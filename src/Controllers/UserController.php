@@ -9,6 +9,124 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Exception; // For handling potential errors
 
+/**
+ * @OA\PathItem(
+ *   path="/users",
+ *   @OA\Get(
+ *     summary="Get all users",
+ *     description="Returns all users",
+ *     @OA\Response(
+ *       response=200,
+ *       description="A list of users",
+ *       @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/User"))
+ *     ),
+ *     @OA\Response(
+ *       response=500,
+ *       description="An error occurred"
+ *     )
+ *   ),
+ *   @OA\Post(
+ *     summary="Create a new user",
+ *     description="Creates a new user and returns the user information",
+ *     @OA\RequestBody(
+ *       required=true,
+ *       @OA\JsonContent(ref="#/components/schemas/User")
+ *     ),
+ *     @OA\Response(
+ *       response=201,
+ *       description="A user",
+ *       @OA\JsonContent(ref="#/components/schemas/User")
+ *     ),
+ *     @OA\Response(
+ *       response=400,
+ *       description="Invalid user data"
+ *     ),
+ *     @OA\Response(
+ *       response=500,
+ *       description="An error occurred"
+ *     )
+ *   )
+ * )
+ * @OA\PathItem(
+ *   path="/users/{id}",
+ *   @OA\Get(
+ *     summary="Get user information",
+ *     description="Returns user information",
+ *     @OA\Parameter(
+ *       name="id",
+ *       in="path",
+ *       required=true,
+ *       @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Response(
+ *       response=200,
+ *       description="A user",
+ *       @OA\JsonContent(ref="#/components/schemas/User")
+ *     ),
+ *     @OA\Response(
+ *       response=404,
+ *       description="User not found"
+ *     ),
+ *     @OA\Response(
+ *       response=500,
+ *       description="An error occurred"
+ *     )
+ *   ),
+ *   @OA\Put(
+ *     summary="Update user information",
+ *     description="Updates user information and returns the updated user",
+ *     @OA\Parameter(
+ *       name="id",
+ *       in="path",
+ *       required=true,
+ *       @OA\Schema(type="integer")
+ *     ),
+ *     @OA\RequestBody(
+ *       required=true,
+ *       @OA\JsonContent(ref="#/components/schemas/User")
+ *     ),
+ *     @OA\Response(
+ *       response=200,
+ *       description="A user",
+ *       @OA\JsonContent(ref="#/components/schemas/User")
+ *     ),
+ *     @OA\Response(
+ *       response=400,
+ *       description="Invalid user data"
+ *     ),
+ *     @OA\Response(
+ *       response=404,
+ *       description="User not found"
+ *     ),
+ *     @OA\Response(
+ *       response=500,
+ *       description="An error occurred"
+ *     )
+ *   ),
+ *   @OA\Delete(
+ *     summary="Delete a user",
+ *     description="Deletes a user",
+ *     @OA\Parameter(
+ *       name="id",
+ *       in="path",
+ *       required=true,
+ *       @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Response(
+ *       response=204,
+ *       description="No content"
+ *     ),
+ *     @OA\Response(
+ *       response=404,
+ *       description="User not found"
+ *     ),
+ *     @OA\Response(
+ *       response=500,
+ *       description="An error occurred"
+ *     )
+ *   )
+ * )
+ */
 class UserController
 {
     private $db;
@@ -96,7 +214,6 @@ class UserController
 				return $response->withStatus(404); // Not Found
 			}
 			$user = new User($result);
-			DebugArray::debug($user);
 			$response->getBody()->write(json_encode($user));
 			return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
 		} catch (Exception $e) {

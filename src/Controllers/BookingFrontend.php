@@ -8,6 +8,24 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Exception; // For handling potential errors
 
+/**
+ * @OA\PathItem(
+ *   path="/BookingFrontend/SearchDataAll",
+ *   @OA\Get(
+ *     summary="Get all booking data",
+ *     description="Returns all booking data",
+ *     @OA\Response(
+ *       response=200,
+ *       description="A list of booking data",
+ *       @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/BookingData"))
+ *     ),
+ *     @OA\Response(
+ *       response=500,
+ *       description="An error occurred"
+ *     )
+ *   )
+ * )
+ */
 class BookingFrontend
 {
     private $db;

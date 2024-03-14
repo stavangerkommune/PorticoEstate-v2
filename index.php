@@ -3,13 +3,14 @@
 use App\Helpers\DebugArray;
 use Slim\Factory\AppFactory;
 use DI\ContainerBuilder;
+use App\Middleware\ApiKeyVerifier;
 
-require __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 $containerBuilder = new ContainerBuilder();
 
 // Add your settings to the container
-$settings = require __DIR__ . '/config/database.php';
+$settings = require_once __DIR__ . '/config/database.php';
 $containerBuilder->addDefinitions(['settings' => $settings]);
 
 // Build PHP-DI Container instance
@@ -35,6 +36,8 @@ foreach ($providers as $provider)
 // Register routes from separate files
 $routeProvider = new \App\Providers\RouteProvider();
 $routeProvider->register($app);
+
+$app->add(new ApiKeyVerifier($container));
 
 //App\Helpers\DebugArray::debug($app);
 
