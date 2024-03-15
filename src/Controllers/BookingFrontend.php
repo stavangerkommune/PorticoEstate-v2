@@ -9,23 +9,19 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Exception; // For handling potential errors
 
 /**
- * @OA\PathItem(
- *   path="/BookingFrontend/SearchDataAll",
- *   @OA\Get(
- *     summary="Get all booking data",
- *     description="Returns all booking data",
- *     @OA\Response(
- *       response=200,
- *       description="A list of booking data",
- *       @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/BookingData"))
- *     ),
- *     @OA\Response(
- *       response=500,
- *       description="An error occurred"
- *     )
- *   )
+ * @OA\OpenApi(
+ *    @OA\Server(url="http://localhost:8080"),
+ *   @OA\Info(
+ *    title="Portico API",
+ *   version="1.0.0",
+ *  description="Portico API",
+ * @OA\Contact(
+ * email="sigurdne@gmail.com"
+ * )
+ * )
  * )
  */
+
 class BookingFrontend
 {
     private $db;
@@ -34,6 +30,39 @@ class BookingFrontend
 	{
 		$this->db = $container->get('db');
 	}
+	/**
+	 * @OA\Get(
+	 *     path="/search-data",
+	 *     summary="Get various search data",
+	 *     tags={"Search Data"},
+	 *     @OA\Response(
+	 *         response=200,
+	 *         description="Successful response",
+	 *         @OA\JsonContent(
+	 *             type="object",
+	 *             @OA\Property(property="activities", type="array", @OA\Items(ref="#/components/schemas/Activity")),
+	 *             @OA\Property(property="buildings", type="array", @OA\Items(ref="#/components/schemas/Building")),
+	 *             @OA\Property(property="building_resources", type="array", @OA\Items(ref="#/components/schemas/BuildingResource")),
+	 *             @OA\Property(property="facilities", type="array", @OA\Items(ref="#/components/schemas/Facility")),
+	 *             @OA\Property(property="resources", type="array", @OA\Items(ref="#/components/schemas/Resource")),
+	 *             @OA\Property(property="resource_activities", type="array", @OA\Items(ref="#/components/schemas/ResourceActivity")),
+	 *             @OA\Property(property="resource_facilities", type="array", @OA\Items(ref="#/components/schemas/ResourceFacility")),
+	 *             @OA\Property(property="resource_categories", type="array", @OA\Items(ref="#/components/schemas/ResourceCategory")),
+	 *             @OA\Property(property="resource_category_activity", type="array", @OA\Items(ref="#/components/schemas/ResourceCategoryActivity")),
+	 *             @OA\Property(property="towns", type="array", @OA\Items(ref="#/components/schemas/Town")),
+	 *             @OA\Property(property="organizations", type="array", @OA\Items(ref="#/components/schemas/Organization"))
+	 *         )
+	 *     ),
+	 *     @OA\Response(
+	 *         response=500,
+	 *         description="Internal server error",
+	 *         @OA\JsonContent(
+	 *             type="object",
+	 *             @OA\Property(property="error", type="string")
+	 *         )
+	 *     )
+	 * )
+	 */
 
 	public function SearchDataAll(Request $request, Response $response): Response
 	{

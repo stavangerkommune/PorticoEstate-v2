@@ -10,122 +10,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Exception; // For handling potential errors
 
 /**
- * @OA\PathItem(
- *   path="/users",
- *   @OA\Get(
- *     summary="Get all users",
- *     description="Returns all users",
- *     @OA\Response(
- *       response=200,
- *       description="A list of users",
- *       @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/User"))
- *     ),
- *     @OA\Response(
- *       response=500,
- *       description="An error occurred"
- *     )
- *   ),
- *   @OA\Post(
- *     summary="Create a new user",
- *     description="Creates a new user and returns the user information",
- *     @OA\RequestBody(
- *       required=true,
- *       @OA\JsonContent(ref="#/components/schemas/User")
- *     ),
- *     @OA\Response(
- *       response=201,
- *       description="A user",
- *       @OA\JsonContent(ref="#/components/schemas/User")
- *     ),
- *     @OA\Response(
- *       response=400,
- *       description="Invalid user data"
- *     ),
- *     @OA\Response(
- *       response=500,
- *       description="An error occurred"
- *     )
- *   )
- * )
- * @OA\PathItem(
- *   path="/users/{id}",
- *   @OA\Get(
- *     summary="Get user information",
- *     description="Returns user information",
- *     @OA\Parameter(
- *       name="id",
- *       in="path",
- *       required=true,
- *       @OA\Schema(type="integer")
- *     ),
- *     @OA\Response(
- *       response=200,
- *       description="A user",
- *       @OA\JsonContent(ref="#/components/schemas/User")
- *     ),
- *     @OA\Response(
- *       response=404,
- *       description="User not found"
- *     ),
- *     @OA\Response(
- *       response=500,
- *       description="An error occurred"
- *     )
- *   ),
- *   @OA\Put(
- *     summary="Update user information",
- *     description="Updates user information and returns the updated user",
- *     @OA\Parameter(
- *       name="id",
- *       in="path",
- *       required=true,
- *       @OA\Schema(type="integer")
- *     ),
- *     @OA\RequestBody(
- *       required=true,
- *       @OA\JsonContent(ref="#/components/schemas/User")
- *     ),
- *     @OA\Response(
- *       response=200,
- *       description="A user",
- *       @OA\JsonContent(ref="#/components/schemas/User")
- *     ),
- *     @OA\Response(
- *       response=400,
- *       description="Invalid user data"
- *     ),
- *     @OA\Response(
- *       response=404,
- *       description="User not found"
- *     ),
- *     @OA\Response(
- *       response=500,
- *       description="An error occurred"
- *     )
- *   ),
- *   @OA\Delete(
- *     summary="Delete a user",
- *     description="Deletes a user",
- *     @OA\Parameter(
- *       name="id",
- *       in="path",
- *       required=true,
- *       @OA\Schema(type="integer")
- *     ),
- *     @OA\Response(
- *       response=204,
- *       description="No content"
- *     ),
- *     @OA\Response(
- *       response=404,
- *       description="User not found"
- *     ),
- *     @OA\Response(
- *       response=500,
- *       description="An error occurred"
- *     )
- *   )
- * )
+ * @OA\Info(title="Portico API", version="0.1")
  */
 class UserController
 {
@@ -135,7 +20,43 @@ class UserController
 	{
 		$this->db = $container->get('db');
 	}
-   
+	/**
+	 * @OA\Get(
+	 *     path="/users",
+	 *     summary="Get a paginated list of users",
+	 *     tags={"Users"},
+	 *     @OA\Parameter(
+	 *         name="page",
+	 *         in="query",
+	 *         description="Page number (default: 1)",
+	 *         required=false,
+	 *         @OA\Schema(type="integer")
+	 *     ),
+	 *     @OA\Parameter(
+	 *         name="perPage",
+	 *         in="query",
+	 *         description="Number of users per page (default: 10)",
+	 *         required=false,
+	 *         @OA\Schema(type="integer")
+	 *     ),
+	 *     @OA\Response(
+	 *         response=200,
+	 *         description="Successful response",
+	 *         @OA\JsonContent(
+	 *             type="array",
+	 *             @OA\Items(ref="#/components/schemas/User")
+	 *         )
+	 *     ),
+	 *     @OA\Response(
+	 *         response=500,
+	 *         description="Internal server error",
+	 *         @OA\JsonContent(
+	 *             type="object",
+	 *             @OA\Property(property="error", type="string")
+	 *         )
+	 *     )
+	 * )
+	 */
 	public function index(Request $request, Response $response): Response
 	{
 		$queryParams = $request->getQueryParams();
@@ -165,6 +86,41 @@ class UserController
 		return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
 	}
 
+	/**
+	 * @OA\Post(
+	 *     path="/users",
+	 *     summary="Create a new user",
+	 *     tags={"Users"},
+	 *     @OA\RequestBody(
+	 *         required=true,
+	 *         @OA\JsonContent(
+	 *             @OA\Property(property="name", type="string"),
+	 *             @OA\Property(property="email", type="string")
+	 *         )
+	 *     ),
+	 *     @OA\Response(
+	 *         response=201,
+	 *         description="User created successfully",
+	 *         @OA\JsonContent(ref="#/components/schemas/User")
+	 *     ),
+	 *     @OA\Response(
+	 *         response=400,
+	 *         description="Validation error",
+	 *         @OA\JsonContent(
+	 *             type="object",
+	 *             @OA\Property(property="error", type="string")
+	 *         )
+	 *     ),
+	 *     @OA\Response(
+	 *         response=500,
+	 *         description="Internal server error",
+	 *         @OA\JsonContent(
+	 *             type="object",
+	 *             @OA\Property(property="error", type="string")
+	 *         )
+	 *     )
+	 * )
+	 */
     public function store(Request $request, Response $response): Response
     {
         $name = $request->getParsedBodyParam('name');
@@ -198,6 +154,37 @@ class UserController
         }
     }
 
+	/**
+	 * @OA\Get(
+	 *     path="/users/{id}",
+	 *     summary="Get user details by ID",
+	 *     tags={"Users"},
+	 *     @OA\Parameter(
+	 *         name="id",
+	 *         in="path",
+	 *         description="User ID",
+	 *         required=true,
+	 *         @OA\Schema(type="integer")
+	 *     ),
+	 *     @OA\Response(
+	 *         response=200,
+	 *         description="Successful response",
+	 *         @OA\JsonContent(ref="#/components/schemas/User")
+	 *     ),
+	 *     @OA\Response(
+	 *         response=404,
+	 *         description="User not found",
+	 *     ),
+	 *     @OA\Response(
+	 *         response=500,
+	 *         description="Internal server error",
+	 *         @OA\JsonContent(
+	 *             type="object",
+	 *             @OA\Property(property="error", type="string")
+	 *         )
+	 *     )
+	 * )
+	 */
 	public function show(Request $request, Response $response, array $args): Response
 	{
 		$userId = $args['id'];
@@ -224,7 +211,49 @@ class UserController
 		}
 	}
 
-    public function update(Request $request, Response $response, array $args): Response
+	/**
+	 * @OA\Put(
+	 *     path="/users/{id}",
+	 *     summary="Update user details by ID",
+	 *     tags={"Users"},
+	 *     @OA\Parameter(
+	 *         name="id",
+	 *         in="path",
+	 *         description="User ID",
+	 *         required=true,
+	 *         @OA\Schema(type="integer")
+	 *     ),
+	 *     @OA\RequestBody(
+	 *         required=true,
+	 *         @OA\JsonContent(
+	 *             @OA\Property(property="name", type="string"),
+	 *             @OA\Property(property="email", type="string")
+	 *         )
+	 *     ),
+	 *     @OA\Response(
+	 *         response=200,
+	 *         description="User updated successfully",
+	 *         @OA\JsonContent(ref="#/components/schemas/User")
+	 *     ),
+	 *     @OA\Response(
+	 *         response=400,
+	 *         description="Validation error",
+	 *         @OA\JsonContent(
+	 *             type="object",
+	 *             @OA\Property(property="error", type="string")
+	 *         )
+	 *     ),
+	 *     @OA\Response(
+	 *         response=500,
+	 *         description="Internal server error",
+	 *         @OA\JsonContent(
+	 *             type="object",
+	 *             @OA\Property(property="error", type="string")
+	 *         )
+	 *     )
+	 * )
+	 */
+	public function update(Request $request, Response $response, array $args): Response
     {
         $userId = $args['id'];
         $name = $request->getParsedBodyParam('name');
@@ -257,7 +286,37 @@ class UserController
         }
     }
 
-    public function destroy(Request $request, Response $response, array $args): Response
+	/**
+	 * @OA\Delete(
+	 *     path="/users/{id}",
+	 *     summary="Delete user by ID",
+	 *     tags={"Users"},
+	 *     @OA\Parameter(
+	 *         name="id",
+	 *         in="path",
+	 *         description="User ID",
+	 *         required=true,
+	 *         @OA\Schema(type="integer")
+	 *     ),
+	 *     @OA\Response(
+	 *         response=204,
+	 *         description="User deleted successfully (No Content)"
+	 *     ),
+	 *     @OA\Response(
+	 *         response=404,
+	 *         description="User not found"
+	 *     ),
+	 *     @OA\Response(
+	 *         response=500,
+	 *         description="Internal server error",
+	 *         @OA\JsonContent(
+	 *             type="object",
+	 *             @OA\Property(property="error", type="string")
+	 *         )
+	 *     )
+	 * )
+	 */
+	public function destroy(Request $request, Response $response, array $args): Response
     {
         $userId = $args['id'];
 

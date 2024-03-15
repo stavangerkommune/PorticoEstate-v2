@@ -7,6 +7,7 @@ use App\Middleware\ApiKeyVerifier;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+
 $containerBuilder = new ContainerBuilder();
 
 // Add your settings to the container
@@ -37,12 +38,16 @@ foreach ($providers as $provider)
 $routeProvider = new \App\Providers\RouteProvider();
 $routeProvider->register($app);
 
-$app->add(new ApiKeyVerifier($container));
+
+//$app->add(new ApiKeyVerifier($container));
 
 //App\Helpers\DebugArray::debug($app);
 
 // Set the displayErrorDetails setting. This is off by default
 $app->addErrorMiddleware(true, true, true);
+
+// Start the session with a specific session id
+$session = (new Middlewares\PhpSession())->name('portico_php_session');
 
 // Run the Slim app
 $app->run();

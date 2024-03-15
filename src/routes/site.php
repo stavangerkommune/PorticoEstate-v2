@@ -13,10 +13,17 @@ return [
 	],
 	'/swagger' => [
 		'get' => function (Request $request, Response $response) {
-		//	$swaggerUi = \Swagger\UI::scan('path/to/swagger.yaml');
-			$swaggerUi = \OpenApi\Generator::scan([__DIR__ . '/../../swagger.yaml']);
-	//		$response = $response->withHeader('Content-Type', 'text/html');
-	//		$response->getBody()->write($swaggerUi);
+	
+		//	$swaggerUi = \OpenApi\Generator::scan([
+		//		__DIR__ . '/../Controllers/UserController.php',
+		//		__DIR__ . '/../Controllers/BookingFrontend.php']
+		//	);
+			$json_file = __DIR__ . '/../../swagger.json';
+			//read file to string
+			$json = file_get_contents($json_file);
+			$response = $response->withHeader('Content-Type', 'text/html');
+		//	$response->getBody()->write($swaggerUi->toJson());
+			$response->getBody()->write($json);
 			return $response;
 		}
 	],
