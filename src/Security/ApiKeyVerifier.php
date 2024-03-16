@@ -1,14 +1,21 @@
 <?php
-namespace App\Middleware;
+namespace App\Security;
 
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-use Slim\Psr7\Response as Response;
+
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Container\ContainerInterface;
-use PDO;
+use Slim\Routing\RouteContext;
+use Slim\Exception\HttpNotFoundException;
+use Slim\Exception\HttpForbiddenException;
 use App\Helpers\Auth;
+use PDO;
+use Slim\Psr7\Response;
 
-class ApiKeyVerifier
+
+class ApiKeyVerifier  implements MiddlewareInterface
 {
 	protected $db;
 
@@ -17,10 +24,10 @@ class ApiKeyVerifier
 		$this->db = $container->get('db');
 	}
 
-	public function __invoke(Request $request, RequestHandler $handler): Response
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
 	{
-		
-
+//		$response = $handler->handle($request);
+//		return $response;
 		$UserName = $request->getHeaderLine('X-API-User');
 		$passwd = $request->getHeaderLine('X-API-Key');
 
@@ -60,7 +67,6 @@ class ApiKeyVerifier
 	{
 		$response = new Response();
 		$response->getBody()->write(json_encode($error));
-		$newResponse = $response->withStatus(401);
-		return $newResponse;
+		return $response->withHeader('Content-Type', 'application/json')->withStatus(401);
 	}
 }

@@ -4,6 +4,9 @@ use App\Helpers\DebugArray;
 use Slim\Factory\AppFactory;
 use DI\ContainerBuilder;
 use App\Middleware\ApiKeyVerifier;
+use App\Middleware\AccessVerifier;
+use App\Providers\AclServiceProvider;
+use App\Providers\DatabaseServiceProvider;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -21,25 +24,21 @@ $container = $containerBuilder->build();
 AppFactory::setContainer($container);
 $app = AppFactory::create();
 
-$providers = [
-    \App\Providers\DatabaseServiceProvider::class,
-];
+// Register service providers
+$datbaseProvider = new DatabaseServiceProvider();
+$aclProvider = new AclServiceProvider();
 
-
-// Register all providers
-foreach ($providers as $provider)
-{
-     (new $provider)->register($app);
-}
+$datbaseProvider->register($app);
+$aclProvider->register($app);
 
 //phpinfo();
 
 // Register routes from separate files
-$routeProvider = new \App\Providers\RouteProvider();
-$routeProvider->register($app);
+require_once __DIR__ . '/src/routes/users.php';
+require_once __DIR__ . '/src/routes/site.php';
+require_once __DIR__ . '/src/routes/BookingFrontend.php';
+//require all routes
 
-
-//$app->add(new ApiKeyVerifier($container));
 
 //App\Helpers\DebugArray::debug($app);
 
@@ -48,6 +47,9 @@ $app->addErrorMiddleware(true, true, true);
 
 // Start the session with a specific session id
 $session = (new Middlewares\PhpSession())->name('portico_php_session');
+
+// Boot service providers
+
 
 // Run the Slim app
 $app->run();

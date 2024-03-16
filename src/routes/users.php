@@ -1,22 +1,16 @@
 <?php
 
+use Slim\Routing\RouteCollectorProxy;
+use App\Controllers\UserController;
+use App\Security\AccessVerifier;
+use App\Security\ApiKeyVerifier;
 
-// Path: src/routes/users.php
-// return array of routes to be used in Providers/RouteProvider.php
-
-return [
-	'/users' => [
-		'group' => true,
-		'routes' => [
-			'/' => [
-				'get' => 'App\Controllers\UserController:index',
-				'post' => 'App\Controllers\UserController:store',
-			],
-			'/{id}' => [
-				'get' => 'App\Controllers\UserController:show',
-				'put' => 'App\Controllers\UserController:update',
-				'delete' => 'App\Controllers\UserController:destroy',
-			]
-		]
-	]
-];
+$app->group('/users', function (RouteCollectorProxy $group) {
+	$group->get('', UserController::class . ':index');
+	$group->post('', UserController::class . ':store');
+	$group->get('/{id}', UserController::class . ':show');
+	$group->put('/{id}', UserController::class . ':update');
+	$group->delete('/{id}', UserController::class . ':destroy');
+})
+->addMiddleware(new AccessVerifier($container))
+->addMiddleware(new ApiKeyVerifier($container));

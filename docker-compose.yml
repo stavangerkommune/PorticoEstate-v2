@@ -10,11 +10,11 @@ services:
             context: .
             dockerfile: Dockerfile
         working_dir: /var/www
-        command: php -S 0.0.0.0:8080
+        command: php -S 0.0.0.0:8088
         environment:
             docker: "true"
         ports:
-            - "8080:8080"
+            - "8088:8088"
         volumes:
             - .:/var/www
             - logs:/var/www/logs

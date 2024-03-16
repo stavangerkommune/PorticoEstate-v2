@@ -15,10 +15,12 @@ use Exception; // For handling potential errors
 class UserController
 {
     private $db;
+	private $acl;
 
     public function __construct(ContainerInterface $container)
 	{
 		$this->db = $container->get('db');
+		$this->acl = $container->get('acl');
 	}
 	/**
 	 * @OA\Get(
@@ -123,9 +125,14 @@ class UserController
 	 */
     public function store(Request $request, Response $response): Response
     {
-        $name = $request->getParsedBodyParam('name');
-        $email = $request->getParsedBodyParam('email');
+	//	print_r($_POST);die();
 
+		$parsedBody = $request->getParsedBody();
+
+		// Access the 'name' parameter from the parsed body
+		$name = $parsedBody['name'] ?? null;
+		$email = $parsedBody['email'] ?? null;
+	
         if (empty($name) || empty($email)) {
             // Handle validation error (e.g., return a 400 Bad Request response)
             $error = "Please provide name and email";
@@ -141,8 +148,13 @@ class UserController
             $stmt->execute();
 
             $userId = $this->db->lastInsertId();
-            $user = new User($userId, $name, $email); // Create a new User object
-
+			$userData = [
+				'id' => $userId,
+				'name' => $name,
+				'email' => $email,
+			];
+			
+			$user = new User($userData); // Create a new User object
 			$response->getBody()->write(json_encode($user));
 			return $response->withHeader('Content-Type', 'application/json')->withStatus(201); // // Return the created user (201 Created)
 
@@ -256,8 +268,11 @@ class UserController
 	public function update(Request $request, Response $response, array $args): Response
     {
         $userId = $args['id'];
-        $name = $request->getParsedBodyParam('name');
-        $email = $request->getParsedBodyParam('email');
+		$parsedBody = $request->getParsedBody();
+
+		// Access the 'name' parameter from the parsed body
+		$name = $parsedBody['name'] ?? null;
+		$email = $parsedBody['email'] ?? null;
 
         if (empty($name) || empty($email)) {
             // Handle validation error (400 Bad Request)
@@ -274,7 +289,13 @@ class UserController
             $stmt->bindParam(':id', $userId);
             $stmt->execute();
             
-            $user = new User($userId, $name, $email); // Create a new User object
+			$userData = [
+				'id' => $userId,
+				'name' => $name,
+				'email' => $email,
+			];
+			
+			$user = new User($userData); // Create a new User object
 			$response->getBody()->write(json_encode($user));
 			return $response->withHeader('Content-Type', 'application/json')->withStatus(200); // OK
 
@@ -317,25 +338,25 @@ class UserController
 	 * )
 	 */
 	public function destroy(Request $request, Response $response, array $args): Response
-    {
-        $userId = $args['id'];
-
-        try {
-            $sql = "DELETE FROM bb_user WHERE id = :id";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':id', $userId);
-            $stmt->execute();
-
-            if ($stmt->rowCount() === 0) {
-                return $response->withStatus(404); // Not Found
-            }
-
-            return $response->withStatus(204); // No Content
-        } catch (Exception $e) {
-            // Handle database error
-            $error = "Error deleting user: " . $e->getMessage();
+	{
+		$userId = $args['id'];
+	
+		try {
+			$sql = "DELETE FROM bb_user WHERE id = :id";
+			$stmt = $this->db->prepare($sql);
+			$stmt->bindParam(':id', $userId);
+			$stmt->execute();
+	
+			if ($stmt->rowCount() === 0) {
+				return $response->withStatus(404); // Not Found
+			}
+	
+			return $response->withStatus(204); // No Content
+		} catch (Exception $e) {
+			// Handle database error
+			$error = "Error deleting user: " . $e->getMessage();
 			$response->getBody()->write(json_encode(['error' => $error]));
 			return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        }
-    }
+		}
+	}
 }
