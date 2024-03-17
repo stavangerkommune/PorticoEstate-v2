@@ -5,7 +5,7 @@
     "version": "0.1"
   },
   "paths": {
-    "/users": {
+    "/booking/users": {
       "get": {
         "summary": "Get a paginated list of users",
         "tags": ["Users"],
@@ -125,7 +125,7 @@
         }
       }
     },
-    "/users/{id}": {
+    "/booking/users/{id}": {
       "get": {
         "summary": "Get user details by ID",
         "tags": ["Users"],
