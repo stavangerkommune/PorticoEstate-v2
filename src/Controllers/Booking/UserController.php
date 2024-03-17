@@ -1,9 +1,9 @@
 <?php
-namespace App\Controllers;
+namespace App\Controllers\Booking;
 
 use App\Helpers\DebugArray;
 use PDO;
-use App\Models\User;
+use App\Models\Booking\User;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -20,7 +20,7 @@ class UserController
     public function __construct(ContainerInterface $container)
 	{
 		$this->db = $container->get('db');
-		$this->acl = $container->get('acl');
+	//	$this->acl = $container->get('acl');
 	}
 	/**
 	 * @OA\Get(

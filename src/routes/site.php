@@ -10,10 +10,10 @@ $app->get('/', function (Request $request, Response $response) {
     return $response->withHeader('Content-Type', 'application/json');
 });
 
-$app->get('/swagger', function (Request $request, Response $response) {
+$app->get('/swagger[/{params:.*}]', function (Request $request, Response $response) {
     $json_file = __DIR__ . '/../../swagger.json';
     $json = file_get_contents($json_file);
-    $response = $response->withHeader('Content-Type', 'text/html');
+    $response = $response->withHeader('Content-Type', 'application/json');
     $response->getBody()->write($json);
     return $response;
 });

@@ -1,5 +1,5 @@
 <?php
-namespace App\Controllers;
+namespace App\Controllers\BookingFrontend;
 
 use App\Helpers\DebugArray;
 use PDO;
@@ -22,7 +22,7 @@ use Exception; // For handling potential errors
  * )
  */
 
-class BookingFrontend
+class DataStore
 {
     private $db;
 

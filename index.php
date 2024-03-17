@@ -26,17 +26,17 @@ $app = AppFactory::create();
 
 // Register service providers
 $datbaseProvider = new DatabaseServiceProvider();
-$aclProvider = new AclServiceProvider();
+//$aclProvider = new AclServiceProvider();
 
 $datbaseProvider->register($app);
-$aclProvider->register($app);
+//$aclProvider->register($app);
 
 //phpinfo();
 
 // Register routes from separate files
-require_once __DIR__ . '/src/routes/users.php';
+require_once __DIR__ . '/src/routes/bookingfrontend/routes.php';
+require_once __DIR__ . '/src/routes/booking/routes.php';
 require_once __DIR__ . '/src/routes/site.php';
-require_once __DIR__ . '/src/routes/BookingFrontend.php';
 //require all routes
 
 

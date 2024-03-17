@@ -22,7 +22,7 @@ class AccessVerifier  implements MiddlewareInterface
 
 	public function __construct(ContainerInterface $container)
 	{
-		$this->acl = $container->get('acl');
+	//	$this->acl = $container->get('acl');
 	}
 
 	//public function process
