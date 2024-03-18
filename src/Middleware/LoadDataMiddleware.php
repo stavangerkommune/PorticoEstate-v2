@@ -14,9 +14,7 @@ use App\Services\Settings;
 use App\Services\ServerSettings;
 use Psr\Http\Server\MiddlewareInterface;
 use Slim\Exception\NotFoundException;
-use App\Services\Translation;
-use App\Security\Acl;
-
+use App\Services\DatabaseObject;
 
 
 class LoadDataMiddleware implements MiddlewareInterface
@@ -32,6 +30,8 @@ class LoadDataMiddleware implements MiddlewareInterface
 
     public function process(Request $request, RequestHandler $handler): Response
     {
+	//	print_r(__CLASS__);
+
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
 
@@ -40,7 +40,7 @@ class LoadDataMiddleware implements MiddlewareInterface
             throw new NotFoundException($request, $response);
         }
 
-
+		DatabaseObject::getInstance($this->db);
         //get the route path
         $routePath = $route->getPattern();
         $routePath_arr = explode('/', $routePath);
@@ -57,32 +57,15 @@ class LoadDataMiddleware implements MiddlewareInterface
 
         $account_id = !empty($result['account_id']) ? $result['account_id'] : 0;
 
-        $ServerSettings =  new ServerSettings($this->db);
-
         $flags = [
             'currentapp' => $currentApp
         ];
-        $ServerSettings->set('flags', $flags);
 
- //       ServerSettings::getInstance()->get('flags');
+		ServerSettings::getInstance()->set('flags', $flags);
 
+		Settings::getInstance()->set('account_id', $account_id);
 
-        $userSettings = new Settings($this->db, $account_id);
-  //      Settings::getInstance($this->db);
-
-        $userSettings->set('account_id', $account_id);
-
-        //TODO: check if the user has permission to access the route
-        // If access is granted, proceed to the next middleware
-        // Otherwise, return a response indicating that access is denied
-        // If the user does not have permission to access the route, return 403
-        //throw new HttpForbiddenException($request, "You do not have permission to access this route.");
-        $acl = new Acl($this->db, $account_id);
-
-
-        
-
-        // Add data to the request as an attribute
+         // Add data to the request as an attribute
  
         // Continue with the next middleware
         return $handler->handle($request);

@@ -25,13 +25,13 @@ class Settings
     public $account_id;
 
 
-    public function __construct($db = null, $account_id = null )
+    public function __construct($account_id = null )
     {
-        $this->db = $db;
+		$this->db = DatabaseObject::getInstance()->get('db');
         $this->account_id = $account_id;
         $this->serverSettings = ServerSettings::getInstance()->get('server');
         $this->userSettings = $this->ReadUserSettings();
-        $this->translation = new Translation($db,  $this->userSettings);
+        $this->translation = new Translation($this->db,  $this->userSettings);
 
         // Load settings from the database
         $this->settings = $this->loadSettingsFromDatabase();
@@ -48,10 +48,10 @@ class Settings
         $this->set('account_id', $account_id);
     }
 
-    public static function getInstance($db = null, $account_id = null)
+    public static function getInstance($account_id = null)
     {
         if (null === static::$instance) {
-            static::$instance = new static($db, $account_id);
+            static::$instance = new static($account_id);
         }
     
         return static::$instance;
@@ -59,24 +59,12 @@ class Settings
 
     private function loadSettingsFromDatabase()
     {
-        static $data_cache = array();
-        if(!empty($data_cache))
-        {
-            $this->settings = $data_cache;
-            return $this->settings;
-        }
-
-        // Your code to fetch settings from the database goes here
-        // This is just a placeholder
-        $this->settings = [
+		return [
             'apps' => $this->ReadInstalledApps(),
             'usersettings' => $this->userSettings,
             'account_id'   => $this->account_id,
             // ...
         ];
-        $data_cache = $this->settings;
-
-        return $this->settings;
     }
 
  
@@ -201,7 +189,8 @@ class Settings
      */
     function parse_notify($msg, $values = '', $use_standard_values = true)
     {
-        $vals = $values ? $values : array();
+        $replace = $with = array();
+		$vals = $values ? $values : array();
 
         if ($use_standard_values && is_array($this->values))
         {

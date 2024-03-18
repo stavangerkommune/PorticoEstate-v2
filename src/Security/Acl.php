@@ -44,9 +44,13 @@
     namespace App\Security;
     use App\Services\Settings;
     use App\Services\ServerSettings;
+	use App\Services\DatabaseObject;
+	use App\Services\Cache;
+	use App\Controllers\Api\Accounts\Accounts;
+	use App\Controllers\Api\Applications;
+	
 
-
-    class Acl
+	class Acl
     {
  		/**
 		* Account id
@@ -153,6 +157,10 @@
 		protected $soap_functions;
         public $serverSettings;
         protected $server_flags;
+		protected $cache;
+		protected $accounts;
+		protected $applications;
+
 
 		/**
 		* ACL constructor for setting account id
@@ -163,15 +171,21 @@
 		* @param integer $account_id Account id
 		*/
 
-        public function __construct($db)
+        public function __construct()
         {
-            $this->_db = $db;
+     //       $this->_db = $db;
+			$this->_db = DatabaseObject::getInstance()->get('db');
             $this->_like		= 'ILIKE';
 			$this->_join		= 'JOIN';
 			$this->_left_join	= 'LEFT JOIN';
             $this->serverSettings = ServerSettings::getInstance()->get('server');
             $this->server_flags = ServerSettings::getInstance()->get('flags');
-            $this->_account_id = Settings::getInstance($this->_db)->get('account_id');
+            $this->_account_id = Settings::getInstance()->get('account_id');
+			$this->cache = new Cache($this->_db);
+			$this->accounts = (new Accounts())->getObject();
+			$this->applications = new Applications();
+	
+
        }
 
 		/**
@@ -198,7 +212,7 @@
 				$location_id = 0;
 				if($location)
 				{
-					$app_id			= $GLOBALS['phpgw']->applications->name2id($appname);
+					$app_id			= $this->applications->name2id($appname);
 					$location_id	= $GLOBALS['phpgw']->locations->get_id($appname, $location);
 				}
 
@@ -283,7 +297,7 @@
 		*/
 		public function add($appname, $location, $rights, $grantor = -1, $mask = 0)
 		{
-			$app_id = $GLOBALS['phpgw']->applications->name2id($appname);
+			$app_id = $this->applications->name2id($appname);
 			$location_id	= $GLOBALS['phpgw']->locations->get_id($appname, $location);
 
 			if( !$location_id > 0)
@@ -325,7 +339,7 @@
 				$appname = $this->server_flags['currentapp'];
 			}
 
-			$app_id = $GLOBALS['phpgw']->applications->name2id($appname);
+			$app_id = $this->applications->name2id($appname);
 
 			$locations = array();
 			$locations[] = $GLOBALS['phpgw']->locations->get_id($appname, $location);
@@ -371,7 +385,7 @@
 		*/
 		public function save_repository($appname = '', $location = '')
 		{
-			$app_id = $GLOBALS['phpgw']->applications->name2id($appname);
+			$app_id = $this->applications->name2id($appname);
 			$location_id	= $GLOBALS['phpgw']->locations->get_id($appname, $location);
 
 			$_locations = array();
@@ -786,7 +800,7 @@
 				$appname = $this->server_flags['currentapp'];
 			}
 
-			$app_id = $GLOBALS['phpgw']->applications->name2id($appname);
+			$app_id = $this->applications->name2id($appname);
 
 			if( !$location_id = $GLOBALS['phpgw']->locations->get_id($appname, $location))
 			{
@@ -912,7 +926,7 @@
 			}
 			$rights = 0;
 
-			$app_id = $GLOBALS['phpgw']->applications->name2id($appname);
+			$app_id = $this->applications->name2id($appname);
 			$location_id	= $GLOBALS['phpgw']->locations->get_id($appname, $location);
 
 			if(isset($this->_data[$this->_account_id][$app_id][$location_id]) && count($this->_data[$this->_account_id][$app_id][$location_id]))
@@ -1373,7 +1387,7 @@
 				$app = $this->server_flags['currentapp'];
 			}
 
-			$grant_rights = phpgwapi_cache::session_get('phpgwapi', "get_grants_{$app}_{$location}");
+			$grant_rights = $this->cache->session_get('phpgwapi', "get_grants_{$app}_{$location}");
 			if ( !is_null($grant_rights) )
 			{
 				return $grant_rights; // nothing more to do
@@ -1395,7 +1409,7 @@
 					}
 				}
 			}
-			phpgwapi_cache::session_set('phpgwapi', "get_grants_{$app}_{$location}", $grant_rights);
+			$this->cache->session_set('phpgwapi', "get_grants_{$app}_{$location}", $grant_rights);
 			return $grant_rights;
 		}
 		/**
@@ -1414,7 +1428,7 @@
 				$app = $this->server_flags['currentapp'];
 			}
 
-			$grant_rights = phpgwapi_cache::session_get('phpgwapi', "get_grants2_{$app}_{$location}");
+			$grant_rights = $this->cache->session_get('phpgwapi', "get_grants2_{$app}_{$location}");
 			if ( !is_null($grant_rights) )
 			{
 				return $grant_rights; // nothing more to do
@@ -1450,7 +1464,7 @@
 					}
 				}
 			}
-			phpgwapi_cache::session_set('phpgwapi', "get_grants2_{$app}_{$location}", $grant_rights);
+			$this->cache->session_set('phpgwapi', "get_grants2_{$app}_{$location}", $grant_rights);
 			return $grant_rights;
 		}
 		/**
@@ -1738,7 +1752,7 @@
 
 		 	$location = $this->_db->db_addslashes($location);
 			$description = $this->_db->db_addslashes($description);
-		 	$appid = $GLOBALS['phpgw']->applications->name2id($appname);
+		 	$appid = $this->applications->name2id($appname);
 
 		 	$this->_db->query('UPDATE phpgw_locations'
 		 			. " SET descr = '{$description}'"
@@ -1814,7 +1828,7 @@
 
 			foreach($accounts as $id)
 			{
-				phpgwapi_cache::user_clear('phpgwapi', "acl_data_{$app_id}_{$location_id}", $id);
+				$this->cache->user_clear('phpgwapi', "acl_data_{$app_id}_{$location_id}", $id);
 			}
 		}
 
@@ -1834,7 +1848,7 @@
 
 			if(!$app_id && $account_type != 'accounts')
 			{
-				$data = phpgwapi_cache::user_get('phpgwapi', 'acl_data', $this->_account_id);
+				$data = $this->cache->user_get('phpgwapi', 'acl_data', $this->_account_id);
 				if ( !is_null($data) )
 				{
 					$this->_data[$this->_account_id] = $data;
@@ -1843,7 +1857,7 @@
 			}
 			elseif($account_type != 'accounts')
 			{
-				$data = phpgwapi_cache::user_get('phpgwapi', "acl_data_{$app_id}_{$location_id}", $this->_account_id);
+				$data = $this->cache->user_get('phpgwapi', "acl_data_{$app_id}_{$location_id}", $this->_account_id);
 				if ( !is_null($data) )
 				{
 					$this->_data[$this->_account_id][$app_id][$location_id] = $data;
@@ -1866,14 +1880,14 @@
 			{
 				if(!$app_id && $this->_data[$this->_account_id])
 				{
-					phpgwapi_cache::user_set('phpgwapi', 'acl_data', $this->_data[$this->_account_id], $this->_account_id);
+					$this->cache->user_set('phpgwapi', 'acl_data', $this->_data[$this->_account_id], $this->_account_id);
 				}
 				else
 				{
 					if(isset($this->_data[$this->_account_id][$app_id][$location_id]) && is_array($this->_data[$this->_account_id][$app_id][$location_id]))
 					{
 //						throw new Exception("user_set ({$app_id}, {$location_id}) not set");
-						phpgwapi_cache::user_set('phpgwapi', "acl_data_{$app_id}_{$location_id}", $this->_data[$this->_account_id][$app_id][$location_id], $this->_account_id);
+						$this->cache->user_set('phpgwapi', "acl_data_{$app_id}_{$location_id}", $this->_data[$this->_account_id][$app_id][$location_id], $this->_account_id);
 					}
 				}
 			}

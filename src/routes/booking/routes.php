@@ -13,7 +13,7 @@ $app->group('/booking/users', function (RouteCollectorProxy $group) {
 	$group->put('/{id}', UserController::class . ':update');
 	$group->delete('/{id}', UserController::class . ':destroy');
 })
-->addMiddleware(new LoadDataMiddleware($container))
 ->addMiddleware(new AccessVerifier($container))
+->addMiddleware(new LoadDataMiddleware($container))
 ->addMiddleware(new ApiKeyVerifier($container))
 ;

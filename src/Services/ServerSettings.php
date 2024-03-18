@@ -11,9 +11,9 @@ class ServerSettings
     private $config_data;
     
 
-    public function __construct($db = null)
+    public function __construct()
     {
-        $this->db = $db;
+		$this->db = DatabaseObject::getInstance()->get('db');
 
         // Load settings from the database
         $this->settings = $this->loadSettingsFromDatabase();
@@ -30,10 +30,7 @@ class ServerSettings
 
     private function loadSettingsFromDatabase()
     {
-
-        // Your code to fetch settings from the database goes here
-        // This is just a placeholder
-        return [
+         return [
             'server' => $this->read_repository('phpgwapi')
         ];
     }

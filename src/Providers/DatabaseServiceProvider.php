@@ -2,7 +2,6 @@
 namespace App\Providers;
 
 use PDO;
-use DI\Container;
 use Slim\App;
 use Exception;
 use PDOException;
