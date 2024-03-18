@@ -171,11 +171,7 @@
 			$this->_left_join	= 'LEFT JOIN';
             $this->serverSettings = ServerSettings::getInstance()->get('server');
             $this->server_flags = ServerSettings::getInstance()->get('flags');
-			print_r(Settings::getInstance()->get('usersettings'));
-
-            $this->_account_id = Settings::getInstance()->get('account_id');
-
-
+            $this->_account_id = Settings::getInstance($this->_db)->get('account_id');
        }
 
 		/**

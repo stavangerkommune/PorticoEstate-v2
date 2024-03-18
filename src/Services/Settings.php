@@ -25,7 +25,7 @@ class Settings
     public $account_id;
 
 
-    public function __construct($db = null, $account_id = 0 )
+    public function __construct($db = null, $account_id = null )
     {
         $this->db = $db;
         $this->account_id = $account_id;
@@ -35,7 +35,10 @@ class Settings
 
         // Load settings from the database
         $this->settings = $this->loadSettingsFromDatabase();
-        $this->set('account_id', $account_id);
+        if ($account_id)
+        {
+            $this->set('account_id', $account_id);
+        }
     }
 
     public function setAccountId($account_id)
@@ -45,26 +48,35 @@ class Settings
         $this->set('account_id', $account_id);
     }
 
-    public static function getInstance()
+    public static function getInstance($db = null, $account_id = null)
     {
         if (null === static::$instance) {
-            static::$instance = new static();
+            static::$instance = new static($db, $account_id);
         }
-
+    
         return static::$instance;
     }
 
     private function loadSettingsFromDatabase()
     {
+        static $data_cache = array();
+        if(!empty($data_cache))
+        {
+            $this->settings = $data_cache;
+            return $this->settings;
+        }
 
         // Your code to fetch settings from the database goes here
         // This is just a placeholder
-        return [
+        $this->settings = [
             'apps' => $this->ReadInstalledApps(),
             'usersettings' => $this->userSettings,
             'account_id'   => $this->account_id,
             // ...
         ];
+        $data_cache = $this->settings;
+
+        return $this->settings;
     }
 
  

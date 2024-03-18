@@ -64,8 +64,11 @@ class LoadDataMiddleware implements MiddlewareInterface
         ];
         $ServerSettings->set('flags', $flags);
 
+ //       ServerSettings::getInstance()->get('flags');
+
 
         $userSettings = new Settings($this->db, $account_id);
+  //      Settings::getInstance($this->db);
 
         $userSettings->set('account_id', $account_id);
 
@@ -74,7 +77,7 @@ class LoadDataMiddleware implements MiddlewareInterface
         // Otherwise, return a response indicating that access is denied
         // If the user does not have permission to access the route, return 403
         //throw new HttpForbiddenException($request, "You do not have permission to access this route.");
-       // $acl = new Acl($this->db, $account_id);
+        $acl = new Acl($this->db, $account_id);
 
 
         
