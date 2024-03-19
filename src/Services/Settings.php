@@ -31,7 +31,7 @@ class Settings
         $this->account_id = $account_id;
         $this->serverSettings = ServerSettings::getInstance()->get('server');
         $this->userSettings = $this->ReadUserSettings();
-        $this->translation = new Translation($this->db,  $this->userSettings);
+        $this->translation = new Translation($this->userSettings);
 
         // Load settings from the database
         $this->settings = $this->loadSettingsFromDatabase();
@@ -318,6 +318,7 @@ class Settings
                 'version' => $value['app_version']
           ];
         }
+		return $values;
     }
 
     public function set($name, $value)

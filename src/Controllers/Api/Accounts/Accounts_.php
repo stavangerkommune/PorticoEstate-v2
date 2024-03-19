@@ -519,7 +519,7 @@ abstract class phpgwapi_accounts_
 	public function set_account($account_id = null, $account_type = null)
 	{
 		if (!is_null($account_id)) {
-			$this->account_id = get_account_id($account_id);
+			$this->account_id = (int)$account_id;
 		}
 
 		if (!is_null($account_type)) {

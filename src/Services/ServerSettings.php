@@ -54,7 +54,6 @@ class ServerSettings
 
        
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $key = $row['config_name'] == 'phpgwapi' ? 'server' : $row['config_name'];
             $test = @unserialize($row['config_value']);
             if ($test) {
                 $this->config_data[$row['config_name']] = $test;
@@ -62,6 +61,12 @@ class ServerSettings
                 $this->config_data[$row['config_name']] = $row['config_value'];
             }
         }
+		
+		//check if the temp_dir is set and is writable
+		if($module == 'phpgwapi' && (empty($this->config_data['temp_dir']) || !is_writable($this->config_data['temp_dir'])))
+		{
+			$this->config_data['temp_dir'] = '/tmp';
+		}
 
         $data_cache[$module] = $this->config_data;
 

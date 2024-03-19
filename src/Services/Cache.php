@@ -38,18 +38,21 @@
     namespace App\Services;
     use App\Services\Redis;
     use App\Services\Shm;
-
+	use App\Services\DatabaseObject;
+	use App\Services\ServerSettings;
+	use DirectoryIterator;
+	use PDO;
+	use App\Services\Crypto;
+		
+	
 	class Cache
 	{
         
 		static private $phpgwapi_redis;
 
-        private $db;
 
-        public function __construct($db)
+        public function __construct()
         {
-            $this->db = $db;
-
         }
  
 		private static function get_redis()
@@ -209,7 +212,8 @@
 		 */
 		protected static function _value_prepare($value, $bypass = true)
 		{
-			return $GLOBALS['phpgw']->crypto->encrypt($value, $bypass);
+			$crypto = new Crypto();
+			return $crypto->encrypt($value, $bypass);
 		}
 
 		/**
@@ -226,8 +230,9 @@
 				return null;
 			}
 
-			// crypto class unserializes the data for us
-			return $GLOBALS['phpgw']->crypto->decrypt($str, $bypass);
+		// crypto class unserializes the data for us
+			$crypto = new Crypto();
+			return $crypto->decrypt($str, $bypass);
 		}
 
 		/**
@@ -490,18 +495,25 @@
 		 */
 		protected static function _user_clear_db($module, $id, $uid)
 		{
-			$key = $GLOBALS['phpgw']->db->db_addslashes(self::_gen_key($module, $id));
+			$db = DatabaseObject::getInstance()->get('db');
+
+			$key = $db->quote(self::_gen_key($module, $id));
 			$uid = (int) $uid;
 
-			$sql = "DELETE FROM phpgw_cache_user WHERE item_key = '{$key}'";
+			$sql = "DELETE FROM phpgw_cache_user WHERE item_key = :key";
 
 			// this is a bit of a hack, but we need some way of clearing cache values of all users - i am open to suggestions
-			if ( $uid <> -1 )
-			{
-				$sql .= " AND user_id = {$uid}";
+			if ($uid <> -1) {
+				$sql .= " AND user_id = :uid";
 			}
-			return !!$GLOBALS['phpgw']->db->query($sql, __LINE__, __FILE__);
-		}
+
+			$stmt = $db->prepare($sql);
+			$params = [':key' => $key];
+			if ($uid <> -1) {
+				$params[':uid'] = $uid;
+			}
+
+		return !!$stmt->execute($params);		}
 
 		/**
 		 * Retreive data from the user cache
@@ -513,22 +525,22 @@
 		 */
 		protected static function _user_get_db($module, $id, $uid, $bypass = true, $compress = true)
 		{
-			$key = $GLOBALS['phpgw']->db->db_addslashes(self::_gen_key($module, $id));
+			$db = DatabaseObject::getInstance()->get('db');
+
+			$key = $db->quote(self::_gen_key($module, $id));
 			$uid = (int) $uid;
 
 			$ret = null;
-			
-			$sql = "SELECT cache_data FROM phpgw_cache_user WHERE user_id = {$uid} AND item_key = '{$key}'";
-			$GLOBALS['phpgw']->db->query($sql, __LINE__, __FILE__);
-			if ( $GLOBALS['phpgw']->db->next_record() )
-			{
-				$ret = $GLOBALS['phpgw']->db->f('cache_data');
-				if($compress && function_exists('gzcompress'))
-				{
+
+			$sql = "SELECT cache_data FROM phpgw_cache_user WHERE user_id = :uid AND item_key = :key";
+			$stmt = $db->prepare($sql);
+			$stmt->execute([':uid' => $uid, ':key' => $key]);
+
+			if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+				$ret = $row['cache_data'];
+				if ($compress && function_exists('gzcompress')) {
 					$ret =  gzuncompress(base64_decode($ret));
-				}
-				else
-				{
+				} else {
 					$ret = stripslashes($ret);
 				}
 				$ret = self::_value_return($ret, $bypass);
@@ -553,8 +565,9 @@
 			{
 				return false;
 			}
+			$db = DatabaseObject::getInstance()->get('db');
 
-			$key = $GLOBALS['phpgw']->db->db_addslashes(self::_gen_key($module, $id));
+			$key = $db->quote(self::_gen_key($module, $id));
 			$value = self::_value_prepare($value, $bypass);
 			if($compress && function_exists('gzcompress'))
 			{
@@ -562,24 +575,29 @@
 			}
 			else
 			{
-				$value = $GLOBALS['phpgw']->db->db_addslashes($value);
+				$value = $db->quote($value);
 			}
 
 			$now = time();
 
-			$GLOBALS['phpgw']->db->query("SELECT user_id FROM phpgw_cache_user WHERE item_key = '{$key}' AND user_id = {$uid}", __LINE__, __FILE__);
-			if ( $GLOBALS['phpgw']->db->next_record() )
+			$stmt = $db->prepare("SELECT user_id FROM phpgw_cache_user WHERE item_key = :key AND user_id = :uid");
+			$stmt->execute([':key' => $key, ':uid' => $uid]);
+
+			if ($stmt->fetch(PDO::FETCH_ASSOC))
 			{
 				$sql = 'UPDATE phpgw_cache_user'
-					. " SET cache_data = '{$value}', lastmodts = {$now}"
-					. " WHERE item_key = '{$key}' AND user_id = {$uid}";
+					. " SET cache_data = :value, lastmodts = :now"
+					. " WHERE item_key = :key AND user_id = :uid";
 			}
 			else
 			{
-				$sql = "INSERT INTO phpgw_cache_user (item_key, user_id, cache_data, lastmodts) VALUES('{$key}', {$uid}, '{$value}', $now)";
+				$sql = "INSERT INTO phpgw_cache_user (item_key, user_id, cache_data, lastmodts) VALUES(:key, :uid, :value, :now)";
 			}
 
-			return !!$GLOBALS['phpgw']->db->query($sql, __LINE__, __FILE__);
+			$stmt = $db->prepare($sql);
+			$params = [':key' => $key, ':uid' => $uid, ':value' => $value, ':now' => $now];
+
+			return !!$stmt->execute($params);
 		}
 
 		/**

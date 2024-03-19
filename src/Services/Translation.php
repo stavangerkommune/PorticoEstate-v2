@@ -70,12 +70,12 @@
 		private $serverSettings;
 		private $userSettings;
 
-		public function __construct($db, $userSettings)
+		public function __construct($userSettings = [])
 		{
-            $this->db = $db;
-            $this->cache = new Cache($db);
+			$this->db = DatabaseObject::getInstance()->get('db');
+            $this->cache = new Cache();
             $this->serverSettings = ServerSettings::getInstance()->get('server');
-            $this->userSettings = $userSettings;
+            $this->userSettings = $userSettings ?? Settings::getInstance()->get('usersettings');
 
 			$userlang = isset($this->serverSettings['default_lang']) && $this->serverSettings['default_lang']? $this->serverSettings['default_lang'] : 'en';
 			if ( isset($this->userSettings['common']['lang']) )

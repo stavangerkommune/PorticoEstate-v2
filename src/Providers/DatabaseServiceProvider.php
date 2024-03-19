@@ -2,6 +2,7 @@
 namespace App\Providers;
 
 use PDO;
+use App\Database\Db;
 use Slim\App;
 use Exception;
 use PDOException;
@@ -21,7 +22,7 @@ class DatabaseServiceProvider
 					PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 					PDO::ATTR_PERSISTENT => true,
 				];
-				$db = new PDO($dsn, $config['user'], $config['password'], $options);
+				$db = new Db($dsn, $config['user'], $config['password'], $options);
 				return $db;
 			} catch (PDOException $e) {
 				throw new Exception("Error connecting to database: " . $e->getMessage());

@@ -37,6 +37,7 @@ namespace App\Controllers\Api;
 use App\Services\DatabaseObject;
 use App\Services\Settings;
 use App\Security\Acl;
+use App\Services\Translation;
 
 class Applications
 {
@@ -152,14 +153,15 @@ class Applications
 			$apps[$app_admin] = true;
 		}
 
-		foreach ($GLOBALS['phpgw_info']['apps'] as $app) {
+		$installed_apps = Settings::getInstance()->get('apps');
+		foreach ($installed_apps as $app) {
 			if (isset($apps[$app['name']])) {
 				$this->data[$app['name']] = array(
-					'title'   => $GLOBALS['phpgw']->translation->translate($app['name'], array(), false, $app['name']),
+					'title'   => $installed_apps[$app['name']]['title'],
 					'name'    => $app['name'],
 					'enabled' => True,
-					'status'  => $GLOBALS['phpgw_info']['apps'][$app['name']]['status'],
-					'id'      => $GLOBALS['phpgw_info']['apps'][$app['name']]['id']
+					'status'  => $installed_apps[$app['name']]['status'],
+					'id'      => $installed_apps[$app['name']]['id']
 				);
 			}
 		}
@@ -312,20 +314,31 @@ class Applications
 	 */
 	public function read_installed_apps()
 	{
-		$this->db->fetchmode = 'ASSOC';
+
+		$translation = new Translation();
+
 		$sql = 'SELECT * FROM phpgw_applications WHERE app_enabled != 0 ORDER BY app_order ASC';
-		$this->db->query($sql, __LINE__, __FILE__);
-		$apps = $this->db->resultSet;
-		foreach ($apps as $key => $value) {
-			$GLOBALS['phpgw_info']['apps'][$value['app_name']] = array(
-				'name'    => $value['app_name'],
-				'title'   => $GLOBALS['phpgw']->translation->translate($value['app_name'], array(), false, $value['app_name']),
-				'enabled' => true,
-				'status'  => $value['app_enabled'],
-				'id'      => (int) $value['app_id'],
-				'version' => $value['app_version']
-			);
+		// get all installed apps
+		try {
+			$apps = $this->db->query($sql)->fetchAll();
+		} catch (PDOException $e) {
+			die("Error executing query: " . $e->getMessage());
 		}
+		$values = [];
+		foreach ($apps as $key => $value) {
+			$values[$value['app_name']] =
+				[
+					'name'    => $value['app_name'],
+					'title'   => $translation->translate($value['app_name'], array(), false, $value['app_name']),
+					'enabled' => true,
+					'status'  => $value['app_enabled'],
+					'id'      => (int) $value['app_id'],
+					'version' => $value['app_version']
+				];
+		}
+		return $values;
+
+
 	}
 
 	/**

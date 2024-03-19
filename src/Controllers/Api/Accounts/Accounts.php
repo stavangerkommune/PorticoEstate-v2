@@ -90,6 +90,7 @@
 		}
 	}
 
+	namespace App\Controllers\Api\Accounts;
 	abstract class phpgwapi_account
 	{
 		/**
@@ -261,6 +262,7 @@
 		}
 	}
 
+	namespace App\Controllers\Api\Accounts;
 	/**
 	 * phpGroupWare group data object
 	 *
@@ -446,6 +448,8 @@
 		}
 	}
 
+
+	namespace App\Controllers\Api\Accounts;
 
 	/**
 	 * phpGroupWare user data object
