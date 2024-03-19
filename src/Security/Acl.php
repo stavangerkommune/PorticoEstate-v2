@@ -1100,37 +1100,30 @@
 
 			$accountid = (int) $accountid;
 			$account_id = 0;
-			if ($accountid )
+			if ($accountid)
 			{
-				if ( isset($cache_accountid[$accountid])
-					&& $cache_accountid[$accountid] )
+				if (isset($cache_accountid[$accountid]) && $cache_accountid[$accountid])
 				{
 					$account_id = $cache_accountid[$accountid];
 				}
 				else
 				{
-					
 					$account_id = $accountid ? $accountid : $this->_account_id;
 					$cache_accountid[$accountid] = $account_id;
 				}
-				$account_sel = " AND (acl_account = {$account_id} OR acl_grantor = {$account_id})";
+				$account_sel = " AND (acl_account = :account_id OR acl_grantor = :account_id)";
 			}
 
-			$app = $this->_db->db_addslashes($app);
+			$app = $this->_db->quote($app);
+			$location = $this->_db->quote($location);
 
-			// this slows things down but makes the code easier to read & this isn't a common operation
 			$sql = 'SELECT location_id FROM phpgw_locations'
-				. " {$this->_join} phpgw_applications ON phpgw_locations.app_id = phpgw_applications.app_id"
-				. " WHERE phpgw_applications.app_name {$this->_like} '{$app}'"
-					. " AND phpgw_locations.name {$this->_like} '{$location}'";
+				. " JOIN phpgw_applications ON phpgw_locations.app_id = phpgw_applications.app_id"
+				. " WHERE phpgw_applications.app_name LIKE {$app}"
+				. " AND phpgw_locations.name LIKE {$location}";
 
-			$this->_db->query($sql, __LINE__, __FILE__);
-
-			$locations = array();
-			while ($this->_db->next_record())
-			{
-				$locations[] = $this->_db->f('location_id');
-			}
+			$stmt = $this->_db->query($sql);
+			$locations = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
 
 			if(!$locations)
 			{
@@ -1140,11 +1133,15 @@
 
 			$sql = 'DELETE FROM phpgw_acl'
 				. " WHERE location_id IN ({$location_filter}) $account_sel";
-			$this->_db->query($sql, __LINE__, __FILE__);
+			$stmt = $this->_db->prepare($sql);
+			if ($account_id) {
+				$stmt->bindValue(':account_id', $account_id, PDO::PARAM_INT);
+			}
+			$stmt->execute();
 
-			$ret = !!$this->_db->affected_rows();
+			$ret = !!$stmt->rowCount();
 
-			if ( $ret )
+			if ($ret)
 			{
 				foreach ($locations as $location_id)
 				{
@@ -1164,7 +1161,6 @@
 			}
 			return $ret;
 		}
-
 		/**
 		* Get application list for an account id
 		*
@@ -1190,7 +1186,7 @@
 				$cache_accountid[$accountid] = $account_id;
 			}
 
-			$location = $this->_db->db_addslashes($location);
+			$location = $this->_db->quote($location);
 			$rights = 0;
 			$apps = array();
 
@@ -1198,32 +1194,32 @@
 				. " {$this->_join} phpgw_locations ON phpgw_acl.location_id = phpgw_locations.location_id"
 				. " {$this->_join} phpgw_applications ON phpgw_locations.app_id = phpgw_applications.app_id";
 
-
-			$filtermethod = " WHERE phpgw_locations.name = '{$location}'"
-				. " AND (acl_account = {$account_id}";
+			$filtermethod = " WHERE phpgw_locations.name = {$location}"
+				. " AND (acl_account = :account_id";
 
 			if($inherited)
 			{
 				$sql .=" {$this->_left_join}  phpgw_group_map ON (phpgw_acl.acl_account = phpgw_group_map.group_id)";
 
-				$filtermethod .= " OR account_id = {$account_id})";
+				$filtermethod .= " OR account_id = :account_id)";
 			}
 			else
 			{
 				$filtermethod .= ")";
-
 			}
 
 			$sql .=" $filtermethod";
 
-			$this->_db->query($sql, __LINE__, __FILE__);
+			$stmt = $this->_db->prepare($sql);
+			$stmt->bindValue(':account_id', $account_id, PDO::PARAM_INT);
+			$stmt->execute();
 
-			while ($this->_db->next_record())
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 			{
-				$rights |= $this->_db->f('acl_rights');
+				$rights |= $row['acl_rights'];
 				if ( $rights & $required )
 				{
-					$apps[] = $this->_db->f('app_name');
+					$apps[] = $row['app_name'];
 				}
 			}
 			return $apps;
@@ -1243,7 +1239,7 @@
 		{
 			static $cache_accountid;
 
-			if ( isset($cache_accountid[$accountid]) && $cache_accountid[$accountid] )
+			if (isset($cache_accountid[$accountid]) && $cache_accountid[$accountid])
 			{
 				$account_id = $cache_accountid[$accountid];
 			}
@@ -1253,31 +1249,31 @@
 				$cache_accountid[$accountid] = $account_id;
 			}
 
-			$app = $this->_db->db_addslashes($app);
 			$rights = 0;
 			$locations = array();
 
 			$sql = 'SELECT phpgw_locations.name, phpgw_acl.acl_rights FROM phpgw_acl'
 				. " {$this->_join} phpgw_locations ON phpgw_acl.location_id = phpgw_locations.location_id"
 				. " {$this->_join} phpgw_applications ON phpgw_locations.app_id = phpgw_applications.app_id"
-				. " WHERE phpgw_applications.app_name = '{$app}'"
-					. " AND acl_account = {$account_id}";
+				. " WHERE phpgw_applications.app_name = :app"
+				. " AND acl_account = :account_id";
 
-			$this->_db->query($sql, __LINE__, __FILE__);
-			while ($this->_db->next_record())
+			$stmt = $this->_db->prepare($sql);
+			$stmt->execute([':app' => $app, ':account_id' => $account_id]);
+
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 			{
-				if ($this->_db->f('acl_rights'))
+				if ($row['acl_rights'])
 				{
-					$rights |= $this->_db->f('acl_rights');
+					$rights |= $row['acl_rights'];
 					if ( $rights & $required )
 					{
-						$locations[] = $this->_db->f('acl_location');
+						$locations[] = $row['name'];
 					}
 				}
 			}
 			return $locations;
 		}
-
 		/**
 		* Get ids for location - which does what exactly?
 		*
@@ -1292,33 +1288,31 @@
 		{
 			$accounts = array();
 
-			if ( !$app )
+			if (!$app)
 			{
 				$app = $this->server_flags['currentapp'];
 			}
 
-			$app = $this->_db->db_addslashes($app);
-			$location = $this->_db->db_addslashes($location);
-
 			$sql = 'SELECT phpgw_acl.acl_account, phpgw_acl.acl_rights FROM phpgw_acl'
 				. " {$this->_join} phpgw_locations ON phpgw_acl.location_id = phpgw_locations.location_id"
 				. " {$this->_join} phpgw_applications ON phpgw_locations.app_id = phpgw_applications.app_id"
-				. " WHERE phpgw_applications.app_name = '{$app}'"
-					. " AND phpgw_locations.name = '{$location}'";
+				. " WHERE phpgw_applications.app_name = :app"
+				. " AND phpgw_locations.name = :location";
 
-			$this->_db->query($sql, __LINE__, __FILE__);
-			while ($this->_db->next_record())
+			$stmt = $this->_db->prepare($sql);
+			$stmt->execute([':app' => $app, ':location' => $location]);
+
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 			{
 				$rights = 0;
-				$rights |= (int) $this->_db->f('acl_rights');
-				if ( $rights & $required )
+				$rights |= (int) $row['acl_rights'];
+				if ($rights & $required)
 				{
-					$accounts[] = (int) $this->_db->f('acl_account');
+					$accounts[] = (int) $row['acl_account'];
 				}
 			}
 			return $accounts;
 		}
-
 		/**
 		* Get a list of applications a user has rights to
 		*
@@ -1350,22 +1344,23 @@
 				. " {$this->_join} phpgw_locations ON phpgw_locations.app_id = phpgw_applications.app_id"
 				. " {$this->_join} phpgw_acl ON phpgw_locations.location_id = phpgw_acl.location_id"
 				. " WHERE phpgw_locations.name = 'run'"
-					. " AND phpgw_acl.acl_account IN ({$ids})";
-			$this->_db->query($sql, __LINE__, __FILE__);
+				. " AND phpgw_acl.acl_account IN (:ids)";
+
+			$stmt = $this->_db->prepare($sql);
+			$stmt->execute([':ids' => $ids]);
 
 			$apps = array();
-			while ($this->_db->next_record())
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 			{
-				$appname = $this->_db->f('app_name');
+				$appname = $row['app_name'];
 				if ( !isset($apps[$appname]) )
 				{
 					$apps[$appname] = 0;
 				}
-				$apps[$appname] |= $this->_db->f('acl_rights');
+				$apps[$appname] |= $row['acl_rights'];
 			}
 			return $apps;
 		}
-
 		/**
 		* Get a list of users that have grants rights to their records at a location within an app
 		*
@@ -1490,16 +1485,15 @@
 					);
 			}
 
-			if ( !$app )
+			if (!$app)
 			{
 				$app = $this->server_flags['currentapp'];
 			}
 
 			$at_location = '';
-			if ( $location )
+			if ($location)
 			{
-				$location = $this->_db->db_addslashes($location);
-				$at_location = " AND phpgw_locations.name = '$location'";
+				$at_location = " AND phpgw_locations.name = :location";
 			}
 
 			$accts =& $this->accounts;
@@ -1513,14 +1507,15 @@
 				. ' FROM phpgw_acl'
 				. " {$this->_join} phpgw_locations ON phpgw_acl.location_id = phpgw_locations.location_id"
 				. " {$this->_join} phpgw_applications ON phpgw_applications.app_id = phpgw_locations.app_id"
-				. " WHERE phpgw_applications.app_name = '$app' $at_location"
-					. " AND acl_grantor > 0 AND acl_type = $mask"
-					. " AND acl_account IN ($ids)";
+				. " WHERE phpgw_applications.app_name = :app $at_location"
+				. " AND acl_grantor > 0 AND acl_type = :mask"
+				. " AND acl_account IN ($ids)";
 
-			$this->_db->query($sql, __LINE__, __FILE__);
-			if ( $this->_db->num_rows() == 0 && $mask == 0  && !empty($this->_account_id))
+			$stmt = $this->_db->prepare($sql);
+			$stmt->execute([':app' => $app, ':location' => $location, ':mask' => $mask]);
+
+			if ($stmt->rowCount() == 0 && $mask == 0  && !empty($this->_account_id))
 			{
-				//return array($this->_account_id => 31);
 				return array(
 					'accounts' => array($this->_account_id => 31),
 					'groups' => $groups
@@ -1528,13 +1523,13 @@
 			}
 
 			$records = array();
-			while ($this->_db->next_record())
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 			{
 				$records[] = array
 				(
-					'account'	=> $this->_db->f('acl_account'),
-					'grantor'	=> $this->_db->f('acl_grantor'),
-					'rights'	=> $this->_db->f('acl_rights')
+					'account' => $row['acl_account'],
+					'grantor' => $row['acl_grantor'],
+					'rights' => $row['acl_rights']
 				);
 			}
 
@@ -1623,16 +1618,15 @@
 				return $accounts;
 			}
 
-			if ( !$app )
+			if (!$app)
 			{
 				$app = $this->server_flags['currentapp'];
 			}
 
 			$at_location = '';
-			if ( $location )
+			if ($location)
 			{
-				$location = $this->_db->db_addslashes($location);
-				$at_location = " AND phpgw_locations.name = '$location'";
+				$at_location = " AND phpgw_locations.name = :location";
 			}
 
 			$accts =& $this->accounts;
@@ -1646,27 +1640,28 @@
 				. ' FROM phpgw_acl'
 				. " {$this->_join} phpgw_locations ON phpgw_acl.location_id = phpgw_locations.location_id"
 				. " {$this->_join} phpgw_applications ON phpgw_applications.app_id = phpgw_locations.app_id"
-				. " WHERE phpgw_applications.app_name = '$app' $at_location"
-					. " AND acl_grantor > 0 AND acl_type = $mask"
-					. " AND acl_account IN ($ids)";
+				. " WHERE phpgw_applications.app_name = :app $at_location"
+				. " AND acl_grantor > 0 AND acl_type = :mask"
+				. " AND acl_account IN ($ids)";
 
-			$this->_db->query($sql, __LINE__, __FILE__);
-			if ( $this->_db->num_rows() == 0 && $mask == 0  && !empty($this->_account_id))
+			$stmt = $this->_db->prepare($sql);
+			$stmt->execute([':app' => $app, ':location' => $location, ':mask' => $mask]);
+
+			if ($stmt->rowCount() == 0 && $mask == 0  && !empty($this->_account_id))
 			{
 				return array($this->_account_id => 31);
 			}
 
 			$records = array();
-			while ($this->_db->next_record())
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 			{
 				$records[] = array
 				(
-					'account'	=> $this->_db->f('acl_account'),
-					'grantor'	=> $this->_db->f('acl_grantor'),
-					'rights'	=> $this->_db->f('acl_rights')
+					'account' => $row['acl_account'],
+					'grantor' => $row['acl_grantor'],
+					'rights' => $row['acl_rights']
 				);
 			}
-
 			foreach ($records as $record )
 			{
 				$grantor = $record['grantor'];
@@ -1740,22 +1735,22 @@
 		 */
 		public function update_location_description($location, $description, $appname = '')
 		{
-		 	if ( !$appname )
-		 	{
-		 		$appname = $GLOBALS['phpgw']['flags']['currentapp'];
-		 	}
+			if (!$appname)
+			{
+				$appname = $this->server_flags['currentapp'];
+			}
 
-		 	$location = $this->_db->db_addslashes($location);
-			$description = $this->_db->db_addslashes($description);
-		 	$appid = $this->_get_app_id($appname);
+			$appid = $this->_get_app_id($appname);
 
-		 	$this->_db->query('UPDATE phpgw_locations'
-		 			. " SET descr = '{$description}'"
-		 			. " WHERE app_id = '{$appid}' AND name = '{$location}'",
-		 		 __LINE__, __FILE__);
+			$sql = 'UPDATE phpgw_locations'
+				. ' SET descr = :description'
+				. ' WHERE app_id = :appid AND name = :location';
+
+			$stmt = $this->_db->prepare($sql);
+			$stmt->execute([':description' => $description, ':appid' => $appid, ':location' => $location]);
+
 			return true;
 		}
-
 		/**
 		* Reads ACL accounts from database and return array with accounts that have rights
 		*
@@ -1768,11 +1763,10 @@
 		*
 		* @return array Array with accounts
 		*/
-		public function get_accounts_at_location($appname = '', $location = '',
-												$grantor = -1 ,$mask = 0)
+		public function get_accounts_at_location($appname = '', $location = '', $grantor = -1 ,$mask = 0)
 		{
 			$acl_accounts = array();
-			if ( !$appname )
+			if (!$appname)
 			{
 				$appname = $this->server_flags['currentapp'];
 			}
@@ -1784,22 +1778,23 @@
 			}
 
 			$sql = 'SELECT acl_account FROM phpgw_acl'
-					. " $this->_join phpgw_locations ON phpgw_acl.location_id = phpgw_locations.location_id"
-					. " $this->_join phpgw_applications ON phpgw_locations.app_id = phpgw_applications.app_id"
-				. " WHERE app_name = '{$appname}'"
-					. " AND phpgw_locations.name {$this->_like} '{$location}%' {$filter_grants}"
-					. " AND acl_type = '{$mask}'"
+				. " {$this->_join} phpgw_locations ON phpgw_acl.location_id = phpgw_locations.location_id"
+				. " {$this->_join} phpgw_applications ON phpgw_locations.app_id = phpgw_applications.app_id"
+				. " WHERE app_name = :appname"
+				. " AND phpgw_locations.name LIKE :location {$filter_grants}"
+				. " AND acl_type = :mask"
 				. ' GROUP BY acl_account';
-			$this->_db->query($sql, __LINE__, __FILE__);
 
-			while ($this->_db->next_record())
+			$stmt = $this->_db->prepare($sql);
+			$stmt->execute([':appname' => $appname, ':location' => $location . '%', ':mask' => $mask]);
+
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 			{
-				$acl_accounts[$this->_db->f('acl_account')] = true;
+				$acl_accounts[$row['acl_account']] = true;
 			}
 
 			return $acl_accounts;
 		}
-
 		/**
 		* Delete ACL information from cache
 		*
@@ -1816,17 +1811,17 @@
 			}
 			$accounts[] = $account_id;
 
-			$sql = "SELECT app_id FROM phpgw_locations WHERE location_id = {$location_id}";
-			$this->_db->query($sql, __LINE__, __FILE__);
-			$this->_db->next_record();
-			$app_id	= $this->_db->f('app_id');
+			$sql = "SELECT app_id FROM phpgw_locations WHERE location_id = :location_id";
+			$stmt = $this->_db->prepare($sql);
+			$stmt->execute([':location_id' => $location_id]);
+			$row = $stmt->fetch(PDO::FETCH_ASSOC);
+			$app_id = $row['app_id'];
 
 			foreach($accounts as $id)
 			{
 				$this->cache->user_clear('phpgwapi', "acl_data_{$app_id}_{$location_id}", $id);
 			}
 		}
-
 		/**
 		 * Reads ACL records from database and return array along with storing it
 		 *
@@ -1921,7 +1916,7 @@
 			if($location_id)
 			{
 				$location_id = (int) $location_id;
-				$at_location = " AND phpgw_acl.location_id = {$location_id}";
+				$at_location = " AND phpgw_acl.location_id = :location_id";
 				$this->_data[$this->_account_id][$app_id][$location_id] = array();
 			}
 			else
@@ -1929,30 +1924,31 @@
 				$this->_data[$this->_account_id] = array();
 			}
 
+			$placeholders = implode(',', array_fill(0, count($account_list), '?'));
 			$sql = 'SELECT phpgw_applications.app_id, phpgw_locations.location_id,'
 					. ' phpgw_acl.acl_account, phpgw_acl.acl_grantor,'
 					. ' phpgw_acl.acl_rights, phpgw_acl.acl_type'
 					. ' FROM phpgw_acl'
 					. " {$this->_join} phpgw_locations ON phpgw_acl.location_id = phpgw_locations.location_id"
 					. " {$this->_join} phpgw_applications ON phpgw_applications.app_id = phpgw_locations.app_id"
-					. ' WHERE acl_account in (' . implode(',', $account_list) . "){$at_location}";
+					. " WHERE acl_account in ($placeholders){$at_location}";
 
-			$this->_db->query($sql, __LINE__, __FILE__);
+			$stmt = $this->_db->prepare($sql);
+			$stmt->execute(array_merge($account_list, [$location_id]));
 
-			while ( $this->_db->next_record() )
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 			{
-				$this->_data[$this->_account_id][$this->_db->f('app_id')][$this->_db->f('location_id')][] = array
+				$this->_data[$this->_account_id][$row['app_id']][$row['location_id']][] = array
 				(
-					'account'		=> $this->_db->f('acl_account'),
-					'rights'		=> $this->_db->f('acl_rights'),
-					'grantor'		=> $this->_db->f('acl_grantor'),
-					'type'			=> $this->_db->f('acl_type'),
-					'account_type'	=> $this->_get_type_ldap($this->_db->f('acl_account'))
+					'account'       => $row['acl_account'],
+					'rights'        => $row['acl_rights'],
+					'grantor'       => $row['acl_grantor'],
+					'type'          => $row['acl_type'],
+					'account_type'  => $this->_get_type_ldap($row['acl_account'])
 				);
 			}
 			return $this->_data;
 		}
-
 		/**
 		* Get account_type for LDAP user and cache the result for performance
 		*
@@ -2075,22 +2071,24 @@
 			else
 			{
 				$sql = "SELECT DISTINCT account_id, account_type FROM phpgw_accounts"
-					. " {$this->_join} phpgw_acl on phpgw_accounts.account_id = phpgw_acl.acl_account"
-					. " {$this->_join} phpgw_locations on phpgw_acl.location_id = phpgw_locations.location_id"
-					. " {$this->_join} phpgw_applications on phpgw_locations.app_id  = phpgw_applications.app_id"
-					. " WHERE account_status = 'A' AND phpgw_locations.name = '{$location}'"
-					. " AND phpgw_applications.app_name = '{$appname}'";
-
-				$this->_db->query($sql,__LINE__,__FILE__);
-
-				while ($this->_db->next_record())
+				. " {$this->_join} phpgw_acl on phpgw_accounts.account_id = phpgw_acl.acl_account"
+				. " {$this->_join} phpgw_locations on phpgw_acl.location_id = phpgw_locations.location_id"
+				. " {$this->_join} phpgw_applications on phpgw_locations.app_id  = phpgw_applications.app_id"
+				. " WHERE account_status = 'A' AND phpgw_locations.name = :location"
+				. " AND phpgw_applications.app_name = :appname";
+	
+				$stmt = $this->_db->prepare($sql);
+				$stmt->execute([':location' => $location, ':appname' => $appname]);
+		
+				while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 				{
 					$active_accounts[] = array
 					(
-						'account_id'	=> $this->_db->f('account_id'),
-						'account_type'	=> $this->_db->f('account_type')
+						'account_id' => $row['account_id'],
+						'account_type' => $row['account_type']
 					);
 				}
+	
 			}
 
 			/*
@@ -2165,20 +2163,22 @@
 
 			if(isset($accounts) && count($accounts) > 0)
 			{
-				$sql = 'SELECT * FROM phpgw_accounts where account_id in ('. implode(',',$accounts) . ') ORDER BY account_lastname';
-				$this->_db->query($sql,__LINE__,__FILE__);
-				while ($this->_db->next_record())
+				$placeholders = implode(',', array_fill(0, count($accounts), '?'));
+				$sql = "SELECT * FROM phpgw_accounts where account_id in ($placeholders) ORDER BY account_lastname";
+				$stmt = $this->_db->prepare($sql);
+				$stmt->execute($accounts);
+				while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 				{
 					$users[] = array
 					(
-						'account_id'        => $this->_db->f('account_id'),
-						'account_lid'       => $this->_db->f('account_lid'),
-						'account_type'      => $this->_db->f('account_type'),
-						'account_firstname' => $this->_db->f('account_firstname', true),
-						'account_lastname'  => $this->_db->f('account_lastname', true),
-						'account_status'    => $this->_db->f('account_status'),
-						'account_expires'   => $this->_db->f('account_expires'),
-						'account_lastlogin' => $this->_db->f('account_lastlogin')
+						'account_id' => $row['account_id'],
+						'account_lid' => $row['account_lid'],
+						'account_type' => $row['account_type'],
+						'account_firstname' => $row['account_firstname'],
+						'account_lastname' => $row['account_lastname'],
+						'account_status' => $row['account_status'],
+						'account_expires' => $row['account_expires'],
+						'account_lastlogin' => $row['account_lastlogin']
 					);
 				}
 			}
