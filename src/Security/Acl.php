@@ -83,7 +83,7 @@
 		/**
 		* @var string $_like syntax for SQL like statement
 		*/
-		protected $_like = 'LIKE';
+		protected $_like = 'ILIKE';
 
 		/**
 		* @var string $join database join statement syntax
@@ -1119,8 +1119,8 @@
 
 			$sql = 'SELECT location_id FROM phpgw_locations'
 				. " JOIN phpgw_applications ON phpgw_locations.app_id = phpgw_applications.app_id"
-				. " WHERE phpgw_applications.app_name LIKE {$app}"
-				. " AND phpgw_locations.name LIKE {$location}";
+				. " WHERE phpgw_applications.app_name ILIKE {$app}"
+				. " AND phpgw_locations.name ILIKE {$location}";
 
 			$stmt = $this->_db->query($sql);
 			$locations = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
@@ -1781,7 +1781,7 @@
 				. " {$this->_join} phpgw_locations ON phpgw_acl.location_id = phpgw_locations.location_id"
 				. " {$this->_join} phpgw_applications ON phpgw_locations.app_id = phpgw_applications.app_id"
 				. " WHERE app_name = :appname"
-				. " AND phpgw_locations.name LIKE :location {$filter_grants}"
+				. " AND phpgw_locations.name ILIKE :location {$filter_grants}"
 				. " AND acl_type = :mask"
 				. ' GROUP BY acl_account';
 
