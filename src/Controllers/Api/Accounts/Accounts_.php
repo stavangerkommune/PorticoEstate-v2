@@ -40,6 +40,7 @@
  */
 
 use App\Services\DatabaseObject;
+use App\Security\Acl;
 
 abstract class phpgwapi_accounts_
 {
@@ -350,7 +351,7 @@ abstract class phpgwapi_accounts_
 
 			$this->_cache_account($account);
 
-			$aclobj = &$GLOBALS['phpgw']->acl;
+			$aclobj = new Acl();
 			$aclobj->set_account_id($account->id, true);
 			foreach ($acls as $acl) {
 				$aclobj->add($acl['appname'], $acl['location'], $acl['rights']);

@@ -456,10 +456,12 @@ class Locations
 		if (!is_array($apps)) {
 			$apps = array();
 		}
+		$applications = new Applications();
 
 		foreach ($apps as $appname => $values) {
 			$appname = $this->_db->quote($appname);
-			$app_id = $GLOBALS['phpgw']->applications->name2id($appname);
+			$app_id = $applications->name2id($appname);
+			
 			if ($app_id > 0) {
 				$sql = 'SELECT name FROM phpgw_locations'
 					. ' WHERE app_id = :app_id AND name = :location';

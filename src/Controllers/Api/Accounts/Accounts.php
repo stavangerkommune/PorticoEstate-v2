@@ -418,6 +418,7 @@
 		 */
 		private function _validate_groupname($group, $lookup = true)
 		{
+			$accounts = (new Accounts())->getObject();
 			if ( !strlen($group) )
 			{
 				throw new Exception('Group name is too short');
@@ -427,8 +428,8 @@
 			{
 				if ($this->_data['id'])
 				{
-					if($this->_data['id'] != $GLOBALS['phpgw']->accounts->name2id($group)
-						&& $GLOBALS['phpgw']->accounts->name2id($group) )
+					if($this->_data['id'] !=$accounts->name2id($group)
+						&&$accounts->name2id($group) )
 					{
 						throw new Exception('Group name already in use');
 					}
@@ -926,9 +927,11 @@
 				throw new Exception('Username is too short');
 			}
 
+			$accounts = (new Accounts())->getObject();
+
 			if ( $lookup )
 			{
-				$id = $GLOBALS['phpgw']->accounts->name2id($username);
+				$id = $accounts->name2id($username);
 				if ( $id && $id <> $this->_data['id'] )
 				{
 					throw new Exception('Username already in use');
