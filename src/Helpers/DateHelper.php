@@ -35,7 +35,7 @@ class DateHelper
 			return ''; // return nothing if not valid input
 		}
 
-		$preferences = $preferences ?? Settings::getInstance()->get('user')['preferences'];
+		$this->preferences = isset(Settings::getInstance()->get('user')['preferences']) ? Settings::getInstance()->get('user')['preferences'] : $preferences;
 
 		try {
 			$date = new DateTime(date('Y-m-d H:i:s', $t));

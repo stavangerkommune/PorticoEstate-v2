@@ -495,7 +495,7 @@ class Locations
 	public function get_locations($grant = false, $appname = '', $allow_c_attrib = false, $c_function = false, $have_categories = false)
 	{
 		if (!$appname) {
-			$flags = ServerSettings::getInstance()->get('flags');
+			$flags = Settings::getInstance()->get('flags');
 			$appname = $flags['currentapp'];
 		}
 

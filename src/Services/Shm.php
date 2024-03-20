@@ -68,7 +68,7 @@
 
     namespace App\Services;
 
-	$serverSettings = ServerSettings::getInstance()->get('server');
+	$serverSettings = Settings::getInstance()->get('server');
 
 	//This makes sure there is something set for temp
 	if ( !isset($serverSettings['temp_dir'])  

@@ -76,9 +76,9 @@
             $this->cache = new Cache();
             $this->serverSettings = Settings::getInstance()->get('server');
 
- 			$this->preferences = $preferences ?? Settings::getInstance()->get('user')['preferences'];
+ 			$this->preferences = isset(Settings::getInstance()->get('user')['preferences']) ? Settings::getInstance()->get('user')['preferences'] : $preferences;
 			
-			$userlang = isset($this->serverSettings['default_lang']) && $this->serverSettings['default_lang']? $this->serverSettings['default_lang'] : 'en';
+			$userlang = isset($this->preferences['default_lang']) && $this->preferences['default_lang']? $this->preferences['default_lang'] : 'en';
 			if ( isset($this->preferences['common']['lang']) )
 			{
 				$userlang = $this->preferences['common']['lang'];
@@ -113,6 +113,8 @@
 		*/
 		public function set_userlang($lang, $reset = false)
 		{
+//			print_r($lang);
+
 			if ( strlen($lang) != 2 )
 			{
 				$lang = 'en';

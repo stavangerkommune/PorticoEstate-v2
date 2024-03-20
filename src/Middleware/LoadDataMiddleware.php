@@ -16,6 +16,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Slim\Exception\NotFoundException;
 use App\Services\DatabaseObject;
 Use App\Services\Preferences;
+use App\Services\Cache;
 
 
 class LoadDataMiddleware implements MiddlewareInterface
@@ -64,6 +65,8 @@ class LoadDataMiddleware implements MiddlewareInterface
         $account_id = !empty($result['account_id']) ? $result['account_id'] : 0;
 
 		$this->read_repositories($account_id, $currentApp);
+
+//		echo lang('date');
  
         // Continue with the next middleware
         return $handler->handle($request);
@@ -72,9 +75,8 @@ class LoadDataMiddleware implements MiddlewareInterface
 	private function read_repositories($account_id = 0, $currentApp = '', $write_cache = false)
 	{
 		if ($write_cache) {
-			$data = \App\Services\Cache::system_get('phpgwapi', 'phpgw_info');
-		echo json_encode($data);
-		die();
+			$data = Cache::session_get('phpgwapi', 'phpgw_info');
+		echo json_encode($data);die();
 		}
 
 		$flags = [
@@ -111,8 +113,9 @@ class LoadDataMiddleware implements MiddlewareInterface
 //		echo json_encode(Settings::getInstance()->get('flags'));
 //		die();
 		if ($write_cache) {
-			\App\Services\Cache::system_set('phpgwapi', 'phpgw_info', $data);
+			Cache::session_set('phpgwapi', 'phpgw_info', $data);
 		}
+		
 	}
 
 	/**
