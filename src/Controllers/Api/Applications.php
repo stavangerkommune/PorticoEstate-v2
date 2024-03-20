@@ -38,6 +38,7 @@ use App\Services\DatabaseObject;
 use App\Services\Settings;
 use App\Security\Acl;
 use App\Services\Translation;
+use PDOException;
 
 class Applications
 {
@@ -73,7 +74,7 @@ class Applications
 	public function __construct($account_id = 0)
 	{
 		$this->db = DatabaseObject::getInstance()->get('db');
-	//	$this->acl =new Acl();
+		$this->acl =new Acl($account_id);
 
 		$this->set_account_id($account_id);
 	}
@@ -97,6 +98,8 @@ class Applications
 	 */
 	public function list_methods($_type = 'xmlrpc')
 	{
+		$translation = new Translation();
+
 		if (is_array($_type)) {
 			$_type = $_type['type'] ? $_type['type'] : $_type[0];
 		}
@@ -106,12 +109,12 @@ class Applications
 					'read' => array(
 						'function'  => 'read',
 						'signature' => array(array(xmlrpcStruct)),
-						'docstring' => lang('Returns struct of users application access')
+						'docstring' => $translation->translate('Returns struct of users application access')
 					),
 					'list_methods' => array(
 						'function'  => 'list_methods',
 						'signature' => array(array(xmlrpcStruct, xmlrpcString)),
-						'docstring' => lang('Read this list of methods.')
+						'docstring' => $translation->translate('Read this list of methods.')
 					)
 				);
 				return $xml_functions;
@@ -165,6 +168,7 @@ class Applications
 				);
 			}
 		}
+		Settings::getInstance()->set('apps', $this->data);
 		return $this->data;
 	}
 
@@ -173,7 +177,7 @@ class Applications
 	 * 
 	 * @return array List with applications for the user
 	 */
-	public function read()
+	public function read(): array
 	{
 		if (!count($this->data)) {
 			$this->read_repository();
@@ -189,23 +193,26 @@ class Applications
 	 */
 	public function add($apps)
 	{
+		$translation = new Translation();
+		$installed_apps = Settings::getInstance()->get('apps');
+
 		if (is_array($apps)) {
 			foreach ($apps as $app) {
 				$this->data[$app[1]] = array(
-					'title'   => lang($app[1]),
+					'title'   =>  $translation->translate($app[1], array(), false, $app[1]),
 					'name'    => $app[1],
 					'enabled' => true,
-					'status'  => $GLOBALS['phpgw_info']['apps'][$app[1]]['status'],
-					'id'      => $GLOBALS['phpgw_info']['apps'][$app[1]]['id']
+					'status'  => $installed_apps[$app[1]]['status'],
+					'id'      => $installed_apps[$app[1]]['id']
 				);
 			}
 		} else if (is_string($apps)) {
 			$this->data[$apps] = array(
-				'title'   => lang($apps),
+				'title'   => $translation->translate($apps, array(), false, $apps),
 				'name'    => $apps,
 				'enabled' => true,
-				'status'  => $GLOBALS['phpgw_info']['apps'][$apps]['status'],
-				'id'      => $GLOBALS['phpgw_info']['apps'][$apps]['id']
+				'status'  => $installed_apps[$apps]['status'],
+				'id'      => $installed_apps[$apps]['id']
 			);
 		}
 		return $this->data;
@@ -254,7 +261,7 @@ class Applications
 			if (!$this->is_system_enabled($app)) {
 				continue;
 			}
-			$this->acl->add_repository($app, 'run', $this->account_id, phpgwapi_acl::READ);
+			$this->acl->add_repository($app, 'run', $this->account_id, ACL_READ);
 		}
 		return $this->data;
 	}
@@ -281,11 +288,14 @@ class Applications
 	 */
 	public function read_account_specific($inherited = false)
 	{
-	
+		$translation = new Translation();
+
 		if (!is_array(Settings::getInstance()->get('apps'))) {
 			$this->read_installed_apps();
 		}
-		
+
+		$installed_apps = Settings::getInstance()->get('apps');
+
 		$app_list = $this->acl->get_app_list_for_id('run', 1, $this->account_id, $inherited);
 
 		if (!is_array($app_list) || !count($app_list)) {
@@ -294,11 +304,11 @@ class Applications
 		foreach ($app_list as $app) {
 			if ($this->is_system_enabled($app)) {
 				$this->data[$app] = array(
-					'title'   => lang($app),
+					'title'   => $translation->translate($app, array(), false, $app),
 					'name'    => $app,
 					'enabled' => true,
-					'status'  => $GLOBALS['phpgw_info']['apps'][$app]['status'],
-					'id'      => $GLOBALS['phpgw_info']['apps'][$app]['id']
+					'status'  => $installed_apps[$app]['status'],
+					'id'      => $installed_apps[$app]['id']
 				);
 			}
 		}
@@ -336,9 +346,9 @@ class Applications
 					'version' => $value['app_version']
 				];
 		}
+
+		Settings::getInstance()->set('apps', $values);
 		return $values;
-
-
 	}
 
 	/**
@@ -350,10 +360,12 @@ class Applications
 	 */
 	public function is_system_enabled($appname)
 	{
-		if (!isset($GLOBALS['phpgw_info']['apps']) || !is_array($GLOBALS['phpgw_info']['apps'])) {
+		$installed_apps = Settings::getInstance()->get('apps');
+
+		if (empty($installed_apps)) {
 			$this->read_installed_apps();
 		}
-		return isset($GLOBALS['phpgw_info']['apps'][$appname]) && $GLOBALS['phpgw_info']['apps'][$appname]['enabled'];
+		return isset($installed_apps[$appname]) && $installed_apps[$appname]['enabled'];
 	}
 
 	/**
@@ -365,11 +377,12 @@ class Applications
 	public function id2name($id)
 	{
 		static $names = array();
+		$installed_apps = Settings::getInstance()->get('apps');
 
 		if (!isset($names[$id])) {
 			$names[$id] = '';
 			$id = (int) $id;
-			foreach ($GLOBALS['phpgw_info']['apps'] as $appname => $app) {
+			foreach ($installed_apps as $appname => $app) {
 				if ($app['id'] == $id) {
 					$names[$id] = $appname;
 				}
@@ -386,18 +399,15 @@ class Applications
 	 */
 	public function name2id($appname)
 	{
-		if (
-			!isset($GLOBALS['phpgw_info']['apps'])
-			|| !is_array($GLOBALS['phpgw_info']['apps'])
-		) {
+		$installed_apps = Settings::getInstance()->get('apps');
+
+		if (empty($installed_apps)|| !is_array($installed_apps)) {
 			$this->read_installed_apps();
+			$installed_apps = Settings::getInstance()->get('apps');
 		}
 
-		if (
-			isset($GLOBALS['phpgw_info']['apps'][$appname])
-			&& is_array($GLOBALS['phpgw_info']['apps'][$appname])
-		) {
-			return $GLOBALS['phpgw_info']['apps'][$appname]['id'];
+		if (isset($installed_apps[$appname]) && is_array($installed_apps[$appname])	) {
+			return $installed_apps[$appname]['id'];
 		}
 		return 0;
 	}

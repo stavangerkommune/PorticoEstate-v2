@@ -68,19 +68,20 @@
 		private $db;
 		private $cache;
 		private $serverSettings;
-		private $userSettings;
+		private $preferences;
 
-		public function __construct($userSettings = [])
+		public function __construct($preferences = [])
 		{
 			$this->db = DatabaseObject::getInstance()->get('db');
             $this->cache = new Cache();
-            $this->serverSettings = ServerSettings::getInstance()->get('server');
-            $this->userSettings = $userSettings ?? Settings::getInstance()->get('usersettings');
+            $this->serverSettings = Settings::getInstance()->get('server');
 
+ 			$this->preferences = $preferences ?? Settings::getInstance()->get('user')['preferences'];
+			
 			$userlang = isset($this->serverSettings['default_lang']) && $this->serverSettings['default_lang']? $this->serverSettings['default_lang'] : 'en';
-			if ( isset($this->userSettings['common']['lang']) )
+			if ( isset($this->preferences['common']['lang']) )
 			{
-				$userlang = $this->userSettings['common']['lang'];
+				$userlang = $this->preferences['common']['lang'];
 			}
 
 			$this->set_userlang($userlang, true);
@@ -227,7 +228,7 @@
 				$userlang = 'en';
 			}
 
-			$app_name = $force_app ? $force_app : $GLOBALS['phpgw_info']['flags']['currentapp'];
+			$app_name = $force_app ? $force_app : ServerSettings::getInstance()->get('flags')['currentapp'];
 			$lookup_key = strtolower(trim(substr($key, 0, self::MAX_MESSAGE_ID_LENGTH)));
 
 			if ( (!isset(self::$lang[$app_name][$lookup_key]) && !isset(self::$lang['common'][$lookup_key]))

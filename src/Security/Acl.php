@@ -1337,18 +1337,19 @@
 
 			$id = array_keys($this->accounts->membership($account_id));
 			$id[] = $account_id;
-			$ids = implode(',', $id);
+
+			$placeholders = implode(',', array_fill(0, count($id), '?'));
+			$params = array_map('intval', $id);
 
 			$sql = 'SELECT phpgw_applications.app_name, phpgw_acl.acl_rights'
 				. ' FROM phpgw_applications'
 				. " {$this->_join} phpgw_locations ON phpgw_locations.app_id = phpgw_applications.app_id"
 				. " {$this->_join} phpgw_acl ON phpgw_locations.location_id = phpgw_acl.location_id"
 				. " WHERE phpgw_locations.name = 'run'"
-				. " AND phpgw_acl.acl_account IN (:ids)";
+				. " AND phpgw_acl.acl_account IN ($placeholders)";
 
 			$stmt = $this->_db->prepare($sql);
-			$stmt->execute([':ids' => $ids]);
-
+			$stmt->execute($params);
 			$apps = array();
 			while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 			{

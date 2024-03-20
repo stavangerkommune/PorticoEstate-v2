@@ -32,6 +32,7 @@
 use App\Security\Acl;
 use App\Controllers\Api\Accounts\phpgwapi_group;
 use App\Controllers\Api\Accounts\phpgwapi_user;
+use App\Controllers\Api\Accounts\phpgwapi_account;
 
 
 /**
@@ -312,6 +313,7 @@ class phpgwapi_accounts_sql extends phpgwapi_accounts_
 	 */
 	public function get($id, $use_cache = true)
 	{
+
 		$id = (int) $id;
 		$account = null;
 		static $cache = array();

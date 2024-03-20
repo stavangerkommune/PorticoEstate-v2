@@ -57,7 +57,7 @@
 	{
 		private $object;
 
-		public function __construct()
+		public function __construct($account_id = 0)
 		{
 			$serverSettings = ServerSettings::getInstance()->get('server');
 			$acct_type = isset($serverSettings['account_repository']) ? strtolower($serverSettings['account_repository']) : 'sql';
@@ -78,7 +78,7 @@
 
 			$className = "phpgwapi_accounts_{$acct_type}";
 			if (class_exists($className)) {
-				$this->object = new $className();
+				$this->object = new $className($account_id);
 			} else {
 				throw new Exception("Class {$className} does not exist");
 			}
@@ -91,6 +91,7 @@
 	}
 
 	namespace App\Controllers\Api\Accounts;
+	use App\Services\Translation;
 	abstract class phpgwapi_account
 	{
 		/**
@@ -235,7 +236,7 @@
 		{
 			if ( !strlen($name) )
 			{
-				throw new Exception('First name must not be empty');
+				throw new \Exception('First name must not be empty');
 			}
 		}
 
@@ -362,7 +363,8 @@
 					return $this->_data[$name];
 
 				default:
-					throw new Exception(lang('Unknown value: %1', $name));
+					throw new \Exception(lang('Unknown value: %1', $name));
+
 			}
 		}
 
@@ -421,7 +423,7 @@
 			$accounts = (new Accounts())->getObject();
 			if ( !strlen($group) )
 			{
-				throw new Exception('Group name is too short');
+				throw new \Exception('Group name is too short');
 			}
 
 			if ( $lookup )
@@ -431,19 +433,18 @@
 					if($this->_data['id'] !=$accounts->name2id($group)
 						&&$accounts->name2id($group) )
 					{
-						throw new Exception('Group name already in use');
+						throw new \Exception('Group name already in use');
 					}
 				}
-				else if($GLOBALS['phpgw']->accounts->name2id($group))
+				else if($accounts->name2id($group))
 				{
-					throw new Exception('Group name already in use');				
+					throw new \Exception('Group name already in use');				
 				}
 			}
 
-			phpgw::import_class('phpgwapi.globally_denied');
-			if ( phpgwapi_globally_denied::user($group) )
+			if (\App\Security\GloballyDenied::user($group) )
 			{
-				throw new Exception('Group name is blocked');
+				throw new \Exception('Group name is blocked');
 			}
 			return true;
 		}
@@ -561,7 +562,7 @@
 				case 'type':
 					return $this->_data[$name];
 				default:
-					throw new Exception(lang('Unknown value: %1', $name));
+					throw new \Exception(lang('Unknown value: %1', $name));
 			}
 		}
 
@@ -604,7 +605,6 @@
 					break;
 
 				case 'last_login':
-					$this->_validate_last_login($value);
 					$this->_data['last_login_from'] = phpgw::get_var('REMOTE_ADDR', 'ip', 'SERVER', '0.0.0.0');
 					break;
 
@@ -720,7 +720,7 @@
 			if ( $exp !== 0
 				&& (int) $exp != $exp )
 			{
-				throw new Exception('Expiry date is invalid');
+				throw new \Exception('Expiry date is invalid');
 			}
 			return true;
 		}
@@ -780,7 +780,7 @@
 			}
 			if($error)
 			{
-				throw new Exception(implode('<br/>',array_reverse($error)));
+				throw new \Exception(implode('<br/>',array_reverse($error)));
 			}
 		}
 
@@ -798,7 +798,7 @@
 			if ( $len < 8 )
 			{
 				$error = lang('Password must be at least 8 characters long, not %1', $len);
-				//throw new Exception(lang('Password must be at least 8 characters long, not %1', $len));
+				//throw new \Exception(lang('Password must be at least 8 characters long, not %1', $len));
 			}
 			return $error;
 		}
@@ -817,7 +817,7 @@
 			if ( preg_match_all('/[A-Z]/', $passwd, $m) < 2 )
 			{
 				$error = lang('Password must contain at least 2 upper case characters');
-				//throw new Exception(lang('Password must contain at least 2 upper case characters'));
+				//throw new \Exception(lang('Password must contain at least 2 upper case characters'));
 			}
 			return $error;
 		}
@@ -835,7 +835,7 @@
 			if ( preg_match_all('/[a-z]/', $passwd, $m) < 2 )
 			{
 				$error = lang('Password must contain at least 2 lower case characters');
-				//throw new Exception(lang('Password must contain at least 2 lower case characters'));
+				//throw new \Exception(lang('Password must contain at least 2 lower case characters'));
 			}
 			return $error;
 		}
@@ -853,7 +853,7 @@
 			if ( !preg_match_all('/[0-9]/', $passwd, $m) )
 			{
 				$error = lang('Password must contain at least 1 number');
-				//throw new Exception(lang('Password must contain at least 1 number'));
+				//throw new \Exception(lang('Password must contain at least 1 number'));
 			}
 			return $error;
 		}
@@ -871,7 +871,7 @@
 			if ( !preg_match_all('/\W/', $passwd, $m)  )
 			{
 				$error = lang('Password must contain at least 1 non alphanumeric character');
-				//throw new Exception(lang('Password must contain at least 1 non alphanumeric character'));
+				//throw new \Exception(lang('Password must contain at least 1 non alphanumeric character'));
 			}
 			return $error;
 		}
@@ -889,7 +889,7 @@
 		{
 			if ( (int) $quota != $quota )
 			{
-				throw new Exception('Invalid quota value');
+				throw new \Exception('Invalid quota value');
 			}
 
 			//FIXME this should be stored in the API - not filemanager - it is a global value!
@@ -907,7 +907,7 @@
 					return true;
 				}
 			}
-			throw new Exception('Quota value not supported');
+			throw new \Exception('Quota value not supported');
 		}
 
 		/**
@@ -924,7 +924,7 @@
 		{
 			if ( !strlen($username) )
 			{
-				throw new Exception('Username is too short');
+				throw new \Exception('Username is too short');
 			}
 
 			$accounts = (new Accounts())->getObject();
@@ -934,14 +934,14 @@
 				$id = $accounts->name2id($username);
 				if ( $id && $id <> $this->_data['id'] )
 				{
-					throw new Exception('Username already in use');
+					throw new \Exception('Username already in use');
 				}
 			}
 
 			phpgw::import_class('phpgwapi.globally_denied');
 			if ( phpgwapi_globally_denied::user($username) )
 			{
-				throw new Exception('Username is blocked');
+				throw new \Exception('Username is blocked');
 			}
 			return true;
 		}

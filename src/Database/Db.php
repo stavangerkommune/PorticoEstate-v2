@@ -59,7 +59,7 @@ class Db extends PDO
 			}
 			return $_value;
 		} else if ($type == 'string') {
-			return	$this->stripslashes($_value);
+			return	$this->stripslashes($value);
 		}
 
 		//Sanity check
@@ -109,7 +109,7 @@ class Db extends PDO
 				}
 				$ret = $statement_object->execute();
 			}
-		} catch (PDOException $e) {
+		} catch (\PDOException $e) {
 			trigger_error('Error: ' . $e->getMessage() . "<br>SQL: $sql\n in File: $file\n on Line: $line\n", E_USER_ERROR);
 		}
 		return $ret;
@@ -133,7 +133,7 @@ class Db extends PDO
 				}
 				$ret = $statement_object->execute();
 			}
-		} catch (PDOException $e) {
+		} catch (\PDOException $e) {
 			trigger_error('Error: ' . $e->getMessage() . "<br>SQL: $sql\n in File: $file\n on Line: $line\n", E_USER_ERROR);
 		}
 		return $ret;

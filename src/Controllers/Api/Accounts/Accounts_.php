@@ -41,6 +41,10 @@
 
 use App\Services\DatabaseObject;
 use App\Security\Acl;
+use App\Services\Settings;
+use App\Controllers\Api\Accounts\phpgwapi_group;
+use App\Controllers\Api\Accounts\phpgwapi_user;
+use App\Controllers\Api\Accounts\phpgwapi_account;
 
 abstract class phpgwapi_accounts_
 {
@@ -88,7 +92,7 @@ abstract class phpgwapi_accounts_
 	 * @return void
 	 */
 
-	protected $like, $join, $account_type;
+	protected $like, $join, $account_type, $serverSettings;
 	public function __construct($account_id = null, $account_type = null)
 	{
 		$this->db = DatabaseObject::getInstance()->get('db');
@@ -96,6 +100,7 @@ abstract class phpgwapi_accounts_
 		$this->join = 'JOIN';
 
 		$this->set_account($account_id, $account_type);
+		$this->serverSettings = \App\Services\ServerSettings::getInstance()->get('server');
 	}
 
 	public function get_id()
@@ -253,7 +258,7 @@ abstract class phpgwapi_accounts_
 	/**
 	 * Read the currently selected account from the storage repository
 	 *
-	 * @return void
+	 * @return object
 	 */
 	abstract public function read_repository();
 
@@ -287,11 +292,11 @@ abstract class phpgwapi_accounts_
 	{
 		if ($expiredate) {
 			$expires = (int) $expiredate;
-		} else if (isset($GLOBALS['phpgw_info']['server']['auto_create_expire'])) {
-			if ($GLOBALS['phpgw_info']['server']['auto_create_expire'] == 'never') {
+		} else if (isset($this->serverSettings['auto_create_expire'])) {
+			if ($this->serverSettings['auto_create_expire'] == 'never') {
 				$expires = -1;
 			} else {
-				$expires = time() + $GLOBALS['phpgw_info']['server']['auto_create_expire'];
+				$expires = time() + $this->serverSettings['auto_create_expire'];
 			}
 		} else {
 			$expires = time() + (60 * 60 * 24 * 7); // 1 week - sane default
@@ -306,7 +311,7 @@ abstract class phpgwapi_accounts_
 		$acct_info->expires = $expires;
 
 		$group = array(
-			$this->name2id($GLOBALS['phpgw_info']['server']['default_group_lid'])
+			$this->name2id($this->serverSettings['default_group_lid'])
 		);
 
 		$account_id = $this->create($acct_info, $group);
@@ -484,7 +489,7 @@ abstract class phpgwapi_accounts_
 
 		foreach ($app_users as $app_user) {
 			try {
-				$type = $GLOBALS['phpgw']->accounts->get_type($app_user);
+				$type = $this->get_type($app_user);
 			} catch (Exception $e) {
 				// we ignore invalid accounts, this avoid problems with old crud
 			}
@@ -560,13 +565,13 @@ abstract class phpgwapi_accounts_
 		}
 		$contacts = createObject('phpgwapi.contacts');
 
-		if (!isset($GLOBALS['phpgw_info']['server']['addressmaster'])) {
-			$GLOBALS['phpgw_info']['server']['addressmaster'] = -3;
+		if (!isset($this->serverSettings['addressmaster'])) {
+			$this->serverSettings['addressmaster'] = -3;
 		}
 
 		foreach ($accounts as $account) {
 			if ($account) {
-				$GLOBALS['phpgw']->db->transaction_begin();
+				$this->db->transaction_begin();
 				$this->account_id = $account;
 				$user = $this->read_repository();
 				$comms = array();
@@ -578,13 +583,13 @@ abstract class phpgwapi_accounts_
 							'per_first_name'	=> $user->firstname,
 							'per_last_name'		=> $user->lastname,
 							'access'			=> 'public',
-							'owner'		=> $GLOBALS['phpgw_info']['server']['addressmaster']
+							'owner'		=> $this->serverSettings['addressmaster']
 						);
 						$type = $contacts->search_contact_type('Persons');
 
 						$domain = '';
-						if (isset($GLOBALS['phpgw_info']['server']['mail_server'])) {
-							$domain = $GLOBALS['phpgw_info']['server']['mail_server'];
+						if (isset($this->serverSettings['mail_server'])) {
+							$domain = $this->serverSettings['mail_server'];
 						}
 
 						if ($domain) {
@@ -600,7 +605,7 @@ abstract class phpgwapi_accounts_
 
 					case phpgwapi_account::TYPE_GROUP:
 						$primary = array(
-							'owner'		=> $GLOBALS['phpgw_info']['server']['addressmaster'],
+							'owner'		=> $this->serverSettings['addressmaster'],
 							'access'	=> 'public',
 							'org_name'	=> (string) $user
 						);
@@ -614,7 +619,7 @@ abstract class phpgwapi_accounts_
 
 				$this->account = $user;
 				if ($this->save_repository()) {
-					$GLOBALS['phpgw']->db->transaction_commit();
+					$this->db->transaction_commit();
 				}
 			}
 		}
@@ -643,7 +648,7 @@ abstract class phpgwapi_accounts_
 
 		// FIXME This is broken and only supports localFS VFS
 		if ($group->old_loginid != $group->lid) {
-			$basedir = "{$GLOBALS['phpgw_info']['server']['files_dir']}/groups/";
+			$basedir = "{$this->serverSettings['files_dir']}/groups/";
 			@rename("{$basedir}{$group->old_loginid}", "{$basedir}/{$group->lid}");
 		}
 
@@ -693,10 +698,11 @@ abstract class phpgwapi_accounts_
 
 		//FIXME need permissions here
 
-		$aclobj = &$GLOBALS['phpgw']->acl;
+		$aclobj = new Acl();
 		$aclobj->set_account_id($user->id, true);
 		$aclobj->clear_user_cache($user->id);
-		foreach ($GLOBALS['phpgw_info']['apps'] as $app => $dummy) {
+		$installed_apps = \App\Services\Settings::getInstance()->get('apps');
+		foreach ($installed_apps as $app => $dummy) {
 			if ($app == 'phpgwapi') {
 				continue;
 			}
@@ -714,16 +720,18 @@ abstract class phpgwapi_accounts_
 
 		// application permissions
 		if (is_array($modules)) {
-			$apps = createObject('phpgwapi.applications', $user->id);
+			$apps = new \App\Controllers\Api\Applications($user->id);
 			$apps->update_data($modules);
 			$apps->save_repository();
 		}
 
-		$GLOBALS['hook_values'] = array(
+		$hook_values = array(
 			'account_id'	=> $user->id,
 			'account_lid'	=> $user->lid,
 			'new_passwd'	=> $user->passwd
 		);
+
+		Settings::getInstance()->set('hook_values', $hook_values);
 
 		$GLOBALS['phpgw']->hooks->process('editaccount');
 
@@ -835,9 +843,9 @@ abstract class phpgwapi_accounts_
 	protected function _get_nextid($account_type = 'u')
 	{
 
-		$min = !empty($GLOBALS['phpgw_info']['server']['account_min_id']) ? (int) $GLOBALS['phpgw_info']['server']['account_min_id'] : 0;
+		$min = !empty($this->serverSettings['account_min_id']) ? (int) $this->serverSettings['account_min_id'] : 0;
 
-		$max = !empty($GLOBALS['phpgw_info']['server']['account_max_id']) ? (int) $GLOBALS['phpgw_info']['server']['account_max_id'] : 2147483647;
+		$max = !empty($this->serverSettings['account_max_id']) ? (int) $this->serverSettings['account_max_id'] : 2147483647;
 
 		if ($account_type == 'g') {
 			$type = 'groups';
@@ -860,8 +868,8 @@ abstract class phpgwapi_accounts_
 		}
 
 		if (
-			isset($GLOBALS['phpgw_info']['server']['account_max_id']) &&
-			$GLOBALS['phpgw_info']['server']['account_max_id'] < $nextid
+			isset($this->serverSettings['account_max_id']) &&
+			$this->serverSettings['account_max_id'] < $nextid
 		) {
 			return false;
 		}
@@ -878,11 +886,11 @@ abstract class phpgwapi_accounts_
 	 */
 	protected function _save_contact_for_group(&$group)
 	{
-		if (!isset($GLOBALS['phpgw_info']['server']['addressmaster'])) {
-			$GLOBALS['phpgw_info']['server']['addressmaster'] = -3;
+		if (!isset($this->serverSettings['addressmaster'])) {
+			$this->serverSettings['addressmaster'] = -3;
 		}
 		$primary = array(
-			'owner'		=> $GLOBALS['phpgw_info']['server']['addressmaster'],
+			'owner'		=> $this->serverSettings['addressmaster'],
 			'access'	=> 'public',
 			'org_name'	=> (string) $group
 		);
@@ -913,7 +921,7 @@ abstract class phpgwapi_accounts_
 			$primary = $contact_data['primary'];
 		} else {
 			$primary = array(
-				'owner'				=> $GLOBALS['phpgw_info']['server']['addressmaster'],
+				'owner'				=> $this->serverSettings['addressmaster'],
 				'access'			=> 'public',
 				'per_first_name'	=> $user->firstname,
 				'per_last_name'		=> $user->lastname,
@@ -935,8 +943,8 @@ abstract class phpgwapi_accounts_
 
 			$comms = array();
 			$domain = '';
-			if (isset($GLOBALS['phpgw_info']['server']['mail_server'])) {
-				$domain = $GLOBALS['phpgw_info']['server']['mail_server'];
+			if (isset($this->serverSettings['mail_server'])) {
+				$domain = $this->serverSettings['mail_server'];
 			}
 
 			if ($domain) {
