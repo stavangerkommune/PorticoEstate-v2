@@ -56,12 +56,14 @@ class SessionsMiddleware implements MiddlewareInterface
     {
         $this->container = $container;
         $this->db = $container->get('db');
+		DatabaseObject::getInstance($this->db);
+
 		$this->config = $container->get('settings')['settings'];
 		
 		$serverSetting = ServerSettings::getInstance()->get('server');
 		
 		$auth_type = !empty($serverSetting['auth_type']) ? ucfirst($serverSetting['auth_type']) : 'Sql';
-		include_once SRC_ROOT_PATH . "/Security/Auth_{$auth_type}.php";
+		include_once SRC_ROOT_PATH . "/Security/Auth/Auth_{$auth_type}.php";
 		$this->Auth = new Auth($this->db);
 
 
@@ -159,7 +161,6 @@ class SessionsMiddleware implements MiddlewareInterface
 		}
 
 
-		DatabaseObject::getInstance($this->db);
         //get the route path
         $this->routePath = $route->getPattern();
         $routePath_arr = explode('/', $this->routePath);
