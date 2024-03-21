@@ -15,8 +15,8 @@ class Sanitizer
 		 */
 		public static function clean_html($html, $base_url = '')
 		{
-            $serverSettings = Settings::getInstance()->get('server');
-            $flags = Settings::getInstance()->get('flags');
+            $serverSettings = \App\Services\Settings::getInstance()->get('server');
+            $flags = \App\Services\Settings::getInstance()->get('flags');
 
 			if ( !$base_url )
 			{
@@ -58,7 +58,7 @@ class Sanitizer
 				);
 		}
 
-		$purifier = new HTMLPurifier($config);
+			$purifier = new HTMLPurifier($config);
 
 			$clean_html = $purifier->purify($html);
 

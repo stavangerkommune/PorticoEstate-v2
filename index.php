@@ -9,8 +9,8 @@ use App\Providers\AclServiceProvider;
 use App\Providers\DatabaseServiceProvider;
 
 require_once __DIR__ . '/vendor/autoload.php';
-ini_set('session.use_cookies', '0');
-ini_set('session.cache_limiter', '');
+#ini_set('session.use_cookies', '0');
+#ini_set('session.cache_limiter', '');
 
 
 define('SRC_ROOT_PATH' , __DIR__ . '/src');
