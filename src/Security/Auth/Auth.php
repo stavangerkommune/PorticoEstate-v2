@@ -38,8 +38,13 @@
 
 	use App\Services\Settings;
 
+	$serverSettings = Settings::getInstance()->get('server');
+	//\App\Helpers\DebugArray::debug($serverSettings['auth_type']);
+
+
 	if (!empty($serverSettings['auth_type'])) {
-		$auth_type = !empty($this->serverSetting['auth_type']) ? ucfirst($this->serverSetting['auth_type']) : 'Sql';
+		
+		$auth_type = !empty($serverSettings['auth_type']) ? ucfirst($serverSettings['auth_type']) : 'Sql';
 		require_once SRC_ROOT_PATH . "/Security/Auth/Auth_{$auth_type}.php";
 	}
 	else
@@ -54,7 +59,7 @@
 	
 	abstract class Auth_
 	{
-		protected $serverSetting;
+		protected $serverSettings;
 		
 		public $xmlrpc_methods = array
 		(
@@ -70,7 +75,7 @@
 		*/
 		public function __construct()
 		{
-			$this->serverSetting = Settings::getInstance()->get('server');
+			$this->serverSettings = Settings::getInstance()->get('server');
 		}
 
 		/**

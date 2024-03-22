@@ -86,6 +86,7 @@ class SessionsMiddleware implements MiddlewareInterface
 		
 		$this->Auth = new Auth($this->db);
 
+
 		$this->_use_cookies = false;
 
 		$this->_phpgw_set_cookie_params();
