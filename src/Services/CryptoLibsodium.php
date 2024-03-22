@@ -29,7 +29,7 @@ class Crypto extends Crypto_
 
 	function init($vars)
 	{
-		$serverSettings = \App\Services\ServerSettings::getInstance()->get('server');
+		$serverSettings = \App\Services\Settings::getInstance()->get('server');
 
 		$key = $vars[0];
 

@@ -32,7 +32,7 @@ class Preferences
 	{
 		$this->db = DatabaseObject::getInstance()->get('db');
 		$this->account_id = $account_id;
-		$this->serverSettings = ServerSettings::getInstance()->get('server');
+		$this->serverSettings = Settings::getInstance()->get('server');
 		$this->preferences = $this->Readpreferences();
 	//	$this->translation = new Translation($this->preferences);
 

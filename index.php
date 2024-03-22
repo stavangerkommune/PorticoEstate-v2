@@ -28,12 +28,15 @@ define('ACL_CUSTOM_3', 256);
 //phpinfo();
 $containerBuilder = new ContainerBuilder();
 
-// Add your settings to the container
-$settings = require_once __DIR__ . '/config/database.php';
 require_once SRC_ROOT_PATH . '/Helpers/Translation.php';
 require_once SRC_ROOT_PATH . '/Helpers/Sanitizer.php';
+// Add your settings to the container
 
-$containerBuilder->addDefinitions(['settings' => $settings]);
+$database_settings = require_once __DIR__ . '/config/database.php';
+
+//DebugArray::debug($database_settings);
+
+$containerBuilder->addDefinitions(['settings' => ['db' => $database_settings]]);
 
 // Build PHP-DI Container instance
 $container = $containerBuilder->build();

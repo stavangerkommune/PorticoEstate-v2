@@ -11,7 +11,6 @@ use Slim\Exception\HttpForbiddenException;
 use App\Security\Auth\Auth;
 use PDO;
 use App\Services\Settings;
-use App\Services\ServerSettings;
 use Psr\Http\Server\MiddlewareInterface;
 use Slim\Exception\NotFoundException;
 use App\Services\DatabaseObject;
@@ -22,8 +21,10 @@ use App\Controllers\Api\Accounts\Accounts;
 use App\Services\Crypto;
 use App\Services\Log;
 
-$serverSetting = ServerSettings::getInstance()->get('server');
-$flags = ServerSettings::getInstance()->get('flags');
+
+$serverSetting = Settings::getInstance()->get('server');
+
+$flags = Settings::getInstance()->get('flags');
 
 /**
  * Set the session name to something unique for phpgw
@@ -76,15 +77,13 @@ class SessionsMiddleware implements MiddlewareInterface
     {
         $this->container = $container;
 		$this->db = DatabaseObject::getInstance()->get('db');
-
-		$this->config = $container->get('settings')['settings'];
 		
-		$this->serverSetting = ServerSettings::getInstance()->get('server');
+		$this->serverSetting = Settings::getInstance()->get('server');
+
+//		\App\Helpers\DebugArray::debug($this->serverSetting);
 
 		$this->Log = new Log();
 		
-		$auth_type = !empty($this->serverSetting['auth_type']) ? ucfirst($this->serverSetting['auth_type']) : 'Sql';
-		include_once SRC_ROOT_PATH . "/Security/Auth/Auth_{$auth_type}.php";
 		$this->Auth = new Auth($this->db);
 
 		$this->_use_cookies = false;
@@ -144,8 +143,8 @@ class SessionsMiddleware implements MiddlewareInterface
 			return $this->_cookie_domain;
 		}
 
-		if (!empty($this->config['cookieDomain'])) {
-			$this->_cookie_domain = $this->config['cookieDomain'];
+		if (!empty($this->serverSetting['cookie_domain'])) {
+			$this->_cookie_domain = $this->serverSetting['cookie_domain'];
 		} else {
 			$parts = explode(':', \Sanitizer::get_var('HTTP_HOST', 'string', 'SERVER')); // strip portnumber if it exists in url (as in 'http://127.0.0.1:8080/')
 			$this->_cookie_domain = $parts[0];
@@ -160,8 +159,8 @@ class SessionsMiddleware implements MiddlewareInterface
 		//			$secure = \Sanitizer::get_var('HTTPS', 'bool', 'SERVER');
 		$secure = false;
 
-		if (!empty($this->config['webserverUrl'])) {
-			$webserver_url = $this->config['webserverUrl'] . '/';
+		if (!empty($this->serverSetting['webserver_url'])) {
+			$webserver_url = $this->serverSetting['webserver_url'] . '/';
 		} else {
 			$webserver_url = '/';
 		}
@@ -221,9 +220,6 @@ class SessionsMiddleware implements MiddlewareInterface
 
 		session_start();
 		$this->_sessionid = session_id();
-
-
-
 
 
 		$this->read_repositories($account_id, $currentApp);
@@ -582,7 +578,8 @@ class SessionsMiddleware implements MiddlewareInterface
 			$GLOBALS['phpgw']->preferences->set_account_id($this->_account_id);
 			$GLOBALS['phpgw']->applications->set_account_id($this->_account_id);
 */
-		$GLOBALS['phpgw']->translation->populate_cache();
+		
+		(new \App\Services\Translation())->populate_cache();
 
 		if (!$this->_account_lid) {
 			if (is_object($this->Log)) {
@@ -602,6 +599,31 @@ class SessionsMiddleware implements MiddlewareInterface
 		}
 		$this->_verified = true;
 		return true;
+	}
+
+	/**
+	 * Read a session
+	 *
+	 * @param string $sessionid the session id
+	 *
+	 * @return array session data - empty array when not found
+	 */
+	public function read_session($sessionid)
+	{
+		if ($sessionid) {
+			session_id($sessionid);
+		}
+
+		session_start();
+
+		if (!session_id() == $sessionid) {
+			return array();
+		}
+
+		if (isset($_SESSION['phpgw_session']) && is_array($_SESSION['phpgw_session'])) {
+			return $_SESSION['phpgw_session'];
+		}
+		return array();
 	}
 
 	/**
@@ -671,25 +693,33 @@ class SessionsMiddleware implements MiddlewareInterface
 	 */
 	public function log_access($sessionid, $login = '', $user_ip = '', $account_id = '')
 	{
-		$now		= time();
-		$sessionid	= $this->db->db_addslashes($sessionid);
-		$login		= $this->db->db_addslashes($login);
-		$user_ip	= $this->db->db_addslashes($user_ip);
-		$account_id	= (int) $account_id;
+		$now        = time();
+		$account_id = (int) $account_id;
 
 		if ($login != '') {
 			$sql = 'INSERT INTO phpgw_access_log(sessionid,loginid,ip,li,lo,account_id)'
-			. " VALUES ('{$sessionid}', '{$login}', '{$user_ip}', {$now}, 0, {$account_id})";
-			$this->db->query($sql, __LINE__, __FILE__);
+			. " VALUES (:sessionid, :login, :user_ip, :now, 0, :account_id)";
+			$stmt = $this->db->prepare($sql);
+			$stmt->execute([
+				':sessionid' => $sessionid,
+				':login' => $login,
+				':user_ip' => $user_ip,
+				':now' => $now,
+				':account_id' => $account_id
+			]);
 		} else {
-			$sql = "UPDATE phpgw_access_log SET lo ={$now}"
-			. " WHERE sessionid='{$sessionid}'";
-			$this->db->query($sql, __LINE__, __FILE__);
+			$sql = "UPDATE phpgw_access_log SET lo = :now WHERE sessionid = :sessionid";
+			$stmt = $this->db->prepare($sql);
+			$stmt->execute([
+				':now' => $now,
+				':sessionid' => $sessionid
+			]);
 		}
 		if ($this->serverSetting['max_access_log_age']) {
 			$max_age = $now - ($this->serverSetting['max_access_log_age'] * 24 * 60 * 60);
 
-			$this->db->query("DELETE FROM phpgw_access_log WHERE li < {$max_age}");
+			$stmt = $this->db->prepare("DELETE FROM phpgw_access_log WHERE li < :max_age");
+			$stmt->execute([':max_age' => $max_age]);
 		}
 	}
 
@@ -703,7 +733,7 @@ class SessionsMiddleware implements MiddlewareInterface
 	{
 		if ($write_cache) {
 			$data = Cache::session_get('phpgwapi', 'phpgw_info');
-		echo json_encode($data);die();
+		//	echo json_encode($data);
 		}
 
 		$flags = [
@@ -711,16 +741,17 @@ class SessionsMiddleware implements MiddlewareInterface
 		];
 
 		$data = [];
-		ServerSettings::getInstance()->set('flags', $flags);
+		Settings::getInstance()->set('account_id', $account_id);
+		Settings::getInstance()->set('flags', $flags);
 		$preferences = Preferences::getInstance($account_id)->get('preferences');
-		Settings::getInstance()->setAccountId($account_id);
+		
 
 //		$acl = (new \App\Security\Acl())->set_account_id($account_id);
 		$apps = (new \App\Controllers\Api\Applications($account_id))->read();
 
-		Settings::getInstance()->set('server', ServerSettings::getInstance()->get('server'));
+	//	Settings::getInstance()->set('server', Settings::getInstance()->get('server'));
 		Settings::getInstance()->set('apps', $apps);
-		Settings::getInstance()->set('flags', $flags);
+	//	Settings::getInstance()->set('flags', $flags);
 		
 		$accounts = (new \App\Controllers\Api\Accounts\Accounts($account_id))->getObject();
 
@@ -825,31 +856,37 @@ class SessionsMiddleware implements MiddlewareInterface
 	 */
 	protected function _login_blocked($login, $ip)
 	{
-		$blocked	= false;
+		$blocked = false;
 		$block_time = time() - $this->serverSetting['block_time'] * 60;
-		$ip			= $this->db->db_addslashes($ip);
+		$ip = $this->db->quote($ip);
 
 		if (isset($this->serverSetting['sessions_checkip']) && $this->serverSetting['sessions_checkip']) {
 			$sql = 'SELECT COUNT(*) AS cnt FROM phpgw_access_log'
-			. " WHERE account_id = 0 AND ip = '{$ip}' AND li > {$block_time}";
+			. " WHERE account_id = 0 AND ip = :ip AND li > :block_time";
 
-			$this->db->query($sql, __LINE__, __FILE__);
-			$this->db->next_record();
+			$stmt = $this->db->prepare($sql);
+			$stmt->execute([':ip' => $ip, ':block_time' => $block_time]);
 
-			$false_ip = $this->db->f('cnt');
+			$false_ip = $stmt->fetchColumn();
 			if ($false_ip > $this->serverSetting['num_unsuccessful_ip']) {
 				$blocked = true;
 			}
 		}
+		
+		$login = $this->db->quote($login);
+		$sql = 'SELECT COUNT(*) AS cnt FROM phpgw_access_log'
+			. " WHERE account_id = 0 AND (loginid=:login OR loginid LIKE :loginLike)"
+			. " AND li > :block_time";
 
-		$login	= $this->db->db_addslashes($login);
-		$sql	= 'SELECT COUNT(*) AS cnt FROM phpgw_access_log'
-		. " WHERE account_id = 0 AND (loginid='{$login}' OR loginid LIKE '$login#%')"
-			. " AND li > {$block_time}";
-		$this->db->query($sql, __LINE__, __FILE__);
+		$stmt = $this->db->prepare($sql);
+		$stmt->execute([
+			':login' => $login,
+			':loginLike' => "$login#%",
+			':block_time' => $block_time
+		]);
 
-		$this->db->next_record();
-		$false_id = $this->db->f('cnt');
+		$false_id = $stmt->fetchColumn();
+
 		if ($false_id > $this->serverSetting['num_unsuccessful_id']) {
 			$blocked = true;
 		}
@@ -868,13 +905,12 @@ class SessionsMiddleware implements MiddlewareInterface
 			$body    = lang('Too many unsuccessful attempts to login: '
 			. "%1 for the user '%2', %3 for the IP %4", $false_id, $login, $false_ip, $ip);
 
-			if (!is_object($GLOBALS['phpgw']->send)) {
-				$GLOBALS['phpgw']->send = createObject('phpgwapi.send');
-			}
-			$subject = $GLOBALS['phpgw']->send->encode_subject($subject);
+			$send = new \App\Services\Send();
+
+			$subject = $send->encode_subject($subject);
 			$admin_mails = explode(',', $this->serverSetting['admin_mails']);
 			foreach ($admin_mails as $to) {
-				$GLOBALS['phpgw']->send->msg(
+				$send->msg(
 					'email',
 					$to,
 					$subject,
@@ -887,7 +923,7 @@ class SessionsMiddleware implements MiddlewareInterface
 				);
 			}
 			// save time of mail, to not send to many mails
-			$config = createObject('phpgwapi.config', 'phpgwapi');
+			$config = new \App\Services\Config('phpgwapi');
 			$config->read_repository();
 			$config->value('login_blocked_mail_time', time());
 			$config->save_repository();
@@ -909,15 +945,16 @@ class SessionsMiddleware implements MiddlewareInterface
 	 */
 	public function list_sessions($start, $order, $sort, $all_no_sort = false)
 	{
+		$preferences = Settings::getInstance()->get('user')['preferences'];
 		// We cache the data for 5mins system wide as this is an expensive operation
-		$last_updated = 0; //phpgwapi_cache::system_get('phpgwapi', 'session_list_saved');
+		$last_updated = 0; //Cache::system_get('phpgwapi', 'session_list_saved');
 
 		if (
 			is_null($last_updated)
 			|| $last_updated < 60 * 5
 		) {
 			$data = array();
-			switch ($GLOBALS['phpgw_info']['server']['sessions_type']) {
+			switch ($this->serverSetting['sessions_type']) {
 				case 'db':
 					$data = SessionHandlerDb::get_list();
 					break;
@@ -926,10 +963,10 @@ class SessionsMiddleware implements MiddlewareInterface
 				default:
 					$data = self::_get_list();
 			}
-			phpgwapi_cache::system_set('phpgwapi', 'session_list', $data);
-			phpgwapi_cache::system_set('phpgwapi', 'session_list_saved', time());
+			Cache::system_set('phpgwapi', 'session_list', $data);
+			Cache::system_set('phpgwapi', 'session_list_saved', time());
 		} else {
-			$data = phpgwapi_cache::system_get('phpgwapi', 'session_list');
+			$data = Cache::system_get('phpgwapi', 'session_list');
 		}
 
 		if ($all_no_sort) {
@@ -943,15 +980,91 @@ class SessionsMiddleware implements MiddlewareInterface
 
 		$maxmatches = 25;
 		if (
-			isset($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'])
-			&& (int) $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs']
+			isset($preferences['common']['maxmatchs'])
+			&& (int) $preferences['common']['maxmatchs']
 		) {
-			$maxmatches = (int) $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
+			$maxmatches = (int) $preferences['common']['maxmatchs'];
 		}
 
 		return array_slice($data, $start, $maxmatches);
 	}
 
+	protected function _get_list()
+	{
+		$values = array();
+
+		/*
+			   Yes recursive - from the manual
+			   There is an optional N argument to this [session.save_path] that determines
+			   the number of directory levels your session files will be spread around in.
+			 */
+		$path = session_save_path();
+
+		// debian/ubuntu set the perms to /var/lib/php and so the sessions can't be read
+		if (!is_readable($path)) {
+			// FIXME we really should throw an exception here
+			$values[] = array(
+				'id'		=> 'Unable to read sessions',
+				'lid'		=> 'invalid',
+				'ip'		=> '0.0.0.0',
+				'action'	=> 'Access denied by underlying filesystem',
+				'dla'		=> 0,
+				'logints'	=> 0
+			);
+			return $values;
+		}
+
+		$dir = new \RecursiveDirectoryIterator($path);
+		foreach ($dir as $file) {
+			$filename = $file->getFilename();
+			// only try php session files
+			if (!preg_match('/^sess_([a-z0-9]+)$/', $filename)) {
+				continue;
+			}
+
+			$rawdata = file_get_contents("{$path}/{$filename}");
+
+			//taken from http://no.php.net/manual/en/function.session-decode.php#79244
+			$vars = preg_split(
+				'/([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff^|]*)\|/',
+				$rawdata,
+				-1,
+				PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE
+			);
+			$data = array();
+
+			/*		for($i=0; $vars[$i]; $i++)
+				{
+					$data[$vars[$i++]]=unserialize($vars[$i]);
+				}
+		*/
+			if (isset($vars[3])) {
+				$data[$vars[0]] = unserialize($vars[1]);
+				$data[$vars[2]] = unserialize($vars[3]);
+			}
+
+			// skip invalid or anonymous sessions
+			if (
+				!isset($data['phpgw_session'])
+				|| $data['phpgw_session']['session_install_id'] != $GLOBALS['phpgw_info']['server']['install_id']
+				|| !isset($data['phpgw_session']['session_flags'])
+				|| $data['phpgw_session']['session_flags'] == 'A'
+			) {
+				continue;
+			}
+
+			$values[$data['phpgw_session']['session_id']] = array(
+				'id'				=> $data['phpgw_session']['session_id'],
+				'lid'				=> $data['phpgw_session']['session_lid'],
+				'ip'				=> $data['phpgw_session']['session_ip'],
+				'action'			=> $data['phpgw_session']['session_action'],
+				'dla'				=> $data['phpgw_session']['session_dla'],
+				'logints'			=> $data['phpgw_session']['session_logintime'],
+				'session_file'		=> "{$path}/{$filename}"
+			);
+		}
+		return $values;
+	}
 
 	/**
 	 * Send an error response

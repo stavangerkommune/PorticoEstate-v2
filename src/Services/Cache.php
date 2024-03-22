@@ -39,7 +39,7 @@
     use App\Services\Redis;
     use App\Services\Shm;
 	use App\Services\DatabaseObject;
-	use App\Services\ServerSettings;
+	
 	use DirectoryIterator;
 	use PDO;
 	use App\Services\Crypto;
@@ -94,7 +94,7 @@
 
 		private static function _file_clear_all()
 		{
-			$serverSettings = ServerSettings::getInstance()->get('server');
+			$serverSettings = Settings::getInstance()->get('server');
 			$dir = new DirectoryIterator($serverSettings['temp_dir']); 
 
 			if ( is_object($dir) )
@@ -151,7 +151,7 @@
 		 */
 		protected static function _gen_key($module, $id)
 		{
-			$serverSettings = ServerSettings::getInstance()->get('server');
+			$serverSettings = Settings::getInstance()->get('server');
 
 			return sha1("{$serverSettings['install_id']}::{$module}::{$id}");
 		}
@@ -164,7 +164,7 @@
 		 */
 		protected static function _gen_filename($key)
 		{
-			$serverSettings = ServerSettings::getInstance()->get('server');
+			$serverSettings = Settings::getInstance()->get('server');
 
 			return "{$serverSettings['temp_dir']}/phpgw_cache_{$key}";
 		}

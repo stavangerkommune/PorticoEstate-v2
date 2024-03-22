@@ -35,7 +35,21 @@
 	*/
 
 	namespace App\Security\Auth;
-	use App\Services\ServerSettings;
+
+	use App\Services\Settings;
+
+	if (!empty($serverSettings['auth_type'])) {
+		$auth_type = !empty($this->serverSetting['auth_type']) ? ucfirst($this->serverSetting['auth_type']) : 'Sql';
+		require_once SRC_ROOT_PATH . "/Security/Auth/Auth_{$auth_type}.php";
+	}
+	else
+	{
+		//Fall back
+		class Auth extends Auth_
+		{
+		}
+	}
+
 
 	
 	abstract class Auth_
@@ -56,7 +70,7 @@
 		*/
 		public function __construct()
 		{
-			$this->serverSetting = ServerSettings::getInstance()->get('server');
+			$this->serverSetting = Settings::getInstance()->get('server');
 		}
 
 		/**

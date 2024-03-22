@@ -28,7 +28,7 @@ class Crypto extends Crypto_
 
 	function init($vars)
 	{
-		$serverSettings = \App\Services\ServerSettings::getInstance()->get('server');
+		$serverSettings = \App\Services\Settings::getInstance()->get('server');
 		/* _debug_array(mcrypt_list_algorithms()); */
 		$key = $vars[0];
 		$iv = $vars[1];

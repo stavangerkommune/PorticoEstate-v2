@@ -10,7 +10,7 @@ use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpForbiddenException;
 use Slim\Psr7\Response;
 use App\Services\Settings;
-use App\Services\ServerSettings;
+
 use App\Security\Acl;
 
 
@@ -43,7 +43,7 @@ class AccessVerifier  implements MiddlewareInterface
 		$currentApp = $routePath_arr[1];
 
 
-		$flags = ServerSettings::getInstance()->get('flags');
+		$flags = Settings::getInstance()->get('flags');
 		$account_id = Settings::getInstance()->get('account_id');
 
 	//	print_r(__CLASS__);

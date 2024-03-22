@@ -179,8 +179,8 @@
             $this->_like		= 'ILIKE';
 			$this->_join		= 'JOIN';
 			$this->_left_join	= 'LEFT JOIN';
-            $this->serverSettings = ServerSettings::getInstance()->get('server');
-            $this->server_flags = ServerSettings::getInstance()->get('flags');
+            $this->serverSettings = Settings::getInstance()->get('server');
+            $this->server_flags = Settings::getInstance()->get('flags');
             $this->_account_id = Settings::getInstance()->get('account_id');
 			$this->cache = new Cache($this->_db);
 			$this->accounts = (new Accounts())->getObject();

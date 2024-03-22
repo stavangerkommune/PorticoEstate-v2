@@ -12,7 +12,7 @@
 
 namespace App\Services;
 	
- $serverSettings = \App\Services\ServerSettings::getInstance()->get('server');
+ $serverSettings = \App\Services\Settings::getInstance()->get('server');
 
 if (!empty($serverSettings['mcrypt_enabled']) || (isset($serverSettings['enable_crypto']) && $serverSettings['enable_crypto'] == 'mcrypt')) {
 	require_once SRC_ROOT_PATH . '/Services/CryptoMcrypt.php';

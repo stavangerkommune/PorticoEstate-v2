@@ -49,8 +49,7 @@
  */
 
 	namespace App\Controllers\Api\Accounts;
-
-	use App\Services\ServerSettings;
+	use App\Services\Settings;	
 	use Exception;
 	
 	class Accounts
@@ -59,7 +58,7 @@
 
 		public function __construct($account_id = 0)
 		{
-			$serverSettings = ServerSettings::getInstance()->get('server');
+			$serverSettings = Settings::getInstance()->get('server');
 			$acct_type = isset($serverSettings['account_repository']) ? strtolower($serverSettings['account_repository']) : 'sql';
 			include_once SRC_ROOT_PATH . "/Controllers/Api/Accounts/Accounts_.php";
 			switch ($acct_type) {
@@ -596,7 +595,8 @@
 
 				case 'passwd':
 					$this->validate_password($value);
-					$this->_data['passwd_hash'] = ExecMethod('phpgwapi.auth.create_hash', $value);
+					$Auth = new \App\Security\Auth\Auth();
+					$this->_data['passwd_hash'] = $Auth->create_hash( $value);
 					$this->_data['last_passwd_change'] = time();
 					break;
 
@@ -605,7 +605,7 @@
 					break;
 
 				case 'last_login':
-					$this->_data['last_login_from'] = phpgw::get_var('REMOTE_ADDR', 'ip', 'SERVER', '0.0.0.0');
+					$this->_data['last_login_from'] = \Sanitizer::get_var('REMOTE_ADDR', 'ip', 'SERVER', '0.0.0.0');
 					break;
 
 				case 'enabled':
@@ -893,7 +893,7 @@
 			}
 
 			//FIXME this should be stored in the API - not filemanager - it is a global value!
-			$config = createObject('phpgwapi.config', 'filemanager')->read_repository();
+			$config = (new \App\Services\Config('filemanager'))->read_repository();
 			if ( !isset($config['set_quota']) )
 			{
 				return true; // misocnfigured, but lets just accept it - for now
@@ -938,8 +938,7 @@
 				}
 			}
 
-			phpgw::import_class('phpgwapi.globally_denied');
-			if ( phpgwapi_globally_denied::user($username) )
+			if (\App\Security\GloballyDenied::user($username))
 			{
 				throw new \Exception('Username is blocked');
 			}

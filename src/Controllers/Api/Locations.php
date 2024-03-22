@@ -39,7 +39,7 @@ namespace App\Controllers\Api;
 use App\Services\DatabaseObject;
 use App\Controllers\Api\Applications;
 use App\Security\Acl;
-use App\Services\ServerSettings;
+
 use PDO;
 
 class Locations

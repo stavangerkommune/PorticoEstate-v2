@@ -18,12 +18,12 @@ class DatabaseServiceProvider
 			$config = $container->get('settings')['db'];
 
 			try {
-				$dsn = "pgsql:host={$config['host']};port={$config['port']};dbname={$config['dbname']}";
+				$dsn = "pgsql:host={$config['db_host']};port={$config['db_port']};dbname={$config['db_name']}";
 				$options = [
 					PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 					PDO::ATTR_PERSISTENT => true,
 				];
-				$db = new Db($dsn, $config['user'], $config['password'], $options);
+				$db = new Db($dsn, $config['db_user'], $config['db_pass'], $options);
 				//register the database object in a singleton pattern
 				DatabaseObject::getInstance($db);
 				return $db;

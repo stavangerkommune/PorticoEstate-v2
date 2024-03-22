@@ -21,7 +21,7 @@
     namespace App\Services;
 
     use App\Services\Cache;
-    use App\Services\ServerSettings;
+    
     use App\Services\Settings;
     use PDO;
 
@@ -230,7 +230,7 @@
 				$userlang = 'en';
 			}
 
-			$app_name = $force_app ? $force_app : ServerSettings::getInstance()->get('flags')['currentapp'];
+			$app_name = $force_app ? $force_app : Settings::getInstance()->get('flags')['currentapp'];
 			$lookup_key = strtolower(trim(substr($key, 0, self::MAX_MESSAGE_ID_LENGTH)));
 
 			if ( (!isset(self::$lang[$app_name][$lookup_key]) && !isset(self::$lang['common'][$lookup_key]))

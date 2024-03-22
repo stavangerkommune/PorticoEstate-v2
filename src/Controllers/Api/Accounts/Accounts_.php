@@ -100,7 +100,7 @@ abstract class phpgwapi_accounts_
 		$this->join = 'JOIN';
 
 		$this->set_account($account_id, $account_type);
-		$this->serverSettings = \App\Services\ServerSettings::getInstance()->get('server');
+		$this->serverSettings = \App\Services\Settings::getInstance()->get('server');
 	}
 
 	public function get_id()
