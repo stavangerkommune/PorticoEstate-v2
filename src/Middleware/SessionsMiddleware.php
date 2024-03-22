@@ -20,10 +20,27 @@ use App\Services\Cache;
 use App\Controllers\Api\Accounts\phpgwapi_account;
 use App\Controllers\Api\Accounts\Accounts;
 use App\Services\Crypto;
+use App\Services\Log;
 
+$serverSetting = ServerSettings::getInstance()->get('server');
+$flags = ServerSettings::getInstance()->get('flags');
 
-$session_identifier = 'phpgw';
-session_name("session{$session_identifier}sessid");
+/**
+ * Set the session name to something unique for phpgw
+ */
+if (isset($flags['session_name']) && $flags['session_name']) {
+	session_name($flags['session_name']);
+} else {
+	$session_identifier = 'phpgw';
+	session_name("session{$session_identifier}sessid");
+}
+
+/*
+ * Include the db session handler if required
+ */
+if ($serverSetting['sessions_type'] == 'db') {
+	require_once SRC_ROOT_PATH . '/Security/SessionHandlerDb.php';
+}
 
 
 class SessionsMiddleware implements MiddlewareInterface
@@ -50,30 +67,53 @@ class SessionsMiddleware implements MiddlewareInterface
 	private $serverSetting;
 	private $Auth;
 	private $Crypto;
+	private $Log;
 		
 	
+
+
     public function __construct($container)
     {
         $this->container = $container;
-        $this->db = $container->get('db');
-		DatabaseObject::getInstance($this->db);
+		$this->db = DatabaseObject::getInstance()->get('db');
 
 		$this->config = $container->get('settings')['settings'];
 		
-		$serverSetting = ServerSettings::getInstance()->get('server');
+		$this->serverSetting = ServerSettings::getInstance()->get('server');
+
+		$this->Log = new Log();
 		
-		$auth_type = !empty($serverSetting['auth_type']) ? ucfirst($serverSetting['auth_type']) : 'Sql';
+		$auth_type = !empty($this->serverSetting['auth_type']) ? ucfirst($this->serverSetting['auth_type']) : 'Sql';
 		include_once SRC_ROOT_PATH . "/Security/Auth/Auth_{$auth_type}.php";
 		$this->Auth = new Auth($this->db);
 
+		$this->_use_cookies = false;
 
-		//how do I get the settings from the container?
-		//	$this->_use_cookies = $this->serverSetting['use_cookies'];
+		$this->_phpgw_set_cookie_params();
 
 
-		$this->_use_cookies = true;
+		if (
+			!empty($this->serverSetting['usecookies'])  && !\Sanitizer::get_var('api_mode', 'bool')
+		) {
+			$this->_use_cookies = true;
+			$this->_sessionid	= \Sanitizer::get_var(session_name(), 'string', 'COOKIE');
+		} else if (!empty($_GET[session_name()])) {
+			$this->_sessionid = \Sanitizer::get_var(session_name(), 'string', 'GET');
+			ini_set("session.use_trans_sid", 1);
+		} else {
+			$this->_sessionid = \Sanitizer::get_var(session_name(), 'string', 'POST');
+			ini_set("session.use_trans_sid", 1);
+		}
 
-	//	$this->_phpgw_set_cookie_params();
+
+		//respect the config option for cookies
+		ini_set('session.use_cookies', $this->_use_cookies);
+
+		//don't rewrite URL, as we have to do it in link - why? cos it is buggy otherwise
+		ini_set('url_rewriter.tags', '');
+		ini_set("session.gc_maxlifetime", $this->serverSetting['sessions_timeout']);
+
+
 
 		$this->_sessionid	= \Sanitizer::get_var(session_name(), 'string', 'COOKIE');
 
@@ -186,7 +226,6 @@ class SessionsMiddleware implements MiddlewareInterface
 
 
 
-
 		$this->read_repositories($account_id, $currentApp);
 
 //		echo lang('date');
@@ -251,8 +290,9 @@ class SessionsMiddleware implements MiddlewareInterface
 
 	
 		$this->_account_id = $accounts->name2id($this->_account_lid);
-	
-	//	$GLOBALS['phpgw_info']['user']['account_id'] = $this->_account_id;
+
+		//	$GLOBALS['phpgw_info']['user']['account_id'] = $this->_account_id;
+		Settings::getInstance()->setAccountId($this->_account_id);
 		$accounts->set_account($this->_account_id);
 
 		session_start();
@@ -289,14 +329,14 @@ class SessionsMiddleware implements MiddlewareInterface
 
 		$this->read_repositories();
 		if ($this->_data['expires'] != -1 && $this->_data['expires'] < time()) {
-			if (is_object($GLOBALS['phpgw']->log)) {
-				$GLOBALS['phpgw']->log->message(array(
+			if (is_object($this->Log)) {
+				$this->Log->message(array(
 					'text' => 'W-LoginFailure, account loginid %1 is expired',
 					'p1'   => $this->_account_lid,
 					'line' => __LINE__,
 					'file' => __FILE__
 				));
-				$GLOBALS['phpgw']->log->commit();
+				$this->Log->commit();
 			}
 
 			$this->cd_reason = 2;
@@ -311,7 +351,7 @@ class SessionsMiddleware implements MiddlewareInterface
 		$this->db->transaction_begin();
 		$this->register_session($login, $user_ip, $now, $session_flags);
 		$this->log_access($this->_sessionid, $login, $user_ip, $this->_account_id);
-		$GLOBALS['phpgw']->auth->update_lastlogin($this->_account_id, $user_ip);
+		$this->Auth->update_lastlogin($this->_account_id, $user_ip);
 		$this->db->transaction_commit();
 
 		$this->_verified = true;
@@ -379,8 +419,8 @@ class SessionsMiddleware implements MiddlewareInterface
 				|| $session['session_dla'] <= $timeout
 			) {
 				if (isset($session['session_dla'])) {
-					if (is_object($GLOBALS['phpgw']->log)) {
-						$GLOBALS['phpgw']->log->message(array(
+					if (is_object($this->Log)) {
+						$this->Log->message(array(
 							'text' => 'W-VerifySession, session for %1 is expired by %2 sec, inactive for %3 sec',
 							'p1'   => $this->_account_lid,
 							'p2'   => ($timeout - $session['session_dla']),
@@ -388,7 +428,7 @@ class SessionsMiddleware implements MiddlewareInterface
 							'line' => __LINE__,
 							'file' => __FILE__
 						));
-						$GLOBALS['phpgw']->log->commit();
+						$this->Log->commit();
 					}
 					if (is_object($this->Crypto)) {
 						$this->Crypto->cleanup();
@@ -421,7 +461,9 @@ class SessionsMiddleware implements MiddlewareInterface
 			return false;
 		}
 
-	//	$GLOBALS['phpgw_info']['user']['account_id'] = $this->_account_id;
+		//	$GLOBALS['phpgw_info']['user']['account_id'] = $this->_account_id;
+		Settings::getInstance()->setAccountId($this->_account_id);
+
 
 		/* init the crypto object before appsession call below */
 		//$this->_key = md5($this->_sessionid . $this->serverSetting['encryptkey']); //Sigurd: not good for permanent data
@@ -440,14 +482,14 @@ class SessionsMiddleware implements MiddlewareInterface
 		$this->read_repositories($use_cache);
 
 		if ($this->_data['expires'] != -1 && $this->_data['expires'] < time()) {
-			if (is_object($GLOBALS['phpgw']->log)) {
-				$GLOBALS['phpgw']->log->message(array(
+			if (is_object($this->Log)) {
+				$this->Log->message(array(
 					'text' => 'W-VerifySession, account loginid %1 is expired',
 					'p1'   => $this->_account_lid,
 					'line' => __LINE__,
 					'file' => __FILE__
 				));
-				$GLOBALS['phpgw']->log->commit();
+				$this->Log->commit();
 			}
 			if (is_object($this->Crypto)) {
 				$this->Crypto->cleanup();
@@ -464,15 +506,15 @@ class SessionsMiddleware implements MiddlewareInterface
 		$GLOBALS['phpgw_info']['user']['passwd']     = Cache::session_get('phpgwapi', 'password');
 
 		if ($this->_account_domain != $GLOBALS['phpgw_info']['user']['domain']) {
-			if (is_object($GLOBALS['phpgw']->log)) {
-				$GLOBALS['phpgw']->log->message(array(
+			if (is_object($this->Log)) {
+				$this->Log->message(array(
 					'text' => 'W-VerifySession, the domains %1 and %2 don\'t match',
 					'p1'   => $this->_account_domain,
 					'p2'   => $GLOBALS['phpgw_info']['user']['domain'],
 					'line' => __LINE__,
 					'file' => __FILE__
 				));
-				$GLOBALS['phpgw']->log->commit();
+				$this->Log->commit();
 			}
 			if (is_object($this->Crypto)) {
 				$this->Crypto->cleanup();
@@ -484,16 +526,16 @@ class SessionsMiddleware implements MiddlewareInterface
 
 		// verify the user agent in an attempt to stop session hijacking
 		if ($_SESSION['phpgw_session']['user_agent'] != md5(\Sanitizer::get_var('HTTP_USER_AGENT', 'string', 'SERVER'))) {
-			if (is_object($GLOBALS['phpgw']->log)) {
+			if (is_object($this->Log)) {
 				// This needs some better wording
-				$GLOBALS['phpgw']->log->message(array(
+				$this->Log->message(array(
 					'text' => 'W-VerifySession, User agent hash %1 doesn\'t match user agent hash %2 in session',
 					'p1'   => $_SESSION['phpgw_session']['user_agent'],
 					'p2'   => md5(\Sanitizer::get_var('HTTP_USER_AGENT', 'string', 'SERVER')),
 					'line' => __LINE__,
 					'file' => __FILE__
 				));
-				$GLOBALS['phpgw']->log->commit();
+				$this->Log->commit();
 			}
 			if (is_object($this->Crypto)) {
 				$this->Crypto->cleanup();
@@ -515,16 +557,16 @@ class SessionsMiddleware implements MiddlewareInterface
 				(!$GLOBALS['phpgw_info']['user']['session_ip']
 				|| $GLOBALS['phpgw_info']['user']['session_ip'] != $this->_get_user_ip())
 			) {
-				if (is_object($GLOBALS['phpgw']->log)) {
+				if (is_object($this->Log)) {
 					// This needs some better wording
-					$GLOBALS['phpgw']->log->message(array(
+					$this->Log->message(array(
 						'text' => 'W-VerifySession, IP %1 doesn\'t match IP %2 in session',
 						'p1'   => $this->_get_user_ip(),
 						'p2'   => $GLOBALS['phpgw_info']['user']['session_ip'],
 						'line' => __LINE__,
 						'file' => __FILE__
 					));
-					$GLOBALS['phpgw']->log->commit();
+					$this->Log->commit();
 				}
 				if (is_object($this->Crypto)) {
 					$this->Crypto->cleanup();
@@ -543,14 +585,14 @@ class SessionsMiddleware implements MiddlewareInterface
 		$GLOBALS['phpgw']->translation->populate_cache();
 
 		if (!$this->_account_lid) {
-			if (is_object($GLOBALS['phpgw']->log)) {
+			if (is_object($this->Log)) {
 				// This needs some better wording
-				$GLOBALS['phpgw']->log->message(array(
+				$this->Log->message(array(
 					'text' => 'W-VerifySession, account_id is empty',
 					'line' => __LINE__,
 					'file' => __FILE__
 				));
-				$GLOBALS['phpgw']->log->commit();
+				$this->Log->commit();
 			}
 			if (is_object($this->Crypto)) {
 				$this->Crypto->cleanup();
@@ -612,7 +654,7 @@ class SessionsMiddleware implements MiddlewareInterface
 				unlink($sessions[$sessionid]['session_file']);
 			}
 		} else {
-			phpgwapi_session_handler_db::destroy($sessionid);
+			SessionHandlerDb::destroy($sessionid);
 		}
 
 		return true;
@@ -851,6 +893,63 @@ class SessionsMiddleware implements MiddlewareInterface
 			$config->save_repository();
 		}
 		return $blocked;
+	}
+
+	/**
+	 * get list of normal / non-anonymous sessions
+	 *
+	 * The data form the session-files get cached in the app_session phpgwapi/php4_session_cache
+	 *
+	 * @param integer $start       the record to start at
+	 * @param string  $order       the "field" to sort by
+	 * @param string  $sort        the direction to sort the data
+	 * @param boolean $all_no_sort get all records unsorted?
+	 *
+	 * @return array the list of session records
+	 */
+	public function list_sessions($start, $order, $sort, $all_no_sort = false)
+	{
+		// We cache the data for 5mins system wide as this is an expensive operation
+		$last_updated = 0; //phpgwapi_cache::system_get('phpgwapi', 'session_list_saved');
+
+		if (
+			is_null($last_updated)
+			|| $last_updated < 60 * 5
+		) {
+			$data = array();
+			switch ($GLOBALS['phpgw_info']['server']['sessions_type']) {
+				case 'db':
+					$data = SessionHandlerDb::get_list();
+					break;
+
+				case 'php':
+				default:
+					$data = self::_get_list();
+			}
+			phpgwapi_cache::system_set('phpgwapi', 'session_list', $data);
+			phpgwapi_cache::system_set('phpgwapi', 'session_list_saved', time());
+		} else {
+			$data = phpgwapi_cache::system_get('phpgwapi', 'session_list');
+		}
+
+		if ($all_no_sort) {
+			return $data;
+		}
+
+		$GLOBALS['phpgw']->session->sort_by = $sort;
+		$GLOBALS['phpgw']->session->sort_order = $order;
+
+		uasort($data, array($this, 'session_sort'));
+
+		$maxmatches = 25;
+		if (
+			isset($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'])
+			&& (int) $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs']
+		) {
+			$maxmatches = (int) $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
+		}
+
+		return array_slice($data, $start, $maxmatches);
 	}
 
 

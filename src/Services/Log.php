@@ -9,16 +9,21 @@
 	* @subpackage application
 	* @version $Id$
 	*/
+	namespace App\Services;
 
-    use App\Helpers\DateHelper;
-    Use App\Helpers\Sanitizer;
+ //   use App\Helpers\DateHelper;
+ //   Use App\Helpers\Sanitizer;
+	use App\Services\LogMessage;
+//	use App\Database\Db;
+
+
 	/**
 	* Log
 	*
 	* @package phpgwapi
 	* @subpackage application
 	*/
-	class phpgwapi_log
+	class Log
 	{
 
 		/***************************\
@@ -80,12 +85,13 @@
 
 		function checkprefs()
 		{
+			$serverSetting = Settings::getInstance()->get('server');
 			//validate defaults
-			if (!isset($GLOBALS['phpgw_info']['server']['log_levels']))
+			if (!isset($serverSetting['log_levels']))
 			{
-				$GLOBALS['phpgw_info']['server']['log_levels']['global_level'] = 'E';
-				$GLOBALS['phpgw_info']['server']['log_levels']['module'] = array();
-				$GLOBALS['phpgw_info']['server']['log_levels']['user'] = array();
+				$serverSetting['log_levels']['global_level'] = 'E';
+				$serverSetting['log_levels']['module'] = array();
+				$serverSetting['log_levels']['user'] = array();
 			}
 		}
 
@@ -97,22 +103,25 @@
 
 		function is_level($level)
 		{
+			$user = Settings::getInstance()->get('user');
+			$serverSetting = Settings::getInstance()->get('server');
+
 			$this->checkprefs();
-			if ( $this->log_level_table[$GLOBALS['phpgw_info']['server']['log_levels']['global_level']] >= $this->log_level_table[$level] )
+			if ( $this->log_level_table[$serverSetting['log_levels']['global_level']] >= $this->log_level_table[$level] )
 			{
 				return true;
 			}
 
-			if ( isset($GLOBALS['phpgw_info']['flags']['currentapp'])
-				 && @array_key_exists( $GLOBALS['phpgw_info']['flags']['currentapp'] , $GLOBALS['phpgw_info']['server']['log_levels']['module'])
-				 && $this->log_level_table[$GLOBALS['phpgw_info']['server']['log_levels']['module'][$GLOBALS['phpgw_info']['flags']['currentapp']]] >= $this->log_level_table[$level] )
+			if ( isset(Settings::getInstance()->get('flags')['currentapp'])
+				 && @array_key_exists( Settings::getInstance()->get('flags')['currentapp'] , $serverSetting['log_levels']['module'])
+				 && $this->log_level_table[$serverSetting['log_levels']['module'][Settings::getInstance()->get('flags')['currentapp']]] >= $this->log_level_table[$level] )
 			{
 					return true;
 			}
 
-			if ( isset($GLOBALS['phpgw_info']['user']['account_lid'])
-				 && @array_key_exists($GLOBALS['phpgw_info']['user']['account_lid'], $GLOBALS['phpgw_info']['server']['log_levels']['user'])
-				 && $this->log_level_table[$GLOBALS['phpgw_info']['server']['log_levels']['user'][$GLOBALS['phpgw_info']['user']['account_lid']]] >= $this->log_level_table[$level] )
+			if ( isset($user['account_lid'])
+				 && @array_key_exists($user['account_lid'], $serverSetting['log_levels']['user'])
+				 && $this->log_level_table[$serverSetting['log_levels']['user'][$user['account_lid']]] >= $this->log_level_table[$level] )
 			{
 				return true;
 			}
@@ -126,7 +135,7 @@
 			if ( $this->is_level($level) )
 			{
 				$parms['severity'] = $level;
-				$err = createObject('phpgwapi.log_message',$parms);
+				$err = new LogMessage($parms);
 				$this->write_error_to_db($err);
  				$this->handle_fatal_error($err);              // this is here instead of in fatal() because I still support
  				                                              // the old methods.
@@ -225,54 +234,45 @@
 
 		function write_error_to_db($err)
 		{
-			if ( isset($GLOBALS['phpgw']->db)
-				&& is_object($GLOBALS['phpgw']->db))
-			{
-				$db =& $GLOBALS['phpgw']->db;
-			}
-			else if ( isset($GLOBALS['phpgw_setup']->oProc->m_odb)
-				&& is_object($GLOBALS['phpgw_setup']->oProc->m_odb) ) // during setup
-			{
-				$db =& $GLOBALS['phpgw_setup']->oProc->m_odb;
-				if(!$db->metadata('phpgw_log'))
-				{
-					echo 'Failed to log error to database.';
-					return;
-				}
-			}
-			else
+			$db = DatabaseObject::getInstance()->get('db');
+			$flags = Settings::getInstance()->get('flags');
+
+			if(!$db)
 			{
 				//trigger_error("Failed to log error to database: no database object available");
 				return;
 			}
+			if (!$db->metadata('phpgw_log')) {
+				echo 'Failed to log error to database.';
+				return;
+			}
 
-			$values = array
-			(
-				date($db->datetime_format()),
-				$db->db_addslashes($GLOBALS['phpgw_info']['flags']['currentapp']),
-				isset($GLOBALS['phpgw_info']['user']['id']) && $GLOBALS['phpgw_info']['user']['id'] ? $GLOBALS['phpgw_info']['user']['id'] : -1,
-				$db->db_addslashes(isset($GLOBALS['phpgw_info']['user']['lid']) && $GLOBALS['phpgw_info']['user']['lid'] ? $GLOBALS['phpgw_info']['user']['lid'] : 'not authenticated'),
+			$user = Settings::getInstance()->get('user');
+
+			$values = array(
+				date('Y-m-d H:i:s'),
+				$flags['currentapp'],
+				isset($user['id']) && $user['id'] ? $user['id'] : -1,
+				isset($user['lid']) && $user['lid'] ? $user['lid'] : 'not authenticated',
 				$err->severity,
-				$err->fname ? $db->db_addslashes($err->fname) : 'dummy',
+				$err->fname ? $err->fname : 'dummy',
 				(int)$err->line,
-				$db->db_addslashes($err->msg),
+				$err->msg,
 			);
 
-			$values	= $db->validate_insert($values);
+			$sql = "INSERT INTO phpgw_log (log_date, log_app, log_account_id, log_account_lid, log_severity, log_file, log_line, log_msg) 
+					VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-			$db->query("insert into phpgw_log (log_date, log_app, log_account_id, log_account_lid, log_severity,"
-					 . "log_file, log_line, log_msg) values ({$values})",__LINE__,__FILE__);
-			if ( isset($db->Errno) )
-			{
-				//trigger_error("Failed to log error to database. DB errno " . $db->Errno . ": message " . $db->Error,  E_USER_NOTICE);
-			}
-		}
+			$stmt = $db->prepare($sql);
+			$stmt->execute($values);		}
 
 		// I pulled this from the old code, where it's used to display a fatal error and determinate processing..
 		// Do I still want to do this?  If so, do I want to translate the error message like it used to?
 		//
 		function handle_fatal_error($err)
 		{
+			$user = Settings::getInstance()->get('user');
+
 			if ($err->severity == 'F')
 			{
 				$trace = '<p>' . lang('Please report this incident to your system administrator') . "</p>\n";
@@ -282,7 +282,7 @@
 					$msg_array = explode("\n", $err->msg);
 					$msg = $msg_array[0];
 					unset($msg_array[0]);
-					if ( isset($GLOBALS['phpgw_info']['user']['apps']['admin']) )
+					if ( isset($user['apps']['admin']) )
 					{
 						$trace = '<h2>' .lang('back trace') . "</h2>\n"
 									. '<p>' . lang('Please include the following output when you report this incident on our bug tracker - %1',
@@ -301,7 +301,7 @@
 					. $trace;
 				}
 
-				if(Sanitizer::get_var('phpgw_return_as') == 'json')
+				if(\Sanitizer::get_var('phpgw_return_as') == 'json')
 				{
 					echo json_encode($message);
 					$call_footer = false;
@@ -324,14 +324,14 @@
 		// write() left in for backward compatibility
 		function write($parms)
 		{
-			$err = createObject('phpgwapi.log_message',$parms);
+			$err = new LogMessage($parms);
 			$this->write_error_to_db($err);
 			return true;
 		}
 	   // message() left in for backward compatibility
 		function message($parms)
 		{
-			$err = createObject('phpgwapi.log_message',$parms);
+			$err = new LogMessage($parms);
 			$this->write_error_to_db($err);
 			return true;
 		}

@@ -78,7 +78,7 @@
 			}
 			if ( isset($parms['file']) ) 
 			{
-				$this->fname = str_replace(PHPGW_SERVER_ROOT, '/path/to/phpgroupware', $parms['file']);
+				$this->fname = str_replace(SRC_ROOT_PATH, 'path/to/portico', $parms['file']);
 			}			
 			if  ( isset( $GLOBALS['phpgw_info']['flags']['currentapp']) ) 
 			{

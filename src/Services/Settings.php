@@ -12,7 +12,7 @@ class Settings
     {
 		$this->account_id = $account_id;
         // Load settings from the database
-        $this->settings = $this->loadSettingsFromDatabase();
+        $this->settings = $this->loadSettingsFromCache();
 
         if ($account_id)
         {
@@ -35,7 +35,7 @@ class Settings
         return static::$instance;
     }
 
-    private function loadSettingsFromDatabase()
+    private function loadSettingsFromCache()
     {
 		return [
         ];

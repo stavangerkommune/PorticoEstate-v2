@@ -139,4 +139,48 @@ class Db extends PDO
 		return $ret;
 	}
 
+	public function metadata($table)
+	{
+		$stmt = $this->prepare("SELECT column_name, data_type, character_maximum_length
+		FROM   information_schema.columns
+		WHERE  table_schema = 'public'
+		AND    table_name   = :table");
+		$stmt->execute(['table' => $table]);
+
+		$meta = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		return $meta;
+	}
+
+	public static function datetime_format()
+	{
+		return 'Y-m-d H:i:s';
+	}
+
+	public static function date_format()
+	{
+		return 'Y-m-d H:i:s';
+	}
+	/**
+	 * Convert a unix timestamp to a rdms specific timestamp
+	 *
+	 * @param int unix timestamp
+	 * @return string rdms specific timestamp
+	 */
+	public function to_timestamp($epoch)
+	{
+		return date($this->datetime_format(), $epoch);
+	}
+
+	/**
+	 * Convert a rdms specific timestamp to a unix timestamp
+	 *
+	 * @param string rdms specific timestamp
+	 * @return int unix timestamp
+	 */
+	public function from_timestamp($timestamp)
+	{
+		return strtotime($timestamp);
+	}
+
 }
