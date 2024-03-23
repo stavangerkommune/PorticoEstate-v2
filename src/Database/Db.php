@@ -6,6 +6,7 @@ use Exception;
 class Db extends PDO
 {
 	private $isTransactionActive = false;
+	private static $domain;
 
 	public function transaction_begin()
 	{
@@ -181,6 +182,16 @@ class Db extends PDO
 	public function from_timestamp($timestamp)
 	{
 		return strtotime($timestamp);
+	}
+
+	public function get_domain()
+	{
+		return self::$domain;
+	}
+
+	public function set_domain($domain)
+	{
+		self::$domain = $domain;
 	}
 
 }

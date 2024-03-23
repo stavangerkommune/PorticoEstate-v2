@@ -1,5 +1,6 @@
 <?php
 
+	use App\Services\Translation;
    	/**
 	* Translate a string to a user's prefer language - convience method
 	*
@@ -40,7 +41,7 @@
 
         if (!$translation)
         {
-            $translation = new App\Services\Translation();
+            $translation = Translation::getInstance();
         }
 
 		return $translation->translate($key, $vars);

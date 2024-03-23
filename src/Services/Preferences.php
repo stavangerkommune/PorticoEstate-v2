@@ -34,7 +34,6 @@ class Preferences
 		$this->account_id = $account_id;
 		$this->serverSettings = Settings::getInstance()->get('server');
 		$this->preferences = $this->Readpreferences();
-	//	$this->translation = new Translation($this->preferences);
 
 		// Load settings from the database
 		$this->settings = $this->loadSettingsFromDatabase();
@@ -238,7 +237,7 @@ class Preferences
 	function standard_substitutes()
 	{
 		//hack to include the usersetting in the translation object
-		$this->translation = new Translation($this->data);
+		$this->translation = Translation::getInstance($this->data);
 		if (empty($this->serverSettings['mail_suffix'])) {
 			$this->serverSettings['mail_suffix'] = $_SERVER['HTTP_HOST'];
 		}

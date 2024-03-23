@@ -54,17 +54,16 @@
 		*/
 		public function authenticate($username, $passwd)
 		{
-			$username = $this->db->db_addslashes($username);
+			$sql = 'SELECT account_pwd FROM phpgw_accounts WHERE account_lid = :username AND account_status = :status';
+			$stmt = $this->db->prepare($sql);
 
-			$sql = 'SELECT account_pwd FROM phpgw_accounts'
-				. " WHERE account_lid = '{$username}'"
-					. " AND account_status = 'A'";
+			$stmt->execute([
+				':username' => $username,
+				':status' => 'A'
+			]);
 
-			$this->db->query($sql, __LINE__, __FILE__);
-			return !!$this->db->next_record();
-
+			return !!$stmt->fetch();
 		}
-
 		/* php ping function
 		*/
 		private function ping($host)
@@ -222,15 +221,16 @@
 		*/
 		public function update_lastlogin($account_id, $ip)
 		{
-			$ip = $this->db->db_addslashes($ip);
 			$account_id = (int) $account_id;
 			$now = time();
 
-			$sql = 'UPDATE phpgw_accounts'
-				. " SET account_lastloginfrom = '{$ip}',"
-					. " account_lastlogin = {$now}"
-				. " WHERE account_id = {$account_id}";
+			$sql = 'UPDATE phpgw_accounts SET account_lastloginfrom = :ip, account_lastlogin = :now WHERE account_id = :account_id';
+			$stmt = $this->db->prepare($sql);
 
-			$this->db->query($sql, __LINE__, __FILE__);
+			$stmt->execute([
+				':ip' => $ip,
+				':now' => $now,
+				':account_id' => $account_id
+			]);
 		}
 	}

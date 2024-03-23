@@ -69,31 +69,38 @@
 		private $cache;
 		private $serverSettings;
 		private $preferences;
+		private static $instance = null;
 
-		public function __construct($preferences = [])
+		private function __construct($preferences = [])
 		{
 			$this->db = DatabaseObject::getInstance()->get('db');
-            $this->cache = new Cache();
-            $this->serverSettings = Settings::getInstance()->get('server');
-
- 			$this->preferences = isset(Settings::getInstance()->get('user')['preferences']) ? Settings::getInstance()->get('user')['preferences'] : $preferences;
-			
-			$userlang = isset($this->preferences['default_lang']) && $this->preferences['default_lang']? $this->preferences['default_lang'] : 'en';
-			if ( isset($this->preferences['common']['lang']) )
-			{
+			$this->cache = new Cache();
+			$this->serverSettings = Settings::getInstance()->get('server');
+	
+			$this->preferences = isset(Settings::getInstance()->get('user')['preferences']) ? Settings::getInstance()->get('user')['preferences'] : $preferences;
+	
+			$userlang = isset($this->preferences['default_lang']) && $this->preferences['default_lang'] ? $this->preferences['default_lang'] : 'en';
+			if (isset($this->preferences['common']['lang'])) {
 				$userlang = $this->preferences['common']['lang'];
 			}
-
+	
 			$this->set_userlang($userlang, true);
-
-			if ( isset($this->serverSettings['collect_missing_translations'])
-				&& $this->serverSettings['collect_missing_translations'])
-			{
-				 $this->collect_missing = true;
+	
+			if (isset($this->serverSettings['collect_missing_translations'])
+				&& $this->serverSettings['collect_missing_translations']) {
+				$this->collect_missing = true;
 			}
 		}
-
-		/**
+	
+		public static function getInstance($preferences = [])
+		{
+			if (self::$instance === null) {
+				self::$instance = new self($preferences);
+			}
+	
+			return self::$instance;
+		}
+			/**
 		* Reset the current user's language settings
 		*/
 		protected function reset_lang()

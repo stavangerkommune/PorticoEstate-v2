@@ -217,7 +217,7 @@ class phpgwapi_accounts_sql extends phpgwapi_accounts_
 
 		if ($deleted) {
 			// Delete all ACLs
-			$acl = new Acl();
+			$acl = Acl::getInstance();
 			$acl->delete_repository('%%', '%%', $account_id);
 
 			if (get_class($acct) == phpgwapi_account::CLASS_TYPE_GROUP) {

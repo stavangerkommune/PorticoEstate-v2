@@ -356,7 +356,7 @@ abstract class phpgwapi_accounts_
 
 			$this->_cache_account($account);
 
-			$aclobj = new Acl();
+			$aclobj = Acl::getInstance();
 			$aclobj->set_account_id($account->id, true);
 			foreach ($acls as $acl) {
 				$aclobj->add($acl['appname'], $acl['location'], $acl['rights']);
@@ -698,7 +698,7 @@ abstract class phpgwapi_accounts_
 
 		//FIXME need permissions here
 
-		$aclobj = new Acl();
+		$aclobj = Acl::getInstance();
 		$aclobj->set_account_id($user->id, true);
 		$aclobj->clear_user_cache($user->id);
 		$installed_apps = \App\Services\Settings::getInstance()->get('apps');

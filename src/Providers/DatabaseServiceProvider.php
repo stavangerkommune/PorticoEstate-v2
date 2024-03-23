@@ -24,6 +24,7 @@ class DatabaseServiceProvider
 					PDO::ATTR_PERSISTENT => true,
 				];
 				$db = new Db($dsn, $config['db_user'], $config['db_pass'], $options);
+				$db->set_domain($config['domain']);
 				//register the database object in a singleton pattern
 				DatabaseObject::getInstance($db);
 				return $db;

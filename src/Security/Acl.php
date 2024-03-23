@@ -163,6 +163,8 @@
 		protected $apps;
 		private $locations;
 
+		private static $instance = null;
+
 
 		/**
 		* ACL constructor for setting account id
@@ -173,7 +175,7 @@
 		* @param integer $account_id Account id
 		*/
 
-        public function __construct()
+        private function __construct($account_id = 0)
         {
 			$this->_db = DatabaseObject::getInstance()->get('db');
             $this->_like		= 'ILIKE';
@@ -182,13 +184,26 @@
             $this->serverSettings = Settings::getInstance()->get('server');
             $this->server_flags = Settings::getInstance()->get('flags');
             $this->_account_id = Settings::getInstance()->get('account_id');
-			$this->cache = new Cache($this->_db);
+			$this->cache = new Cache();
 			$this->accounts = (new Accounts())->getObject();
 			$this->apps = Settings::getInstance()->get('apps');
 			$this->locations = new Locations();
-			
+			if($account_id)
+			{
+				$this->set_account_id($account_id);
+			}
+
        }
 
+	   public static function getInstance($account_id = 0)
+	   {
+		   if (self::$instance === null) {
+			   self::$instance = new self($account_id);
+		   }
+   
+		   return self::$instance;
+	   }
+   
 	   private function _get_app_id($appname)
 	   {
 			return $this->apps[$appname]['id'] ?? 0;

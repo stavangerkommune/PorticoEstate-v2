@@ -13,7 +13,7 @@ class Settings
     private $config_data;
 	private $account_id; 
 
-    public function __construct($account_id = null)
+    private function __construct($account_id = null)
     {
 		$this->db = DatabaseObject::getInstance()->get('db');
 		$this->account_id = $account_id;
@@ -69,7 +69,7 @@ class Settings
 		{
 			$this->config_data['server']['temp_dir'] = '/tmp';
 		}
-
+        $this->config_data['server']['default_domain'] = $this->db->get_domain();
         $data_cache[$module] = $this->config_data;
 	//	DebugArray::debug($this->config_data);
 
@@ -77,6 +77,19 @@ class Settings
 
     }
 
+    public function get_config_data()
+    {
+        return $this->config_data;
+    }
+
+    public function setAccountId($account_id)
+    {
+        $this->account_id = $account_id;
+        $this->set('account_id', $account_id);
+        $this->settings = array_merge($this->settings, array('user' => array('account_id' => $account_id)));
+    }
+
+ 
     public function set($name, $value)
     {
         $this->settings = array_merge($this->settings, array($name => $value));

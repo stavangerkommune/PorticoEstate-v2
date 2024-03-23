@@ -74,7 +74,7 @@ class Applications
 	public function __construct($account_id = 0)
 	{
 		$this->db = DatabaseObject::getInstance()->get('db');
-		$this->acl =new Acl($account_id);
+		$this->acl =Acl::getInstance($account_id);
 
 		$this->set_account_id($account_id);
 	}
@@ -98,7 +98,7 @@ class Applications
 	 */
 	public function list_methods($_type = 'xmlrpc')
 	{
-		$translation = new Translation();
+		$translation = Translation::getInstance();
 
 		if (is_array($_type)) {
 			$_type = $_type['type'] ? $_type['type'] : $_type[0];
@@ -193,7 +193,7 @@ class Applications
 	 */
 	public function add($apps)
 	{
-		$translation = new Translation();
+		$translation = Translation::getInstance();
 		$installed_apps = Settings::getInstance()->get('apps');
 
 		if (is_array($apps)) {
@@ -288,7 +288,7 @@ class Applications
 	 */
 	public function read_account_specific($inherited = false)
 	{
-		$translation = new Translation();
+		$translation = Translation::getInstance();
 
 		if (!is_array(Settings::getInstance()->get('apps'))) {
 			$this->read_installed_apps();
@@ -325,7 +325,7 @@ class Applications
 	public function read_installed_apps()
 	{
 
-		$translation = new Translation();
+		$translation = Translation::getInstance();
 
 		$sql = 'SELECT * FROM phpgw_applications WHERE app_enabled != 0 ORDER BY app_order ASC';
 		// get all installed apps

@@ -196,7 +196,7 @@ class Locations
 			$oProc->DropTable($tbl);
 		}
 */
-		$acl = new Acl();
+		$acl = Acl::getInstance();
 		$acl->delete_repository($appname, $location);
 
 		$stmt = $this->_db->prepare('DELETE FROM phpgw_locations WHERE app_id = :app AND name = :location');

@@ -48,7 +48,7 @@ class AccessVerifier  implements MiddlewareInterface
 
 	//	print_r(__CLASS__);
 
-		$acl = new Acl();
+		$acl = Acl::getInstance();
 
 		$run = $acl->check('run', ACL_READ, $currentApp);
 
