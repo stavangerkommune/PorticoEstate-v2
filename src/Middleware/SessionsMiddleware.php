@@ -82,34 +82,25 @@ class SessionsMiddleware implements MiddlewareInterface
         $this->routePath = $route->getPattern();
         $routePath_arr = explode('/', $this->routePath);
         $currentApp = $routePath_arr[1];       
-
-        $UserName = $request->getHeaderLine('X-API-User');
-		$Password = $request->getHeaderLine('X-API-Key');
-		$this->_account_lid = $UserName;
-		$this->_account_domain = 'default';
-
-		$sql = "SELECT account_id FROM phpgw_accounts"
-		 ." WHERE account_lid = :UserName";
-		$stmt = $this->db->prepare($sql);
-		$stmt->bindParam(':UserName', $UserName);
-		$stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        $account_id = !empty($result['account_id']) ? $result['account_id'] : 0;
-
-
 		$this->read_initial_settings( $currentApp);
-
-
 		$sessions = new Sessions();
-//		die();
-		$sessionid = $sessions->create($UserName, $Password);
-
-		// If there is no route, return 404
-		if (empty($sessionid)) {
-	//		return $this->sendErrorResponse(['msg' => 'A valid session could not be created'], 401);
+		if ($currentApp == 'login' && isset($_POST['login']) && isset($_POST['passwd'])){
+			$login = $request->getParsedBody()['login'];
+			$passwd = $request->getParsedBody()['passwd'];
+			$sessionid = $sessions->create($login, $passwd);
+			if (empty($sessionid)) {
+						return $this->sendErrorResponse(['msg' => 'A valid session could not be created'], 401);
+			}
+			
+			$response = new Response();
+			$response->getBody()->write(json_encode(['session_id' => $sessionid]));
+			return $response->withHeader('Content-Type', 'application/json');
+		}
+		else if(!$sessions->verify()){
+			return $this->sendErrorResponse(['msg' => 'A valid session could not be found'], 401);
 		}
 
+		
 
         // Continue with the next middleware
         return $handler->handle($request);

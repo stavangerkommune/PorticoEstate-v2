@@ -1995,7 +1995,7 @@
 		{
 			$account_list = array();
 			if ($account_type == 'accounts' || $account_type == 'both') {
-				$account_list = array($this->_account_id, 0);
+				$account_list = array((int)$this->_account_id, 0);
 			}
 
 			if ($account_type == 'groups' || $account_type == 'both') {

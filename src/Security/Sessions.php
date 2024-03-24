@@ -299,7 +299,7 @@ class Sessions
 			return false;
 		}
 
-		$GLOBALS['phpgw_info']['user']  = $this->_data;
+		//$GLOBALS['phpgw_info']['user']  = $this->_data;
 		//		$GLOBALS['phpgw_info']['hooks'] = $this->hooks;
 
 		Cache::session_set('phpgwapi', 'password', base64_encode($this->_passwd));
@@ -397,7 +397,6 @@ class Sessions
 			}
 		}
 
-
 		if (isset($lid_data[1])) {
 			$this->_account_domain = $lid_data[1];
 		} else {
@@ -411,7 +410,13 @@ class Sessions
 		unset($lid_data);
 
 		$this->update_dla();
-		$this->_account_id = $GLOBALS['phpgw']->accounts->name2id($this->_account_lid);
+		
+	//	$this->_account_id = $GLOBALS['phpgw']->accounts->name2id($this->_account_lid);
+		$accounts = (new \App\Controllers\Api\Accounts\Accounts())->getObject();
+		$this->_account_id = $accounts->name2id($this->_account_lid);
+
+
+
 		if (!$this->_account_id) {
 			$this->cd_reason = 5;
 			return false;
@@ -455,18 +460,40 @@ class Sessions
 			return false;
 		}
 
-		$GLOBALS['phpgw_info']['user']  = $this->_data;
+//		$GLOBALS['phpgw_info']['user']  = $this->_data;
 		//		$GLOBALS['phpgw_info']['hooks'] = $this->hooks;
 
-		$GLOBALS['phpgw_info']['user']['session_ip'] = $session['session_ip'];
-		$GLOBALS['phpgw_info']['user']['passwd']     = Cache::session_get('phpgwapi', 'password');
+		$user_info  = Settings::getInstance()->get('user');
 
-		if ($this->_account_domain != $GLOBALS['phpgw_info']['user']['domain']) {
+//		$GLOBALS['phpgw_info']['user']['session_ip'] = $session['session_ip'];
+//		$GLOBALS['phpgw_info']['user']['passwd']     = Cache::session_get('phpgwapi', 'password');
+		$user_info['session_ip'] = $session['session_ip'];
+		$user_info['passwd']     = Cache::session_get('phpgwapi', 'password');
+
+		if (\Sanitizer::get_var('domain', 'string', 'REQUEST', false))
+		{
+			// on "normal" pageview
+			if(!$user_info['domain'] = \Sanitizer::get_var('domain', 'string', 'GET', false))
+			{
+				if(!$user_info['domain'] = \Sanitizer::get_var('domain', 'string', 'POST', false))
+				{
+					$user_info['domain'] = \Sanitizer::get_var('domain', 'string', 'COOKIE', false);
+				}
+			}
+		}
+		else
+		{
+			$user_info['domain'] = \Sanitizer::get_var('last_domain', 'string', 'COOKIE', false);
+		}
+	
+		Settings::getInstance()->set('user', $user_info);
+
+		if ($this->_account_domain != $user_info['domain']) {
 			if (is_object($this->Log)) {
 				$this->Log->message(array(
 					'text' => 'W-VerifySession, the domains %1 and %2 don\'t match',
 					'p1'   => $this->_account_domain,
-					'p2'   => $GLOBALS['phpgw_info']['user']['domain'],
+					'p2'   => $user_info['domain'],
 					'line' => __LINE__,
 					'file' => __FILE__
 				));
@@ -510,15 +537,15 @@ class Sessions
 		if ($check_ip) {
 			if (
 				PHP_OS != 'Windows' &&
-				(!$GLOBALS['phpgw_info']['user']['session_ip']
-				|| $GLOBALS['phpgw_info']['user']['session_ip'] != $this->_get_user_ip())
+				(!$user_info['session_ip']
+				|| $user_info['session_ip'] != $this->_get_user_ip())
 			) {
 				if (is_object($this->Log)) {
 					// This needs some better wording
 					$this->Log->message(array(
 						'text' => 'W-VerifySession, IP %1 doesn\'t match IP %2 in session',
 						'p1'   => $this->_get_user_ip(),
-						'p2'   => $GLOBALS['phpgw_info']['user']['session_ip'],
+						'p2'   => $user_info['session_ip'],
 						'line' => __LINE__,
 						'file' => __FILE__
 					));
@@ -623,9 +650,11 @@ class Sessions
 		}
 
 		$this->log_access($this->_sessionid);	// log logout-time
+		$user_info  = Settings::getInstance()->get('user');
+
 
 		// Only do the following, if where working with the current user
-		if ($sessionid == $GLOBALS['phpgw_info']['user']['sessionid']) {
+		if ($sessionid == $user_info['sessionid']) {
 			session_unset();
 			session_destroy();
 			$this->phpgw_setcookie(session_name());
@@ -689,7 +718,7 @@ class Sessions
 	 * @param string $currentApp
 	 * @param bool $write_cache
 	 */
-	private function read_repositories( $write_cache = true)
+	private function read_repositories( $write_cache = false)
 	{
 		if ($write_cache) {
 			$this->_data = Cache::session_get('phpgwapi', 'phpgw_info');
@@ -710,6 +739,7 @@ class Sessions
 		$this->_data['fullname']	= $accounts->read()->__toString();
 		$this->_data['preferences']	= $preferences;
 		$this->_data['apps']       	= $apps;
+//		$this->_data['expires']      	= -1;
 
 		//$phpgw_info['user' => [], 'server' => [], 'apps' =>[], 'flags' =>[]];
 		$this->_data['session_ip']  = $this->_get_user_ip();

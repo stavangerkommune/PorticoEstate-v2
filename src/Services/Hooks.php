@@ -40,11 +40,16 @@ class Hooks
 	var $found_hooks = array();
 	protected $db = null;
 	private $apps = null;
+	private $flags = null;
+	private $user = null;
 
 	public function __construct($db = null)
 	{
 		$this->db = $db ?? DatabaseObject::getInstance()->get('db');
 		$this->apps = Settings::getInstance()->get('apps');
+		$this->flags = Settings::getInstance()->get('flags');
+		$this->user = Settings::getInstance()->get('user');
+
 		$this->read();
 	}
 
@@ -83,7 +88,7 @@ class Hooks
 		//echo "<p>hooks::process("; print_r($args); echo ")</p>\n";
 		if ($order == '') {
 			$order = is_array($args) && isset($args['order']) ? $args['order'] :
-				array($GLOBALS['phpgw_info']['flags']['currentapp']);
+				array($this->flags['currentapp']);
 		}
 
 		$results = array();
@@ -101,8 +106,8 @@ class Hooks
 		$apps = array();
 		if ($no_permission_check) {
 			$apps = $this->apps;
-		} else if (isset($GLOBALS['phpgw_info']['user']['apps'])) {
-			$apps = $GLOBALS['phpgw_info']['user']['apps'];
+		} else if (isset($this->user['apps'])) {
+			$apps = $this->user['apps'];
 		}
 
 		// Run any API hooks first
@@ -142,7 +147,7 @@ class Hooks
 			$location = $args;
 		}
 		if (!$appname) {
-			$appname = is_array($args) && isset($args['appname']) ? $args['appname'] : $GLOBALS['phpgw_info']['flags']['currentapp'];
+			$appname = is_array($args) && isset($args['appname']) ? $args['appname'] : $this->flags['currentapp'];
 		}
 
 		/* First include the ordered apps hook file */
@@ -156,8 +161,8 @@ class Hooks
 				if ($try_unregistered && empty($methode)) {
 					$method = 'hook_' . $location . '.inc.php';
 				}
-				$f = PHPGW_SERVER_ROOT . "/{$appname}/inc/{$method}";
-				if (((isset($GLOBALS['phpgw_info']['user']['apps'][$appname]) && $GLOBALS['phpgw_info']['user']['apps'][$appname])
+				$f = SRC_ROOT_PATH . "/{$appname}/inc/{$method}";
+				if (((isset($this->user['apps'][$appname]) && $this->user['apps'][$appname])
 						|| (($no_permission_check || $location == 'config' || $appname == 'phpgwapi') && $appname))
 					&& file_exists($f)
 				) {
@@ -179,7 +184,7 @@ class Hooks
 	public function count($location)
 	{
 		$count = 0;
-		foreach ($GLOBALS['phpgw_info']['user']['apps'] as $appname => $data) {
+		foreach ($this->user['apps'] as $appname => $data) {
 			if (isset($this->found_hooks[$appname][$location])) {
 				++$count;
 			}
@@ -196,18 +201,19 @@ class Hooks
 	public function register_hooks($appname, $hooks = '')
 	{
 		if (!$appname) {
-			return False;
+			return false;
 		}
 
-		$db_appname = $this->db->db_addslashes($appname);
-		$this->db->query("DELETE FROM phpgw_hooks WHERE hook_appname='$db_appname'", __LINE__, __FILE__);
+		$db_appname = $this->db->quote($appname);
+		$stmt = $this->db->prepare("DELETE FROM phpgw_hooks WHERE hook_appname = :appname");
+		$stmt->execute([':appname' => $db_appname]);
 
-		if (!is_array($hooks))	// only deregister
+		if (!is_array($hooks)) // only deregister
 		{
-			return True;
+			return true;
 		}
 		foreach ($hooks as $key => $hook) {
-			if (!is_numeric($key))	// new method based hook
+			if (!is_numeric($key)) // new method based hook
 			{
 				$location = $key;
 				$filename = $hook;
@@ -215,28 +221,30 @@ class Hooks
 				$location = $hook;
 				$filename = "hook_$hook.inc.php";
 			}
-			$this->db->query("INSERT INTO phpgw_hooks (hook_appname,hook_location,hook_filename)" .
-				" VALUES ('$appname','$location','$filename')", __LINE__, __FILE__);
+			$stmt = $this->db->prepare("INSERT INTO phpgw_hooks (hook_appname,hook_location,hook_filename) VALUES (:appname, :location, :filename)");
+			$stmt->execute([
+				':appname' => $appname,
+				':location' => $location,
+				':filename' => $filename
+			]);
 		}
-		return True;
+		return true;
 	}
-
-
 	/**
 	 * Register the hooks of all applications (used by admin)
 	 *
 	 */
 	public function register_all_hooks()
 	{
-		if (!isset($GLOBALS['phpgw_info']['apps']) || !is_array($GLOBALS['phpgw_info']['apps'])) {
+		if (!isset($this->apps) || !is_array($this->apps)) {
 			$GLOBALS['phpgw']->applications->read_installed_apps();
 		}
 
-		$app_list = array_keys($GLOBALS['phpgw_info']['apps']);
+		$app_list = array_keys($this->apps);
 		$app_list[] = 'phpgwapi';
 
 		foreach ($app_list as $appname) {
-			$f = PHPGW_SERVER_ROOT . "/$appname/setup/setup.inc.php";
+			$f = SRC_ROOT_PATH . "/$appname/setup/setup.inc.php";
 			if (file_exists($f)) {
 				//DO NOT USE include_once here it breaks API hooks - skwashd dec07
 				include $f;
