@@ -8,7 +8,7 @@ use App\Middleware\SessionsMiddleware;
 
 
 $app->group('/booking/users', function (RouteCollectorProxy $group) {
-	$group->get('[/{params:.*}]', UserController::class . ':index');
+	$group->get('', UserController::class . ':index');
 	$group->post('', UserController::class . ':store');
 	$group->get('/{id}', UserController::class . ':show');
 	$group->put('/{id}', UserController::class . ':update');

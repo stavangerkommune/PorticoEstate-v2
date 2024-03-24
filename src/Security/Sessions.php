@@ -105,7 +105,6 @@ class Sessions
 			ini_set("session.use_trans_sid", 1);
 		}
 
-
 		//respect the config option for cookies
 		ini_set('session.use_cookies', $this->_use_cookies);
 
@@ -115,7 +114,7 @@ class Sessions
 
 
 
-		$this->_sessionid	= \Sanitizer::get_var(session_name(), 'string', 'COOKIE');
+	//	$this->_sessionid	= \Sanitizer::get_var(session_name(), 'string', 'COOKIE');
 
 
 		//respect the config option for cookies
@@ -281,7 +280,7 @@ class Sessions
 		$this->Crypto = new Crypto();
 		$this->Crypto->init(array($this->_key, $this->_iv));
 
-		$this->read_repositories();
+		$this->read_repositories(true);
 //\App\Helpers\DebugArray::debug($this->_data);die();
 
 		if ($this->_data['expires'] != -1 && $this->_data['expires'] < time()) {
@@ -359,6 +358,7 @@ class Sessions
 		$this->_sessionid = $sessionid;
 
 		$session = $this->read_session($sessionid);
+
 		if (!$session) {
 			return false;
 		}
@@ -414,7 +414,6 @@ class Sessions
 	//	$this->_account_id = $GLOBALS['phpgw']->accounts->name2id($this->_account_lid);
 		$accounts = (new \App\Controllers\Api\Accounts\Accounts())->getObject();
 		$this->_account_id = $accounts->name2id($this->_account_lid);
-
 
 
 		if (!$this->_account_id) {
@@ -720,9 +719,14 @@ class Sessions
 	 */
 	private function read_repositories( $write_cache = false)
 	{
-		if ($write_cache) {
-			$this->_data = Cache::session_get('phpgwapi', 'phpgw_info');
-		//	echo json_encode($this->_data);
+		$phpgw_info = Cache::session_get('phpgwapi', 'phpgw_info');
+
+		if (!empty($phpgw_info['user']) && is_array($phpgw_info['user'])) {
+			$this->_data = $phpgw_info['user'];
+			Settings::getInstance()->set('user', $phpgw_info['user']);
+			Settings::getInstance()->set('account_id', $this->_account_id);
+			Settings::getInstance()->set('apps',  $phpgw_info['apps']);
+			return;
 		}
 
 		$this->_data = [];
@@ -747,10 +751,14 @@ class Sessions
 		$this->_data['account_id']  = $this->_account_id;
 		
 		Settings::getInstance()->set('user', $this->_data);
-		header('Content-Type: application/json');
-		if ($write_cache) {
-			Cache::session_set('phpgwapi', 'phpgw_info', $this->_data);
-		}
+	//	if ($write_cache) {
+			Cache::session_set('phpgwapi', 'phpgw_info', array(
+				'user' => $this->_data,
+				'apps' => $apps,
+				'flags' => Settings::getInstance()->get('flags'),
+				'server' => Settings::getInstance()->get('server')
+		));
+	//	}
 		
 	}
 
