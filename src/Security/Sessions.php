@@ -468,6 +468,7 @@ class Sessions
 //		$GLOBALS['phpgw_info']['user']['passwd']     = Cache::session_get('phpgwapi', 'password');
 		$user_info['session_ip'] = $session['session_ip'];
 		$user_info['passwd']     = Cache::session_get('phpgwapi', 'password');
+		$user_info['sessionid']  = $this->_sessionid;
 
 		if (\Sanitizer::get_var('domain', 'string', 'REQUEST', false))
 		{
@@ -650,6 +651,8 @@ class Sessions
 
 		$this->log_access($this->_sessionid);	// log logout-time
 		$user_info  = Settings::getInstance()->get('user');
+
+//		\App\Helpers\DebugArray::debug($user_info);
 
 
 		// Only do the following, if where working with the current user

@@ -18,7 +18,15 @@ $app->get('/swagger[/{params:.*}]', function (Request $request, Response $respon
     return $response;
 });
 
-$app->get('/login[/{params:.*}]', function (Request $request, Response $response) {
+$app->get('/login[/{params:.*}]', function (Request $request, Response $response) use ($phpgw_domain) {
+
+    $last_domain = \Sanitizer::get_var('last_domain', 'string', 'COOKIE', false);
+    $domainOptions = '';
+    foreach (array_keys($phpgw_domain) as $domain) {
+        $selected = ($domain === $last_domain) ? 'selected' : '';
+        $domainOptions .= "<option value=\"$domain\" $selected>$domain</option>";
+    }
+
     $html = '
         <!DOCTYPE html>
         <html>
@@ -28,13 +36,19 @@ $app->get('/login[/{params:.*}]', function (Request $request, Response $response
         <body>
             <div class="container">
                 <form method="POST" action="/login">
-                <div class="mb-3">
-                    <label for="login" class="form-label">Login:</label>
+                    <div class="mb-3">
+                        <label for="login" class="form-label">Login:</label>
                         <input type="text" class="form-control" id="login" name="login">
                     </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password:</label>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password:</label>
                         <input type="password" class="form-control" id="password" name="passwd">
+                    </div>
+                    <div class="mb-3">
+                        <label for="domain">Domain:</label>
+                        <select class="form-select" id="domain" name="domain">
+                            ' . $domainOptions . '
+                        </select>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
@@ -42,7 +56,6 @@ $app->get('/login[/{params:.*}]', function (Request $request, Response $response
         </body>
         </html>
     ';
-
     $response = $response->withHeader('Content-Type', 'text/html');
     $response->getBody()->write($html);
     return $response;
@@ -58,3 +71,21 @@ $app->post('/login', function (Request $request, Response $response) {
     $response->getBody()->write($json);
     return $response;
 })->addMiddleware(new App\Middleware\SessionsMiddleware($container));
+
+
+$app->get('/logout[/{params:.*}]', function (Request $request, Response $response) {
+    $sessions = new \App\Security\Sessions();
+    if (!$sessions->verify()) {
+        $response_str = json_encode(['message' => 'Du er ikke logget inn']);
+        $response->getBody()->write($response_str);
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+    else
+    {
+        $session_id = $sessions->get_session_id();
+        $sessions->destroy($session_id);
+        $response_str = json_encode(['message' => 'Du er logget ut']);
+        $response->getBody()->write($response_str);
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+});

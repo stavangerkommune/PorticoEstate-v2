@@ -30,7 +30,8 @@ require_once SRC_ROOT_PATH . '/Helpers/Translation.php';
 require_once SRC_ROOT_PATH . '/Helpers/Sanitizer.php';
 // Add your settings to the container
 
-$database_settings = require_once __DIR__ . '/config/database.php';
+$phpgw_domain = require_once __DIR__ . '/config/database.php';
+$database_settings = require_once SRC_ROOT_PATH . '/Helpers/FilterDatabaseConfig.php';
 
 //DebugArray::debug($database_settings);
 
