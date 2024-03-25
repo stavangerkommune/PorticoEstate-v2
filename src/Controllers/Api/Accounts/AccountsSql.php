@@ -29,11 +29,13 @@
 	   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
+namespace App\Controllers\Api\Accounts;
 use App\Security\Acl;
+use App\Controllers\Api\Accounts\Accounts_;
 use App\Controllers\Api\Accounts\phpgwapi_group;
 use App\Controllers\Api\Accounts\phpgwapi_user;
 use App\Controllers\Api\Accounts\phpgwapi_account;
-
+use PDO;
 
 /**
  * View and manipulate handling user and group account records using SQL
@@ -42,7 +44,7 @@ use App\Controllers\Api\Accounts\phpgwapi_account;
  * @subpackage phpgwapi
  * @category accounts
  */
-class phpgwapi_accounts_sql extends phpgwapi_accounts_
+class Accounts extends Accounts_
 {
 	protected $global_lock = false;
 	/**
@@ -229,7 +231,7 @@ class phpgwapi_accounts_sql extends phpgwapi_accounts_
 			}
 
 			// The cached object is needed for the hooks
-			App\Services\Cache::system_clear('phpgwapi', "account_{$account_id}");
+			\App\Services\Cache::system_clear('phpgwapi', "account_{$account_id}");
 
 			// delete the group mappings
 			if ($stmt->execute([':account_id' => $account_id])) {
@@ -323,7 +325,7 @@ class phpgwapi_accounts_sql extends phpgwapi_accounts_
 		}
 
 		if ($use_cache) {
-			$account = App\Services\Cache::system_get('phpgwapi', "account_{$id}");
+			$account = \App\Services\Cache::system_get('phpgwapi', "account_{$id}");
 			if (is_object($account)) {
 				$account->firstname = stripslashes($account->firstname);
 				$account->lastname = stripslashes($account->lastname);
@@ -359,7 +361,7 @@ class phpgwapi_accounts_sql extends phpgwapi_accounts_
 			}
 			$account->init($record);
 
-			App\Services\Cache::system_set('phpgwapi', "account_{$id}", $account);
+			\App\Services\Cache::system_set('phpgwapi', "account_{$id}", $account);
 		} else {
 			$account = new phpgwapi_user();
 		}

@@ -1,9 +1,13 @@
 <?php
+
 /**
- * Account data objects
+ * Shared functions for other account repository managers and loader
  *
+ * @author Joseph Engo <jengo@phpgroupware.org>
+ * @author Bettina Gille <ceb@phpgroupware.org>
+ * @author Philipp Kamps <pkamps@probusiness.de>
  * @author Dave Hall <skwashd@phpgroupware.org>
- * @copyright Copyright (C) 2008 Free Software Foundation, Inc. http://www.fsf.org/
+ * @copyright Copyright (C) 2000-2008 Free Software Foundation, Inc. http://www.fsf.org/
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License v2 or later
  * @package phpgroupware
  * @subpackage phpgwapi
@@ -25,925 +29,966 @@
 	   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
+namespace App\Controllers\Api\Accounts;
+
+
 /**
- * Abstract account data object, used for storing account data
- *
- * @property		integer	$id the account id
- * @property		string	$lid the account login id
- * @property		string	$firstname the first name of the account
- * @property		string	$lastname the lastname of the account
- * @property		string	$passwd the password for the account
- * @property-read	string	$passwd_hash the account's hashed password
- * @property		integer	$last_login the unix timestamp of when the user last logged in
- * @property		string	$last_login_from the IP address which the user last logged in from
- * @property		integer	$last_passwd_change the unix timestamp of when the user last changed their password
- * @property		boolean	$enabled is the account currently enabled?
- * @property		integer	$expires unix timestamp of when the account is due to expire
- * @property		integer	$person_id the contact id for the account - FIXME rename to contact_id - skwashd apr08
- * @property		integer $quota the amount of storage for the user in Mb
- * @property-read	string	$old_loginid the account's hashed password
+ * Class for handling user and group accounts
  *
  * @package phpgroupware
  * @subpackage phpgwapi
  * @category accounts
  */
 
-	namespace App\Controllers\Api\Accounts;
-	use App\Services\Settings;	
-	use Exception;
-	
-	class Accounts
-	{
-		private $object;
 
-		public function __construct($account_id = 0)
-		{
-			$serverSettings = Settings::getInstance()->get('server');
-			$acct_type = isset($serverSettings['account_repository']) ? strtolower($serverSettings['account_repository']) : 'sql';
-			include_once SRC_ROOT_PATH . "/Controllers/Api/Accounts/Accounts_.php";
-			switch ($acct_type) {
-				case 'sqlldap':
-					include_once SRC_ROOT_PATH . "/Controllers/Api/Accounts/AccountsSql.php";
-					//fall through
+use App\Security\Acl;
+use App\Services\Settings;
+use App\Controllers\Api\Accounts\phpgwapi_group;
+use App\Controllers\Api\Accounts\phpgwapi_user;
+use App\Controllers\Api\Accounts\phpgwapi_account;
+use Exception;
 
-				case 'ldap':
-					include_once SRC_ROOT_PATH . "/Controllers/Api/Accounts/AccountsLdap.php";
-					break;
+$serverSettings = Settings::getInstance()->get('server');
 
-				default:
-					$acct_type = 'Sql';
-			}
-			include_once SRC_ROOT_PATH . "/Controllers/Api/Accounts/Accounts{$acct_type}.php";
+$acct_type = isset($serverSettings['account_repository']) ? strtolower($serverSettings['account_repository']) : 'sql';
+include_once SRC_ROOT_PATH . "/Controllers/Api/Accounts/AccountTypes.php";
+switch ($acct_type) {
+	case 'sqlldap':
+		include_once SRC_ROOT_PATH . "/Controllers/Api/Accounts/AccountsSql.php";
+		//fall through
 
-			$className = "phpgwapi_accounts_{$acct_type}";
-			if (class_exists($className)) {
-				$this->object = new $className($account_id);
-			} else {
-				throw new Exception("Class {$className} does not exist");
-			}
-		}
+	case 'ldap':
+		include_once SRC_ROOT_PATH . "/Controllers/Api/Accounts/AccountsLdap.php";
+		break;
 
-		public function getObject()
-		{
-			return $this->object;
-		}
-	}
-
-	namespace App\Controllers\Api\Accounts;
-	use App\Services\Translation;
-	abstract class phpgwapi_account
-	{
-		/**
-		 * User object class name
-		 */
-		const CLASS_TYPE_USER = 'phpgwapi_user';
-
-		/**
-		 * Group object class name
-		 */
-		const CLASS_TYPE_GROUP = 'phpgwapi_group';
-
-		/**
-		 * Group Type account
-		 */
-		const TYPE_GROUP = 'g';
-
-		/**
-		 * User Type account
-		 */
-		const TYPE_USER = 'u';
-
-		/**
-		 * @var array $_data the account data
-		 */
-		protected $_data = array
-		(
-			'id'				=> 0,
-			'lid'				=> '',
-			'firstname'			=> '',
-			'lastname'			=> '',
-			'passwd'			=> '',
-			'passwd_hash'		=> '',
-			'last_login'		=> 0,
-			'last_login_from'	=> '0.0.0.0',
-			'last_passwd_change'=> 0,
-			'enabled'			=> false,
-			'expires'			=> 0,
-			'person_id'			=> 0,
-			'quota'				=> 0,
-			'old_loginid'		=> '',
-			'type' 				=> ''
-		);
-
-		/**
-		 * @var string $_hash the hash of initial data, used for tracking changes
-		 */
-		protected $_hash = '';
-
-		/**
-		 * Initialise the values of the object - this should only be called from phpgwapi_accounts
-		 *
-		 * @param array $arr the values to initialise the values of the object with
-		 *
-		 * @return void
-		 *
-		 * @internal doesn't validate input or throw Exceptions
-		 */
-		abstract public function init($arr);
-
-		/**
-		 * Check to see if the class data has changed since it was loaded
-		 *
-		 * @return boolean is the data dirty?
-		 */
-		public function is_dirty()
-		{
-			return $this->_hash != $this->_generate_hash();
-		}
-
-		/**
-		 * Convert object to an array - for backwards compatiability
-		 *
-		 * @return array the object as an array
-		 */
-		public function toArray()
-		{
-			return $this->_data;
-		}
+	default:
+		$acct_type = 'Sql';
+}
+include_once SRC_ROOT_PATH . "/Controllers/Api/Accounts/Accounts{$acct_type}.php";
 
 
-		/**
-		 * Magic getter function, for getting values from $_data
-		 *
-		 * @param string $name the name of the value to lookup
-		 *
-		 * @return string|integer the property sought
-		 *
-		 * @throws Exception on invalid property requested
-		 */
-		abstract public function __get($name);
-
-		/**
-		 * Magic isset for checking if a value of $_data is set or not
-		 *
-		 * @param string $name the name of the value to set
-		 *
-		 * @return boolean is the property set?
-		 */
-		public function __isset($name)
-		{
-			return isset($this->_data[$name]);
-		}
-
-		/**
-		 * Magic setter function, for setting values in $_data
-		 *
-		 * @param string         $name  the name of the value to set
-		 * @param string|integer $value the value to be assigned
-		 *
-		 * @return boolean was the property set?
-		 */
-		abstract public function __set($name, $value);
-
-		/**
-		 * Shortcut for getting the fullname of the account
-		 *
-		 * @return string the full name of the account in the user's preferred format
-		 */
-		abstract public function __toString();
-
-		/**
-		 * Generate a hash of the current values, so quick checking if the values have changed
-		 *
-		 * @return string hash of current data stored
-		 */
-		protected function _generate_hash()
-		{
-			return sha1(serialize($this->_data));
-		}
-
-		/**
-		 * Check that a firstname is valid
-		 *
-		 * @param string $name the name to validate
-		 *
-		 * @return bool is the name valid?
-		 *
-		 * @throws Exception when name is empty
-		 */
-		protected function _validate_firstname($name)
-		{
-			if ( !strlen($name) )
-			{
-				throw new \Exception('First name must not be empty');
-			}
-		}
-
-		/**
-		 * Make sure a contact exists
-		 *
-		 * @param integer $id   the contact id to lookup
-		 * @param string  $type the contact type to lookup
-		 *
-		 * @return bool does the contact id exist?
-		 */
-		protected function _validate_contact_id($id, $type)
-		{
-			$contacts = createObject('phpgwapi.contacts');
-			switch ( $type )
-			{
-				case 'org':
-					return !!count($contacts->get_principal_organizations_data($id));
-
-				case 'person':
-				default: // just in case?
-					return !!count($contacts->get_principal_persons_data($id));
-			}
-		}
-	}
-
-	namespace App\Controllers\Api\Accounts;
+abstract class Accounts_
+{
 	/**
-	 * phpGroupWare group data object
-	 *
-	 * @category accounts
-	 * @package phpgroupware
-	 * @subpackage phpgwapi
+	 * @var object $account the currently selected user object
 	 */
-	class phpgwapi_group extends phpgwapi_account
+	public $account;
+
+	/**
+	 * @var integer $account_id track the current account_id - which may not match the this->account->id
+	 */
+	protected $account_id = 0;
+
+	/**
+	 * @var object $db reference to the global database object
+	 */
+	protected $db;
+
+	/**
+	 * @var array $memberships groups users are members of
+	 */
+	protected $memberships = array();
+
+	/**
+	 * @var array $members groups users are members of
+	 */
+	protected $members = array();
+
+	/**
+	 * @var integer $total the number of records found in previous search
+	 */
+	public $total;
+
+	/**
+	 * @var array $xmlrpc_methods the methods of the class available via xmlrpc
+	 */
+	public $xmlrpc_methods = array();
+
+	/**
+	 * Constructor
+	 *
+	 * @param integer $account_id   Account id defaults to current account id
+	 * @param string  $account_type Account type 'u': account; 'g' : group; defaults to current account type
+	 *
+	 * @return void
+	 */
+
+	protected $like, $join, $account_type, $serverSettings;
+	public function __construct($account_id = null, $account_type = null)
 	{
+		$this->db = \App\Database\Db::getInstance();
+		$this->like = 'ILIKE';
+		$this->join = 'JOIN';
 
-		/**
-		 * @var array $_data the group data
-		 */
+		$this->set_account($account_id, $account_type);
+		$this->serverSettings = \App\Services\Settings::getInstance()->get('server');
+	}
 
-		protected $_data = array
-		(
-			'id'				=> 0,
-			'lid'				=> '',
-			'firstname'			=> '',
-			'lastname'			=> 'Group',
-			'passwd_hash'		=> '',
-			'enabled'			=> false,
-			'expires'			=> 0,
-			'person_id'			=> 0,
-			'old_loginid'		=> '',
-			'type' 				=> 'g'
+	public function get_id()
+	{
+		return $this->account_id;
+	}
+
+	/**
+	 * Add an account to a group entry
+	 *
+	 * @param integer $account_id Account id
+	 * @param integer $group_id   Group id
+	 *
+	 * @return boolean true on success otherwise false
+	 */
+	abstract public function add_user2group($account_id, $group_id);
+
+	/**
+	 * Create a new user account  - this only creates the acccount
+	 *
+	 * For creating a fully working user, use self::create()
+	 *
+	 * @param object $account the phpgwapi_user object for the new account
+	 *
+	 * @return integer the new user id
+	 *
+	 * @see self::create
+	 */
+	abstract public function create_user_account($account);
+
+	/**
+	 * Create a new group account  - this only creates the acccount
+	 *
+	 * For creating a fully working user, use self::create()
+	 *
+	 * @param object $account the phpgwapi_user object for the new account
+	 *
+	 * @return integer the new user id
+	 *
+	 * @see self::create
+	 */
+	abstract public function create_group_account($account);
+
+	/**
+	 * Delete an account
+	 *
+	 * @param integer $account_id the account to delete
+	 *
+	 * @return boolean was the account deleted?
+	 */
+	abstract public function delete($account_id);
+
+	/**
+	 * Delete an account from a group
+	 *
+	 * @param integer $account_id The account to delete from the group
+	 * @param integer $group_id   The group to delete the account from
+	 *
+	 * @return boolean true on success otherwise false
+	 */
+	abstract public function delete_account4group($account_id, $group_id);
+
+	/**
+	 * Does the user account exist?
+	 *
+	 * @param integer|string $account_lid the accound login or id to check
+	 *
+	 * @return boolean does the account exist or not?
+	 */
+	abstract public function exists($account_lid);
+
+	/**
+	 * Fetch an account
+	 *
+	 * @param integer $id the account id to fetch
+	 *
+	 * @return object the account as a phpgw_account derived object
+	 */
+	abstract public function get($id);
+
+	/**
+	 * Get a list of member account ids for a group
+	 *
+	 * @param integer $group_id the group to get members from
+	 *
+	 * @return arrray list of members of the current group
+	 */
+	abstract public function get_members($group_id = null);
+
+	/**
+	 * Get a list of groups the user is a member of
+	 *
+	 * @param integer $account_id the user account to lookup
+	 *
+	 * @return array the groups the user is a member of
+	 *
+	 * @internal return structure array(array('account_id' => id, 'account_name' => group name))
+	 */
+	abstract public function membership($account_id = 0);
+
+	/**
+	 * Get a list of members of the group
+	 *
+	 * @param integer $group_id the group to check
+	 *
+	 * @return array list of members
+	 */
+	abstract public function member($group_id = 0);
+
+	/**
+	 * Get a list of accounts which have contacts linked to them
+	 *
+	 * @return array account_id => contact_id mappings
+	 */
+	abstract public function get_account_with_contact();
+
+	/**
+	 * Get a list of accounts which don't have contacts associated with them
+	 *
+	 * @return array list of account_ids without contacts
+	 */
+	abstract public function get_account_without_contact();
+
+	/**
+	 * Get a list of accounts based on a search criteria
+	 *
+	 * @param string  $_type  type of accounts sought
+	 * @param integer $start  the position to start at in the result set
+	 * @param string  $sort   the direction to sort - valid values "ASC" or "DESC"
+	 * @param string  $order  the field to sort on
+	 * @param string  $query  the search criteria - matches firstname, lastname and lid
+	 * @param integer $offset the number of records to return
+	 *
+	 * @return array list of accounts that match criteria
+	 */
+	abstract public function get_list(
+		$_type = 'both',
+		$start = -1,
+		$sort = '',
+		$order = '',
+		$query = '',
+		$offset = -1,
+		$filter = array()
+	);
+
+	/**
+	 * Convert an account login id to an account id
+	 *
+	 * @param string $account_lid the login id to look up
+	 *
+	 * @return integer the account id - 0 if not found
+	 */
+	abstract public function name2id($account_lid);
+
+	/**
+	 * Read the currently selected account from the storage repository
+	 *
+	 * @return object
+	 */
+	abstract public function read_repository();
+
+	/**
+	 * Save/update account information to database
+	 *
+	 * @return void
+	 */
+	abstract public function save_repository();
+
+	/**
+	 * Match a contact ID with an account id
+	 *
+	 * @param integer $person_id the contact person ID
+	 *
+	 * @return integer account id - 0 if not found
+	 */
+	abstract public function search_person($person_id);
+
+	/**
+	 * Create a non existing but authorized user
+	 *
+	 * @param string  $accountname    User name
+	 * @param string  $passwd         User password
+	 * @param integer $expiredate     Expire date of this account. '-1' for never.
+	 * @param string  $account_status Status for new user. 'A' for active user.
+	 *
+	 * @return integer Account id
+	 */
+	public function auto_add($accountname, $passwd, $firstname, $lastname, $expiredate = 0, $account_status = 'A')
+	{
+		if ($expiredate) {
+			$expires = (int) $expiredate;
+		} else if (isset($this->serverSettings['auto_create_expire'])) {
+			if ($this->serverSettings['auto_create_expire'] == 'never') {
+				$expires = -1;
+			} else {
+				$expires = time() + $this->serverSettings['auto_create_expire'];
+			}
+		} else {
+			$expires = time() + (60 * 60 * 24 * 7); // 1 week - sane default
+		}
+
+		$acct_info = new phpgwapi_user();
+		$acct_info->lid = $accountname;
+		$acct_info->firstname = $firstname;
+		$acct_info->lastname = $lastname;
+		$acct_info->passwd = $passwd;
+		$acct_info->enabled = $account_status == 'A';
+		$acct_info->expires = $expires;
+
+		$group = array(
+			$this->name2id($this->serverSettings['default_group_lid'])
 		);
 
-		/**
-		 * Initialise the values of the object - this should only be called from phpgwapi_accounts
-		 *
-		 * @param array $arr the values to initialise the values of the object with
-		 *
-		 * @return void
-		 *
-		 * @internal doesn't validate input or throw Exceptions
-		 */
-		public function init($arr)
-		{
-			foreach ( $arr as $key => $val )
-			{
-				switch ( $key )
-				{
-					case 'id':
-					case 'lid':
-					case 'firstname':
-					case 'passwd_hash':
-					case 'expires':
-					case 'enabled':
-					case 'person_id':
-					case 'quota':
-					case 'old_loginid':
-						$this->_data[$key] = $val;
-					// we ignore the rest
-				}
-			}
-		//	$this->_data['lastname'] = 'Group';
-		//	$this->_data['type'] = 'g';
-			$this->_hash = $this->_generate_hash();
-		}
+		$account_id = $this->create($acct_info, $group);
+		return $account_id;
+	}
 
-		/**
-		 * Constructor
-		 *
-		 * @return void
-		 */
-		public function __construct()
-		{
-			$this->_data['lastname']	= 'Group';
-			$this->_data['type'] 		= parent::TYPE_GROUP;
-		}
 
-		/**
-		 * Magic getter function, for getting values from $_data
-		 *
-		 * @param string $name the name of the value to lookup
-		 *
-		 * @return string|integer the property sought
-		 *
-		 * @throws Exception on invalid property requested
-		 */
-		public function __get($name)
-		{
-			switch($name)
-			{
-				case 'id':
-				case 'lid':
-				case 'passwd_hash':
-				case 'firstname':
-				case 'lastname':
-				case 'expires':
-				case 'enabled':
-				case 'person_id':
-				case 'quota':
-				case 'old_loginid':
-				case 'type':
-					return $this->_data[$name];
+	/**
+	 * Create a account account
+	 *
+	 * @param object $account the new account object
+	 * @param array  $group   group information
+	 *	- memberships for users / members for groups
+	 * @param array  $acls    list of access controls to set for the user
+	 * @param array  $modules the list of modules to enable for the user
+	 * @param array  $contact_data for related contact in the addressbook
+	 *
+	 * @return integer the new account id
+	 */
+	public function create($account, $group, $acls = array(), $modules = array(), $contact_data = array())
+	{
+		// FIXME: Conflicting transactions - there is a transaction in acl::save_repository()
+		//	$this->db->transaction_begin();
+		try {
+			$class = get_class($account);
+			switch ($class) {
+				case phpgwapi_account::CLASS_TYPE_USER:
+					$this->_create_user($account, $group, $contact_data);
+					break;
+
+				case phpgwapi_account::CLASS_TYPE_GROUP:
+					$this->_create_group($account, $group);
+					break;
 
 				default:
-					throw new \Exception(lang('Unknown value: %1', $name));
-
-			}
-		}
-
-		/**
-		 * Magic setter function, for setting values in $_data
-		 *
-		 * @param string         $name  the name of the value to set
-		 * @param string|integer $value the value to be assigned
-		 *
-		 * @return boolean was the property set?
-		 */
-		public function __set($name, $value)
-		{
-			switch($name)
-			{
-				case 'lid':
-					$this->_validate_groupname($value);
-					break;
-
-				case 'firstname':
-					$this->_validate_groupname($value, false);
-					break;
-
-				case 'enabled':
-						$value = !!$value;
-
-				case 'person_id':
-					$this->_validate_contact_id($value, 'org');
-					break;
-			}
-			$this->_data[$name] = $value;
-		}
-
-		/**
-		 * Shortcut for getting the full group name
-		 *
-		 * @return string the full group name - in the user's local language
-		 */
-		public function __toString()
-		{
-			return lang('%1 Group', $this->_data['firstname']);
-		}
-
-		/**
-		 * Validate a group name
-		 *
-		 * @param string  $group  the group name to validate
-		 * @param boolean $lookup check if the account already exists
-		 *
-		 * @return boolean is the group name valid?
-		 *
-		 * @throws Exception when group name is invalid
-		 */
-		private function _validate_groupname($group, $lookup = true)
-		{
-			$accounts = (new Accounts())->getObject();
-			if ( !strlen($group) )
-			{
-				throw new \Exception('Group name is too short');
+					throw new Exception("Invalid account type: {$class}");
 			}
 
-			if ( $lookup )
-			{
-				if ($this->_data['id'])
-				{
-					if($this->_data['id'] !=$accounts->name2id($group)
-						&&$accounts->name2id($group) )
-					{
-						throw new \Exception('Group name already in use');
+			if (!$account->id) {
+				throw new Exception('Failed to create account');
+			}
+
+			$this->_cache_account($account);
+
+			$aclobj = Acl::getInstance();
+			$aclobj->set_account_id($account->id, true);
+			foreach ($acls as $acl) {
+				$aclobj->add($acl['appname'], $acl['location'], $acl['rights']);
+			}
+
+			// application permissions
+			foreach ($modules as $module) {
+				$aclobj->add($module, 'run', Acl::READ);
+			}
+
+			$aclobj->save_repository();
+		} catch (Exception $e) {
+			//		$this->db->transaction_abort();
+			// throw it again so it can be caught higher up
+			throw $e;
+		}
+
+		//	$this->db->transaction_commit();
+		return $account->id;
+	}
+
+	/**
+	 * Check which type of account the user id is
+	 *
+	 * @param integer $account_id the account id to look up
+	 *
+	 * @return string 'u' = user, 'g' = group
+	 *
+	 * @throws Exception invalid account id
+	 */
+	public function get_type($account_id)
+	{
+		if (!is_numeric($account_id)) {
+			$account_id = $this->name2id($account_id);
+			trigger_error('Invalid account id specified in call to accounts::get_type', E_USER_NOTICE);
+		}
+
+		$account = $this->get($account_id);
+		if (!is_object($account)) {
+			throw new Exception('Invalid account id specified');
+		}
+
+		switch (get_class($account)) {
+			case phpgwapi_account::CLASS_TYPE_USER:
+				return phpgwapi_account::TYPE_USER;
+
+			case phpgwapi_account::CLASS_TYPE_GROUP:
+				return phpgwapi_account::TYPE_GROUP;
+
+			default:
+				throw new Exception('Invalid account type');
+		}
+	}
+
+	/**
+	 * Convert an account id to an account login id
+	 *
+	 * Generally self::id2name should be used as this exposes login information,
+	 * which is a potential security risk
+	 *
+	 * @param integer $account_id the account_id to convert to login id
+	 *
+	 * @return string the account login id - empty if not found
+	 */
+	public function id2lid($account_id)
+	{
+		$acct = $this->get($account_id);
+		if (is_object($acct)) {
+			return $acct->lid;
+		}
+		return '';
+	}
+
+	/**
+	 * Convert an id into its corresponding account or group name
+	 *
+	 * @param integer $account_id Account or group id
+	 *
+	 * @return string Name of the account or the group when found othwerwise empty string
+	 */
+	public function id2name($account_id)
+	{
+		return (string) $this->get($account_id);
+	}
+
+	/**
+	 * Is the current account expired?
+	 *
+	 * @return boolean has the account expired?
+	 */
+	public function is_expired()
+	{
+		return $this->account->is_expired();
+	}
+
+	/**
+	 * Read the currently selected account
+	 *
+	 * @return object the account
+	 */
+	public function read()
+	{
+		if (
+			!is_object($this->account)
+			|| $this->account->id != $this->account_id
+		) {
+			$this->read_repository();
+		}
+		return $this->account;
+	}
+
+	/**
+	 * Get an array of users and groups seperated, including all members of groups
+	 *
+	 * @param array $app_users Array with user/group names
+	 *
+	 * @return array 'users' contains the user names for the given group or application
+	 */
+	public function return_members($app_users = array())
+	{
+		$users = array();
+		$groups = array();
+
+		if (!is_array($app_users)) {
+			return array(
+				'groups'	=> array(),
+				'users'		=> array()
+			);
+		}
+
+		foreach ($app_users as $app_user) {
+			try {
+				$type = $this->get_type($app_user);
+			} catch (Exception $e) {
+				// we ignore invalid accounts, this avoid problems with old crud
+			}
+
+			if ($type == phpgwapi_account::TYPE_GROUP) {
+				$groups[$app_user] = true;
+
+				$members = $this->get_members($app_user);
+				if (is_array($members)) {
+					foreach ($members as $member) {
+						$users[$member] = true;
 					}
 				}
-				else if($accounts->name2id($group))
-				{
-					throw new \Exception('Group name already in use');				
-				}
+			} else {
+				$users[$app_user] = true;
 			}
-
-			if (\App\Security\GloballyDenied::user($group) )
-			{
-				throw new \Exception('Group name is blocked');
-			}
-			return true;
 		}
+
+		return array(
+			'groups'	=> array_keys($groups),
+			'users'		=> array_keys($users)
+		);
 	}
-
-
-	namespace App\Controllers\Api\Accounts;
 
 	/**
-	 * phpGroupWare user data object
+	 * Set the account id of the class
 	 *
-	 * @package phpgroupware
-	 * @subpackage phpgwapi
-	 * @category accounts
+	 * @param integer $account_id   the id of the user/group
+	 * @param string  $account_type the type of account - 'user'/'group'
+	 *
+	 * @return void
 	 */
-	class phpgwapi_user extends phpgwapi_account
+	public function set_account($account_id = null, $account_type = null)
 	{
-
-		public function __construct()
-		{
-			$this->_data['type'] 		= parent::TYPE_USER;
+		if (!is_null($account_id)) {
+			$this->account_id = (int)$account_id;
 		}
 
-		/**
-		 * Initialise the values of the object - this should only be called from phpgwapi_accounts
-		 *
-		 * @param array $arr the values to initialise the values of the object with
-		 *
-		 * @return void
-		 *
-		 * @internal doesn't validate input or throw Exceptions
-		 */
-		public function init($arr)
-		{
-			foreach ( $arr as $key => $val )
-			{
-				switch ( $key )
-				{
-					case 'lid':
-						$this->_data['old_loginid'] = $val;
-
-					case 'id':
-					case 'firstname':
-					case 'lastname':
-					case 'passwd':
-					case 'passwd_hash':
-					case 'last_login':
-					case 'last_login_from':
-					case 'last_passwd_change':
-					case 'enabled':
-					case 'expires':
-					case 'enabled':
-					case 'person_id':
-					case 'quota':
-					case 'type':
-						$this->_data[$key] = $val;
-				}
-			}
-			$this->_hash = $this->_generate_hash();
-		}
-
-		/**
-		 * Has the user account expired?
-		 *
-		 * @return boolean has the account expired?
-		 */
-		public function is_expired()
-		{
-			$expires = $this->_data['expires'];
-			return $expires <> -1 && $expires < time();
-		}
-
-		/**
-		 * Convert object to an array - for backwards compatiability
-		 *
-		 * @return array the object as an array
-		 */
-		public function toArray()
-		{
-			$array = $this->_data;
-	//		unset($array['passwd'], $array['passwd_hash']);
-			unset($array['passwd']);
-			return $array;
-		}
-
-		/**
-		 * Magic getter function, for getting values from $_data
-		 *
-		 * @param string $name the name of the value to lookup
-		 *
-		 * @return string|integer the property sought
-		 *
-		 * @throws Exception on invalid property requested
-		 *
-		 * @todo handle LDAP extended attributes
-		 */
-		public function __get($name)
-		{
-			switch($name)
-			{
-				case 'id':
-				case 'lid':
-				case 'firstname':
-				case 'lastname':
-				case 'passwd':
-				case 'passwd_hash':
-				case 'last_login':
-				case 'last_login_from':
-				case 'last_passwd_change':
-				case 'enabled':
-				case 'expires':
-				case 'person_id':
-				case 'quota':
-				case 'old_loginid':
-				case 'type':
-					return $this->_data[$name];
-				default:
-					throw new \Exception(lang('Unknown value: %1', $name));
-			}
-		}
-
-		/**
-		 * Magic setter function, for setting values in $_data
-		 *
-		 * @param string         $name  the name of the value to set
-		 * @param string|integer $value the value to be assigned
-		 *
-		 * @return boolean was the property set?
-		 */
-		public function __set($name, $value)
-		{
-			switch($name)
-			{
-				case 'id':
-					break;
-
-				case 'lid':
-					$this->_validate_username($value);
-					$this->_data['old_loginid'] = $value;
-					break;
-
-				case 'firstname':
-					$this->_validate_firstname($value);
-					break;
-
-				case 'lastname':
-					$this->_validate_lastname($value);
-					break;
-
-				case 'passwd':
-					$this->validate_password($value);
-					$Auth = new \App\Security\Auth\Auth();
-					$this->_data['passwd_hash'] = $Auth->create_hash( $value);
-					$this->_data['last_passwd_change'] = time();
-					break;
-
-				case 'passwd_hash':
-					$this->_data['password'] = null; // make it invalid
-					break;
-
-				case 'last_login':
-					$this->_data['last_login_from'] = \Sanitizer::get_var('REMOTE_ADDR', 'ip', 'SERVER', '0.0.0.0');
-					break;
-
-				case 'enabled':
-					$value = !!$value;
-					break;
-
-				case 'expires':
-					$this->_validate_expires($value);
-					break;
-
-				case 'person_id':
-					$this->_validate_contact_id($value, 'person');
-					break;
-
-				case 'quota':
-					$this->_validate_quota($value);
-					break;
-
-				case 'type':
-					$this->_data['type'] = 'u';
-					break;
-
-				case 'dn':
-				case 'homedirectory':
-				case 'loginshell':
-				case 'mail':
-					return $this->_set_ldap_extended($name, $value);
-
-				default:
-					$class = get_class($this);
-					// trigger notice here & allow execution to continue, we just won't set anything
-					$varname = "{$class}::{$name}";
-					trigger_error("Attempted to set {$varname} to $value, {$varname} is unknown",
-									E_USER_NOTICE);
-					return false;
-			}
-			$this->_data[$name] = $value;
-			return true;
-		}
-
-		/**
-		 * Shortcut for getting the fullname of the account
-		 *
-		 * @return string the full name of the account in the user's preferred format
-		 */
-		public function __toString()
-		{
-			if(empty($this->_data['lastname']) && empty($this->_data['firstname']))
-			{
-				return false;
-			}
-
-			$display = 'firstname';
-			if ( isset($GLOBALS['phpgw_info']['user']['preferences']['common']['account_display']) )
-			{
-				$display = $GLOBALS['phpgw_info']['user']['preferences']['common']['account_display'];
-			}
-
-			switch ( $display )
-			{
-				case 'lastname':
-					return "{$this->_data['lastname']}, {$this->_data['firstname']}";
-
-				default:
-					return "{$this->_data['firstname']} {$this->_data['lastname']}";
-			}
-		}
-
-		/**
-		 * Set the extended LDAP attributes
-		 *
-		 * @param string $name  the name of the value to set
-		 * @param string $value the value to be assigned
-		 *
-		 * @return boolean was the property valid and set?
-		 */
-		protected function _set_ldap_extended($name, $value)
-		{
-			// only used by ldap
-			if ( $GLOBALS['phpgw_info']['server']['account_repository'] != 'ldap' )
-			{
-				return false;
-			}
-			switch($name)
-			{
-				case 'dn':
-				case 'homedirectory':
-				case 'loginshell':
-				case 'mail':
-					$this->data['ldap_extended'][$name] = $value;
-					return true;
-			}
-			$name = htmlentities($name, ENT_QUOTES, 'UTF-8');
-			$value = htmlentities($value, ENT_QUOTES, 'UTF-8');
-			trigger_error("Attempted to set ldap extended attribute '{$name}' to '{$value}',"
-					. " {$name} is not a supported attribute", E_USER_NOTICE);
-			return false;
-
-		}
-
-		/**
-		 * Check that the account expiry time stamp is valid
-		 *
-		 * @param integer $exp the account expiry expresses as a unix timestamp
-		 *
-		 * @return boolean is the expiry valid?
-		 *
-		 * @throws Exception when expiry timestamp is invalid
-		 */
-		protected function _validate_expires($exp)
-		{
-			if ( $exp !== 0
-				&& (int) $exp != $exp )
-			{
-				throw new \Exception('Expiry date is invalid');
-			}
-			return true;
-		}
-
-		/**
-		 * Check that a lastname is valid
-		 *
-		 * @param string $name the name to validate
-		 *
-		 * @return boolean is the name valid?
-		 *
-		 * @throws Exception when name is empty
-		 */
-		protected function _validate_lastname($name)
-		{
-			return strlen($name) >= 1;
-		}
-
-		/**
-		 * Check that a password is valid and secure
-		 *
-		 * @param string $passwd the password to check
-		 *
-		 * @return boolean is the password valid and secure?
-		 *
-		 * @throws Exception when password is invalid/insecure
-		 */
-		public function validate_password($passwd)
-		{			
-			$_error = array();
-			switch ( $GLOBALS['phpgw_info']['server']['password_level'] )
-			{
-				default:
-				case 'NONALPHA':
-					$_error[] = self::_validate_password_level_nonalpha($passwd);
-					// fall through
-				case '1NUM':
-					$_error[] = self::_validate_password_level_1num($passwd);
-					// fall through
-				case '2LOW':
-					$_error[] = self::_validate_password_level_2low($passwd);
-					// fall through
-				case '2UPPER':
-					$_error[] = self::_validate_password_level_2upper($passwd);
-					// fall through
-				case '8CHAR':
-					$_error[] = self::_validate_password_level_8char($passwd);
-			}
-
-			$error = array();
-			foreach($_error as $_msq)
-			{
-				if($_msq)
-				{
-					$error[] = $_msq;
-				}
-			}
-			if($error)
-			{
-				throw new \Exception(implode('<br/>',array_reverse($error)));
-			}
-		}
-
-		/**
-		 * Check that a password is at least 8 characters long
-		 *
-		 * @param string $passwd the password to check
-		 *
-		 * @throws Exception when password is shorter than 8 characters long
-		 */
-		protected static function _validate_password_level_8char($passwd)
-		{
-			$error = '';
-			$len = strlen($passwd); 
-			if ( $len < 8 )
-			{
-				$error = lang('Password must be at least 8 characters long, not %1', $len);
-				//throw new \Exception(lang('Password must be at least 8 characters long, not %1', $len));
-			}
-			return $error;
-		}
-
-		/**
-		 * Check that a password contain at least 2 upper case characters
-		 *
-		 * @param string $passwd the password to check
-		 *
-		 * @throws Exception when password do not contain at least 2 upper case characters
-		 */
-		protected static function _validate_password_level_2upper($passwd)
-		{
-			$error = '';
-			$m = array();
-			if ( preg_match_all('/[A-Z]/', $passwd, $m) < 2 )
-			{
-				$error = lang('Password must contain at least 2 upper case characters');
-				//throw new \Exception(lang('Password must contain at least 2 upper case characters'));
-			}
-			return $error;
-		}
-		/**
-		 * Check that a password contain at least 2 lower case characters
-		 *
-		 * @param string $passwd the password to check
-		 *
-		 * @throws Exception when password do not contain at least 2 lower case characters
-		 */
-		protected static function _validate_password_level_2low($passwd)
-		{
-			$error = '';
-			$m = array();
-			if ( preg_match_all('/[a-z]/', $passwd, $m) < 2 )
-			{
-				$error = lang('Password must contain at least 2 lower case characters');
-				//throw new \Exception(lang('Password must contain at least 2 lower case characters'));
-			}
-			return $error;
-		}
-		/**
-		 * Check that a password contain at least 1 number
-		 *
-		 * @param string $passwd the password to check
-		 *
-		 * @throws Exception when password is invalid/insecure do not contain at least 1 number
-		 */
-		protected static function _validate_password_level_1num($passwd)
-		{
-			$error = '';
-			$m = array();
-			if ( !preg_match_all('/[0-9]/', $passwd, $m) )
-			{
-				$error = lang('Password must contain at least 1 number');
-				//throw new \Exception(lang('Password must contain at least 1 number'));
-			}
-			return $error;
-		}
-		/**
-		 * Check that a password contain at least 1 non alphanumeric character
-		 *
-		 * @param string $passwd the password to check
-		 *
-		 * @throws Exception when password do not contain at least 1 non alphanumeric character
-		 */
-		protected static function _validate_password_level_nonalpha($passwd)
-		{
-			$error = '';
-			$m = array();
-			if ( !preg_match_all('/\W/', $passwd, $m)  )
-			{
-				$error = lang('Password must contain at least 1 non alphanumeric character');
-				//throw new \Exception(lang('Password must contain at least 1 non alphanumeric character'));
-			}
-			return $error;
-		}
-
-		/**
-		 * Check if the specified quota is a valid value
-		 *
-		 * @param integer $quota the users quota in Kb
-		 *
-		 * @return boolean is the quota valid?
-		 *
-		 * @throws Exception if quota is invalid
-		 */
-		private function _validate_quota($quota)
-		{
-			if ( (int) $quota != $quota )
-			{
-				throw new \Exception('Invalid quota value');
-			}
-
-			//FIXME this should be stored in the API - not filemanager - it is a global value!
-			$config = (new \App\Services\Config('filemanager'))->read_repository();
-			if ( !isset($config['set_quota']) )
-			{
-				return true; // misocnfigured, but lets just accept it - for now
-			}
-			$vals = explode(',', $config['set_quota']);
-			foreach ( $vals as $val )
-			{
-		//		if ( $quota == $val * 1024 ) // compare kb to kb
-				if ( $quota == $val )
-				{
-					return true;
-				}
-			}
-			throw new \Exception('Quota value not supported');
-		}
-
-		/**
-		 * Validate a username
-		 *
-		 * @param string  $username the username to validate
-		 * @param boolean $lookup   check if the account already exists
-		 *
-		 * @return boolean is the username valid?
-		 *
-		 * @throws Exception when username is invalid
-		 */
-		private function _validate_username($username, $lookup = true)
-		{
-			if ( !strlen($username) )
-			{
-				throw new \Exception('Username is too short');
-			}
-
-			$accounts = (new Accounts())->getObject();
-
-			if ( $lookup )
-			{
-				$id = $accounts->name2id($username);
-				if ( $id && $id <> $this->_data['id'] )
-				{
-					throw new \Exception('Username already in use');
-				}
-			}
-
-			if (\App\Security\GloballyDenied::user($username))
-			{
-				throw new \Exception('Username is blocked');
-			}
-			return true;
+		if (!is_null($account_type)) {
+			$this->account_type = $account_type;
 		}
 	}
 
+	/**
+	 * Set data for the current account
+	 *
+	 * @param array $data the user data
+	 *
+	 * @return boolean was the data set properly
+	 */
+	public function set_data($data)
+	{
+		$this->account = new phpgwapi_user();
+		try {
+			$this->account->init($data);
+		} catch (Exception $e) {
+			throw $e;
+		}
+		return true;
+	}
 
+	/**
+	 * Synchronises accounts with contacts
+	 *
+	 * @return void
+	 */
+	public function sync_accounts_contacts()
+	{
+		$accounts = $this->get_account_without_contact();
+
+		if (!is_array($accounts)) {
+			return;
+		}
+		$contacts = createObject('phpgwapi.contacts');
+
+		if (!isset($this->serverSettings['addressmaster'])) {
+			$this->serverSettings['addressmaster'] = -3;
+		}
+
+		foreach ($accounts as $account) {
+			if ($account) {
+				$this->db->transaction_begin();
+				$this->account_id = $account;
+				$user = $this->read_repository();
+				$comms = array();
+
+				switch ($user->type) {
+					case phpgwapi_account::TYPE_USER:
+						$primary = array(
+							'per_prefix'		=> '',
+							'per_first_name'	=> $user->firstname,
+							'per_last_name'		=> $user->lastname,
+							'access'			=> 'public',
+							'owner'		=> $this->serverSettings['addressmaster']
+						);
+						$type = $contacts->search_contact_type('Persons');
+
+						$domain = '';
+						if (isset($this->serverSettings['mail_server'])) {
+							$domain = $this->serverSettings['mail_server'];
+						}
+
+						if ($domain) {
+							$comm = array(
+								'comm_descr'		=> $contacts->search_comm_descr('work email'),
+								'comm_data'			=> "{$user->lid}@{$domain}",
+								'comm_preferred'	=> 'Y'
+							);
+							$comms = array($comm);
+						}
+
+						break;
+
+					case phpgwapi_account::TYPE_GROUP:
+						$primary = array(
+							'owner'		=> $this->serverSettings['addressmaster'],
+							'access'	=> 'public',
+							'org_name'	=> (string) $user
+						);
+						$type = $contacts->search_contact_type('Organizations');
+						break;
+					default:
+						throw new Exception('Invalid account type');
+				}
+
+				$user->person_id = $contacts->add_contact($type, $primary, $comms);
+
+				$this->account = $user;
+				if ($this->save_repository()) {
+					$this->db->transaction_commit();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Update the data for a group
+	 *
+	 * @param object $group   the phpgwapi_account_group object to use for the update
+	 * @param array  $modules the list of modules the group shall have access to
+	 *
+	 * @return integer the group id
+	 */
+	public function update_group($group, $modules = null)
+	{
+		$this->account = $group;
+		$this->account_id = $group->id;
+		$this->save_repository();
+
+		// module permissions
+		if (is_array($modules)) {
+			$apps = new \App\Controllers\Api\Applications($group->id);
+			$apps->update_data(array_keys($modules));
+			$apps->save_repository();
+		}
+
+		// FIXME This is broken and only supports localFS VFS
+		if ($group->old_loginid != $group->lid) {
+			$basedir = "{$this->serverSettings['files_dir']}/groups/";
+			@rename("{$basedir}{$group->old_loginid}", "{$basedir}/{$group->lid}");
+		}
+
+		$GLOBALS['hook_values'] = array(
+			'account_id'	=> $group->id,
+			'account_lid'	=> $group->lid,
+		);
+
+		(new \App\Services\Hooks())->process('editgroup');
+
+		return $group->id;
+	}
+
+	/**
+	 * Update an existing user account record
+	 *
+	 * @param object $user        the phpgw_account object to store
+	 * @param array  $groups      the groups the user should be a member of
+	 * @param array  $permissions ACLs to set for the user
+	 * @param array  $modules     the modules the user has access to
+	 *
+	 * @return void
+	 */
+	public function update_user($user, $groups, $acls = array(), $modules = null)
+	{
+		$this->set_account($user->id);
+		$this->account = $user;
+		$this->save_repository();
+
+		$this->_cache_account($user);
+
+		// handle groups
+		$old_groups = array_keys($this->membership($user->id));
+		$new_groups = $groups;
+		$drop_groups = array_diff($old_groups, $new_groups);
+
+		if (is_array($drop_groups) && count($drop_groups)) {
+			foreach ($drop_groups as $group) {
+				$this->delete_account4group($user->id, $group);
+			}
+		}
+		unset($old_groups, $groups, $drop_groups);
+
+		foreach ($new_groups as $group) {
+			$this->add_user2group($user->id, $group);
+		}
+
+		//FIXME need permissions here
+
+		$aclobj = Acl::getInstance();
+		$aclobj->set_account_id($user->id, true);
+		$aclobj->clear_user_cache($user->id);
+		$installed_apps = \App\Services\Settings::getInstance()->get('apps');
+		foreach ($installed_apps as $app => $dummy) {
+			if ($app == 'phpgwapi') {
+				continue;
+			}
+			$aclobj->delete_repository($app, 'admin', $user->id);
+		}
+
+		$aclobj->delete_repository('preferences', 'changepassword', $user->id);
+		$aclobj->delete_repository('phpgwapi', 'anonymous', $user->id);
+		$aclobj->set_account_id($user->id, true); //reread the current repository
+		foreach ($acls as $acl) {
+			$aclobj->add($acl['appname'], $acl['location'], $acl['rights']);
+		}
+
+		$aclobj->save_repository();
+
+		// application permissions
+		if (is_array($modules)) {
+			$apps = new \App\Controllers\Api\Applications($user->id);
+			$apps->update_data($modules);
+			$apps->save_repository();
+		}
+
+		$hook_values = array(
+			'account_id'	=> $user->id,
+			'account_lid'	=> $user->lid,
+			'new_passwd'	=> $user->passwd
+		);
+
+		Settings::getInstance()->set('hook_values', $hook_values);
+
+		(new \App\Services\Hooks())->process('editaccount');
+
+		return true;
+	}
+
+	/**
+	 * Update the account data
+	 *
+	 * @param object $data the account data to use
+	 *
+	 * @return object the account
+	 *
+	 * @internal does not write it to the storage backend
+	 */
+	public function update_data($data)
+	{
+		if ($this->get_type($data->id) == 'g') {
+			$account = new phpgwapi_group();
+		} else {
+			$account = new phpgwapi_user();
+		}
+		$account->init($data);
+		$this->account = $account;
+		return $this->account;
+	}
+
+	/**
+	 * Cache an account object in the system cache
+	 *
+	 * @param object $account phpgw_account object to cache
+	 *
+	 * @return void
+	 */
+	protected function _cache_account($account)
+	{
+		\App\Services\Cache::system_set('phpgwapi', "account_{$account->id}", $account);
+	}
+
+	/**
+	 * Handle the group specific parts of account creation
+	 *
+	 * @param object $group   the phpgwapi_group to be stored
+	 * @param array  $members the users which are members of the group
+	 *
+	 * @return integer the id of the newly created group
+	 */
+	protected function _create_group($group, $members)
+	{
+		$this->_save_contact_for_group($group);
+		if (!$this->create_group_account($group)) {
+			return false;
+		}
+
+		foreach ($members as $member) {
+			$this->add_user2Group($member, $group->id);
+		}
+
+		$GLOBALS['hook_values'] = array(
+			'account_id'	=> $group->id,
+			'account_lid'	=> $group->lid,
+		);
+
+		(new \App\Services\Hooks())->process('addgroup');
+
+		return $group->id;
+	}
+
+	/**
+	 * Handle the user specific parts of account creation
+	 *
+	 * @param object $user   the phpgwapi_user object to be stored
+	 * @param array  $groups the groups the user is to be a member of
+	 *
+	 * @return integer the id of the new user account
+	 */
+	protected function _create_user($user, $groups, $contact_data = array())
+	{
+		$this->_save_contact_for_user($user, $contact_data);
+		if (!$this->create_user_account($user)) {
+			return false;
+		}
+
+		foreach ($groups as $group) {
+			$this->add_user2Group($user->id, $group);
+		}
+
+		// preferences - this is ugly - but the def_pref hook is ugly too
+		$GLOBALS['hook_values'] = array(
+			'account_id'	=> $user->id,
+			'account_lid'	=> $user->lid,
+			'new_passwd'	=> $user->passwd
+		);
+
+		//FIXME
+		//$GLOBALS['pref'] = CreateObject('phpgwapi.preferences', $user->id);
+		$Preferences = \App\Services\Preferences::getInstance($user->id);
+		$Hooks = new \App\Services\Hooks();
+		$Hooks->process('addaccount');
+		$Hooks->process('add_def_pref');
+		//Alert me for later..
+		throw new Exception('Check $Preferences->save_repository()');
+
+		$Preferences->save_repository(false);
+
+		return $user->id;
+	}
+
+	/**
+	 * Find the next available account_id
+	 *
+	 * @param string $account_type Account type 'u' : user; 'g' : group
+	 *
+	 * @return integer New account id
+	 */
+	protected function _get_nextid($account_type = 'u')
+	{
+
+		$min = !empty($this->serverSettings['account_min_id']) ? (int) $this->serverSettings['account_min_id'] : 0;
+
+		$max = !empty($this->serverSettings['account_max_id']) ? (int) $this->serverSettings['account_max_id'] : 2147483647;
+
+		if ($account_type == 'g') {
+			$type = 'groups';
+		} else {
+			$type = 'accounts';
+		}
+
+		$nextid = (int) $GLOBALS['phpgw']->common->last_id($type, $min, $max);
+
+		/* Loop until we find a free id */
+		$free = false;
+		while (!$free) {
+			$account_lid = '';
+			//echo '<br />calling search for id: '.$nextid;
+			if ($this->exists($nextid)) {
+				$nextid = (int) $GLOBALS['phpgw']->common->next_id($type, $min, $max);
+			} else {
+				break;
+			}
+		}
+
+		if (
+			isset($this->serverSettings['account_max_id']) &&
+			$this->serverSettings['account_max_id'] < $nextid
+		) {
+			return false;
+		}
+		/* echo '<br />using'.$nextid;exit; */
+		return $nextid;
+	}
+
+	/**
+	 * Save the contact details for the associated group
+	 *
+	 * @param object &$group phpgwapi_account_group object with information about the group.
+	 *
+	 * @return boolean was the contact created/edited?
+	 */
+	protected function _save_contact_for_group(&$group)
+	{
+		if (!isset($this->serverSettings['addressmaster'])) {
+			$this->serverSettings['addressmaster'] = -3;
+		}
+		$primary = array(
+			'owner'		=> $this->serverSettings['addressmaster'],
+			'access'	=> 'public',
+			'org_name'	=> (string) $group
+		);
+
+		$contacts = createObject('phpgwapi.contacts');
+
+		// does the user already exist in the addressbook?
+		if ($group->person_id && $contacts->exist_contact($group->person_id)) {
+			return !!$contacts->edit_org($group->person_id, $primary);
+		}
+
+		$type = $contacts->search_contact_type('Organizations');
+
+		$group->person_id = $contacts->add_contact($type, $primary);
+		return !!$group->person_id;
+	}
+
+	/**
+	 * Save the contact details for the associated user
+	 *
+	 * @param object &$user phpgwapi_account_user object with information about the user.
+	 *
+	 * @return boolean was the contact created/edited?
+	 */
+	protected function _save_contact_for_user(&$user, $contact_data)
+	{
+		if (isset($contact_data['primary']) && $contact_data['primary']) {
+			$primary = $contact_data['primary'];
+		} else {
+			$primary = array(
+				'owner'				=> $this->serverSettings['addressmaster'],
+				'access'			=> 'public',
+				'per_first_name'	=> $user->firstname,
+				'per_last_name'		=> $user->lastname,
+			);
+		}
+
+		$contacts = createObject('phpgwapi.contacts');
+
+		// does the user already exist in the addressbook?
+		if ($user->person_id && $contacts->exist_contact($user->person_id)) {
+			return !!$contacts->edit_person($user->person_id, $primary);
+		}
+
+		$type = $contacts->search_contact_type('Persons');
+
+		if (isset($contact_data['comms']) && $contact_data['comms']) {
+			$comms = $contact_data['comms'];
+		} else {
+
+			$comms = array();
+			$domain = '';
+			if (isset($this->serverSettings['mail_server'])) {
+				$domain = $this->serverSettings['mail_server'];
+			}
+
+			if ($domain) {
+				$comm = array(
+					'comm_descr'		=> $contacts->search_comm_descr('work email'),
+					'comm_data'			=> "{$user->lid}@{$domain}",
+					'comm_preferred'	=> 'Y'
+				);
+				$comms = array($comm);
+			}
+		}
+
+		$locations = isset($contact_data['locations']) && $contact_data['locations'] ? $contact_data['locations'] : array();
+
+		$user->person_id = $contacts->add_contact($type, $primary, $comms, $locations);
+
+		return !!$user->person_id;
+	}
+}

@@ -182,7 +182,7 @@ class Sessions
 	 */
 	public function create($login, $passwd = '', $skip_auth = false)
 	{
-		$accounts = (new Accounts())->getObject();
+		$accounts = new Accounts();
 
 		if (is_array($login)) {
 			$this->_login	= $login['login'];
@@ -398,7 +398,7 @@ class Sessions
 		$this->update_dla();
 		
 	//	$this->_account_id = $GLOBALS['phpgw']->accounts->name2id($this->_account_lid);
-		$accounts = (new \App\Controllers\Api\Accounts\Accounts())->getObject();
+		$accounts = new \App\Controllers\Api\Accounts\Accounts();
 		$this->_account_id = $accounts->name2id($this->_account_lid);
 
 
@@ -733,7 +733,7 @@ class Sessions
 
 		Settings::getInstance()->set('apps', $apps);
 		
-		$accounts = (new \App\Controllers\Api\Accounts\Accounts($this->_account_id))->getObject();
+		$accounts = new \App\Controllers\Api\Accounts\Accounts($this->_account_id);
 
 		$this->_data               	= $accounts->read()->toArray();
 		$this->_data['fullname']	= $accounts->read()->__toString();

@@ -228,7 +228,7 @@ class Preferences
 			return $this->data['email']['address'];
 		}
 
-		$prefs_email_address = (new Accounts())->getObject()->id2lid($this->account_id);
+		$prefs_email_address = (new Accounts())->id2lid($this->account_id);
 
 		if (!preg_match('/@/', $prefs_email_address)) {
 			$prefs_email_address .= "@{$this->serverSettings['mail_suffix']}";
@@ -244,7 +244,7 @@ class Preferences
 			$this->serverSettings['mail_suffix'] = $_SERVER['HTTP_HOST'];
 		}
 
-		$user = (new Accounts())->getObject()->get($this->account_id);
+		$user = (new Accounts())->get($this->account_id);
 
 		// we cant use phpgw_info/user/fullname, as it's not set when we run
 		// standard notify replacements

@@ -195,7 +195,7 @@
 		{
 			$userSettings = \App\Services\Settings::getInstance()->get('user');
 			$flags = \App\Services\Settings::getInstance()->get('flags');
-			$accounts = (new \App\Controllers\Api\Accounts\Accounts())->getObject();
+			$accounts = new \App\Controllers\Api\Accounts\Accounts();
 
 			$account_id = (int) $account_id;
 			// Don't allow passwords changes for other accounts when using XML-RPC

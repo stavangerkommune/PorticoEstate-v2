@@ -184,7 +184,7 @@
             $this->server_flags = Settings::getInstance()->get('flags');
             $this->_account_id = Settings::getInstance()->get('account_id');
 			$this->cache = new Cache();
-			$this->accounts = (new Accounts())->getObject();
+			$this->accounts = new Accounts();
 			$this->apps = Settings::getInstance()->get('apps');
 			$this->locations = new Locations();
 			if($account_id)
