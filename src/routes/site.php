@@ -2,6 +2,8 @@
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use App\Middleware\LoginMiddleware;
+
 
 
 $app->get('/', function (Request $request, Response $response) {
@@ -70,7 +72,10 @@ $app->post('/login', function (Request $request, Response $response) {
     $response = $response->withHeader('Content-Type', 'application/json');
     $response->getBody()->write($json);
     return $response;
-})->addMiddleware(new App\Middleware\SessionsMiddleware($container));
+})
+->addMiddleware(new App\Middleware\SessionsMiddleware($container))
+//->addMiddleware(new App\Middleware\LoginMiddleware($container))
+;
 
 
 $app->get('/logout[/{params:.*}]', function (Request $request, Response $response) {

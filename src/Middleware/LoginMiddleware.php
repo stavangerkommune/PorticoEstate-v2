@@ -25,33 +25,48 @@
 		You should have received a copy of the GNU Lesser General Public License
 		along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
-namespace App\Security;
+	namespace App\Middleware;
+	use Psr\Http\Message\ServerRequestInterface as Request;
+	use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+	use Psr\Container\ContainerInterface;
+	use Slim\Psr7\Response;
+	use Slim\Routing\RouteContext;
+	use Slim\Exception\HttpForbiddenException;
+	use App\Security\Sessions;
+	use App\Services\Settings;
+	use Psr\Http\Server\MiddlewareInterface;
+
 	/**
 	* Login - enables common handling of the login process from different part of the system
 	*
 	* @package phpgwapi
 	* @subpackage login
 	*/
-	class Login
+	class LoginMiddleware implements MiddlewareInterface
 	{
-		public function __construct()
+		private $flags;
+		private $serverSetting;
+		public function __construct($container)
 		{
+			$this->flags = Settings::getInstance()->get('flags');
+			$this->serverSetting = Settings::getInstance()->get('server');
+
 			/*
 			 * Generic include for login.php like pages
 			 */
-			if(!empty( $GLOBALS['phpgw_info']['flags']['session_name'] ))
+			if(!empty( $this->flags['session_name'] ))
 			{
-				$session_name = $GLOBALS['phpgw_info']['flags']['session_name'];
+				$session_name = $this->flags['session_name'];
 			}
 
-			if(!empty( $GLOBALS['phpgw_info']['flags']['custom_frontend'] ))
+			if(!empty( $this->flags['custom_frontend'] ))
 			{
-				$custom_frontend = $GLOBALS['phpgw_info']['flags']['custom_frontend'];
+				$custom_frontend = $this->flags['custom_frontend'];
 			}
 
 			$GLOBALS['phpgw_info'] = array();
 
-			$GLOBALS['phpgw_info']['flags'] = array
+			$this->flags = array
 			(
 				'disable_template_class' => true,
 				'login'                  => true,
@@ -60,18 +75,11 @@ namespace App\Security;
 			);
 			if(!empty($session_name))
 			{
-				$GLOBALS['phpgw_info']['flags']['session_name'] = $session_name;
+				$this->flags['session_name'] = $session_name;
 			}
 			if(!empty($custom_frontend))
 			{
-				$GLOBALS['phpgw_info']['flags']['custom_frontend'] = $custom_frontend;
-			}
-
-			$header = dirname(realpath(__FILE__)) . '/../../header.inc.php';
-			if ( !file_exists($header) )
-			{
-				Header('Location: ../setup/index.php');
-				exit;
+				$this->flags['custom_frontend'] = $custom_frontend;
 			}
 
 
@@ -84,17 +92,6 @@ namespace App\Security;
 				{
 					$_POST['login'] = str_replace('@', '#', $_POST['login']);
 				}
-			}
-
-			/**
-			* Include phpgroupware header
-			*/
-			require_once $header;
-
-			if(!empty($_GET['debug']))
-			{
-				_debug_array($_SERVER);
-				$GLOBALS['phpgw']->common->phpgw_exit();
 			}
 
 			require_once dirname(realpath(__FILE__)) . '/sso/include_login.inc.php';
@@ -115,28 +112,9 @@ namespace App\Security;
 		}
 
 
-		public function login($frontend = '', $anonymous = false)
+		public function process(Request $request, RequestHandler $handler): Response
 		{
 
-			if(isset($_REQUEST['hide_lightbox']) && $_REQUEST['hide_lightbox'])
-			{
-				$onload = <<<JS
-					<script language="javascript" type="text/javascript">
-						if(typeof(parent.lightbox_login) != 'undefined')
-						{
-						parent.lightbox_login.hide();
-						}
-						else
-						{
-							parent.TINY.box.hide();
-						}
-					</script>
-JS;
-			echo <<<HTML
-<html><head>{$onload}</head></html>
-HTML;
-				exit;
-			}
 
 			if (isset($_REQUEST['skip_remote']) && $_REQUEST['skip_remote'])
 			{
@@ -157,13 +135,13 @@ HTML;
 				switch ($_POST['section'])
 				{
 					case 'activitycalendarfrontend':
-						$GLOBALS['phpgw_info']['flags']['session_name'] = 'activitycalendarfrontendsession';
+						$this->flags['session_name'] = 'activitycalendarfrontendsession';
 						break;
 					case 'bookingfrontend':
-						$GLOBALS['phpgw_info']['flags']['session_name'] = 'bookingfrontendsession';
+						$this->flags['session_name'] = 'bookingfrontendsession';
 						break;
 					case 'eventplannerfrontend':
-						$GLOBALS['phpgw_info']['flags']['session_name'] = 'eventplannerfrontendsession';
+						$this->flags['session_name'] = 'eventplannerfrontendsession';
 						break;
 					default://nothing
 						break;
@@ -199,19 +177,19 @@ HTML;
 
 			if (isset($_REQUEST['skip_remote']) && $_REQUEST['skip_remote']) // In case a user failed logged in via SSO - get another try
 			{
-				$GLOBALS['phpgw_info']['server']['auth_type'] = $GLOBALS['phpgw_remote_user_fallback'];
+				$this->serverSetting['auth_type'] = $GLOBALS['phpgw_remote_user_fallback'];
 			}
 
 			/* Program starts here */
 
-			if ($GLOBALS['phpgw_info']['server']['auth_type'] == 'http' && isset($_SERVER['PHP_AUTH_USER']))
+			if ($this->serverSetting['auth_type'] == 'http' && isset($_SERVER['PHP_AUTH_USER']))
 			{
 				$submit	 = true;
 				$login	 = $_SERVER['PHP_AUTH_USER'];
 				$passwd	 = $_SERVER['PHP_AUTH_PW'];
 			}
 
-			if ($GLOBALS['phpgw_info']['server']['auth_type'] == 'ntlm' && isset($_SERVER['REMOTE_USER']) && (!isset($_REQUEST['skip_remote']) || !$_REQUEST['skip_remote']))
+			if ($this->serverSetting['auth_type'] == 'ntlm' && isset($_SERVER['REMOTE_USER']) && (!isset($_REQUEST['skip_remote']) || !$_REQUEST['skip_remote']))
 			{
 				$remote_user = explode('@', $_SERVER['REMOTE_USER']);
 				$login   = $remote_user[0];//$_SERVER['REMOTE_USER'];
@@ -266,7 +244,7 @@ HTML;
 
 			# Apache + mod_ssl style SSL certificate authentication
 			# Certificate (chain) verification occurs inside mod_ssl
-			if ($GLOBALS['phpgw_info']['server']['auth_type'] == 'sqlssl' && isset($_SERVER['SSL_CLIENT_S_DN']) && !isset($_GET['cd']))
+			if ($this->serverSetting['auth_type'] == 'sqlssl' && isset($_SERVER['SSL_CLIENT_S_DN']) && !isset($_GET['cd']))
 			{
 				# an X.509 subject looks like:
 				# /CN=john.doe/OU=Department/O=Company/C=xx/Email=john@comapy.tld/L=City/
@@ -297,7 +275,7 @@ HTML;
 				unset($sslattributes);
 			}
 
-			if ($GLOBALS['phpgw_info']['server']['auth_type'] == 'customsso' &&  (!isset($_REQUEST['skip_remote']) || !$_REQUEST['skip_remote']))
+			if ($this->serverSetting['auth_type'] == 'customsso' &&  (!isset($_REQUEST['skip_remote']) || !$_REQUEST['skip_remote']))
 			{
 				//Reset auth object
 				$GLOBALS['phpgw']->auth	= createObject('phpgwapi.auth');
@@ -350,8 +328,8 @@ HTML;
 			 * OpenID Connect
 			 */
 			else if (
-				in_array($GLOBALS['phpgw_info']['server']['auth_type'],  array('remoteuser', 'azure'))
-				&& !empty($GLOBALS['phpgw_info']['server']['mapping'])
+				in_array($this->serverSetting['auth_type'],  array('remoteuser', 'azure'))
+				&& !empty($this->serverSetting['mapping'])
 				&& (isset($_SERVER['OIDC_upn']) || isset($_SERVER['REMOTE_USER']) || isset($_SERVER['OIDC_pid']))
 				&& empty($_REQUEST['skip_remote']))
 			{
@@ -359,7 +337,7 @@ HTML;
 				$phpgw_map_authtype = isset($_SERVER['HTTP_SHIB_ORIGIN_SITE']) ? 'shibboleth':'remoteuser';
 
 				//Create the mapping if necessary :
-				if(isset($GLOBALS['phpgw_info']['server']['mapping']) && !empty($GLOBALS['phpgw_info']['server']['mapping']))
+				if(isset($this->serverSetting['mapping']) && !empty($this->serverSetting['mapping']))
 				{
 					if(!is_object($GLOBALS['phpgw']->mapping))
 					{
@@ -388,7 +366,7 @@ HTML;
 							$OIDC_groups = mb_convert_encoding(mb_convert_encoding($_SERVER["OIDC_groups"], 'ISO-8859-1', 'UTF-8'), 'UTF-8', 'ISO-8859-1');
 							$ad_groups	= explode(",",$OIDC_groups);
 						}
-						$default_group_lid	 = !empty($GLOBALS['phpgw_info']['server']['default_group_lid']) ? $GLOBALS['phpgw_info']['server']['default_group_lid'] : 'Default';
+						$default_group_lid	 = !empty($this->serverSetting['default_group_lid']) ? $this->serverSetting['default_group_lid'] : 'Default';
 
 						if (!in_array($default_group_lid, $ad_groups))
 						{
@@ -401,15 +379,15 @@ HTML;
 				}
 				else if (!$login || empty($GLOBALS['sessionid']))
 				{
-					if(!empty($GLOBALS['phpgw_info']['server']['auto_create_acct']))
+					if(!empty($this->serverSetting['auto_create_acct']))
 					{
 
-						if ($GLOBALS['phpgw_info']['server']['mapping'] == 'id')
+						if ($this->serverSetting['mapping'] == 'id')
 						{
 							// Redirection to create the new account :
 							return $this->create_account();
 						}
-						else if ($GLOBALS['phpgw_info']['server']['mapping'] == 'table' || $GLOBALS['phpgw_info']['server']['mapping'] == 'all')
+						else if ($this->serverSetting['mapping'] == 'table' || $this->serverSetting['mapping'] == 'all')
 						{
 							// Redirection to create a new mapping :
 							return $this->create_mapping();
@@ -464,8 +442,8 @@ HTML;
 				}
 
 				$receipt = array();
-				if (isset($GLOBALS['phpgw_info']['server']['usecookies'])
-						&& $GLOBALS['phpgw_info']['server']['usecookies'])
+				if (isset($this->serverSetting['usecookies'])
+						&& $this->serverSetting['usecookies'])
 				{
 					if (isset($_COOKIE['domain']) && $_COOKIE['domain'] != $logindomain)
 					{
@@ -521,14 +499,14 @@ HTML;
 				$variables['lang_login']	= lang('login');
 				$variables['partial_url']	= $partial_url;
 				$variables['lang_frontend']	= $frontend ? lang($frontend) : '';
-				if (isset($GLOBALS['phpgw_info']['server']['half_remote_user']) && $GLOBALS['phpgw_info']['server']['half_remote_user'] == 'remoteuser')
+				if (isset($this->serverSetting['half_remote_user']) && $this->serverSetting['half_remote_user'] == 'remoteuser')
 				{
 					$variables['lang_additional_url']	 = lang('use sso login');
 					$variables['additional_url']		 = $GLOBALS['phpgw']->link('/' . $phpgw_url_for_sso);
 				}
 			}
 
-			$uilogin = new phpgw_uilogin($GLOBALS['phpgw_info']['server']['auth_type'] == 'remoteuser' && !isset($GLOBALS['phpgw_remote_user']));
+			$uilogin = new phpgw_uilogin($this->serverSetting['auth_type'] == 'remoteuser' && !isset($GLOBALS['phpgw_remote_user']));
 			$uilogin->phpgw_display_login($variables);
 		}
 
@@ -574,7 +552,7 @@ HTML;
 		{
 			if($anonymous && $frontend)
 			{
-				$GLOBALS['phpgw_info']['server']['auth_type'] = 'sql';
+				$this->serverSetting['auth_type'] = 'sql';
 				$config = createobject('phpgwapi.config', $frontend)->read();
 
 				$login = $config['anonymous_user'];
