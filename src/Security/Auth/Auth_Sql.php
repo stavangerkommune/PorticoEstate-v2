@@ -26,6 +26,7 @@
 	 */
 
 	namespace App\Security\Auth;
+	use PDO;
 
 	/**
 	* Authentication based on SQL table
@@ -55,21 +56,17 @@
 		*/
 		public function authenticate($username, $passwd)
 		{
-			$username = $this->db->db_addslashes($username);
+			$sql = 'SELECT account_pwd FROM phpgw_accounts WHERE account_lid = :username AND account_status = \'A\'';
+			$stmt = $this->db->prepare($sql);
+			$stmt->execute([':username' => $username]);
 
-			$sql = 'SELECT account_pwd FROM phpgw_accounts'
-				. " WHERE account_lid = '{$username}'"
-					. " AND account_status = 'A'";
-
-			$this->db->query($sql, __LINE__, __FILE__);
-			if ( !$this->db->next_record() )
-			{
+			$row = $stmt->fetch(PDO::FETCH_ASSOC);
+			if (!$row) {
 				return false;
 			}
 
-			$hash = $this->db->f('account_pwd', true);
-			return $this->verify_hash($passwd, $hash);
-		}
+			$hash = $row['account_pwd'];
+			return $this->verify_hash($passwd, $hash);		}
 
 		/**
 		* Set the user's password to a new value

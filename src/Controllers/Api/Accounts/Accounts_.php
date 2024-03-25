@@ -39,7 +39,6 @@
  * @category accounts
  */
 
-use App\Services\DatabaseObject;
 use App\Security\Acl;
 use App\Services\Settings;
 use App\Controllers\Api\Accounts\phpgwapi_group;
@@ -95,7 +94,7 @@ abstract class phpgwapi_accounts_
 	protected $like, $join, $account_type, $serverSettings;
 	public function __construct($account_id = null, $account_type = null)
 	{
-		$this->db = DatabaseObject::getInstance()->get('db');
+		$this->db = \App\Database\Db::getInstance();
 		$this->like = 'ILIKE';
 		$this->join = 'JOIN';
 
@@ -364,7 +363,7 @@ abstract class phpgwapi_accounts_
 
 			// application permissions
 			foreach ($modules as $module) {
-				$aclobj->add($module, 'run', phpgwapi_acl::READ);
+				$aclobj->add($module, 'run', Acl::READ);
 			}
 
 			$aclobj->save_repository();
@@ -641,7 +640,7 @@ abstract class phpgwapi_accounts_
 
 		// module permissions
 		if (is_array($modules)) {
-			$apps = createObject('phpgwapi.applications', $group->id);
+			$apps = new \App\Controllers\Api\Applications($group->id);
 			$apps->update_data(array_keys($modules));
 			$apps->save_repository();
 		}
@@ -657,7 +656,7 @@ abstract class phpgwapi_accounts_
 			'account_lid'	=> $group->lid,
 		);
 
-		$GLOBALS['phpgw']->hooks->process('editgroup');
+		(new \App\Services\Hooks())->process('editgroup');
 
 		return $group->id;
 	}
@@ -733,7 +732,7 @@ abstract class phpgwapi_accounts_
 
 		Settings::getInstance()->set('hook_values', $hook_values);
 
-		$GLOBALS['phpgw']->hooks->process('editaccount');
+		(new \App\Services\Hooks())->process('editaccount');
 
 		return true;
 	}
@@ -768,7 +767,7 @@ abstract class phpgwapi_accounts_
 	 */
 	protected function _cache_account($account)
 	{
-		phpgwapi_cache::system_set('phpgwapi', "account_{$account->id}", $account);
+		\App\Services\Cache::system_set('phpgwapi', "account_{$account->id}", $account);
 	}
 
 	/**
@@ -795,7 +794,7 @@ abstract class phpgwapi_accounts_
 			'account_lid'	=> $group->lid,
 		);
 
-		$GLOBALS['phpgw']->hooks->process('addgroup');
+		(new \App\Services\Hooks())->process('addgroup');
 
 		return $group->id;
 	}
@@ -825,10 +824,17 @@ abstract class phpgwapi_accounts_
 			'account_lid'	=> $user->lid,
 			'new_passwd'	=> $user->passwd
 		);
-		$GLOBALS['pref'] = CreateObject('phpgwapi.preferences', $user->id);
-		$GLOBALS['phpgw']->hooks->process('addaccount');
-		$GLOBALS['phpgw']->hooks->process('add_def_pref');
-		$GLOBALS['pref']->save_repository(false);
+
+		//FIXME
+		//$GLOBALS['pref'] = CreateObject('phpgwapi.preferences', $user->id);
+		$Preferences = \App\Services\Preferences::getInstance($user->id);
+		$Hooks = new \App\Services\Hooks();
+		$Hooks->process('addaccount');
+		$Hooks->process('add_def_pref');
+		//Alert me for later..
+		throw new Exception('Check $Preferences->save_repository()');
+
+		$Preferences->save_repository(false);
 
 		return $user->id;
 	}

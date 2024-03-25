@@ -56,10 +56,12 @@
 		 */
 		public static function destroy($id)
 		{
-			$id = $GLOBALS['phpgw']->db->db_addslashes($id);
+			$db		= \App\Database\Db::getInstance();
 
-			return !!$GLOBALS['phpgw']->db->query("DELETE FROM phpgw_sessions WHERE session_id = '{$id}'", __LINE__, __FILE__);
-		}
+			$stmt = $db->prepare("DELETE FROM phpgw_sessions WHERE session_id = :id");
+			$result = $stmt->execute([':id' => $id]);
+
+			return !!$result;		}
 
 		/**
 		 * Garbage Collection - remove stale sessions out of the database
@@ -68,10 +70,13 @@
 		 */
 		public static function gc($max)
 		{
+			$db	= \App\Database\Db::getInstance();
 			$timestamp = time() - (int) $max;
 
-			return !!$GLOBALS['phpgw']->db->query("DELETE FROM phpgw_sessions WHERE lastmodts <= {$timestamp}", __LINE__, __FILE__);
-		}
+			$stmt = $db->prepare("DELETE FROM phpgw_sessions WHERE lastmodts <= :timestamp");
+			$result = $stmt->execute([':timestamp' => $timestamp]);
+
+			return !!$result;		}
 
 		/**
 		 * Get a list of currently logged in sessions
@@ -80,6 +85,9 @@
 		 */
 		public static function get_list()
 		{
+			$db	= \App\Database\Db::getInstance();
+			$Crypto = new App\Services\Crypto();
+
 			// clean out the dead sessions
 			self::gc(ini_get('session.gc_maxlifetime'));
 			
@@ -87,11 +95,12 @@
 
 			$sql = 'SELECT session_id, ip, data FROM phpgw_sessions';
 
-			$GLOBALS['phpgw']->db->query($sql, __LINE__, __FILE__);
-			while ($GLOBALS['phpgw']->db->next_record())
-			{
-				$rawdata = $GLOBALS['phpgw']->crypto->decrypt($GLOBALS['phpgw']->db->f('data', true));
+			$stmt = $db->prepare($sql);
+			$stmt->execute();
 
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+				$rawdata = $Crypto->decrypt($row['data']);
+			
 				//taken from http://no.php.net/manual/en/function.session-decode.php#79244
 				$vars = preg_split('/([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff^|]*)\|/',
 				$rawdata, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
@@ -143,22 +152,30 @@
 		 */
 		public static function read($id)
 		{
-			$id = $GLOBALS['phpgw']->db->db_addslashes($id);
-			$sql = "SELECT data FROM phpgw_sessions WHERE session_id = '{$id}'";
 
-			if ( isset($GLOBALS['phpgw_info']['server']['sessions_checkip'])
-				&& $GLOBALS['phpgw_info']['server']['sessions_checkip'] )
-			{
-				$ip = phpgw::get_var('REMOTE_ADDR', 'ip', 'SERVER');
-				$sql .= " AND ip = '{$ip}'";
+			$serverSettings = App\Services\Settings::getInstance()->get('server');
+			$db	= \App\Database\Db::getInstance();
+
+			$id = $db->db_addslashes($id);
+			$sql = "SELECT data FROM phpgw_sessions WHERE session_id = :id";
+
+			$params = [':id' => $id];
+
+			if (isset($serverSettings['sessions_checkip']) && $serverSettings['sessions_checkip']) {
+				$ip = \Sanitizer::get_var('REMOTE_ADDR', 'ip', 'SERVER');
+				$sql .= " AND ip = :ip";
+				$params[':ip'] = $ip;
 			}
 
-			$GLOBALS['phpgw']->db->query($sql, __LINE__, __FILE__);
-			if ( $GLOBALS['phpgw']->db->next_record() )
-			{
-			//	return $GLOBALS['phpgw']->crypto->decrypt($GLOBALS['phpgw']->db->f('data', true));
-				return unserialize($GLOBALS['phpgw']->db->f('data', true));
+			$stmt = $db->prepare($sql);
+			$stmt->execute($params);
+
+			$data = $stmt->fetchColumn();
+
+			if ($data !== false) {
+				return unserialize($data);
 			}
+
 			return '';
 		}
 
@@ -171,30 +188,28 @@
 		 */
 		public static function write($id, $data)
 		{
-			$db 	= & $GLOBALS['phpgw']->db;
-		//	$crypto = & $GLOBALS['phpgw']->crypto;
+			$db			= \App\Database\Db::getInstance();
 
 			$id   = $db->db_addslashes($id);
-		//	$data = $db->db_addslashes($crypto->encrypt($data));
 			$data = $db->db_addslashes(serialize($data));
 			$ts   = time();
 
-			$db->query("SELECT session_id FROM phpgw_sessions WHERE session_id = '{$id}'", __LINE__, __FILE__);
-			if ( $db->next_record() )
-			{
-				$sql = 'UPDATE phpgw_sessions'
-					. " SET data = '{$data}', lastmodts = {$ts}"
-					. " WHERE session_id = '{$id}'";
-			}
-			else
-			{
-				$ip = phpgw::get_var('REMOTE_ADDR', 'ip', 'SERVER');
-				$sql = "INSERT INTO phpgw_sessions VALUES('{$id}', '{$ip}', '{$data}', {$ts})";
+			$stmt = $db->prepare("SELECT session_id FROM phpgw_sessions WHERE session_id = :id");
+			$stmt->execute([':id' => $id]);
+
+			if ($stmt->fetch()) {
+				$sql = "UPDATE phpgw_sessions SET data = :data, lastmodts = :ts WHERE session_id = :id";
+				$params = [':data' => $data, ':ts' => $ts, ':id' => $id];
+			} else {
+				$ip = \Sanitizer::get_var('REMOTE_ADDR', 'ip', 'SERVER');
+				$sql = "INSERT INTO phpgw_sessions VALUES(:id, :ip, :data, :ts)";
+				$params = [':id' => $id, ':ip' => $ip, ':data' => $data, ':ts' => $ts];
 			}
 
-			$ret = $db->query($sql, __LINE__, __FILE__);
-			return $ret;
-		}
+			$stmt = $db->prepare($sql);
+			$ret = $stmt->execute($params);
+
+			return $ret;		}
 	}
 
 	// Now to make it all work

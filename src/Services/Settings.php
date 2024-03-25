@@ -15,7 +15,7 @@ class Settings
 
     private function __construct($account_id = null)
     {
-		$this->db = DatabaseObject::getInstance()->get('db');
+		$this->db = \App\Database\Db::getInstance();
 		$this->account_id = $account_id;
         // Load settings from the database
         $this->settings = $this->loadSettingsFromDatabase();

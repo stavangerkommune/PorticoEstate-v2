@@ -34,7 +34,6 @@
  * @subpackage application
  */
 namespace App\Controllers\Api;
-use App\Services\DatabaseObject;
 use App\Services\Settings;
 use App\Security\Acl;
 use App\Services\Translation;
@@ -73,7 +72,7 @@ class Applications
 	 */
 	public function __construct($account_id = 0)
 	{
-		$this->db = DatabaseObject::getInstance()->get('db');
+		$this->db = \App\Database\Db::getInstance();
 		$this->acl =Acl::getInstance($account_id);
 
 		$this->set_account_id($account_id);

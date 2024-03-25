@@ -234,7 +234,7 @@
 
 		function write_error_to_db($err)
 		{
-			$db = DatabaseObject::getInstance()->get('db');
+			$db = \App\Database\Db::getInstance();
 			$flags = Settings::getInstance()->get('flags');
 
 			if(!$db)

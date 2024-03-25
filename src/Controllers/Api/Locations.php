@@ -36,7 +36,6 @@
 
 namespace App\Controllers\Api;
 
-use App\Services\DatabaseObject;
 use App\Controllers\Api\Applications;
 use App\Security\Acl;
 
@@ -68,7 +67,7 @@ class Locations
 	 */
 	public function __construct()
 	{
-		$this->_db = DatabaseObject::getInstance()->get('db');
+		$this->_db = \App\Database\Db::getInstance();
 		$this->_join = 'JOIN';
 		$this->_like = 'ILIKE';
 	}

@@ -52,6 +52,15 @@
 		//Fall back
 		class Auth extends Auth_
 		{
+			public function authenticate($username, $passwd)
+			{
+				// Implementation of the authenticate method
+			}
+
+			public function change_password($old_passwd, $new_passwd, $account_id = 0)
+			{
+				// Implementation of the change_password method
+			}
 		}
 	}
 
@@ -123,7 +132,7 @@
 		public function create_hash($passwd)
 		{
 			static $retry = 0;
-			switch ($this->serverSetting['encryption_type'])
+			switch ($this->serverSettings['encryption_type'])
 			{
 				case 'CRYPT'://deprecated
 				case 'BCRYPT':

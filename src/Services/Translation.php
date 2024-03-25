@@ -73,7 +73,7 @@
 
 		private function __construct($preferences = [])
 		{
-			$this->db = DatabaseObject::getInstance()->get('db');
+			$this->db = \App\Database\Db::getInstance();
 			$this->cache = new Cache();
 			$this->serverSettings = Settings::getInstance()->get('server');
 	

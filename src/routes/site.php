@@ -45,8 +45,8 @@ $app->get('/login[/{params:.*}]', function (Request $request, Response $response
                         <input type="password" class="form-control" id="password" name="passwd">
                     </div>
                     <div class="mb-3">
-                        <label for="domain">Domain:</label>
-                        <select class="form-select" id="domain" name="domain">
+                        <label for="logindomain">Domain:</label>
+                        <select class="form-select" id="logindomain" name="logindomain">
                             ' . $domainOptions . '
                         </select>
                     </div>

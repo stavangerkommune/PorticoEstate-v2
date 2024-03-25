@@ -38,8 +38,7 @@
     namespace App\Services;
     use App\Services\Redis;
     use App\Services\Shm;
-	use App\Services\DatabaseObject;
-	
+		
 	use DirectoryIterator;
 	use PDO;
 	use App\Services\Crypto;
@@ -495,7 +494,7 @@
 		 */
 		protected static function _user_clear_db($module, $id, $uid)
 		{
-			$db = DatabaseObject::getInstance()->get('db');
+			$db = \App\Database\Db::getInstance();
 
 			$key = $db->quote(self::_gen_key($module, $id));
 			$uid = (int) $uid;
@@ -525,7 +524,7 @@
 		 */
 		protected static function _user_get_db($module, $id, $uid, $bypass = true, $compress = true)
 		{
-			$db = DatabaseObject::getInstance()->get('db');
+			$db = \App\Database\Db::getInstance();
 
 			$key = $db->quote(self::_gen_key($module, $id));
 			$uid = (int) $uid;
@@ -565,7 +564,7 @@
 			{
 				return false;
 			}
-			$db = DatabaseObject::getInstance()->get('db');
+			$db = \App\Database\Db::getInstance();
 
 			$key = $db->quote(self::_gen_key($module, $id));
 			$value = self::_value_prepare($value, $bypass);

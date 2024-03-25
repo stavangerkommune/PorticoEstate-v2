@@ -6,7 +6,6 @@ use App\Database\Db;
 use Slim\App;
 use Exception;
 use PDOException;
-use App\Services\DatabaseObject;
 
 class DatabaseServiceProvider
 {
@@ -23,10 +22,9 @@ class DatabaseServiceProvider
 					PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 					PDO::ATTR_PERSISTENT => true,
 				];
-				$db = new Db($dsn, $config['db_user'], $config['db_pass'], $options);
-				$db->set_domain($config['domain']);
 				//register the database object in a singleton pattern
-				DatabaseObject::getInstance($db);
+				$db = Db::getInstance($dsn, $config['db_user'], $config['db_pass'], $options);
+				$db->set_domain($config['domain']);
 				return $db;
 			} catch (PDOException $e) {
 				throw new Exception("Error connecting to database: " . $e->getMessage());

@@ -33,8 +33,7 @@ namespace App\Services;
  * @subpackage application
  */
 
- use App\Services\DatabaseObject;
- use PDO;
+  use PDO;
 class Hooks
 {
 	var $found_hooks = array();
@@ -45,7 +44,7 @@ class Hooks
 
 	public function __construct($db = null)
 	{
-		$this->db = $db ?? DatabaseObject::getInstance()->get('db');
+		$this->db = $db ?? \App\Database\Db::getInstance();
 		$this->apps = Settings::getInstance()->get('apps');
 		$this->flags = Settings::getInstance()->get('flags');
 		$this->user = Settings::getInstance()->get('user');

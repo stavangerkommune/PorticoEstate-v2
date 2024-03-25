@@ -5,8 +5,22 @@ use Exception;
 
 class Db extends PDO
 {
+	private static $instance = null;
 	private $isTransactionActive = false;
 	private static $domain;
+
+	private function __construct($dsn, $username = null, $password = null, $options = null)
+	{
+		parent::__construct($dsn, $username, $password, $options);
+	}
+
+	public static function getInstance($dsn='', $username = null, $password = null, $options = null)
+	{
+		if (self::$instance === null) {
+			self::$instance = new self($dsn, $username, $password, $options);
+		}
+		return self::$instance;
+	}
 
 	public function transaction_begin()
 	{
@@ -34,7 +48,10 @@ class Db extends PDO
 
 	public function db_addslashes($string)
 	{
-		return parent::quote($string);
+		if ($string === '' || $string === null) {
+			return '';
+		}
+		return substr(parent::quote($string), 1, -1);
 	}
 
 	public function get_transaction()
@@ -194,4 +211,38 @@ class Db extends PDO
 		self::$domain = $domain;
 	}
 
+	/**
+	 * Finds the next ID for a record at a table
+	 *
+	 * @param string $table tablename in question
+	 * @param array $key conditions
+	 * @return int the next id
+	 */
+
+	final public function next_id($table = '', $key = '')
+	{
+		$where = '';
+		$condition = array();
+		$params = array();
+		if (is_array($key)) {
+			foreach ($key as $column => $value) {
+				if ($value) {
+					$condition[] = $column . " = :" . $column;
+					$params[$column] = $value;
+				}
+			}
+
+			if ($condition) {
+				$where = 'WHERE ' . implode(' AND ', $condition);
+			}
+		}
+
+		$stmt = $this->prepare("SELECT max(id) as maximum FROM $table $where");
+		$stmt->execute($params);
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		$next_id = (int)$row['maximum'] + 1;
+		return $next_id;
+	}
+
+	
 }

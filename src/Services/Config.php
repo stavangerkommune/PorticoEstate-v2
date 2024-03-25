@@ -27,6 +27,7 @@
 	 */
 
 namespace App\Services;
+use PDO;
 /**
  * Application configuration in a centralized location
  *
@@ -68,7 +69,7 @@ class Config
 		if (!$module) {
 			$module = $serverFlags['currentapp'];
 		}
-		$this->db = DatabaseObject::getInstance()->get('db');
+		$this->db = \App\Database\Db::getInstance();
 		$this->module =	$this->db->quote($module);
 	}
 

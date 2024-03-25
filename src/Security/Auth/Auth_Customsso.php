@@ -27,6 +27,7 @@
 	 */
 
 	namespace App\Security\Auth;
+	use PDO;
 
 	/**
 	* Authentication based on SQL table
@@ -98,79 +99,63 @@
 				return;
 			}
 
-			$ssn_hash = "{SHA}" . base64_encode(phpgwapi_common::hex2bin(sha1($ssn)));
+			$hash_safe = "{SHA}" . base64_encode(self::hex2bin(sha1($ssn)));
 
-			$hash_safe = $this->db->db_addslashes($ssn_hash); // just to be safe :)
 			$sql = "SELECT account_lid FROM phpgw_accounts"
 				. " JOIN phpgw_accounts_data ON phpgw_accounts.account_id = phpgw_accounts_data.account_id"
-				. " WHERE account_data->>'ssn_hash' = '{$hash_safe}'";
-			$this->db->query($sql,__LINE__,__FILE__);
-			$this->db->next_record();
-			$username = $this->db->f('account_lid',true);
-			
+				. " WHERE account_data->>'ssn_hash' = :hash_safe";
+			$stmt = $this->db->prepare($sql);
+			$stmt->execute([':hash_safe' => $hash_safe]);
+
+			$row = $stmt->fetch(PDO::FETCH_ASSOC);
+			$username = $row['account_lid'];
+
 			if($username)
 			{
 				return $username;
 			}
 
-			$db = createObject('phpgwapi.db_adodb', null, null, true);
+		// Alternative config
+			$locations = new \App\Controllers\Api\Locations();
+			$location_id = $locations->get_id('property', '.admin');
 
-			// Alternative config
-			$config = CreateObject('admin.soconfig', $GLOBALS['phpgw']->locations->get_id('property', '.admin'));
+			$config = (new \App\Services\ConfigLocation($location_id))->read();
 
-			if ($config->config_data['fellesdata']['host'])
-			{
-				if( !$this->ping($config->config_data['fellesdata']['host']))
-				{
-					$message = "Database server {$config->config_data['fellesdata']['host']} is not accessible";
-					phpgwapi_cache::message_set($message, 'error');
+			try {
+				if ($config['fellesdata']['host']) {
+					if (!$this->ping($config['fellesdata']['host'])) {
+						$message = "Database server {$config['fellesdata']['host']} is not accessible";
+						\App\Services\Cache::message_set($message, 'error');
+					}
+
+					$dsn = "oci:dbname={$config['fellesdata']['host']}:{$config['fellesdata']['port']}/{$config['fellesdata']['db_name']}";
+					$db = new PDO($dsn, $config['fellesdata']['user'], $config['fellesdata']['password']);
+				} else {
+					$config = (new \App\Services\Config('rental'))->read();
+
+					if (!$config['external_db_host'] || !$this->ping($config['external_db_host'])) {
+						$message = "Database server {$config['external_db_host']} is not accessible";
+						\App\Services\Cache::message_set($message, 'error');
+					}
+
+					$dsn = "{$config['external_db_type']}:host={$config['external_db_host']};port={$config['external_db_port']};dbname={$config['external_db_name']}";
+					$db = new PDO($dsn, $config['external_db_user'], $config['external_db_password']);
 				}
-
-				$db->debug = false;
-				$db->Host = $config->config_data['fellesdata']['host'];
-				$db->Port = $config->config_data['fellesdata']['port'];
-				$db->Type = 'oracle';
-				$db->Database = $config->config_data['fellesdata']['db_name'];
-				$db->User = $config->config_data['fellesdata']['user'];
-				$db->Password = $config->config_data['fellesdata']['password'];
-
-			}
-			else
-			{
-				$config	= CreateObject('phpgwapi.config','rental')->read();
-
-				if(! $config['external_db_host'] || !$this->ping($config['external_db_host']))
-				{
-					$message ="Database server {$config['external_db_host']} is not accessible";
-					phpgwapi_cache::message_set($message, 'error');
-				}
-
-				$db->debug = !!$config['external_db_debug'];
-				$db->Host = $config['external_db_host'];
-				$db->Port = $config['external_db_port'];
-				$db->Type = $config['external_db_type'];
-				$db->Database = $config['external_db_name'];
-				$db->User = $config['external_db_user'];
-				$db->Password = $config['external_db_password'];
-			}
-
-			try
-			{
-				$db->connect();
-			}
-			catch(Exception $e)
-			{
+			} catch (\PDOException $e) {
 				$message = lang('unable_to_connect_to_database');
-				phpgwapi_cache::message_set($message, 'error');
+				\App\Services\Cache::message_set($message, 'error');
 				return false;
 			}
 
-			$sql = "SELECT BRUKERNAVN FROM V_AD_PERSON WHERE FODSELSNR ='{$ssn}'";
-			$db->query($sql,__LINE__,__FILE__);
-			$db->next_record();
-			$username = $db->f('BRUKERNAVN',true);
-			return $username;
+			$sql = "SELECT BRUKERNAVN FROM V_AD_PERSON WHERE FODSELSNR = :ssn";
+			$stmt = $db->prepare($sql);
+			$stmt->execute([':ssn' => $ssn]);
 
+			$row = $stmt->fetch(PDO::FETCH_ASSOC);
+			if ($row) {
+				$username = $row['BRUKERNAVN'];
+				return $username;
+			}
 		}
 
 		/**
@@ -183,35 +168,44 @@
 		*/
 		public function change_password($old_passwd, $new_passwd, $account_id = 0)
 		{
+			$userSettings = \App\Services\Settings::getInstance()->get('user');
+			$flags = \App\Services\Settings::getInstance()->get('flags');
+			$accounts = (new \App\Controllers\Api\Accounts\Accounts())->getObject();
+
+
 			$account_id = (int) $account_id;
 			// Don't allow passwords changes for other accounts when using XML-RPC
 			if ( !$account_id )
 			{
-				$account_id = $GLOBALS['phpgw_info']['user']['account_id'];
+				$account_id = $userSettings['account_id'];
 			}
 
-			if ( $GLOBALS['phpgw_info']['flags']['currentapp'] == 'login')
+			if ($flags['currentapp'] == 'login')
 			{
-				if ( !$this->authenticate($GLOBALS['phpgw']->accounts->id2lid($account_id), $old_passwd) )
+				if ( !$this->authenticate($accounts->id2lid($account_id), $old_passwd) )
 				{
 					return '';
 				}
 			}
 
-			$hash = $this->create_hash($new_passwd);
-			$hash_safe = $this->db->db_addslashes($hash); // just to be safe :)
+			$hash_safe = $this->create_hash($new_passwd);
 			$now = time();
 
 			$sql = 'UPDATE phpgw_accounts'
-				. " SET account_pwd = '{$hash_safe}', account_lastpwd_change = {$now}"
-				. " WHERE account_id = {$account_id}";
+				. " SET account_pwd = :hash_safe, account_lastpwd_change = :now"
+				. " WHERE account_id = :account_id";
 
-			if ( !!$this->db->query($sql, __LINE__, __FILE__) )
-			{
-				return $hash;
+			$stmt = $this->db->prepare($sql);
+			$result = $stmt->execute([
+				':hash_safe' => $hash_safe,
+				':now' => $now,
+				':account_id' => $account_id
+			]);
+
+			if ($result) {
+				return $hash_safe;
 			}
-			return '';
-		}
+			return '';		}
 
 		/**
 		* Update when the user last logged in

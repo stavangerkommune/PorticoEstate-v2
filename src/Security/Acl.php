@@ -44,8 +44,7 @@
     namespace App\Security;
     use App\Services\Settings;
     use App\Services\ServerSettings;
-	use App\Services\DatabaseObject;
-	use App\Services\Cache;
+		use App\Services\Cache;
 	use App\Controllers\Api\Accounts\Accounts;
 	use App\Controllers\Api\Locations;
 	use PDO;
@@ -177,7 +176,7 @@
 
         private function __construct($account_id = 0)
         {
-			$this->_db = DatabaseObject::getInstance()->get('db');
+			$this->_db = \App\Database\Db::getInstance();
             $this->_like		= 'ILIKE';
 			$this->_join		= 'JOIN';
 			$this->_left_join	= 'LEFT JOIN';
@@ -1572,7 +1571,7 @@
 					if ( $is_group[$grantor] )
 					{
 						// Don't allow to override private!
-						$rights &= (~ PHPGW_ACL_PRIVATE);
+						$rights &= (~ ACL_PRIVATE);
 						if ( !isset($grants['groups'][$grantor]) )
 						{
 							$grants['groups'][$grantor] = 0;
@@ -1701,7 +1700,7 @@
 					if ( $is_group[$grantor] )
 					{
 						// Don't allow to override private!
-						$rights &= (~ PHPGW_ACL_PRIVATE);
+						$rights &= (~ ACL_PRIVATE);
 						if ( !isset($grants[$grantor]) )
 						{
 							$grants[$grantor] = 0;

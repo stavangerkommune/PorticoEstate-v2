@@ -77,7 +77,7 @@ class AuthExchange extends Auth_
 
 		// empty pw will connect as anonymous user
 		if (empty($passwd)) {
-			$passwd = crypt(microtime());
+			$passwd = crypt(microtime(), 'salt');
 		}
 
 		$passwd = stripslashes($passwd);

@@ -1,19 +1,18 @@
 <?php
 namespace App\Security;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+//use Psr\Http\Message\ServerRequestInterface as Request;
+//use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Container\ContainerInterface;
-use Slim\Psr7\Response as Psr7Response;
-use Slim\Routing\RouteContext;
+//use Psr\Container\ContainerInterface;
+//use Slim\Psr7\Response as Psr7Response;
+//use Slim\Routing\RouteContext;
 //use Slim\Exception\HttpNotFoundException;
-use Slim\Exception\HttpForbiddenException;
+//use Slim\Exception\HttpForbiddenException;
 use App\Security\Auth\Auth;
-use PDO;
+//use PDO;
 use App\Services\Settings;
-use Psr\Http\Server\MiddlewareInterface;
-use Slim\Exception\NotFoundException;
-use App\Services\DatabaseObject;
+//use Psr\Http\Server\MiddlewareInterface;
+//use Slim\Exception\NotFoundException;
 Use App\Services\Preferences;
 use App\Services\Cache;
 use App\Controllers\Api\Accounts\phpgwapi_account;
@@ -76,7 +75,7 @@ class Sessions
 
     public function __construct()
     {
-		$this->db = DatabaseObject::getInstance()->get('db');
+		$this->db = \App\Database\Db::getInstance();
 		
 		$this->serverSetting = Settings::getInstance()->get('server');
 
@@ -111,19 +110,6 @@ class Sessions
 		//don't rewrite URL, as we have to do it in link - why? cos it is buggy otherwise
 		ini_set('url_rewriter.tags', '');
 		ini_set("session.gc_maxlifetime", $this->serverSetting['sessions_timeout']);
-
-
-
-	//	$this->_sessionid	= \Sanitizer::get_var(session_name(), 'string', 'COOKIE');
-
-
-		//respect the config option for cookies
-		ini_set('session.use_cookies', true);
-
-		//don't rewrite URL, as we have to do it in link - why? cos it is buggy otherwise
-	//	ini_set('url_rewriter.tags', '');
-	//	ini_set("session.gc_maxlifetime", $this->serverSetting['sessions_timeout']);
-
     }
 
 	public function get_session_id()
@@ -172,7 +158,7 @@ class Sessions
 
 		session_set_cookie_params(
 			array(
-				'lifetime' => 0,
+				'lifetime' => $this->serverSetting['sessions_timeout'],
 				'path' => parse_url($webserver_url, PHP_URL_PATH),
 				'domain' => $this->_cookie_domain,
 				'secure' => $secure,
@@ -667,7 +653,7 @@ class Sessions
 				unlink($sessions[$sessionid]['session_file']);
 			}
 		} else {
-			SessionHandlerDb::destroy($sessionid);
+			\SessionHandlerDb::destroy($sessionid);
 		}
 
 		return true;
@@ -718,11 +704,18 @@ class Sessions
 	 * Read the repositories for the current user
 	 * @param int $account_id
 	 * @param string $currentApp
-	 * @param bool $write_cache
+	 * @param bool $use_cache
 	 */
-	private function read_repositories( $write_cache = false)
+	public function read_repositories( $use_cache = false)
 	{
-		$phpgw_info = Cache::session_get('phpgwapi', 'phpgw_info');
+		if($use_cache)
+		{
+			$phpgw_info = null;
+		}
+		else
+		{
+			$phpgw_info = Cache::session_get('phpgwapi', 'phpgw_info');
+		}
 
 		if (!empty($phpgw_info['user']) && is_array($phpgw_info['user'])) {
 			$this->_data = $phpgw_info['user'];
@@ -754,14 +747,13 @@ class Sessions
 		$this->_data['account_id']  = $this->_account_id;
 		
 		Settings::getInstance()->set('user', $this->_data);
-	//	if ($write_cache) {
-			Cache::session_set('phpgwapi', 'phpgw_info', array(
-				'user' => $this->_data,
-				'apps' => $apps,
-				'flags' => Settings::getInstance()->get('flags'),
-				'server' => Settings::getInstance()->get('server')
+		Cache::session_set('phpgwapi', 'phpgw_info', array(
+			'user' => $this->_data,
+			'apps' => $apps,
+			'flags' => Settings::getInstance()->get('flags'),
+			'server' => Settings::getInstance()->get('server')
 		));
-	//	}
+	
 		
 	}
 
@@ -947,7 +939,7 @@ class Sessions
 			$data = array();
 			switch ($this->serverSetting['sessions_type']) {
 				case 'db':
-					$data = SessionHandlerDb::get_list();
+					$data = \SessionHandlerDb::get_list();
 					break;
 
 				case 'php':

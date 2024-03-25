@@ -12,7 +12,6 @@ use PDO;
 use App\Services\Settings;
 use Psr\Http\Server\MiddlewareInterface;
 use Slim\Exception\NotFoundException;
-use App\Services\DatabaseObject;
 Use App\Services\Preferences;
 use App\Services\Cache;
 use App\Controllers\Api\Accounts\phpgwapi_account;
@@ -54,7 +53,7 @@ class SessionsMiddleware implements MiddlewareInterface
     public function __construct($container)
     {
         $this->container = $container;
-		$this->db = DatabaseObject::getInstance()->get('db');
+		$this->db = \App\Database\Db::getInstance();
 		
 		$this->serverSetting = Settings::getInstance()->get('server');
 

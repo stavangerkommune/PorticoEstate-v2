@@ -25,6 +25,7 @@
 	 */
 
 	namespace App\Security\Auth;
+	use PDO;
 
 	/**
 	* Authentication based on Azure AD
@@ -51,20 +52,22 @@
 		*/
 		public function authenticate($username, $passwd)
 		{
-			$username = $this->db->db_addslashes($username);
 
 			$sql = 'SELECT account_id FROM phpgw_accounts'
-				. " WHERE account_lid = '{$username}'"
-					. " AND account_status = 'A'";
+				. " WHERE account_lid = :username"
+				. " AND account_status = 'A'";
 
-			$this->db->query($sql, __LINE__, __FILE__);
-			$authenticated = !!$this->db->next_record();
-			$account_id = (int)$this->db->f('account_id');
+			$stmt = $this->db->prepare($sql);
+			$stmt->execute([':username' => $username]);
 
-			$ssn = phpgw::get_var('OIDC_pid', 'string', 'SERVER');
+			$authenticated = $stmt->fetchColumn() !== false;
+			$account_id = (int)$stmt->fetchColumn();
 
-			// skip anonymous users
-			if (!$GLOBALS['phpgw']->acl->check('anonymous', 1, 'phpgwapi') && $ssn && $authenticated)
+			$ssn = \Sanitizer::get_var('OIDC_pid', 'string', 'SERVER');
+
+		// skip anonymous users
+			$Acl = \App\Security\Acl::getInstance($account_id);
+			if (!$Acl->check('anonymous', 1, 'phpgwapi') && $ssn && $authenticated)
 			{
 				$this->update_hash($account_id, $ssn);
 			}
@@ -80,8 +83,8 @@
 		 */
 		public function get_username($primary = false)
 		{
-			$remote_user_1 = explode('@', phpgw::get_var('OIDC_upn', 'string', 'SERVER'));
-			$remote_user_2 = phpgw::get_var('OIDC_onpremisessamaccountname', 'string', 'SERVER');
+			$remote_user_1 = explode('@', \Sanitizer::get_var('OIDC_upn', 'string', 'SERVER'));
+			$remote_user_2 = \Sanitizer::get_var('OIDC_onpremisessamaccountname', 'string', 'SERVER');
 
 //			$GLOBALS['phpgw']->log->write(array('text' => 'I-Notification, SERVER-values %1',
 //				'p1' => '<pre>' . print_r($_SERVER, true) . '</pre>'));
@@ -100,7 +103,7 @@
 				$username = $GLOBALS['phpgw']->mapping->get_mapping($_SERVER['REMOTE_USER']);
 			}
 
-			$ssn = phpgw::get_var('OIDC_pid', 'string', 'SERVER');
+			$ssn = \Sanitizer::get_var('OIDC_pid', 'string', 'SERVER');
 
 			/**
 			 * Azure from inside firewall
@@ -118,46 +121,50 @@
 				return;
 			}
 
-			$ssn_hash = "{SHA}" . base64_encode(phpgwapi_common::hex2bin(sha1($ssn)));
+			$ssn_hash = "{SHA}" . base64_encode(self::hex2bin(sha1($ssn)));
 
-			$hash_safe = $this->db->db_addslashes($ssn_hash); // just to be safe :)
+
 			$sql = "SELECT account_lid FROM phpgw_accounts"
 				. " JOIN phpgw_accounts_data ON phpgw_accounts.account_id = phpgw_accounts_data.account_id"
-				. " WHERE account_data->>'ssn_hash' = '{$hash_safe}'";
-			$this->db->query($sql,__LINE__,__FILE__);
-			$this->db->next_record();
-			$username = $this->db->f('account_lid',true);
+				. " WHERE account_data->>'ssn_hash' = :ssn_hash";
+			$stmt = $this->db->prepare($sql);
+			$stmt->execute([':ssn_hash' => $ssn_hash]);
+
+			$row = $stmt->fetch(PDO::FETCH_ASSOC);
+			$username = $this->db->unmarshal($row['account_lid'], 'string');
 
 			if($username)
 			{
 				return $username;
 			}
 
-	
 			return $username;
 
 		}
 
 		function update_hash($account_id, $ssn)
 		{
-			$ssn_hash = "{SHA}" . base64_encode(phpgwapi_common::hex2bin(sha1($ssn)));
-			$hash_safe = $this->db->db_addslashes($ssn_hash); // just to be safe :)
+			$ssn_hash = "{SHA}" . base64_encode(self::hex2bin(sha1($ssn)));
 
 			$sql = "SELECT phpgw_accounts.account_id, account_lid FROM phpgw_accounts"
 				. " JOIN phpgw_accounts_data ON phpgw_accounts.account_id = phpgw_accounts_data.account_id"
-				. " WHERE account_data->>'ssn_hash' = '{$hash_safe}'";
-			$this->db->query($sql,__LINE__,__FILE__);
-			$this->db->next_record();
-			$old_account_id = $this->db->f('account_id');
-			$old_account_lid = $this->db->f('account_lid');
-			
+				. " WHERE account_data->>'ssn_hash' = :ssn_hash";
+			$stmt = $this->db->prepare($sql);
+			$stmt->execute([':ssn_hash' => $ssn_hash]);
+
+			$row = $stmt->fetch(PDO::FETCH_ASSOC);
+			$old_account_id = $row['account_id'];
+			$old_account_lid = $row['account_lid'];			
 			if($old_account_id && $old_account_id != $account_id)
 			{
-				$this->db->query("SELECT account_lid FROM phpgw_accounts WHERE account_id = " . (int)$account_id,__LINE__,__FILE__);
-				$this->db->next_record();
-				$new_account_lid = $this->db->f('account_lid');
+				$Log = new \App\Services\Log();
+				$stmt = $this->db->prepare("SELECT account_lid FROM phpgw_accounts WHERE account_id = :account_id");
+				$stmt->execute([':account_id' => (int)$account_id]);
 
-				$GLOBALS['phpgw']->log->write(array('text' => 'I-Notification, attempt to register duplicate ssn for old: %1, new: %2',
+				$row = $stmt->fetch(PDO::FETCH_ASSOC);
+				$new_account_lid = $row['account_lid'];
+
+					$Log->write(array('text' => 'I-Notification, attempt to register duplicate ssn for old: %1, new: %2',
 					'p1' => $old_account_lid,
 					'p2' => $new_account_lid,
 					));
@@ -165,12 +172,14 @@
 				return;
 			}
 
-			$this->db->query("SELECT account_id FROM phpgw_accounts_data WHERE account_id = " . (int)$account_id,__LINE__,__FILE__);
-			if (!$this->db->next_record())
-			{
-				$data = json_encode(array('ssn_hash' => $hash_safe,'updated' => date('Y-m-d H:i:s')));
-				$sql = "INSERT INTO phpgw_accounts_data (account_id, account_data) VALUES ({$account_id}, '{$data}')";
-				$this->db->query($sql,__LINE__,__FILE__);
+			$stmt = $this->db->prepare("SELECT account_id FROM phpgw_accounts_data WHERE account_id = :account_id");
+			$stmt->execute([':account_id' => (int)$account_id]);
+
+			if (!$stmt->fetch()) {
+				$data = json_encode(array('ssn_hash' => $ssn_hash,'updated' => date('Y-m-d H:i:s')));
+				$sql = "INSERT INTO phpgw_accounts_data (account_id, account_data) VALUES (:account_id, :data)";
+				$stmt = $this->db->prepare($sql);
+				$stmt->execute([':account_id' => $account_id, ':data' => $data]);
 			}
 		}
 
@@ -184,32 +193,39 @@
 		*/
 		public function change_password($old_passwd, $new_passwd, $account_id = 0)
 		{
+			$userSettings = \App\Services\Settings::getInstance()->get('user');
+			$flags = \App\Services\Settings::getInstance()->get('flags');
+			$accounts = (new \App\Controllers\Api\Accounts\Accounts())->getObject();
+
 			$account_id = (int) $account_id;
 			// Don't allow passwords changes for other accounts when using XML-RPC
 			if ( !$account_id )
 			{
-				$account_id = $GLOBALS['phpgw_info']['user']['account_id'];
+				$account_id = $userSettings['account_id'];
 			}
 
-			if ( $GLOBALS['phpgw_info']['flags']['currentapp'] == 'login')
+			if ( $flags['currentapp'] == 'login')
 			{
-				if ( !$this->authenticate($GLOBALS['phpgw']->accounts->id2lid($account_id), $old_passwd) )
+				if ( !$this->authenticate($accounts->id2lid($account_id), $old_passwd) )
 				{
 					return '';
 				}
 			}
 
-			$hash = $this->create_hash($new_passwd);
-			$hash_safe = $this->db->db_addslashes($hash); // just to be safe :)
+			$hash_safe = $this->create_hash($new_passwd);
+			
 			$now = time();
 
 			$sql = 'UPDATE phpgw_accounts'
-				. " SET account_pwd = '{$hash_safe}', account_lastpwd_change = {$now}"
-				. " WHERE account_id = {$account_id}";
+				. " SET account_pwd = :hash_safe, account_lastpwd_change = :now"
+				. " WHERE account_id = :account_id";
 
-			if ( !!$this->db->query($sql, __LINE__, __FILE__) )
-			{
-				return $hash;
+			$stmt = $this->db->prepare($sql);
+			$stmt->bindParam(':hash_safe', $hash_safe);
+			$stmt->bindParam(':now', $now);
+			$stmt->bindParam(':account_id', $account_id);
+			if ($stmt->execute()) {
+				return $hash_safe;
 			}
 			return '';
 		}
@@ -227,10 +243,14 @@
 			$now = time();
 
 			$sql = 'UPDATE phpgw_accounts'
-				. " SET account_lastloginfrom = '{$ip}',"
-					. " account_lastlogin = {$now}"
-				. " WHERE account_id = {$account_id}";
+				. " SET account_lastloginfrom = :ip,"
+				. " account_lastlogin = :now"
+				. " WHERE account_id = :account_id";
 
-			$this->db->query($sql, __LINE__, __FILE__);
+			$stmt = $this->db->prepare($sql);
+			$stmt->bindParam(':ip', $ip);
+			$stmt->bindParam(':now', $now);
+			$stmt->bindParam(':account_id', $account_id);
+			$stmt->execute();
 		}
 	}

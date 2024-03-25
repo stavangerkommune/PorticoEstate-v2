@@ -7,6 +7,7 @@ use PDO;
 use DateTimeZone;
 use DateTime;
 use App\Controllers\Api\Accounts\Accounts;
+use App\Security\Sessions;
 
 
 class Preferences
@@ -26,11 +27,12 @@ class Preferences
 	private $apps;
 	private $preferences;
 	public $account_id;
+	private $global_lock = false;
 
 
 	public function __construct($account_id = null)
 	{
-		$this->db = DatabaseObject::getInstance()->get('db');
+		$this->db = \App\Database\Db::getInstance();
 		$this->account_id = $account_id;
 		$this->serverSettings = Settings::getInstance()->get('server');
 		$this->preferences = $this->Readpreferences();
@@ -319,4 +321,75 @@ class Preferences
 	{
 		return $this->settings[$name] ?? null;
 	}
+
+	/**
+	 * save the the preferences to the repository
+	 *
+	 * @param $update_session_info old param, seems not to be used
+	 * @param $type which prefs to update: user/default/forced
+	 * the user prefs for saveing are in $this->user not in $this->data, which are the effectiv prefs only
+	 */
+	public function save_repository($update_session_info = False, $type = 'user')
+	{
+		// Don't get the old values back from the cache on next load
+		\App\Services\Cache::session_clear('phpgwapi', 'phpgw_info');
+
+		switch ($type) {
+			case 'forced':
+				$account_id = -1;
+				$prefs = &$this->forced;
+				break;
+			case 'default':
+				$account_id = -2;
+				$prefs = &$this->default;
+				break;
+			default:
+				$account_id = intval($this->account_id);
+				$prefs = &$this->user;	// we use the user-array as data contains default values too
+				break;
+		}
+		//echo "<p>preferences::save_repository(,$type): account_id=$account_id, prefs="; print_r($prefs); echo "</p>\n";
+
+		$Acl = \App\Security\Acl::getInstance();
+		if (!$Acl->check('session_only_preferences', 1, 'preferences')) {
+			if ($this->db->get_transaction()) {
+				$this->global_lock = true;
+			} else {
+				$this->db->transaction_begin();
+			}
+
+			$stmt = $this->db->prepare("DELETE FROM phpgw_preferences WHERE preference_owner = :account_id");
+			$stmt->execute([':account_id' => $account_id]);
+
+			foreach ($prefs as $app => $value) {
+				if (!is_array($value)) {
+					continue;
+				}
+
+				$value_set = array(
+					':preference_owner' => $account_id,
+					':preference_app' => $app,
+					':preference_json' => json_encode($value)
+				);
+
+				$sql = "INSERT INTO phpgw_preferences (preference_owner, preference_app, preference_json) VALUES (:preference_owner, :preference_app, :preference_json)";
+				$stmt = $this->db->prepare($sql);
+				$stmt->execute($value_set);				
+			}
+
+			if (!$this->global_lock) {
+				$this->db->transaction_commit();
+			}
+		}
+
+	//	$GLOBALS['phpgw_info']['user']['preferences'] = $this->data;
+
+		if (($type == 'user' || !$type) && !empty($this->serverSettings['cache_phpgw_info'])) {
+			$sessions = new Sessions();
+			$sessions->read_repositories(false);
+		}
+
+		return $this->data;
+	}
+
 }
