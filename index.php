@@ -65,8 +65,12 @@ require_once __DIR__ . '/src/routes/site.php';
 // Set the displayErrorDetails setting. This is off by default
 $app->addErrorMiddleware(true, true, true);
 
-// Start the session with a specific session id
-//$session = (new Middlewares\PhpSession())->name('portico_php_session');
+// Set custom error handlers
+
+//$errorHandler = new \App\Helpers\ErrorHandler($app->getResponseFactory());
+//$errorMiddleware->setDefaultErrorHandler($errorHandler);
+
+
 
 // Boot service providers
 
