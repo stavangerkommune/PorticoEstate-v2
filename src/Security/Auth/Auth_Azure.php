@@ -40,10 +40,10 @@
 		private $db;
 		private $mapping;
 
-		public function __construct($db)
+		public function __construct()
 		{
 			parent::__construct();
-			$this->db = $db;
+			$this->db = \App\Database\Db::getInstance();
 
 			$phpgw_map_location = isset($_SERVER['HTTP_SHIB_ORIGIN_SITE']) ? $_SERVER['HTTP_SHIB_ORIGIN_SITE'] : 'local';
 			$phpgw_map_authtype = isset($_SERVER['HTTP_SHIB_ORIGIN_SITE']) ? 'shibboleth' : 'remoteuser';

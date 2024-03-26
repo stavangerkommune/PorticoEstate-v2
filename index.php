@@ -49,7 +49,7 @@ $datbaseProvider = new DatabaseServiceProvider();
 //$aclProvider = new AclServiceProvider();
 
 $datbaseProvider->register($app);
-//$aclProvider->register($app);
+
 
 //phpinfo();
 
@@ -62,17 +62,15 @@ require_once __DIR__ . '/src/routes/site.php';
 
 //App\Helpers\DebugArray::debug($app);
 
-// Set the displayErrorDetails setting. This is off by default
-$app->addErrorMiddleware(true, true, true);
 
-// Set custom error handlers
+$displayErrorDetails = true; // Set to false in production
+$logErrors = true;
+$logErrorDetails = true;
+$errorMiddleware = $app->addErrorMiddleware($displayErrorDetails, $logErrors, $logErrorDetails);
+// Get default error handler and override it with your custom error handler
+$customErrorHandler = new \App\Helpers\ErrorHandler($app->getResponseFactory());
+$errorMiddleware->setDefaultErrorHandler($customErrorHandler);
 
-//$errorHandler = new \App\Helpers\ErrorHandler($app->getResponseFactory());
-//$errorMiddleware->setDefaultErrorHandler($errorHandler);
-
-
-
-// Boot service providers
 
 
 // Run the Slim app

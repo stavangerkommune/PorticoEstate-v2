@@ -43,9 +43,9 @@
 		/**
 		* Constructor
 		*/
-		public function __construct($db)
+		public function __construct()
 		{
-			$this->db = $db;
+			$this->db = \App\Database\Db::getInstance();
 			parent::__construct();
 		}
 

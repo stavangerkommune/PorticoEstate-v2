@@ -95,7 +95,7 @@ class Login
 				break;
 		}
 
-		if(!empty($_POST['login']) &&in_array($this->serverSetting['auth_type'],  array('remoteuser', 'azure')))
+		if(!empty($_POST['login']) &&in_array($this->serverSetting['auth_type'],  array('remoteuser', 'azure', 'customsso')))
 		{
 			$this->serverSetting['auth_type'] = $phpgw_remote_user_fallback;
 		}
@@ -197,7 +197,7 @@ class Login
 
 		if ($this->serverSetting['auth_type'] == 'customsso' &&  empty($_REQUEST['skip_remote'])) {
 			//Reset auth object
-			$Auth = new \App\Security\Auth\Aauth();
+			$Auth = new \App\Security\Auth\Auth();
 			$login = $Auth->get_username();
 			
 
@@ -222,7 +222,7 @@ class Login
 		) {
 			print_r($this->serverSetting);
 
-			$Auth = new \App\Security\Auth\Aauth();
+			$Auth = new \App\Security\Auth\Auth();
 			$login = $Auth->get_username();
 			
 

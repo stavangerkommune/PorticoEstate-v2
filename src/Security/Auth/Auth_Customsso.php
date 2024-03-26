@@ -40,10 +40,11 @@
 
 		private $db;
 
-		public function __construct($db)
+		public function __construct()
 		{
 			parent::__construct();
-			$this->db = $db;
+			$this->db = \App\Database\Db::getInstance();
+
 		}
 
 		/**
@@ -77,9 +78,10 @@
 		public function get_username()
 		{
 			$headers = getallheaders();
-			$ssn = $headers['uid'];
+			$ssn = !empty($headers['uid']) ? $headers['uid'] : false;
+			$upn = !empty($headers['upn']) ? $headers['upn'] : false;
 
-			$remote_user = $headers['REMOTE_USER'] ? $headers['REMOTE_USER'] : $headers['upn'];
+			$remote_user = !empty($headers['REMOTE_USER']) ? $headers['REMOTE_USER'] : $upn;
 			$username_arr  = explode('@', $remote_user);
 			$username = $username_arr[0];
 

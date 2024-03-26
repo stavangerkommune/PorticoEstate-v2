@@ -38,10 +38,10 @@
 
 		private $db;
 
-		public function __construct($db)
+		public function __construct()
 		{
 			parent::__construct();
-			$this->db = $db;
+			$this->db = \App\Database\Db::getInstance();
 		}
 
 		public function authenticate($username, $passwd)

@@ -41,10 +41,10 @@ class phpgwapi_auth_sql extends Auth_ // wait for it...
 	 */
 	private $db;
 
-	public function __construct($db)
+	public function __construct()
 	{
 		parent::__construct();
-		$this->db = $db;
+		$this->db = \App\Database\Db::getInstance();
 	}
 
 	/**
