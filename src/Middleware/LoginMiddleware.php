@@ -26,16 +26,13 @@
 		along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 	namespace App\Middleware;
+
 	use Psr\Http\Message\ServerRequestInterface as Request;
 	use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-	use Psr\Container\ContainerInterface;
 	use Slim\Psr7\Response;
-
 	use Slim\Routing\RouteContext;
-	use Slim\Exception\HttpForbiddenException;
-	use App\Security\Sessions;
-	use App\Services\Settings;
 	use Psr\Http\Server\MiddlewareInterface;
+	use App\Security\Login;
 
 	/**
 	* Login - enables common handling of the login process from different part of the system
@@ -45,9 +42,6 @@
 	*/
 	class LoginMiddleware implements MiddlewareInterface
 	{
-		private $flags;
-		private $serverSetting;
-		private $sessions;
 		public function __construct($container)
 		{
 		}
@@ -86,7 +80,7 @@
 				return $this->sendErrorResponse(['msg' => 'route not found'], 404);
 			}
 
-			$Login = new \App\Security\Login();
+			$Login = new Login();
 			$sessionid = $Login->login();
 			if(!$sessionid)
 			{
