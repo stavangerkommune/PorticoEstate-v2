@@ -27,6 +27,8 @@
 
 	namespace App\Security\Auth;
 	use PDO;
+	use App\Services\Settings;
+
 
 	/**
 	* Authentication based on SQL table
@@ -56,7 +58,7 @@
 		*/
 		public function authenticate($username, $passwd)
 		{
-			$sql = 'SELECT account_pwd FROM phpgw_accounts WHERE account_lid = :username AND account_status = \'A\'';
+			$sql = "SELECT account_pwd FROM phpgw_accounts WHERE account_lid = :username AND account_status = 'A'";
 			$stmt = $this->db->prepare($sql);
 			$stmt->execute([':username' => $username]);
 
@@ -66,7 +68,11 @@
 			}
 
 			$hash = $row['account_pwd'];
-			return $this->verify_hash($passwd, $hash);		}
+			return $this->verify_hash($passwd, $hash);
+		}
+
+		public function get_username()
+		{}
 
 		/**
 		* Set the user's password to a new value
@@ -78,31 +84,34 @@
 		*/
 		public function change_password($old_passwd, $new_passwd, $account_id = 0)
 		{
+			$userSettings = Settings::getInstance()->get('user');
+			$flags = Settings::getInstance()->get('flags');
+
 			$account_id = (int) $account_id;
 			// Don't allow passwords changes for other accounts when using XML-RPC
 			if ( !$account_id )
 			{
-				$account_id = $GLOBALS['phpgw_info']['user']['account_id'];
+				$account_id = $userSettings['account_id'];
 			}
 			
-			if ( $GLOBALS['phpgw_info']['flags']['currentapp'] == 'login')
+			if ($flags['currentapp'] == 'login')
 			{
-				if ( !$this->authenticate($GLOBALS['phpgw']->accounts->id2lid($account_id), $old_passwd) )
+				$accounts = new \App\Controllers\Api\Accounts\Accounts();
+				
+				if ( !$this->authenticate($accounts->id2lid($account_id), $old_passwd) )
 				{
 					return '';
 				}
 			}
 
 			$hash = $this->create_hash($new_passwd);
-			$hash_safe = $this->db->db_addslashes($hash); // just to be safe :)
 			$now = time();
 
-			$sql = 'UPDATE phpgw_accounts'
-				. " SET account_pwd = '{$hash_safe}', account_lastpwd_change = {$now}"
-				. " WHERE account_id = {$account_id}";
+			$sql = 'UPDATE phpgw_accounts SET account_pwd = :hash, account_lastpwd_change = :now WHERE account_id = :account_id';
+			$stmt = $this->db->prepare($sql);
+			$result = $stmt->execute([':hash' => $hash, ':now' => $now, ':account_id' => $account_id]);
 
-			if ( !!$this->db->query($sql, __LINE__, __FILE__) )
-			{
+			if ($result) {
 				return $hash;
 			}
 			return '';
@@ -116,15 +125,10 @@
 		*/
 		public function update_lastlogin($account_id, $ip)
 		{
-			$ip = $this->db->db_addslashes($ip);
-			$account_id = (int) $account_id;
 			$now = time();
 
-			$sql = 'UPDATE phpgw_accounts'
-				. " SET account_lastloginfrom = '{$ip}',"
-					. " account_lastlogin = {$now}"
-				. " WHERE account_id = {$account_id}";
-
-			$this->db->query($sql, __LINE__, __FILE__);
+			$sql = 'UPDATE phpgw_accounts SET account_lastloginfrom = :ip, account_lastlogin = :now WHERE account_id = :account_id';
+			$stmt = $this->db->prepare($sql);
+			$stmt->execute([':ip' => $ip, ':now' => $now, ':account_id' => (int) $account_id]);
 		}
 	}

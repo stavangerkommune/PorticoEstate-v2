@@ -8,6 +8,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Exception; // For handling potential errors
+use App\Services\Settings;
 
 /**
  * @OA\Info(title="Portico API", version="0.1")
@@ -16,10 +17,12 @@ class UserController
 {
     private $db;
 	private $acl;
+	private $userSettings;
 
     public function __construct(ContainerInterface $container)
 	{
 		$this->db = $container->get('db');
+		$this->userSettings = Settings::getInstance()->get('user');
 	//	$this->acl = $container->get('acl');
 	}
 	/**
@@ -61,17 +64,24 @@ class UserController
 	 */
 	public function index(Request $request, Response $response): Response
 	{
+		$maxMatches = isset($this->userSettings['preferences']['common']['maxmatchs']) ? (int)$this->userSettings['preferences']['common']['maxmatchs'] : 15;
 		$queryParams = $request->getQueryParams();
-		$page = isset($queryParams['page']) ? (int)$queryParams['page'] : 1;
-		$perPage = isset($queryParams['perPage']) ? (int)$queryParams['perPage'] : 10;
-		$offset = ($page - 1) * $perPage;
+		$start = isset($queryParams['start']) ? (int)$queryParams['start'] : 0;
+		$perPage = isset($queryParams['results']) ? (int)$queryParams['results'] : $maxMatches;
+
+		$sql = "SELECT * FROM bb_user ORDER BY id";
+		if($perPage > 0)
+		{
+			$sql .= " LIMIT :limit OFFSET :start";
+		}
 
 		$users = [];
 		try {
-			$sql = "SELECT * FROM bb_user ORDER BY id LIMIT :limit OFFSET :offset";
 			$stmt = $this->db->prepare($sql);
-			$stmt->bindParam(':limit', $perPage, PDO::PARAM_INT);
-			$stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+			if ($perPage > 0) {
+				$stmt->bindParam(':limit', $perPage, PDO::PARAM_INT);
+				$stmt->bindParam(':start', $start, PDO::PARAM_INT);
+			}
 			$stmt->execute();
 			$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

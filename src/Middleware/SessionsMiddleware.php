@@ -76,7 +76,6 @@ class SessionsMiddleware implements MiddlewareInterface
 			return $this->sendErrorResponse(['msg' => 'route not found'], 404);
 		}
 
-
         //get the route path
         $this->routePath = $route->getPattern();
         $routePath_arr = explode('/', $this->routePath);
@@ -88,7 +87,7 @@ class SessionsMiddleware implements MiddlewareInterface
 			$passwd = $request->getParsedBody()['passwd'];
 			$sessionid = $sessions->create($login, $passwd);
 			if (empty($sessionid)) {
-						return $this->sendErrorResponse(['msg' => 'A valid session could not be created'], 401);
+				return $this->sendErrorResponse(['msg' => 'A valid session could not be created'], 401);
 			}
 			
 			$response = new Response();

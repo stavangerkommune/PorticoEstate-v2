@@ -165,6 +165,52 @@ class Preferences
 		return $this->data;
 	}
 
+
+	/**
+	 * add preference to $app_name a particular app
+	 *
+	 * @param $app_name name of the app
+	 * @param $var name of preference to be stored
+	 * @param $value value of the preference
+	 * @param $type of preference to set: forced, default, user
+	 * the effective prefs ($this->data) are updated to reflect the change
+	 * @return the new effective prefs (even when forced or default prefs are set !)
+	 */
+	public function add($app_name, $var, $value = '##undef##', $type = 'user')
+	{
+		//echo "<p>add('$app_name','$var','$value')</p>\n";
+		if ($value == '##undef##') {
+			global $$var;
+			$value = $$var;
+		}
+
+		switch ($type) {
+			case 'forced':
+				$this->data[$app_name][$var] = $this->forced[$app_name][$var] = $value;
+				break;
+
+			case 'default':
+				$this->default[$app_name][$var] = $value;
+				if ((!isset($this->forced[$app_name][$var]) || $this->forced[$app_name][$var] === '') &&
+					(!isset($this->user[$app_name][$var]) || $this->user[$app_name][$var] === '')
+				) {
+					$this->data[$app_name][$var] = $value;
+				}
+				break;
+
+			case 'user':
+			default:
+				$this->user[$app_name][$var] = $value;
+				if (!isset($this->forced[$app_name][$var]) || $this->forced[$app_name][$var] === '') {
+					$this->data[$app_name][$var] = $value;
+				}
+				break;
+		}
+		reset($this->data);
+		return $this->data;
+	}
+
+
 	/**
 	 * parses a notify and replaces the substitutes
 	 *

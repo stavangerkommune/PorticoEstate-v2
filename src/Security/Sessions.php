@@ -61,7 +61,7 @@ class Sessions
     private $_key;
     private $_iv;
     private $_verified;
-    private $cd_reason;
+    public $cd_reason;
 	private $reason;
 	private $_login;
 	private $_passwd;

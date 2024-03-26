@@ -73,9 +73,7 @@ $app->post('/login', function (Request $request, Response $response) {
     $response->getBody()->write($json);
     return $response;
 })
-->addMiddleware(new App\Middleware\SessionsMiddleware($container))
-//->addMiddleware(new App\Middleware\LoginMiddleware($container))
-;
+->addMiddleware(new App\Middleware\LoginMiddleware($container));
 
 
 $app->get('/logout[/{params:.*}]', function (Request $request, Response $response) {

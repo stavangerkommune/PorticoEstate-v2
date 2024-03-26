@@ -25,6 +25,7 @@
 	 */
 
 	namespace App\Security\Auth;
+	use App\Security\Sso\Mapping;
 	use PDO;
 
 	/**
@@ -37,11 +38,17 @@
 	{
 
 		private $db;
+		private $mapping;
 
 		public function __construct($db)
 		{
 			parent::__construct();
 			$this->db = $db;
+
+			$phpgw_map_location = isset($_SERVER['HTTP_SHIB_ORIGIN_SITE']) ? $_SERVER['HTTP_SHIB_ORIGIN_SITE'] : 'local';
+			$phpgw_map_authtype = isset($_SERVER['HTTP_SHIB_ORIGIN_SITE']) ? 'shibboleth' : 'remoteuser';
+
+			$this->mapping = new Mapping(array('auth_type' => $phpgw_map_authtype, 'location' => $phpgw_map_location));
 		}
 		/**
 		* Authenticate a user

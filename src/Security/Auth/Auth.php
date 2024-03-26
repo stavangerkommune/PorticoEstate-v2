@@ -56,6 +56,10 @@
 			{
 				// Implementation of the authenticate method
 			}
+			public function get_username()
+			{
+				// Implementation of the get_username method
+			}
 
 			public function change_password($old_passwd, $new_passwd, $account_id = 0)
 			{
@@ -105,6 +109,8 @@
 		* @param int $account_id the account to change the password for - defaults to current user
 		*/
 		abstract public function change_password($old_passwd, $new_passwd, $account_id = 0);
+
+		abstract public function get_username();
 
 		/**
 		* Generate random salt
