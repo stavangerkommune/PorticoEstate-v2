@@ -152,12 +152,14 @@
 		*/
 		private function get_file_id($p)
 		{
-			$sql = "SELECT external_id FROM phpgw_vfs WHERE  directory='{$p->fake_leading_dirs_clean}' AND name='{$p->fake_name_clean}'"
+			$sql = "SELECT external_id FROM phpgw_vfs WHERE  directory=:directory AND name=:name"
 				. " AND ((mime_type != 'journal' AND mime_type != 'journal-deleted') OR mime_type IS NULL)";
-//	_debug_array($sql);
-			$this->db->query($sql, __LINE__, __FILE__);
-			$this->db->next_record();
-			return $this->db->f('external_id');
+
+			$stmt = $this->db->prepare($sql);
+			$stmt->execute([':directory' => $p->fake_leading_dirs_clean, ':name' => $p->fake_name_clean]);
+
+			$row = $stmt->fetch(PDO::FETCH_ASSOC);
+			return $row['external_id'];
 		}
 
 		/**

@@ -213,6 +213,7 @@
 		protected $serverSettings;
 		protected $userSettings;
 		protected $flags;
+		protected $db;
 
 		/**
 		 *  * constructor
@@ -225,6 +226,8 @@
 			$this->serverSettings  = \App\Services\Settings::getInstance()->get('server');		
 			$this->userSettings  = \App\Services\Settings::getInstance()->get('user');
 			$this->flags  = \App\Services\Settings::getInstance()->get('flags');
+			$this->db = \App\Database\Db::getInstance();
+
 
 			$this->basedir = $this->serverSettings['files_dir'];
 			$this->working_id = $this->userSettings['account_id'];
@@ -1127,7 +1130,7 @@
 			}
 
 			//$string = preg_replace ("/'/", "/\'/", $data['string']);
-			$string = $GLOBALS['phpgw']->db->db_addslashes($data['string']);
+			$string = $this->db->db_addslashes($data['string']);
 			
 
 			return $string;
