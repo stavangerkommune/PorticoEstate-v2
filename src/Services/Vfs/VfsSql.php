@@ -117,24 +117,26 @@
 				$GLOBALS['phpgw']->common->phpgw_exit();
 			}
 
-			/* We store the linked directories in an array now, so we don't have to make the SQL call again */
-			if(in_array($this->serverSettings['db_type'], array('mssql', 'mssqlnative', 'sybase')))
-			{
-				$query = $this->db->query("SELECT directory, name, link_directory, link_name"
-				. " FROM phpgw_vfs WHERE CONVERT(varchar,link_directory) != ''"
-				. " AND CONVERT(varchar,link_name) != ''" . $this->extra_sql(array('query_type' => VFS_SQL_SELECT)), __LINE__,__FILE__);
-			}
-			else
-			{
-				$query = $this->db->query("SELECT directory, name, link_directory, link_name"
-				. " FROM phpgw_vfs WHERE(link_directory IS NOT NULL or link_directory != '')"
-				. " AND(link_name IS NOT NULL or link_name != '')" . $this->extra_sql(array('query_type' => VFS_SQL_SELECT)), __LINE__,__FILE__);
+			$params = [];
+			$extraSql = $this->extra_sql(array('query_type' => VFS_SQL_SELECT));
+			$sql = "SELECT directory, name, link_directory, link_name FROM phpgw_vfs WHERE ";
+
+			if(in_array($this->serverSettings['db_type'], array('mssql', 'mssqlnative', 'sybase'))) {
+				$sql .= "(CONVERT(varchar,link_directory) != '' AND CONVERT(varchar,link_name) != '')";
+			} else {
+				$sql .= "(link_directory IS NOT NULL or link_directory != '') AND (link_name IS NOT NULL or link_name != '')";
 			}
 
+			$sql .= $extraSql['sql'];
+
+			$stmt = $this->db->prepare($sql);
+			$params = array_merge($params, $extraSql['params']);
+
+			$stmt->execute($params);
+
 			$this->linked_dirs = array();
-			while($this->db->next_record())
-			{
-				$this->linked_dirs[] = $this->Record();
+			while ($row = $stmt->fetch()) {
+				$this->linked_dirs[] = $row;
 			}
 		}
 
@@ -178,35 +180,29 @@
 		 */
 		function extra_sql($data)
 		{
-			if(!is_array($data))
-			{
+			if (!is_array($data)) {
 				$data = array('query_type' => VFS_SQL_SELECT);
 			}
 
-			if($data['query_type'] == VFS_SQL_SELECT || $data['query_type'] == VFS_SQL_DELETE || $data['query_type'] = VFS_SQL_UPDATE)
-			{
+			$sql = '';
+			$params = [];
+
+			if ($data['query_type'] == VFS_SQL_SELECT || $data['query_type'] == VFS_SQL_DELETE || $data['query_type'] == VFS_SQL_UPDATE) {
 				$sql = ' AND((';
 
-				//reset($this->meta_types);
-				//while(list($num, $type) = each($this->meta_types))
-				if (is_array($this->meta_types))
-				{
-					foreach($this->meta_types as $num => $type)
-					{
-						if($num)
-						{
-							$sql .= ' AND ';
-						}
-
-						$sql .= "mime_type != '{$type}'";
+				if (is_array($this->meta_types)) {
+					$conditions = [];
+					foreach ($this->meta_types as $num => $type) {
+						$conditions[] = "mime_type != ?";
+						$params[] = $type;
 					}
+					$sql .= implode(' AND ', $conditions);
 				}
 				$sql .= ') OR mime_type IS NULL)';
 			}
 
-			return($sql);
+			return ['sql' => $sql, 'params' => $params];
 		}
-
 		/**
 		 * Add a journal entry after(or before) completing an operation,
 		*
@@ -623,7 +619,9 @@
 				return false;
 			}
 
-			$sql = "SELECT * FROM phpgw_vfs WHERE directory='{$p->fake_leading_dirs_clean}' AND name='{$p->fake_name_clean}'";
+			$sql = "SELECT * FROM phpgw_vfs WHERE directory=:directory AND name=:name";
+
+			$params = array(':directory' => $p->fake_leading_dirs_clean, ':name' => $p->fake_name_clean);
 
 			if($data['type'] == 1)
 			{
@@ -638,13 +636,14 @@
 				$sql .= " AND(mime_type='journal' OR mime_type='journal-deleted')";
 			}
 
-			$query = $this->db->query($sql, __LINE__, __FILE__);
+			$stmt = $this->db->prepare($sql);
+			$stmt->execute($params);
 
-			while($this->db->next_record())
+			$rarray = array();
+			while($row = $stmt->fetch(PDO::FETCH_ASSOC))
 			{
-				$rarray[] = $this->Record();
+				$rarray[] = $this->Record( $this->attributes, $row);
 			}
-
 			return $rarray;
 		}
 
@@ -738,13 +737,17 @@
 				   We don't use ls() to get owner_id as we normally would,
 				   because ls() calls acl_check(), which would create an infinite loop
 				*/
-				$query = $this->db->query("SELECT owner_id FROM phpgw_vfs WHERE directory='{$p2->fake_leading_dirs_clean}'"
-				. " AND name='{$p2->fake_name_clean}'" . $this->extra_sql(array('query_type' => VFS_SQL_SELECT)), __LINE__, __FILE__);
-				$this->db->next_record();
+				$extraSql = $this->extra_sql(array('query_type' => VFS_SQL_SELECT));
+				$sql = "SELECT owner_id FROM phpgw_vfs WHERE directory = ? AND name = ?" . $extraSql['sql'];
 
-				$record		= $this->Record();
-				$owner_id	= $record['owner_id'];
-			}
+				$stmt = $this->db->prepare($sql);
+				$params = array($p2->fake_leading_dirs_clean, $p2->fake_name_clean);
+				$params = array_merge($params, $extraSql['params']);
+
+				$stmt->execute($params);
+
+				$record = $stmt->fetch();
+				$owner_id = $record['owner_id'];			}
 			else
 			{
 				$owner_id = $data['owner_id'];
@@ -780,18 +783,20 @@
 			$attributes = $this->attributes;
 			$attributes[] = 'tags';
 
-			$sql = "SELECT tags, phpgw_vfs.* FROM phpgw_vfs LEFT JOIN phpgw_vfs_filetags ON phpgw_vfs.file_id = phpgw_vfs_filetags.file_id WHERE phpgw_vfs.file_id={$file_id}";
+			$sql = "SELECT tags, phpgw_vfs.* FROM phpgw_vfs LEFT JOIN phpgw_vfs_filetags ON phpgw_vfs.file_id = phpgw_vfs_filetags.file_id WHERE phpgw_vfs.file_id=:file_id";
 
-			$query = $this->db->query($sql, __LINE__, __FILE__);
+			$stmt = $this->db->prepare($sql);
+			$stmt->execute([':file_id' => $file_id]);
+
 			$values = array();
-			while($this->db->next_record())
+			while($row = $stmt->fetch(PDO::FETCH_ASSOC))
 			{
 				foreach ($attributes as $attribute)
 				{
-					$values[$attribute] = $this->db->f($attribute);
+					$values[$attribute] = $row[$attribute];
 				}
 			}
-			return $values;
+			return $values;	
 		}
 
 		/*
@@ -1379,12 +1384,14 @@
 					))
 				)
 				{
-					$query = $this->db->query("UPDATE phpgw_vfs SET owner_id='{$this->working_id}',"
-					. " directory='{$t->fake_leading_dirs_clean}',"
-					. " name='{$t->fake_name_clean}'"
-					. " WHERE owner_id='{$this->working_id}' AND directory='{$t->fake_leading_dirs_clean}'"
-					. " AND name='{$t->fake_name_clean}'" . $this->extra_sql(VFS_SQL_UPDATE), __LINE__, __FILE__);
+					$extraSql = $this->extra_sql(VFS_SQL_UPDATE);
+					$sql = "UPDATE phpgw_vfs SET owner_id=:owner_id, directory=:directory, name=:name WHERE owner_id=:owner_id AND directory=:directory AND name=:name " . $extraSql['sql'];
 
+					$stmt = $this->db->prepare($sql);
+					$params = array(':owner_id' => $this->working_id, ':directory' => $t->fake_leading_dirs_clean, ':name' => $t->fake_name_clean);
+					$params = array_merge($params, $extraSql['params']);
+
+					$stmt->execute($params);
 					$set_attributes_array = array
 					(
 						'createdby_id'	=> $account_id,
@@ -1655,11 +1662,14 @@
 					))
 				)
 				{
-					$query = $this->db->query("UPDATE phpgw_vfs SET owner_id='{$this->working_id}',"
-					. " directory='{$t->fake_leading_dirs_clean}',"
-					. " name='{$t->fake_name_clean}'"
-					. " WHERE owner_id='{$this->working_id}' AND directory='{$t->fake_leading_dirs_clean}'"
-					. " AND name='$t->fake_name_clean'" . $this->extra_sql(VFS_SQL_UPDATE), __LINE__, __FILE__);
+					$extraSql = $this->extra_sql(VFS_SQL_UPDATE);
+					$sql = "UPDATE phpgw_vfs SET owner_id=:owner_id, directory=:directory, name=:name WHERE owner_id=:owner_id AND directory=:directory AND name=:name " . $extraSql['sql'];
+
+					$stmt = $this->db->prepare($sql);
+					$params = array(':owner_id' => $this->working_id, ':directory' => $t->fake_leading_dirs_clean, ':name' => $t->fake_name_clean);
+					$params = array_merge($params, $extraSql['params']);
+
+					$stmt->execute($params);
 
 					$set_attributes_array = array
 					(
@@ -1990,11 +2000,14 @@
 						return false;
 					}
 
-					$query = $this->db->query("UPDATE phpgw_vfs SET owner_id='{$this->working_id}',"
-					. " directory='{$t2->fake_leading_dirs_clean}',"
-					. " name='{$t2->fake_name_clean}'"
-					. " WHERE owner_id='{$this->working_id}' AND file_id='{$data['id']}'" . $this->extra_sql(VFS_SQL_UPDATE), __LINE__, __FILE__);
+					$extraSql = $this->extra_sql(VFS_SQL_UPDATE);
+					$sql = "UPDATE phpgw_vfs SET owner_id=:owner_id, directory=:directory, name=:name WHERE owner_id=:owner_id AND file_id=:file_id " . $extraSql['sql'];
 
+					$stmt = $this->db->prepare($sql);
+					$params = array(':owner_id' => $this->working_id, ':directory' => $t2->fake_leading_dirs_clean, ':name' => $t2->fake_name_clean, ':file_id' => $data['id']);
+					$params = array_merge($params, $extraSql['params']);
+
+					$stmt->execute($params);
 					$t = $t2;
 
 					$set_attributes_array = array
@@ -2322,15 +2335,25 @@
 							'relatives'	=> array($t->mask)
 						)
 					);
-					$query = $this->db->query("UPDATE phpgw_vfs SET size={$size}"
-					. " WHERE directory='{$t->fake_leading_dirs_clean}'"
-					. " AND name='{$t->fake_name_clean}'" . $this->extra_sql(array('query_type' => VFS_SQL_UPDATE)), __LINE__, __FILE__);
+					$extraSql = $this->extra_sql(array('query_type' => VFS_SQL_UPDATE));
+					$sql = "UPDATE phpgw_vfs SET size=:size WHERE directory=:directory AND name=:name " . $extraSql['sql'];
+
+					$stmt = $this->db->prepare($sql);
+					$params = array(':size' => $size, ':directory' => $t->fake_leading_dirs_clean, ':name' => $t->fake_name_clean);
+					$params = array_merge($params, $extraSql['params']);
+
+					$stmt->execute($params);
 				}
 				elseif(!$t->outside)
 				{
-					$query = $this->db->query("UPDATE phpgw_vfs SET name='{$t->fake_name_clean}', directory='{$t->fake_leading_dirs_clean}'"
-					. " WHERE directory='{$f->fake_leading_dirs_clean}'"
-					. " AND name='{$f->fake_name_clean}'" . $this->extra_sql(array('query_type' => VFS_SQL_UPDATE)), __LINE__, __FILE__);
+					$extraSql = $this->extra_sql(array('query_type' => VFS_SQL_UPDATE));
+					$sql = "UPDATE phpgw_vfs SET name=:new_name, directory=:new_directory WHERE directory=:directory AND name=:name " . $extraSql['sql'];
+
+					$stmt = $this->db->prepare($sql);
+					$params = array(':new_name' => $t->fake_name_clean, ':new_directory' => $t->fake_leading_dirs_clean, ':directory' => $f->fake_leading_dirs_clean, ':name' => $f->fake_name_clean);
+					$params = array_merge($params, $extraSql['params']);
+
+					$stmt->execute($params);
 				}
 
 				$this->set_attributes(array(
@@ -2388,9 +2411,14 @@
 						$newdir = preg_replace("/^" . str_replace('/', '\/', $f->fake_full_path). "/", $t->fake_full_path, $entry['directory']);
 						$newdir_clean = $this->clean_string(array('string' => $newdir));
 
-						$query = $this->db->query("UPDATE phpgw_vfs SET directory='{$newdir_clean}'"
-						. " WHERE file_id='{$entry['file_id']}'" . $this->extra_sql(array('query_type' => VFS_SQL_UPDATE)), __LINE__, __FILE__);
+						$extraSql = $this->extra_sql(array('query_type' => VFS_SQL_UPDATE));
+						$sql = "UPDATE phpgw_vfs SET directory=:newdir_clean WHERE file_id=:file_id " . $extraSql['sql'];
 
+						$stmt = $this->db->prepare($sql);
+						$params = array(':newdir_clean' => $newdir_clean, ':file_id' => $entry['file_id']);
+						$params = array_merge($params, $extraSql['params']);
+
+						$stmt->execute($params);
 						$this->correct_attributes(array(
 								'string'	=> "{$newdir}/{$entry['name']}",
 								'relatives'	=> array($t->mask)
@@ -2483,23 +2511,33 @@
 					)
 				);
 
-				$this->db->query("SELECT file_id FROM phpgw_vfs"
-				. " WHERE directory='{$p->fake_leading_dirs_clean}'"
-				. " AND name='{$p->fake_name_clean}'" . $this->extra_sql(array('query_type' => VFS_SQL_DELETE)), __LINE__, __FILE__);
+				$extraSql = $this->extra_sql(array('query_type' => VFS_SQL_DELETE));
+				$sql = "SELECT file_id FROM phpgw_vfs WHERE directory=:directory AND name=:name " . $extraSql['sql'];
 
-				$this->db->next_record();
+				$stmt = $this->db->prepare($sql);
+				$params = array(':directory' => $p->fake_leading_dirs_clean, ':name' => $p->fake_name_clean);
+				$params = array_merge($params, $extraSql['params']);
 
-				$file_id = (int)$this->db->f('file_id');
+				$stmt->execute($params);
 
+				$row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+				$file_id = (int)$row['file_id'];
 				if($file_id)
 				{
-					$this->db->query("DELETE FROM phpgw_vfs_filetags WHERE file_id = {$file_id}", __LINE__, __FILE__);
+					$sql = "DELETE FROM phpgw_vfs_filetags WHERE file_id = :file_id";
+					$stmt = $this->db->prepare($sql);
+					$stmt->execute([':file_id' => $file_id]);
 				}
 
-				$query = $this->db->query("DELETE FROM phpgw_vfs"
-				. " WHERE directory='{$p->fake_leading_dirs_clean}'"
-				. " AND name='{$p->fake_name_clean}'" . $this->extra_sql(array('query_type' => VFS_SQL_DELETE)), __LINE__, __FILE__);
+				$extraSql = $this->extra_sql(array('query_type' => VFS_SQL_DELETE));
+				$sql = "DELETE FROM phpgw_vfs WHERE directory=:directory AND name=:name " . $extraSql['sql'];
 
+				$stmt = $this->db->prepare($sql);
+				$params = array(':directory' => $p->fake_leading_dirs_clean, ':name' => $p->fake_name_clean);
+				$params = array_merge($params, $extraSql['params']);
+
+				$stmt->execute($params);
 				if($this->file_actions)
 				{
 					$rr = $this->fileoperation->unlink($p);
@@ -2594,8 +2632,14 @@
 					)
 				);
 
-				$query = $this->db->query("DELETE FROM phpgw_vfs"
-				. " WHERE directory='{$p->fake_leading_dirs_clean}' AND name='{$p->fake_name_clean}'" . $this->extra_sql(array('query_type' => VFS_SQL_DELETE)), __LINE__, __FILE__);
+				$extraSql = $this->extra_sql(array('query_type' => VFS_SQL_DELETE));
+				$sql = "DELETE FROM phpgw_vfs WHERE directory=:directory AND name=:name " . $extraSql['sql'];
+
+				$stmt = $this->db->prepare($sql);
+				$params = array(':directory' => $p->fake_leading_dirs_clean, ':name' => $p->fake_name_clean);
+				$params = array_merge($params, $extraSql['params']);
+
+				$stmt->execute($params);
 
 				if($this->file_actions)
 				{
@@ -2899,6 +2943,7 @@
 
 			reset($this->attributes);
 			$value_set = array();
+			$params = array();
 
 			foreach($this->attributes as $num => $attribute)
 			{
@@ -2922,7 +2967,8 @@
 
 					$$attribute = $this->clean_string(array('string' => $$attribute));
 
-					$value_set[$attribute] = $$attribute;
+					$value_set[] = $attribute . " = :" . $attribute;
+					$params[":" . $attribute] = $$attribute;
 
 					$change_attributes++;
 				}
@@ -2930,14 +2976,15 @@
 
 			if( $change_attributes )
 			{
-				$value_set	= $this->db->validate_update($value_set);
-				$sql .= " {$value_set} WHERE file_id=" .(int)$record['file_id'];
-				$sql .= $this->extra_sql(array('query_type' => VFS_SQL_UPDATE));
+				$extraSql = $this->extra_sql(array('query_type' => VFS_SQL_UPDATE));
+				$sql = "UPDATE phpgw_vfs SET " . implode(", ", $value_set) . " WHERE file_id=:file_id " . $extraSql['sql'];
+				$params[':file_id'] = (int)$record['file_id'];
+				$params = array_merge($params, $extraSql['params']);
 
-				//echo 'sql: ' . $sql;
+				$stmt = $this->db->prepare($sql);
+				$stmt->execute($params);
 
-				$query = $this->db->query($sql, __LINE__, __FILE__);
-				if($query)
+				if($stmt->rowCount() > 0)
 				{
 					if($edited_comment)
 					{
@@ -3021,21 +3068,29 @@
 			   passed a directory
 			*/
 			$db2 = & $this->db2;
-			$db2->query("SELECT mime_type FROM phpgw_vfs WHERE directory='{$p->fake_leading_dirs_clean}'"
-			. " AND name='{$p->fake_name_clean}'"
-			. $this->extra_sql(array('query_type' => VFS_SQL_SELECT)), __LINE__, __FILE__);
+			$extraSql = $this->extra_sql(array('query_type' => VFS_SQL_SELECT));
+			$sql = "SELECT mime_type FROM phpgw_vfs WHERE directory=:directory AND name=:name " . $extraSql['sql'];
 
-			$db2->next_record();
-			$mime_type = $db2->f('mime_type');
+			$stmt = $db2->prepare($sql);
+			$params = array(':directory' => $p->fake_leading_dirs_clean, ':name' => $p->fake_name_clean);
+			$params = array_merge($params, $extraSql['params']);
 
+			$stmt->execute($params);
+
+			$row = $stmt->fetch(PDO::FETCH_ASSOC);
+			$mime_type = $row['mime_type'];
 			if(!$mime_type)
 			{
 				$mime_type = $this->get_ext_mime_type(array('string' => $data['string']));
 				{
-					$db2->query("UPDATE phpgw_vfs SET mime_type='{$mime_type}'"
-					. " WHERE directory='{$p->fake_leading_dirs_clean}' AND name='{$p->fake_name_clean}'"
-					. $this->extra_sql(array('query_type' => VFS_SQL_SELECT)), __LINE__, __FILE__);
-				}
+					$extraSql = $this->extra_sql(array('query_type' => VFS_SQL_SELECT));
+					$sql = "UPDATE phpgw_vfs SET mime_type=:mime_type WHERE directory=:directory AND name=:name " . $extraSql['sql'];
+
+					$stmt = $db2->prepare($sql);
+					$params = array(':mime_type' => $mime_type, ':directory' => $p->fake_leading_dirs_clean, ':name' => $p->fake_name_clean);
+					$params = array_merge($params, $extraSql['params']);
+
+					$stmt->execute($params);				}
 			}
 
 			return $mime_type;
@@ -3045,19 +3100,19 @@
 		{
 			$sql = "SELECT DISTINCT jsonb_array_elements(tags) as tag FROM phpgw_vfs_filetags";
 
-			$this->db->query($sql, __LINE__, __FILE__);
+			$stmt = $this->db->prepare($sql);
+			$stmt->execute();
 
 			$tags = array();
-			while ($this->db->next_record())
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 			{
-				$tag = $this->db->stripslashes(json_decode($this->db->f('tag')));
+				$tag = json_decode($row['tag']);
 				$tags[] = array(
 					'id' => $tag,
 					'name' => $tag
 				);
 			}
-			return $tags;
-		}
+			return $tags;		}
 
 
 		function remove_tags($ids, $tags)
@@ -3087,20 +3142,22 @@
 			$sql = "SELECT file_id FROM phpgw_vfs_filetags WHERE file_id IN (" . implode(',', $ids) . ")"
 				. " AND tags @> '[{$json_string}]'::jsonb";
 
-			$this->db->query($sql, __LINE__, __FILE__);
+			$stmt = $this->db->query($sql);
 
 			$ids_with_tag = array();
-			while ($this->db->next_record())
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 			{
-				$ids_with_tag[] = $this->db->f('file_id');
+				$ids_with_tag[] = $row['file_id'];
 			}
-
 
 			if($ids_with_tag)
 			{
-				$sql = "UPDATE phpgw_vfs_filetags SET tags = tags - '{$tag}'"
-				. " WHERE file_id IN (" . implode(',', $ids_with_tag) . ")";
-				$this->db->query($sql, __LINE__, __FILE__);
+				$placeholders = implode(',', array_fill(0, count($ids_with_tag), '?'));
+				$sql = "UPDATE phpgw_vfs_filetags SET tags = tags - ? WHERE file_id IN ($placeholders)";
+
+				$params = array_merge(array($tag), $ids_with_tag);
+				$stmt = $this->db->prepare($sql);
+				$stmt->execute($params);
 			}
 		}
 
@@ -3142,27 +3199,30 @@
 				$ids = array($ids);
 			}
 
-			$sql = "SELECT file_id FROM phpgw_vfs_filetags WHERE file_id IN (" . implode(',', $ids) . ")";
+			$placeholders = implode(',', array_fill(0, count($ids), '?'));
+			$sql = "SELECT file_id FROM phpgw_vfs_filetags WHERE file_id IN ($placeholders)";
 
-			$this->db->query($sql, __LINE__, __FILE__);
+			$stmt = $this->db->prepare($sql);
+			$stmt->execute($ids);
 
 			$existing_ids = array();
-			while ($this->db->next_record())
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 			{
-				$existing_ids[] = $this->db->f('file_id');
+				$existing_ids[] = $row['file_id'];
 			}
-
 			$ids_with_tag = array();
+
 			if($existing_ids)
 			{
 				$sql = "SELECT file_id FROM phpgw_vfs_filetags WHERE file_id IN (" . implode(',', $existing_ids) . ")"
 					. " AND tags @> '[" . json_encode($tag) ."]'::jsonb";
 
-				$this->db->query($sql, __LINE__, __FILE__);
+				$stmt = $this->db->query($sql);
 
-				while ($this->db->next_record())
+				$ids_with_tag = array();
+				while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 				{
-					$ids_with_tag[] = $this->db->f('file_id');
+					$ids_with_tag[] = $row['file_id'];
 				}
 			}
 
@@ -3232,11 +3292,16 @@
 			}
 
 			$db2 = & $this->db2;
-			$db2->query("SELECT name FROM phpgw_vfs WHERE directory='{$p->fake_leading_dirs_clean}'"
-			. " AND name='{$p->fake_name_clean}'"
-			. $this->extra_sql(array('query_type' => VFS_SQL_SELECT)), __LINE__, __FILE__);
+			$extraSql = $this->extra_sql(array('query_type' => VFS_SQL_SELECT));
+			$sql = "SELECT name FROM phpgw_vfs WHERE directory=:directory AND name=:name " . $extraSql['sql'];
 
-			if($db2->next_record())
+			$stmt = $db2->prepare($sql);
+			$params = array(':directory' => $p->fake_leading_dirs_clean, ':name' => $p->fake_name_clean);
+			$params = array_merge($params, $extraSql['params']);
+
+			$stmt->execute($params);
+
+			if($stmt->fetch())
 			{
 				return true;
 			}
@@ -3265,7 +3330,7 @@
 		}
 
 		/* temporary wrapper function for not working Record function in adodb layer(ceb)*/
-		function Record($attributes = array())
+		function Record($attributes = array(), $row= array())
 		{
 			if(!$attributes)
 			{
@@ -3273,9 +3338,12 @@
 			}
 
 			$values = array();
-			foreach($attributes as $attribute)
+			if($row)
 			{
-				$values[$attribute] = $this->db->f($attribute);
+				foreach($attributes as $attribute)
+				{
+					$values[$attribute] = $row[$attribute];
+				}
 			}
 			return $values;
 		}
@@ -3315,17 +3383,23 @@
 			if(($ftype != 'Directory' || $data['nofiles'] ) && !$p->outside)
 			{
 				/* SELECT all, the, attributes */
+				$extraSql = $this->extra_sql(array('query_type' => VFS_SQL_SELECT));
 				$sql = 'SELECT ' . implode(', ', $this->attributes)
-						. " FROM phpgw_vfs WHERE directory='{$p->fake_leading_dirs_clean}' AND name='{$p->fake_name_clean}' "
-						. $this->extra_sql(array('query_type' => VFS_SQL_SELECT));
+					. " FROM phpgw_vfs WHERE directory=:directory AND name=:name "
+					. $extraSql['sql'];
 
-				$query = $this->db->query($sql, __LINE__, __FILE__);
-				if($this->db->num_rows() == 0)
+				$stmt = $this->db->prepare($sql);
+				$params = array(':directory' => $p->fake_leading_dirs_clean, ':name' => $p->fake_name_clean);
+				$params = array_merge($params, $extraSql['params']);
+
+				$stmt->execute($params);
+
+				if($stmt->rowCount() == 0)
 				{
 					return array();
 				}
-				$this->db->next_record();
-				$record = $this->Record();
+
+				$record = $stmt->fetch(PDO::FETCH_ASSOC);
 				//echo 'record: ' . _debug_array($record);
 
 				/* We return an array of one array to maintain the standard */
@@ -3344,10 +3418,14 @@
 
 						if($record[$attribute])
 						{
-							$db2->query("UPDATE phpgw_vfs SET mime_type='{$record[$attribute]}'"
-							. " WHERE directory='{$p->fake_leading_dirs_clean}' AND name='{$p->fake_name_clean}'"
-							. $this->extra_sql(array('query_type' => VFS_SQL_SELECT)), __LINE__, __FILE__);
-						}
+							$extraSql = $this->extra_sql(array('query_type' => VFS_SQL_SELECT));
+							$sql = "UPDATE phpgw_vfs SET mime_type=:mime_type WHERE directory=:directory AND name=:name " . $extraSql['sql'];
+
+							$stmt = $db2->prepare($sql);
+							$params = array(':mime_type' => $record[$attribute], ':directory' => $p->fake_leading_dirs_clean, ':name' => $p->fake_name_clean);
+							$params = array_merge($params, $extraSql['params']);
+
+							$stmt->execute($params);						}
 					}
 
 					$rarray[0][$attribute] = $record[$attribute];
@@ -3398,34 +3476,43 @@
 			$sql = 'SELECT ' . implode(',', $this->attributes);
 
 			$dir_clean = $this->clean_string(array('string' => $p->fake_full_path));
+			$params = array();
+
 			if($data['checksubdirs'])
 			{
-				$sql .= " FROM phpgw_vfs WHERE directory LIKE '{$dir_clean}%'";
+				$sql .= " FROM phpgw_vfs WHERE directory LIKE :dir_clean";
+				$params[':dir_clean'] = $dir_clean . '%';
 			}
 			else
 			{
 				$_attributes = $this->attributes;
 				$_attributes[] = 'tags';
 
-				$sql = "SELECT tags, phpgw_vfs.* FROM phpgw_vfs LEFT JOIN phpgw_vfs_filetags ON phpgw_vfs.file_id = phpgw_vfs_filetags.file_id WHERE directory = '{$dir_clean}'";
+				$sql = "SELECT tags, phpgw_vfs.* FROM phpgw_vfs LEFT JOIN phpgw_vfs_filetags ON phpgw_vfs.file_id = phpgw_vfs_filetags.file_id WHERE directory = :dir_clean";
+				$params[':dir_clean'] = $dir_clean;
 			}
 
-			$sql .= $this->extra_sql(array('query_type' => VFS_SQL_SELECT));
+			$extraSql = $this->extra_sql(array('query_type' => VFS_SQL_SELECT));
+			$sql .= $extraSql['sql'];
+			$params = array_merge($params, $extraSql['params']);
 
 			if($data['mime_type'])
 			{
-				$sql .= " AND mime_type='{$data['mime_type']}'";
+				$sql .= " AND mime_type=:mime_type";
+				$params[':mime_type'] = $data['mime_type'];
 			}
 
-			$sql .= " ORDER BY {$data['orderby']}";
+			$sql .= " ORDER BY :orderby";
+			$params[':orderby'] = $data['orderby'];
 
-			$query = $this->db->query($sql, __LINE__, __FILE__);
+			$stmt = $this->db->prepare($sql);
+			$stmt->execute($params);
 
 			$rarray = array();
-			while( $this->db->next_record() )
+			while($row = $stmt->fetch(PDO::FETCH_ASSOC))
 			{
-				$record = $this->Record($_attributes);
-
+				$record = $this->Record($_attributes, $row);
+			
 				//_debug_array($record);
 				/* Further checking on the directory.  This makes sure /home/user/test won't match /home/user/test22 */
 			//	if(!@ereg("^{$p->fake_full_path}(/|$)", $record['directory']))
@@ -3448,10 +3535,14 @@
 
 					if( $record['mime_type'] )
 					{
-						$db2->query("UPDATE phpgw_vfs SET mime_type='{$record['mime_type']}'"
-						. " WHERE directory='{$p->fake_leading_dirs_clean}' AND name='{$p->fake_name_clean}'"
-						. $this->extra_sql(array('query_type' => VFS_SQL_SELECT)), __LINE__, __FILE__);
+						$extraSql = $this->extra_sql(array('query_type' => VFS_SQL_SELECT));
+						$sql = "UPDATE phpgw_vfs SET mime_type=:mime_type WHERE directory=:directory AND name=:name " . $extraSql['sql'];
 
+						$stmt = $db2->prepare($sql);
+						$params = array(':mime_type' => $record['mime_type'], ':directory' => $p->fake_leading_dirs_clean, ':name' => $p->fake_name_clean);
+						$params = array_merge($params, $extraSql['params']);
+
+						$stmt->execute($params);
 					}
 				}
 				$rarray[] = $record;
@@ -3603,9 +3694,14 @@
 
 				if($mime_type)
 				{
-					$this->db->query("UPDATE phpgw_vfs SET mime_type='{$mime_type}'"
-					. " WHERE directory='{$p->fake_leading_dirs_clean}' AND name='{$p->fake_name_clean}'"
-					. $this->extra_sql(array('query_type' => VFS_SQL_SELECT)), __LINE__, __FILE__);
+					$extraSql = $this->extra_sql(array('query_type' => VFS_SQL_SELECT));
+					$sql = "UPDATE phpgw_vfs SET mime_type=:mime_type WHERE directory=:directory AND name=:name " . $extraSql['sql'];
+
+					$stmt = $this->db->prepare($sql);
+					$params = array(':mime_type' => $mime_type, ':directory' => $p->fake_leading_dirs_clean, ':name' => $p->fake_name_clean);
+					$params = array_merge($params, $extraSql['params']);
+
+					$stmt->execute($params);
 				}
 			}
 
