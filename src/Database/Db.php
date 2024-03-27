@@ -8,6 +8,7 @@ class Db extends PDO
 	private static $instance = null;
 	private $isTransactionActive = false;
 	private static $domain;
+	private static $config;
 
 	private function __construct($dsn, $username = null, $password = null, $options = null)
 	{
@@ -209,6 +210,16 @@ class Db extends PDO
 	public function set_domain($domain)
 	{
 		self::$domain = $domain;
+	}
+
+	public function set_config($config)
+	{
+		self::$config = $config;
+	}
+
+	public function get_config()
+	{
+		return self::$config;
 	}
 
 	/**

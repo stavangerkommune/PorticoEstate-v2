@@ -25,6 +25,7 @@ class DatabaseServiceProvider
 				//register the database object in a singleton pattern
 				$db = Db::getInstance($dsn, $config['db_user'], $config['db_pass'], $options);
 				$db->set_domain($config['domain']);
+				$db->set_config($config);
 				return $db;
 			} catch (PDOException $e) {
 				throw new Exception("Error connecting to database: " . $e->getMessage());

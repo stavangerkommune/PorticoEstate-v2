@@ -257,7 +257,7 @@ class Sessions
 			$this->phpgw_setcookie('last_domain', $this->_account_domain, $cookie_expires);
 		}
 		/* we kill this for security reasons */
-		unset($this->serverSetting['default_domain']);
+//		unset($this->serverSetting['default_domain']);
 
 		/* init the crypto object */
 		$this->_key = md5($this->_sessionid . $this->serverSetting['encryptkey']);

@@ -21,6 +21,9 @@ class UserController
 
     public function __construct(ContainerInterface $container)
 	{
+		// only for testing
+		//$vfs = new \App\Services\Vfs\Vfs;
+
 		$this->db = $container->get('db');
 		$this->userSettings = Settings::getInstance()->get('user');
 	//	$this->acl = $container->get('acl');

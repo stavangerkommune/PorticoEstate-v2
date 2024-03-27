@@ -13,6 +13,38 @@ use Throwable;
 use ErrorException;
 use App\Services\Settings;
 
+$serverSettings  = \App\Services\Settings::getInstance()->get('server');
+
+if (isset($serverSettings['log_levels']['global_level'])) {
+	switch ($serverSettings['log_levels']['global_level']) {
+		case 'F': // Fatal
+		case 'E': // Error
+			error_reporting(E_ERROR | E_USER_ERROR | E_PARSE);
+			break;
+
+		case 'W': // Warn
+		case 'I': // Info
+			error_reporting(E_ERROR | E_USER_ERROR | E_WARNING | E_USER_WARNING | E_PARSE);
+			break;
+
+		case 'N': // Notice
+		case 'D': // Debug
+			error_reporting(E_ERROR | E_USER_ERROR | E_WARNING | E_USER_WARNING | E_NOTICE | E_USER_NOTICE | E_PARSE);
+			break;
+
+		case 'S': // Strict
+			error_reporting(E_STRICT | E_PARSE);
+			break;
+
+		case 'DP': // Deprecated
+			error_reporting(E_ERROR | E_USER_ERROR | E_DEPRECATED | E_USER_DEPRECATED | E_PARSE | E_ALL);
+			break;
+		case 'A': // All
+			error_reporting(E_ALL);
+			break;
+	}
+}	
+
 
 /**
  * phpGroupWare Information level "error"
@@ -48,38 +80,7 @@ class ErrorHandler
 		$this->serverSettings  = \App\Services\Settings::getInstance()->get('server');		
 		$this->userSettings  = \App\Services\Settings::getInstance()->get('user');
 		$this->Log = new Log();
-		$this->db = Db::getInstance();
-
-		if (isset($this->serverSettings['log_levels']['global_level'])) {
-			switch ($this->serverSettings['log_levels']['global_level']) {
-				case 'F': // Fatal
-				case 'E': // Error
-					error_reporting(E_ERROR | E_USER_ERROR | E_PARSE);
-					break;
-		
-				case 'W': // Warn
-				case 'I': // Info
-					error_reporting(E_ERROR | E_USER_ERROR | E_WARNING | E_USER_WARNING | E_PARSE);
-					break;
-		
-				case 'N': // Notice
-				case 'D': // Debug
-					error_reporting(E_ERROR | E_USER_ERROR | E_WARNING | E_USER_WARNING | E_NOTICE | E_USER_NOTICE | E_PARSE);
-					break;
-		
-				case 'S': // Strict
-					error_reporting(E_STRICT | E_PARSE);
-					break;
-		
-				case 'DP': // Deprecated
-					error_reporting(E_ERROR | E_USER_ERROR | E_DEPRECATED | E_USER_DEPRECATED | E_PARSE | E_ALL);
-					break;
-				case 'A': // All
-					error_reporting(E_ALL);
-					break;
-			}
-		}	
-		
+		$this->db = Db::getInstance();		
 	}
 
     /**
@@ -106,13 +107,15 @@ class ErrorHandler
  	   if ($exception instanceof ErrorException && $exception->getSeverity() === E_USER_ERROR) {
 			// Handle user errors
 			$this->phpgw_handle_error($exception->getSeverity(), $exception->getMessage(), $exception->getFile(), $exception->getLine());
-
+			// create a response, set the status code, and write the response body
+			$response = $this->responseFactory->createResponse();
 			$response->getBody()->write("A user error occurred!");
 		}
 		else
 		{
 			// Handle other exceptions
 			$this->phpgw_handle_exception($exception);
+			$response = $this->responseFactory->createResponse();
 			$response->getBody()->write("An exception occurred!");
 		}
 
