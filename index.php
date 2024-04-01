@@ -26,6 +26,7 @@ define('ACL_CUSTOM_3', 256);
 //phpinfo();
 $containerBuilder = new ContainerBuilder();
 
+
 require_once SRC_ROOT_PATH . '/Helpers/Translation.php';
 require_once SRC_ROOT_PATH . '/Helpers/Sanitizer.php';
 // Add your settings to the container
@@ -36,6 +37,8 @@ $database_settings = require_once SRC_ROOT_PATH . '/Helpers/FilterDatabaseConfig
 //DebugArray::debug($database_settings);
 
 $containerBuilder->addDefinitions(['settings' => ['db' => $database_settings]]);
+(require __DIR__ . '/config/dependencies.php')($containerBuilder);
+
 
 // Build PHP-DI Container instance
 $container = $containerBuilder->build();

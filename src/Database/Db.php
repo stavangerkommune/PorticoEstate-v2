@@ -255,5 +255,32 @@ class Db extends PDO
 		return $next_id;
 	}
 
-	
+		/**
+	* Get a list of table names in the current database
+	* @param bool $include_views include views in the listing if any (optional)
+	*
+	* @return array list of the tables
+	*/
+	public function table_names($include_views = null)
+	{
+		$return = array();
+
+		$stmt = $this->prepare("SELECT table_name as name, CAST(table_type = 'VIEW' AS INTEGER) as view
+			FROM information_schema.tables
+			WHERE table_schema = current_schema()");
+		$stmt->execute();
+
+		while ($entry = $stmt->fetch(PDO::FETCH_ASSOC)) {
+			if($include_views) {
+				$return[] =  $entry['name'];
+			} else {
+				if (!$entry['view']) {
+					$return[] =  $entry['name'];
+				}
+			}
+		}
+
+		return $return;
+	}
+
 }

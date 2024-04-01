@@ -66,7 +66,7 @@
 		*/
 
 		private $db;
-		private $cache;
+		protected $cache;
 		private $serverSettings;
 		private $preferences;
 		private static $instance = null;
