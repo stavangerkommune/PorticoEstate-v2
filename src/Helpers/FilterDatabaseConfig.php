@@ -29,6 +29,7 @@ if (isset($phpgw_domain[$user_domain])) {
 	$db_server['db_name']			= $phpgw_domain[$user_domain]['db_name'];
 	$db_server['db_user']			= $phpgw_domain[$user_domain]['db_user'];
 	$db_server['db_pass']			= $phpgw_domain[$user_domain]['db_pass'];
+	$db_server['db_type']			= $phpgw_domain[$user_domain]['db_type'];
   $db_server['domain']      = $user_domain;
 } else {
 	$db_server['db_host']			= $phpgw_domain[$default_domain]['db_host'];
@@ -36,6 +37,7 @@ if (isset($phpgw_domain[$user_domain])) {
 	$db_server['db_name']			= $phpgw_domain[$default_domain]['db_name'];
 	$db_server['db_user']			= $phpgw_domain[$default_domain]['db_user'];
 	$db_server['db_pass']			= $phpgw_domain[$default_domain]['db_pass'];
+	$db_server['db_type']			= $phpgw_domain[$default_domain]['db_type'];
   $db_server['domain']      = $default_domain;
 }
 

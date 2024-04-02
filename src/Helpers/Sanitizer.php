@@ -218,13 +218,7 @@ class Sanitizer
 				{
 					$value = trim($value);
 				}
-
-				// This won't be needed in PHP 5.4 and later as GPC magic quotes are being removed
-				if ( version_compare(PHP_VERSION, '5.3.7') <= 0 && get_magic_quotes_gpc() )
-				{
-						$value = stripslashes($value);
-				}
-
+	
 				if(preg_match('/\'$/', $value))
 				{
 					$error =  'SQL-injection spottet.';
@@ -371,10 +365,10 @@ class Sanitizer
 						$value = self::clean_html($value);
 						break;
 					case 'date':
-						$value = phpgwapi_datetime::date_to_timestamp($value);
+						$value = \App\Helpers\DateHelper::date_to_timestamp($value);
 						if($value)
 						{
-							$value -= phpgwapi_datetime::user_timezone();
+							$value -= \App\Helpers\DateHelper::user_timezone();
 						}
 						break;
 					case 'csv':

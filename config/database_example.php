@@ -7,6 +7,7 @@ $phpgw_domain['default'] = array(
 	'db_name'		 => 'your_db_name',
 	'db_user'		 => 'your_username_here',
 	'db_pass'		 => 'your_password_here',
+	'db_type'		 => 'pgsql',
 	'config_passwd'	 => 'your_config_password_here'
 );
 /**
@@ -18,6 +19,7 @@ $phpgw_domain['your_domain_here'] = array(
 	'db_name'		 => 'your_db_name',
 	'db_user'		 => 'your_username_here',
 	'db_pass'		 => 'your_password_here',
+	'db_type'		 => 'pgsql',
 	'config_passwd'	 => 'your_config_password_here'
 );
 

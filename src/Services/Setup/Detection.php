@@ -14,6 +14,7 @@
     use App\Database\Db;
     use Exception;
     use App\Services\Setup\Setup;
+	use PDO;
 	/**
 	* Setup detection
 	* 
@@ -24,10 +25,14 @@
 	{
         //constructor
         private $setup;
+		private $db;
+		private $serverSettings;
+
+
         public function __construct()
         {
             $this->serverSettings = Settings::getInstance()->get('server');
-            $this->db = \App\Database\Db::getInstance();
+            $this->db = Db::getInstance();
             $this->setup = new Setup();
         }
 		function get_versions()
@@ -55,7 +60,7 @@
 		function get_db_versions($setup_info=array())
 		{
 			$tname = Array();
-			 $this->db->Halt_On_Error = 'no';
+			$this->db->set_halt_on_error('no');
 			$tables =  $this->db->table_names();
 			$newapps = '';
 			$oldapps = '';
@@ -94,12 +99,12 @@
 					// _debug_array($setup_info['phpgwapi']);exit;
 					// There seems to be a problem here.  If ['phpgwapi']['currentver'] is set,
 					// The GLOBALS never gets set.
-					$GLOBALS['setup_info'] = $setup_info;
+					Settings::getInstance()->set('setup_info', $setup_info);
 					$this->setup->register_app('phpgwapi');
 				}
 				else
 				{
-					$GLOBALS['setup_info'] = $setup_info;
+					Settings::getInstance()->set('setup_info', $setup_info);
 				}
 				$setup_info['phpgwapi']['version'] = $tmp; /* restore the file version */
 			}
@@ -270,36 +275,47 @@
 		//FIXME
         function check_header()
 		{
-            $setup_info = Settings::getInstance()->get('setup_info');
-            $server_info = Settings::getInstance()->get('server');
+ //         $setup_info = Settings::getInstance()->get('setup_info');
+//			$server_info = Settings::getInstance()->get('server');
+			$setup_data = Settings::getInstance()->get('setup');
 
-			if(!file_exists('../header.inc.php'))
+			if(!file_exists(SRC_ROOT_PATH . '/../config/config.php'))
 			{
-				$GLOBALS['phpgw_info']['setup']['header_msg'] = 'Stage One';
+				$setup_data['header_msg'] = 'Stage One';
+				$setup_data['stage']['header'] = 1;
+				Settings::getInstance()->set('setup', $setup_data);
 				return 1;
 			}
 			else
 			{
-				if (!isset($GLOBALS['phpgw_info']['server']['header_admin_password']))
+				if (!isset($this->serverSettings['header_admin_password']))
 				{
-					$GLOBALS['phpgw_info']['setup']['header_msg'] = 'Stage One (No header admin password set)';
+					$setup_data['header_msg'] = 'Stage One (No header admin password set)';
+					$setup_data['stage']['header'] = 2;
+					Settings::getInstance()->set('setup', $setup_data);
 					return 2;
 				}
-				elseif (!isset($GLOBALS['phpgw_domain']))
+				elseif (empty($this->db->get_domain()))
 				{
-					$GLOBALS['phpgw_info']['setup']['header_msg'] = 'Stage One (Upgrade your header.inc.php)';
+					$setup_data['header_msg'] = 'Stage One (Upgrade your header.inc.php)';
+					$setup_data['stage']['header'] = 3;
+					Settings::getInstance()->set('setup', $setup_data);
 					return 3;
 				}
-				elseif ( isset($GLOBALS['phpgw_info']['server']['versions']['header']) 
-					&& isset($GLOBALS['phpgw_info']['server']['versions']['current_header'])
-					&& $GLOBALS['phpgw_info']['server']['versions']['header'] != $GLOBALS['phpgw_info']['server']['versions']['current_header'])
+				elseif ( isset($this->serverSettings['versions']['header']) 
+					&& isset($this->serverSettings['versions']['current_header'])
+					&& $this->serverSettings['versions']['header'] != $this->serverSettings['versions']['current_header'])
 				{
-					$GLOBALS['phpgw_info']['setup']['header_msg'] = 'Stage One (Upgrade your header.inc.php)';
+					$setup_data['header_msg'] = 'Stage One (Upgrade your header.inc.php)';
+					$setup_data['stage']['header'] = 3;
+					Settings::getInstance()->set('setup', $setup_data);
 					return 3;
 				}
 			}
 			/* header.inc.php part settled. Moving to authentication */
-			$GLOBALS['phpgw_info']['setup']['header_msg'] = 'Stage One (Completed)';
+			$setup_data['header_msg'] = 'Stage One (Completed)';
+			$setup_data['stage']['header'] = 10;
+			Settings::getInstance()->set('setup', $setup_data);
 			return 10;
 		}
 
@@ -309,7 +325,7 @@
             $setup_info = Settings::getInstance()->get('setup_info');
             $setup_data = Settings::getInstance()->get('setup');// to be removed
 
-			 $this->db->Halt_On_Error = 'no';
+			 $this->db->set_halt_on_error('no');
 			// _debug_array($setup_info);
 
 			//error message supression
@@ -337,7 +353,6 @@
 				if ( isset($setup_info['phpgwapi']['version'])
 					&& $setup_info['phpgwapi']['currentver'] == $setup_info['phpgwapi']['version'])
 				{
-					$GLOBALS['phpgw_info']['setup']['header_msg'] = 'Stage 1 (Tables Complete)';
                     $setup_data['header_msg'] = 'Stage 1 (Tables Complete)';
                     $setup_info['setup']['header_msg'] = 'Stage 1 (Tables Complete)';
                     Settings::getInstance()->set('setup', $setup_data);
@@ -346,7 +361,6 @@
 				}
 				else
 				{
-					$GLOBALS['phpgw_info']['setup']['header_msg'] = 'Stage 1 (Tables need upgrading)';
                     $setup_data['header_msg'] = 'Stage 1 (Tables need upgrading)';
                     $setup_info['setup']['header_msg'] = 'Stage 1 (Tables need upgrading)';
                     Settings::getInstance()->set('setup', $setup_data);
@@ -367,14 +381,12 @@
 
                 if ($this->db->errorCode() == '00000') {
                     $this->db->exec('DROP TABLE phpgw_testrights');
-                    $GLOBALS['phpgw_info']['setup']['header_msg'] = 'Stage 3 (Install Applications)';
                     $setup_info['setup']['header_msg'] = 'Stage 3 (Install Applications)';
                     $setup_data['header_msg'] = 'Stage 3 (Install Applications)';
                     Settings::getInstance()->set('setup', $setup_data);
                     Settings::getInstance()->set('setup_info', $setup_info);
                     return 3;
                 } else {
-                    $GLOBALS['phpgw_info']['setup']['header_msg'] = 'Stage 1 (Create Database)';
                     $setup_info['setup']['header_msg'] = 'Stage 1 (Create Database)';
                     $setup_data['header_msg'] = 'Stage 1 (Create Database)';
                     Settings::getInstance()->set('setup', $setup_data);
@@ -386,11 +398,11 @@
 
 		function check_config()
 		{
-            $setup_info = Settings::getInstance()->get('setup_info');
+            $setup_data = Settings::getInstance()->get('setup');
 
-			 $this->db->Halt_On_Error = 'no';
-			if( !isset($setup_info['setup']['stage']['db'])
-				|| $setup_info['setup']['stage']['db'] != 10 )
+			 $this->db->set_halt_on_error('no');
+			if( !isset($setup_data['stage']['db'])
+				|| $setup_data['stage']['db'] != 10 )
 			{
 				return '';
 			}
@@ -402,26 +414,30 @@
             $configed = $result['config_value'];
 			if($configed)
 			{
-				$setup_info['setup']['header_msg'] = 'Stage 2 (Needs Configuration)';
-                Settings::getInstance()->set('setup_info', $setup_info);
+				$setup_data['header_msg'] = 'Stage 2 (Needs Configuration)';
+				$setup_data['stage']['config'] = 1;
+                Settings::getInstance()->set('setup', $setup_data);
 				return 1;
 			}
 			else
 			{
-				$setup_info['setup']['header_msg'] = 'Stage 2 (Configuration OK)';
-                Settings::getInstance()->set('setup_info', $setup_info);
+				$setup_data['header_msg'] = 'Stage 2 (Configuration OK)';
+				$setup_data['stage']['config'] = 10;
+                Settings::getInstance()->set('setup', $setup_data);
 				return 10;
 			}
 		}
 
 		function check_lang($check = true)
 		{
-             $setup_info = Settings::getInstance()->get('setup_info');
+			$setup_data = Settings::getInstance()->get('setup');
+			$setup_info = Settings::getInstance()->get('setup_info');
 
-			 $this->db->Halt_On_Error = 'no';
+
+			$this->db->set_halt_on_error('no');
 			if ( $check 
-				&& (!isset($setup_info['setup']['stage']['db'])
-					|| $setup_info['setup']['stage']['db'] != 10 ) )
+				&& (!isset($setup_data['stage']['db'])
+					|| $setup_data['stage']['db'] != 10 ) )
 			{
 				return '';
 			}
@@ -438,7 +454,7 @@
 			$langtbl  = '';
 			$languagestbl = '';
 
-			$setup_info['setup']['installed_langs'] = array();
+			$setup_data['installed_langs'] = array();
 
             $stmt = $this->db->prepare("SELECT COUNT(DISTINCT lang) as langcount FROM phpgw_lang");
             $stmt->execute();
@@ -446,8 +462,9 @@
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($result['langcount'] == 0) {
-                $setup_info['setup']['header_msg'] = 'Stage 3 (No languages installed)';
-                Settings::getInstance()->set('setup_info', $setup_info);
+				$setup_data['header_msg'] = 'Stage 3 (No languages installed)';
+				$setup_data['stage']['lang'] = 1;
+                Settings::getInstance()->set('setup', $setup_data);
                 return 1;
             }
             else
@@ -455,21 +472,22 @@
                 $stmt = $this->db->prepare("SELECT DISTINCT lang FROM phpgw_lang");
                 $stmt->execute();
 
-                $setup_info['setup']['installed_langs'] = array();
+				$setup_data['installed_langs'] = array();
 
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                    $setup_info['setup']['installed_langs'][$row['lang']] = $row['lang'];
+					$setup_data['installed_langs'][$row['lang']] = $row['lang'];
                 }
 
-                foreach($setup_info['setup']['installed_langs'] as $key => $value) {
+                foreach($setup_data['installed_langs'] as $key => $value) {
                     $stmt = $this->db->prepare("SELECT lang_name FROM phpgw_languages WHERE lang_id = :value");
                     $stmt->execute([':value' => $value]);
 
                     $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                    $setup_info['setup']['installed_langs'][$value] = $result['lang_name'];
-                }				
-                $setup_info['setup']['header_msg'] = 'Stage 3 (Completed)';
-                Settings::getInstance()->set('setup_info', $setup_info);
+					$setup_data['installed_langs'][$value] = $result['lang_name'];
+                }
+				$setup_data['header_msg'] = 'Stage 3 (Completed)';
+				$setup_data['stage']['lang'] = 10;
+                Settings::getInstance()->set('setup', $setup_data);
 				return 10;
 			}
 		}
@@ -489,7 +507,7 @@
 			{
 				/* Make a copy, else we send some callers into an infinite loop */
 				$copy = $setup_info;
-				 $this->db->Halt_On_Error = 'no';
+				$this->db->set_halt_on_error('no');
 				$table_names =  $this->db->table_names();
 				$tables = Array();
 				foreach($table_names as $key => $val)

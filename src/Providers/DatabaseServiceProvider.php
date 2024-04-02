@@ -17,7 +17,17 @@ class DatabaseServiceProvider
 			$config = $container->get('settings')['db'];
 
 			try {
-				$dsn = "pgsql:host={$config['db_host']};port={$config['db_port']};dbname={$config['db_name']}";
+
+				switch ($config['db_type']) {
+					case 'pgsql':
+						$dsn = "pgsql:host={$config['db_host']};port={$config['db_port']};dbname={$config['db_name']}";
+						break;
+					case 'mysql':
+						$dsn = "mysql:host={$config['db_host']};port={$config['db_port']};dbname={$config['db_name']}";
+						break;
+					default:
+						throw new Exception("Database type not supported");
+				}
 				$options = [
 					PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 					PDO::ATTR_PERSISTENT => true,

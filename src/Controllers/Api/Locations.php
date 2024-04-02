@@ -38,6 +38,7 @@ namespace App\Controllers\Api;
 
 use App\Controllers\Api\Applications;
 use App\Security\Acl;
+use App\Services\Settings;
 
 use PDO;
 
@@ -190,7 +191,7 @@ class Locations
 			);
 
 			$oProc->m_odb = &$this->_db;
-			$oProc->m_odb->Halt_On_Error = 'report';
+			$oProc->m_odb->set_halt_on_error'report');
 
 			$oProc->DropTable($tbl);
 		}

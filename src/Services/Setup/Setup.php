@@ -18,6 +18,11 @@
 	use App\Services\Setup\Html;
 	use App\Services\Hooks;
 	use App\Services\Crypto;
+	use App\Services\Settings;
+	use App\Database\Db;
+	use PDO;
+	use Sanitizer;
+
 	/**
 	* Setup
 	*
@@ -43,16 +48,31 @@
 
 		private $hack_file_name;
 		private $serverSettings;
-		private $setupSettings;
+		private $setup_data;
 		private $crypto;
 
+		public $setup_info;
+
+
+		/*
+		varanter av $Globals
+		$GLOBALS['phpgw_info']['apps']
+		$GLOBALS['phpgw_info']['server']
+		$GLOBALS['phpgw_info']['setup']
+		$GLOBALS['setup_info']
+
+
+		*/
+		
 		public function __construct($html = False, $translation = False)
 		{
 			ini_set('session.use_cookies', true);
             $this->serverSettings = Settings::getInstance()->get('server');
-            $this->setupSettings = Settings::getInstance()->get('setup');
+            $this->setup_data = Settings::getInstance()->get('setup');
 			$this->serverSettings['default_lang'] = !empty($this->serverSettings['default_lang']) ? $this->serverSettings['default_lang'] : 'en';
 			Settings::getInstance()->set('server', $this->serverSettings);
+
+			$this->setup_info = Settings::getInstance()->get('setup_info');
 
 			
 
@@ -60,13 +80,14 @@
 			 * FIXME - do not take effect
 			 */
 			ini_set('session.cookie_samesite', 'Strict');
-			$this->detection = new Detection();//createObject('phpgwapi.setup_detection');
-			$this->process   = new Process(); //createObject('phpgwapi.setup_process');
-			$_translation    = &$this->process->translation;
+//			$this->detection = new Detection();//createObject('phpgwapi.setup_detection');
+
+//			$this->process   = new Process(); //createObject('phpgwapi.setup_process');
+//			$_translation    = &$this->process->translation;
 
 			/* The setup application needs these */
-			$this->html	= $html ? new Html() : null;
-			$this->translation = $translation ? $_translation : null ; //CreateObject('phpgwapi.setup_translation') : null;
+//			$this->html	= $html ? new Html() : null;
+//			$this->translation = $translation ? $_translation : null ; //CreateObject('phpgwapi.setup_translation') : null;
 
 			//$this->tbl_apps    = $this->get_apps_table_name();
 			//$this->tbl_config  = $this->get_config_table_name();
@@ -118,6 +139,7 @@
 		function auth($auth_type='Config')
 		{
 			$remoteip     = $_SERVER['REMOTE_ADDR'];
+			print_r($_POST);
 
 			$FormLogout   = \Sanitizer::get_var('FormLogout');
 			$ConfigLogin  = \Sanitizer::get_var('ConfigLogin',	'string', 'POST');
@@ -161,7 +183,7 @@
 			 */
 			$hack_prevention = $this->_get_login_attempts();
 
-			$ip = phpgw::get_ip_address();
+			$ip = Sanitizer::get_ip_address();
 
 			if(!$ip)
 			{
@@ -172,9 +194,9 @@
 
 			if(isset($hack_prevention[$ip]['denied'][$now]) && $hack_prevention[$ip]['denied'][$now] > 3)
 			{
-				$this->setupSettings['HeaderLoginMSG'] = $auth_type == 'Header' ? 'To many failed attempts' : '';
-				$this->setupSettings['ConfigLoginMSG'] = $auth_type == 'Config' ? 'To many failed attempts' : '';
-				Settings::getInstance()->set('setup', $this->setupSettings);
+				$this->setup_data['HeaderLoginMSG'] = $auth_type == 'Header' ? 'To many failed attempts' : '';
+				$this->setup_data['ConfigLoginMSG'] = $auth_type == 'Config' ? 'To many failed attempts' : '';
+				Settings::getInstance()->set('setup', $this->setup_data);
 				return False;
 			}
 
@@ -201,8 +223,8 @@
 				}
 				else
 				{
-					$this->setupSettings['HeaderLoginMSG'] = lang('Invalid password');
-					$this->setupSettings['ConfigLoginMSG'] = '';
+					$this->setup_data['HeaderLoginMSG'] = lang('Invalid password');
+					$this->setup_data['ConfigLoginMSG'] = '';
 					if(isset($hack_prevention[$ip]['denied'][$now]))
 					{
 						$hack_prevention[$ip]['denied'][$now] +=1;
@@ -212,8 +234,8 @@
 						$hack_prevention[$ip]['denied'][$now] =1;
 					}
 
-					$this->setupSettings['HeaderLoginMSG'] .= " ({$hack_prevention[$ip]['denied'][$now]})";
-					Settings::getInstance()->set('setup', $this->setupSettings);
+					$this->setup_data['HeaderLoginMSG'] .= " ({$hack_prevention[$ip]['denied'][$now]})";
+					Settings::getInstance()->set('setup', $this->setup_data);
 
 					$this->_store_login_attempts($hack_prevention);
 
@@ -244,8 +266,8 @@
 				}
 				else
 				{
-					$this->setupSettings['ConfigLoginMSG'] = lang('Invalid password');
-					$this->setupSettings['HeaderLoginMSG'] = '';
+					$this->setup_data['ConfigLoginMSG'] = lang('Invalid password');
+					$this->setup_data['HeaderLoginMSG'] = '';
 					if(isset($hack_prevention[$ip]['denied'][$now]))
 					{
 						$hack_prevention[$ip]['denied'][$now] +=1;
@@ -255,8 +277,8 @@
 						$hack_prevention[$ip]['denied'][$now] =1;
 					}
 
-					$this->setupSettings['ConfigLoginMSG'] .= " ({$hack_prevention[$ip]['denied'][$now]})";
-					Settings::getInstance()->set('setup', $this->setupSettings);
+					$this->setup_data['ConfigLoginMSG'] .= " ({$hack_prevention[$ip]['denied'][$now]})";
+					Settings::getInstance()->set('setup', $this->setup_data);
 
 					$this->_store_login_attempts($hack_prevention);
 
@@ -270,12 +292,12 @@
 				{
 					/* config logout */
 					setcookie('ConfigPW','');
-					$this->setupSettings['LastDomain'] = isset($_COOKIE['ConfigDomain']) ? $_COOKIE['ConfigDomain'] : '';
+					$this->setup_data['LastDomain'] = isset($_COOKIE['ConfigDomain']) ? $_COOKIE['ConfigDomain'] : '';
 					setcookie('ConfigDomain','');
-					$this->setupSettings['ConfigLoginMSG'] = lang('You have successfully logged out');
+					$this->setup_data['ConfigLoginMSG'] = lang('You have successfully logged out');
 					setcookie('ConfigLang','');
-					$this->setupSettings['HeaderLoginMSG'] = '';
-					Settings::getInstance()->set('setup', $this->setupSettings);
+					$this->setup_data['HeaderLoginMSG'] = '';
+					Settings::getInstance()->set('setup', $this->setup_data);
 
 					return False;
 				}
@@ -283,10 +305,10 @@
 				{
 					/* header admin logout */
 					setcookie('HeaderPW','');
-					$this->setupSettings['HeaderLoginMSG'] = lang('You have successfully logged out');
+					$this->setup_data['HeaderLoginMSG'] = lang('You have successfully logged out');
 					setcookie('ConfigLang','');
-					$this->setupSettings['ConfigLoginMSG'] = '';
-					Settings::getInstance()->set('setup', $this->setupSettings);
+					$this->setup_data['ConfigLoginMSG'] = '';
+					Settings::getInstance()->set('setup', $this->setup_data);
 
 					return False;
 				}
@@ -304,9 +326,9 @@
 				}
 				else
 				{
-					$this->setupSettings['ConfigLoginMSG'] = lang('Invalid password');
-					$this->setupSettings['HeaderLoginMSG'] = '';
-					Settings::getInstance()->set('setup', $this->setupSettings);
+					$this->setup_data['ConfigLoginMSG'] = lang('Invalid password');
+					$this->setup_data['HeaderLoginMSG'] = '';
+					Settings::getInstance()->set('setup', $this->setup_data);
 					return False;
 				}
 			}
@@ -328,17 +350,17 @@
 				}
 				else
 				{
-					$this->setupSettings['HeaderLoginMSG'] = lang('Invalid password');
-					$this->setupSettings['ConfigLoginMSG'] = '';
-					Settings::getInstance()->set('setup', $this->setupSettings);
+					$this->setup_data['HeaderLoginMSG'] = lang('Invalid password');
+					$this->setup_data['ConfigLoginMSG'] = '';
+					Settings::getInstance()->set('setup', $this->setup_data);
 					return False;
 				}
 			}
 			else
 			{
-				$this->setupSettings['HeaderLoginMSG'] = '';
-				$this->setupSettings['ConfigLoginMSG'] = '';
-				Settings::getInstance()->set('setup', $this->setupSettings);
+				$this->setup_data['HeaderLoginMSG'] = '';
+				$this->setup_data['ConfigLoginMSG'] = '';
+				Settings::getInstance()->set('setup', $this->setup_data);
 				return False;
 			}
 		}
@@ -390,9 +412,9 @@
 				}
 				if(!$foundip)
 				{
-					$this->setupSettings['HeaderLoginMSG'] = '';
-					$this->setupSettings['ConfigLoginMSG'] = lang('Invalid IP address');
-					Settings::getInstance()->set('setup', $this->setupSettings);
+					$this->setup_data['HeaderLoginMSG'] = '';
+					$this->setup_data['ConfigLoginMSG'] = lang('Invalid IP address');
+					Settings::getInstance()->set('setup', $this->setup_data);
 					return False;
 				}
 			}
@@ -625,8 +647,8 @@
 
 			if($tableschanged == True)
 			{
-				$this->setupSettings['tableschanged'] = True;
-				Settings::getInstance()->set('setup', $this->setupSettings);
+				$this->setup_data['tableschanged'] = True;
+				Settings::getInstance()->set('setup', $this->setup_data);
 			}
 			if($setup_info[$appname]['currentver'])
 			{

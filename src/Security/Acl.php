@@ -44,8 +44,9 @@
     namespace App\Security;
     use App\Services\Settings;
     use App\Services\ServerSettings;
-		use App\Services\Cache;
+	use App\Services\Cache;
 	use App\Controllers\Api\Accounts\Accounts;
+	use App\Controllers\Api\Accounts\phpgwapi_account;
 	use App\Controllers\Api\Locations;
 	use PDO;
 	

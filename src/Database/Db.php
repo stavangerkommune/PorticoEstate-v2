@@ -283,4 +283,26 @@ class Db extends PDO
 		return $return;
 	}
 
+	public function set_halt_on_error($halt_on_error = '')
+	{
+
+		switch ($halt_on_error) {
+			case 'yes':
+				$this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+				break;
+			case 'report':
+				$this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
+				break;
+			default:
+				$this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
+		}
+	}
+
+	/**
+	 * Implement the create database method
+	 */
+	public function create_database()
+	{
+	}
+
 }

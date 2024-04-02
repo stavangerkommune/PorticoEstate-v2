@@ -126,6 +126,7 @@ $app->get('/setup', function (Request $request, Response $response) use ($phpgw_
                         <label for="password" class="form-label">Password:</label>
                         <input type="password" class="form-control" id="password" name="FormPW">
                     </div>
+					 <input type="hidden" name="ConfigLogin" value="Login">
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>

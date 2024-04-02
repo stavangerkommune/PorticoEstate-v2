@@ -2,6 +2,7 @@
 
 return array(
 	'server' => array(
+		'header_admin_password' => '',
 		'show_domain_selectbox' => false,
 		'domain_from_host' => false,
 		'db_persistent' => true,

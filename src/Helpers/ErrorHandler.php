@@ -173,7 +173,7 @@ class ErrorHandler
 		$log = $this->Log;
 	
 		if (!isset($this->userSettings['apps']['admin'])) {
-			$error_file = str_replace(PHPGW_SERVER_ROOT, '/path/to/portico', $error_file);
+			$error_file = str_replace(SRC_ROOT_PATH, '/path/to/portico', $error_file);
 		}
 	
 		$bt = debug_backtrace();
@@ -308,7 +308,7 @@ class ErrorHandler
 			$file = 'unknown';
 			if (isset($entry['file'])) {
 				if (!isset($this->userSettings['apps']['admin'])) {
-					$file = '/path/to/portico/' . substr($entry['file'], strlen(PHPGW_SERVER_ROOT));
+					$file = '/path/to/portico/' . substr($entry['file'], strlen(SRC_ROOT_PATH));
 				} else {
 					$file = $entry['file'];
 				}

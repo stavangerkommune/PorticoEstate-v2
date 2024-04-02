@@ -10,6 +10,10 @@
 	* @version $Id$
 	*/
     namespace App\Services\Setup;
+
+	use App\Services\Settings;
+	use Sanitizer;
+
 	/**
 	* Setup html
 	*
@@ -28,15 +32,15 @@
 			$GLOBALS['header_template']->set_block('header','domain','domain');
 			$var = Array();
 
-			$deletedomain = phpgw::get_var('deletedomain', 'string', 'POST');
-			$domains = phpgw::get_var('domains', 'string', 'POST');
+			$deletedomain = Sanitizer::get_var('deletedomain', 'string', 'POST');
+			$domains = Sanitizer::get_var('domains', 'string', 'POST');
 			if( !is_array($domains) )
 			{
 				$domains = array();
 			}
 
-			$setting = phpgw::get_var('setting', 'raw', 'POST');
-			$settings = phpgw::get_var("settings", 'raw', 'POST');
+			$setting = Sanitizer::get_var('setting', 'raw', 'POST');
+			$settings = Sanitizer::get_var("settings", 'raw', 'POST');
 
 			foreach($domains as $k => $v)
 			{
@@ -83,20 +87,21 @@
 		function setup_tpl_dir($app_name='setup')
 		{
 			/* hack to get tpl dir */
-			if (is_dir(PHPGW_SERVER_ROOT))
+			if (is_dir(SRC_ROOT_PATH))
 			{
-				$srv_root = PHPGW_SERVER_ROOT . "/$app_name";
+				$srv_root = SRC_ROOT_PATH . "/Modules/" . ucfirst($app_name);
 			}
 			else
 			{
 				$srv_root = '';
 			}
 
-			return "{$srv_root}/templates/base";
+			return "{$srv_root}/Templates";
 		}
 
 		function show_header($title='',$nologoutbutton=False, $logoutfrom='config', $configdomain='')
 		{
+			$serverSettings = Settings::getInstance()->get('server');
 			$GLOBALS['setup_tpl']->set_var('lang_charset',lang('charset'));
 			$style = array('th_bg'		=> '#486591',
 					'th_text'	=> '#FFFFFF',
@@ -127,9 +132,9 @@
 				$GLOBALS['setup_tpl']->set_var('configdomain',' - ' . lang('Domain') . ': ' . $configdomain);
 			}
 
-			$api_version = isset($GLOBALS['phpgw_info']['server']['versions']['phpgwapi']) ? $GLOBALS['phpgw_info']['server']['versions']['phpgwapi'] : '';
+			$api_version = isset($serverSettings['versions']['phpgwapi']) ? $serverSettings['versions']['phpgwapi'] : '';
 			
-			$version = isset($GLOBALS['phpgw_info']['server']['versions']['system']) ? $GLOBALS['phpgw_info']['server']['versions']['system'] : $api_version;
+			$version = isset($serverSettings['versions']['system']) ? $serverSettings['versions']['system'] : $api_version;
 
 			$GLOBALS['setup_tpl']->set_var('pgw_ver',$version);
 			$GLOBALS['setup_tpl']->set_var('logoutbutton',$btn_logout);

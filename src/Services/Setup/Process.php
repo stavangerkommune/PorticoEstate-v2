@@ -9,11 +9,15 @@
 	* @version $Id$
 	*/
     namespace App\Services\Setup;
-	use App\Services\Setup\Translation;
+	use App\Services\Setup\SetupTranslation;
 	use App\Database\Db;
 	use App\Services\Setup\Detection;
 	use App\Services\SchemaProc\SchemaProc;
 	use App\Services\Setup\Setup;
+	use App\Controllers\Api\Accounts\Accounts;
+	Use App\Security\Acl;
+	use App\Controllers\Api\Accounts\phpgwapi_account;
+
 	/**
 	* Setup process
 	* 
@@ -41,7 +45,7 @@
 
  		function __construct()
 		{
-			$this->translation = new Translation();
+			$this->translation = new SetupTranslation();
 			$this->db = Db::getInstance();
 			$this->detection = new Detection();
 			$this->setup = new Setup();
@@ -66,7 +70,7 @@
 
 			$this->oProc = new SchemaProc('postgres');//createObject('phpgwapi.schema_proc',$phpgw_domain[$ConfigDomain]['db_type']);
 			$this->oProc->m_odb           = $this->db;
-			$this->oProc->m_odb->Halt_On_Error = 'yes';
+			$this->oProc->m_odb->set_halt_on_error('yes');
 		}
 
 		/**
@@ -186,9 +190,13 @@
 				{
 					echo '<br>Setup failure: excess looping in process->pass():'."\n";
 					echo '<br>Pass:<br>'."\n";
-					_debug_array($pass);
+					echo '<pre>';
+						print_r($pass);
+					echo '</pre>';
 					echo '<br>Passed:<br>'."\n";
-					_debug_array($passed);
+					echo '<pre>';
+						print_r($passed);
+					echo '</pre>';
 					exit;
 				}
 				$pass_string = implode (':', array_keys($pass) );
@@ -299,7 +307,7 @@
 								echo '<br>process->dropviews(): Dropping :'. $setup_info[$key]['name'] . ' view: ' . $view;
 							}
 						}
-						catch (Exception $ex)
+						catch (\Exception $ex)
 						{
 							// Nothing
 
@@ -347,7 +355,7 @@
 
 				if($DEBUG) { echo '<br>process->current(): Incoming status: ' . $appname . ',status: '. $setup_info[$key]['status']; }
 
-				$appdir  = PHPGW_SERVER_ROOT . "/{$appname}/setup/";
+				$appdir  = SRC_ROOT_PATH . "/Modules/" . ucfirst($appname) . "/Setup/";
 
 				if ( isset($setup_info[$key]['tables']) 
 					&& $setup_info[$key]['tables'] 
@@ -434,15 +442,15 @@
 			}
 			foreach ( array_keys($setup_info) as $key )
 			{
-				$appname = isset($setup_info[$key]['name']) ? $setup_info[$key]['name'] : '';
-				$appdir  = PHPGW_SERVER_ROOT . "/{$appname}/setup/";
+				$appname = isset($setup_info[$key]['name']) ? ucfirst($setup_info[$key]['name']) : '';
+				$appdir  = SRC_ROOT_PATH . "/Modules/{$appname}/Setup/";
 
 //				if( isset($setup_info[$key]['tables'])
 //					&& $setup_info[$key]['tables']
 //					&& file_exists($appdir.'default_records.inc.php'))
 				$default_found = false;
 
-				$ConfigDomain = phpgw::get_var('ConfigDomain','string', 'COOKIE');
+				$ConfigDomain = \Sanitizer::get_var('ConfigDomain','string', 'COOKIE');
 
 				if( file_exists($appdir.$ConfigDomain.'/default_records.inc.php'))
 				{
@@ -551,14 +559,18 @@
 		 */
 		function add_credential($appname)
 		{
-			$GLOBALS['phpgw']->accounts	= createObject('phpgwapi.accounts');
-			$GLOBALS['phpgw']->acl		= CreateObject('phpgwapi.acl');
+	//		$GLOBALS['phpgw']->accounts	= createObject('phpgwapi.accounts');
+			$accountsobj = new Accounts();
+			$aclobj = new Acl();
+
+	//		$GLOBALS['phpgw']->acl		= CreateObject('phpgwapi.acl');
+
 
 			$admins = array();
-			$accounts	= $GLOBALS['phpgw']->acl->get_ids_for_location('run', phpgwapi_acl::READ, 'admin');
+			$accounts	= $aclobj->get_ids_for_location('run', Acl::READ, 'admin');
 			foreach($accounts as $account_id)
 			{
-				$account = $GLOBALS['phpgw']->accounts->get($account_id);
+				$account = $accountsobj->get($account_id);
 				if($account->type == phpgwapi_account::TYPE_GROUP)
 				{
 					$admins[] = $account_id;
@@ -568,21 +580,22 @@
 			$members = array();
 			foreach ($admins as $admin)
 			{
-				if(!$GLOBALS['phpgw']->acl->check('run', phpgwapi_acl::READ, $appname))
+				if(!$aclobj->check('run', Acl::READ, $appname))
 				{
-					$locations = $GLOBALS['phpgw']->locations->get_locations(false, $appname);
+			//		$locations = $GLOBALS['phpgw']->locations->get_locations(false, $appname);
+					$locations = (new \App\Controllers\Api\Locations())->get_locations(false, $appname);
 
-					$aclobj =& $GLOBALS['phpgw']->acl;
+
 					$aclobj->set_account_id($admin, true);
 					// application permissions
-					$aclobj->add($appname, 'run', phpgwapi_acl::READ);
+					$aclobj->add($appname, 'run', Acl::READ);
 					foreach ($locations as $location => $info)
 					{
 						$aclobj->add($appname, $location, 31);
 					}
 
 					$aclobj->save_repository();
-					$members = array_merge($members, $GLOBALS['phpgw']->accounts->get_members($admin));
+					$members = array_merge($members, $accountsobj->get_members($admin));
 				}
 			}
 
@@ -591,7 +604,7 @@
 			//FIXME - the cache is not cleared
 			foreach ($members as $account_id)
 			{
-				phpgwapi_cache::user_clear('phpgwapi', 'menu', $account_id);
+				\App\Services\Cache::user_clear('phpgwapi', 'menu', $account_id);
 			}
 		}
 
@@ -615,8 +628,8 @@
 			}
 			foreach($setup_info as $key => $ignored)
 			{
-				$appname = $setup_info[$key]['name'];
-				$appdir  = PHPGW_SERVER_ROOT . "/{$appname}/setup/";
+				$appname = ucfirst($setup_info[$key]['name']);
+				$appdir  = SRC_ROOT_PATH . "/Modules/{$appname}/Setup/";
 
 				if(file_exists($appdir.'test_data.inc.php'))
 				{
@@ -641,7 +654,7 @@
 		 */
 		function baseline($setup_info,$DEBUG=False)
 		{
-			if ( !isset($this->oProc) || !$GLOBALS['phpgw_setup'] )
+			if (!isset($this->oProc) || !$this->oProc)
 			{
 				$this->init_process();
 			}
@@ -652,8 +665,8 @@
 			}
 			foreach($setup_info as $key => $ignored)
 			{
-				$appname = $setup_info[$key]['name'];
-				$appdir  = PHPGW_SERVER_ROOT . "/{$appname}/setup/";
+				$appname = ucfirst($setup_info[$key]['name']);
+				$appdir  = SRC_ROOT_PATH . "/Modules/{$appname}/setup/";
 
 				if(file_exists($appdir.'tables_baseline.inc.php'))
 				{
@@ -727,7 +740,7 @@
 					//$apptitle   = isset($setup_info[$key]['title']) ? $setup_info[$key]['title'] : '';
 					$currentver = $setup_info[$key]['currentver'];
 					$targetver  = $setup_info[$key]['version'];	// The version we need to match when done
-					$appdir     = PHPGW_SERVER_ROOT . "/{$appname}/setup/";
+					$appdir     = SRC_ROOT_PATH . "/Modules/" . ucfirst($appname) ."/Setup/";
 
 					$test   = array();
 					$this->oProc->m_aTables = $phpgw_baseline = array();
