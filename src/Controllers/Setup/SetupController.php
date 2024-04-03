@@ -14,6 +14,7 @@ Use App\Services\Setup\Process;
 Use App\Services\Setup\Html;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
+use App\Helpers\Template;
 
 
 class SetupController
@@ -29,10 +30,10 @@ class SetupController
     public function __construct()
     {
 		$loader = new FilesystemLoader(SRC_ROOT_PATH . '/Modules/Setup/Templates');
-		$this->twig = new Environment($loader, [
-			'cache' => sys_get_temp_dir() . '/cache',
-			'cache' => false, // To disable cache during development
-		]);
+	//	$this->twig = new Environment($loader, [
+	//		'cache' => sys_get_temp_dir() . '/cache',
+	//		'cache' => false, // To disable cache during development
+	//	]);
 
 		//setup_info
 		Settings::getInstance()->set('setup_info', []);//$GLOBALS['setup_info']
@@ -46,9 +47,12 @@ class SetupController
 		$this->setup = new Setup();
     }
 
-    public function handler_eksempel(Request $request, Response $response, $args)
+    public function logout(Request $request, Response $response, $args)
     {
-        return $this->twig->render($response, '/Setup/head.twig', $args);
+		$_POST['FormLogout'] = $_GET['FormLogout'];
+		$this->setup->auth('Config');
+		Header('Location: ../setup');
+		exit;
     }
 
     public function index(Request $request, Response $response, $args)
@@ -76,8 +80,9 @@ class SetupController
     
         @set_time_limit(0);
     
- /*        $tpl_root = $this->html->setup_tpl_dir('setup');
-        $setup_tpl = CreateObject('phpgwapi.template',$tpl_root);
+        $tpl_root = $this->html->setup_tpl_dir('setup');
+        $setup_tpl = new Template($tpl_root);
+		$this->html->set_tpl($setup_tpl);
         $setup_tpl->set_file(array
         (
             'T_head'		=> 'head.tpl',
@@ -110,23 +115,9 @@ class SetupController
         $setup_tpl->set_block('T_setup_db_blocks','B_db_stage_6_post','V_db_stage_6_post');
         $setup_tpl->set_block('T_setup_db_blocks','B_db_stage_10','V_db_stage_10');
         $setup_tpl->set_block('T_setup_db_blocks','B_db_stage_default','V_db_stage_default');
-  */     
-  	//	$setup_tpl->set_var('HeaderLoginWarning', lang('Warning: All your passwords (database, phpGroupWare admin,...)<br /> will be shown in plain text after you log in for header administration.'));
-    //    $setup_tpl->set_var('lang_cookies_must_be_enabled', lang('<b>NOTE:</b> You must have cookies enabled to use setup and header admin!'));
-
-		$templateVariables = [
-			'HeaderLoginWarning' => lang('Warning: All your passwords (database, phpGroupWare admin,...)<br /> will be shown in plain text after you log in for header administration.'),
-			'lang_cookies_must_be_enabled' => lang('<b>NOTE:</b> You must have cookies enabled to use setup and header admin!'),
-			// Add other template variables here...
-		];
-
-		// Render a template
-//		$output = $this->twig->render('login_main.twig', $templateVariables);
-
-		// Write the rendered template to the response
-	//	$response->getBody()->write($output);
-//		return $response;
-	
+      
+  		$setup_tpl->set_var('HeaderLoginWarning', lang('Warning: All your passwords (database, phpGroupWare admin,...)<br /> will be shown in plain text after you log in for header administration.'));
+        $setup_tpl->set_var('lang_cookies_must_be_enabled', lang('<b>NOTE:</b> You must have cookies enabled to use setup and header admin!'));
 
 		// Check header and authentication
 		$setup_data['stage']['header'] = $this->detection->check_header();
@@ -138,11 +129,7 @@ class SetupController
         }
         elseif (!$this->setup->auth('Config'))
         {
-
-            $_POST['ConfigLang'] = isset($serverSettings['default_lang']) ? $serverSettings['default_lang'] : '';
-            $this->html->show_header(lang('Please login'),True);
-            $this->html->login_form();
-            $this->html->show_footer();
+			Header('Location: setup');
             exit;
         }
     
@@ -156,7 +143,6 @@ class SetupController
 		$setup_data['stage']['db'] = $this->detection->check_db();
         if ($setup_data['stage']['db'] != 1)
         {
-            $setup_info = $this->detection->get_versions();
             $setup_info = $this->detection->get_db_versions($setup_info);
             $setup_data['stage']['db'] = $this->detection->check_db();
             if($GLOBALS['DEBUG'])
@@ -237,9 +223,10 @@ class SetupController
                 $setup_data['stage']['db'] = 6;
                 break;
         }
-        $setup_tpl->set_var('subtitle', $subtitle);
-        $setup_tpl->set_var('submsg', $submsg);
-        $setup_tpl->set_var('subaction', $subaction);
+
+         $setup_tpl->set_var('subtitle', $subtitle);
+         $setup_tpl->set_var('submsg', $submsg);
+         $setup_tpl->set_var('subaction', $subaction);
     
         // Old PHP
         if (version_compare(phpversion(), '8.0.0', '<'))
@@ -261,7 +248,6 @@ class SetupController
     
         $setup_tpl->set_var('img_incomplete', $incomplete);
         $setup_tpl->set_var('img_completed', $completed);
-    
         $setup_tpl->set_var('db_step_text',lang('Step 1 - Simple Application Management'));
     
         switch($setup_data['stage']['svn'])
@@ -287,6 +273,7 @@ class SetupController
                     // unlink($tmpfname);
                     // $_svn_message = '<pre>' . print_r($output,true) . '</pre>';
                 }
+
                 $setup_tpl->set_var('svn_message',$_svn_message);
                 $setup_tpl->parse('V_svn_stage_1','B_svn_stage_1');
                 $svn_filled_block = $setup_tpl->get_var('V_svn_stage_1');
@@ -373,6 +360,7 @@ class SetupController
                 $setup_tpl->set_var('V_db_filled_block',$db_filled_block);
                 break;
             case 4:
+				print_r($setup_info['phpgwapi']);
                 $setup_tpl->set_var('oldver',lang('You appear to be running version %1 of phpGroupWare',$setup_info['phpgwapi']['currentver']));
                 $setup_tpl->set_var('automatic',lang('We will automatically update your tables/records to %1',$setup_info['phpgwapi']['version']));
                 $setup_tpl->set_var('backupwarn',lang('backupwarn'));
@@ -470,7 +458,7 @@ class SetupController
                 $db_filled_block = $setup_tpl->get_var('V_db_stage_default');
                 $setup_tpl->set_var('V_db_filled_block',$db_filled_block);
         }
-    
+		Settings::getInstance()->set('setup', $setup_data);
         // Config Section
         $setup_tpl->set_var('config_step_text',lang('Step 2 - Configuration'));
         $setup_data['stage']['config'] = $this->detection->check_config();
@@ -625,12 +613,13 @@ class SetupController
         // Lang Section
         $setup_tpl->set_var('lang_step_text',lang('Step 3 - Language Management'));
 		$setup_data['stage']['lang'] = $this->detection->check_lang();
+//		print_r($setup_data['stage']);  
 		$setup_data = Settings::getInstance()->get('setup');
-    
-        // begin DEBUG code
-        //$GLOBALS['phpgw_info']['setup']['stage']['lang'] = 0;
-        // end DEBUG code
-    
+
+		// begin DEBUG code
+		//$GLOBALS['phpgw_info']['setup']['stage']['lang'] = 0;
+		// end DEBUG code
+   
         switch($setup_data['stage']['lang'])
         {
             case 1:
@@ -675,8 +664,8 @@ class SetupController
         {
             $setup_data['stage']['db'] = null;
         }
-    
-        switch($setup_data['stage']['db'])
+
+		switch($setup_data['stage']['db'])
         {
             case 10:
                 $setup_tpl->set_var('apps_status_img',$completed);
@@ -700,14 +689,19 @@ class SetupController
         }
     
         
-		$this->html->show_header(
+		$header = $this->html->get_header(
             $setup_data['header_msg'],
             False,
             'config',
 			$this->db->get_domain() . '(' . $db_config['db_type'] . ')'
         );
-        $setup_tpl->pparse('out','T_setup_main');
-        $this->html->show_footer();
+		$main = $setup_tpl->fp('out', 'T_setup_main');
 
+		$footer = $this->html->get_footer();
+
+		$response = new \Slim\Psr7\Response();
+		$response->getBody()->write($header . $main . $footer);
+
+		return $response;
     }
 }

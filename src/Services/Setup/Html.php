@@ -22,6 +22,12 @@
 	*/
 	class Html
 	{
+		protected $setup_tpl;
+
+		function set_tpl($tpl)
+		{
+			$this->setup_tpl = $tpl;
+		}
 		/**
 		 * generate header.inc.php file output - NOT a generic html header function
 		*
@@ -96,13 +102,18 @@
 				$srv_root = '';
 			}
 
-			return "{$srv_root}/Templates";
+			return "{$srv_root}/Templates/base";
 		}
 
-		function show_header($title='',$nologoutbutton=False, $logoutfrom='config', $configdomain='')
+		function show_header($title = '', $nologoutbutton = False, $logoutfrom = 'config', $configdomain = '')
+		{
+			print $this->get_header($title, $nologoutbutton, $logoutfrom, $configdomain);
+		}
+
+		function get_header($title = '', $nologoutbutton = False, $logoutfrom = 'config', $configdomain = '')
 		{
 			$serverSettings = Settings::getInstance()->get('server');
-			$GLOBALS['setup_tpl']->set_var('lang_charset',lang('charset'));
+			$this->setup_tpl->set_var('lang_charset',lang('charset'));
 			$style = array('th_bg'		=> '#486591',
 					'th_text'	=> '#FFFFFF',
 					'row_on'	=> '#DDDDDD',
@@ -110,49 +121,54 @@
 					'banner_bg'	=> '#4865F1',
 					'msg'		=> '#FF0000',
 					);
-			$GLOBALS['setup_tpl']->set_var($style);
+			$this->setup_tpl->set_var($style);
 			if ($nologoutbutton)
 			{
 				$btn_logout = '&nbsp;';
 			}
 			else
 			{
-				$btn_logout = '<a href="index.php?FormLogout=' . $logoutfrom . '" class="link">' . lang('Logout').'</a>';
+				$btn_logout = '<a href="setup/logout?FormLogout=' . $logoutfrom . '" class="link">' . lang('Logout').'</a>';
 			}
 
-			$GLOBALS['setup_tpl']->set_var('lang_version', lang('version'));
-			$GLOBALS['setup_tpl']->set_var('lang_setup', lang('setup'));
-			$GLOBALS['setup_tpl']->set_var('page_title',$title);
+			$this->setup_tpl->set_var('lang_version', lang('version'));
+			$this->setup_tpl->set_var('lang_setup', lang('setup'));
+			$this->setup_tpl->set_var('page_title',$title);
 			if ($configdomain == '')
 			{
-				$GLOBALS['setup_tpl']->set_var('configdomain','');
+				$this->setup_tpl->set_var('configdomain','');
 			}
 			else
 			{
-				$GLOBALS['setup_tpl']->set_var('configdomain',' - ' . lang('Domain') . ': ' . $configdomain);
+				$this->setup_tpl->set_var('configdomain',' - ' . lang('Domain') . ': ' . $configdomain);
 			}
 
 			$api_version = isset($serverSettings['versions']['phpgwapi']) ? $serverSettings['versions']['phpgwapi'] : '';
 			
 			$version = isset($serverSettings['versions']['system']) ? $serverSettings['versions']['system'] : $api_version;
 
-			$GLOBALS['setup_tpl']->set_var('pgw_ver',$version);
-			$GLOBALS['setup_tpl']->set_var('logoutbutton',$btn_logout);
-			$GLOBALS['setup_tpl']->pparse('out','T_head');
+			$this->setup_tpl->set_var('pgw_ver',$version);
+			$this->setup_tpl->set_var('logoutbutton',$btn_logout);
+			return $this->setup_tpl->fp('out','T_head');
 			/* $setup_tpl->set_var('T_head',''); */
 		}
 
+		function get_footer()
+		{
+			$footer = $this->setup_tpl->fp('out', 'T_footer');
+			unset($this->setup_tpl);
+			return $footer;
+		}
 		function show_footer()
 		{
-			$GLOBALS['setup_tpl']->pparse('out','T_footer');
-			unset($GLOBALS['setup_tpl']);
+			print $this->get_footer();
 		}
 
 		function show_alert_msg($alert_word='Setup alert',$alert_msg='setup alert (generic)')
 		{
-			$GLOBALS['setup_tpl']->set_var('V_alert_word',$alert_word);
-			$GLOBALS['setup_tpl']->set_var('V_alert_msg',$alert_msg);
-			$GLOBALS['setup_tpl']->pparse('out','T_alert_msg');
+			$this->setup_tpl->set_var('V_alert_word',$alert_word);
+			$this->setup_tpl->set_var('V_alert_msg',$alert_msg);
+			$this->setup_tpl->pparse('out','T_alert_msg');
 		}
 
 		function make_frm_btn_simple($pre_frm_blurb='',$frm_method='POST',$frm_action='',$input_type='submit',$input_value='',$post_frm_blurb='')
@@ -174,107 +190,5 @@
 				. $post_link_blurb . "\n";
 			return $simple_link;
 		}
-
-		function login_form()
-		{
-			/* begin use TEMPLATE login_main.tpl */
-			$GLOBALS['setup_tpl']->set_var('ConfigLoginMSG',
-				@$GLOBALS['phpgw_info']['setup']['ConfigLoginMSG']
-				? $GLOBALS['phpgw_info']['setup']['ConfigLoginMSG'] : '&nbsp;');
-
-			$GLOBALS['setup_tpl']->set_var('HeaderLoginMSG',
-				@$GLOBALS['phpgw_info']['setup']['HeaderLoginMSG']
-				? $GLOBALS['phpgw_info']['setup']['HeaderLoginMSG'] : '&nbsp;');
-
-			if ($GLOBALS['phpgw_info']['setup']['stage']['header'] == '10')
-			{
-				/*
-				 Begin use SUB-TEMPLATE login_stage_header,
-				 fills V_login_stage_header used inside of login_main.tpl
-				*/
-				$GLOBALS['setup_tpl']->set_var('lang_select',lang_select());
-				if (count($GLOBALS['phpgw_domain']) > 1)
-				{
-					$domains = '';
-					foreach($GLOBALS['phpgw_domain'] as $domain => $data)
-					{
-						$domains .= "<option value=\"$domain\" ";
-						if(isset($GLOBALS['phpgw_info']['setup']['LastDomain']) && $domain == $GLOBALS['phpgw_info']['setup']['LastDomain'])
-						{
-							$domains .= ' SELECTED';
-						}
-						elseif($domain == $_SERVER['SERVER_NAME'])
-						{
-							$domains .= ' SELECTED';
-						}
-						$domains .= ">$domain</option>\n";
-					}
-					$GLOBALS['setup_tpl']->set_var('domains',$domains);
-
-					// use BLOCK B_multi_domain inside of login_stage_header
-					$GLOBALS['setup_tpl']->parse('V_multi_domain','B_multi_domain');
-					// in this case, the single domain block needs to be nothing
-					$GLOBALS['setup_tpl']->set_var('V_single_domain','');
-				}
-				else
-				{
-					reset($GLOBALS['phpgw_domain']);
-					//$default_domain = each($GLOBALS['phpgw_domain']);
-					$default_domain = key($GLOBALS['phpgw_domain']);
-					$GLOBALS['setup_tpl']->set_var('default_domain_zero',$default_domain);
-
-					/* Use BLOCK B_single_domain inside of login_stage_header */
-					$GLOBALS['setup_tpl']->parse('V_single_domain','B_single_domain');
-					/* in this case, the multi domain block needs to be nothing */
-					$GLOBALS['setup_tpl']->set_var('V_multi_domain','');
-				}
-				/*
-				 End use SUB-TEMPLATE login_stage_header
-				 put all this into V_login_stage_header for use inside login_main
-				*/
-				$GLOBALS['setup_tpl']->parse('V_login_stage_header','T_login_stage_header');
-			}
-			else
-			{
-				/* begin SKIP SUB-TEMPLATE login_stage_header */
-				$GLOBALS['setup_tpl']->set_var('V_multi_domain','');
-				$GLOBALS['setup_tpl']->set_var('V_single_domain','');
-				$GLOBALS['setup_tpl']->set_var('V_login_stage_header','');
-			}
-			/*
-			 end use TEMPLATE login_main.tpl
-			 now out the login_main template
-			*/
-			$GLOBALS['setup_tpl']->pparse('out','T_login_main');
-		}
-
-		/**
-		 * Get a list of available template sets
-		 *
-		 * @internal this doesn't appear to be called from anywhere - and duplicated code from phpgwapi_common
-		 */
-		function get_template_list()
-		{
-			return $GLOBALS['phpgw']->common->template_list();
-		}
-
-		/**
-		 * Get a list of available old style themes
-		 *
-		 * @todo FIXME This is broken - themes aren't done this way any more
-		 */
-		function list_themes()
-		{
-			$dh = dir(PHPGW_SERVER_ROOT . '/phpgwapi/themes');
-			while ($file = $dh->read())
-			{
-				if (preg_match("/\.theme$/i", $file))
-				{
-					$list[] = substr($file,0,strpos($file,'.'));
-				}
-			}
-			$dh->close();
-			reset ($list);
-			return $list;
-		}
+	
 	}

@@ -139,7 +139,6 @@
 		function auth($auth_type='Config')
 		{
 			$remoteip     = $_SERVER['REMOTE_ADDR'];
-			print_r($_POST);
 
 			$FormLogout   = \Sanitizer::get_var('FormLogout');
 			$ConfigLogin  = \Sanitizer::get_var('ConfigLogin',	'string', 'POST');

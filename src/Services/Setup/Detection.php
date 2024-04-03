@@ -37,12 +37,20 @@
         }
 		function get_versions()
 		{
-			$d = dir( realpath(dirname(__FILE__) . '/../../Modules') );
+
+			$d = dir( realpath(SRC_ROOT_PATH . '/Modules') );
 			while ( $entry = $d->read() )
 			{
-				if ( $entry != 'setup' && is_dir(SRC_ROOT_PATH . '/Modules/' . $entry))
+				// skip the . and .. directories
+				if ( $entry == '.' || $entry == '..' )
 				{
-					$f = SRC_ROOT_PATH . '/' . $entry . '/Setup/setup.inc.php';
+					continue;
+				}
+
+				if ( $entry != 'Setup' && is_dir(SRC_ROOT_PATH . '/Modules/' . $entry))
+				{
+					$f = SRC_ROOT_PATH . '/Modules/' . $entry . '/Setup/setup.inc.php';
+
 					if ( file_exists($f) )
 					{
 						require $f;
@@ -77,8 +85,6 @@
 			{
                 $stmt = $this->db->prepare('SELECT * FROM phpgw_applications');
                 $stmt->execute();
-
-                $setup_info = array();
 
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     $setup_info[$row['app_name']]['currentver'] = $row['app_version'];

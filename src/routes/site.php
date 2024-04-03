@@ -4,6 +4,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\Middleware\LoginMiddleware;
 use App\Controllers\Setup\SetupController;
+use Slim\Routing\RouteCollectorProxy;
+
+
 
 
 
@@ -140,3 +143,5 @@ $app->get('/setup', function (Request $request, Response $response) use ($phpgw_
 
 
 $app->post('/setup', SetupController::class . ':index');
+
+$app->get('/setup/logout', SetupController::class . ':logout');
