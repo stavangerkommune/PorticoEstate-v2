@@ -10,6 +10,7 @@ use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpForbiddenException;
 use Slim\Psr7\Response;
 use App\Modules\Api\Services\Settings;
+use App\Database\Db;
 
 use App\Modules\Api\Security\Acl;
 
@@ -21,7 +22,7 @@ class AccessVerifier  implements MiddlewareInterface
 
 	public function __construct(ContainerInterface $container)
 	{
-		$this->db = $container->get('db');
+		$this->db =	Db::getInstance();
 	}
 
 	//public function process

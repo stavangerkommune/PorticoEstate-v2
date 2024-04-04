@@ -9,6 +9,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Exception; // For handling potential errors
 use App\Modules\Api\Services\Settings;
+use App\Database\Db;
 
 /**
  * @OA\Info(title="Portico API", version="0.1")
@@ -24,7 +25,7 @@ class UserController
 		// only for testing
 		//$vfs = new \App\Modules\Api\Services\Vfs\Vfs;
 
-		$this->db = $container->get('db');
+		$this->db =	Db::getInstance();
 		$this->userSettings = Settings::getInstance()->get('user');
 	}
 	/**

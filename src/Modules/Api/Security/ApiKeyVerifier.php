@@ -10,9 +10,11 @@ use Psr\Container\ContainerInterface;
 use Slim\Routing\RouteContext;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpForbiddenException;
-use App\Helpers\Auth;
+use App\Modules\Api\Security\Auth\Auth;
 use PDO;
 use Slim\Psr7\Response;
+use App\Database\Db;
+
 
 
 class ApiKeyVerifier  implements MiddlewareInterface
@@ -21,7 +23,7 @@ class ApiKeyVerifier  implements MiddlewareInterface
 
 	public function __construct(ContainerInterface $container)
 	{
-		$this->db = $container->get('db');
+		$this->db =	Db::getInstance();
 	}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -55,7 +57,7 @@ class ApiKeyVerifier  implements MiddlewareInterface
 			return $this->sendErrorResponse(['msg' => 'UserName does not exist']);
 		}
 
-		if (!Auth::VerifyHash($passwd, $hash)) {
+		if (!(new Auth())->verify_hash($passwd, $hash)) {
 			return $this->sendErrorResponse(['msg' => 'Invalid passwd']);
 		}
 
