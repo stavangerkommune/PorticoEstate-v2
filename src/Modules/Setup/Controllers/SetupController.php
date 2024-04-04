@@ -54,6 +54,15 @@ class SetupController
 		exit;
     }
 
+	public function applications(Request $request, Response $response, $args)
+	{
+		$response = new \Slim\Psr7\Response();
+		$response->getBody()->write('Applications');
+
+		return $response;
+
+	}
+
     public function index(Request $request, Response $response, $args)
     {
 		$setup_data = Settings::getInstance()->get('setup');
@@ -671,7 +680,7 @@ class SetupController
                 $setup_tpl->set_var('apps_status_alt',lang('completed'));
                 $btn_manage_apps = $this->html->make_frm_btn_simple(
                     lang('This stage is completed')  . '<br/>',
-                    '','applications.php',
+                    '','setup/applications',
                     'submit',lang('Manage Applications'),
                     '');
                 $setup_tpl->set_var('apps_table_data',$btn_manage_apps);

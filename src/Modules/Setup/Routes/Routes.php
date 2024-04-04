@@ -51,3 +51,5 @@ $app->get('/setup', function (Request $request, Response $response) use ($phpgw_
 $app->post('/setup', SetupController::class . ':index');
 
 $app->get('/setup/logout', SetupController::class . ':logout');
+
+$app->get('/setup/applications', SetupController::class . ':applications');
