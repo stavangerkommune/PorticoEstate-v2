@@ -1,14 +1,10 @@
 <?php
 
-namespace App\Helpers;
 
-class DebugArray
+
+function _debug_array($array): void
 {
-    public static function debug($array): void
-    {
-        echo '<pre>';
-        print_r($array);
-        echo '</pre>';
-    }
- 
+	echo '<pre>';
+	print_r($array);
+	echo '</pre>';
 }

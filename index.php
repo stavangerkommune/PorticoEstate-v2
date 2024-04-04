@@ -29,6 +29,7 @@ $containerBuilder = new ContainerBuilder();
 
 require_once SRC_ROOT_PATH . '/Helpers/Translation.php';
 require_once SRC_ROOT_PATH . '/Helpers/Sanitizer.php';
+require_once SRC_ROOT_PATH . '/Helpers/DebugArray.php';
 // Add your settings to the container
 
 $phpgw_domain = require_once __DIR__ . '/config/database.php';
