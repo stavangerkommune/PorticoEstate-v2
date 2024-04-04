@@ -56,11 +56,8 @@ $datbaseProvider->register($app);
 
 //phpinfo();
 
-// Register routes from separate files
-require_once __DIR__ . '/src/routes/bookingfrontend/routes.php';
-require_once __DIR__ . '/src/routes/booking/routes.php';
-require_once __DIR__ . '/src/routes/site.php';
 //require all routes
+require_once __DIR__ . '/src/Routes/RegisterRoutes.php';
 
 
 //App\Helpers\DebugArray::debug($app);

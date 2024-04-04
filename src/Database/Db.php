@@ -160,14 +160,43 @@ class Db extends PDO
 
 	public function metadata($table)
 	{
-		$stmt = $this->prepare("SELECT column_name, data_type, character_maximum_length
-		FROM   information_schema.columns
-		WHERE  table_schema = 'public'
-		AND    table_name   = :table");
-		$stmt->execute(['table' => $table]);
+		$db_type = self::$config['db_type'];
 
-		$meta = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		switch ($db_type) {
+			case 'pgsql':
+			case 'postgres':
+				$stmt = $this->prepare("SELECT column_name, data_type, character_maximum_length
+				FROM   information_schema.columns
+				WHERE  table_schema = 'public'
+				AND    table_name   = :table");
+				$stmt->execute(['table' => $table]);
 
+				$meta = $stmt->fetchAll(PDO::FETCH_ASSOC);
+				break;
+			case 'mysql':
+				$stmt = $this->prepare("SHOW COLUMNS FROM $table");
+				$stmt->execute();
+				$meta = $stmt->fetchAll(PDO::FETCH_ASSOC);
+				break;
+			case 'mssql':
+			case 'mssqlnative':
+				$stmt = $this->prepare("SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH
+				FROM INFORMATION_SCHEMA.COLUMNS
+				WHERE TABLE_NAME = :table");
+				$stmt->execute(['table' => $table]);
+				$meta = $stmt->fetchAll(PDO::FETCH_ASSOC);
+				break;
+			case 'oci8':
+				$stmt = $this->prepare("SELECT COLUMN_NAME, DATA_TYPE, DATA_LENGTH
+				FROM ALL_TAB_COLUMNS
+				WHERE TABLE_NAME = :table");
+				$stmt->execute(['table' => $table]);
+				$meta = $stmt->fetchAll(PDO::FETCH_ASSOC);
+				break;
+			default:
+			throw new Exception("Database type not supported");
+		}
+		
 		return $meta;
 	}
 
@@ -265,22 +294,70 @@ class Db extends PDO
 	{
 		$return = array();
 
-		$stmt = $this->prepare("SELECT table_name as name, CAST(table_type = 'VIEW' AS INTEGER) as view
-			FROM information_schema.tables
-			WHERE table_schema = current_schema()");
-		$stmt->execute();
+		$db_type = self::$config['db_type'];
 
-		while ($entry = $stmt->fetch(PDO::FETCH_ASSOC)) {
-			if($include_views) {
-				$return[] =  $entry['name'];
-			} else {
-				if (!$entry['view']) {
-					$return[] =  $entry['name'];
+		switch ($db_type) {
+			case 'pgsql':
+			case 'postgres':
+				$stmt = $this->prepare("SELECT table_name as name, CAST(table_type = 'VIEW' AS INTEGER) as view
+				FROM information_schema.tables
+				WHERE table_schema = current_schema()");
+				$stmt->execute();
+
+				while ($entry = $stmt->fetch(PDO::FETCH_ASSOC)) {
+					if ($include_views) {
+						$return[] =  $entry['name'];
+					} else {
+						if (!$entry['view']) {
+							$return[] =  $entry['name'];
+						}
+					}
 				}
-			}
+				break;
+			case 'mysql':
+
+				$sql = "SHOW FULL TABLES";
+
+				if (!$include_views) {
+					$sql .= " WHERE Table_Type != 'VIEW'";
+				}
+				$stmt = $this->prepare($sql);
+				$stmt->execute();
+				//insert the result into the return array
+				while ($entry = $stmt->fetch(PDO::FETCH_NUM)) {
+					$return[] = $entry[0];
+				}
+	
+				break;
+			case 'mssql':
+			case 'mssqlnative':
+				$stmt = $this->prepare("SELECT name FROM sysobjects WHERE xtype='U'");
+				$stmt->execute();
+				while ($entry = $stmt->fetch(PDO::FETCH_ASSOC)) {
+					$return[] = $entry['name'];
+				}
+				break;
+			case 'oci8':
+				$stmt = $this->prepare("SELECT TABLE_NAME as name, TABLE_TYPE as table_type FROM cat");
+				$stmt->execute();
+				while ($entry = $stmt->fetch(PDO::FETCH_ASSOC)) {
+					if ($include_views) {
+						$return[] = $entry['name'];
+					} else {
+						if ($entry['table_type'] == 'TABLE') {
+							$return[] = $entry['name'];
+						}
+					}
+				}
+
+				break;
+			default:
+				throw new Exception("Database type not supported");
 		}
 
 		return $return;
+
+
 	}
 
 	public function set_halt_on_error($halt_on_error = '')

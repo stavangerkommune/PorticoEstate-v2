@@ -15,15 +15,27 @@ class DatabaseServiceProvider
 
 		$container->set('db', function () use ($container) {
 			$config = $container->get('settings')['db'];
-
 			try {
 
 				switch ($config['db_type']) {
+					case 'postgres':
 					case 'pgsql':
 						$dsn = "pgsql:host={$config['db_host']};port={$config['db_port']};dbname={$config['db_name']}";
 						break;
 					case 'mysql':
 						$dsn = "mysql:host={$config['db_host']};port={$config['db_port']};dbname={$config['db_name']}";
+						break;
+					case 'mssqlnative':
+						$dsn = "sqlsrv:Server={$config['db_host']},{$config['db_port']};Database={$config['db_name']}";
+						break;
+					case 'mssql':
+					case 'sybase':
+						$dsn = "dblib:host={$config['db_host']}:{$config['db_port']};dbname={$config['db_name']}";
+						break;
+					case 'oci8':
+						$port = $config['db_port'] ? $config['db_port'] : 1521;
+						$_charset = ';charset=AL32UTF8';
+						$dsn = "oci:dbname={$config['db_host']}:{$port}/{$config['db_name']}{$_charset}";
 						break;
 					default:
 						throw new Exception("Database type not supported");

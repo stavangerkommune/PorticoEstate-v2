@@ -4,7 +4,7 @@ namespace App\Helpers;
 use DateTime;
 use DateTimeZone;
 use Exception;
-use App\Services\Settings;
+use App\Modules\Api\Services\Settings;
 
 date_default_timezone_set('UTC');
 

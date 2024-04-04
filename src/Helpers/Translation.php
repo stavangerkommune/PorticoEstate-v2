@@ -1,6 +1,6 @@
 <?php
 
-	use App\Services\Translation;
+	use App\Modules\Api\Services\Translation;
    	/**
 	* Translate a string to a user's prefer language - convience method
 	*
@@ -20,7 +20,7 @@
 	*/
 	function lang($key,$m1='',$m2='',$m3='',$m4='',$m5='',$m6='',$m7='',$m8='',$m9='',$m10='')
 	{
-        static $translation = null;// new App\Services\Translation;
+        static $translation = null;
         if(is_array($m1))
 		{
 			$vars = $m1;

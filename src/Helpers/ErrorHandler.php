@@ -5,15 +5,15 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseFactoryInterface;
 
-use App\Services\Log;
+use App\Modules\Api\Services\Log;
 use App\Database\Db;
 use Psr\Http\Server\RequestHandlerInterface;
 //use Psr\Http\Server\MiddlewareInterface;
 use Throwable;
 use ErrorException;
-use App\Services\Settings;
+use App\Modules\Api\Services\Settings;
 
-$serverSettings  = \App\Services\Settings::getInstance()->get('server');
+$serverSettings  = \App\Modules\Api\Services\Settings::getInstance()->get('server');
 
 if (isset($serverSettings['log_levels']['global_level'])) {
 	switch ($serverSettings['log_levels']['global_level']) {
@@ -77,8 +77,8 @@ class ErrorHandler
 	public function __construct(ResponseFactoryInterface $responseFactory)
 	{
 		$this->responseFactory = $responseFactory;
-		$this->serverSettings  = \App\Services\Settings::getInstance()->get('server');		
-		$this->userSettings  = \App\Services\Settings::getInstance()->get('user');
+		$this->serverSettings  = \App\Modules\Api\Services\Settings::getInstance()->get('server');		
+		$this->userSettings  = \App\Modules\Api\Services\Settings::getInstance()->get('user');
 		$this->Log = new Log();
 		$this->db = Db::getInstance();		
 	}
