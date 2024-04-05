@@ -1,7 +1,7 @@
 <!-- BEGIN sqlheader --><?php
   /**************************************************************************\
-  * phpGroupWare - Setup                                                     *
-  * http://www.phpgroupware.org                                              *
+  * PorticoEstate - Setup                                                     *
+  * https://github.com/PorticoEstate                                         *
   * --------------------------------------------                             *
   *  This program is free software; you can redistribute it and/or modify it *
   *  under the terms of the GNU General Public License as published by the   *
@@ -31,5 +31,4 @@
 <!-- END sqlbody -->
 <!-- BEGIN sqlfooter -->
 	);
-?>
 <!-- END sqlfooter -->

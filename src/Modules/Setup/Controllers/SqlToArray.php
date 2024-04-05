@@ -173,10 +173,14 @@
 				if ($download) {
 					$this->download_handler($dlstring);
 				}
+				else
+				{
+					return $header . $dlstring;
+				}
 			} else {
 				$header = $this->html->get_header();
 
-				$this->setup_tpl->set_var('action_url', 'sqltoarray.php');
+				$this->setup_tpl->set_var('action_url', 'sqltoarray');
 				$this->setup_tpl->set_var('lang_submit', 'Show selected');
 				$this->setup_tpl->set_var('lang_showall', 'Show all');
 				$this->setup_tpl->set_var('title', 'SQL to schema_proc array util');
@@ -306,8 +310,8 @@
 				$this->setup_tpl->set_var('table',$table);
 				$this->setup_tpl->set_var('lang_download','Download');
 				$this->setup_tpl->set_var('showall',$showall);
-				$this->setup_tpl->set_var('action_url','sqltoarray.php');
-				$this->setup_tpl->pfp('out',$template);
+				$this->setup_tpl->set_var('action_url','sqltoarray');
+				$string = $this->setup_tpl->parse('out',$template);
 			}
 			return $string;
 		}
@@ -325,8 +329,8 @@
 			header('Pragma: public');
 			header('Expires: 0');
 			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-			header('Content-Disposition:inline filename="' . $fn . '"');
-			header('Content-Type: text / plain');
+			header('Content-Disposition: attachment; filename="' . $fn . '"');
+			header('Content-Type: text/plain');
 			echo $dlstring;
 			exit;
 		}
