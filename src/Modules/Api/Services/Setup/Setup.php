@@ -74,23 +74,11 @@
 
 			$this->setup_info = Settings::getInstance()->get('setup_info');
 
-			
 
 			/*
 			 * FIXME - do not take effect
 			 */
 			ini_set('session.cookie_samesite', 'Strict');
-//			$this->detection = new Detection();//createObject('phpgwapi.setup_detection');
-
-//			$this->process   = new Process(); //createObject('phpgwapi.setup_process');
-//			$_translation    = &$this->process->translation;
-
-			/* The setup application needs these */
-//			$this->html	= $html ? new Html() : null;
-//			$this->translation = $translation ? $_translation : null ; //CreateObject('phpgwapi.setup_translation') : null;
-
-			//$this->tbl_apps    = $this->get_apps_table_name();
-			//$this->tbl_config  = $this->get_config_table_name();
 			$this->tbl_hooks   = $this->get_hooks_table_name();
 
 			$temp_dir = sys_get_temp_dir();

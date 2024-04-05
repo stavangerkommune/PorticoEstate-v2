@@ -266,8 +266,17 @@
 		function _GetColumns(&$oProc, $sTableName, &$sColumns)
 		{
 			$oProc->m_odb->fetchmode = 'BOTH';
-			$sdb = clone($oProc->m_odb);
-			$sdc = clone($oProc->m_odb);
+
+			$db_config = $oProc->m_odb->get_config();
+			$sdb = new \PDO("pgsql:host={$db_config['db_host']};port={$db_config['db_port']};dbname={$db_config['db_name']}", $db_config['db_user'], $db_config['db_pass']);
+			$sdb->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+			$sdb->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
+			$sdb->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+
+			$sdc = new \PDO("pgsql:host={$db_config['db_host']};port={$db_config['db_port']};dbname={$db_config['db_name']}", $db_config['db_user'], $db_config['db_pass']);
+			$sdc->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+			$sdc->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
+			$sdc->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
 
 			$sColumns = '';
 			$this->pk = array();

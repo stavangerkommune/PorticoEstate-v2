@@ -25,7 +25,7 @@ function check_all(strTargetAction)
 <!-- END header -->
 
 <!-- BEGIN app_header -->
-<form action="applications.php" method="post" id="apps">
+<form action="applications" method="post" id="apps">
 <table id="apps">
 	<thead>
 		<tr>
@@ -53,7 +53,7 @@ function check_all(strTargetAction)
 
 <!-- BEGIN apps -->
 		<tr class="{bg_class}">
-			<td class="appicon"><a href="applications.php?detail={appname}"><img src="../phpgwapi/templates/base/images/{instimg}" alt="{instalt}" title="{instalt}" border="0"></a></td>
+			<td class="appicon"><a href="applications?detail={appname}"><img src="../phpgwapi/templates/base/images/{instimg}" alt="{instalt}" title="{instalt}" border="0"></a></td>
 			<td><strong>{appname}</strong></td>
 			<td>{appinfo}</td>
 			<td>{currentver}</td>

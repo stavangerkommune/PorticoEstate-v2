@@ -53,3 +53,5 @@ $app->post('/setup', SetupController::class . ':index');
 $app->get('/setup/logout', SetupController::class . ':logout');
 
 $app->get('/setup/applications', SetupController::class . ':applications');
+$app->get('/setup/sqltoarray', SetupController::class . ':sqltoarray');
+
