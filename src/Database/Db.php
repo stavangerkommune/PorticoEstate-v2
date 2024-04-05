@@ -382,4 +382,56 @@ class Db extends PDO
 	{
 	}
 
+	/**
+	 * Returns an associate array of foreign keys, or false if not supported.
+	 *
+	 * @param string $table name of table to describe
+	 * @param boolean $primary optional, default False.
+	 * @return array Index data
+	 */
+
+	public function metaindexes($table, $primary = false)
+	{
+		$db_type = self::$config['db_type'];
+
+		switch ($db_type) {
+			case 'pgsql':
+			case 'postgres':
+				$stmt = $this->prepare("SELECT
+					c.relname as name,
+					i.indisunique as unique,
+					i.indisprimary as primary,
+					pg_get_indexdef(i.indexrelid) as definition
+				FROM
+					pg_catalog.pg_class c,
+					pg_catalog.pg_class c2,
+					pg_catalog.pg_index i
+				WHERE
+					c.relname = :table
+					and c.oid = i.indrelid
+					and i.indexrelid = c2.oid
+					and i.indisprimary = :primary");
+
+				$primary = filter_var($primary, FILTER_VALIDATE_BOOLEAN);
+				if ($primary) {
+					$primary = 'true';
+				} else {
+					$primary = 'false';
+				}
+
+				$stmt->execute(['table' => $table, 'primary' => $primary]);
+				$meta = $stmt->fetchAll(PDO::FETCH_ASSOC);
+				break;
+			default:
+				throw new Exception("Database type not supported");
+		}
+
+		foreach ($meta as &$entry) {
+			preg_match('/\((.*?)\)/', $entry['definition'], $matches);
+			$columns = explode(',', $matches[1]);
+			$entry['columns'] = array_map('trim', $columns);
+		}
+
+		return $meta;
+	}
 }

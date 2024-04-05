@@ -17,6 +17,9 @@
 	* @internal SQL for table properties taken from phpPgAdmin Version 2.2.1
 	*/
 	namespace App\Modules\Api\Services\SchemaProc;
+	use PDO;
+	use Exception;
+
 
 	/**
 	* Database schema abstraction class for PostgreSQL
@@ -265,18 +268,16 @@
 
 		function _GetColumns(&$oProc, $sTableName, &$sColumns)
 		{
-			$oProc->m_odb->fetchmode = 'BOTH';
-
 			$db_config = $oProc->m_odb->get_config();
 			$sdb = new \PDO("pgsql:host={$db_config['db_host']};port={$db_config['db_port']};dbname={$db_config['db_name']}", $db_config['db_user'], $db_config['db_pass']);
-			$sdb->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-			$sdb->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
-			$sdb->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+			$sdb->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$sdb->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+			$sdb->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_BOTH);
 
 			$sdc = new \PDO("pgsql:host={$db_config['db_host']};port={$db_config['db_port']};dbname={$db_config['db_name']}", $db_config['db_user'], $db_config['db_pass']);
-			$sdc->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-			$sdc->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
-			$sdc->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+			$sdc->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$sdc->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+			$sdc->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_BOTH);
 
 			$sColumns = '';
 			$this->pk = array();
@@ -299,87 +300,70 @@
 					pg_attribute a,
 					pg_type t
 				WHERE
-					c.relname = '$sTableName'
+					c.relname = :tableName
 					and a.attnum > 0
 					and a.attrelid = c.oid
 					and a.atttypid = t.oid
-					ORDER BY a.attnum";
-			/* attnum field type length lengthvar notnull(Yes/No) */
-			$sdb->query($sql_get_fields, __LINE__, __FILE__);
-			while ($sdb->next_record())
-			{
-				$colnum  = $sdb->f(0);
-				$colname = $sdb->f(1);
+				ORDER BY a.attnum";
 
-				if ($sdb->f(5) == 'false')
-				{
+			$stmt = $sdb->prepare($sql_get_fields);
+			$stmt->execute(['tableName' => $sTableName]);
+
+			while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+				$colnum  = $row[0];
+				$colname = $row[1];
+
+				if ($row[5] == 'false') {
 					$null = "'nullable' => False";
-				}
-				else
-				{
+				} else {
 					$null = "'nullable' => True";
 				}
 
-				if ($sdb->f(2) == 'numeric')
-				{
-					$prec  = $sdb->f(3);
-					$scale = $sdb->f(4);
-				}
-				elseif ($sdb->f(3) > 0)
-				{
-					$prec  = $sdb->f(3);
+				if ($row[2] == 'numeric') {
+					$prec  = $row[3];
+					$scale = $row[4];
+				} elseif ($row[3] > 0) {
+					$prec  = $row[3];
 					$scale = 0;
-				}
-				elseif ($sdb->f(4) > 0)
-				{
-					$prec = $sdb->f(4) - 4;
+				} elseif ($row[4] > 0) {
+					$prec = $row[4] - 4;
 					$scale = 0;
-				}
-				else
-				{
+				} else {
 					$prec = 0;
 					$scale = 0;
 				}
 
-				$type = $this->rTranslateType($sdb->f(2), $prec, $scale);
+				$type = $this->rTranslateType($row[2], $prec, $scale);
 
 				$sql_get_default = "
 				SELECT column_default
 					FROM information_schema.columns
-					WHERE table_name='{$sTableName}'
-					AND column_name = '{$colname}'";
+					WHERE table_name=:tableName
+					AND column_name = :columnName";
 
-				$sdc->query($sql_get_default, __LINE__, __FILE__);
-				$sdc->next_record();
-				if ($sdc->f(0) != '')
-				{
-					if (preg_match('/nextval/',$sdc->f(0)))
-					{
+				$stmt2 = $sdc->prepare($sql_get_default);
+				$stmt2->execute(['tableName' => $sTableName, 'columnName' => $colname]);
+				$defaultRow = $stmt2->fetch(PDO::FETCH_NUM);
+
+				if ($defaultRow[0] != '') {
+					if (preg_match('/nextval/', $defaultRow[0])) {
 						$default = '';
 						$nullcomma = '';
 						$type = "'type' => 'auto'";
-					}
-					else
-					{
-						if(preg_match('/(now()|::timestamp(6) without time zone$|::timestamp without time zone$)/i', $sdc->f(0)))
-						{
+					} else {
+						if(preg_match('/(now()|::timestamp(6) without time zone$|::timestamp without time zone$)/i', $defaultRow[0])) {
 							$default =  "'default' =>'current_timestamp'";
-						}
-						else
-						{
-							$default = "'default' => '" . str_replace(array('::integer','::text','::bpchar','::character varying'),array('','','',''),$sdc->f(0));
+						} else {
+							$default = "'default' => '" . str_replace(array('::integer','::text','::bpchar','::character varying'),array('','','',''),$defaultRow[0]);
 						}
 
 						// For db-functions - add an apos
-						if(substr($default,-1)!= "'")
-						{
+						if(substr($default,-1)!= "'") {
 							$default .= "'";
 						}
 						$nullcomma = ',';
 					}
-				}
-				else
-				{
+				} else {
 					$default = '';
 					$nullcomma = '';
 				}
@@ -405,84 +389,55 @@
 					AND ic.oid = i.indexrelid
 					AND ia.attrelid = i.indexrelid
 					AND ta.attrelid = bc.oid
-					AND bc.relname = '$sTableName'
+					AND bc.relname = :tableName
 					AND ta.attrelid = i.indrelid
 					AND ta.attnum = i.indkey[ia.attnum-1]
 				ORDER BY
 					index_name, tab_name, column_name";
-			$sdc->query($sql_pri_keys, __LINE__, __FILE__);
-			while ($sdc->next_record())
-			{
-				//echo '<br> checking: ' . $sdc->f(4);
-				if ($sdc->f(4) == 't')
-				{
-					$this->pk[] = $sdc->f(2);
-				}
-				else if ($sdc->f(3) == 't')
-				{
-					$this->uc[] = $sdc->f(2);
+
+			$stmt = $sdc->prepare($sql_pri_keys);
+			$stmt->execute(['tableName' => $sTableName]);
+
+			while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+				if ($row[4] == 't') {
+					$this->pk[] = $row[2];
+				} else if ($row[3] == 't') {
+					$this->uc[] = $row[2];
 				}
 			}
 
-/*
-			$ForeignKeys = $sdc->MetaForeignKeys($sTableName);
+			$sql_pri_keys = "
+				SELECT
+					ic.relname AS index_name,
+					bc.relname AS tab_name,
+					ta.attname AS column_name,
+					i.indisunique AS unique_key,
+					i.indisprimary AS primary_key
+				FROM
+					pg_class bc,
+					pg_class ic,
+					pg_index i,
+					pg_attribute ta,
+					pg_attribute ia
+				WHERE
+					bc.oid = i.indrelid
+					AND ic.oid = i.indexrelid
+					AND ia.attrelid = i.indexrelid
+					AND ta.attrelid = bc.oid
+					AND bc.relname = :tableName
+					AND ta.attrelid = i.indrelid
+					AND ta.attnum = i.indkey[ia.attnum-1]
+				ORDER BY
+					index_name, tab_name, column_name";
 
-			foreach($ForeignKeys as $table => $keys)
-			{
-				$keystr = array();
-				foreach ($keys as $keypair)
-				{
-					$keypair = explode('=',$keypair);
-					$keystr[] = "'" . $keypair[0] . "' => '" . $keypair[1] . "'";
-				}
-				$this->fk[] = $table . "' => array(" . implode(', ',$keystr)  . ')';
-			}
-*/
+			$stmt = $oProc->m_odb->prepare($sql_pri_keys);
+			$stmt->execute(['tableName' => $sTableName]);
 
-			$sql_f_keys = "SELECT
-				pc.conname,
-				pg_catalog.pg_get_constraintdef(pc.oid, true) AS consrc,
-				pc.contype,
-				CASE WHEN pc.contype='u' OR pc.contype='p' THEN (
-					SELECT
-						indisclustered
-					FROM
-						pg_catalog.pg_depend pd,
-						pg_catalog.pg_class pl,
-						pg_catalog.pg_index pi
-					WHERE
-						pd.refclassid=pc.tableoid
-						AND pd.refobjid=pc.oid
-						AND pd.objid=pl.oid
-						AND pl.oid=pi.indexrelid
-				) ELSE
-					NULL
-				END AS indisclustered
-			FROM
-				pg_catalog.pg_constraint pc
-			WHERE
-				pc.conrelid = (SELECT oid FROM pg_catalog.pg_class WHERE relname='$sTableName'
-					AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace
-					WHERE nspname='public'))
-			ORDER BY
-				1";
-
-			$oProc->m_odb->query($sql_f_keys, __LINE__, __FILE__);
-			while ($oProc->m_odb->next_record())
-			{
-				if($oProc->m_odb->f('contype') == 'f')
-				{
-					$f_temp = preg_split("/FOREIGN KEY|REFERENCES|[()]/",$oProc->m_odb->f('consrc'));
-					$f_temp_primary = explode(', ',$f_temp[2]);
-					$f_temp_foreign = explode(', ',$f_temp[5]);
-
-					$keystr = array();
-					for ($i=0;$i<count($f_temp_primary);$i++)
-					{
-						$keystr[] = "'" . $f_temp_primary[$i] . "' => '" . $f_temp_foreign[$i] . "'";
-					}
-
-					$this->fk[] = "'" . trim($f_temp[4]) . "' => array(" . implode(', ',$keystr)  . ')';
+			while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+				if ($row[4] == 't') {
+					$this->pk[] = $row[2];
+				} else if ($row[3] == 't') {
+					$this->uc[] = $row[2];
 				}
 			}
 			unset($keystr);

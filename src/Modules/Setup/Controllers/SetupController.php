@@ -124,7 +124,7 @@ class SetupController
 
 		// Check header and authentication
 		if (!$this->setup->auth('Config')) {
-			Header('Location: setup');
+			Header('Location: ../setup');
 			exit;
 		}
 		// Does not return unless user is authorized
@@ -729,7 +729,7 @@ class SetupController
         }
         elseif (!$this->setup->auth('Config'))
         {
-			Header('Location: setup');
+			Header('Location: ../setup');
             exit;
         }
     

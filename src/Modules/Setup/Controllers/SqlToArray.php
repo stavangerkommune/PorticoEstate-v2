@@ -58,7 +58,7 @@
 
 			// Check header and authentication
 			if (!$this->setup->auth('Config')) {
-				Header('Location: setup');
+				Header('Location: ../setup');
 				exit;
 			}
 
@@ -127,18 +127,22 @@
 
 				if ((!isset($table) || !$table) && !$appname) {
 					$term = ',';
-					$dlstring .= $this->printout('sqlheader');
+					$dlstring .= $this->printout(
+				'sqlheader', $download, $appname, $table, $showall);
 
 					$db = $this->db;
 					$db->query('SHOW TABLES');
 					while ($db->next_record()) {
 						$table = $db->f(0);
 						$this->parse_vars($table, $term);
-						$dlstring .= $this->printout('sqlbody');
+						$dlstring .= $this->printout(
+					'sqlbody', $download, $appname, $table, $showall);
 					}
-					$dlstring .= $this->printout('sqlfooter');
+					$dlstring .= $this->printout(
+				'sqlfooter', $download, $appname, $table, $showall);
 				} elseif ($appname) {
-					$dlstring .= $this->printout('sqlheader');
+					$dlstring .= $this->printout(
+				'sqlheader', $download, $appname, $table, $showall);
 					$term = ',';
 
 					if (!isset($setup_info[$appname]['tables']) || !$setup_info[$appname]['tables']) {
@@ -151,28 +155,20 @@
 						}
 					}
 
-					//$tables = explode(',',$setup_info[$appname]['tables']);
 					$tables = $setup_info[$appname]['tables'];
-					// $i = 1;
-					//while(list($key,$table) = @each($tables))
 					foreach ($tables as $key => $table) {
-						/*
-					if($i == count($tables))
-					{
-						$term = '';
-					}
-					*/
 						$this->parse_vars($table, $term);
-						$dlstring .= $this->printout('sqlbody');
-						// ++$i;
+						$dlstring .= $this->printout(
+					'sqlbody', $download, $appname, $table, $showall);
 					}
-					$dlstring .= $this->printout('sqlfooter');
+					$dlstring .= $this->printout(
+				'sqlfooter', $download, $appname, $table, $showall);
 				} elseif ($table) {
 					$term = ';';
 					$this->parse_vars($table, $term);
-					$dlstring .= $this->printout('sqlheader');
-					$dlstring .= $this->printout('sqlbody');
-					$dlstring .= $this->printout('sqlfooter');
+					$dlstring .= $this->printout('sqlheader', $download, $appname, $table, $showall);
+					$dlstring .= $this->printout('sqlbody', $download, $appname, $table, $showall);
+					$dlstring .= $this->printout('sqlfooter', $download, $appname, $table, $showall);
 				}
 				if ($download) {
 					$this->download_handler($dlstring);
@@ -294,9 +290,9 @@
 		 * @param string $template
 		 * @return string
 		 */
-		function printout($template)
+		function printout($template, $download, $appname, $table, $showall)
 		{
-			global $download,$appname,$table,$showall;
+		//	global $download,$appname,$table,$showall;
 			$string = '';
 
 			if ($download)
