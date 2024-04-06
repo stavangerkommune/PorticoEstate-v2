@@ -17,6 +17,8 @@
 	use App\Modules\Api\Controllers\Accounts\Accounts;
 	Use App\Modules\Api\Security\Acl;
 	use App\Modules\Api\Controllers\Accounts\phpgwapi_account;
+	use App\Modules\Api\Services\Settings;
+
 
 	/**
 	* Setup process
@@ -827,9 +829,13 @@
 								{
 									/* start upgrading db in addition to bas eline */
 									$this->oProc->m_bDeltaOnly = False;
-									if($DEBUG) { echo '<br>process->upgrade(): running ' . $function; }
+									if($DEBUG) 
+									{
+										 echo '<br>process->upgrade(): running ' . $function;
+									}
 									/* run upgrade function */
-									$success = $function();
+									$success = $function($this->oProc);
+
 									if ( $success )
 									{
 										$setup_info[$key]['currentver'] = $success;
@@ -842,6 +848,17 @@
 										}
 										$appstatus = 'R';
 										$setup_info[$key]['status'] = $appstatus;
+
+										throw new \Exception('FIXME: Store the new version in the setup_info array');
+
+						//				\_debug_array($setup_info);
+										
+						//				Settings::getInstance()->set('setup_info', $setup_info);
+
+						//				\_debug_array(Settings::getInstance()->get('setup_info'));
+						//				die();
+
+
 										if($this->setup->app_registered($appname))
 										{
 											if($DEBUG)

@@ -19,6 +19,7 @@
 	use App\Modules\Api\Services\Hooks;
 	use App\Modules\Api\Services\Crypto;
 	use App\Modules\Api\Services\Settings;
+	use App\Modules\Api\Services\Setup\SetupTranslation;
 	use App\Database\Db;
 	use PDO;
 	use Sanitizer;
@@ -44,12 +45,13 @@
 		/* table name vars */
 		var $tbl_apps;
 		var $tbl_config;
-		var $tbl_hooks,$translation;
+		var $tbl_hooks;
 
 		private $hack_file_name;
 		private $serverSettings;
 		private $setup_data;
 		private $crypto;
+		private $translation;
 
 		public $setup_info;
 
@@ -73,6 +75,8 @@
 			Settings::getInstance()->set('server', $this->serverSettings);
 
 			$this->setup_info = Settings::getInstance()->get('setup_info');
+			$this->translation = new SetupTranslation();
+
 
 
 			/*
@@ -85,8 +89,34 @@
 			$this->hack_file_name = "$temp_dir/setup_login_hack_prevention.json";
 			$this->hooks = new Hooks();
 			$this->crypto = new Crypto();
+            $this->db = Db::getInstance();
+
 		}
 
+		function lang($key,$m1='',$m2='',$m3='',$m4='',$m5='',$m6='',$m7='',$m8='',$m9='',$m10='')
+		{
+			if(is_array($m1))
+			{
+				$vars = $m1;
+			}
+			else
+			{
+				$vars = array($m1,$m2,$m3,$m4,$m5,$m6,$m7,$m8,$m9,$m10);
+			}
+	
+			// Support DOMNodes from XSL templates
+			foreach($vars as &$var)
+			{
+				if (is_object($var) && $var instanceof DOMNode)
+				{
+					$var = $var->nodeValue;
+				}
+			}
+	
+	
+			return $this->translation->translate($key, $vars);
+		}
+	
 		/**
 		 * include api db class for the ConfigDomain and connect to the db
 		*
@@ -94,8 +124,8 @@
 		function loaddb()
 		{
 
-			$db = Db::getInstance();
-            $this->db = $db;
+//			$db = Db::getInstance();
+ //           $this->db = $db;
 		}
 
 		private function _store_login_attempts( $data )
@@ -567,28 +597,21 @@
 				return False;
 			}
 
-			if($this->alessthanb($setup_info['phpgwapi']['currentver'],'0.9.10pre8') && ($setup_info['phpgwapi']['currentver'] != ''))
-			{
-				$appstbl = 'applications';
-			}
-			else
-			{
-				$appstbl = 'phpgw_applications';
-			}
-
 			if($GLOBALS['DEBUG'])
 			{
-				echo '<br>update_app(): ' . $appname . ', version: ' . $setup_info[$appname]['currentver'] . ', table: ' . $appstbl . '<br>';
-				// _debug_array($setup_info[$appname]);
+				echo '<br>update_app(): ' . $appname . ', version: ' . $setup_info[$appname]['currentver'] . ', table: phpgw_applications<br>';
+//				 _debug_array($setup_info);
 			}
 
-			$this->db->query("SELECT COUNT(app_name) as cnt FROM $appstbl WHERE app_name='".$appname."'",__LINE__,__FILE__);
-			$this->db->next_record();
-			if(!$this->db->f('cnt'))
+			$stmt = $this->db->prepare("SELECT COUNT(app_name) as cnt FROM phpgw_applications WHERE app_name=:appname");
+			$stmt->execute([':appname' => $appname]);
+
+			$result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+			if(!$result['cnt'])
 			{
 				return False;
 			}
-
 			if($setup_info[$appname]['version'])
 			{
 				//echo '<br>' . $setup_info[$appname]['version'];
@@ -623,14 +646,6 @@
 				return False;
 			}
 
-			if($this->alessthanb($setup_info['phpgwapi']['currentver'],'0.9.10pre8') && ($setup_info['phpgwapi']['currentver'] != ''))
-			{
-				$appstbl = 'applications';
-			}
-			else
-			{
-				$appstbl = 'phpgw_applications';
-			}
 
 			if($tableschanged == True)
 			{
@@ -639,7 +654,7 @@
 			}
 			if($setup_info[$appname]['currentver'])
 			{
-				$stmt = $this->db->prepare("UPDATE $appstbl SET app_version=:currentver WHERE app_name=:appname");
+				$stmt = $this->db->prepare("UPDATE phpgw_applications SET app_version=:currentver WHERE app_name=:appname");
 				$stmt->execute([':currentver' => $setup_info[$appname]['currentver'], ':appname' => $appname]);
 			}
 			return $setup_info;

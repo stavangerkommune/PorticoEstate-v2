@@ -160,6 +160,8 @@
 				}
 			}
 			// _debug_array($setup_info);
+
+			Settings::getInstance()->set('setup_info', $setup_info);
 			return $setup_info;
 		}
 
@@ -231,6 +233,7 @@
 					}
 				}
 			}
+			Settings::getInstance()->set('setup_info', $setup_info);
 			return $setup_info;
 		}
 

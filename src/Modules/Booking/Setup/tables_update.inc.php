@@ -6549,18 +6549,18 @@ SQL;
 	 *
 	 */
 	$test[] = '0.2.96';
-	function booking_upgrade0_2_96()
+	function booking_upgrade0_2_96($oProc)
 	{
-		$GLOBALS['phpgw_setup']->oProc->m_odb->transaction_begin();
+	//	$oProc->m_odb->transaction_begin();
 
-		$GLOBALS['phpgw_setup']->oProc->AddColumn('bb_e_lock_system', 'webservicehost',
+		$oProc->AddColumn('bb_e_lock_system', 'webservicehost_',
 				array('type' => 'text', 'nullable' => true)
 			);
 
-		if ($GLOBALS['phpgw_setup']->oProc->m_odb->transaction_commit())
+	//	if ($oProc->m_odb->transaction_commit())
 		{
-			$GLOBALS['setup_info']['booking']['currentver'] = '0.2.97';
-			return $GLOBALS['setup_info']['booking']['currentver'];
+			$currentver = '0.2.97';
+			return $currentver;
 		}
 	}
 

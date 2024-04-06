@@ -185,7 +185,7 @@
 				$this->setup_tpl->set_var('lang_showall', 'Show all');
 				$this->setup_tpl->set_var('title', 'SQL to schema_proc array util');
 				$this->setup_tpl->set_var('lang_applist', 'Applications');
-				$this->setup_tpl->set_var('select_to_download_file', lang('Select to download file'));
+				$this->setup_tpl->set_var('select_to_download_file', $this->setup->lang('Select to download file'));
 				$this->setup_tpl->pfp('out', 'appheader');
 
 				$d = dir(SRC_ROOT_PATH . '/Modules');

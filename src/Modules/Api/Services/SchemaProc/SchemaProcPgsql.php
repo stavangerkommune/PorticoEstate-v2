@@ -481,8 +481,9 @@
 			$this->GetSequenceForTable($oProc,$table,$sSequenceName);
 			if ($sSequenceName)
 			{
-				$stmt = $oProc->m_odb->prepare("DROP SEQUENCE :sequenceName CASCADE");
-				$stmt->execute([':sequenceName' => $sSequenceName]);
+				$query = "DROP SEQUENCE {$sSequenceName} CASCADE";
+				$stmt = $oProc->m_odb->prepare($query);
+				$result = $stmt->execute();
 			}
 			return True;
 		}
@@ -491,24 +492,27 @@
 		{
 			$this->DropSequenceForTable($oProc,$sTableName);
 
-			$stmt = $oProc->m_odb->prepare("DROP TABLE :tableName CASCADE");
-			$stmt->execute([':tableName' => $sTableName]);
-
-			return $stmt && $this->DropSequenceForTable($oProc, $sTableName);
+			$query = "DROP TABLE {$sTableName} CASCADE";
+			$stmt = $oProc->m_odb->prepare($query);
+			$result = $stmt->execute();
+			
+			return !!$result && $this->DropSequenceForTable($oProc, $sTableName);
 		}
 
 		function DropView($oProc, $sViewName)
 		{
-			$stmt = $oProc->m_odb->prepare("DROP VIEW :viewName");
-			$result = $stmt->execute([':viewName' => $sViewName]);
+			$query = "DROP VIEW {$sViewName}";
+			$stmt = $oProc->m_odb->prepare($query);
+			$result = $stmt->execute();
 
 			return !!$result;
 		}
 
 		function DropColumn($oProc, &$aTables, $sTableName, $aNewTableDef, $sColumnName, $bCopyData = true)
 		{
-			$stmt = $oProc->m_odb->prepare("ALTER TABLE :tableName DROP COLUMN :columnName CASCADE");
-			$result = $stmt->execute([':tableName' => $sTableName, ':columnName' => $sColumnName]);
+			$query = "ALTER TABLE {$sTableName} DROP COLUMN {$sColumnName} CASCADE";
+			$stmt = $oProc->m_odb->prepare($query);
+			$result = $stmt->execute();
 
 			return !!$result;
 		}
@@ -543,13 +547,15 @@
 				if ($DEBUG) { echo '<br>RenameTable(): Altering column default for: ' . $sField; }
 			}
 
-			$stmt = $oProc->m_odb->prepare("ALTER TABLE :oldTableName RENAME TO :newTableName");
-			$stmt->execute([':oldTableName' => $sOldTableName, ':newTableName' => $sNewTableName]);
+			$query = "ALTER TABLE {$sOldTableName} RENAME TO {$sNewTableName}";
+			$stmt = $oProc->m_odb->prepare($query);
+			$stmt->execute();
 
 			if ($sSequenceName)
 			{
-				$stmt = $oProc->m_odb->prepare("ALTER TABLE :newTableName ALTER :field SET DEFAULT nextval('seq_' || :newTableName)");
-				$Ok = !!$stmt->execute([':newTableName' => $sNewTableName, ':field' => $sField]);
+				$query = "ALTER TABLE {$sNewTableName} ALTER {$sField} SET DEFAULT nextval('seq_' || '{$sNewTableName}')";
+				$stmt = $oProc->m_odb->prepare($query);
+				$Ok = !!$stmt->execute();
 				$this->DropSequenceForTable($oProc,$sOldTableName);
 			}
 
@@ -577,8 +583,9 @@
 
 		function RenameColumn($oProc, &$aTables, $sTableName, $sOldColumnName, $sNewColumnName, $bCopyData = true)
 		{
-			$stmt = $oProc->m_odb->prepare("ALTER TABLE :tableName RENAME COLUMN :oldColumnName TO :newColumnName");
-			$result = $stmt->execute([':tableName' => $sTableName, ':oldColumnName' => $sOldColumnName, ':newColumnName' => $sNewColumnName]);
+			$query = "ALTER TABLE {$sTableName} RENAME COLUMN {$sOldColumnName} TO {$sNewColumnName}";
+			$stmt = $oProc->m_odb->prepare($query);
+			$result = $stmt->execute();
 
 			return !!$result;
 		}
@@ -619,8 +626,9 @@
 			}
 
 			$sFieldSQL = $this->TranslateType($sType, $iPrecision, $iScale);
-			$stmt = $oProc->m_odb->prepare("ALTER TABLE :tableName ALTER COLUMN :columnName TYPE :fieldSQL");
-			$result = $stmt->execute([':tableName' => $sTableName, ':columnName' => $sColumnName, ':fieldSQL' => $sFieldSQL]);
+			$query = "ALTER TABLE {$sTableName} ALTER COLUMN {$sColumnName} TYPE {$sFieldSQL}";
+			$stmt = $oProc->m_odb->prepare($query);
+			$result = $stmt->execute();
 
 			$Ok = !!$result;
 
@@ -633,9 +641,9 @@
 				$sFieldSQL = ' DROP NOT NULL';
 			}
 
-			$stmt = $oProc->m_odb->prepare("ALTER TABLE :tableName ALTER COLUMN :columnName TYPE :fieldSQL");
-			$result = $stmt->execute([':tableName' => $sTableName, ':columnName' => $sColumnName, ':fieldSQL' => $sFieldSQL]);
-
+			$query = "ALTER TABLE {$sTableName} ALTER COLUMN {$sColumnName} {$sFieldSQL}";
+			$stmt = $oProc->m_odb->prepare($query);
+			$result = $stmt->execute();
 			$Ok = !!$result;
 
 			if($sDefault == '0')
@@ -654,8 +662,9 @@
 
 			if(isset($defaultSQL) && $defaultSQL)
 			{
-				$stmt = $oProc->m_odb->prepare("ALTER TABLE :tableName ALTER COLUMN :columnName SET :defaultSQL");
-				$result = $stmt->execute([':tableName' => $sTableName, ':columnName' => $sColumnName, ':defaultSQL' => $defaultSQL]);
+				$query = "ALTER TABLE {$sTableName} ALTER COLUMN {$sColumnName} SET {$defaultSQL}";
+				$stmt = $oProc->m_odb->prepare($query);
+				$result = $stmt->execute();
 
 				$Ok = !!$result;
 			}
@@ -686,9 +695,9 @@
 			}
 
 			$oProc->_GetFieldSQL($aColumnDef, $sFieldSQL, $sTableName, $sColumnName);
-			$stmt = $oProc->m_odb->prepare("ALTER TABLE :tableName ADD COLUMN :columnName :fieldSQL");
-			$result = $stmt->execute([':tableName' => $sTableName, ':columnName' => $sColumnName, ':fieldSQL' => $sFieldSQL]);
-
+			$query = "ALTER TABLE {$sTableName} ADD COLUMN {$sColumnName} {$sFieldSQL}";
+			$stmt = $oProc->m_odb->prepare($query);
+			$result = $stmt->execute();
 			return !!$result;
 		}
 
@@ -769,9 +778,9 @@
 					$oProc->_GetFK(array($foreign_table => $foreign_key), $sFKSQL);
 					$local_key = implode('_',array_keys($foreign_key));
 
-					$query = "ALTER TABLE :tableName ADD CONSTRAINT {$sTableName}_{$local_key}_fk :fkSQL";
+					$query = "ALTER TABLE {$sTableName} ADD CONSTRAINT {$sTableName}_{$local_key}_fk {$sFKSQL}";
 					$stmt = $oProc->m_odb->prepare($query);
-					$result = $stmt->execute([':tableName' => $sTableName, ':fkSQL' => $sFKSQL]);
+					$result = $stmt->execute();
 
 					if ($DEBUG) {
 						echo '<pre>';
