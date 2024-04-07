@@ -18,6 +18,7 @@ use App\Helpers\Template;
 Use App\Modules\Setup\Controllers\SqlToArray;
 use App\Modules\Setup\Controllers\Applications;
 use App\Modules\Setup\Controllers\Lang;
+use App\Modules\Setup\Controllers\Config;
 
 
 class SetupController
@@ -104,6 +105,20 @@ class SetupController
 		return $response;
 
 	}
+
+    public function	Config(Request $request, Response $response, $args)
+	{
+
+		$Applications = new Config();
+		$ret = $Applications->index();
+
+		$response = new \Slim\Psr7\Response();
+		$response->getBody()->write($ret);
+		return $response;
+
+	}
+
+     
 
     function index(Request $request, Response $response, $args)
     {
@@ -511,7 +526,7 @@ class SetupController
                 $setup_tpl->set_var('config_status_alt',$this->setup->lang('not completed'));
                 $btn_config_now = $this->html->make_frm_btn_simple(
                     $this->setup->lang('Please configure phpGroupWare for your environment'),
-                    'POST','../config',
+                    'POST','setup/config',
                     'submit',$this->setup->lang('Configure Now'),
                     '');
                 $setup_tpl->set_var('config_table_data',$btn_config_now);
@@ -564,7 +579,7 @@ class SetupController
     
                 $btn_edit_config = $this->html->make_frm_btn_simple(
                     $this->setup->lang('Configuration completed'),
-                    'POST','../config',
+                    'POST','setup/config',
                     'submit',$this->setup->lang('Edit Current Configuration'),
                     $completed_notice
                 );
@@ -729,7 +744,7 @@ class SetupController
 		$header = $this->html->get_header(
             $setup_data['header_msg'],
             False,
-            'config',
+            'setup/config',
 			$this->db->get_domain() . '(' . $db_config['db_type'] . ')'
         );
 		$main = $setup_tpl->fp('out', 'T_setup_main');

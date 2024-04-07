@@ -57,4 +57,6 @@ $app->post('/setup/applications', SetupController::class . ':Applications');
 $app->get('/setup/sqltoarray', SetupController::class . ':SqlToArray');
 $app->post('/setup/lang', SetupController::class . ':Lang');
 $app->get('/setup/lang', SetupController::class . ':Lang');
+$app->get('/setup/config', SetupController::class . ':Config');
+$app->post('/setup/config', SetupController::class . ':Config');
 
