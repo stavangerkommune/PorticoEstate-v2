@@ -59,4 +59,6 @@ $app->post('/setup/lang', SetupController::class . ':Lang');
 $app->get('/setup/lang', SetupController::class . ':Lang');
 $app->get('/setup/config', SetupController::class . ':Config');
 $app->post('/setup/config', SetupController::class . ':Config');
+$app->get('/setup/accounts', SetupController::class . ':Accounts');
+$app->post('/setup/accounts', SetupController::class . ':Accounts');
 

@@ -160,7 +160,7 @@ class Hooks
 				if ($try_unregistered && empty($methode)) {
 					$method = 'hook_' . $location . '.inc.php';
 				}
-				$f = SRC_ROOT_PATH . "/{$appname}/inc/{$method}";
+				$f = SRC_ROOT_PATH . "/Modules/" . ucfirst($appname) ."/inc/{$method}";
 				if (((isset($this->user['apps'][$appname]) && $this->user['apps'][$appname])
 						|| (($no_permission_check || $location == 'config' || $appname == 'phpgwapi') && $appname))
 					&& file_exists($f)

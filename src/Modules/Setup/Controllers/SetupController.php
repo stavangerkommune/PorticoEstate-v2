@@ -19,6 +19,7 @@ Use App\Modules\Setup\Controllers\SqlToArray;
 use App\Modules\Setup\Controllers\Applications;
 use App\Modules\Setup\Controllers\Lang;
 use App\Modules\Setup\Controllers\Config;
+use App\Modules\Setup\Controllers\Accounts;
 
 
 class SetupController
@@ -109,16 +110,28 @@ class SetupController
     public function	Config(Request $request, Response $response, $args)
 	{
 
-		$Applications = new Config();
-		$ret = $Applications->index();
+		$Config = new Config();
+		$ret = $Config->index();
 
 		$response = new \Slim\Psr7\Response();
 		$response->getBody()->write($ret);
 		return $response;
 
 	}
+ 
+ 
+    public function	Accounts(Request $request, Response $response, $args)
+	{
 
-     
+	//	$Accounts = new Accounts();
+		$ret = 'Accounts';//$Accounts->index();
+
+		$response = new \Slim\Psr7\Response();
+		$response->getBody()->write($ret);
+		return $response;
+
+	}
+       
 
     function index(Request $request, Response $response, $args)
     {
@@ -601,7 +614,7 @@ class SetupController
 					if ($ldap_host != '') {
 						$btn_config_ldap = $this->html->make_frm_btn_simple(
 							$this->setup->lang('LDAP account import/export'),
-							'POST','../ldap',
+							'POST','setup/ldap',
 							'submit',$this->setup->lang('Configure LDAP accounts'),
 							''
 						);
@@ -617,7 +630,7 @@ class SetupController
 						/* NOTE: we assume here ldap doesn't delete accounts */
 						$link_make_accts = $this->html->make_href_link_simple(
 							'<br>',
-							'../accounts',
+							'setup/accounts',
 							$this->setup->lang('Setup an Admininstrator account'),
 							$this->setup->lang('and optional demo accounts.')
 						);
@@ -646,7 +659,7 @@ class SetupController
 					}    
                      $link_make_accts = $this->html->make_href_link_simple(
                          '<br>',
-                         '../accounts',
+                         'setup/accounts',
                          $this->setup->lang('Setup an Admininstrator account'),
                         $account_creation_notice
                      );

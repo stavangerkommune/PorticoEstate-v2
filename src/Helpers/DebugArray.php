@@ -8,3 +8,8 @@ function _debug_array($array): void
 	print_r($array);
 	echo '</pre>';
 }
+
+function print_debug($array): void
+{
+
+}

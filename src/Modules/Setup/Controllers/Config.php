@@ -18,7 +18,7 @@
 	use App\Modules\Api\Services\Setup\Detection;
 	use App\Modules\Api\Services\Setup\Process;
 	use App\Modules\Api\Services\Setup\Html;
-	use App\Helpers\Template;
+	use App\Helpers\Template2;
 	use App\Modules\Api\Services\Setup\SetupTranslation;
 	use App\Modules\Api\Services\Sanitizer;
     use App\Helpers\DateHelper;
@@ -70,8 +70,8 @@
 			}
 
 			$tpl_root = $this->html->setup_tpl_dir('setup');
-			$this->setup_tpl = new Template($tpl_root);
-            $this->setup_tpl->set_unknowns('keep');
+			$this->setup_tpl = new Template2($tpl_root);
+            $this->setup_tpl->set_unknowns('loose');
 
 
 			$this->html->set_tpl($this->setup_tpl);
