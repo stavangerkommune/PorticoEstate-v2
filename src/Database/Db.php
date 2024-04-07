@@ -34,11 +34,13 @@ class Db extends PDO
 	public function transaction_commit()
 	{
 		if ($this->isTransactionActive) {
-			parent::commit();
+			$commitSuccess = parent::commit();
 			$this->isTransactionActive = false;
+			return $commitSuccess;
 		}
+		return false;
 	}
-
+	
 	public function transaction_abort()
 	{
 		if ($this->isTransactionActive) {

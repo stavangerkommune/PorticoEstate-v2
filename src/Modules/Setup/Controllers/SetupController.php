@@ -17,6 +17,7 @@ use App\Helpers\Template;
 
 Use App\Modules\Setup\Controllers\SqlToArray;
 use App\Modules\Setup\Controllers\Applications;
+use App\Modules\Setup\Controllers\Lang;
 
 
 class SetupController
@@ -69,7 +70,7 @@ class SetupController
     }
 
 
-	public function	sqltoarray(Request $request, Response $response, $args)
+	public function	SqlToArray(Request $request, Response $response, $args)
 	{
 
 		$SqlToArray = new SqlToArray();
@@ -84,6 +85,18 @@ class SetupController
 	{
 
 		$Applications = new Applications();
+		$ret = $Applications->index();
+
+		$response = new \Slim\Psr7\Response();
+		$response->getBody()->write($ret);
+		return $response;
+
+	}
+
+    public function	Lang(Request $request, Response $response, $args)
+	{
+
+		$Applications = new Lang();
 		$ret = $Applications->index();
 
 		$response = new \Slim\Psr7\Response();
@@ -447,6 +460,7 @@ class SetupController
                         $setup_info = $this->detection->base_install($setup_info);
                         $setup_info = $this->process->pass($setup_info, 'new', false, true);
                         $GLOBALS['included'] = True;
+                        //FIXME
                         include_once('lang.php');
                         $setup_data['currentver']['phpgwapi'] = 'oldversion';
                         break;
@@ -650,7 +664,7 @@ class SetupController
                 $setup_tpl->set_var('lang_status_alt','not completed');
                 $btn_install_lang = $this->html->make_frm_btn_simple(
                     $this->setup->lang('You do not have any languages installed. Please install one now <br />'),
-                    'POST','../lang',
+                    'POST','setup/lang',
                     'submit',$this->setup->lang('Install Language'),
                     '');
                 $setup_tpl->set_var('lang_table_data',$btn_install_lang);
@@ -670,7 +684,7 @@ class SetupController
                 $setup_tpl->set_var('lang_status_alt','completed');
                 $btn_manage_lang = $this->html->make_frm_btn_simple(
                     $this->setup->lang('This stage is completed') . '<br/>' .  $this->setup->lang('Currently installed languages: %1',$langs_list) . ' <br/>',
-                    'POST','../lang',
+                    'POST','setup/lang',
                     'submit',$this->setup->lang('Manage Languages'),
                     '');
                 $setup_tpl->set_var('lang_table_data',$btn_manage_lang);

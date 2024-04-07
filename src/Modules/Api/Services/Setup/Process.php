@@ -256,6 +256,7 @@
 							$this->oProc->DropTable($table);
 							// Update the array values for return below
 							$setup_info[$key]['status'] = 'U';
+							$this->update_setup_info($setup_info[$key], $setup_info[$key]['name']);
 						}
 					}
 				}
@@ -413,7 +414,11 @@
 					}
 					$setup_info[$key]['status'] = 'C';
 				}
-				if($DEBUG) { echo '<br>process->current(): Outgoing status: ' . $appname . ',status: '. $setup_info[$key]['status']; }
+				if($DEBUG) {
+					 echo '<br>process->current(): Outgoing status: ' . $appname . ',status: '. $setup_info[$key]['status']; 
+				}
+				// Update the array values for return below
+				$this->update_setup_info($setup_info[$key], $appname);
 			}
 
 			if ( !$this->global_lock )
@@ -452,7 +457,8 @@
 //					&& file_exists($appdir.'default_records.inc.php'))
 				$default_found = false;
 
-				$ConfigDomain = \Sanitizer::get_var('ConfigDomain','string', 'COOKIE');
+				//$ConfigDomain = \Sanitizer::get_var('ConfigDomain','string', 'COOKIE');
+				$ConfigDomain = $this->db->get_domain();
 
 				if( file_exists($appdir.$ConfigDomain.'/default_records.inc.php'))
 				{
@@ -813,6 +819,10 @@
 									$appstatus = 'C';
 									$setup_info[$key]['status']     = $appstatus;
 									$setup_info[$key]['currentver'] = $targetver;
+
+									/* Update the array values for return below */
+									$this->update_setup_info($setup_info[$key], $appname);
+
 									if($this->setup->app_registered($appname))
 									{
 										$this->setup->update_app($appname);
@@ -848,16 +858,7 @@
 										}
 										$appstatus = 'R';
 										$setup_info[$key]['status'] = $appstatus;
-
-										throw new \Exception('FIXME: Store the new version in the setup_info array');
-
-						//				\_debug_array($setup_info);
-										
-						//				Settings::getInstance()->set('setup_info', $setup_info);
-
-						//				\_debug_array(Settings::getInstance()->get('setup_info'));
-						//				die();
-
+										$this->update_setup_info($setup_info[$key], $appname);
 
 										if($this->setup->app_registered($appname))
 										{
@@ -921,6 +922,9 @@
 						{
 							$setup_info[$key]['currentver'] == $targetver;
 							$appstatus  = 'C';
+							//update_setup_info
+							$this->update_setup_info($setup_info[$key], $appname);
+
 							if($this->setup->app_registered($appname))
 							{
 								$this->setup->update_app($appname);
@@ -958,6 +962,13 @@
 
 			/* Done, return current status */
 			return ($setup_info);
+		}
+
+		function update_setup_info($updated_setup_info, $appname)
+		{
+			$setup_info = Settings::getInstance()->get('setup_info');
+			$setup_info[$appname] = $updated_setup_info;
+			Settings::getInstance()->set('setup_info', $setup_info);
 		}
 
 		/**

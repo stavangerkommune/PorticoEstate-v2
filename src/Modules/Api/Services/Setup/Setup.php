@@ -620,7 +620,7 @@
 					$tables = implode(',', $setup_info[$appname]['tables']);
 				}
 
-				$stmt = $this->db->prepare("UPDATE $appstbl SET app_name=:name, app_enabled=:enabled, app_order=:order, app_tables=:tables, app_version=:version WHERE app_name=:appname");
+				$stmt = $this->db->prepare("UPDATE phpgw_applications SET app_name=:name, app_enabled=:enabled, app_order=:order, app_tables=:tables, app_version=:version WHERE app_name=:appname");
 				$stmt->execute([
 					':name' => $setup_info[$appname]['name'],
 					':enabled' => intval($setup_info[$appname]['enable']),

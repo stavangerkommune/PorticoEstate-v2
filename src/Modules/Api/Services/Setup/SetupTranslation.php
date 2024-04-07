@@ -34,6 +34,8 @@
 		{
 			$this->serverSettings = Settings::getInstance()->get('server');
 			$this->db = \App\Database\Db::getInstance();
+			parent::set_db($this->db);
+			parent::set_serverSettings($this->serverSettings);
 
 			$ConfigLang = \Sanitizer::get_var('ConfigLang', 'string', 'POST');
 			

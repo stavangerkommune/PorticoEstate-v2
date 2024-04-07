@@ -91,6 +91,15 @@
 				$this->collect_missing = true;
 			}
 		}
+
+		protected function set_db($db)
+		{
+			$this->db = $db;
+		}
+		protected function set_serverSettings($serverSettings)
+		{
+			$this->serverSettings = $serverSettings;
+		}
 	
 		public static function getInstance($preferences = [])
 		{
@@ -396,7 +405,8 @@
 
 				if ($upgrademethod == 'dumpold')
 				{
-					$this->db->query('DELETE FROM phpgw_lang',__LINE__,__FILE__);
+					$stmt = $this->db->prepare('DELETE FROM phpgw_lang');
+					$stmt->execute();
 					$this->serverSettings['lang_ctimes'] = array();
 				}
 
@@ -411,7 +421,7 @@
 					}
 
 					//echo '<br />Working on: ' . $lang;
-					$this->cache->system_clear('phpgwapi', "lang_{$lang}");
+					Cache::system_clear('phpgwapi', "lang_{$lang}");
 
 					if ($upgrademethod == 'addonlynew')
 					{
@@ -438,7 +448,9 @@
 
 					foreach ( array_keys( $apps) as $app )
 					{
-						$appfile = PHPGW_SERVER_ROOT . "/{$app}/setup/phpgw_{$lang}.lang";
+
+						$_app =  $app =='phpgwapi' ? 'Api' : ucfirst($app);
+						$appfile = SRC_ROOT_PATH . "/Modules/" . $_app ."/Setup/phpgw_{$lang}.lang";
 						if ( !is_file($appfile) )
 						{
 							// make sure file exists before trying to load it
@@ -462,8 +474,8 @@
                         }
 						// Override with localised translations
 
-                        $ConfigDomain = htmlspecialchars($_REQUEST['ConfigDomain'], ENT_QUOTES, 'UTF-8', true);
-						$appfile_override = PHPGW_SERVER_ROOT . "/{$app}/setup/{$ConfigDomain}/phpgw_{$lang}.lang";
+						$ConfigDomain = $this->db->get_domain();
+						$appfile_override = SRC_ROOT_PATH . "/Modules" . ucfirst($_app) ."/Setup/{$ConfigDomain}/phpgw_{$lang}.lang";
 
 						if ( is_file($appfile_override) )
 						{
@@ -514,7 +526,8 @@
                 
                 $stmt = $this->db->prepare("INSERT INTO phpgw_config(config_app,config_name,config_value) VALUES ('phpgwapi','lang_ctimes', :config_value)");
                 $stmt->execute([':config_value' => serialize($this->serverSettings['lang_ctimes'])]);
-                
+
+				Settings::getInstance()->set('server', $this->serverSettings);
 
                 $this->db->commit();
 			}

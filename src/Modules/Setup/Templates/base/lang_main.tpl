@@ -13,7 +13,7 @@
 <tr class="row_on">
 	<td {td_align}>
 		{select_box_desc}
-		<form method="POST" action="lang.php">
+		<form method="POST" action="lang">
 		{hidden_var1}
 		<p style="height: 150px; overflow: auto; border: 5px solid #eee; background: #eee; color: #000; margin-bottom: 1.5em;">
 		{checkbox_langs}
