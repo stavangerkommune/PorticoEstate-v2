@@ -30,6 +30,7 @@ class SetupController
 	private $process;
 	private $html;
 	private $setup;
+	private $serverSettings;
 
 
     public function __construct()
@@ -43,7 +44,9 @@ class SetupController
 		//setup_info
 		Settings::getInstance()->set('setup_info', []);//$GLOBALS['setup_info']
 		//setup_data
-		Settings::getInstance()->set('setup', []);//$GLOBALS['phpgw_info']['setup']
+		Settings::getInstance()->set('setup', []); //$GLOBALS['phpgw_info']['setup']
+		$this->serverSettings = Settings::getInstance()->get('server');
+
 
 		$this->db = Db::getInstance();
 		$this->detection = new Detection();
@@ -65,9 +68,14 @@ class SetupController
 
     public function logout(Request $request, Response $response, $args)
     {
-		$_POST['FormLogout'] = $_GET['FormLogout'];
 		$this->setup->auth('Config');
-		Header('Location: ../setup');
+		setcookie('ConfigPW', '', time() - 3600);
+
+//		$response = new \Slim\Psr7\Response();
+//		$response->getBody()->write('Logged out');
+//		return $response;
+
+		Header('Location: ../setup/');
 		exit;
     }
 
@@ -123,8 +131,8 @@ class SetupController
     public function	Accounts(Request $request, Response $response, $args)
 	{
 
-	//	$Accounts = new Accounts();
-		$ret = 'Accounts';//$Accounts->index();
+		$Accounts = new Accounts();
+		$ret = $Accounts->index();
 
 		$response = new \Slim\Psr7\Response();
 		$response->getBody()->write($ret);
@@ -193,8 +201,21 @@ class SetupController
         }
         elseif (!$this->setup->auth('Config'))
         {
-			Header('Location: ../setup');
-            exit;
+
+			$_POST['ConfigLang'] = isset($this->serverSettings['default_lang']) ? $this->serverSettings['default_lang'] : '';
+			$header = $this->html->get_header(lang('Please login'), True);
+			$login_form = $this->html->login_form();
+			$footer = $this->html->get_footer();
+
+
+			$response = new \Slim\Psr7\Response();
+			$response->getBody()->write($header . $login_form . $footer);
+
+			return $response;
+
+
+		//	Header('Location: ../setup');
+       //     exit;
         }
     
         $this->setup->loaddb();
@@ -757,7 +778,7 @@ class SetupController
 		$header = $this->html->get_header(
             $setup_data['header_msg'],
             False,
-            'setup/config',
+            'config',
 			$this->db->get_domain() . '(' . $db_config['db_type'] . ')'
         );
 		$main = $setup_tpl->fp('out', 'T_setup_main');

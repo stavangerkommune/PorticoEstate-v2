@@ -24,6 +24,8 @@
 	class SetupTranslation extends Translation
 	{
 		var $langarray,$lang;
+		var $db;
+		var $serverSettings;
 
 		/**
 		 * constructor for the class, loads all phrases into langarray

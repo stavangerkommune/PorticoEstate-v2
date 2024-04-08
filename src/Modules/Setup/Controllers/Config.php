@@ -35,6 +35,7 @@
 		private $html;
 		private $setup;
 		private $setup_tpl;
+		private $translation;
 		
 		public function __construct()
 		{
@@ -122,7 +123,7 @@
                 'T_config_post_script' => 'config_post_script.tpl'
             ));
         
-            $this->setup_tpl->set_var('lang_cookies_must_be_enabled', lang('<b>NOTE:</b> You must have cookies enabled to use setup and header admin!') );
+            $this->setup_tpl->set_var('lang_cookies_must_be_enabled', $this->setup->lang('<b>NOTE:</b> You must have cookies enabled to use setup and header admin!') );
         
             $css = file_get_contents(dirname(__DIR__, 1) . "/phpgwapi/templates/pure/css/version_3/pure-min.css");
             $this->setup_tpl->set_var('css', $css);
@@ -246,7 +247,7 @@
         
             if(!isset($newsettings['auth_type']) || $newsettings['auth_type'] != 'ldap')
             {
-                $header = $this->html->get_header(lang('Configuration'),False,'config',$this->db->get_domain() . '(' .  $db_config["db_type"] . ')');
+                $header = $this->html->get_header($this->setup->lang('Configuration'),False,'config',$this->db->get_domain() . '(' .  $db_config["db_type"] . ')');
             }
         
             $stmt = $this->db->prepare("SELECT * FROM phpgw_config");
@@ -260,7 +261,7 @@
             // are we here because of an error: files-dir in docroot
             if (isset($_POST['newsettings']) && is_array($_POST['newsettings']) && $files_in_docroot)
             {
-                echo '<p class="err">' . lang('Path to user and group files HAS TO BE OUTSIDE of the webservers document-root!!!') . "</strong></p>\n";
+                echo '<p class="err">' . $this->setup->lang('Path to user and group files HAS TO BE OUTSIDE of the webservers document-root!!!') . "</strong></p>\n";
         
                 foreach($_POST['newsettings'] as $key => $val)
                 {
@@ -272,7 +273,7 @@
             {
                 // Please check the number and dial again :)
                 $this->html->show_alert_msg('Error',
-                    lang('There was a problem trying to connect to your LDAP server. <br />'
+                    $this->setup->lang('There was a problem trying to connect to your LDAP server. <br />'
                         .'please check your LDAP server configuration') . '.');
             }
         
@@ -305,7 +306,7 @@
                 switch ($var_type)
                 {
                     case 'lang':
-                        $this->setup_tpl->set_var($value, lang($newval));
+                        $this->setup_tpl->set_var($value, $this->setup->lang($newval));
                         break;
                     case 'value':
                         $newval = str_replace(' ','_',$newval);
@@ -351,10 +352,10 @@
                 }
             }
             $body =  $this->setup_tpl->fp('out','body');
-            $this->setup_tpl->set_var('more_configs',lang('Please login to phpgroupware and run the admin application for additional site configuration') . '.');
+            $this->setup_tpl->set_var('more_configs',$this->setup->lang('Please login to phpgroupware and run the admin application for additional site configuration') . '.');
         
-            $this->setup_tpl->set_var('lang_submit',lang('Save'));
-            $this->setup_tpl->set_var('lang_cancel',lang('Cancel'));
+            $this->setup_tpl->set_var('lang_submit',$this->setup->lang('Save'));
+            $this->setup_tpl->set_var('lang_cancel',$this->setup->lang('Cancel'));
             $post_script = $this->setup_tpl->fp('out','T_config_post_script');
         
             $footer = $this->html->get_footer();

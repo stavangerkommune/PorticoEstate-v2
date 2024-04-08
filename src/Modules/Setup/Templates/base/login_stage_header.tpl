@@ -9,7 +9,7 @@
 </tr>
 <tr class="row_on">
 	<td colspan="2">
-		<form action="index.php" method="POST" name="config">
+		<form action="setup" method="POST" name="config">
 		<!-- BEGIN B_multi_domain -->
 		<table>
 		<tr>

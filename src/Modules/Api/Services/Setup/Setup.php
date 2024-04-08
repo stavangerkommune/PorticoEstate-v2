@@ -107,7 +107,7 @@
 			// Support DOMNodes from XSL templates
 			foreach($vars as &$var)
 			{
-				if (is_object($var) && $var instanceof DOMNode)
+				if (is_object($var) && $var instanceof \DOMNode)
 				{
 					$var = $var->nodeValue;
 				}
@@ -156,14 +156,16 @@
 		 */
 		function auth($auth_type='Config')
 		{
+			$this->setup_data = Settings::getInstance()->get('setup'); //refresh the setup data
+			$phpgw_domain = require SRC_ROOT_PATH . '/../config/database.php';
+
 			$remoteip     = $_SERVER['REMOTE_ADDR'];
 
 			$FormLogout   = \Sanitizer::get_var('FormLogout');
 			$ConfigLogin  = \Sanitizer::get_var('ConfigLogin',	'string', 'POST');
 			$HeaderLogin  = \Sanitizer::get_var('HeaderLogin',	'string', 'POST');
-			$logindomain   = \Sanitizer::get_var('logindomain',	'string', 'POST');
+			$logindomain   = \Sanitizer::get_var('FormDomain',	'string', 'POST');
 			$FormPW       = \Sanitizer::get_var('FormPW',		'string', 'POST');
-
 			$ConfigDomain = \Sanitizer::get_var('ConfigDomain');
 			$ConfigPW     = \Sanitizer::get_var('ConfigPW');
 			$HeaderPW     = \Sanitizer::get_var('HeaderPW');
@@ -175,7 +177,6 @@
 			$ConfigPW     = $ConfigPW ? $ConfigPW : \Sanitizer::get_var('ConfigPW',	'string', 'COOKIE');
 			$HeaderPW     = $HeaderPW ? $HeaderPW : \Sanitizer::get_var('HeaderPW',	'string', 'COOKIE');
 			$ConfigLang   = $ConfigLang ? $ConfigLang : \Sanitizer::get_var('ConfigLang',	'string', 'COOKIE');
-
 
 			/*
 			if(!empty($remoteip) && !$this->checkip($remoteip))
@@ -261,8 +262,9 @@
 			}
 			elseif(!empty($ConfigLogin) && $auth_type == 'Config')
 			{
+
 				/* config login */
-				if($FormPW == $this->crypto->decrypt($GLOBALS['phpgw_domain'][$logindomain]['config_passwd']))
+				if($FormPW == $this->crypto->decrypt($phpgw_domain[$logindomain]['config_passwd']))
 				{
 					$hash = password_hash($FormPW, PASSWORD_BCRYPT);
 					setcookie('ConfigPW', $hash, $expire);
@@ -333,7 +335,7 @@
 			elseif(!empty($ConfigPW) && $auth_type == 'Config')
 			{
 				/* Returning after login to config */
-				$config_passwd = $this->crypto->decrypt($GLOBALS['phpgw_domain'][$ConfigDomain]['config_passwd']);
+				$config_passwd = $this->crypto->decrypt($phpgw_domain[$ConfigDomain]['config_passwd']);
 				if(password_verify($config_passwd, $ConfigPW))
 				{
 					setcookie('ConfigPW', $ConfigPW,  $expire);

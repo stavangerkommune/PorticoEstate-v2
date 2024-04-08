@@ -5,7 +5,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use App\Modules\Setup\Controllers\SetupController;
 
 
-$app->get('/setup', function (Request $request, Response $response) use ($phpgw_domain) {
+$app->get('/setup/', function (Request $request, Response $response) use ($phpgw_domain) {
 
 	$last_domain = \Sanitizer::get_var('last_domain', 'string', 'COOKIE', false);
 	$domainOptions = '';
@@ -26,8 +26,8 @@ $app->get('/setup', function (Request $request, Response $response) use ($phpgw_
                 <h1>Setup</h1>
                 <form method="POST" action="/setup">
                     <div class="mb-3">
-                        <label for="logindomain">Domain:</label>
-                        <select class="form-select" id="logindomain" name="logindomain">
+                        <label for="FormDomain">Domain:</label>
+                        <select class="form-select" id="FormDomain" name="FormDomain">
                             ' . $domainOptions . '
                         </select>
                     </div>
@@ -48,6 +48,7 @@ $app->get('/setup', function (Request $request, Response $response) use ($phpgw_
 });
 
 
+$app->get('/setup', SetupController::class . ':index');
 $app->post('/setup', SetupController::class . ':index');
 
 $app->get('/setup/logout', SetupController::class . ':logout');

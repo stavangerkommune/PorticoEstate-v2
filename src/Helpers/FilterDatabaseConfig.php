@@ -19,7 +19,12 @@ if (isset($_POST['login']))	// on login
 			$user_domain = \Sanitizer::get_var('domain', 'string', 'COOKIE', false);
 		}
 	}
-} else {
+}
+else if (isset($_POST['FormDomain']))
+{
+	$user_domain = \Sanitizer::get_var('FormDomain', 'string', 'POST', $default_domain);
+}
+ else {
 	$user_domain = \Sanitizer::get_var('last_domain', 'string', 'COOKIE', false);
 }
 $db_server = [];

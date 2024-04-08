@@ -694,6 +694,7 @@
 				}
 			}
 
+			$sFieldSQL = '';
 			$oProc->_GetFieldSQL($aColumnDef, $sFieldSQL, $sTableName, $sColumnName);
 			$query = "ALTER TABLE {$sTableName} ADD COLUMN {$sColumnName} {$sFieldSQL}";
 			$stmt = $oProc->m_odb->prepare($query);
@@ -717,6 +718,7 @@
 		{
 			global $DEBUG;
 			$this->indexes_sql = array();
+			$sTableSQL = $sSequenceSQL = $sTriggerSQL = '';
 			if ($oProc->_GetTableSQL($sTableName, $aTableDef, $sTableSQL, $sSequenceSQL, $sTriggerSQL))
 			{
 				/* create sequence first since it will be needed for default */

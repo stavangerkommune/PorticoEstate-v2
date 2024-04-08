@@ -13,6 +13,7 @@
 
 	use App\Modules\Api\Services\Settings;
 	use Sanitizer;
+	use App\Modules\Api\Services\Setup\Setup;
 
 	/**
 	* Setup html
@@ -34,8 +35,8 @@
 		 */
 		function generate_header()
 		{
-			$GLOBALS['header_template']->set_file(array('header' => 'header.inc.php.template'));
-			$GLOBALS['header_template']->set_block('header','domain','domain');
+			$this->setup_tpl->set_file(array('header' => 'header.inc.php.template'));
+			$this->setup_tpl->set_block('header','domain','domain');
 			$var = Array();
 
 			$deletedomain = Sanitizer::get_var('deletedomain', 'string', 'POST');
@@ -55,19 +56,19 @@
 					continue;
 				}
 				$dom = $settings[$k];
-				$GLOBALS['header_template']->set_var('DB_DOMAIN',$v);
+				$this->setup_tpl->set_var('DB_DOMAIN',$v);
 				foreach($dom as $x => $y)
 				{
 					if( ((isset($setting['enable_mcrypt']) && $setting['enable_mcrypt'] == 'True') || !empty($setting['enable_crypto'])) && ($x == 'db_pass' || $x == 'db_host' || $x == 'db_port' || $x == 'db_name' || $x == 'db_user' || $x == 'config_pass'))
 					{
 						$y = $GLOBALS['phpgw']->crypto->encrypt($y);
 					}
-					$GLOBALS['header_template']->set_var(strtoupper($x),$y);
+					$this->setup_tpl->set_var(strtoupper($x),$y);
 				}
-				$GLOBALS['header_template']->parse('domains','domain',True);
+				$this->setup_tpl->parse('domains','domain',True);
 			}
 
-			$GLOBALS['header_template']->set_var('domain','');
+			$this->setup_tpl->set_var('domain','');
 
 			if(!empty($setting) && is_array($setting))
 			{
@@ -86,8 +87,8 @@
 					$var[strtoupper($k)] = $v;
 				}
 			}
-			$GLOBALS['header_template']->set_var($var);
-			return $GLOBALS['header_template']->parse('out','header');
+			$this->setup_tpl->set_var($var);
+			return $this->setup_tpl->parse('out','header');
 		}
 
 		function setup_tpl_dir($app_name='setup')
@@ -112,8 +113,9 @@
 
 		function get_header($title = '', $nologoutbutton = False, $logoutfrom = 'config', $configdomain = '')
 		{
+			$setup = new Setup();
 			$serverSettings = Settings::getInstance()->get('server');
-			$this->setup_tpl->set_var('lang_charset',lang('charset'));
+			$this->setup_tpl->set_var('lang_charset', $setup->lang('charset'));
 			$style = array('th_bg'		=> '#486591',
 					'th_text'	=> '#FFFFFF',
 					'row_on'	=> '#DDDDDD',
@@ -128,11 +130,11 @@
 			}
 			else
 			{
-				$btn_logout = '<a href="/setup/logout?FormLogout=' . $logoutfrom . '" class="link">' . lang('Logout').'</a>';
+				$btn_logout = '<a href="/setup/logout?FormLogout=' . $logoutfrom . '" class="link">' . $setup->lang('Logout').'</a>';
 			}
 
-			$this->setup_tpl->set_var('lang_version', lang('version'));
-			$this->setup_tpl->set_var('lang_setup', lang('setup'));
+			$this->setup_tpl->set_var('lang_version', $setup->lang('version'));
+			$this->setup_tpl->set_var('lang_setup', $setup->lang('setup'));
 			$this->setup_tpl->set_var('page_title',$title);
 			if ($configdomain == '')
 			{
@@ -140,7 +142,7 @@
 			}
 			else
 			{
-				$this->setup_tpl->set_var('configdomain',' - ' . lang('Domain') . ': ' . $configdomain);
+				$this->setup_tpl->set_var('configdomain',' - ' . $setup->lang('Domain') . ': ' . $configdomain);
 			}
 
 			$api_version = isset($serverSettings['versions']['phpgwapi']) ? $serverSettings['versions']['phpgwapi'] : '';
@@ -190,5 +192,134 @@
 				. $post_link_blurb . "\n";
 			return $simple_link;
 		}
-	
+
+	function login_form()
+	{
+		$setup_data = Settings::getInstance()->get('setup');
+		/* begin use TEMPLATE login_main.tpl */
+
+		$this->setup_tpl->set_var(
+			'ConfigLoginMSG',
+			isset($setup_data['ConfigLoginMSG'])
+			? $setup_data['ConfigLoginMSG'] : '&nbsp;'
+		);
+
+		$this->setup_tpl->set_var(
+			'HeaderLoginMSG',
+			isset($setup_data['HeaderLoginMSG'])
+			? $setup_data['HeaderLoginMSG'] : '&nbsp;'
+		);
+
+		if ($setup_data['stage']['header'] == '10') {
+			/*
+				 Begin use SUB-TEMPLATE login_stage_header,
+				 fills V_login_stage_header used inside of login_main.tpl
+				*/
+			$this->setup_tpl->set_var('lang_select', $this->lang_select());
+
+			$phpgw_domain = require SRC_ROOT_PATH . '/../config/database.php';
+
+			if (count($phpgw_domain) > 1) {
+				$domains = '';
+				foreach ($phpgw_domain as $domain => $data) {
+					$domains .= "<option value=\"$domain\" ";
+					if (isset($setup_data['LastDomain']) && $domain == $setup_data['LastDomain']) {
+						$domains .= ' SELECTED';
+					} elseif ($domain == $_SERVER['SERVER_NAME']) {
+						$domains .= ' SELECTED';
+					}
+					$domains .= ">$domain</option>\n";
+				}
+				$this->setup_tpl->set_var('domains', $domains);
+
+				// use BLOCK B_multi_domain inside of login_stage_header
+				$this->setup_tpl->parse('V_multi_domain', 'B_multi_domain');
+				// in this case, the single domain block needs to be nothing
+				$this->setup_tpl->set_var('V_single_domain', '');
+			} else {
+				reset($phpgw_domain);
+				//$default_domain = each($phpgw_domain);
+				$default_domain = key($phpgw_domain);
+				$this->setup_tpl->set_var('default_domain_zero', $default_domain);
+
+				/* Use BLOCK B_single_domain inside of login_stage_header */
+				$this->setup_tpl->parse('V_single_domain', 'B_single_domain');
+				/* in this case, the multi domain block needs to be nothing */
+				$this->setup_tpl->set_var('V_multi_domain', '');
+			}
+			/*
+				 End use SUB-TEMPLATE login_stage_header
+				 put all this into V_login_stage_header for use inside login_main
+				*/
+			$this->setup_tpl->parse('V_login_stage_header', 'T_login_stage_header');
+		} else {
+			/* begin SKIP SUB-TEMPLATE login_stage_header */
+			$this->setup_tpl->set_var('V_multi_domain', '');
+			$this->setup_tpl->set_var('V_single_domain', '');
+			$this->setup_tpl->set_var('V_login_stage_header', '');
+		}
+		/*
+			 end use TEMPLATE login_main.tpl
+			 now out the login_main template
+			*/
+		return $this->setup_tpl->fp('out', 'T_login_main');
+	}
+
+	/**
+	 * Generate a select box of available languages
+	 *
+	 * @param bool $onChange javascript to trigger when selection changes (optional)
+	 * @returns string HTML snippet for select box
+	 */
+	function lang_select($onChange = '')
+	{
+		$ConfigLang = \Sanitizer::get_var('ConfigLang', 'string', 'POST');
+		$select = '<select name="ConfigLang"' . ($onChange ? ' onChange="this.form.submit();"' : '') . '>' . "\n";
+		$languages = $this->get_langs();
+		//while(list($null,$data) = each($languages))
+		foreach ($languages as $null => $data) {
+			if ($data['available'] && !empty($data['lang'])) {
+				$selected = '';
+				$short = substr($data['lang'], 0, 2);
+				if ($short == $ConfigLang || empty($ConfigLang) && $short == substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2)) {
+					$selected = ' selected';
+				}
+				$select .= '<option value="' . $data['lang'] . '"' . $selected . '>' . $data['descr'] . '</option>' . "\n";
+			}
+		}
+		$select .= '</select>' . "\n";
+
+		return $select;
+	}
+
+	/**
+	 * Get a list of supported languages
+	 *
+	 * @returns array supported language ['lang' => iso631_code, 'descr' => language_name, 'available' => bool_is_installed]
+	 */
+	function get_langs()
+	{
+		$f = fopen(SRC_ROOT_PATH .'/Modules/Setup/Lang/languages', 'rb');
+		while ($line = fgets($f, 200)) {
+			list($x, $y) = explode("\t", $line);
+			$languages[$x]['lang']  = trim($x);
+			$languages[$x]['descr'] = trim($y);
+			$languages[$x]['available'] = False;
+		}
+		fclose($f);
+
+		$d = dir(SRC_ROOT_PATH . '/Modules/Setup/Lang');
+		while ($entry = $d->read()) {
+			if (strpos($entry, 'phpgw_') === 0) {
+				$z = substr($entry, 6, 2);
+				$languages[$z]['available'] = True;
+			}
+		}
+		$d->close();
+
+		//		print_r($languages);
+		return $languages;
+	}
+
+
 	}

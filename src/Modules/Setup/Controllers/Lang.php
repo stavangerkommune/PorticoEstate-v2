@@ -34,6 +34,7 @@
 		private $html;
 		private $setup;
 		private $setup_tpl;
+		private $translation;
 		
 		public function __construct()
 		{
@@ -82,6 +83,7 @@
 				exit;
 			}
 
+			$newinstall = false;
 
         
             if (isset($_POST['submit']) && $_POST['submit'] )
@@ -107,11 +109,13 @@
                             'T_footer'		=> 'footer.tpl',
                         ));
         
-                        $stage_title = lang('Multi-Language support setup');
-                        $stage_desc  = lang('ERROR');
-        
-                        $header = $this->html->get_header("$stage_title: $stage_desc", false, 'config', $ConfigDomain . '(' . $phpgw_domain[$ConfigDomain]['db_type'] . ')');
-                        $return = lang('Return to Multi-Language support setup');
+                        $stage_title = $this->setup->lang('Multi-Language support setup');
+                        $stage_desc  = $this->setup->lang('ERROR');
+
+						$db_config = $this->db->get_config();
+
+						$header = $this->html->get_header("$stage_title: $stage_desc", false, 'config', $this->db->get_domain() . '(' . $db_config['db_type'] . ')');
+                        $return = $this->setup->lang('Return to Multi-Language support setup');
                         $error .= <<<HTML
                         <div>
                             <a href="../setup/lang">$return</a>
@@ -143,8 +147,8 @@
         
                     $this->setup_tpl->set_block('T_lang_main','B_choose_method','V_choose_method');
         
-                    $stage_title = lang('Multi-Language support setup');
-                    $stage_desc  = lang('This program will help you upgrade or install different languages for phpGroupWare');
+                    $stage_title = $this->setup->lang('Multi-Language support setup');
+                    $stage_desc  = $this->setup->lang('This program will help you upgrade or install different languages for phpGroupWare');
                     $tbl_width   = $newinstall ? '60%' : '80%';
                     $td_colspan  = $newinstall ? '1' : '2';
                     $td_align    = $newinstall ? ' align="center"' : '';
@@ -164,7 +168,7 @@
                        $this->detection->check_lang(false);	// get installed langs
                     }
 
-                    $select_box_desc = lang('Select which languages you would like to use');
+                    $select_box_desc = $this->setup->lang('Select which languages you would like to use');
         
                 $stmt = $this->db->prepare('SELECT lang_id, lang_name, available FROM phpgw_languages WHERE lang_id IN('.implode(',', $avail_lang).') ORDER BY lang_name');
                 $stmt->execute();
@@ -183,10 +187,10 @@
         
                     if ( !$newinstall )
                     {
-                        $meth_desc = lang('Select which method of upgrade you would like to do');
-                        $blurb_addonlynew = lang('Only add languages that are not in the database already');
-                        $blurb_addmissing = lang('Only add new phrases');
-                        $blurb_dumpold = lang('Delete all old languages and install new ones');
+                        $meth_desc = $this->setup->lang('Select which method of upgrade you would like to do');
+                        $blurb_addonlynew = $this->setup->lang('Only add languages that are not in the database already');
+                        $blurb_addmissing = $this->setup->lang('Only add new phrases');
+                        $blurb_dumpold = $this->setup->lang('Delete all old languages and install new ones');
         
                         $this->setup_tpl->set_var('meth_desc',$meth_desc);
                         $this->setup_tpl->set_var('blurb_addonlynew',$blurb_addonlynew);
@@ -208,8 +212,8 @@
                     $this->setup_tpl->set_var('select_box_desc',$select_box_desc);
                     $this->setup_tpl->set_var('checkbox_langs',$checkbox_langs);
         
-                    $this->setup_tpl->set_var('lang_install',lang('install'));
-                    $this->setup_tpl->set_var('lang_cancel',lang('cancel'));
+                    $this->setup_tpl->set_var('lang_install',$this->setup->lang('install'));
+                    $this->setup_tpl->set_var('lang_cancel',$this->setup->lang('cancel'));
 
                     $db_config = $this->db->get_config();
 
