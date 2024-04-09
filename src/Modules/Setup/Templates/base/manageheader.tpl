@@ -3,7 +3,7 @@
 <tr class="th">
     <th colspan="2">{lang_settings}</th>
 </tr>
-<form action="manageheader.php" method="post">
+<form action="manageheader" method="post">
     <input type="hidden" name="setting[write_config]" value="true">
 	<tr>
 		<td colspan="2"><b>{lang_serverroot}</b>
@@ -111,7 +111,7 @@
 	{formend}
 	<tr>
 		<td colspan="3">
-			<form action="index.php" method="post">
+			<form action="setup/logout" method="post">
 				<br>{lang_finaldescr}<br>
 				<input type="hidden" name="FormLogout"  value="header">
 				<input type="submit" name="junk" value="{lang_continue}">

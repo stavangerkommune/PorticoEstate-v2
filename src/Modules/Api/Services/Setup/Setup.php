@@ -156,6 +156,7 @@
 		 */
 		function auth($auth_type='Config')
 		{
+
 			$this->setup_data = Settings::getInstance()->get('setup'); //refresh the setup data
 			$phpgw_domain = require SRC_ROOT_PATH . '/../config/database.php';
 
@@ -170,6 +171,7 @@
 			$ConfigPW     = \Sanitizer::get_var('ConfigPW');
 			$HeaderPW     = \Sanitizer::get_var('HeaderPW');
 			$ConfigLang   = \Sanitizer::get_var('ConfigLang');
+		
 
 			// In case the cookies are not included in $_REQUEST
 			$FormLogout   = $FormLogout ? $FormLogout : \Sanitizer::get_var('FormLogout',	'string', 'COOKIE');
@@ -178,12 +180,6 @@
 			$HeaderPW     = $HeaderPW ? $HeaderPW : \Sanitizer::get_var('HeaderPW',	'string', 'COOKIE');
 			$ConfigLang   = $ConfigLang ? $ConfigLang : \Sanitizer::get_var('ConfigLang',	'string', 'COOKIE');
 
-			/*
-			if(!empty($remoteip) && !$this->checkip($remoteip))
-			{
-				return False;
-			}
-			*/
 
 			/* 6 cases:
 				1. Logging into header admin
@@ -217,7 +213,6 @@
 				Settings::getInstance()->set('setup', $this->setup_data);
 				return False;
 			}
-
 			if(!empty($HeaderLogin) && $auth_type == 'Header')
 			{
 				/* header admin login */

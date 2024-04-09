@@ -1,5 +1,6 @@
 /config/database.php
 /config/config.php
+/config/header.inc.php
 /vendor/*
 /logs/*
 /nbproject/*

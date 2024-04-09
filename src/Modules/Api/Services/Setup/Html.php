@@ -14,6 +14,8 @@
 	use App\Modules\Api\Services\Settings;
 	use Sanitizer;
 	use App\Modules\Api\Services\Setup\Setup;
+	use App\Helpers\Template;
+
 
 	/**
 	* Setup html
@@ -35,8 +37,11 @@
 		 */
 		function generate_header()
 		{
-			$this->setup_tpl->set_file(array('header' => 'header.inc.php.template'));
-			$this->setup_tpl->set_block('header','domain','domain');
+			$tpl_root =	SRC_ROOT_PATH . '/../config';
+			
+			$setup_tpl = new Template($tpl_root);
+			$setup_tpl->set_file(array('header' => 'header.inc.php.template'));
+			$setup_tpl->set_block('header','domain','domain');
 			$var = Array();
 
 			$deletedomain = Sanitizer::get_var('deletedomain', 'string', 'POST');
@@ -56,19 +61,19 @@
 					continue;
 				}
 				$dom = $settings[$k];
-				$this->setup_tpl->set_var('DB_DOMAIN',$v);
+				$setup_tpl->set_var('DB_DOMAIN',$v);
 				foreach($dom as $x => $y)
 				{
 					if( ((isset($setting['enable_mcrypt']) && $setting['enable_mcrypt'] == 'True') || !empty($setting['enable_crypto'])) && ($x == 'db_pass' || $x == 'db_host' || $x == 'db_port' || $x == 'db_name' || $x == 'db_user' || $x == 'config_pass'))
 					{
 						$y = $GLOBALS['phpgw']->crypto->encrypt($y);
 					}
-					$this->setup_tpl->set_var(strtoupper($x),$y);
+					$setup_tpl->set_var(strtoupper($x),$y);
 				}
-				$this->setup_tpl->parse('domains','domain',True);
+				$setup_tpl->parse('domains','domain',True);
 			}
 
-			$this->setup_tpl->set_var('domain','');
+			$setup_tpl->set_var('domain','');
 
 			if(!empty($setting) && is_array($setting))
 			{
@@ -87,8 +92,8 @@
 					$var[strtoupper($k)] = $v;
 				}
 			}
-			$this->setup_tpl->set_var($var);
-			return $this->setup_tpl->parse('out','header');
+			$setup_tpl->set_var($var);
+			return $setup_tpl->parse('out','header');
 		}
 
 		function setup_tpl_dir($app_name='setup')
@@ -158,7 +163,6 @@
 		function get_footer()
 		{
 			$footer = $this->setup_tpl->fp('out', 'T_footer');
-			unset($this->setup_tpl);
 			return $footer;
 		}
 		function show_footer()
@@ -196,6 +200,7 @@
 	function login_form()
 	{
 		$setup_data = Settings::getInstance()->get('setup');
+		
 		/* begin use TEMPLATE login_main.tpl */
 
 		$this->setup_tpl->set_var(

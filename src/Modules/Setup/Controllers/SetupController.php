@@ -139,6 +139,18 @@ class SetupController
 		return $response;
 
 	}
+
+	public function	ManageHeader(Request $request, Response $response, $args)
+	{
+
+		$ManageHeader = new ManageHeader();
+		$ret = $ManageHeader->index();
+
+		$response = new \Slim\Psr7\Response();
+		$response->getBody()->write($ret);
+		return $response;
+	}
+	
        
 
     function index(Request $request, Response $response, $args)

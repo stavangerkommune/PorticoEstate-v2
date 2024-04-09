@@ -2,8 +2,7 @@
 namespace App\Modules\Api\Services;
 use PDO;
 use App\Helpers\DebugArray;
-
-
+use Exception;
 
 class Settings
 {
@@ -50,6 +49,7 @@ class Settings
         }
 
 		$this->config_data  = require_once SRC_ROOT_PATH . '/../config/config.php';
+		require_once (SRC_ROOT_PATH . '/Modules/Api/Setup/setup.inc.php');
         
         $stmt = $this->db->prepare("SELECT * FROM phpgw_config WHERE config_app=:module");
         $stmt->execute([':module' => $module]);
@@ -69,6 +69,15 @@ class Settings
 		{
 			$this->config_data['server']['temp_dir'] = '/tmp';
 		}
+
+		if($module == 'phpgwapi' && isset($this->config_data['server']['versions']['header']))
+		{
+			if($this->config_data['server']['versions']['header'] !== $setup_info['phpgwapi']['versions']['current_header'] )
+			{
+				throw new Exception( 'You need to port your settings to the new header.inc.php version. Run setup now');
+			}
+		}
+
         $this->config_data['server']['default_domain'] = $this->db->get_domain();
         $data_cache[$module] = $this->config_data;
 	//	DebugArray::debug($this->config_data);

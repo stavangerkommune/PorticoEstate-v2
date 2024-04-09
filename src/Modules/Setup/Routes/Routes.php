@@ -52,6 +52,7 @@ $app->get('/setup', SetupController::class . ':index');
 $app->post('/setup', SetupController::class . ':index');
 
 $app->get('/setup/logout', SetupController::class . ':logout');
+$app->post('/setup/logout', SetupController::class . ':logout');
 
 $app->get('/setup/applications', SetupController::class . ':Applications');
 $app->post('/setup/applications', SetupController::class . ':Applications');
@@ -62,4 +63,7 @@ $app->get('/setup/config', SetupController::class . ':Config');
 $app->post('/setup/config', SetupController::class . ':Config');
 $app->get('/setup/accounts', SetupController::class . ':Accounts');
 $app->post('/setup/accounts', SetupController::class . ':Accounts');
+$app->get('/setup/manageheader', SetupController::class . ':manageheader');
+$app->post('/setup/manageheader', SetupController::class . ':manageheader');
+
 

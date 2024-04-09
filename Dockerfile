@@ -1,13 +1,13 @@
 FROM php:8-fpm
 
-#RUN pear config-set http_proxy ${http_proxy} &&\
-#    pear config-set php_ini $PHP_INI_DIR/php.ini
+RUN pear config-set http_proxy ${http_proxy} &&\
+    pear config-set php_ini $PHP_INI_DIR/php.ini
 
 
-RUN apt-get update && apt-get install -y libpq-dev zlib1g-dev libzip-dev \
-    && docker-php-ext-install pdo_pgsql \
-    && pecl install xdebug \
-    && docker-php-ext-enable xdebug
+RUN apt-get update && apt-get install -y libpq-dev zlib1g-dev libzip-dev libxslt-dev \
+	&& docker-php-ext-install pdo_pgsql xsl \
+	&& pecl install xdebug \
+	&& docker-php-ext-enable xdebug
 RUN echo 'xdebug.mode=debug' >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo 'xdebug.client_host=host.docker.internal' >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo 'xdebug.client_port=9004' >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \

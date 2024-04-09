@@ -10,7 +10,7 @@
 <tr class="row_off">
 	<td colspan="2" class="feedback">{HeaderLoginMSG}</td>
 </tr>
-<form action="manageheader.php" method="POST" name="admin">
+<form action="setup/manageheader" method="POST" name="admin">
 <tr class="row_off">
 	<td>
 		Password:
