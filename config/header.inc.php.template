@@ -7,7 +7,7 @@
 	* @author Joseph Engo <jengo@phpgroupware.org>
  	* @author Dave Hall <skwashd@phpgroupware.org>
  	* @author Sigurd Nes <sigurdne@online.no>
- 	* @copyright Copyright (C) 2000-2017 Free Software Foundation, Inc. http://www.fsf.org/
+ 	* @copyright Copyright (C) 2000-2024 Free Software Foundation, Inc. http://www.fsf.org/
   	* @license http://www.gnu.org/licenses/gpl.html GNU General Public License
   	* @package phpgroupware
  	* @version $Id: header.inc.php.template 18392 2008-01-26 12:45:06Z skwashd $
@@ -36,15 +36,18 @@
 	// the absolute path to fit your site, and you should be up and running.
 	// **************************************************************************
 
-	/**
-	* Server root directory
-	*/
-	define('PHPGW_SERVER_ROOT', '{SERVER_ROOT}');
+	if (!defined('PHPGW_SERVER_ROOT'))
+	{
+		/**
+		* Server root directory
+		*/
+		define('PHPGW_SERVER_ROOT', '{SERVER_ROOT}');
+	}
 
-	/**
-	* Include root directory - legacy support
-	*/
-//	define('SRC_ROOT_PATH', PHPGW_SERVER_ROOT);
+	if (!defined('SRC_ROOT_PATH'))
+	{
+		define('SRC_ROOT_PATH', PHPGW_SERVER_ROOT);
+	}
 
 	//We only let preset flags remain everything else is killed
 	$flags = array();
@@ -184,24 +187,31 @@ HTML;
 	$phpgw_info['server']['setup_mcrypt_key'] = '{SETUP_MCRYPT_KEY}';
 
 
-	// debugging settings
-	define('DEBUG_APP',  False);
-	define('DEBUG_API',  False);
-	define('DEBUG_DATATYPES',  True);
-	define('DEBUG_LEVEL',  3);
-	define('DEBUG_OUTPUT', 2); // 1 = screen,  2 = DB (not supported with PHP3). For both use 3.
-	define('DEBUG_TIMER', False);
-
-
-	/**
-	* Perf get microtime
-	*
-	* @return float Microseconds
-	*/
-	function perfgetmicrotime()
+	//check if DEBUG_APP is defined
+	if (!defined('DEBUG_APP'))
 	{
-		list($usec, $sec) = explode(' ',microtime());
-		return ((float)$usec + (float)$sec);
+		// debugging settings
+		define('DEBUG_APP',  False);
+		define('DEBUG_API',  False);
+		define('DEBUG_DATATYPES',  True);
+		define('DEBUG_LEVEL',  3);
+		define('DEBUG_OUTPUT', 2); // 1 = screen,  2 = DB (not supported with PHP3). For both use 3.
+		define('DEBUG_TIMER', False);
+	}
+
+
+	if (!function_exists('perfgetmicrotime'))
+	{
+		/**
+		* Perf get microtime
+		*
+		* @return float Microseconds
+		*/
+		function perfgetmicrotime()
+		{
+			list($usec, $sec) = explode(' ',microtime());
+			return ((float)$usec + (float)$sec);
+		}
 	}
 
 
@@ -214,42 +224,25 @@ HTML;
 	// Do not edit these lines
 	// **************************************************************************
 
-	/**
-	* phpgroupware API include root
-	*/
-	define('PHPGW_API_INC',PHPGW_SERVER_ROOT.'/phpgwapi/inc');
+	if (!defined('PHPGW_API_INC'))
+	{
+		/**
+		* phpgroupware API include root
+		*/
+		define('PHPGW_API_INC',PHPGW_SERVER_ROOT.'/phpgwapi/inc');
+	}
 	
-	/**
-	* string $phpgw_info['server']['versions']['phpgwapi']
-	* Installed API version
-	*/
-	$phpgw_info['server']['versions']['phpgwapi'] = $setup_info['phpgwapi']['version'];
-
-	/**
-	* string $phpgw_info['server']['versions']['system']
-	* Installed header version
-	*/
-	$phpgw_info['server']['versions']['system'] = $setup_info['phpgwapi']['versions']['system'];
-
-	/**
-	* string $phpgw_info['server']['versions']['current_header']
-	* Installed header version
-	*/
-	$phpgw_info['server']['versions']['current_header'] = $setup_info['phpgwapi']['versions']['current_header'];
-
-	unset($setup_info);
-
 	/**
 	* string $phpgw_info['server']['versions']['header']
 	* Version of this header file
 	*/
 	$phpgw_info['server']['versions']['header'] = '1.32';
 
-return array(
-	'server' => $phpgw_info['server'],
-	'flags' => $phpgw_info['flags'],
-	'phpgw_domain' => $phpgw_domain
-);	
+	return array(
+		'phpgw_info' => $phpgw_info,
+		'phpgw_domain' => $phpgw_domain
+	);	
+
 	// Leave off the final php closing tag, some editors will add
 	// a \n or space after which will mess up cookies later on
 
@@ -264,7 +257,6 @@ return array(
 		'db_pass' => '{DB_PASS}',
 		// Look at the README file
 		'db_type' => '{DB_TYPE}',
-		'db_abstraction' => '{DB_ABSTRACTION}',
 		'config_passwd' => '{CONFIG_PASS}'
 	);
 

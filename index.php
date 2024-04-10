@@ -32,13 +32,13 @@ require_once SRC_ROOT_PATH . '/Helpers/Sanitizer.php';
 require_once SRC_ROOT_PATH . '/Helpers/DebugArray.php';
 // Add your settings to the container
 
-$phpgw_domain = require_once __DIR__ . '/config/database.php';
+//$phpgw_domain = require_once __DIR__ . '/config/database.php';
 $database_settings = require_once SRC_ROOT_PATH . '/Helpers/FilterDatabaseConfig.php';
 
-//DebugArray::debug($database_settings);
+//_debug_array($database_settings);
 
 $containerBuilder->addDefinitions(['settings' => ['db' => $database_settings]]);
-(require __DIR__ . '/config/dependencies.php')($containerBuilder);
+//(require __DIR__ . '/config/dependencies.php')($containerBuilder);
 
 
 // Build PHP-DI Container instance

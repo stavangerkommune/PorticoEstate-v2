@@ -288,7 +288,7 @@
 //			$server_info = Settings::getInstance()->get('server');
 			$setup_data = Settings::getInstance()->get('setup');
 
-			if(!file_exists(SRC_ROOT_PATH . '/../config/config.php'))
+			if(!file_exists(SRC_ROOT_PATH . '/../config/header.inc.php'))
 			{
 				$setup_data['header_msg'] = 'Stage One';
 				$setup_data['stage']['header'] = 1;

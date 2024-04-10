@@ -230,12 +230,12 @@
                 
                 if($newsettings['auth_type'] == 'ldap')
                 {
-                    Header('Location: '.$newsettings['webserver_url'].'/setup/ldap.php');
+                    Header('Location:/setup/ldap');
                     exit;
                 }
                 else
                 {
-                    Header('Location: ../setup');
+                    Header('Location:/setup');
                     exit;
                 }
                 

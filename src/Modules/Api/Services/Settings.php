@@ -48,7 +48,14 @@ class Settings
             return $this->config_data;
         }
 
-		$this->config_data  = require_once SRC_ROOT_PATH . '/../config/config.php';
+		$rootDir = dirname(__DIR__, 4);
+
+		$settings = require $rootDir . '/config/header.inc.php';
+		$this->config_data = $settings['phpgw_info'];
+
+//		_debug_array($this->config_data);die();
+		
+		//$this->config_data  = require_once SRC_ROOT_PATH . '/../config/config.php';
 		require_once (SRC_ROOT_PATH . '/Modules/Api/Setup/setup.inc.php');
         
         $stmt = $this->db->prepare("SELECT * FROM phpgw_config WHERE config_app=:module");
@@ -72,9 +79,15 @@ class Settings
 
 		if($module == 'phpgwapi' && isset($this->config_data['server']['versions']['header']))
 		{
-			if($this->config_data['server']['versions']['header'] !== $setup_info['phpgwapi']['versions']['current_header'] )
+			if($this->config_data['server']['versions']['header'] < $setup_info['phpgwapi']['versions']['current_header'] )
 			{
-				throw new Exception( 'You need to port your settings to the new header.inc.php version. Run setup now');
+				//check in "/setup" is part of php_self
+				if(!preg_match('/\/setup/', $_SERVER['PHP_SELF']))
+				{
+					$msg =  "You need to port your settings to the new header.inc.php version. <a href='/setup'>Run setup now</a>";
+					echo "<div style='background-color: #FF0000; color: #FFFFFF; padding: 5px; text-align: center; font-weight: bold;'>$msg</div>";
+					exit;
+				}
 			}
 		}
 

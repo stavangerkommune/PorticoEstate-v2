@@ -26,6 +26,12 @@
 	class Html
 	{
 		protected $setup_tpl;
+		protected $crypto;
+
+		function __construct($crypto = null)
+		{
+			$this->crypto = $crypto;
+		}
 
 		function set_tpl($tpl)
 		{
@@ -62,11 +68,24 @@
 				}
 				$dom = $settings[$k];
 				$setup_tpl->set_var('DB_DOMAIN',$v);
+
+				if (empty($dom['db_port']))
+				{
+					if ($dom['db_type'] == 'postgres')
+					{
+						$dom['db_port'] = '5432';
+					}
+					else
+					{
+						$dom['db_port'] = '3306';
+					}
+				}
+
 				foreach($dom as $x => $y)
 				{
 					if( ((isset($setting['enable_mcrypt']) && $setting['enable_mcrypt'] == 'True') || !empty($setting['enable_crypto'])) && ($x == 'db_pass' || $x == 'db_host' || $x == 'db_port' || $x == 'db_name' || $x == 'db_user' || $x == 'config_pass'))
 					{
-						$y = $GLOBALS['phpgw']->crypto->encrypt($y);
+						$y = $this->crypto->encrypt($y);
 					}
 					$setup_tpl->set_var(strtoupper($x),$y);
 				}
@@ -81,7 +100,7 @@
 				{
 					if (((isset($setting['enable_mcrypt']) && $setting['enable_mcrypt'] == 'True')  || !empty($setting['enable_crypto']))&& $k == 'HEADER_ADMIN_PASSWORD')
 					{
-						$v = $GLOBALS['phpgw']->crypto->encrypt($v);
+						$v = $this->crypto->encrypt($v);
 					}
 					
 					if( in_array( $k, array( 'server_root', 'include_root' ) )
@@ -222,7 +241,8 @@
 				*/
 			$this->setup_tpl->set_var('lang_select', $this->lang_select());
 
-			$phpgw_domain = require SRC_ROOT_PATH . '/../config/database.php';
+			$settings = require SRC_ROOT_PATH . '/../config/header.inc.php';
+			$phpgw_domain = $settings['phpgw_domain'];
 
 			if (count($phpgw_domain) > 1) {
 				$domains = '';

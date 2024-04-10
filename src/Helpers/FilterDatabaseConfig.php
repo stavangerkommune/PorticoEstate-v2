@@ -1,5 +1,9 @@
 <?php
 
+$rootDir = dirname(__DIR__, 2);
+
+$settings = require $rootDir . '/config/header.inc.php';
+$phpgw_domain = $settings['phpgw_domain'];
 
 $_phpgw_domains = array_keys($phpgw_domain);
 $default_domain = $_phpgw_domains[0];
@@ -24,9 +28,14 @@ else if (isset($_POST['FormDomain']))
 {
 	$user_domain = \Sanitizer::get_var('FormDomain', 'string', 'POST', $default_domain);
 }
+else if (isset($_COOKIE['ConfigDomain']))
+{
+	$user_domain =	\Sanitizer::get_var('ConfigDomain', 'string', 'COOKIE', false);
+}
  else {
 	$user_domain = \Sanitizer::get_var('last_domain', 'string', 'COOKIE', false);
 }
+
 $db_server = [];
 if (isset($phpgw_domain[$user_domain])) {
 	$db_server['db_host']			= $phpgw_domain[$user_domain]['db_host'];

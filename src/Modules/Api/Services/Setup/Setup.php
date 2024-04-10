@@ -158,7 +158,16 @@
 		{
 
 			$this->setup_data = Settings::getInstance()->get('setup'); //refresh the setup data
-			$phpgw_domain = require SRC_ROOT_PATH . '/../config/database.php';
+
+			if (file_exists(SRC_ROOT_PATH . '/../config/header.inc.php')) {
+				$phpgw_settings = require(SRC_ROOT_PATH . '/../config/header.inc.php');
+				$phpgw_domain = $phpgw_settings['phpgw_domain'];
+			}
+			else
+			{
+				$phpgw_domain = array();
+			}
+
 
 			$remoteip     = $_SERVER['REMOTE_ADDR'];
 

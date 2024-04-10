@@ -111,7 +111,7 @@
 	{formend}
 	<tr>
 		<td colspan="3">
-			<form action="setup/logout" method="post">
+			<form action="/setup/logout" method="post">
 				<br>{lang_finaldescr}<br>
 				<input type="hidden" name="FormLogout"  value="header">
 				<input type="submit" name="junk" value="{lang_continue}">
@@ -155,14 +155,7 @@
     </td>
     <td>{lang_whichdb}</td>
 </tr>
-<tr>
-    <td><b>{lang_db_abstraction}</b><br>
-		<select name="settings[{db_domain}][db_abstraction]" class="pure-u-7-8">
-			{db_abstraction_options}
-		</select>
-    </td>
-    <td>{lang_whichdb_abstraction}</td>
-</tr>
+
 <tr>
     <td><b>{lang_configpass}</b><br><input type="text" name="settings[{db_domain}][config_pass]" value="{config_pass}" class="pure-u-7-8"></td>
     <td>{lang_passforconfig}</td>

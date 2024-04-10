@@ -19,11 +19,5 @@
         "psr-4": {
             "App\\": "src/"
         }
-    },
-    "scripts": {
-        "post-create-project-cmd": [
-            "php -r \"file_exists('config/config.php') || copy('config/config_example.php', 'config/config.php');\"",
-            "php -r \"file_exists('config/database.php') || copy('config/database_example.php', 'config/database.php');\""
-        ]
     }
 }

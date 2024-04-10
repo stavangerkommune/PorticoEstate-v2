@@ -63,6 +63,7 @@
 				$_key = isset($this->serverSettings['setup_mcrypt_key']) ? $this->serverSettings['setup_mcrypt_key'] : '';
 			}
 
+			Settings::getInstance()->set('server', $this->serverSettings); // used in crypto
 			if ($_key)
 			{
 				$this->crypto = new Crypto(array($_key, $_iv));
@@ -72,7 +73,7 @@
 			$this->db = Db::getInstance();
 			$this->detection = new Detection();
 			$this->process = new Process();
-			$this->html = new Html();
+			$this->html = new Html($this->crypto);
 			$this->setup = new Setup();
             $this->translation = new SetupTranslation();
 
@@ -141,7 +142,7 @@
 			}
 
 		if (file_exists($this->configDir . '/header.inc.php')) {
-			require_once($this->configDir . '/header.inc.php');
+			$phpgw_settings = require($this->configDir . '/header.inc.php');
 		}
 
 		srand((float)microtime() * 1000000);
@@ -358,7 +359,7 @@ HTML;
 
 				$default_lang =  Sanitizer::get_var('ConfigLang', 'string', 'POST', $this->serverSettings['default_lang']);
 
-				$detected .= '<tr><td colspan="2"><form action="setup/manageheader" method="post">Please Select your language ' . $this->html->lang_select(True) . "</form></td></tr>\n";
+				$detected .= '<tr><td colspan="2"><form action="/setup/manageheader" method="post">Please Select your language ' . $this->html->lang_select(True) . "</form></td></tr>\n";
 
 				$manual = '<a href="https://github.com/PorticoEstate/PorticoEstate/blob/master/doc/README.adoc" target="_blank">' . $this->setup->lang('Portico Estate Administration Manual') . '</a>';
 				$detected .= '<tr><td colspan="2"><p><strong>' . $this->setup->lang('Please consult the %1.', $manual) . "</strong></td></tr>\n";
@@ -426,11 +427,8 @@ HTML;
 					$detected .= '<li class="warn">' . $this->setup->lang('you may need curl for integration capabilities') . "</li>\n";
 				}
 
-
-				$supported_db_abstraction = array('adodb');
 				if (extension_loaded('pdo_pgsql')) {
 					$detected .= '<li>' . $this->setup->lang('You appear to have PDO support enabled') . "</li>\n";
-					array_unshift($supported_db_abstraction, 'pdo');
 					$supported_db[]  = 'postgres';
 				} else {
 					$detected .= '<li class="warn">' . $this->setup->lang('No PDO support found. Disabling') . "</li>\n";
@@ -583,21 +581,8 @@ HTML;
 							$this->setup_tpl->set_var('dbtype_options', $dbtype_options);
 							//---------
 							$selected = '';
-							$db_abstraction_options = '';
 							$found_dbtype = False;
-							foreach ($supported_db_abstraction as $db_abstraction) {
-								if ($db_abstraction == $phpgw_settings['phpgw_domain'][$key]['db_abstraction']) {
-									$selected = ' selected';
-									$found_db_abstraction = true;
-								} else {
-									$selected = '';
-								}
-								$db_abstraction_options .= <<<HTML
-								<option{$selected} value="{$db_abstraction}">$db_abstraction</option>
 
-HTML;
-							}
-							$this->setup_tpl->set_var('db_abstraction_options', $db_abstraction_options);
 							//----------
 
 							$ret_domains .= $this->setup_tpl->parse('domains', 'domain', true);
@@ -626,7 +611,6 @@ HTML;
 					$this->setup_tpl->set_var('db_user', 'phpgroupware');
 					$this->setup_tpl->set_var('db_pass', 'your_password');
 					$this->setup_tpl->set_var('db_type', $supported_db[0]);
-					$this->setup_tpl->set_var('db_abstraction', $supported_db_abstraction[0]);
 					$this->setup_tpl->set_var('config_pass', 'changeme');
 
 					$dbtype_options = '';
@@ -637,16 +621,6 @@ HTML;
 HTML;
 					}
 					$this->setup_tpl->set_var('dbtype_options', $dbtype_options);
-
-					$db_abstraction_options = '';
-					foreach ($supported_db_abstraction as $db_abstraction) {
-						$db_abstraction_options .= <<<HTML
-						<option value="{$db_abstraction}">{$db_abstraction}</option>
-
-HTML;
-					}
-					$this->setup_tpl->set_var('db_abstraction_options', $db_abstraction_options);
-
 
 					$this->setup_tpl->parse('domains', 'domain', True);
 					$this->setup_tpl->set_var('domain', '');
@@ -817,8 +791,6 @@ HTML;
 				$this->setup_tpl->set_var('lang_dbpassdescr', $this->setup->lang('Password of db user'));
 				$this->setup_tpl->set_var('lang_dbtype', $this->setup->lang('DB Type'));
 				$this->setup_tpl->set_var('lang_whichdb', $this->setup->lang('Which database type do you want to use with phpGroupWare?'));
-				$this->setup_tpl->set_var('lang_db_abstraction', $this->setup->lang('Database abstraction'));
-				$this->setup_tpl->set_var('lang_whichdb_abstraction', $this->setup->lang('Which abstraction type do you want to use with phpGroupWare?'));
 				$this->setup_tpl->set_var('lang_configpass', $this->setup->lang('Configuration Password'));
 				$this->setup_tpl->set_var('lang_passforconfig', $this->setup->lang('Password needed for configuration'));
 				$this->setup_tpl->set_var('lang_persist', $this->setup->lang('Persistent connections'));
@@ -842,7 +814,7 @@ HTML;
 				$this->setup_tpl->set_var('lang_continue', $this->setup->lang('Continue'));
 
 				$manageheader = $this->setup_tpl->fp('out', 'manageheader');
-				return $ret_header .  $ret_domains . $manageheader;
+				return $ret_header .  $manageheader;
 				// ending the switch default
 			}
 		}
