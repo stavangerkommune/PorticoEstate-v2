@@ -1,6 +1,6 @@
 <?php
 
-	use App\Modules\Api\Services\Translation;
+	use App\Modules\PhpGWApi\Services\Translation;
    	/**
 	* Translate a string to a user's prefer language - convience method
 	*

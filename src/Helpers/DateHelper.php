@@ -4,7 +4,7 @@ namespace App\Helpers;
 use DateTime;
 use DateTimeZone;
 use Exception;
-use App\Modules\Api\Services\Settings;
+use App\Modules\PhpGWApi\Services\Settings;
 
 date_default_timezone_set('UTC');
 

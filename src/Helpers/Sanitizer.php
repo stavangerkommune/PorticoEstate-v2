@@ -15,8 +15,8 @@ class Sanitizer
 	 */
 	public static function clean_html($html, $base_url = '')
 	{
-		$serverSettings = \App\Modules\Api\Services\Settings::getInstance()->get('server');
-		$flags = \App\Modules\Api\Services\Settings::getInstance()->get('flags');
+		$serverSettings = \App\Modules\PhpGWApi\Services\Settings::getInstance()->get('server');
+		$flags = \App\Modules\PhpGWApi\Services\Settings::getInstance()->get('flags');
 
 		if ( !$base_url )
 		{

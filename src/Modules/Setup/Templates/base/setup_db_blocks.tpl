@@ -12,14 +12,14 @@
 		{makesure}.<br>
 		<br>
 		{instr}<p>
-		<form action="index.php" method="post">
+		<form action="/setup" method="post">
 		{createdb}<br>
 		    DB root username: <input type="text" name="db_root" value="{db_root}">
 		    DB root password: <input type="password" name="db_pass">
             <input type="hidden" name="action" value="Create Database">
 		    <input type="submit" name="label" value="{create_database}">
 		</form>
-		<form method="POST" action="index.php"> <br>
+		<form method="POST" action="/setup"> <br>
 		<input type="submit" value="Re-Check my database">
 		</form>
 	</td>
@@ -48,7 +48,7 @@
 		<img src="{img_incomplete}" alt="{Complete}" border="0">
 	</td>
 	<td>
-		<form action="index.php" method="post">
+		<form action="/setup" method="post">
 		<input type="hidden" name="oldversion" value="new">
 
 		{dbexists}<br>
@@ -70,14 +70,14 @@
 		{oldver}.<br>
 		{automatic}
 		{backupwarn}<br>
-		<form method="POST" action="index">
+		<form method="POST" action="/setup">
 		<input type="hidden" name="oldversion" value="{oldver}">
 		<input type="hidden" name="useglobalconfigsettings">
 		<input type="hidden" name="action" value="Upgrade">
 		<input type="submit" name="label" value="{upgrade}"><br>
 		</form>
 
-		<form method="POST" action="index">
+		<form method="POST" action="/setup">
 		<input type="hidden" name="oldversion" value="{oldver}">
 		<input type="hidden" name="useglobalconfigsettings">
 		<input type="hidden" name="action" value="Uninstall all applications">
@@ -110,12 +110,12 @@
 		<img src="{img_incomplete}" alt="{Complete}" border="0">
 	</td>
 	<td>
-		<form action="index.php" method="post">
+		<form action="/setup" method="post">
 		<input type="hidden" name="oldversion" value="new">
         <input type="hidden" name="action" value="REALLY Uninstall all applications">
 		<input type="submit" name="label" value="{really_uninstall_all_applications}"> {dropwarn}
 		</form>
-		<form action="index.php" method="post">
+		<form action="/setup" method="post">
 		<input type="submit" name="cancel" value="{cancel}">
 		</form>
 	</td>
@@ -161,7 +161,7 @@
 		</tr>
 		</table>
 
-		<form method="POST" action="index.php"> <br>
+		<form method="POST" action="/setup"> <br>
 		<input type="submit" value="{re-check_my_installation}">
 		</form>
 	</td>
@@ -177,7 +177,7 @@
 	</td>
 	<td>
 		{tablescurrent}
-		<form method="POST" action="index.php">
+		<form method="POST" action="/setup">
 		<input type="hidden" name="oldversion" value="new"> <br>
 		{insanity}: 
         <input type="hidden" name="action" value="Uninstall all applications">
@@ -195,7 +195,7 @@
 		<img src="{img_incomplete}" alt="not complete" border="0">
 	</td>
 	<td>
-		<form action="index.php" method="post">
+		<form action="/setup" method="post">
 		{dbnotexist}.<br>
 		<input type="submit" value="{create_one_now}">
 		</form>

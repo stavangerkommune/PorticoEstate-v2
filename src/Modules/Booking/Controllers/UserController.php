@@ -8,7 +8,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Exception; // For handling potential errors
-use App\Modules\Api\Services\Settings;
+use App\Modules\PhpGWApi\Services\Settings;
 use App\Database\Db;
 
 /**
@@ -23,7 +23,7 @@ class UserController
     public function __construct(ContainerInterface $container)
 	{
 		// only for testing
-		//$vfs = new \App\Modules\Api\Services\Vfs\Vfs;
+		//$vfs = new \App\Modules\PhpGWApi\Services\Vfs\Vfs;
 
 		$this->db =	Db::getInstance();
 		$this->userSettings = Settings::getInstance()->get('user');

@@ -2,9 +2,9 @@
 
 use Slim\Routing\RouteCollectorProxy;
 use App\Modules\Booking\Controllers\UserController;
-use App\Modules\Api\Security\AccessVerifier;
-use App\Modules\Api\Security\ApiKeyVerifier;
-use App\Modules\Api\Middleware\SessionsMiddleware;
+use App\Modules\PhpGWApi\Security\AccessVerifier;
+use App\Modules\PhpGWApi\Security\PhpGWApiKeyVerifier;
+use App\Modules\PhpGWApi\Middleware\SessionsMiddleware;
 
 
 $app->group('/booking/users', function (RouteCollectorProxy $group) {

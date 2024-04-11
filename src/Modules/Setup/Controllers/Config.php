@@ -13,14 +13,14 @@
 	use App\Database\Db;
 	use Psr\Http\Message\ResponseInterface as Response;
 	use Psr\Http\Message\ServerRequestInterface as Request;
-	use App\Modules\Api\Services\Settings;
-	use App\Modules\Api\Services\Setup\Setup;
-	use App\Modules\Api\Services\Setup\Detection;
-	use App\Modules\Api\Services\Setup\Process;
-	use App\Modules\Api\Services\Setup\Html;
+	use App\Modules\PhpGWApi\Services\Settings;
+	use App\Modules\PhpGWApi\Services\Setup\Setup;
+	use App\Modules\PhpGWApi\Services\Setup\Detection;
+	use App\Modules\PhpGWApi\Services\Setup\Process;
+	use App\Modules\PhpGWApi\Services\Setup\Html;
 	use App\Helpers\Template2;
-	use App\Modules\Api\Services\Setup\SetupTranslation;
-	use App\Modules\Api\Services\Sanitizer;
+	use App\Modules\PhpGWApi\Services\Setup\SetupTranslation;
+	use App\Modules\PhpGWApi\Services\Sanitizer;
     use App\Helpers\DateHelper;
     use PDO;
 

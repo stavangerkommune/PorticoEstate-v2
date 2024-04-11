@@ -261,7 +261,7 @@ HTML;
 	 */
 	function required_group( $config )
 	{
-		$accounts = new \App\Modules\Api\Controllers\Accounts\Accounts();
+		$accounts = new \App\Modules\PhpGWApi\Controllers\Accounts\Accounts();
 		$groups			 = $accounts->get_list('groups', -1, '', '', '', -1, array('active' => 1));
 		$default_group_lid = !empty($config['default_group_lid']) ? $config['default_group_lid'] : '';
 		$out	 = '<option value="">' . lang('none') . '</option>' . "\n";

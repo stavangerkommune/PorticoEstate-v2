@@ -3,7 +3,7 @@
 use App\Helpers\DebugArray;
 use Slim\Factory\AppFactory;
 use DI\ContainerBuilder;
-use App\Middleware\ApiKeyVerifier;
+use App\Middleware\PhpGWApiKeyVerifier;
 use App\Middleware\AccessVerifier;
 use App\Providers\AclServiceProvider;
 use App\Providers\DatabaseServiceProvider;

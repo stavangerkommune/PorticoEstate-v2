@@ -5,15 +5,15 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseFactoryInterface;
 
-use App\Modules\Api\Services\Log;
+use App\Modules\PhpGWApi\Services\Log;
 use App\Database\Db;
 use Psr\Http\Server\RequestHandlerInterface;
 //use Psr\Http\Server\MiddlewareInterface;
 use Throwable;
 use ErrorException;
-use App\Modules\Api\Services\Settings;
+use App\Modules\PhpGWApi\Services\Settings;
 
-$serverSettings  = \App\Modules\Api\Services\Settings::getInstance()->get('server');
+$serverSettings  = \App\Modules\PhpGWApi\Services\Settings::getInstance()->get('server');
 
 if (isset($serverSettings['log_levels']['global_level'])) {
 	switch ($serverSettings['log_levels']['global_level']) {
@@ -77,8 +77,8 @@ class ErrorHandler
 	public function __construct(ResponseFactoryInterface $responseFactory)
 	{
 		$this->responseFactory = $responseFactory;
-		$this->serverSettings  = \App\Modules\Api\Services\Settings::getInstance()->get('server');		
-		$this->userSettings  = \App\Modules\Api\Services\Settings::getInstance()->get('user');
+		$this->serverSettings  = \App\Modules\PhpGWApi\Services\Settings::getInstance()->get('server');		
+		$this->userSettings  = \App\Modules\PhpGWApi\Services\Settings::getInstance()->get('user');
 		$this->Log = new Log();
 		$this->db = Db::getInstance();		
 	}
@@ -335,24 +335,30 @@ class ErrorHandler
 	 */
 	function phpgw_handle_exception($e)
 	{
-		$log =$this->Log;
-
-		if ($this->db->get_transaction())
+		$tables = $this->db->table_names();
+		if (in_array('phpgw_log', $tables))
 		{
-			$this->db->transaction_abort();
+			$log = $this->Log;
+
+			if ($this->db->get_transaction()) {
+				$this->db->transaction_abort();
+			}
+
+			$log->fatal(array(
+				'text'	=> "<b>Uncaught Exception:</b>\n" . $e->getMessage() . "\n" . $e->getTraceAsString(),
+				'line'	=> $e->getline(),
+				'file'	=> $e->getfile()
+			));
 		}
 
-		$log->fatal(array(
-			'text'	=> "<b>Uncaught Exception:</b>\n". $e->getMessage() . "\n" . $e->getTraceAsString(),
-			'line'	=> $e->getline(),
-			'file'	=> $e->getfile()
-		));
-
+		$userLang = isset($this->userSettings['preferences']['common']['lang'])
+		 ? $this->userSettings['preferences']['common']['lang']
+		  : $this->serverSettings['default_lang'];
 
 		/**
 		 * Friendly message.. in norwegian at least..
 		 */
-		switch ($this->userSettings['preferences']['common']['lang'])
+		switch ($userLang)
 		{
 			case 'no':
 			case 'nn':

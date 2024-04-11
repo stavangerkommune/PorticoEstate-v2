@@ -167,7 +167,7 @@ class Template
 		 
 	function __construct($root = ".", $unknowns = "remove")
 	{
-		$this->serverSettings = \App\Modules\Api\Services\Settings::getInstance()->get('server');
+		$this->serverSettings = \App\Modules\PhpGWApi\Services\Settings::getInstance()->get('server');
 		if ($this->debug & 4) {
 			echo "<p><b>Template:</b> root = $root, unknowns = $unknowns</p>\n";
 		}
@@ -194,7 +194,7 @@ class Template
 	{
 		if (is_null($root)) {
 
-			$flags = \App\Modules\Api\Services\Settings::getInstance()->get('flags');
+			$flags = \App\Modules\PhpGWApi\Services\Settings::getInstance()->get('flags');
 			$root = SRC_ROOT_PATH . $flags['currest_app'] . '/Templates';
 		}
 

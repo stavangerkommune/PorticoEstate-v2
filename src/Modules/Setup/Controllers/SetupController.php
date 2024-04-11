@@ -6,11 +6,11 @@ use App\Database\Db;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
-use App\Modules\Api\Services\Settings;
-use App\Modules\Api\Services\Setup\Setup;
-use App\Modules\Api\Services\Setup\Detection;
-use App\Modules\Api\Services\Setup\Process;
-use App\Modules\Api\Services\Setup\Html;
+use App\Modules\PhpGWApi\Services\Settings;
+use App\Modules\PhpGWApi\Services\Setup\Setup;
+use App\Modules\PhpGWApi\Services\Setup\Detection;
+use App\Modules\PhpGWApi\Services\Setup\Process;
+use App\Modules\PhpGWApi\Services\Setup\Html;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use App\Helpers\Template;
@@ -245,6 +245,7 @@ class SetupController
 
 		// Database actions
 		$setup_info = $this->detection->get_versions();
+//		_debug_array($setup_info);
 		$setup_data['stage']['db'] = $this->detection->check_db();
 		if ($setup_data['stage']['db'] != 1) {
 			$setup_info = $this->detection->get_db_versions($setup_info);
@@ -513,7 +514,6 @@ class SetupController
 					case 'new':
 						// process all apps and langs(last param True), excluding apps with the no_mass_update flag set.
 						//$setup_info = $this->detection->upgrade_exclude($setup_info);
-
 						// Only process phpgwapi, admin and preferences.
 						$setup_info = $this->detection->base_install($setup_info);
 						$setup_info = $this->process->pass($setup_info, 'new', false, true);
@@ -705,10 +705,6 @@ class SetupController
 		$setup_data['stage']['lang'] = $this->detection->check_lang();
 		//		print_r($setup_data['stage']);  
 		$setup_data = Settings::getInstance()->get('setup');
-
-		// begin DEBUG code
-		//$setup_data['stage']['lang'] = 0;
-		// end DEBUG code
 
 		switch ($setup_data['stage']['lang']) {
 			case 1:
