@@ -551,6 +551,12 @@
 		{
 			$setup_info = Settings::getInstance()->get('setup_info');
 
+			$tablenames = $this->db->table_names();
+			if(!in_array('phpgw_applications',$tablenames))
+			{
+				return False;
+			}
+
 
 			if(!$appname)
 			{

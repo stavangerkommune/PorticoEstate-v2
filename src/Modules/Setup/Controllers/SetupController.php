@@ -290,6 +290,7 @@ class SetupController
 		$subtitle = '';
 		$submsg = '';
 		$subaction = '';
+
 		switch (\Sanitizer::get_var('action')) {
 			case 'Uninstall all applications':
 				$subtitle = $this->setup->lang('Deleting Tables');

@@ -166,7 +166,7 @@
 
 		function check_depends($setup_info)
 		{
-//			_debug_array($setup_info);
+//			_debug_array($setup_info);die();
 			/* Run the list of apps */
 			foreach($setup_info as $key => $value)
 			{
@@ -186,25 +186,30 @@
 							{
 								$setup_info[$depvalue['appname']]['currentver'] = null; //deals with undefined index notice
 							}
+							else
+							{
 
-							$major = $this->setup->get_major($setup_info[$depvalue['appname']]['currentver']);
-							if ($major == $depsvalue)
-							{
-								$setup_info['depends'][$depkey]['status'] = True;
-							}
-							else	// check if majors are equal and minors greater or equal
-							{
-								//the @ is used below to work around some sloppy coding, we should not always assume version #s will be X.Y.Z.AAA
-								$major_depsvalue = $this->setup->get_major($depsvalue);				
-								$depsvalue_arr = explode('.', $depsvalue);
-								$minor_depsvalue = isset($depsvalue_arr[3]) ? $depsvalue_arr[3] : null;
-		//						@list(,,,$minor_depsvalue) = explode('.', $depsvalue);
-								$currentver_arr =  explode('.', $setup_info[$depvalue['appname']]['currentver']);
-								$minor = isset($currentver_arr[3]) ? $currentver_arr[3] : null;
-		//						@list(,,,$minor) = explode('.', $setup_info[$depsvalue['appname']]['currentver']);
-								if ($major == $major_depsvalue && $minor <= $minor_depsvalue)
+								$major = $this->setup->get_major($setup_info[$depvalue['appname']]['currentver']);
+								if ($major == $depsvalue)
 								{
 									$setup_info['depends'][$depkey]['status'] = True;
+								}
+								else	// check if majors are equal and minors greater or equal
+								{
+									//the @ is used below to work around some sloppy coding, we should not always assume version #s will be X.Y.Z.AAA
+									$major_depsvalue = $this->setup->get_major($depsvalue);				
+									$depsvalue_arr = explode('.', $depsvalue);
+									$minor_depsvalue = isset($depsvalue_arr[3]) ? $depsvalue_arr[3] : null;
+			//						@list(,,,$minor_depsvalue) = explode('.', $depsvalue);
+
+									$_app_version = isset($setup_info[$depvalue['appname']]['currentver']) ? $setup_info[$depvalue['appname']]['currentver'] : $setup_info[$depvalue['appname']]['version'];
+									$currentver_arr =  explode('.', $_app_version);
+									$minor = isset($currentver_arr[3]) ? $currentver_arr[3] : null;
+			//						@list(,,,$minor) = explode('.', $setup_info[$depsvalue['appname']]['currentver']);
+									if ($major == $major_depsvalue && $minor <= $minor_depsvalue)
+									{
+										$setup_info['depends'][$depkey]['status'] = True;
+									}
 								}
 							}
 						}
