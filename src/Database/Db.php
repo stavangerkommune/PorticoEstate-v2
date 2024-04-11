@@ -12,11 +12,20 @@ class Db extends PDO
 
 	private function __construct($dsn, $username = null, $password = null, $options = null)
 	{
-		parent::__construct($dsn, $username, $password, $options);
+		if ($dsn === '') {
+			//return a dummy PDO-object
+			parent::__construct('sqlite::memory:');
+		}
+		else
+		{
+			parent::__construct($dsn, $username, $password, $options);
+		}
+
 	}
 
 	public static function getInstance($dsn='', $username = null, $password = null, $options = null)
 	{
+		
 		if (self::$instance === null) {
 			self::$instance = new self($dsn, $username, $password, $options);
 		}
@@ -295,6 +304,11 @@ class Db extends PDO
 	public function table_names($include_views = null)
 	{
 		$return = array();
+
+		if (!isset(self::$config['db_type']))
+		{
+			return $return;
+		}
 
 		$db_type = self::$config['db_type'];
 

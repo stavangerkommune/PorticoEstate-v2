@@ -4,6 +4,10 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\modules\setup\controllers\SetupController;
 
+if (!isset($phpgw_domain)) {
+    $phpgw_domain = [];
+}
+
 
 $app->get('/setup/ldapmodify', function (Request $request, Response $response) use ($phpgw_domain) {
 	$html = '

@@ -13,6 +13,11 @@ class DatabaseServiceProvider
     {
         $container = $app->getContainer();
 		$config = $container->get('settings')['db'];
+
+		if (!isset($config['db_host'])) {
+			return;
+//			throw new Exception("Database configuration not found");
+		}
 		try {
 
 			switch ($config['db_type']) {

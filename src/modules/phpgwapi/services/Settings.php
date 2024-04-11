@@ -50,6 +50,10 @@ class Settings
 
 		$rootDir = dirname(__DIR__, 4);
 
+        if (!is_file($rootDir . '/config/header.inc.php')) {
+            return [];
+        } 
+
 		$settings = require $rootDir . '/config/header.inc.php';
 		$this->config_data = $settings['phpgw_info'];
 

@@ -1,7 +1,8 @@
 FROM php:8-fpm
 
-RUN pear config-set http_proxy ${http_proxy} &&\
-    pear config-set php_ini $PHP_INI_DIR/php.ini
+## uncomment the following lines to install php-pear from behind a proxy
+#RUN pear config-set http_proxy ${http_proxy} &&\
+#    pear config-set php_ini $PHP_INI_DIR/php.ini
 
 
 RUN apt-get update && apt-get install -y libpq-dev zlib1g-dev libzip-dev libxslt-dev \

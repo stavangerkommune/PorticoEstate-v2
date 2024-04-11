@@ -2,8 +2,14 @@
 
 $rootDir = dirname(__DIR__, 2);
 
-$settings = require $rootDir . '/config/header.inc.php';
-$phpgw_domain = $settings['phpgw_domain'];
+if (is_file($rootDir . '/config/header.inc.php')) {
+	$settings = require $rootDir . '/config/header.inc.php';
+	$settings = require $rootDir . '/config/header.inc.php';
+	$phpgw_domain = $settings['phpgw_domain'];
+
+} else {
+	return [];
+}
 
 $_phpgw_domains = array_keys($phpgw_domain);
 $default_domain = $_phpgw_domains[0];

@@ -145,7 +145,7 @@
 			$phpgw_settings = require($this->configDir . '/header.inc.php');
 		}
 
-		srand((float)microtime() * 1000000);
+		srand((int)microtime() * 1000000);
 		$random_char = array(
 			'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
 			'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
@@ -186,7 +186,15 @@
 		$this->setup_tpl->set_block('T_setup_manage', 'manageheader', 'manageheader');
 		$this->setup_tpl->set_block('T_setup_manage', 'domain', 'domain');
 
-		$css = file_get_contents(dirname(__DIR__, 1) . "/phpgwapi/templates/pure/css/version_3/pure-min.css");
+		if(is_file(dirname(__DIR__, 1) . "/phpgwapi/templates/pure/css/version_3/pure-min.css"))
+		{
+			$css = file_get_contents(dirname(__DIR__, 1) . "/phpgwapi/templates/pure/css/version_3/pure-min.css");
+		}
+		else
+		{
+			$css = '';
+		}
+
 		$this->setup_tpl->set_var('css', $css);
 		$this->setup_tpl->set_var('HeaderLoginWarning', $this->setup->lang('Warning: All your passwords (database, phpGroupWare admin,...)<br> will be shown in plain text after you log in for header administration.'));
 		$this->setup_tpl->set_var('lang_cookies_must_be_enabled', $this->setup->lang('<b>NOTE:</b> You must have cookies enabled to use setup and header admin!'));
@@ -651,7 +659,7 @@ HTML;
 
 				$this->setup_tpl->set_var('server_root', $this->serverSettings['server_root']);
 				$this->setup_tpl->set_var('include_root', $this->serverSettings['include_root']);
-				$this->setup_tpl->set_var('header_admin_password', isset($this->serverSettings['header_admin_password']) ? $this->crypto->decrypt($this->serverSettings['header_admin_password']) : '');
+				$this->setup_tpl->set_var('header_admin_password', !empty($this->serverSettings['header_admin_password']) ? $this->crypto->decrypt($this->serverSettings['header_admin_password']) : '');
 	//			$this->setup_tpl->set_var('header_admin_password', isset($this->serverSettings['header_admin_password']) ? $this->serverSettings['header_admin_password'] : '');
 				$this->setup_tpl->set_var('system_name', isset($this->serverSettings['system_name']) ? $this->serverSettings['system_name'] : 'Portico Estate');
 				$this->setup_tpl->set_var('default_lang', $default_lang);
