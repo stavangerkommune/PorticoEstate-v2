@@ -177,12 +177,14 @@ class DateHelper
 		*/
 		public static function gmtnow()
 		{
+			$serverSetting = Settings::getInstance()->get('server');
+			
 			static $offset = null;
 			if ( is_null($offset) )
 			{
-				if ( isset($GLOBALS['phpgw_info']['server']['tz_offset']))
+				if ( isset($serverSetting['tz_offset']))
 				{
-					$offset = (int) $GLOBALS['phpgw_info']['server']['tz_offset'];
+					$offset = (int) $serverSetting['tz_offset'];
 				}
 				else
 				{
@@ -200,13 +202,14 @@ class DateHelper
 		*/
 		public static function user_timezone()
 		{
+			$userSettings = Settings::getInstance()->get('user');
 
 			if(!self::$tz_offset_calculated)
 			{
 				// This one should cope with daylight saving time
 				// Create two timezone objects, one for UTC (GMT) and one for
 				// user pref
-				$timezone	 = !empty($GLOBALS['phpgw_info']['user']['preferences']['common']['timezone']) ? $GLOBALS['phpgw_info']['user']['preferences']['common']['timezone'] : 'UTC';
+				$timezone	 = !empty($userSettings['preferences']['common']['timezone']) ? $userSettings['preferences']['common']['timezone'] : 'UTC';
 				$dateTimeZone_utc = new DateTimeZone('UTC');
 				$dateTimeZone_pref = new DateTimeZone($timezone);
 
@@ -220,7 +223,7 @@ class DateHelper
 
 				self::$tz_offset = (int)$dateTimeZone_pref->getOffset($dateTime_utc)/3600;
 
-				$GLOBALS['phpgw_info']['user']['preferences']['common']['tz_offset'] = self::$tz_offset;
+				$userSettings['preferences']['common']['tz_offset'] = self::$tz_offset;
 				self::$tz_offset_calculated = true;
 			}
 
@@ -362,9 +365,10 @@ class DateHelper
 		*/
 		public static function formattime($hour, $min = 0, $sec = null)
 		{
+			$userSettings = Settings::getInstance()->get('user');
 			$h12 = $hour;
 			$ampm = '';
-			if ( $GLOBALS['phpgw_info']['user']['preferences']['common']['timeformat'] == '12' )
+			if ( $userSettings['preferences']['common']['timeformat'] == '12' )
 			{
 				if ($hour >= 12)
 				{
@@ -454,8 +458,9 @@ class DateHelper
 		*/
 		public static function get_weekday_start($year, $month, $day)
 		{
+			$userSettings = Settings::getInstance()->get('user');
 			$weekday = self::day_of_week($year, $month, $day);
-			switch($GLOBALS['phpgw_info']['user']['preferences']['calendar']['weekdaystarts'])
+			switch($userSettings['preferences']['calendar']['weekdaystarts'])
 			{
 				// Saturday is for arabic support
 				case 'Saturday':
@@ -871,7 +876,8 @@ class DateHelper
 				);
 			}
 
-			$dateformat =& $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$userSettings = Settings::getInstance()->get('user');
+			$dateformat = $userSettings['preferences']['common']['dateformat'];
 
 			$pattern = '/[\.\/\-]/';
 			$fields = preg_split($pattern, $datestr);
@@ -943,7 +949,8 @@ class DateHelper
 				return 0;
 			}
 
-			$format = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$userSettings = Settings::getInstance()->get('user');
+			$format = $userSettings['preferences']['common']['dateformat'];
 			if(substr_count($datestr, ':') == 1 )
 			{
 				$format .= ' H:i';
