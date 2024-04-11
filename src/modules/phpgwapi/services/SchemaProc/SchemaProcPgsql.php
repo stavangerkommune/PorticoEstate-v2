@@ -482,8 +482,7 @@
 			if ($sSequenceName)
 			{
 				$query = "DROP SEQUENCE {$sSequenceName} CASCADE";
-				$stmt = $oProc->m_odb->prepare($query);
-				$result = $stmt->execute();
+				$result = $oProc->m_odb->exec($query) !== false;
 			}
 			return True;
 		}
@@ -493,8 +492,7 @@
 			$this->DropSequenceForTable($oProc,$sTableName);
 
 			$query = "DROP TABLE {$sTableName} CASCADE";
-			$stmt = $oProc->m_odb->prepare($query);
-			$result = $stmt->execute();
+			$result = $oProc->m_odb->exec($query) !== false;
 			
 			return !!$result && $this->DropSequenceForTable($oProc, $sTableName);
 		}
@@ -502,19 +500,15 @@
 		function DropView($oProc, $sViewName)
 		{
 			$query = "DROP VIEW {$sViewName}";
-			$stmt = $oProc->m_odb->prepare($query);
-			$result = $stmt->execute();
-
-			return !!$result;
+			$result = $oProc->m_odb->exec($query) !== false;
+			return $result;
 		}
 
 		function DropColumn($oProc, &$aTables, $sTableName, $aNewTableDef, $sColumnName, $bCopyData = true)
 		{
 			$query = "ALTER TABLE {$sTableName} DROP COLUMN {$sColumnName} CASCADE";
-			$stmt = $oProc->m_odb->prepare($query);
-			$result = $stmt->execute();
-
-			return !!$result;
+			$result = $oProc->m_odb->exec($query) !== false;
+			return $result;
 		}
 
 		function RenameTable($oProc, &$aTables, $sOldTableName, $sNewTableName)
@@ -543,19 +537,17 @@
 				}
 				$this->GetSequenceSQL($sNewTableName,$sSequenceSQL);
 				if ($DEBUG) { echo '<br>RenameTable(): Making new sequence using: ' . $sSequenceSQL . $lastval; }
-				$oProc->m_odb->query($sSequenceSQL . $lastval,__LINE__,__FILE__);
+				$oProc->m_odb->exec($sSequenceSQL . $lastval);
 				if ($DEBUG) { echo '<br>RenameTable(): Altering column default for: ' . $sField; }
 			}
 
 			$query = "ALTER TABLE {$sOldTableName} RENAME TO {$sNewTableName}";
-			$stmt = $oProc->m_odb->prepare($query);
-			$stmt->execute();
+			$result = $oProc->m_odb->exec($query) !== false;
 
 			if ($sSequenceName)
 			{
 				$query = "ALTER TABLE {$sNewTableName} ALTER {$sField} SET DEFAULT nextval('seq_' || '{$sNewTableName}')";
-				$stmt = $oProc->m_odb->prepare($query);
-				$Ok = !!$stmt->execute();
+				$Ok = $oProc->m_odb->exec($query) !== false;
 				$this->DropSequenceForTable($oProc,$sOldTableName);
 			}
 
@@ -584,8 +576,7 @@
 		function RenameColumn($oProc, &$aTables, $sTableName, $sOldColumnName, $sNewColumnName, $bCopyData = true)
 		{
 			$query = "ALTER TABLE {$sTableName} RENAME COLUMN {$sOldColumnName} TO {$sNewColumnName}";
-			$stmt = $oProc->m_odb->prepare($query);
-			$result = $stmt->execute();
+			$result = $oProc->m_odb->exec($query) !== false;
 
 			return !!$result;
 		}
@@ -627,8 +618,8 @@
 
 			$sFieldSQL = $this->TranslateType($sType, $iPrecision, $iScale);
 			$query = "ALTER TABLE {$sTableName} ALTER COLUMN {$sColumnName} TYPE {$sFieldSQL}";
-			$stmt = $oProc->m_odb->prepare($query);
-			$result = $stmt->execute();
+			$result = $oProc->m_odb->exec($query) !== false;
+
 
 			$Ok = !!$result;
 
@@ -642,9 +633,7 @@
 			}
 
 			$query = "ALTER TABLE {$sTableName} ALTER COLUMN {$sColumnName} {$sFieldSQL}";
-			$stmt = $oProc->m_odb->prepare($query);
-			$result = $stmt->execute();
-			$Ok = !!$result;
+			$Ok = $oProc->m_odb->exec($query) !== false;
 
 			if($sDefault == '0')
 			{
@@ -663,10 +652,7 @@
 			if(isset($defaultSQL) && $defaultSQL)
 			{
 				$query = "ALTER TABLE {$sTableName} ALTER COLUMN {$sColumnName} SET {$defaultSQL}";
-				$stmt = $oProc->m_odb->prepare($query);
-				$result = $stmt->execute();
-
-				$Ok = !!$result;
+				$Ok = $oProc->m_odb->exec($query) !== false;
 			}
 
 			return $Ok;
@@ -697,9 +683,9 @@
 			$sFieldSQL = '';
 			$oProc->_GetFieldSQL($aColumnDef, $sFieldSQL, $sTableName, $sColumnName);
 			$query = "ALTER TABLE {$sTableName} ADD COLUMN {$sColumnName} {$sFieldSQL}";
-			$stmt = $oProc->m_odb->prepare($query);
-			$result = $stmt->execute();
-			return !!$result;
+			$result = $oProc->m_odb->exec($query) !== false;
+			return $result;
+
 		}
 
 		function GetSequenceSQL($sTableName, &$sSequenceSQL)
@@ -716,6 +702,7 @@
 
 		function CreateTable($oProc, $aTables, $sTableName, $aTableDef, $bCreateSequence = true)
 		{
+	//		_debug_array($sTableName);
 			global $DEBUG;
 			$this->indexes_sql = array();
 			$sTableSQL = $sSequenceSQL = $sTriggerSQL = '';
@@ -725,13 +712,14 @@
 				if ($bCreateSequence && $sSequenceSQL != '')
 				{
 					if ($DEBUG) { echo '<br>Making sequence using: ' . $sSequenceSQL; }
-					$oProc->m_odb->query($sSequenceSQL, __LINE__, __FILE__);
+					$oProc->m_odb->exec($sSequenceSQL);
 				}
 
 				$query = "CREATE TABLE $sTableName ($sTableSQL)";
 				//echo 'sql' .$query . "\n";
 
-				$result = !!$oProc->m_odb->query($query, __LINE__, __FILE__);
+				$result = $oProc->m_odb->exec($query) !== false;
+
 				if($result==True)
 				{
 					if (isset($this->indexes_sql) && $DEBUG)
@@ -748,13 +736,11 @@
 							$ix_name = str_replace(',','_',$key).'_'.$sTableName.'_idx';
 							$IndexSQL = str_replace(array('__index_name__','__table_name__'), array($ix_name,$sTableName), $sIndexSQL);
 
-							$stmt = $oProc->m_odb->prepare($IndexSQL);
-							$stmt->execute();
+							$oProc->m_odb->exec($IndexSQL);
 						}
 					}
 				}
 				return $result;
-				//return !!($oProc->m_odb->query($query));
 			}
 
 			return false;
@@ -781,16 +767,14 @@
 					$local_key = implode('_',array_keys($foreign_key));
 
 					$query = "ALTER TABLE {$sTableName} ADD CONSTRAINT {$sTableName}_{$local_key}_fk {$sFKSQL}";
-					$stmt = $oProc->m_odb->prepare($query);
-					$result = $stmt->execute();
+					$result = $oProc->m_odb->exec($query) !== false;
 
 					if ($DEBUG) {
 						echo '<pre>';
-						print_r($stmt->queryString);
+						print_r($query);
 						echo '</pre>';
 					}
 
-					$result = !!$result;
 					if(!$result)
 					{
 						break;

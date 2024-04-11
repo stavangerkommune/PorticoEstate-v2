@@ -126,7 +126,7 @@ class Locations
 			'name'              => $location,
 			'descr'             => $descr,
 			'allow_grant'       => $allow_grant,
-			'allow_c_attrib'    => $c_attrib ? 1 : false,
+			'allow_c_attrib'    => $c_attrib ? 1 : 0,
 			'c_attrib_table'    => $custom_tbl,
 			'allow_c_function'  => $c_function
 		];

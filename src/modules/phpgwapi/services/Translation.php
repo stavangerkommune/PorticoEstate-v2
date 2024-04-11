@@ -114,6 +114,10 @@
 		*/
 		protected function reset_lang()
 		{
+			if(!isset($this->serverSettings['install_id']))
+			{
+				return;
+			}
 			$lang = $this->cache->system_get('phpgwapi', "lang_{$this->userlang}", true);
 			if ( $lang && is_array($lang) )
 			{

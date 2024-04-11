@@ -480,6 +480,9 @@
 
 					$oProc = &$this->oProc;	// to be compatible with old apps
 
+//					$GLOBALS['phpgw_setup'] =(object)'ciao';
+//					$GLOBALS['phpgw_setup']->oProc = $this->oProc;
+
 					require_once $default_records;
 				}
 

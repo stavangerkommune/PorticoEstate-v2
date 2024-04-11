@@ -20,6 +20,8 @@
 	use App\modules\phpgwapi\services\Crypto;
 	use App\modules\phpgwapi\services\Settings;
 	use App\modules\phpgwapi\services\setup\SetupTranslation;
+	use App\modules\phpgwapi\controllers\Locations;
+
 	use App\Database\Db;
 	use PDO;
 	use Sanitizer;
@@ -52,6 +54,7 @@
 		private $setup_data;
 		private $crypto;
 		private $translation;
+		private $locations;
 
 		public $setup_info;
 
@@ -84,6 +87,7 @@
 			$this->hooks = new Hooks();
 			$this->crypto = new Crypto();
             $this->db = Db::getInstance();
+			$this->locations = new Locations();
 
 		}
 
@@ -536,10 +540,8 @@
 					':version' => $setup_info[$appname]['version']
 				]);
 			}
-			// hack to make phpgwapi_applications::name2id to work properly
-			unset($GLOBALS['phpgw_info']['apps']);
-			$GLOBALS['phpgw']->locations->add('run', "Automatically added on install - run {$appname}", $appname, false);
-			$GLOBALS['phpgw']->locations->add('admin', "Allow app admins - {$appname}", $appname, false);
+			$this->locations->add('run', "Automatically added on install - run {$appname}", $appname, false);
+			$this->locations->add('admin', "Allow app admins - {$appname}", $appname, false);
 		}
 
 		/**
