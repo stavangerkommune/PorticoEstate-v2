@@ -9,6 +9,7 @@
 	* @version $Id$
 	*/
 	namespace App\Modules\Api\Services\SchemaProc;
+	use PDO;
 
 	/**
 	* Database schema abstraction class for Oracle
@@ -223,19 +224,19 @@
 			return '';
 		}
 
-			   // foreign key supports needs MySQL 3.23.44 and up with InnoDB or MySQL 5.1
-			   // or other versions the syntax is parsed in table create commands
-			   // see chapter 1.8.4.5
-			   function GetFKSQL($sFields)
-			   {
-				 if (preg_match("/\((.*)\)/", $sFields, $regs))
-				 {
-				   $ret = "FOREIGN KEY (".$regs[1].")\n" .
-					 "  REFERENCES ".$sFields;
-				   return $ret;
-				 } else
-				   return ""; // incorrect FK declaration found
-			   }
+		// foreign key supports needs MySQL 3.23.44 and up with InnoDB or MySQL 5.1
+		// or other versions the syntax is parsed in table create commands
+		// see chapter 1.8.4.5
+		function GetFKSQL($sFields)
+		{
+			if (preg_match("/\((.*)\)/", $sFields, $regs))
+			{
+			$ret = "FOREIGN KEY (".$regs[1].")\n" .
+				"  REFERENCES ".$sFields;
+			return $ret;
+			} else
+			return ""; // incorrect FK declaration found
+		}
 
 		function _GetColumns($oProc, $sTableName, &$sColumns, $sDropColumn = '')
 		{
@@ -246,25 +247,25 @@
 			$this->uc = array();
 
 			/* Field, Type, Null, Key, Default, Extra */
-			$oProc->m_odb->query("DESCRIBE $sTableName", __LINE__, __FILE__);
-			while ($oProc->m_odb->next_record())
+			$stmt = $oProc->m_odb->query("DESCRIBE $sTableName");
+
+			while ($row = $stmt->fetch(PDO::FETCH_NUM))
 			{
 				$type = $default = $null = $nullcomma = $prec = $scale = $ret = $colinfo = $scales = '';
 				if ($sColumns != '')
 				{
 					$sColumns .= ',';
 				}
-				$sColumns .= $oProc->m_odb->f(0);
+				$sColumns .= $row[0];
 
 				/* The rest of this is used only for SQL->array */
-				$colinfo = explode('(',$oProc->m_odb->f(1));
+				$colinfo = explode('(',$row[1]);
 				$prec = str_replace(')','',$colinfo[1]);
 				$scales = explode(',',$prec);
 
 				if($colinfo[0] == 'enum')
 				{
 					/* set prec to length of longest enum-value */
-					//for($prec=0; list($nul,$name) = @each($scales);)
 					$prec = 0;
 					foreach($scales as $nul => $name)
 					{
@@ -275,14 +276,14 @@
 						}
 					}
 				}
-				elseif ($scales[1])
+				elseif (isset($scales[1]))
 				{
 					$prec  = $scales[0];
 					$scale = $scales[1];
 				}
 				$type = $this->rTranslateType($colinfo[0], $prec, $scale);
 
-				if ($oProc->m_odb->f(2) == 'YES')
+				if ($row[2] == 'YES')
 				{
 					$null = "'nullable' => True";
 				}
@@ -290,9 +291,9 @@
 				{
 					$null = "'nullable' => False";
 				}
-				if ($oProc->m_odb->f(4) != '')
+				if ($row[4] != '')
 				{
-					$default = "'default' => '".$oProc->m_odb->f(4)."'";
+					$default = "'default' => '".$row[4]."'";
 					$nullcomma = ',';
 				}
 				else
@@ -300,23 +301,23 @@
 					$default = '';
 					$nullcomma = '';
 				}
-				if ($oProc->m_odb->f(5))
+				if ($row[5])
 				{
 					$type = "'type' => 'auto'";
 				}
-				$this->sCol[] = "\t\t\t\t'" . $oProc->m_odb->f(0)."' => array(" . $type . ',' . $null . $nullcomma . $default . '),' . "\n";
-				if ($oProc->m_odb->f(3) == 'PRI')
+				$this->sCol[] = "\t\t\t\t'" . $row[0]."' => array(" . $type . ',' . $null . $nullcomma . $default . '),' . "\n";
+				if ($row[3] == 'PRI')
 				{
-					$this->pk[] = $oProc->m_odb->f(0);
+					$this->pk[] = $row[0];
 				}
-				if ($oProc->m_odb->f(3) == 'UNI')
+				if ($row[3] == 'UNI')
 				{
-					$this->uc[] = $oProc->m_odb->f(0);
+					$this->uc[] = $row[0];
 				}
 				/* Hmmm, MUL could also mean unique, or not... */
-				if ($oProc->m_odb->f(3) == 'MUL')
+				if ($row[3] == 'MUL')
 				{
-					$this->ix[] = $oProc->m_odb->f(0);
+					$this->ix[] = $row[0];
 				}
 			}
 			/* ugly as heck, but is here to chop the trailing comma on the last element (for php3) */
@@ -324,21 +325,25 @@
 
 			return false;
 		}
+		
 
 		function GetSequenceForTable($oProc, $table, &$sSequenceName)
 		{
-			$sSQL = sprintf("SELECT SEQUENCE_NAME FROM ALL_SEQUENCES WHERE SEQUENCE_NAME LIKE '%s_%s' ORDER BY SEQUENCE_NAME",
+			$sSQL = sprintf(
+				"SELECT SEQUENCE_NAME FROM ALL_SEQUENCES WHERE SEQUENCE_NAME LIKE '%s_%s' ORDER BY SEQUENCE_NAME",
 				strtoupper($this->m_sSequencePrefix),
 				strtoupper($table)
-				);
-			$oProc->m_odb->query($sSQL, __LINE__, __FILE__);
-			$oProc->m_odb->next_record();
+			);
 
-			if ($oProc->m_odb->f('sequence_name'))
+			$stmt = $oProc->m_odb->query($sSQL);
+
+			$row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+			if ($row['SEQUENCE_NAME'])
 			{
-				$sSequenceName = $oProc->m_odb->f('sequence_name');
+				$sSequenceName = $row['SEQUENCE_NAME'];
 			}
-			return True;
+			return true;
 		}
 
 		function DropSequenceForTable($oProc,$table)
@@ -346,7 +351,7 @@
 			$this->GetSequenceForTable($oProc, $table, $sSequenceName);
 			if ($sSequenceName)
 			{
-				$oProc->m_odb->query("DROP SEQUENCE " . $sSequenceName, __LINE__, __FILE__);
+				$oProc->m_odb->exec("DROP SEQUENCE " . $sSequenceName);
 			}
 			return True;
 		}
@@ -355,42 +360,44 @@
 		{
 			$this->DropSequenceForTable($oProc,$sTableName);
 
-			return !!($oProc->m_odb->query("DROP TABLE " . $sTableName, __LINE__, __FILE__));
+			return !!($oProc->m_odb->exec("DROP TABLE " . $sTableName));
 		}
 
 		function DropView($oProc, $sViewName)
 		{
-			return !!($oProc->m_odb->query("DROP VIEW " . $sViewName . ' CASCADE CONSTRAINT'));
+			return !!($oProc->m_odb->exec("DROP VIEW " . $sViewName . ' CASCADE CONSTRAINT'));
 		}
 
 		function DropColumn($oProc, &$aTables, $sTableName, $aNewTableDef, $sColumnName, $bCopyData = true)
 		{
-			return !!($oProc->m_odb->query("ALTER TABLE $sTableName DROP COLUMN $sColumnName", __LINE__, __FILE__));
+			return !!($oProc->m_odb->exec("ALTER TABLE $sTableName DROP COLUMN $sColumnName"));
 		}
 
 		function RenameTable($oProc, &$aTables, $sOldTableName, $sNewTableName)
 		{
-			return !!($oProc->m_odb->query("ALTER TABLE $sOldTableName RENAME $sNewTableName", __LINE__, __FILE__));
+			return !!($oProc->m_odb->exec("ALTER TABLE $sOldTableName RENAME $sNewTableName"));
 		}
 
 		function RenameColumn($oProc, &$aTables, $sTableName, $sOldColumnName, $sNewColumnName, $bCopyData = true)
 		{
-			/*
+		/*
 			 TODO: This really needs testing - it can affect primary keys, and other table-related objects
 			 like sequences and such
 			*/
+			$sNewColumnSQL = '';
 			if ($oProc->_GetFieldSQL($aTables[$sTableName]["fd"][$sNewColumnName], $sNewColumnSQL, $sTableName, $sOldColumnName))
 			{
-				return !!($oProc->m_odb->query("ALTER TABLE $sTableName CHANGE $sOldColumnName $sNewColumnName " . $sNewColumnSQL, __LINE__, __FILE__));
+				return !!($oProc->m_odb->exec("ALTER TABLE $sTableName CHANGE $sOldColumnName $sNewColumnName " . $sNewColumnSQL));
 			}
 			return false;
 		}
 
 		function AlterColumn($oProc, &$aTables, $sTableName, $sColumnName, &$aColumnDef, $bCopyData = true)
 		{
+			$sNewColumnSQL = '';
 			if ($oProc->_GetFieldSQL($aTables[$sTableName]["fd"][$sColumnName], $sNewColumnSQL, $sTableName, $sColumnName))
 			{
-				return !!($oProc->m_odb->query("ALTER TABLE $sTableName MODIFY $sColumnName " . $sNewColumnSQL, __LINE__, __FILE__));
+				return !!($oProc->m_odb->exec("ALTER TABLE $sTableName MODIFY $sColumnName " . $sNewColumnSQL));
 				/* return !!($oProc->m_odb->query("ALTER TABLE $sTableName CHANGE $sColumnName $sColumnName " . $sNewColumnSQL)); */
 			}
 
@@ -399,10 +406,11 @@
 
 		function AddColumn($oProc, &$aTables, $sTableName, $sColumnName, &$aColumnDef)
 		{
+			$sFieldSQL = '';
 			$oProc->_GetFieldSQL($aColumnDef, $sFieldSQL, $sTableName, $sColumnName);
 			$query = "ALTER TABLE $sTableName ADD COLUMN $sColumnName $sFieldSQL";
 
-			return !!($oProc->m_odb->query($query, __LINE__, __FILE__));
+			return !!($oProc->m_odb->exec($query));
 		}
 
 		function GetSequenceSQL($sTableName, &$sSequenceSQL)
@@ -449,6 +457,7 @@
 			$this->indexcount = 0;
 			$sSequenceSQL = '';
 			$sTriggerSQL = '';
+			$sTableSQL = '';
 
 			if ($oProc->_GetTableSQL($sTableName, $aTableDef, $sTableSQL, $sSequenceSQL, $sTriggerSQL))
 			{
@@ -460,7 +469,7 @@
 
 				$query = "CREATE TABLE $sTableName ($sTableSQL)";
 
-				$result = !!($oProc->m_odb->query($query, __LINE__, __FILE__));
+				$result = !!($oProc->m_odb->exec($query));
 				if($result==True)
 				{
 					if ($DEBUG)
@@ -476,7 +485,7 @@
 						{
 							$ix_name = strtoupper($this->m_sIndexPrefix) . "_" . $sTableName . '_' . $key;
 							$IndexSQL = str_replace(array('__index_name__','__table_name__'), array($ix_name,$sTableName), $sIndexSQL);
-							$oProc->m_odb->query($IndexSQL, __LINE__, __FILE__);
+							$oProc->m_odb->exec($IndexSQL);
 						}
 					}			
 
@@ -488,7 +497,7 @@
 							print_r($sTriggerSQL);
 							echo '</pre>';
 						}			
-						$oProc->m_odb->query($sTriggerSQL, __LINE__, __FILE__);
+						$oProc->m_odb->exec($sTriggerSQL);
 					}
 				}
 				return $result;

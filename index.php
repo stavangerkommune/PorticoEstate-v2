@@ -32,7 +32,6 @@ require_once SRC_ROOT_PATH . '/Helpers/Sanitizer.php';
 require_once SRC_ROOT_PATH . '/Helpers/DebugArray.php';
 // Add your settings to the container
 
-//$phpgw_domain = require_once __DIR__ . '/config/database.php';
 $database_settings = require_once SRC_ROOT_PATH . '/Helpers/FilterDatabaseConfig.php';
 
 //_debug_array($database_settings);

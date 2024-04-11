@@ -11,6 +11,7 @@
 	* @version $Id$
 	*/
 	namespace App\Modules\Api\Services\SchemaProc;
+	use PDO;
 
 	/**
 	* Database schema abstraction class for MSSQL
@@ -295,34 +296,29 @@
 			$this->ix = array();
 			$this->uc = array();
 
-			$oProc->m_odb->query("EXEC sp_columns '$sTableName'", __LINE__, __FILE__);
-			while ($oProc->m_odb->next_record())
-			{
+			$stmt = $oProc->m_odb->query("EXEC sp_columns '$sTableName'");
+
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 				$type = $default = $null = $nullcomma = $prec = $scale = $ret = $colinfo = $scales = '';
-				if ($sColumns != '')
-				{
+				if ($sColumns != '') {
 					$sColumns .= ',';
 				}
 
-				$sColumns .= $oProc->m_odb->f('COLUMN_NAME');
+				$sColumns .= $row['COLUMN_NAME'];
 
-				$type = $this->rTranslateType($oProc->m_odb->f('TYPE_NAME'),$oProc->m_odb->f('PRECISION'), $oProc->m_odb->f('SCALE'));
+				$type = $this->rTranslateType($row['TYPE_NAME'], $row['PRECISION'], $row['SCALE']);
 
-				if ($oProc->m_odb->f('IS_NULLABLE') == 'YES')
-				{
+				if ($row['IS_NULLABLE'] == 'YES') {
 					$null = "'nullable' => True";
-				}
-				else
-				{
+				} else {
 					$null = "'nullable' => False";
 				}
 
-				if ($oProc->m_odb->f('COLUMN_DEF'))
-				{
+				if ($row['COLUMN_DEF']) {
 					$default = "'default' => '".str_replace(array(
 						'(getdate())',
 						"(datediff_big(second,'1970-01-01',getutcdate()))",
-						'((','))',
+						'((', '))',
 						"('", "')"
 						),
 						array(
@@ -332,19 +328,16 @@
 						'',
 						'',
 						''
-						),$oProc->m_odb->f('COLUMN_DEF'))."'";
+						), $row['COLUMN_DEF'])."'";
 					$nullcomma = ',';
-				}
-				else
-				{
+				} else {
 					$default = '';
 					$nullcomma = '';
 				}
-				if ($oProc->m_odb->f('TYPE_NAME') == 'int identity')
-				{
+				if ($row['TYPE_NAME'] == 'int identity') {
 					$type = "'type' => 'auto'";
 				}
-				$this->sCol[] = "\t\t\t\t'" . $oProc->m_odb->f('COLUMN_NAME')."' => array(" . $type . ',' . $null . $nullcomma . $default . '),' . "\n";
+				$this->sCol[] = "\t\t\t\t'" . $row['COLUMN_NAME']."' => array(" . $type . ',' . $null . $nullcomma . $default . '),' . "\n";
 			}
 
 			$this->pk = $oProc->m_odb->MetaPrimaryKeys($sTableName);
@@ -386,17 +379,18 @@
 		   ORDER BY
 				t.name, ind.name, ind.index_id, ic.is_included_column, ic.key_ordinal";
 
-			$oProc->m_odb->query($sql, __LINE__, __FILE__);
+			
+			$stmt = $oProc->m_odb->query($sql);
 
-			while ($oProc->m_odb->next_record())
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 			{
-				if((int)$oProc->m_odb->f('is_unique_constraint') === 0)
+				if((int)$row['is_unique_constraint'] === 0)
 				{
-					$this->ix[] = $oProc->m_odb->f('column_name');
+					$this->ix[] = $row['column_name'];
 				}
 				else
 				{
-					$this->uc[] = $oProc->m_odb->f('column_name');
+					$this->uc[] = $row['column_name'];
 				}
 			}
 
@@ -408,22 +402,22 @@
 
 		function DropTable($oProc, &$aTables, $sTableName)
 		{
-			return !!($oProc->m_odb->query("DROP TABLE " . $sTableName));
+			return !!($oProc->m_odb->exec("DROP TABLE " . $sTableName));
 		}
 
 		function DropView($oProc, $sViewName)
 		{
-			return !!($oProc->m_odb->query("DROP VIEW " . $sViewName));
+			return !!($oProc->m_odb->exec("DROP VIEW " . $sViewName));
 		}
 
 		function DropColumn($oProc, &$aTables, $sTableName, $aNewTableDef, $sColumnName, $bCopyData = true)
 		{
-			return !!($oProc->m_odb->query("ALTER TABLE $sTableName DROP COLUMN $sColumnName"));
+			return !!($oProc->m_odb->exec("ALTER TABLE $sTableName DROP COLUMN $sColumnName"));
 		}
 
 		function RenameTable($oProc, &$aTables, $sOldTableName, $sNewTableName)
 		{
-			return !!($oProc->m_odb->query("EXEC sp_rename '$sOldTableName', '$sNewTableName'"));
+			return !!($oProc->m_odb->exec("EXEC sp_rename '$sOldTableName', '$sNewTableName'"));
 		}
 
 		function RenameColumn($oProc, &$aTables, $sTableName, $sOldColumnName, $sNewColumnName, $bCopyData = true)
@@ -432,9 +426,10 @@
 			// like sequences and such
 			global $DEBUG;
 			if ($DEBUG) { echo '<br>RenameColumn: calling _GetFieldSQL for ' . $sNewColumnName; }
+			$sNewColumnSQL = '';
 			if ($oProc->_GetFieldSQL($aTables[$sTableName]["fd"][$sNewColumnName], $sNewColumnSQL, $sTableName, $sOldColumnName))
 			{
-				return !!($oProc->m_odb->query("EXEC sp_rename '$sTableName.$sOldColumnName', '$sNewColumnName'"));
+				return !!($oProc->m_odb->exec("EXEC sp_rename '$sTableName.$sOldColumnName', '$sNewColumnName'"));
 			}
 			return false;
 		}
@@ -442,10 +437,11 @@
 		function AlterColumn($oProc, &$aTables, $sTableName, $sColumnName, &$aColumnDef, $bCopyData = true)
 		{
 			global $DEBUG;
-			if ($DEBUG) { echo '<br>AlterColumn: calling _GetFieldSQL for ' . $sNewColumnName; }
+			if ($DEBUG) { echo '<br>AlterColumn: calling _GetFieldSQL for ' . $sColumnName; }
+			$sNewColumnSQL = '';
 			if ($oProc->_GetFieldSQL($aTables[$sTableName]["fd"][$sColumnName], $sNewColumnSQL, $sTableName, $sColumnName))
 			{
-				return !!($oProc->m_odb->query("ALTER TABLE $sTableName ALTER COLUMN $sColumnName " . $sNewColumnSQL));
+				return !!($oProc->m_odb->exec("ALTER TABLE $sTableName ALTER COLUMN $sColumnName " . $sNewColumnSQL));
 			}
 
 			return false;
@@ -453,10 +449,11 @@
 
 		function AddColumn($oProc, &$aTables, $sTableName, $sColumnName, &$aColumnDef)
 		{
+			$sFieldSQL = '';
 			$oProc->_GetFieldSQL($aColumnDef, $sFieldSQL, $sTableName, $sColumnName);
 			$query = "ALTER TABLE $sTableName ADD $sColumnName $sFieldSQL";
 
-			return !!($oProc->m_odb->query($query));
+			return !!($oProc->m_odb->exec($query));
 		}
 
 		function GetSequenceSQL($sTableName, &$sSequenceSQL)
@@ -475,6 +472,7 @@
 		{
 			global $DEBUG;
 			unset($this->indexes_sql);
+			$sTableSQL = $sSequenceSQL = $sTriggerSQL = '';
 			if ($oProc->_GetTableSQL($sTableName, $aTableDef, $sTableSQL, $sSequenceSQL, $sTriggerSQL))
 			{
 				// create sequence first since it will be needed for default
@@ -485,7 +483,7 @@
 
 				$query = "CREATE TABLE $sTableName ($sTableSQL)";
 
-				$result = !!$oProc->m_odb->query($query, __LINE__, __FILE__);
+				$result = !!$oProc->m_odb->exec($query);
 				if($result==True)
 				{
 					if (isset($this->indexes_sql) && $DEBUG)
@@ -501,7 +499,7 @@
 						{
 							$ix_name = str_replace(',','_',$key).'_'.$sTableName.'_idx';
 							$IndexSQL = str_replace(array('__index_name__','__table_name__'), array($ix_name,$sTableName), $sIndexSQL);
-							$oProc->m_odb->query($IndexSQL, __LINE__, __FILE__);
+							$oProc->m_odb->exec($IndexSQL);
 						}
 					}
 				}
@@ -535,7 +533,7 @@
 						echo '</pre>';
 					}
 
-					$result = !!$oProc->m_odb->query($query, __LINE__, __FILE__);
+					$result = !!$oProc->m_odb->exec($query);
 					if(!$result)
 					{
 						break;

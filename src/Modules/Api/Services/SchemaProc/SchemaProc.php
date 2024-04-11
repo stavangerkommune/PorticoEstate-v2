@@ -12,6 +12,8 @@
 	*/
 
 	namespace App\Modules\Api\Services\SchemaProc;
+	use Exception;
+
 	/**
 	* Database schema abstraction class
 	*
@@ -220,7 +222,7 @@
 				{
 					if($bOutputHTML)
 					{
-						echo '<br>Drop Table <b>' . $sTableSQL . '</b>';
+						echo '<br>Drop Table <b>' . $sTableName . '</b>';
 					}
 				}
 				else
@@ -463,7 +465,7 @@
 			{
 				if(!$this->_GetPK($aTableDef['pk'], $sPKSQL))
 				{
-					if($bOutputHTML)
+					if($DEBUG)
 					{
 						print('<br>Failed getting primary key<br>');
 					}
@@ -476,7 +478,7 @@
 			{
 				if(!$this->_GetUC($aTableDef['uc'], $sUCSQL))
 				{
-					if($bOutputHTML)
+					if($DEBUG)
 					{
 						print('<br>Failed getting unique constraint<br>');
 					}
@@ -489,7 +491,7 @@
 			{
 				if(!$this->_GetIX($aTableDef['ix'], $sIXSQL, $aTableDef['fd']))
 				{
-					if($bOutputHTML)
+					if($DEBUG)
 					{
 						echo '<br>Failed generating indexes<br>';
 					}
@@ -504,7 +506,7 @@
 			{
 				if(!$this->_GetFK($aTableDef['fk'], $sFKSQL))
 				{
-					if($bOutputHTML)
+					if($DEBUG)
 					{
 						echo '<br>Failed generating foreign keys<br>';
 					}

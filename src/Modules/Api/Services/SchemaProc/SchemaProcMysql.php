@@ -11,6 +11,7 @@
 	* @version $Id$
 	*/
 	namespace App\Modules\Api\Services\SchemaProc;
+	use PDO;
 
 	/**
 	* Database schema abstraction class for MySQL
@@ -32,30 +33,7 @@
 		function __construct()
 		{
 			$this->m_sStatementTerminator = ';';
-			/* The use of a temp_db is to allow this process to be run from other than setup*/
 
-			$temp_db = createObject('phpgwapi.db');
-
-			if( isset($GLOBALS['phpgw_info']['server']['db_name']) && strlen($GLOBALS['phpgw_info']['server']['db_name']) )
-			{
-				$temp_db->Host = $GLOBALS['phpgw_info']['server']['db_host'];
-				$temp_db->Port = $GLOBALS['phpgw_info']['server']['db_port'];
-				$temp_db->Type = $GLOBALS['phpgw_info']['server']['db_type'];
-				$temp_db->Database = $GLOBALS['phpgw_info']['server']['db_name'];
-				$temp_db->User = $GLOBALS['phpgw_info']['server']['db_user'];
-				$temp_db->Password = $GLOBALS['phpgw_info']['server']['db_pass'];
-			}
-			else
-			{
-				$ConfigDomain = phpgw::get_var('ConfigDomain');
-				$phpgw_domain = $GLOBALS['phpgw_domain'];
-
-				$temp_db->Host     = $phpgw_domain[$ConfigDomain]['db_host'];
-				$temp_db->Port     = $phpgw_domain[$ConfigDomain]['db_port'];
-				$temp_db->Database = $phpgw_domain[$ConfigDomain]['db_name'];
-				$temp_db->User     = $phpgw_domain[$ConfigDomain]['db_user'];
-				$temp_db->Password = $phpgw_domain[$ConfigDomain]['db_pass'];
-			}
 		}
 
 		/* Return a type suitable for DDL */
@@ -313,7 +291,6 @@
 
 		function _GetColumns($oProc, $sTableName, &$sColumns, $sDropColumn = '')
 		{
-			$oProc->m_odb->fetchmode = 'BOTH';
 			$sColumns = '';
 			$this->pk = array();
 			$this->fk = array();
@@ -321,29 +298,30 @@
 			$this->uc = array();
 
 			/* Field, Type, Null, Key, Default, Extra */
-			$oProc->m_odb->query("DESCRIBE $sTableName", __LINE__, __FILE__);
-			while ($oProc->m_odb->next_record())
+			$stmt = $oProc->m_odb->prepare("DESCRIBE $sTableName");
+			$stmt->execute();
+
+			while ($row = $stmt->fetch(PDO::FETCH_NUM))
 			{
 				$type = $default = $null = $nullcomma = $prec = $scale = $ret = $colinfo = $scales = '';
 				if ($sColumns != '')
 				{
 					$sColumns .= ',';
 				}
-				$sColumns .= $oProc->m_odb->f(0);
+				$sColumns .= $row[0];
 
 				/* The rest of this is used only for SQL->array */
-				$colinfo = explode('(',$oProc->m_odb->f(1));
+				$colinfo = explode('(',$row[1]);
 
 				if(isset($colinfo[1]))
 				{
 					$prec = str_replace(')','',$colinfo[1]);
-					$scales = explode(',',$prec);	
+					$scales = explode(',',$prec);    
 				}
 
 				if($colinfo[0] == 'enum')
 				{
 					/* set prec to length of longest enum-value */
-					//for($prec=0; list($nul,$name) = @each($scales);)
 					$prec = 0;
 					foreach($scales as $nul => $name)
 					{
@@ -361,7 +339,7 @@
 				}
 				$type = $this->rTranslateType($colinfo[0], $prec, $scale);
 
-				if ($oProc->m_odb->f(2) == 'YES')
+				if ($row[2] == 'YES')
 				{
 					$null = "'nullable' => True";
 				}
@@ -369,9 +347,9 @@
 				{
 					$null = "'nullable' => False";
 				}
-				if ($oProc->m_odb->f(4) != '')
+				if ($row[4] != '')
 				{
-					$default = "'default' => '".$oProc->m_odb->f(4)."'";
+					$default = "'default' => '".$row[4]."'";
 					$nullcomma = ',';
 				}
 				else
@@ -379,23 +357,23 @@
 					$default = '';
 					$nullcomma = '';
 				}
-				if ($oProc->m_odb->f(5))
+				if ($row[5])
 				{
 					$type = "'type' => 'auto'";
 				}
-				$this->sCol[] = "\t\t\t\t'" . $oProc->m_odb->f(0)."' => array(" . $type . ',' . $null . $nullcomma . $default . '),' . "\n";
-				if ($oProc->m_odb->f(3) == 'PRI')
+				$this->sCol[] = "\t\t\t\t'" . $row[0]."' => array(" . $type . ',' . $null . $nullcomma . $default . '),' . "\n";
+				if ($row[3] == 'PRI')
 				{
-					$this->pk[] = $oProc->m_odb->f(0);
+					$this->pk[] = $row[0];
 				}
-				if ($oProc->m_odb->f(3) == 'UNI')
+				if ($row[3] == 'UNI')
 				{
-					$this->uc[] = $oProc->m_odb->f(0);
+					$this->uc[] = $row[0];
 				}
 				/* Hmmm, MUL could also mean unique, or not... */
-				if ($oProc->m_odb->f(3) == 'MUL')
+				if ($row[3] == 'MUL')
 				{
-					$this->ix[] = $oProc->m_odb->f(0);
+					$this->ix[] = $row[0];
 				}
 			}
 			/* ugly as heck, but is here to chop the trailing comma on the last element (for php3) */
@@ -406,22 +384,22 @@
 
 		function DropTable($oProc, &$aTables, $sTableName)
 		{
-			return !!($oProc->m_odb->query("DROP TABLE " . $sTableName, __LINE__, __FILE__, true));
+			return !!($oProc->m_odb->exec("DROP TABLE " . $sTableName));
 		}
 
 		function DropView($oProc, $sViewName)
 		{
-			return !!($oProc->m_odb->query("DROP VIEW " . $sViewName));
+			return !!($oProc->m_odb->exec("DROP VIEW " . $sViewName));
 		}
 
 		function DropColumn($oProc, &$aTables, $sTableName, $aNewTableDef, $sColumnName, $bCopyData = true)
 		{
-			return !!($oProc->m_odb->query("ALTER TABLE $sTableName DROP COLUMN $sColumnName", __LINE__, __FILE__));
+			return !!($oProc->m_odb->exec("ALTER TABLE {$sTableName} DROP COLUMN {$sColumnName}"));
 		}
 
 		function RenameTable($oProc, &$aTables, $sOldTableName, $sNewTableName)
 		{
-			return !!($oProc->m_odb->query("ALTER TABLE $sOldTableName RENAME $sNewTableName", __LINE__, __FILE__));
+			return !!($oProc->m_odb->exec("ALTER TABLE {$sOldTableName} RENAME {$sNewTableName}"));
 		}
 
 		function RenameColumn($oProc, &$aTables, $sTableName, $sOldColumnName, $sNewColumnName, $bCopyData = true)
@@ -435,9 +413,12 @@
 			{
 				echo '<br>RenameColumn: calling _GetFieldSQL for ' . $sNewColumnName;
 			}
+
+			$sNewColumnSQL = '';
+
 			if (isset($aTables[$sTableName]["fd"][$sNewColumnName]) && $oProc->_GetFieldSQL($aTables[$sTableName]["fd"][$sNewColumnName], $sNewColumnSQL, $sTableName, $sOldColumnName))
 			{
-				return !!($oProc->m_odb->query("ALTER TABLE $sTableName CHANGE $sOldColumnName $sNewColumnName " . $sNewColumnSQL, __LINE__, __FILE__));
+				return !!($oProc->m_odb->exec("ALTER TABLE $sTableName CHANGE $sOldColumnName $sNewColumnName " . $sNewColumnSQL));
 			}
 			return false;
 		}
@@ -447,11 +428,12 @@
 			global $DEBUG;
 			if ($DEBUG)
 			{
-				echo '<br>AlterColumn: calling _GetFieldSQL for ' . $sNewColumnName;
+	//			echo '<br>AlterColumn: calling _GetFieldSQL for ' . $sNewColumnName;
 			}
+			$sNewColumnSQL = '';
 			if (isset($aTables[$sTableName]["fd"][$sColumnName]) && $oProc->_GetFieldSQL($aTables[$sTableName]["fd"][$sColumnName], $sNewColumnSQL, $sTableName, $sColumnName))
 			{
-				return !!($oProc->m_odb->query("ALTER TABLE $sTableName MODIFY $sColumnName " . $sNewColumnSQL, __LINE__, __FILE__));
+				return !!($oProc->m_odb->exec("ALTER TABLE $sTableName MODIFY $sColumnName " . $sNewColumnSQL));
 				/* return !!($oProc->m_odb->query("ALTER TABLE $sTableName CHANGE $sColumnName $sColumnName " . $sNewColumnSQL)); */
 			}
 
@@ -460,10 +442,11 @@
 
 		function AddColumn($oProc, &$aTables, $sTableName, $sColumnName, &$aColumnDef)
 		{
+			$sFieldSQL = '';
 			$oProc->_GetFieldSQL($aColumnDef, $sFieldSQL, $sTableName, $sColumnName);
 			$query = "ALTER TABLE $sTableName ADD COLUMN $sColumnName $sFieldSQL";
 
-			return !!($oProc->m_odb->query($query, __LINE__, __FILE__));
+			return !!($oProc->m_odb->exec($query));
 		}
 
 		function GetSequenceSQL($sTableName, &$sSequenceSQL)
@@ -483,6 +466,7 @@
 			global $DEBUG;
 
 			$this->indexes_sql = array();
+			$sTableSQL = $sSequenceSQL = $sTriggerSQL = '';
 			if ($oProc->_GetTableSQL($sTableName, $aTableDef, $sTableSQL, $sSequenceSQL, $sTriggerSQL))
 			{
 				/* create sequence first since it will be needed for default */
@@ -499,7 +483,7 @@
 					var_dump($query);
 				}
 
-				$result = !!($oProc->m_odb->query($query, __LINE__, __FILE__, true));
+				$result = !!($oProc->m_odb->exec($query));
 				if($result==True)
 				{
 					if (isset($this->indexes_sql) && $DEBUG)
@@ -515,7 +499,7 @@
 						{
 							$ix_name = str_replace(',','_',$key).'_'.$sTableName.'_idx';
 							$IndexSQL = str_replace(array('__index_name__','__table_name__'), array($ix_name,$sTableName), $sIndexSQL);
-							$oProc->m_odb->query($IndexSQL, __LINE__, __FILE__);
+							$oProc->m_odb->exec($IndexSQL);
 						}
 					}
 				}
@@ -558,7 +542,7 @@
 						echo '</pre>';
 					}
 
-					$result = !!$oProc->m_odb->query($query, __LINE__, __FILE__);
+					$result = !!$oProc->m_odb->exec($query);
 					if(!$result)
 					{
 						break;
