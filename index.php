@@ -1,12 +1,12 @@
 <?php
 
-use App\Helpers\DebugArray;
+use App\helpers\DebugArray;
 use Slim\Factory\AppFactory;
 use DI\ContainerBuilder;
-use App\Middleware\PhpGWApiKeyVerifier;
-use App\Middleware\AccessVerifier;
-use App\Providers\AclServiceProvider;
-use App\Providers\DatabaseServiceProvider;
+use App\middleware\ApiKeyVerifier;
+use App\middleware\AccessVerifier;
+use App\providers\AclServiceProvider;
+use App\providers\DatabaseServiceProvider;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -27,12 +27,12 @@ define('ACL_CUSTOM_3', 256);
 $containerBuilder = new ContainerBuilder();
 
 
-require_once SRC_ROOT_PATH . '/Helpers/Translation.php';
-require_once SRC_ROOT_PATH . '/Helpers/Sanitizer.php';
-require_once SRC_ROOT_PATH . '/Helpers/DebugArray.php';
+require_once SRC_ROOT_PATH . '/helpers/Translation.php';
+require_once SRC_ROOT_PATH . '/helpers/Sanitizer.php';
+require_once SRC_ROOT_PATH . '/helpers/DebugArray.php';
 // Add your settings to the container
 
-$database_settings = require_once SRC_ROOT_PATH . '/Helpers/FilterDatabaseConfig.php';
+$database_settings = require_once SRC_ROOT_PATH . '/helpers/FilterDatabaseConfig.php';
 
 //_debug_array($database_settings);
 
@@ -57,10 +57,10 @@ $datbaseProvider->register($app);
 //phpinfo();
 
 //require all routes
-require_once __DIR__ . '/src/Routes/RegisterRoutes.php';
+require_once __DIR__ . '/src/routes/RegisterRoutes.php';
 
 
-//App\Helpers\DebugArray::debug($app);
+//App\helpers\DebugArray::debug($app);
 
 
 $displayErrorDetails = true; // Set to false in production
@@ -68,7 +68,7 @@ $logErrors = true;
 $logErrorDetails = true;
 $errorMiddleware = $app->addErrorMiddleware($displayErrorDetails, $logErrors, $logErrorDetails);
 // Get default error handler and override it with your custom error handler
-$customErrorHandler = new \App\Helpers\ErrorHandler($app->getResponseFactory());
+$customErrorHandler = new \App\helpers\ErrorHandler($app->getResponseFactory());
 $errorMiddleware->setDefaultErrorHandler($customErrorHandler);
 
 

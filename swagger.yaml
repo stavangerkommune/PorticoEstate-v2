@@ -71,7 +71,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/BookingData'
+                  $ref: '#/components/schemas/bookingData'
         '500':
           description: An error occurred
 components:
@@ -83,7 +83,7 @@ components:
           type: integer
         name:
           type: string
-    BookingData:
+    bookingData:
       type: object
       properties:
         id:

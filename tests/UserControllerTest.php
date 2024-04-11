@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Container\ContainerInterface;
-use App\Controllers\UserController;
+use App\controllers\UserController;
 use PDO;
 use PDOStatement;
 

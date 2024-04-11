@@ -1,6 +1,6 @@
 <?php
 
-use App\Modules\Setup\Controllers\SetupController;
+use App\modules\setup\controllers\SetupController;
 use Slim\Views\Twig;
 use DI\ContainerBuilder;
 use Psr\Container\ContainerInterface;
