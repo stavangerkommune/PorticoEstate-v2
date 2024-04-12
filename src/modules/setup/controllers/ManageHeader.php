@@ -609,6 +609,7 @@ HTML;
 				} else {
 					$detected .= '<li class="warn">' . $this->setup->lang('Sample configuration not found. using built in defaults') . "</li>\n";
 
+
 					/* These are the settings for the database system */
 					$this->setup_tpl->set_var('lang_domain', $this->setup->lang('Domain'));
 					$this->setup_tpl->set_var('lang_delete', $this->setup->lang('Delete'));
@@ -647,8 +648,7 @@ HTML;
 				// now guessing better settings then the default ones
 				if (!$no_guess) {
 					$detected .= '<li>' . $this->setup->lang('Now guessing better values for defaults...') . "</li>\n";
-					$this_dir = dirname($_SERVER['SCRIPT_FILENAME']);
-					$updir    = realpath('../'); //str_replace('/setup','',$this_dir);
+					$updir    =	dirname(__DIR__, 3);
 					$this->serverSettings['server_root'] = $updir;
 					$this->serverSettings['include_root'] = $updir;
 				}

@@ -88,7 +88,7 @@ class Accounts extends Accounts_
 			return true;
 		}
 
-		$sql = 'INSERT INTO phpgw_group_map (group_id, account_id, rights) VALUES(:group_id, :account_id, :read)';
+		$sql = 'INSERT INTO phpgw_group_map (group_id, account_id, arights) VALUES(:group_id, :account_id, :read)';
 
 		$stmt = $this->db->prepare($sql);
 		$stmt->execute([':group_id' => $group_id, ':account_id' => $account_id, ':read' => $read]);
@@ -122,6 +122,7 @@ class Accounts extends Accounts_
 		$data = array(
 			':account_id' => $id,
 			':account_lid' => $account->lid,
+			':account_pwd' => 'N/A',
 			':account_firstname' => $account->firstname,
 			':account_lastname' => $account->lastname,
 			':account_expires' => -1,
@@ -131,7 +132,7 @@ class Accounts extends Accounts_
 		);
 
 		$sql = 'INSERT INTO phpgw_accounts (account_id, account_lid, account_pwd, account_firstname, account_lastname, account_expires, account_type, account_status, person_id) ' .
-			'VALUES (:account_id, :account_lid, "", :account_firstname, :account_lastname, :account_expires, :account_type, :account_status, :person_id)';
+		'VALUES (:account_id, :account_lid, :account_pwd, :account_firstname, :account_lastname, :account_expires, :account_type, :account_status, :person_id)';
 
 		$stmt = $this->db->prepare($sql);
 		$stmt->execute($data);

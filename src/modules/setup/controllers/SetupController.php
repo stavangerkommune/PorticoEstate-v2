@@ -36,6 +36,8 @@ class SetupController
 
 	public function __construct()
 	{
+		ini_set('session.use_cookies', true);
+		
 		//	$loader = new FilesystemLoader(SRC_ROOT_PATH . '/modules/setup/Templates');
 		//	$this->twig = new Environment($loader, [
 		//		'cache' => sys_get_temp_dir() . '/cache',
@@ -513,14 +515,9 @@ class SetupController
 						$setup_info = $this->process->droptables($setup_info);
 						break;
 					case 'new':
-						// process all apps and langs(last param True), excluding apps with the no_mass_update flag set.
-						//$setup_info = $this->detection->upgrade_exclude($setup_info);
 						// Only process phpgwapi, admin and preferences.
 						$setup_info = $this->detection->base_install($setup_info);
 						$setup_info = $this->process->pass($setup_info, 'new', false, true);
-						$GLOBALS['included'] = True;
-						//FIXME
-						include_once('lang.php');
 						$setup_data['currentver']['phpgwapi'] = 'oldversion';
 						break;
 					case 'oldversion':

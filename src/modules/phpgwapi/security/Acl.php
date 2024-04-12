@@ -1137,7 +1137,7 @@
 				. " WHERE phpgw_applications.app_name ILIKE {$app}"
 				. " AND phpgw_locations.name ILIKE {$location}";
 
-			$stmt = $this->_db->query($sql);
+			$stmt = $this->_db->prepare($sql);
 			$locations = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
 
 			if(!$locations)

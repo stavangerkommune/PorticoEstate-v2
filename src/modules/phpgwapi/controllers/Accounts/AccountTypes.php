@@ -425,10 +425,14 @@
 	 */
 	class phpgwapi_user extends phpgwapi_account
 	{
+		private $serverSettings;
 
 		public function __construct()
 		{
 			$this->_data['type'] 		= parent::TYPE_USER;
+			$this->serverSettings = \App\modules\phpgwapi\services\Settings::getInstance()->get('server');
+			$this->userSettings = \App\modules\phpgwapi\services\Settings::getInstance()->get('user');
+
 		}
 
 		/**
@@ -623,9 +627,9 @@
 			}
 
 			$display = 'firstname';
-			if ( isset($GLOBALS['phpgw_info']['user']['preferences']['common']['account_display']) )
+			if ( isset($this->userSettings['preferences']['common']['account_display']) )
 			{
-				$display = $GLOBALS['phpgw_info']['user']['preferences']['common']['account_display'];
+				$display = $this->userSettings['preferences']['common']['account_display'];
 			}
 
 			switch ( $display )
@@ -649,7 +653,7 @@
 		protected function _set_ldap_extended($name, $value)
 		{
 			// only used by ldap
-			if ( $GLOBALS['phpgw_info']['server']['account_repository'] != 'ldap' )
+			if ( $this->serverSettings['account_repository'] != 'ldap' )
 			{
 				return false;
 			}
@@ -715,7 +719,7 @@
 		public function validate_password($passwd)
 		{			
 			$_error = array();
-			switch ( $GLOBALS['phpgw_info']['server']['password_level'] )
+			switch ( $this->serverSettings['password_level'] )
 			{
 				default:
 				case 'NONALPHA':

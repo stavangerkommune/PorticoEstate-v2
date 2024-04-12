@@ -113,14 +113,14 @@
 			}
 
 			if ( isset(Settings::getInstance()->get('flags')['currentapp'])
-				 && @array_key_exists( Settings::getInstance()->get('flags')['currentapp'] , $serverSetting['log_levels']['module'])
+				 && array_key_exists( Settings::getInstance()->get('flags')['currentapp'] , (array)$serverSetting['log_levels']['module'])
 				 && $this->log_level_table[$serverSetting['log_levels']['module'][Settings::getInstance()->get('flags')['currentapp']]] >= $this->log_level_table[$level] )
 			{
 					return true;
 			}
 
 			if ( isset($user['account_lid'])
-				 && @array_key_exists($user['account_lid'], $serverSetting['log_levels']['user'])
+				 && array_key_exists($user['account_lid'], (array)$serverSetting['log_levels']['user'])
 				 && $this->log_level_table[$serverSetting['log_levels']['user'][$user['account_lid']]] >= $this->log_level_table[$level] )
 			{
 				return true;

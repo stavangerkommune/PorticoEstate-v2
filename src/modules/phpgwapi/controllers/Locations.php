@@ -112,11 +112,13 @@ class Locations
 		$stmt->execute([':app' => $app, ':location' => $location]);
 
 		$location_id = null;
-		if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+		if ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
 			$location_id = (int)$row['location_id']; // already exists so just return the id
 		}
 
-		if ($custom_tbl) {
+		if ($custom_tbl)
+		{
 			$custom_tbl = $this->_db->quote($custom_tbl);
 			$c_attrib = 1;
 		}
@@ -131,15 +133,19 @@ class Locations
 			'allow_c_function'  => $c_function
 		];
 
-		if (!$location_id) {
+		if (!$location_id)
+		{
 			$cols = implode(',', array_keys($value_set));
 			$placeholders = ':' . implode(', :', array_keys($value_set));
 			$stmt = $this->_db->prepare("INSERT INTO phpgw_locations ({$cols}) VALUES ({$placeholders})");
 			$stmt->execute($value_set);
 			$location_id = $this->_db->lastInsertId();
-		} else {
+		}
+		else
+		{
 			$set = '';
-			foreach ($value_set as $key => $value) {
+			foreach ($value_set as $key => $value)
+			{
 				$set .= "{$key} = :{$key}, ";
 			}
 			$set = rtrim($set, ', ');
@@ -169,21 +175,25 @@ class Locations
 		$stmt->execute([':app' => $app, ':location' => $location]);
 
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		if (!$row) {
+		if (!$row)
+		{
 			return false; //invalid location
 		}
 
 		$tbl = $row['c_attrib_table'];
 
-		if ($this->_db->get_transaction()) {
+		if ($this->_db->get_transaction())
+		{
 			$this->global_lock = true;
-		} else {
+		}
+		else
+		{
 			$this->_db->transaction_begin();
 		}
 
 		// if there is a table and the user wants it dropped we drop it
 		//FIXME: this should be done in a schema_proc
-/*
+		/*
 		if ($tbl && $drop_table) {
 			$oProc = createObject(
 				'phpgwapi.schema_proc',
@@ -202,7 +212,8 @@ class Locations
 		$stmt = $this->_db->prepare('DELETE FROM phpgw_locations WHERE app_id = :app AND name = :location');
 		$stmt->execute([':app' => $app, ':location' => $location]);
 
-		if (!$this->global_lock) {
+		if (!$this->global_lock)
+		{
 			$this->_db->transaction_commit();
 		}
 
@@ -222,16 +233,17 @@ class Locations
 		$location = $this->_db->quote($location);
 
 		$sql = 'SELECT c_attrib_table '
-		. ' FROM phpgw_locations '
-		. ' JOIN phpgw_applications ON phpgw_applications.app_id = phpgw_locations.app_id'
-		. ' WHERE phpgw_applications.app_name = :appname'
-		. ' AND phpgw_locations.name = :location';
+			. ' FROM phpgw_locations '
+			. ' JOIN phpgw_applications ON phpgw_applications.app_id = phpgw_locations.app_id'
+			. ' WHERE phpgw_applications.app_name = :appname'
+			. ' AND phpgw_locations.name = :location';
 
 		$stmt = $this->_db->prepare($sql);
 		$stmt->execute([':appname' => $appname, ':location' => $location]);
 
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		if ($row) {
+		if ($row)
+		{
 			return $row['c_attrib_table'];
 		}
 
@@ -250,7 +262,8 @@ class Locations
 	{
 		static $map = array();
 
-		if (isset($map[$appname][$location])) {
+		if (isset($map[$appname][$location]))
+		{
 			return $map[$appname][$location];
 		}
 
@@ -265,9 +278,12 @@ class Locations
 		$stmt = $this->_db->prepare($sql);
 		$stmt->execute([':appname' => $appname, ':location' => $location]);
 
-		if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+		if ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
 			$map[$appname][$location] = $row['location_id'];
-		} else {
+		}
+		else
+		{
 			// throw new Exception("get_id ({$appname}, {$location}) returned 0");
 		}
 
@@ -292,7 +308,8 @@ class Locations
 		$stmt = $this->_db->prepare($sql);
 		$stmt->execute([':location_id' => $location_id]);
 
-		if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+		if ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
 			return [
 				'appname' => $this->_db->unmarshal($row['app_name'], 'string'),
 				'location' => $this->_db->unmarshal($row['name'], 'string'),
@@ -317,7 +334,8 @@ class Locations
 		$stmt = $this->_db->prepare($sql);
 		$stmt->execute([':location_id' => $location_id]);
 
-		if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+		if ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
 			return $this->_db->unmarshal($row['location'], 'string');
 		}
 
@@ -335,7 +353,8 @@ class Locations
 	{
 		static $map = array();
 
-		if (isset($map[$appname][$location])) {
+		if (isset($map[$appname][$location]))
+		{
 			return $map[$appname][$location];
 		}
 
@@ -356,13 +375,15 @@ class Locations
 			':appname' => $appname
 		]);
 
-		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
 			//unmarshal the $row['name'] to remove the slashes
 			$entries[$row['location_id']] = $this->_db->unmarshal($row['name'], 'string');
 		}
 
 		return $entries;
-	}	/**
+	}
+	/**
 	 * Get a list of locations that matches a given location pattern
 	 *
 	 * @param string $appname  the name of the module being looked up
@@ -385,7 +406,8 @@ class Locations
 		]);
 
 		$entries = [];
-		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
 			$entries[] = [
 				'location_id' => $row['location_id'],
 				'name' => $this->_db->unmarshal($row['name'], 'string'),
@@ -394,7 +416,8 @@ class Locations
 		}
 
 		return $entries;
-	}	/**
+	}
+	/**
 	 * Update the description of a location
 	 *
 	 * @param string $location location within application
@@ -453,23 +476,27 @@ class Locations
 	{
 		$location = $this->_db->quote($location);
 
-		if (!is_array($apps)) {
+		if (!is_array($apps))
+		{
 			$apps = array();
 		}
 		$applications = new Applications();
 
-		foreach ($apps as $appname => $values) {
+		foreach ($apps as $appname => $values)
+		{
 			$appname = $this->_db->quote($appname);
 			$app_id = $applications->name2id($appname);
-			
-			if ($app_id > 0) {
+
+			if ($app_id > 0)
+			{
 				$sql = 'SELECT name FROM phpgw_locations'
 					. ' WHERE app_id = :app_id AND name = :location';
 
 				$stmt = $this->_db->prepare($sql);
 				$stmt->execute([':app_id' => $app_id, ':location' => $location]);
 
-				if (!$stmt->fetch(PDO::FETCH_ASSOC)) {
+				if (!$stmt->fetch(PDO::FETCH_ASSOC))
+				{
 					$top = (int) $values['top_grant'];
 
 					$sql = 'INSERT INTO phpgw_locations (app_id, name, descr, allow_grant)'
@@ -494,7 +521,8 @@ class Locations
 
 	public function get_locations($grant = false, $appname = '', $allow_c_attrib = false, $c_function = false, $have_categories = false)
 	{
-		if (!$appname) {
+		if (!$appname)
+		{
 			$flags = Settings::getInstance()->get('flags');
 			$appname = $flags['currentapp'];
 		}
@@ -502,19 +530,23 @@ class Locations
 		$filter = " WHERE app_name=:appname AND phpgw_locations.name != 'run'";
 
 		$join_categories = '';
-		if ($have_categories) {
+		if ($have_categories)
+		{
 			$join_categories = " JOIN phpgw_categories ON phpgw_locations.location_id = phpgw_categories.location_id";
 		}
 
-		if ($allow_c_attrib) {
+		if ($allow_c_attrib)
+		{
 			$filter .= ' AND allow_c_attrib = 1';
 		}
 
-		if ($grant) {
+		if ($grant)
+		{
 			$filter .= ' AND allow_grant = 1';
 		}
 
-		if ($c_function) {
+		if ($c_function)
+		{
 			$filter .= ' AND allow_c_function = 1';
 		}
 
@@ -527,8 +559,10 @@ class Locations
 		$stmt->execute([':appname' => $appname]);
 
 		$locations = array();
-		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
 			$locations[$row['name']] = $row['descr'];
 		}
 		return $locations;
-	}}
+	}
+}

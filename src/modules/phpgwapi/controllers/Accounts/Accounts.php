@@ -53,7 +53,8 @@ $serverSettings = Settings::getInstance()->get('server');
 $acct_type = isset($serverSettings['account_repository']) ? strtolower($serverSettings['account_repository']) : 'sql';
 
 include_once SRC_ROOT_PATH . "/modules/phpgwapi/controllers/Accounts/AccountTypes.php";
-switch ($acct_type) {
+switch ($acct_type)
+{
 	case 'sqlldap':
 		include_once SRC_ROOT_PATH . "/modules/phpgwapi/controllers/Accounts/AccountsSql.php";
 		//fall through
@@ -311,15 +312,23 @@ abstract class Accounts_
 	 */
 	public function auto_add($accountname, $passwd, $firstname, $lastname, $expiredate = 0, $account_status = 'A')
 	{
-		if ($expiredate) {
+		if ($expiredate)
+		{
 			$expires = (int) $expiredate;
-		} else if (isset($this->serverSettings['auto_create_expire'])) {
-			if ($this->serverSettings['auto_create_expire'] == 'never') {
+		}
+		else if (isset($this->serverSettings['auto_create_expire']))
+		{
+			if ($this->serverSettings['auto_create_expire'] == 'never')
+			{
 				$expires = -1;
-			} else {
+			}
+			else
+			{
 				$expires = time() + $this->serverSettings['auto_create_expire'];
 			}
-		} else {
+		}
+		else
+		{
 			$expires = time() + (60 * 60 * 24 * 7); // 1 week - sane default
 		}
 
@@ -356,9 +365,13 @@ abstract class Accounts_
 	{
 		// FIXME: Conflicting transactions - there is a transaction in acl::save_repository()
 		//	$this->db->transaction_begin();
-		try {
+		try
+		{
 			$class = get_class($account);
-			switch ($class) {
+			$parts = explode('\\', $class);
+			$finalElement = end($parts);
+			switch ($finalElement)
+			{
 				case phpgwapi_account::CLASS_TYPE_USER:
 					$this->_create_user($account, $group, $contact_data);
 					break;
@@ -371,7 +384,8 @@ abstract class Accounts_
 					throw new Exception("Invalid account type: {$class}");
 			}
 
-			if (!$account->id) {
+			if (!$account->id)
+			{
 				throw new Exception('Failed to create account');
 			}
 
@@ -379,17 +393,21 @@ abstract class Accounts_
 
 			$aclobj = Acl::getInstance();
 			$aclobj->set_account_id($account->id, true);
-			foreach ($acls as $acl) {
+			foreach ($acls as $acl)
+			{
 				$aclobj->add($acl['appname'], $acl['location'], $acl['rights']);
 			}
 
 			// application permissions
-			foreach ($modules as $module) {
+			foreach ($modules as $module)
+			{
 				$aclobj->add($module, 'run', Acl::READ);
 			}
 
 			$aclobj->save_repository();
-		} catch (Exception $e) {
+		}
+		catch (Exception $e)
+		{
 			//		$this->db->transaction_abort();
 			// throw it again so it can be caught higher up
 			throw $e;
@@ -410,17 +428,20 @@ abstract class Accounts_
 	 */
 	public function get_type($account_id)
 	{
-		if (!is_numeric($account_id)) {
+		if (!is_numeric($account_id))
+		{
 			$account_id = $this->name2id($account_id);
 			trigger_error('Invalid account id specified in call to accounts::get_type', E_USER_NOTICE);
 		}
 
 		$account = $this->get($account_id);
-		if (!is_object($account)) {
+		if (!is_object($account))
+		{
 			throw new Exception('Invalid account id specified');
 		}
 
-		switch (get_class($account)) {
+		switch (get_class($account))
+		{
 			case phpgwapi_account::CLASS_TYPE_USER:
 				return phpgwapi_account::TYPE_USER;
 
@@ -445,7 +466,8 @@ abstract class Accounts_
 	public function id2lid($account_id)
 	{
 		$acct = $this->get($account_id);
-		if (is_object($acct)) {
+		if (is_object($acct))
+		{
 			return $acct->lid;
 		}
 		return '';
@@ -483,7 +505,8 @@ abstract class Accounts_
 		if (
 			!is_object($this->account)
 			|| $this->account->id != $this->account_id
-		) {
+		)
+		{
 			$this->read_repository();
 		}
 		return $this->account;
@@ -501,30 +524,40 @@ abstract class Accounts_
 		$users = array();
 		$groups = array();
 
-		if (!is_array($app_users)) {
+		if (!is_array($app_users))
+		{
 			return array(
 				'groups'	=> array(),
 				'users'		=> array()
 			);
 		}
 
-		foreach ($app_users as $app_user) {
-			try {
+		foreach ($app_users as $app_user)
+		{
+			try
+			{
 				$type = $this->get_type($app_user);
-			} catch (Exception $e) {
+			}
+			catch (Exception $e)
+			{
 				// we ignore invalid accounts, this avoid problems with old crud
 			}
 
-			if ($type == phpgwapi_account::TYPE_GROUP) {
+			if ($type == phpgwapi_account::TYPE_GROUP)
+			{
 				$groups[$app_user] = true;
 
 				$members = $this->get_members($app_user);
-				if (is_array($members)) {
-					foreach ($members as $member) {
+				if (is_array($members))
+				{
+					foreach ($members as $member)
+					{
 						$users[$member] = true;
 					}
 				}
-			} else {
+			}
+			else
+			{
 				$users[$app_user] = true;
 			}
 		}
@@ -545,11 +578,13 @@ abstract class Accounts_
 	 */
 	public function set_account($account_id = null, $account_type = null)
 	{
-		if (!is_null($account_id)) {
+		if (!is_null($account_id))
+		{
 			$this->account_id = (int)$account_id;
 		}
 
-		if (!is_null($account_type)) {
+		if (!is_null($account_type))
+		{
 			$this->account_type = $account_type;
 		}
 	}
@@ -564,9 +599,12 @@ abstract class Accounts_
 	public function set_data($data)
 	{
 		$this->account = new phpgwapi_user();
-		try {
+		try
+		{
 			$this->account->init($data);
-		} catch (Exception $e) {
+		}
+		catch (Exception $e)
+		{
 			throw $e;
 		}
 		return true;
@@ -581,23 +619,28 @@ abstract class Accounts_
 	{
 		$accounts = $this->get_account_without_contact();
 
-		if (!is_array($accounts)) {
+		if (!is_array($accounts))
+		{
 			return;
 		}
 		$contacts = createObject('phpgwapi.contacts');
 
-		if (!isset($this->serverSettings['addressmaster'])) {
+		if (!isset($this->serverSettings['addressmaster']))
+		{
 			$this->serverSettings['addressmaster'] = -3;
 		}
 
-		foreach ($accounts as $account) {
-			if ($account) {
+		foreach ($accounts as $account)
+		{
+			if ($account)
+			{
 				$this->db->transaction_begin();
 				$this->account_id = $account;
 				$user = $this->read_repository();
 				$comms = array();
 
-				switch ($user->type) {
+				switch ($user->type)
+				{
 					case phpgwapi_account::TYPE_USER:
 						$primary = array(
 							'per_prefix'		=> '',
@@ -609,11 +652,13 @@ abstract class Accounts_
 						$type = $contacts->search_contact_type('Persons');
 
 						$domain = '';
-						if (isset($this->serverSettings['mail_server'])) {
+						if (isset($this->serverSettings['mail_server']))
+						{
 							$domain = $this->serverSettings['mail_server'];
 						}
 
-						if ($domain) {
+						if ($domain)
+						{
 							$comm = array(
 								'comm_descr'		=> $contacts->search_comm_descr('work email'),
 								'comm_data'			=> "{$user->lid}@{$domain}",
@@ -639,7 +684,8 @@ abstract class Accounts_
 				$user->person_id = $contacts->add_contact($type, $primary, $comms);
 
 				$this->account = $user;
-				if ($this->save_repository()) {
+				if ($this->save_repository())
+				{
 					$this->db->transaction_commit();
 				}
 			}
@@ -661,14 +707,16 @@ abstract class Accounts_
 		$this->save_repository();
 
 		// module permissions
-		if (is_array($modules)) {
+		if (is_array($modules))
+		{
 			$apps = new \App\modules\phpgwapi\controllers\Applications($group->id);
 			$apps->update_data(array_keys($modules));
 			$apps->save_repository();
 		}
 
 		// FIXME This is broken and only supports localFS VFS
-		if ($group->old_loginid != $group->lid) {
+		if ($group->old_loginid != $group->lid)
+		{
 			$basedir = "{$this->serverSettings['files_dir']}/groups/";
 			@rename("{$basedir}{$group->old_loginid}", "{$basedir}/{$group->lid}");
 		}
@@ -706,14 +754,17 @@ abstract class Accounts_
 		$new_groups = $groups;
 		$drop_groups = array_diff($old_groups, $new_groups);
 
-		if (is_array($drop_groups) && count($drop_groups)) {
-			foreach ($drop_groups as $group) {
+		if (is_array($drop_groups) && count($drop_groups))
+		{
+			foreach ($drop_groups as $group)
+			{
 				$this->delete_account4group($user->id, $group);
 			}
 		}
 		unset($old_groups, $groups, $drop_groups);
 
-		foreach ($new_groups as $group) {
+		foreach ($new_groups as $group)
+		{
 			$this->add_user2group($user->id, $group);
 		}
 
@@ -723,8 +774,10 @@ abstract class Accounts_
 		$aclobj->set_account_id($user->id, true);
 		$aclobj->clear_user_cache($user->id);
 		$installed_apps = \App\modules\phpgwapi\services\Settings::getInstance()->get('apps');
-		foreach ($installed_apps as $app => $dummy) {
-			if ($app == 'phpgwapi') {
+		foreach ($installed_apps as $app => $dummy)
+		{
+			if ($app == 'phpgwapi')
+			{
 				continue;
 			}
 			$aclobj->delete_repository($app, 'admin', $user->id);
@@ -733,14 +786,16 @@ abstract class Accounts_
 		$aclobj->delete_repository('preferences', 'changepassword', $user->id);
 		$aclobj->delete_repository('phpgwapi', 'anonymous', $user->id);
 		$aclobj->set_account_id($user->id, true); //reread the current repository
-		foreach ($acls as $acl) {
+		foreach ($acls as $acl)
+		{
 			$aclobj->add($acl['appname'], $acl['location'], $acl['rights']);
 		}
 
 		$aclobj->save_repository();
 
 		// application permissions
-		if (is_array($modules)) {
+		if (is_array($modules))
+		{
 			$apps = new \App\modules\phpgwapi\controllers\Applications($user->id);
 			$apps->update_data($modules);
 			$apps->save_repository();
@@ -770,9 +825,12 @@ abstract class Accounts_
 	 */
 	public function update_data($data)
 	{
-		if ($this->get_type($data->id) == 'g') {
+		if ($this->get_type($data->id) == 'g')
+		{
 			$account = new phpgwapi_group();
-		} else {
+		}
+		else
+		{
 			$account = new phpgwapi_user();
 		}
 		$account->init($data);
@@ -803,11 +861,13 @@ abstract class Accounts_
 	protected function _create_group($group, $members)
 	{
 		$this->_save_contact_for_group($group);
-		if (!$this->create_group_account($group)) {
+		if (!$this->create_group_account($group))
+		{
 			return false;
 		}
 
-		foreach ($members as $member) {
+		foreach ($members as $member)
+		{
 			$this->add_user2Group($member, $group->id);
 		}
 
@@ -832,11 +892,13 @@ abstract class Accounts_
 	protected function _create_user($user, $groups, $contact_data = array())
 	{
 		$this->_save_contact_for_user($user, $contact_data);
-		if (!$this->create_user_account($user)) {
+		if (!$this->create_user_account($user))
+		{
 			return false;
 		}
 
-		foreach ($groups as $group) {
+		foreach ($groups as $group)
+		{
 			$this->add_user2Group($user->id, $group);
 		}
 
@@ -875,22 +937,32 @@ abstract class Accounts_
 
 		$max = !empty($this->serverSettings['account_max_id']) ? (int) $this->serverSettings['account_max_id'] : 2147483647;
 
-		if ($account_type == 'g') {
+		if ($account_type == 'g')
+		{
 			$type = 'groups';
-		} else {
+		}
+		else
+		{
 			$type = 'accounts';
 		}
 
-		$nextid = (int) $GLOBALS['phpgw']->common->last_id($type, $min, $max);
-
+		//	$nextid = (int) $GLOBALS['phpgw']->common->last_id($type, $min, $max);
+		$nextid = (int) $this->db->next_id('phpgw_nextid', array('appname' => $type), $min, $max);
 		/* Loop until we find a free id */
+
+
 		$free = false;
-		while (!$free) {
+		while (!$free)
+		{
 			$account_lid = '';
 			//echo '<br />calling search for id: '.$nextid;
-			if ($this->exists($nextid)) {
-				$nextid = (int) $GLOBALS['phpgw']->common->next_id($type, $min, $max);
-			} else {
+			if ($this->exists($nextid))
+			{
+				//		$nextid = (int) $GLOBALS['phpgw']->common->next_id($type, $min, $max);
+				$nextid = (int) $this->db->next_id('phpgw_nextid', array('appname' => $type), $min, $max);
+			}
+			else
+			{
 				break;
 			}
 		}
@@ -898,7 +970,8 @@ abstract class Accounts_
 		if (
 			isset($this->serverSettings['account_max_id']) &&
 			$this->serverSettings['account_max_id'] < $nextid
-		) {
+		)
+		{
 			return false;
 		}
 		/* echo '<br />using'.$nextid;exit; */
@@ -914,7 +987,9 @@ abstract class Accounts_
 	 */
 	protected function _save_contact_for_group(&$group)
 	{
-		if (!isset($this->serverSettings['addressmaster'])) {
+		return true;
+		if (!isset($this->serverSettings['addressmaster']))
+		{
 			$this->serverSettings['addressmaster'] = -3;
 		}
 		$primary = array(
@@ -926,7 +1001,8 @@ abstract class Accounts_
 		$contacts = createObject('phpgwapi.contacts');
 
 		// does the user already exist in the addressbook?
-		if ($group->person_id && $contacts->exist_contact($group->person_id)) {
+		if ($group->person_id && $contacts->exist_contact($group->person_id))
+		{
 			return !!$contacts->edit_org($group->person_id, $primary);
 		}
 
@@ -945,9 +1021,13 @@ abstract class Accounts_
 	 */
 	protected function _save_contact_for_user(&$user, $contact_data)
 	{
-		if (isset($contact_data['primary']) && $contact_data['primary']) {
+		return true;
+		if (isset($contact_data['primary']) && $contact_data['primary'])
+		{
 			$primary = $contact_data['primary'];
-		} else {
+		}
+		else
+		{
 			$primary = array(
 				'owner'				=> $this->serverSettings['addressmaster'],
 				'access'			=> 'public',
@@ -959,23 +1039,29 @@ abstract class Accounts_
 		$contacts = createObject('phpgwapi.contacts');
 
 		// does the user already exist in the addressbook?
-		if ($user->person_id && $contacts->exist_contact($user->person_id)) {
+		if ($user->person_id && $contacts->exist_contact($user->person_id))
+		{
 			return !!$contacts->edit_person($user->person_id, $primary);
 		}
 
 		$type = $contacts->search_contact_type('Persons');
 
-		if (isset($contact_data['comms']) && $contact_data['comms']) {
+		if (isset($contact_data['comms']) && $contact_data['comms'])
+		{
 			$comms = $contact_data['comms'];
-		} else {
+		}
+		else
+		{
 
 			$comms = array();
 			$domain = '';
-			if (isset($this->serverSettings['mail_server'])) {
+			if (isset($this->serverSettings['mail_server']))
+			{
 				$domain = $this->serverSettings['mail_server'];
 			}
 
-			if ($domain) {
+			if ($domain)
+			{
 				$comm = array(
 					'comm_descr'		=> $contacts->search_comm_descr('work email'),
 					'comm_data'			=> "{$user->lid}@{$domain}",

@@ -33,7 +33,9 @@
  * @package phpgwapi
  * @subpackage application
  */
+
 namespace App\modules\phpgwapi\controllers;
+
 use App\modules\phpgwapi\services\Settings;
 use App\modules\phpgwapi\security\Acl;
 use App\modules\phpgwapi\services\Translation;
@@ -73,7 +75,7 @@ class Applications
 	public function __construct($account_id = 0)
 	{
 		$this->db = \App\Database\Db::getInstance();
-		$this->acl =Acl::getInstance($account_id);
+		$this->acl = Acl::getInstance($account_id);
 
 		$this->set_account_id($account_id);
 	}
@@ -99,10 +101,12 @@ class Applications
 	{
 		$translation = Translation::getInstance();
 
-		if (is_array($_type)) {
+		if (is_array($_type))
+		{
 			$_type = $_type['type'] ? $_type['type'] : $_type[0];
 		}
-		switch ($_type) {
+		switch ($_type)
+		{
 			case 'xmlrpc':
 				$xml_functions = array(
 					'read' => array(
@@ -138,26 +142,32 @@ class Applications
 	 */
 	public function read_repository()
 	{
-		if (empty(Settings::getInstance()->get('apps'))) {
+		if (empty(Settings::getInstance()->get('apps')))
+		{
 			$this->read_installed_apps();
 		}
 		$this->data = array();
-		if ($this->account_id == False) {
+		if ($this->account_id == False)
+		{
 			return array();
 		}
 
 		$apps = $this->acl->get_user_applications($this->account_id);
 		$apps_admin = $this->acl->get_app_list_for_id('admin', Acl::ADD, $this->account_id);
-		if ($apps_admin) {
+		if ($apps_admin)
+		{
 			$apps['admin'] = true;
 		}
-		foreach ($apps_admin as $app_admin) {
+		foreach ($apps_admin as $app_admin)
+		{
 			$apps[$app_admin] = true;
 		}
 
 		$installed_apps = Settings::getInstance()->get('apps');
-		foreach ($installed_apps as $app) {
-			if (isset($apps[$app['name']])) {
+		foreach ($installed_apps as $app)
+		{
+			if (isset($apps[$app['name']]))
+			{
 				$this->data[$app['name']] = array(
 					'title'   => $installed_apps[$app['name']]['title'],
 					'name'    => $app['name'],
@@ -178,7 +188,8 @@ class Applications
 	 */
 	public function read(): array
 	{
-		if (!count($this->data)) {
+		if (!count($this->data))
+		{
 			$this->read_repository();
 		}
 		return $this->data;
@@ -195,8 +206,10 @@ class Applications
 		$translation = Translation::getInstance();
 		$installed_apps = Settings::getInstance()->get('apps');
 
-		if (is_array($apps)) {
-			foreach ($apps as $app) {
+		if (is_array($apps))
+		{
+			foreach ($apps as $app)
+			{
 				$this->data[$app[1]] = array(
 					'title'   =>  $translation->translate($app[1], array(), false, $app[1]),
 					'name'    => $app[1],
@@ -205,7 +218,9 @@ class Applications
 					'id'      => $installed_apps[$app[1]]['id']
 				);
 			}
-		} else if (is_string($apps)) {
+		}
+		else if (is_string($apps))
+		{
 			$this->data[$apps] = array(
 				'title'   => $translation->translate($apps, array(), false, $apps),
 				'name'    => $apps,
@@ -225,7 +240,8 @@ class Applications
 	 */
 	public function delete($appname)
 	{
-		if ($this->data[$appname]) {
+		if ($this->data[$appname])
+		{
 			unset($this->data[$appname]);
 		}
 		return $this->data;
@@ -252,12 +268,15 @@ class Applications
 	{
 		$num_rows = $this->acl->delete_repository("%%", 'run', $this->account_id);
 
-		if (!is_array($this->data) || !count($this->data)) {
+		if (!is_array($this->data) || !count($this->data))
+		{
 			return array();
 		}
 
-		foreach ($this->data as $app) {
-			if (!$this->is_system_enabled($app)) {
+		foreach ($this->data as $app)
+		{
+			if (!$this->is_system_enabled($app))
+			{
 				continue;
 			}
 			$this->acl->add_repository($app, 'run', $this->account_id, ACL_READ);
@@ -271,10 +290,12 @@ class Applications
 
 	public function app_perms()
 	{
-		if (count($this->data) == 0) {
+		if (count($this->data) == 0)
+		{
 			$this->read_repository();
 		}
-		foreach (array_keys($this->data) as $key) {
+		foreach (array_keys($this->data) as $key)
+		{
 			$app[] = $this->data[$key]['name'];
 		}
 		return $app;
@@ -289,7 +310,8 @@ class Applications
 	{
 		$translation = Translation::getInstance();
 
-		if (!is_array(Settings::getInstance()->get('apps'))) {
+		if (!is_array(Settings::getInstance()->get('apps')))
+		{
 			$this->read_installed_apps();
 		}
 
@@ -297,11 +319,14 @@ class Applications
 
 		$app_list = $this->acl->get_app_list_for_id('run', 1, $this->account_id, $inherited);
 
-		if (!is_array($app_list) || !count($app_list)) {
+		if (!is_array($app_list) || !count($app_list))
+		{
 			return $this->data;
 		}
-		foreach ($app_list as $app) {
-			if ($this->is_system_enabled($app)) {
+		foreach ($app_list as $app)
+		{
+			if ($this->is_system_enabled($app))
+			{
 				$this->data[$app] = array(
 					'title'   => $translation->translate($app, array(), false, $app),
 					'name'    => $app,
@@ -328,13 +353,18 @@ class Applications
 
 		$sql = 'SELECT * FROM phpgw_applications WHERE app_enabled != 0 ORDER BY app_order ASC';
 		// get all installed apps
-		try {
-			$apps = $this->db->query($sql)->fetchAll();
-		} catch (PDOException $e) {
+		try
+		{
+			$this->db->query($sql);
+			$apps = $this->db->resultSet;
+		}
+		catch (PDOException $e)
+		{
 			die("Error executing query: " . $e->getMessage());
 		}
 		$values = [];
-		foreach ($apps as $key => $value) {
+		foreach ($apps as $key => $value)
+		{
 			$values[$value['app_name']] =
 				[
 					'name'    => $value['app_name'],
@@ -361,7 +391,8 @@ class Applications
 	{
 		$installed_apps = Settings::getInstance()->get('apps');
 
-		if (empty($installed_apps)) {
+		if (empty($installed_apps))
+		{
 			$this->read_installed_apps();
 		}
 		return isset($installed_apps[$appname]) && $installed_apps[$appname]['enabled'];
@@ -378,11 +409,14 @@ class Applications
 		static $names = array();
 		$installed_apps = Settings::getInstance()->get('apps');
 
-		if (!isset($names[$id])) {
+		if (!isset($names[$id]))
+		{
 			$names[$id] = '';
 			$id = (int) $id;
-			foreach ($installed_apps as $appname => $app) {
-				if ($app['id'] == $id) {
+			foreach ($installed_apps as $appname => $app)
+			{
+				if ($app['id'] == $id)
+				{
 					$names[$id] = $appname;
 				}
 			}
@@ -400,12 +434,14 @@ class Applications
 	{
 		$installed_apps = Settings::getInstance()->get('apps');
 
-		if (empty($installed_apps)|| !is_array($installed_apps)) {
+		if (empty($installed_apps) || !is_array($installed_apps))
+		{
 			$this->read_installed_apps();
 			$installed_apps = Settings::getInstance()->get('apps');
 		}
 
-		if (isset($installed_apps[$appname]) && is_array($installed_apps[$appname])	) {
+		if (isset($installed_apps[$appname]) && is_array($installed_apps[$appname]))
+		{
 			return $installed_apps[$appname]['id'];
 		}
 		return 0;

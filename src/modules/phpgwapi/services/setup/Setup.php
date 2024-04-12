@@ -71,7 +71,6 @@
 		
 		public function __construct($html = False, $translation = False)
 		{
-			ini_set('session.use_cookies', true);
             $this->serverSettings = Settings::getInstance()->get('server');
             $this->setup_data = Settings::getInstance()->get('setup');
 			$this->serverSettings['default_lang'] = !empty($this->serverSettings['default_lang']) ? $this->serverSettings['default_lang'] : 'en';
