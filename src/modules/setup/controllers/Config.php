@@ -253,7 +253,6 @@
             $stmt = $this->db->prepare("SELECT * FROM phpgw_config");
             $stmt->execute();
 
-            $current_config = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $current_config[$row['config_name']] = $row['config_value'];
             }

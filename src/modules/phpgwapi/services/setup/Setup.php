@@ -184,7 +184,7 @@
 			$ConfigDomain = $ConfigDomain ? $ConfigDomain: \Sanitizer::get_var('ConfigDomain',	'string', 'COOKIE');
 			$ConfigPW     = $ConfigPW ? $ConfigPW : \Sanitizer::get_var('ConfigPW',	'string', 'COOKIE');
 			$HeaderPW     = $HeaderPW ? $HeaderPW : \Sanitizer::get_var('HeaderPW',	'string', 'COOKIE');
-			$ConfigLang   = $ConfigLang ? $ConfigLang : \Sanitizer::get_var('ConfigLang',	'string', 'COOKIE');
+			$ConfigLang   = $ConfigLang ? $ConfigLang : \Sanitizer::get_var('ConfigLang',	'string', 'COOKIE', 'en');
 
 
 			/* 6 cases:
@@ -242,7 +242,7 @@
 				}
 				else
 				{
-					$this->setup_data['HeaderLoginMSG'] = lang('Invalid password');
+					$this->setup_data['HeaderLoginMSG'] = $this->lang('Invalid password');
 					$this->setup_data['ConfigLoginMSG'] = '';
 					if(isset($hack_prevention[$ip]['denied'][$now]))
 					{
@@ -286,7 +286,7 @@
 				}
 				else
 				{
-					$this->setup_data['ConfigLoginMSG'] = lang('Invalid password');
+					$this->setup_data['ConfigLoginMSG'] = $this->lang('Invalid password');
 					$this->setup_data['HeaderLoginMSG'] = '';
 					if(isset($hack_prevention[$ip]['denied'][$now]))
 					{
@@ -314,7 +314,7 @@
 					setcookie('ConfigPW','');
 					$this->setup_data['LastDomain'] = isset($_COOKIE['ConfigDomain']) ? $_COOKIE['ConfigDomain'] : '';
 					setcookie('ConfigDomain','');
-					$this->setup_data['ConfigLoginMSG'] = lang('You have successfully logged out');
+					$this->setup_data['ConfigLoginMSG'] = $this->lang('You have successfully logged out');
 					setcookie('ConfigLang','');
 					$this->setup_data['HeaderLoginMSG'] = '';
 					Settings::getInstance()->set('setup', $this->setup_data);
@@ -325,7 +325,7 @@
 				{
 					/* header admin logout */
 					setcookie('HeaderPW','');
-					$this->setup_data['HeaderLoginMSG'] = lang('You have successfully logged out');
+					$this->setup_data['HeaderLoginMSG'] = $this->lang('You have successfully logged out');
 					setcookie('ConfigLang','');
 					$this->setup_data['ConfigLoginMSG'] = '';
 					Settings::getInstance()->set('setup', $this->setup_data);
@@ -346,7 +346,7 @@
 				}
 				else
 				{
-					$this->setup_data['ConfigLoginMSG'] = lang('Invalid password');
+					$this->setup_data['ConfigLoginMSG'] = $this->lang('Invalid password');
 					$this->setup_data['HeaderLoginMSG'] = '';
 					Settings::getInstance()->set('setup', $this->setup_data);
 					return False;
@@ -370,7 +370,7 @@
 				}
 				else
 				{
-					$this->setup_data['HeaderLoginMSG'] = lang('Invalid password');
+					$this->setup_data['HeaderLoginMSG'] = $this->lang('Invalid password');
 					$this->setup_data['ConfigLoginMSG'] = '';
 					Settings::getInstance()->set('setup', $this->setup_data);
 					return False;
@@ -433,7 +433,7 @@
 				if(!$foundip)
 				{
 					$this->setup_data['HeaderLoginMSG'] = '';
-					$this->setup_data['ConfigLoginMSG'] = lang('Invalid IP address');
+					$this->setup_data['ConfigLoginMSG'] = $this->lang('Invalid IP address');
 					Settings::getInstance()->set('setup', $this->setup_data);
 					return False;
 				}

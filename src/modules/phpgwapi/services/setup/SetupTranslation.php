@@ -55,7 +55,7 @@ class SetupTranslation extends Translation
 
 		$this->set_userlang($ConfigLang);
 
-		$fn = SRC_ROOT_PATH . "/modules/setup/Lang/phpgw_{$this->userlang}.lang";
+		$fn = SRC_ROOT_PATH . "/modules/setup/lang/phpgw_{$this->userlang}.lang";
 		if (!file_exists($fn))
 		{
 			$fn = SRC_ROOT_PATH . '/modules/phpgwapi/setup/phpgw_en.lang';

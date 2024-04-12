@@ -916,7 +916,7 @@ abstract class Accounts_
 		$Hooks->process('addaccount');
 		$Hooks->process('add_def_pref');
 		//Alert me for later..
-		throw new Exception('Check $Preferences->save_repository()');
+	//	throw new Exception('Check $Preferences->save_repository()');
 
 		$Preferences->save_repository(false);
 

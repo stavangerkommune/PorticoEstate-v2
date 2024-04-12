@@ -52,7 +52,8 @@ class DatabaseServiceProvider
 			$db->set_domain($config['domain']);
 			$db->set_config($config);
 		} catch (PDOException $e) {
-			throw new Exception("Error connecting to database: " . $e->getMessage());
+		//	throw new Exception("Error connecting to database: " . $e->getMessage());
+		//	echo "Error connecting to database: " . $e->getMessage();
 		}
 
 		$container->set('db', function () use ($container) {

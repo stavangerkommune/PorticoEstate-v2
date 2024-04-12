@@ -30,6 +30,7 @@ $containerBuilder = new ContainerBuilder();
 require_once SRC_ROOT_PATH . '/helpers/Translation.php';
 require_once SRC_ROOT_PATH . '/helpers/Sanitizer.php';
 require_once SRC_ROOT_PATH . '/helpers/DebugArray.php';
+require_once SRC_ROOT_PATH . '/helpers/LegacyObjectHandler.php';
 // Add your settings to the container
 
 $database_settings = require_once SRC_ROOT_PATH . '/helpers/FilterDatabaseConfig.php';

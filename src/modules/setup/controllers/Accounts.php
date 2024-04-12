@@ -356,7 +356,7 @@
 				$groups = array($defaultgroupid, $admingroupid);
 
 				$accountid = $this->add_account($admin_acct, 'u', $groups, array('admin'), $acls);
-				Header('Location: index.php');
+				Header('Location: /setup');
 				exit;
 			}
 		}
@@ -415,7 +415,7 @@
 			'val_lname'			=> $lname,
 		));
 
-		$main = $this->setup_tpl->pparse('out', 'T_accounts');
+		$main = $this->setup_tpl->parse('out', 'T_accounts');
 		$footer = $this->html->get_footer();
 		return $header . $main . $footer;
 	}
