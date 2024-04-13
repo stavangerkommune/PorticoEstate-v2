@@ -1,5 +1,10 @@
 <?php
 
+    include_once SRC_ROOT_PATH . '/modules/phpgwapi/inc/class.object_factory.inc.php';
+    include_once SRC_ROOT_PATH . '/modules/phpgwapi/inc/class.ofphpgwapi.inc.php';
+    include_once SRC_ROOT_PATH . '/helpers/phpgw.php';
+
+
     /**
     * Import a class, should be used in the top of each class, doesn't instantiate like createObject does
     *
