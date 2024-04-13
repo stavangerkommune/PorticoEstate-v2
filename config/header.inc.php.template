@@ -47,6 +47,10 @@
 	if (!defined('SRC_ROOT_PATH'))
 	{
 		define('SRC_ROOT_PATH', PHPGW_SERVER_ROOT);
+		/**
+		* Include root directory - legacy support
+		*/
+		define('PHPGW_INCLUDE_ROOT', PHPGW_SERVER_ROOT . '/modules');
 	}
 
 	//We only let preset flags remain everything else is killed
