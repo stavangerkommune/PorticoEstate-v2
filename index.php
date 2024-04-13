@@ -27,6 +27,10 @@ define('ACL_CUSTOM_3', 256);
 $containerBuilder = new ContainerBuilder();
 
 
+if (is_file(__DIR__ . '/config/header.inc.php')) {
+  //  $settings = include __DIR__ . '/config/header.inc.php';
+} 
+
 require_once SRC_ROOT_PATH . '/helpers/Translation.php';
 require_once SRC_ROOT_PATH . '/helpers/Sanitizer.php';
 require_once SRC_ROOT_PATH . '/helpers/DebugArray.php';
