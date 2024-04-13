@@ -2,14 +2,12 @@
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use App\modules\phpgwapi\controllers\StartPoint;
+use App\modules\phpgwapi\middleware\SessionsMiddleware;
 
 
-
-$app->get('/', function (Request $request, Response $response) {
-    $response_str = json_encode(['message' => 'Welcome to Portico API']);
-    $response->getBody()->write($response_str);
-    return $response->withHeader('Content-Type', 'application/json');
-});
+$app->get('/', StartPoint::class . ':run')->add(new SessionsMiddleware($app->getContainer()));
+$app->post('/', StartPoint::class . ':run')->add(new SessionsMiddleware($app->getContainer()));
 
 $app->get('/swagger[/{params:.*}]', function (Request $request, Response $response) {
     $json_file = __DIR__ . '/../../swagger.json';
