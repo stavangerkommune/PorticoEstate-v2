@@ -31,7 +31,7 @@
 
 		protected function file_type_for_export_type( $export_type )
 		{
-			$config_data = CreateObject('phpgwapi.config', 'booking')->read();
+			$config_data = (new \App\modules\phpgwapi\services\Config('booking'))->read();
 
 			if ($export_type === 'internal')
 			{

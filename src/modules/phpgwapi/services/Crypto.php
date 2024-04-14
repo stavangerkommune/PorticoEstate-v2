@@ -16,7 +16,7 @@ namespace App\modules\phpgwapi\services;
 
 if (!empty($serverSettings['mcrypt_enabled']) || (isset($serverSettings['enable_crypto']) && $serverSettings['enable_crypto'] == 'mcrypt')) {
 	require_once SRC_ROOT_PATH . '/modules/phpgwapi/services/CryptoMcrypt.php';
-} else if (true){//isset($serverSettings['enable_crypto']) && $serverSettings['enable_crypto'] == 'libsodium') {
+} else if (isset($serverSettings['enable_crypto']) && $serverSettings['enable_crypto'] == 'libsodium') {
 	require_once SRC_ROOT_PATH . '/modules/phpgwapi/services/CryptoLibsodium.php';
 } else {
 	//Fall back

@@ -112,7 +112,7 @@
 
 		private function set_prizing( $article_mapping_id )
 		{
-			$article_prizing = phpgw::get_var('article_prizing');
+			$article_prizing = \Sanitizer::get_var('article_prizing');
 
 			if (empty($article_prizing['date_from']))
 			{

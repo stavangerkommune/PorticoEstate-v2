@@ -81,7 +81,7 @@ class SessionsMiddleware implements MiddlewareInterface
         $routePath_arr = explode('/', $this->routePath);
         $currentApp = $routePath_arr[1];       
 		$this->read_initial_settings( $currentApp);
-		$sessions = new Sessions();
+		$sessions = Sessions::getInstance();
 		if ($currentApp == 'login' && isset($_POST['login']) && isset($_POST['passwd'])){
 			$login = $request->getParsedBody()['login'];
 			$passwd = $request->getParsedBody()['passwd'];

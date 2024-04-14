@@ -123,7 +123,7 @@
 
 		public function get_reserved_resources()
 		{
-			$building_id = phpgw::get_var('building_id', 'int');
+			$building_id = \Sanitizer::get_var('building_id', 'int');
 			return $this->bo->get_reserved_resources($building_id);
 		}
 
@@ -151,12 +151,12 @@
 
 		public function get_articles()
 		{
-			$resources			 = phpgw::get_var('resources', 'int', 'GET');
-			$application_id		 = phpgw::get_var('application_id', 'int', 'GET');
-			$reservation_type	 = phpgw::get_var('reservation_type', 'string', 'GET');
-			$reservation_id		 = phpgw::get_var('reservation_id', 'int', 'GET');
-			$alloc_template_id	 = phpgw::get_var('alloc_template_id', 'int', 'GET');
-			$collection			 = phpgw::get_var('collection', 'bool', 'GET');
+			$resources			 = \Sanitizer::get_var('resources', 'int', 'GET');
+			$application_id		 = \Sanitizer::get_var('application_id', 'int', 'GET');
+			$reservation_type	 = \Sanitizer::get_var('reservation_type', 'string', 'GET');
+			$reservation_id		 = \Sanitizer::get_var('reservation_id', 'int', 'GET');
+			$alloc_template_id	 = \Sanitizer::get_var('alloc_template_id', 'int', 'GET');
+			$collection			 = \Sanitizer::get_var('collection', 'bool', 'GET');
 
 			if($alloc_template_id)
 			{
@@ -269,7 +269,7 @@
 				phpgw::no_access(false, $message);
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$relaxe_acl = true;
 				return $this->query($relaxe_acl);
@@ -357,8 +357,8 @@
 
 		public function get_pricing()
 		{
-			$id	 = phpgw::get_var('id', 'int');
-			$filter_active	 = phpgw::get_var('filter_active', 'bool');
+			$id	 = \Sanitizer::get_var('id', 'int');
+			$filter_active	 = \Sanitizer::get_var('filter_active', 'bool');
 
 			$pricing	 = $this->bo->get_pricing($id, $filter_active);
 
@@ -369,7 +369,7 @@
 		 */
 		public function edit( $values = array(), $mode = 'edit' )
 		{
-			$active_tab										 = !empty($values['active_tab']) ? $values['active_tab'] : phpgw::get_var('active_tab', 'string', 'REQUEST', 'first_tab');
+			$active_tab										 = !empty($values['active_tab']) ? $values['active_tab'] : \Sanitizer::get_var('active_tab', 'string', 'REQUEST', 'first_tab');
 			if (empty($this->permissions[PHPGW_ACL_ADD]))
 			{
 				phpgw::no_access();
@@ -381,7 +381,7 @@
 			}
 			else
 			{
-				$id		 = !empty($values['id']) ? $values['id'] : phpgw::get_var('id', 'int');
+				$id		 = !empty($values['id']) ? $values['id'] : \Sanitizer::get_var('id', 'int');
 				$article = $this->bo->read_single($id, true, true);
 			}
 
@@ -608,7 +608,7 @@ JS;
 				phpgw::no_access();
 			}
 
-			$id = !empty($id) ? $id : phpgw::get_var('id', 'int');
+			$id = !empty($id) ? $id : \Sanitizer::get_var('id', 'int');
 
 			$article = $this->bo->read_single($id)->toArray();
 
@@ -624,11 +624,11 @@ JS;
 				return array();
 			}
 
-			$section			 = phpgw::get_var('section', 'string', 'REQUEST', 'documents');
-			$location_item_id	 = phpgw::get_var('location_item_id', 'int');
-			$ids				 = phpgw::get_var('ids', 'int');
-			$action				 = phpgw::get_var('action', 'string');
-			$tags				 = phpgw::get_var('tags', 'string');
+			$section			 = \Sanitizer::get_var('section', 'string', 'REQUEST', 'documents');
+			$location_item_id	 = \Sanitizer::get_var('location_item_id', 'int');
+			$ids				 = \Sanitizer::get_var('ids', 'int');
+			$action				 = \Sanitizer::get_var('action', 'string');
+			$tags				 = \Sanitizer::get_var('tags', 'string');
 
 			$fakebase	 = '/booking';
 			$bofiles	 = CreateObject('property.bofiles', $fakebase);
@@ -651,8 +651,8 @@ JS;
 
 		function _get_files()
 		{
-			$id		 = phpgw::get_var('id', 'int');
-			$section = phpgw::get_var('section', 'string', 'REQUEST', 'documents');
+			$id		 = \Sanitizer::get_var('id', 'int');
+			$section = \Sanitizer::get_var('section', 'string', 'REQUEST', 'documents');
 
 			if (empty($this->permissions[PHPGW_ACL_READ]))
 			{
@@ -709,14 +709,14 @@ JS;
 				$z++;
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$total_records = count($content_files);
 
 				return array
 					(
 					'data'				 => $content_files,
-					'draw'				 => phpgw::get_var('draw', 'int'),
+					'draw'				 => \Sanitizer::get_var('draw', 'int'),
 					'recordsTotal'		 => $total_records,
 					'recordsFiltered'	 => $total_records
 				);
@@ -731,8 +731,8 @@ JS;
 				phpgw::no_access();
 			}
 
-			$section = phpgw::get_var('section', 'string', 'REQUEST', 'documents');
-			$id		 = phpgw::get_var('id', 'int', 'GET');
+			$section = \Sanitizer::get_var('section', 'string', 'REQUEST', 'documents');
+			$id		 = \Sanitizer::get_var('id', 'int', 'GET');
 
 			phpgw::import_class('property.multiuploader');
 

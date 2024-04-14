@@ -86,7 +86,7 @@
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -223,7 +223,7 @@
 			{
 				$resource = extract_values($_POST, $this->fields);
 				$resource['active'] = '1';
-				$building_id = phpgw::get_var('building_id', 'int');
+				$building_id = \Sanitizer::get_var('building_id', 'int');
 				$resource['buildings'][] = $building_id;
 				$building = $this->sobuilding->read_single($building_id);
 				$resource['activity_id'] = $building['activity_id'];
@@ -290,7 +290,7 @@
 		{
 			$GLOBALS['phpgw_info']['flags']['allow_html_image']	 = true;
 			$GLOBALS['phpgw_info']['flags']['allow_html_iframe'] = true;
-			$id = phpgw::get_var('id', 'int');
+			$id = \Sanitizer::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -314,13 +314,13 @@
 			{
 				$resource = array_merge($resource, extract_values($_POST, $this->fields));
 
-				$resource['simple_booking'] = phpgw::get_var('simple_booking', 'bool', 'POST');
+				$resource['simple_booking'] = \Sanitizer::get_var('simple_booking', 'bool', 'POST');
 				$errors = $this->bo->validate($resource);
 				$location = $this->get_location();
 				$location_id = $GLOBALS['phpgw']->locations->get_id('booking', $location);
 
 				$fields = ExecMethod('booking.custom_fields.get_fields', $location);
-				$values_attribute = phpgw::get_var('values_attribute');
+				$values_attribute = \Sanitizer::get_var('values_attribute');
 				$resource['json_representation'] = array();
 				$json_representation = array();
 				foreach ($fields as $attrib_id => $attrib)
@@ -391,7 +391,7 @@
 
 		private function get_location()
 		{
-			$activity_id = phpgw::get_var('schema_activity_id', 'int');
+			$activity_id = \Sanitizer::get_var('schema_activity_id', 'int');
 			$activity_path = $this->activity_bo->get_path($activity_id);
 			$top_level_activity = $activity_path ? $activity_path[0]['id'] : 0;
 			return ".resource.{$top_level_activity}";
@@ -400,7 +400,7 @@
 
 		public function edit_activities()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = \Sanitizer::get_var('id', 'int');
 			$resource = $this->bo->read_single($id);
 			$resource['id'] = $id;
 
@@ -462,7 +462,7 @@
 
 		public function edit_facilities()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = \Sanitizer::get_var('id', 'int');
 			$resource = $this->bo->read_single($id);
 			$resource['id'] = $id;
 
@@ -505,8 +505,8 @@
 
 		public function get_custom()
 		{
-			$type = phpgw::get_var('type', 'string', 'REQUEST', 'form');
-			$resource_id = phpgw::get_var('resource_id', 'int');
+			$type = \Sanitizer::get_var('type', 'string', 'REQUEST', 'form');
+			$resource_id = \Sanitizer::get_var('resource_id', 'int');
 			$resource = $this->bo->read_single($resource_id);
 			$location = $this->get_location();
 			$location_id = $GLOBALS['phpgw']->locations->get_id('booking', $location);
@@ -552,7 +552,7 @@
 
 		function get_rescategories()
 		{
-			$activity_id = phpgw::get_var('activity_id', 'int');
+			$activity_id = \Sanitizer::get_var('activity_id', 'int');
 			$activity_path = $this->activity_bo->get_path($activity_id);
 			$top_level_activity = $activity_path ? $activity_path[0]['id'] : 0;
 			$rescategory_data = $this->rescategory_bo->get_rescategories_by_activities($top_level_activity);
@@ -601,7 +601,7 @@
 
 		public function get_e_locks()
 		{
-			$resource_id = phpgw::get_var('resource_id', 'int');
+			$resource_id = \Sanitizer::get_var('resource_id', 'int');
 
 			$lock_result = $this->bo->so->get_e_locks($resource_id);
 
@@ -637,7 +637,7 @@
 
 		public function get_participant_limit()
 		{
-			$resource_id = phpgw::get_var('resource_id', 'int');
+			$resource_id = \Sanitizer::get_var('resource_id', 'int');
 
 			$result = $this->bo->so->get_participant_limit($resource_id);
 
@@ -683,12 +683,12 @@
 
 		public function add_e_lock()
 		{
-			$resource_id = phpgw::get_var('resource_id', 'int');
-			$e_lock_system_id = phpgw::get_var('e_lock_system_id', 'int');
-			$e_lock_resource_id = phpgw::get_var('e_lock_resource_id', 'string');
-			$e_lock_name = phpgw::get_var('e_lock_name', 'string');
-			$access_code_format = phpgw::get_var('access_code_format', 'string');
-			$access_instruction = phpgw::get_var('access_instruction', 'string');
+			$resource_id = \Sanitizer::get_var('resource_id', 'int');
+			$e_lock_system_id = \Sanitizer::get_var('e_lock_system_id', 'int');
+			$e_lock_resource_id = \Sanitizer::get_var('e_lock_resource_id', 'string');
+			$e_lock_name = \Sanitizer::get_var('e_lock_name', 'string');
+			$access_code_format = \Sanitizer::get_var('access_code_format', 'string');
+			$access_instruction = \Sanitizer::get_var('access_instruction', 'string');
 
 
 
@@ -720,9 +720,9 @@
 
 		public function remove_e_lock()
 		{
-			$resource_id = phpgw::get_var('resource_id', 'int');
-			$e_lock_system_id = phpgw::get_var('e_lock_system_id', 'int');
-			$e_lock_resource_id = phpgw::get_var('e_lock_resource_id', 'string');
+			$resource_id = \Sanitizer::get_var('resource_id', 'int');
+			$e_lock_system_id = \Sanitizer::get_var('e_lock_system_id', 'int');
+			$e_lock_resource_id = \Sanitizer::get_var('e_lock_resource_id', 'string');
 
 			if (!$e_lock_system_id || !$e_lock_resource_id )
 			{
@@ -751,9 +751,9 @@
 
 		public function add_participant_limit()
 		{
-			$resource_id = phpgw::get_var('resource_id', 'int');
-			$limit_from = phpgw::get_var('limit_from', 'date');
-			$limit_quantity = phpgw::get_var('limit_quantity', 'int');
+			$resource_id = \Sanitizer::get_var('resource_id', 'int');
+			$limit_from = \Sanitizer::get_var('limit_from', 'date');
+			$limit_quantity = \Sanitizer::get_var('limit_quantity', 'int');
 
 			if (!$limit_from )
 			{
@@ -784,7 +784,7 @@
 
 		public function get_buildings()
 		{
-			$resource = $this->bo->read_single(phpgw::get_var('resource_id', 'int'));
+			$resource = $this->bo->read_single(\Sanitizer::get_var('resource_id', 'int'));
 
 			$_filter_building['id'] = array_merge(array(-1), $resource['buildings']);
 
@@ -796,8 +796,8 @@
 
 		public function add_building()
 		{
-			$resource_id = phpgw::get_var('resource_id', 'int');
-			if (!$building_id = phpgw::get_var('building_id', 'int'))
+			$resource_id = \Sanitizer::get_var('resource_id', 'int');
+			if (!$building_id = \Sanitizer::get_var('building_id', 'int'))
 			{
 				return array(
 					'ok' => false,
@@ -825,8 +825,8 @@
 
 		public function remove_building()
 		{
-			$resource_id = phpgw::get_var('resource_id', 'int');
-			if (!$building_id = phpgw::get_var('building_id', 'int'))
+			$resource_id = \Sanitizer::get_var('resource_id', 'int');
+			if (!$building_id = \Sanitizer::get_var('building_id', 'int'))
 			{
 				return array(
 					'ok' => false,
@@ -853,7 +853,7 @@
 
 		public function show()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = \Sanitizer::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -922,7 +922,7 @@
 
 		public function schedule()
 		{
-			$resource = $this->bo->get_schedule(phpgw::get_var('id', 'int'), 'booking.uibuilding', 'booking.uiresource');
+			$resource = $this->bo->get_schedule(\Sanitizer::get_var('id', 'int'), 'booking.uibuilding', 'booking.uiresource');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('booking') . "::{$resource['name']}";
 			$building_names = array();

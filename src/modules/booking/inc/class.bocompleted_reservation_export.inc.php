@@ -20,7 +20,7 @@
 			//build_default_read_params will not automatically build a filter for the to_ field
 			//because it cannot match the name 'filter_to' to an existing field once the prefix 
 			//'filter' is removed nor do we want it to, so we build that filter manually here:
-			if ($filter_to = phpgw::get_var('filter_to', 'string', 'REQUEST', null))
+			if ($filter_to = \Sanitizer::get_var('filter_to', 'string', 'REQUEST', null))
 			{
 				$to_date = date('Y-m-d', phpgwapi_datetime::date_to_timestamp($filter_to));
 				$where_clauses[] = "%%table%%" . sprintf(".to_ <= '%s 23:59:59'", $GLOBALS['phpgw']->db->db_addslashes($to_date));
@@ -29,7 +29,7 @@
 			/**
 			 * filter on already processed
 			 */
-			if(phpgw::get_var('generate_files', 'bool', 'POST') )
+			if(\Sanitizer::get_var('generate_files', 'bool', 'POST') )
 			{
 				$where_clauses[] = '%%table%%.id IN (' .
 				' SELECT bb_completed_reservation_export.id FROM bb_completed_reservation_export'.

@@ -36,7 +36,7 @@
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -171,7 +171,7 @@
 
 			/**
 			 *
-			 * $filter_user_id = phpgw::get_var('filter_user_id', 'int');
+			 * $filter_user_id = \Sanitizer::get_var('filter_user_id', 'int');
 			 * Filter is Is handled by somassbooking::_get_conditions()
 			 */
 
@@ -194,8 +194,8 @@
 
 		public function schedule()
 		{
-			$backend = phpgw::get_var('backend', 'bool');
-			$building = $this->bo->get_schedule(phpgw::get_var('id', 'int'), "booking.uimassbooking");
+			$backend = \Sanitizer::get_var('backend', 'bool');
+			$building = $this->bo->get_schedule(\Sanitizer::get_var('id', 'int'), "booking.uimassbooking");
 			$building['application_link'] = self::link(array(
 					'menuaction' => 'booking.uiallocation.add',
 					'building_id' => $building['id'],
@@ -208,7 +208,7 @@
 			));
 			if ($backend)
 			{
-				$building['date'] = phpgw::get_var('date', 'string');
+				$building['date'] = \Sanitizer::get_var('date', 'string');
 			}
 
 			$building['picker_img'] = $GLOBALS['phpgw']->common->image('phpgwapi', 'cal');

@@ -24,8 +24,9 @@ class Db
 	public $resultSet = null;
 	public $Record = null;
 	public $debug = false;
-
-
+	public $like = 'ILIKE';
+	public $join = 'JOIN';
+	public $left_join = 'LEFT JOIN';
 
 	private function __construct($dsn, $username = null, $password = null, $options = null)
 	{

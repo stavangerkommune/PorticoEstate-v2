@@ -68,7 +68,7 @@
 				)
 			);
 
-			$this->config_data = CreateObject('phpgwapi.config', 'booking')->read();
+			$this->config_data = (new \App\modules\phpgwapi\services\Config('booking'))->read();
 		}
 
 		protected function _get_search_to_date( &$entity )

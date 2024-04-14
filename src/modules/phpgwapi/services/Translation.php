@@ -23,7 +23,6 @@
 namespace App\modules\phpgwapi\services;
 
 use App\modules\phpgwapi\services\Cache;
-
 use App\modules\phpgwapi\services\Settings;
 use PDO;
 

@@ -41,7 +41,7 @@
 
 		public function index()
 		{
-			$appname = phpgw::get_var('appname');
+			$appname = \Sanitizer::get_var('appname');
 			$appname = $appname ? $appname : 'booking';
 			if(!$GLOBALS['phpgw']->acl->check('admin', phpgwapi_acl::ADD, $appname))
 			{

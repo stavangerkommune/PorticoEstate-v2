@@ -30,7 +30,7 @@
 		$preferences->add('common', 'template_set', 'bookingfrontend');
 		$preferences->save_repository(true, 'user');
 
-		$config = CreateObject('phpgwapi.config', 'bookingfrontend');
+		$config = new \App\modules\phpgwapi\services\Config('bookingfrontend');
 		$config->read();
 		$config->value('anonymous_user', 'bookingguest');
 		$config->value('anonymous_passwd', $passwd);

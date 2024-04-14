@@ -43,7 +43,7 @@
 
 		public function __construct()
 		{
-			$this->config = CreateObject('phpgwapi.config', 'booking')->read();
+			$this->config = (new \App\modules\phpgwapi\services\Config('booking'))->read();
 
 			if (!empty($this->config['debug']))
 			{

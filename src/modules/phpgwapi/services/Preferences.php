@@ -481,7 +481,7 @@ class Preferences
 
 		if (($type == 'user' || !$type) && !empty($this->serverSettings['cache_phpgw_info']))
 		{
-			$sessions = new Sessions();
+			$sessions = Sessions::getInstance();
 			$sessions->read_repositories(false);
 		}
 

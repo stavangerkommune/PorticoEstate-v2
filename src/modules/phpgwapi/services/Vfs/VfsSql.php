@@ -61,7 +61,6 @@
 			$this->db = \App\Database\Db::getInstance();
 
 			$db_config = $this->db->get_config();
-			//Array ( [db_host] => 192.168.218.57 [db_port] => 5434 [db_name] => portico_ebe_2023 [db_user] => postgres [db_pass] => changeme [domain] => default ) 
 			//create a new pdo  $this->db2 of the database based on the configuration
 			$this->db2 = new \PDO("pgsql:host={$db_config['db_host']};port={$db_config['db_port']};dbname={$db_config['db_name']}", $db_config['db_user'], $db_config['db_pass']);
 			$this->db2->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);

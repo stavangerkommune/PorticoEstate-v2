@@ -57,7 +57,7 @@
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -243,7 +243,7 @@
 
 		public function copy_season()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = \Sanitizer::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -281,7 +281,7 @@
 		
 		public function edit()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = \Sanitizer::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -354,7 +354,7 @@
 
 		public function show()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = \Sanitizer::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -402,7 +402,7 @@
 
 		public function boundaries()
 		{
-			$season_id = phpgw::get_var('id', 'int');
+			$season_id = \Sanitizer::get_var('id', 'int');
 			$season = $this->bo->read_single($season_id);
 
 			$boundaries = $this->bo->get_boundaries($season_id);
@@ -461,7 +461,7 @@
 
 		public function delete_boundary()
 		{
-			$boundary_id = phpgw::get_var('id', 'int');
+			$boundary_id = \Sanitizer::get_var('id', 'int');
 			$boundary = $this->bo->read_boundary($boundary_id);
 			$season_id = $boundary['season_id'];
 			$this->bo->delete_boundary($boundary);
@@ -470,7 +470,7 @@
 
 		public function delete_wtemplate_alloc()
 		{
-			$allocation_id = phpgw::get_var('id', 'int');
+			$allocation_id = \Sanitizer::get_var('id', 'int');
 			$alloc = $this->bo->so_wtemplate_alloc->read_single($allocation_id);
 			$this->bo->delete_wtemplate_alloc($alloc);
 			return 1;
@@ -478,7 +478,7 @@
 
 		public function wtemplate()
 		{
-			$season_id = phpgw::get_var('id', 'int');
+			$season_id = \Sanitizer::get_var('id', 'int');
 			$season = $this->bo->read_single($season_id);
 			$season['season_link'] = self::link(array('menuaction' => 'booking.uiseason.show',
 					'id' => $season_id));
@@ -510,7 +510,7 @@
 
 		public function wtemplate_json()
 		{
-			$season_id = phpgw::get_var('id', 'int');
+			$season_id = \Sanitizer::get_var('id', 'int');
 			$allocations = $this->bo->wtemplate_schedule($season_id);
 			$data = array
 				(
@@ -525,8 +525,8 @@
 
 		public function wtemplate_alloc()
 		{
-			//$season_id = phpgw::get_var('season_id', 'int');
-			//$phpgw_return_as = phpgw::get_var('phpgw_return_as');
+			//$season_id = \Sanitizer::get_var('season_id', 'int');
+			//$phpgw_return_as = \Sanitizer::get_var('phpgw_return_as');
 
 			if ($_SERVER['REQUEST_METHOD'] == 'POST')
 			{
@@ -537,7 +537,7 @@
 					$alloc['articles'] = json_encode($alloc['articles']);
 				}
 				//$alloc['season_id'] = $season_id;
-				$alloc['season_id'] = phpgw::get_var('season_id', 'int');
+				$alloc['season_id'] = \Sanitizer::get_var('season_id', 'int');
 
 				$errors = $this->bo->validate_wtemplate_alloc($alloc);
 				if (!$errors && $alloc['id'])
@@ -560,11 +560,11 @@
 				return $message;
 			}
 
-			$id = phpgw::get_var('id', 'int');
+			$id = \Sanitizer::get_var('id', 'int');
 
-			$_from = phpgw::get_var('_from', 'string');
-			$_to = phpgw::get_var('_to', 'string');
-			$wday = phpgw::get_var('wday', 'string');//int?
+			$_from = \Sanitizer::get_var('_from', 'string');
+			$_to = \Sanitizer::get_var('_to', 'string');
+			$wday = \Sanitizer::get_var('wday', 'string');//int?
 
 			if (!empty($id))
 			{
@@ -588,7 +588,7 @@
 			$season['to_h'] = $array_to[0];
 			$season['to_m'] = $array_to[1];
 
-			$resource_ids = phpgw::get_var('filter_id', 'int');
+			$resource_ids = \Sanitizer::get_var('filter_id', 'int');
 			$season['resources_json'] = json_encode(array_map('intval', (array)$alloc['resources']));
 
 			$filters = null;
@@ -625,15 +625,15 @@
 JS;
 			$GLOBALS['phpgw']->js->add_code('', $jscode);
 
-			$config = CreateObject('phpgwapi.config', 'booking')->read();
+			$config = (new \App\modules\phpgwapi\services\Config('booking'))->read();
 
 			if( !empty($config['activate_application_articles']))
 			{
 				self::add_javascript('phpgwapi', 'dateformatter', 'dateformatter.js');
 				self::add_javascript('booking', 'base', 'purchase_order_edit.js');
-				$GLOBALS['phpgw']->js->validate_file('alertify', 'alertify.min', 'phpgwapi');
-				$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
-				$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
+				phpgwapi_js::getInstance()->validate_file('alertify', 'alertify.min', 'phpgwapi');
+				phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
+				phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
 			}
 			self::add_javascript('booking', 'base', 'season.wtemplate.js');
 
@@ -646,7 +646,7 @@ JS;
 
 		public function generate()
 		{
-			$season_id = phpgw::get_var('id', 'int');
+			$season_id = \Sanitizer::get_var('id', 'int');
 			$season = $this->bo->read_single($season_id);
 
 			$this->bo->authorize_write($season);
@@ -669,13 +669,13 @@ JS;
 
 			if ($_SERVER['REQUEST_METHOD'] == 'POST')
 			{
-				$step = phpgw::get_var('create') ? 3 : 2;
-				$from = phpgw::get_var('from_', 'string');
-				$to = phpgw::get_var('to_', 'string');
+				$step = \Sanitizer::get_var('create') ? 3 : 2;
+				$from = \Sanitizer::get_var('from_', 'string');
+				$to = \Sanitizer::get_var('to_', 'string');
 				$from_ = date("Y-m-d", phpgwapi_datetime::date_to_timestamp($from));
 				$to_ = date("Y-m-d", phpgwapi_datetime::date_to_timestamp($to));
 
-				$interval = phpgw::get_var('field_interval');
+				$interval = \Sanitizer::get_var('field_interval');
 				if ($from_ < $season['from_'])
 				{
 					$errors['from_'] = lang('Start date must be after %1', pretty_timestamp($season['from_']));

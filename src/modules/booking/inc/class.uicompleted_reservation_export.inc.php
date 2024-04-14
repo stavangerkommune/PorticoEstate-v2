@@ -63,7 +63,7 @@
 
 		protected function generate_files()
 		{
-			$filter_to = phpgw::get_var('filter_to', 'string', 'REQUEST', null);
+			$filter_to = \Sanitizer::get_var('filter_to', 'string', 'REQUEST', null);
 			$filter_params = is_null($filter_to) ? array() : array('filter_to' => $filter_to);
 
 			if (!($GLOBALS['phpgw']->acl->check('run', phpgwapi_acl::READ, 'admin') || $GLOBALS['phpgw']->acl->check('admin', phpgwapi_acl::ADD, 'booking') || $this->bo->has_role(booking_sopermission::ROLE_MANAGER)))
@@ -94,12 +94,12 @@
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
 
-			if (phpgw::get_var('generate_files'))
+			if (\Sanitizer::get_var('generate_files'))
 			{
 				$this->generate_files();
 			}
@@ -219,12 +219,12 @@
 
 		public function query() //index_json
 		{
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$columns = phpgw::get_var('columns');
+			$search = \Sanitizer::get_var('search');
+			$order = \Sanitizer::get_var('order');
+			$columns = \Sanitizer::get_var('columns');
 
-			$start = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$results = phpgw::get_var('length', 'int', 'REQUEST', null);
+			$start = \Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$results = \Sanitizer::get_var('length', 'int', 'REQUEST', null);
 			$query = $search['value'];
 			$sort = $columns[$order[0]['column']]['data'];
 			$dir = $order[0]['dir'];
@@ -269,12 +269,12 @@
 			$filters = array();
 			foreach ($this->bo->so->get_field_defs() as $field => $params)
 			{
-				if (phpgw::get_var("filter_$field"))
+				if (\Sanitizer::get_var("filter_$field"))
 				{
-					$filters[$field] = phpgw::get_var("filter_$field");
+					$filters[$field] = \Sanitizer::get_var("filter_$field");
 				}
 			}
-			$filter_to = phpgw::get_var('to', 'string', 'REQUEST', null);
+			$filter_to = \Sanitizer::get_var('to', 'string', 'REQUEST', null);
 
 			if ($filter_to)
 			{
@@ -359,7 +359,7 @@
 
 		public function show()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = \Sanitizer::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -405,7 +405,7 @@
 
 		function delete()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = \Sanitizer::get_var('id', 'int');
 
 			if (!$id)
 			{
@@ -438,7 +438,7 @@
 
 		protected function get_export_key()
 		{
-			return phpgw::get_var('export_key', 'string', 'REQUEST', null);
+			return \Sanitizer::get_var('export_key', 'string', 'REQUEST', null);
 		}
 
 		public function pre_validate( $export )
@@ -476,9 +476,9 @@
 		{
 			//Values passed in from the "Export"-action in uicompleted_reservation.index
 			$export = extract_values($_POST, $this->fields);
-			$export['process'] = phpgw::get_var('process', 'int', 'POST');
+			$export['process'] = \Sanitizer::get_var('process', 'int', 'POST');
 			$errors = array();
-			if (!phpgw::get_var('prevalidate', 'bool'))
+			if (!\Sanitizer::get_var('prevalidate', 'bool'))
 			{
 				//Fill in a dummy value (so as to temporarily pass validation), this will then be
 				//automatically filled in by bo->add process later on.

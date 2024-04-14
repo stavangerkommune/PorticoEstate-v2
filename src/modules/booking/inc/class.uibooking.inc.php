@@ -56,7 +56,7 @@
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -178,28 +178,28 @@
 			}
 			else
 			{
-				$testdata = phpgw::get_var('filter_building_id', 'int', 'REQUEST', null);
+				$testdata = \Sanitizer::get_var('filter_building_id', 'int', 'REQUEST', null);
 				if ($testdata != 0)
 				{
-					$filters['building_name'] = $this->bo->so->get_building(phpgw::get_var('filter_building_id', 'int', 'REQUEST', null));
+					$filters['building_name'] = $this->bo->so->get_building(\Sanitizer::get_var('filter_building_id', 'int', 'REQUEST', null));
 				}
 				else
 				{
 					unset($filters['building_name']);
 				}
-				$testdata2 = phpgw::get_var('organizations', 'int', 'REQUEST', null);
+				$testdata2 = \Sanitizer::get_var('organizations', 'int', 'REQUEST', null);
 				if ($testdata2 != 0)
 				{
-					$filters['group_id'] = $this->bo->so->get_groups_of_organization(phpgw::get_var('organizations', 'int', 'REQUEST', null));
+					$filters['group_id'] = $this->bo->so->get_groups_of_organization(\Sanitizer::get_var('organizations', 'int', 'REQUEST', null));
 				}
 				else
 				{
 					unset($filters['group_id']);
 				}
-				$testdata3 = phpgw::get_var('filter_season_id', 'int', 'REQUEST', null);
+				$testdata3 = \Sanitizer::get_var('filter_season_id', 'int', 'REQUEST', null);
 				if ($testdata3 != 0 and $testdata3 != '')
 				{
-					$filters['season_id'] = $this->bo->so->get_season(phpgw::get_var('filter_season_id', 'int', 'REQUEST', null));
+					$filters['season_id'] = $this->bo->so->get_season(\Sanitizer::get_var('filter_season_id', 'int', 'REQUEST', null));
 				}
 				else
 				{
@@ -207,13 +207,13 @@
 				}
 			}
 
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$columns = phpgw::get_var('columns');
+			$search = \Sanitizer::get_var('search');
+			$order = \Sanitizer::get_var('order');
+			$columns = \Sanitizer::get_var('columns');
 
 			$params = array(
-				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results' => phpgw::get_var('length', 'int', 'REQUEST', null),
+				'start' => \Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results' => \Sanitizer::get_var('length', 'int', 'REQUEST', null),
 				'query' => $search['value'],
 				'order' => $columns[$order[0]['column']]['data'],
 				'sort' => $columns[$order[0]['column']]['data'],
@@ -261,28 +261,28 @@
 			}
 			else
 			{
-				$testdata = phpgw::get_var('filter_building_id', 'int', 'REQUEST', null);
+				$testdata = \Sanitizer::get_var('filter_building_id', 'int', 'REQUEST', null);
 				if ($testdata != 0)
 				{
-					$filters['building_name'] = $this->bo->so->get_building(phpgw::get_var('filter_building_id', 'int', 'REQUEST', null));
+					$filters['building_name'] = $this->bo->so->get_building(\Sanitizer::get_var('filter_building_id', 'int', 'REQUEST', null));
 				}
 				else
 				{
 					unset($filters['building_name']);
 				}
-				$testdata2 = phpgw::get_var('organizations', 'int', 'REQUEST', null);
+				$testdata2 = \Sanitizer::get_var('organizations', 'int', 'REQUEST', null);
 				if ($testdata2 != 0)
 				{
-					$filters['group_id'] = $this->bo->so->get_group_of_organization(phpgw::get_var('organizations', 'int', 'REQUEST', null));
+					$filters['group_id'] = $this->bo->so->get_group_of_organization(\Sanitizer::get_var('organizations', 'int', 'REQUEST', null));
 				}
 				else
 				{
 					unset($filters['group_id']);
 				}
-				$testdata3 = phpgw::get_var('filter_season_id', 'int', 'REQUEST', null);
+				$testdata3 = \Sanitizer::get_var('filter_season_id', 'int', 'REQUEST', null);
 				if ($testdata3 != 0 and $testdata3 != '')
 				{
-					$filters['season_id'] = $this->bo->so->get_season(phpgw::get_var('filter_season_id', 'int', 'REQUEST', null));
+					$filters['season_id'] = $this->bo->so->get_season(\Sanitizer::get_var('filter_season_id', 'int', 'REQUEST', null));
 				}
 				else
 				{
@@ -291,11 +291,11 @@
 			}
 
 			$params = array(
-				'start' => phpgw::get_var('startIndex', 'int', 'REQUEST', 0),
-				'results' => phpgw::get_var('results', 'int', 'REQUEST', null),
-				'query' => phpgw::get_var('query'),
-				'sort' => phpgw::get_var('sort'),
-				'dir' => phpgw::get_var('dir'),
+				'start' => \Sanitizer::get_var('startIndex', 'int', 'REQUEST', 0),
+				'results' => \Sanitizer::get_var('results', 'int', 'REQUEST', null),
+				'query' => \Sanitizer::get_var('query'),
+				'sort' => \Sanitizer::get_var('sort'),
+				'dir' => \Sanitizer::get_var('dir'),
 				'filters' => $filters
 			);
 
@@ -324,8 +324,8 @@
 
 		public function building_schedule()
 		{
-			$date = new DateTime(phpgw::get_var('date'));
-			$bookings = $this->bo->building_schedule(phpgw::get_var('building_id', 'int'), $date);
+			$date = new DateTime(\Sanitizer::get_var('date'));
+			$bookings = $this->bo->building_schedule(\Sanitizer::get_var('building_id', 'int'), $date);
 			foreach ($bookings['results'] as &$booking)
 			{
 				$booking['resource_link'] = $this->link(array('menuaction' => 'booking.uiresource.schedule',
@@ -346,8 +346,8 @@
 
 		public function building_extraschedule()
 		{
-			$date = new DateTime(phpgw::get_var('date'));
-			$bookings = $this->bo->building_extraschedule(phpgw::get_var('building_id', 'int'), $date);
+			$date = new DateTime(\Sanitizer::get_var('date'));
+			$bookings = $this->bo->building_extraschedule(\Sanitizer::get_var('building_id', 'int'), $date);
 			foreach ($bookings['results'] as &$booking)
 			{
 				$booking['resource_link'] = $this->link(array('menuaction' => 'booking.uiresource.schedule',
@@ -368,8 +368,8 @@
 
 		public function resource_schedule()
 		{
-			$date = new DateTime(phpgw::get_var('date'));
-			$bookings = $this->bo->resource_schedule(phpgw::get_var('resource_id', 'int'), $date);
+			$date = new DateTime(\Sanitizer::get_var('date'));
+			$bookings = $this->bo->resource_schedule(\Sanitizer::get_var('resource_id', 'int'), $date);
 			foreach ($bookings['results'] as &$booking)
 			{
 				$booking['link'] = $this->link(array('menuaction' => 'booking.uibooking.show',
@@ -391,27 +391,27 @@
 			$errors = array();
 			$booking = array();
 			$booking['cost'] = 0;
-			$allocation_id = phpgw::get_var('allocation_id', 'int');
+			$allocation_id = \Sanitizer::get_var('allocation_id', 'int');
 			if (isset($_POST['application_id']))
 			{
-				$application_id = phpgw::get_var('application_id', 'int', 'POST');
+				$application_id = \Sanitizer::get_var('application_id', 'int', 'POST');
 			}
-			$booking['building_id'] = phpgw::get_var('building_id', 'int');
-			$booking['resources'] = phpgw::get_var('resources', 'int');
+			$booking['building_id'] = \Sanitizer::get_var('building_id', 'int');
+			$booking['resources'] = \Sanitizer::get_var('resources', 'int');
 			#The string replace is a workaround for a problem at Bergen Kommune
 
-			$booking['from_'] = str_replace('%3A', ':', phpgw::get_var('from_', 'string'));
-			$booking['to_'] = str_replace('%3A', ':', phpgw::get_var('to_', 'string'));
+			$booking['from_'] = str_replace('%3A', ':', \Sanitizer::get_var('from_', 'string'));
+			$booking['to_'] = str_replace('%3A', ':', \Sanitizer::get_var('to_', 'string'));
 			foreach ($booking['from_'] as $k => $v)
 			{
 				$booking['from_'][$k] = pretty_timestamp($booking['from_'][$k]);
 				$booking['to_'][$k] = pretty_timestamp($booking['to_'][$k]);
 			}
 
-			$time_from = explode(" ", phpgw::get_var('from_', 'string'));
-			$time_to = explode(" ", phpgw::get_var('to_', 'string'));
+			$time_from = explode(" ", \Sanitizer::get_var('from_', 'string'));
+			$time_to = explode(" ", \Sanitizer::get_var('to_', 'string'));
 
-			$step = phpgw::get_var('step', 'int', 'REQUEST', 1);
+			$step = \Sanitizer::get_var('step', 'int', 'REQUEST', 1);
 
 			$invalid_dates = array();
 			$valid_dates = array();
@@ -431,11 +431,11 @@
 			else
 			{
 				$allocation = array();
-				$season = $this->season_bo->read_single(phpgw::get_var('season_id','int', 'POST'));
-				$booking['organization_id'] = phpgw::get_var('organization_id','int', 'POST');
-				$booking['organization_name'] = phpgw::get_var('organization_name','string', 'POST');
+				$season = $this->season_bo->read_single(\Sanitizer::get_var('season_id','int', 'POST'));
+				$booking['organization_id'] = \Sanitizer::get_var('organization_id','int', 'POST');
+				$booking['organization_name'] = \Sanitizer::get_var('organization_name','string', 'POST');
 
-				if(phpgw::get_var('customer_organization_id','int', 'POST'))
+				if(\Sanitizer::get_var('customer_organization_id','int', 'POST'))
 				{
 					$_POST['organization_id'] = $_POST['customer_organization_id'];
 					$_POST['organization_name'] = $_POST['customer_organization_name'];
@@ -460,10 +460,10 @@
 
 				$today = getdate();
 				$booking = extract_values($_POST, $this->fields);
-				$booking['skip_bas'] = (int)phpgw::get_var('skip_bas', 'int');
+				$booking['skip_bas'] = (int)\Sanitizer::get_var('skip_bas', 'int');
 				if ($_POST['cost'])
 				{
-					$this->add_cost_history($booking, phpgw::get_var('cost_comment'), phpgw::get_var('cost', 'float'));
+					$this->add_cost_history($booking, \Sanitizer::get_var('cost_comment'), \Sanitizer::get_var('cost', 'float'));
 				}
 
 				$timestamp = phpgwapi_datetime::date_to_timestamp($booking['from_']);
@@ -548,7 +548,7 @@
 
 					$max_dato = phpgwapi_datetime::date_to_timestamp($_POST['to_']); // highest date from input
 
-					if(phpgw::get_var('field_interval', 'int', 'POST') == 5)
+					if(\Sanitizer::get_var('field_interval', 'int', 'POST') == 5)
 					{
 						$interval = 60 * 60 * 24; // day in seconds
 					}
@@ -647,19 +647,19 @@
 			unset($errors['cost']);
 			self::add_javascript('booking', 'base', 'booking.js');
 
-			if (phpgw::get_var('resource') == null)
+			if (\Sanitizer::get_var('resource') == null)
 			{
 				array_set_default($application, 'resources', array());
 			}
 			else
 			{
-				$resources = explode(",", phpgw::get_var('resource', 'string'));
+				$resources = explode(",", \Sanitizer::get_var('resource', 'string'));
 				array_set_default($booking, 'resources', $resources);
 			}
-			array_set_default($booking, 'season_id', phpgw::get_var('season_id', 'int'));
-			array_set_default($booking, 'group_id', phpgw::get_var('group_id', 'int'));
-			array_set_default($booking, 'building_id', phpgw::get_var('building_id', 'int'));
-			array_set_default($booking, 'building_name', phpgw::get_var('building_name', 'string'));
+			array_set_default($booking, 'season_id', \Sanitizer::get_var('season_id', 'int'));
+			array_set_default($booking, 'group_id', \Sanitizer::get_var('group_id', 'int'));
+			array_set_default($booking, 'building_id', \Sanitizer::get_var('building_id', 'int'));
+			array_set_default($booking, 'building_name', \Sanitizer::get_var('building_name', 'string'));
 			if (strstr($application['building_name'], "%"))
 			{
 				$search = array('%C3%85', '%C3%A5', '%C3%98', '%C3%B8', '%C3%86', '%C3%A6');
@@ -670,7 +670,7 @@
 			$booking['resources_json'] = json_encode(array_map('intval', (array)$booking['resources']));
 			$booking['cancel_link'] = self::link(array('menuaction' => 'booking.uimassbooking.index'));
 
-			$activity_id = phpgw::get_var('activity_id', 'int', 'REQUEST', -1);
+			$activity_id = \Sanitizer::get_var('activity_id', 'int', 'REQUEST', -1);
 			$activity_path = $this->activity_bo->get_path($activity_id);
 			$top_level_activity = $activity_path ? $activity_path[0]['id'] : -1;
 			$activities = $this->activity_bo->fetch_activities();
@@ -747,7 +747,7 @@
 		{
 			$send = CreateObject('phpgwapi.send');
 
-			$config = CreateObject('phpgwapi.config', 'booking');
+			$config = new \App\modules\phpgwapi\services\Config('booking');
 			$config->read();
 			$from = isset($config->config_data['email_sender']) && $config->config_data['email_sender'] ? $config->config_data['email_sender'] : "noreply<noreply@{$GLOBALS['phpgw_info']['server']['hostname']}>";
 
@@ -774,7 +774,7 @@
 
 		public function edit()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = \Sanitizer::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -802,7 +802,7 @@
 
 			if ($_SERVER['REQUEST_METHOD'] == 'POST')
 			{
-				$booking['skip_bas'] = (int)phpgw::get_var('skip_bas', 'int');
+				$booking['skip_bas'] = (int)\Sanitizer::get_var('skip_bas', 'int');
 
 				$_POST['from_'] = ($_POST['from_']) ? date("Y-m-d H:i:s", phpgwapi_datetime::date_to_timestamp($_POST['from_'])) : $_POST['from_'];
 				$_POST['to_'] = ($_POST['to_']) ? date("Y-m-d H:i:s", phpgwapi_datetime::date_to_timestamp($_POST['to_'])) : $_POST['to_'];
@@ -811,18 +811,18 @@
 				$booking = array_merge($booking, extract_values($_POST, $this->fields));
 				if ($_POST['cost'] != $_POST['cost_orig'])
 				{
-					$this->add_cost_history($booking, phpgw::get_var('cost_comment'), phpgw::get_var('cost', 'float'));
+					$this->add_cost_history($booking, \Sanitizer::get_var('cost_comment'), \Sanitizer::get_var('cost', 'float'));
 				}
 				$booking['allocation_id'] = $booking['allocation_id'] ? $booking['allocation_id'] : null;
 				$this->agegroup_bo->extract_form_data($booking);
-				$group = $this->group_bo->read_single(intval(phpgw::get_var('group_id', 'int')));
+				$group = $this->group_bo->read_single(intval(\Sanitizer::get_var('group_id', 'int')));
 				$errors = $this->bo->validate($booking);
 				if (!$errors)
 				{
 					try
 					{
 						$receipt = $this->bo->update($booking);
-						$this->send_mailnotification_to_group($group, lang('Booking changed'), phpgw::get_var('mail', 'html', 'POST'));
+						$this->send_mailnotification_to_group($group, lang('Booking changed'), \Sanitizer::get_var('mail', 'html', 'POST'));
 						self::redirect(array('menuaction' => 'booking.uibooking.show', 'id' => $booking['id']));
 					}
 					catch (booking_unauthorized_exception $e)
@@ -864,16 +864,16 @@
 
 		public function delete()
 		{
-			$id = phpgw::get_var('id', 'int');
-			$outseason = phpgw::get_var('outseason', 'string');
-			$recurring = phpgw::get_var('recurring', 'string');
-			$repeat_untild = phpgw::get_var('repeat_until', 'string');
-			$field_interval = intval(phpgw::get_var('field_interval'));
-			$delete_allocation = phpgw::get_var('delete_allocation');
+			$id = \Sanitizer::get_var('id', 'int');
+			$outseason = \Sanitizer::get_var('outseason', 'string');
+			$recurring = \Sanitizer::get_var('recurring', 'string');
+			$repeat_untild = \Sanitizer::get_var('repeat_until', 'string');
+			$field_interval = intval(\Sanitizer::get_var('field_interval'));
+			$delete_allocation = \Sanitizer::get_var('delete_allocation');
 			$booking = $this->bo->read_single($id);
 			$allocation = $this->allocation_bo->read_single($booking['allocation_id']);
 			$season = $this->season_bo->read_single($booking['season_id']);
-			$step = phpgw::get_var('step', 'int', 'REQUEST', 1);
+			$step = \Sanitizer::get_var('step', 'int', 'REQUEST', 1);
 			$errors = array();
 			$invalid_dates = array();
 			$valid_dates = array();
@@ -1042,8 +1042,8 @@
 
 		private function send_sms_participants($id, $type = 'booking')
 		{
-			$send_sms = phpgw::get_var('send_sms', 'bool');
-			$sms_content = phpgw::get_var('sms_content', 'string');
+			$send_sms = \Sanitizer::get_var('send_sms', 'bool');
+			$sms_content = \Sanitizer::get_var('sms_content', 'string');
 
 			if($send_sms && $sms_content)
 			{
@@ -1107,7 +1107,7 @@
 
 		public function show()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = \Sanitizer::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -1153,7 +1153,7 @@
 
 		public function info()
 		{
-			$booking = $this->bo->read_single(phpgw::get_var('id', 'int'));
+			$booking = $this->bo->read_single(\Sanitizer::get_var('id', 'int'));
 			$booking['group'] = $this->group_bo->read_single($booking['group_id']);
 			$resources = $this->resource_bo->so->read(array('results' => -1, 'filters' => array('id' => $booking['resources']),
 				'sort' => 'name'));

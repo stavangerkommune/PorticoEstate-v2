@@ -19,7 +19,7 @@
 
 		public function index()
 		{
-			$config = CreateObject('phpgwapi.config', 'booking');
+			$config = new \App\modules\phpgwapi\services\Config('booking');
 			$config->read();
 
 			if ($_SERVER['REQUEST_METHOD'] == 'POST')

@@ -229,11 +229,11 @@
 
 			if ($entity->article_cat_id == 1)
 			{
-				$entity->article_id = phpgw::get_var('resource_id', 'int', 'POST');
+				$entity->article_id = \Sanitizer::get_var('resource_id', 'int', 'POST');
 			}
 			else if ($entity->article_cat_id == 2)
 			{
-				$entity->article_id = phpgw::get_var('service_id', 'int', 'POST');
+				$entity->article_id = \Sanitizer::get_var('service_id', 'int', 'POST');
 			}
 			if (!$entity->get_id())
 			{

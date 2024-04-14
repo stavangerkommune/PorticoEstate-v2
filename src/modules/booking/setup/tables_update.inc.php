@@ -6469,7 +6469,7 @@ SQL;
 //			$to			 = "Sigurd.Nes@bergen.kommune.no";
 //			$subject	 = 'Rydding av duplikater i fakturagrunnlag::' . $config_system['site_title'];
 //			$body		 = 'Vedlegg';
-//			$config		 = CreateObject('phpgwapi.config', 'booking')->read();
+//			$config		 = (new \App\modules\phpgwapi\services\Config('booking'))->read();
 //			$from_email	 = isset($config['email_sender']) && $config['email_sender'] ? $config['email_sender'] : "noreply<noreply@{$GLOBALS['phpgw_info']['server']['hostname']}>";
 //
 //			try

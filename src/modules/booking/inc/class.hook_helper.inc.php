@@ -74,7 +74,7 @@
 		 */
 		function after_navbar( )
 		{
-			$config = CreateObject('phpgwapi.config', 'booking')->read();
+			$config = (new \App\modules\phpgwapi\services\Config('booking'))->read();
 
 			if(!empty($config['participant_limit']) && (int)$config['participant_limit'])
 			{

@@ -52,12 +52,12 @@
 
 		public function building_users()
 		{
-			if (!phpgw::get_var('phpgw_return_as') == 'json')
+			if (!\Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return;
 			}
 
-			if (($building_id = phpgw::get_var('building_id', 'int', 'REQUEST', null)))
+			if (($building_id = \Sanitizer::get_var('building_id', 'int', 'REQUEST', null)))
 			{
 				$users = $this->bo->find_building_users($building_id);
 				array_walk($users["results"], array($this, "_add_links"), "bookingfrontend.uiuser.show");
@@ -77,7 +77,7 @@
 				phpgw::no_access();
 			}
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (\Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$receipt			 = $this->bo->update_user_address();
 				$lang_confirm_msg	 = lang('update user address');
@@ -120,11 +120,11 @@
 				phpgw::no_access();
 			}
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (\Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$GLOBALS['phpgw_info']['flags']['xslt_app'] = false;
 
-				$config_data = CreateObject('phpgwapi.config', 'booking')->read();
+				$config_data = (new \App\modules\phpgwapi\services\Config('booking'))->read();
 				if($config_data['customer_list_format'] == 'FACTUM')
 				{
 					header('Content-type: text/xml');
@@ -185,9 +185,9 @@
 			{
 				phpgw::no_access();
 			}
-			$confirm = phpgw::get_var('confirm', 'bool', 'POST');
+			$confirm = \Sanitizer::get_var('confirm', 'bool', 'POST');
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (\Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$receipt			 = $this->bo->collect_users();
 				$lang_confirm_msg	 = lang('Do you really want to collect users again');
@@ -223,7 +223,7 @@
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -349,7 +349,7 @@
 
 		public function edit()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = \Sanitizer::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -418,7 +418,7 @@
 
 		public function show()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = \Sanitizer::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -449,7 +449,7 @@
 
 		public function delete()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = \Sanitizer::get_var('id', 'int');
 
 			$this->bo->delete($id);
 

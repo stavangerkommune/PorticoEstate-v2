@@ -105,7 +105,7 @@
 
 		public function get_reserved_resources()
 		{
-			$building_id = phpgw::get_var('building_id', 'int');
+			$building_id = \Sanitizer::get_var('building_id', 'int');
 			return $this->bo->get_reserved_resources($building_id);
 		}
 
@@ -137,8 +137,8 @@
 			{
 				phpgw::no_access();
 			}
-			$service_id = phpgw::get_var('service_id', 'int','POST');
-			$selected_resources = phpgw::get_var('selected_resources', 'int','POST');
+			$service_id = \Sanitizer::get_var('service_id', 'int','POST');
+			$selected_resources = \Sanitizer::get_var('selected_resources', 'int','POST');
 
 			$ret = $this->bo->set_mapping($service_id, $selected_resources);
 			return array(
@@ -160,7 +160,7 @@
 				phpgw::no_access(false, $message);
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -244,7 +244,7 @@
 
 		public function edit( $values = array(), $mode = 'edit' )
 		{
-			$active_tab										 = !empty($values['active_tab']) ? $values['active_tab'] : phpgw::get_var('active_tab', 'string', 'REQUEST', 'first_tab');
+			$active_tab										 = !empty($values['active_tab']) ? $values['active_tab'] : \Sanitizer::get_var('active_tab', 'string', 'REQUEST', 'first_tab');
 			$GLOBALS['phpgw_info']['flags']['app_header']	 .= '::' . lang('edit');
 			if (empty($this->permissions[PHPGW_ACL_ADD]))
 			{
@@ -257,7 +257,7 @@
 			}
 			else
 			{
-				$id		 = !empty($values['id']) ? $values['id'] : phpgw::get_var('id', 'int');
+				$id		 = !empty($values['id']) ? $values['id'] : \Sanitizer::get_var('id', 'int');
 				$service = $this->bo->read_single($id);
 			}
 
@@ -281,7 +281,7 @@
 					'show_all'	 => '', 'id'		 => $id, 'active_tab' => $active_tab))
 			);
 
-			$show_all = phpgw::get_var('show_all') || false;
+			$show_all = \Sanitizer::get_var('show_all') || false;
 
 			$this->building_so	 = CreateObject('booking.sobuilding');
 			$this->resource_so	 = CreateObject('booking.soresource');
@@ -393,7 +393,7 @@
 				phpgw::no_access();
 			}
 
-			$id = !empty($id) ? $id : phpgw::get_var('id', 'int');
+			$id = !empty($id) ? $id : \Sanitizer::get_var('id', 'int');
 
 			$article = $this->bo->read_single($id)->toArray();
 
@@ -409,11 +409,11 @@
 				return array();
 			}
 
-			$section			 = phpgw::get_var('section', 'string', 'REQUEST', 'documents');
-			$location_item_id	 = phpgw::get_var('location_item_id', 'int');
-			$ids				 = phpgw::get_var('ids', 'int');
-			$action				 = phpgw::get_var('action', 'string');
-			$tags				 = phpgw::get_var('tags', 'string');
+			$section			 = \Sanitizer::get_var('section', 'string', 'REQUEST', 'documents');
+			$location_item_id	 = \Sanitizer::get_var('location_item_id', 'int');
+			$ids				 = \Sanitizer::get_var('ids', 'int');
+			$action				 = \Sanitizer::get_var('action', 'string');
+			$tags				 = \Sanitizer::get_var('tags', 'string');
 
 			$fakebase	 = '/booking';
 			$bofiles	 = CreateObject('property.bofiles', $fakebase);
@@ -436,8 +436,8 @@
 
 		function _get_files()
 		{
-			$id		 = phpgw::get_var('id', 'int');
-			$section = phpgw::get_var('section', 'string', 'REQUEST', 'documents');
+			$id		 = \Sanitizer::get_var('id', 'int');
+			$section = \Sanitizer::get_var('section', 'string', 'REQUEST', 'documents');
 
 			if (empty($this->permissions[PHPGW_ACL_READ]))
 			{
@@ -494,14 +494,14 @@
 				$z++;
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$total_records = count($content_files);
 
 				return array
 					(
 					'data'				 => $content_files,
-					'draw'				 => phpgw::get_var('draw', 'int'),
+					'draw'				 => \Sanitizer::get_var('draw', 'int'),
 					'recordsTotal'		 => $total_records,
 					'recordsFiltered'	 => $total_records
 				);
@@ -516,8 +516,8 @@
 				phpgw::no_access();
 			}
 
-			$section = phpgw::get_var('section', 'string', 'REQUEST', 'documents');
-			$id		 = phpgw::get_var('id', 'int', 'GET');
+			$section = \Sanitizer::get_var('section', 'string', 'REQUEST', 'documents');
+			$id		 = \Sanitizer::get_var('id', 'int', 'GET');
 
 			phpgw::import_class('property.multiuploader');
 

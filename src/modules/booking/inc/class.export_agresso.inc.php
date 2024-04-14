@@ -26,7 +26,7 @@
 		function __construct()
 		{
 			$this->db = &$GLOBALS['phpgw']->db;
-			$this->config = CreateObject('phpgwapi.config', 'booking');
+			$this->config = new \App\modules\phpgwapi\services\Config('booking');
 			$this->config->read_repository();
 		}
 

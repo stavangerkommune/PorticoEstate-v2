@@ -69,11 +69,13 @@ class Sessions
 	private $Auth;
 	private $Crypto;
 	private $Log;
-		
+	private $_history_id
+;		
 	
+    private static $instance;
 
 
-    public function __construct()
+    private function __construct()
     {
 		$this->db = \App\Database\Db::getInstance();
 		
@@ -110,6 +112,14 @@ class Sessions
 		//don't rewrite URL, as we have to do it in link - why? cos it is buggy otherwise
 		ini_set('url_rewriter.tags', '');
 		ini_set("session.gc_maxlifetime", $this->serverSetting['sessions_timeout']);
+    }
+
+    public static function getInstance()
+    {
+        if (null === self::$instance) {
+            self::$instance = new self();
+        }
+        return self::$instance;
     }
 
 	public function get_session_id()
@@ -1049,7 +1059,43 @@ class Sessions
 		return $values;
 	}
 
-	/**
+		/**
+		* Get the list of session variables used for non cookie based sessions
+		*
+		* @return array the variables which are specific to this session type
+		*/
+		public function _get_session_vars()
+		{
+			return array
+			(
+				'domain'		=> $this->_account_domain,
+				session_name()	=> $this->_verified ? $this->_sessionid : null
+			);
+		}
+
+
+		/**
+		* Additional tracking of user actions - prevents reposts/use of back button
+		*
+		* @return string current history id
+		*/
+		public function generate_click_history()
+		{
+			if(!isset($this->_history_id))
+			{
+				$this->_history_id = md5($this->_login . time());
+				$history = (array)Cache::session_get('phpgwapi', 'history');
+
+				if(count($history) >= $GLOBALS['phpgw_info']['server']['max_history'])
+				{
+					array_shift($history);
+					Cache::session_set('phpgwapi', 'history', $history);
+				}
+			}
+			return $this->_history_id;
+		}
+
+		/**
 	 * Send an error response
 	 *
 	 * @param array $error

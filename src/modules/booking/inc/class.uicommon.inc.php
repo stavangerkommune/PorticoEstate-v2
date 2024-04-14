@@ -157,7 +157,7 @@
 			self::add_javascript('booking', 'base', 'common');
 
 			self::restore_flash_msgs();
-			$this->config = CreateObject('phpgwapi.config', 'bookingfrontend');
+			$this->config = new \App\modules\phpgwapi\services\Config('bookingfrontend');
 			$this->config->read();
 
 			if (self::current_app() == 'bookingfrontend')
@@ -703,18 +703,18 @@
 				$theme = 'ui-lightness';
 			}
 			$theme = 'redmond';
-			$GLOBALS['phpgw']->css->add_external_file("phpgwapi/js/jquery/css/{$theme}/jquery-ui.min.css");
+			phpgwapi_css::getInstance()->add_external_file("phpgwapi/js/jquery/css/{$theme}/jquery-ui.min.css");
 
 			switch ($type)
 			{
 				case 'datetime':
-					$GLOBALS['phpgw']->css->add_external_file("phpgwapi/js/jquery/css/jquery-ui-timepicker-addon.css");
-					$GLOBALS['phpgw']->js->validate_file('jquery', 'js/jquery-ui-timepicker-addon.min');
+					phpgwapi_css::getInstance()->add_external_file("phpgwapi/js/jquery/css/jquery-ui-timepicker-addon.css");
+					phpgwapi_js::getInstance()->validate_file('jquery', 'js/jquery-ui-timepicker-addon.min');
 					$_type = 'datetime';
 					break;
 				case 'time':
-					$GLOBALS['phpgw']->css->add_external_file("phpgwapi/js/jquery/css/jquery-ui-timepicker-addon.css");
-					$GLOBALS['phpgw']->js->validate_file('jquery', 'js/jquery-ui-timepicker-addon.min');
+					phpgwapi_css::getInstance()->add_external_file("phpgwapi/js/jquery/css/jquery-ui-timepicker-addon.css");
+					phpgwapi_js::getInstance()->validate_file('jquery', 'js/jquery-ui-timepicker-addon.min');
 					$_type = 'time';
 					break;
 				default:

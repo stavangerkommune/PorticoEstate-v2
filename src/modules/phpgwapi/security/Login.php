@@ -107,7 +107,7 @@ class Login
 		Settings::getInstance()->set('flags', $this->flags);
 		Settings::getInstance()->set('server', $this->serverSetting);
 
-		$this->sessions = new Sessions();
+		$this->sessions = Sessions::getInstance();
 	}
 
 	public function create_account()

@@ -50,7 +50,7 @@
 
 		public function download()
 		{
-			if ($id = phpgw::get_var('id', 'string'))
+			if ($id = \Sanitizer::get_var('id', 'string'))
 			{
 				$document = $this->bo->read_single(urldecode($id));
 				self::send_file($document['filename'], array('filename' => $document['name']));
@@ -59,7 +59,7 @@
 
 		public function regulations()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -106,8 +106,8 @@
 			static $dir, $key;
 			if (!isset($dir))
 			{
-				!($dir = phpgw::get_var('dir', 'string', null)) AND $dir = 'asc';
-				!($sort = phpgw::get_var('sort', 'string', null)) AND $sort = 'name';
+				!($dir = \Sanitizer::get_var('dir', 'string', null)) AND $dir = 'asc';
+				!($sort = \Sanitizer::get_var('sort', 'string', null)) AND $sort = 'name';
 			}
 
 			$retVal = strcmp($a[$sort], $b[$sort]);

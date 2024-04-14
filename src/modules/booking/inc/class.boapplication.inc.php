@@ -207,7 +207,7 @@
 
 			$send = CreateObject('phpgwapi.send');
 
-			$config = CreateObject('phpgwapi.config', 'booking');
+			$config = new \App\modules\phpgwapi\services\Config('booking');
 			$config->read();
 			$from = isset($config->config_data['email_sender']) && $config->config_data['email_sender'] ? $config->config_data['email_sender'] : "noreply<noreply@{$GLOBALS['phpgw_info']['server']['hostname']}>";
 			$reply_to = !empty($config->config_data['email_reply_to']) ? $config->config_data['email_reply_to'] : '';
@@ -593,7 +593,7 @@
 			}
 			$send = CreateObject('phpgwapi.send');
 
-			$config = CreateObject('phpgwapi.config', 'booking');
+			$config = new \App\modules\phpgwapi\services\Config('booking');
 			$config->read();
 
 			$from = isset($config->config_data['email_sender']) && $config->config_data['email_sender'] ? $config->config_data['email_sender'] : "noreply<noreply@{$GLOBALS['phpgw_info']['server']['hostname']}>";
@@ -772,7 +772,7 @@ HTML;
 //				$where_clauses[] = "(%%table%%.case_officer_id = " . intval($for_case_officer_id[1]) . ')';
 			}
 
-			if ($building_id = phpgw::get_var('filter_building_id', 'int', 'REQUEST', 0))
+			if ($building_id = \Sanitizer::get_var('filter_building_id', 'int', 'REQUEST', 0))
 			{
 				$where_clauses[] = "(%%table%%.id IN ("
 					. " SELECT DISTINCT a.id"
@@ -780,9 +780,9 @@ HTML;
 					. " WHERE ar.application_id = a.id AND ar.resource_id = r.id AND br.resource_id =r.id  AND br.building_id = " . intval($building_id) . "))";
 			}
 
-			if ($status = phpgw::get_var('status') != '')
+			if ($status = \Sanitizer::get_var('status') != '')
 			{
-				$params['filters']['status'] = phpgw::get_var('status');
+				$params['filters']['status'] = \Sanitizer::get_var('status');
 			}
 
 			$params['filters']['where'] = $where_clauses;

@@ -49,7 +49,7 @@
 
 			$send = CreateObject('phpgwapi.send');
 
-			$config = CreateObject('phpgwapi.config', 'booking');
+			$config = new \App\modules\phpgwapi\services\Config('booking');
 			$config->read();
 
 			$from = isset($config->config_data['email_sender']) && $config->config_data['email_sender'] ? $config->config_data['email_sender'] : "noreply<noreply@{$GLOBALS['phpgw_info']['server']['hostname']}>";
@@ -182,7 +182,7 @@
 				return;
 			$send = CreateObject('phpgwapi.send');
 
-			$config = CreateObject('phpgwapi.config', 'booking');
+			$config = new \App\modules\phpgwapi\services\Config('booking');
 			$config->read();
 
 			$from = isset($config->config_data['email_sender']) && $config->config_data['email_sender'] ? $config->config_data['email_sender'] : "noreply<noreply@{$GLOBALS['phpgw_info']['server']['hostname']}>";
@@ -1232,7 +1232,7 @@
 
 		function building_extraschedule( $building_id, $date )
 		{
-			$config = CreateObject('phpgwapi.config', 'booking');
+			$config = new \App\modules\phpgwapi\services\Config('booking');
 			$config->read();
 
 			$from = clone $date;

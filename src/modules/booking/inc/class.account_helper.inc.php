@@ -1,5 +1,8 @@
 <?php
 
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\security\Acl;
+
 	class booking_account_helper
 	{
 
@@ -61,7 +64,8 @@
 			if (!isset(self::$account_is_admin))
 			{
 				self::$account_is_admin = false;
-				if ($GLOBALS['phpgw']->acl->check('run', phpgwapi_acl::READ, 'admin') || $GLOBALS['phpgw']->acl->check('admin', phpgwapi_acl::ADD, 'booking'))
+				$acl = Acl::getInstance();
+				if ($acl->check('run', Acl::READ, 'admin') || $acl->check('admin', Acl::ADD, 'booking'))
 				{
 					self::$account_is_admin = true;
 				}

@@ -14,7 +14,7 @@
 			parent::__construct();
 			$this->soapplication	 = CreateObject('booking.soapplication');
 			$this->sopurchase_order	 = createObject('booking.sopurchase_order');
-			$config					 = CreateObject('phpgwapi.config', 'booking')->read();
+			$config					 = (new \App\modules\phpgwapi\services\Config('booking'))->read();
 
 			$this->activate_application_articles = !empty($config['activate_application_articles']) ? true : false;
 

@@ -57,7 +57,7 @@
 
 		public function get_schedule( $id, $module )
 		{
-			$date = new DateTime(phpgw::get_var('date'));
+			$date = new DateTime(\Sanitizer::get_var('date'));
 			// Make sure $from is a monday
 			if ($date->format('w') != 1)
 			{

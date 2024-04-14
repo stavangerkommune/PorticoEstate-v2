@@ -58,7 +58,7 @@
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -176,7 +176,7 @@
 		{
 			$errors = array();
 			$audience = array();
-			$activity_id = phpgw::get_var('activity_id', 'int', 'POST');
+			$activity_id = \Sanitizer::get_var('activity_id', 'int', 'POST');
 			$activities = $this->activity_bo->get_top_level($activity_id);
 			if ($_SERVER['REQUEST_METHOD'] == 'POST')
 			{
@@ -205,7 +205,7 @@
 
 		public function edit()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = \Sanitizer::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -253,7 +253,7 @@
 
 		public function show()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = \Sanitizer::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
