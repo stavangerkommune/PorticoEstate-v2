@@ -59,7 +59,7 @@
 		var $xmldata = '';
 		var $print = false;
 
-	private static $instance = null;
+		private static $instance = null;
 
 
 		/**
@@ -99,6 +99,11 @@
 		function halt($msg)
 		{
 			throw new Exception($msg);
+		}
+
+		function get_xslfiles()
+		{
+			return $this->xslfiles;
 		}
 
 		 /**

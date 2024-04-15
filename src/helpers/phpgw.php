@@ -30,96 +30,14 @@
 	use App\modules\phpgwapi\security\Sessions;
 
 	/**
-	* Global ugliness class
 	*
-	* Here lives all the code which makes the API tick and makes any serious
-	* refactoring almost impossible
 	*
 	* @package phpgroupware
 	* @subpackage phpgwapi
 	*/
 	class phpgw
-	{
-		public $accounts;
-		public $adodb;
-		public $acl;
-		public $auth;
-		public $db;
-		/**
-		 * Turn on debug mode. Will output additional data for debugging purposes.
-		 * @var	string	$debug
-		 * @access public
-		 */
-		public $debug = 0;		// This will turn on debugging information.
-		public $contacts;
-		public $preferences;
+	{	
 
-		// FIXME find all instances and change to sessions then we can drop this
-		public $session;
-		public $send;
-		public $template;
-		public $utilities;
-		public $vfs;
-		public $calendar;
-		public $msg;
-		public $addressbook;
-		public $todo;
-		public $xslttpl;
-		public $mapping;
-
-		/**
-		* @var array $instance_vars holds most of the public instance variable, so they are only instatiated when needed
-		* @internal removes the need for a lot of if ( !isset($var) || !is_object($var)) { $var = createObject("phpgwapi.$var"); } - YAY!
-		*/
-		private $instance_vars = array();
-
-		/**
-		* Handle instance variables better - this way we only load what we need
-		*
-		* @param string $var the variable name to get
-		*/
-		public function __get($var)
-		{
-			if ( !isset($this->instance_vars[$var]) || !is_object($this->instance_vars[$var]) )
-			{
-				$this->instance_vars[$var] = createObject("phpgwapi.{$var}");
-			}
-			return $this->instance_vars[$var];
-		}
-
-		/**
-		* Handle setting instance variables better
-		*
-		* @internal this will probably validate the variable name at some point in the future to stop typo bugs
-		* @param string $var the varliable to set
-		* @param mixed $value the value to assign to the variable
-		*/
-		public function __set($var, $value)
-		{
-			$this->instance_vars[$var] = $value;
-		}
-
-		/**
-		* Handle unset()ing of instance variables
-		*
-		* @param string $var the variable to unset
-		*/
-		public function __unset($var)
-		{
-			unset($this->instance_vars[$var]);
-		}
-
-		/**
-		* Check if an instance variable isset() or not
-		*
-		* @internal we also check if it an object or not - as that is all we should be storing in here
-		* @param string $var the variable to check
-		* @return bool is the variable set or not
-		*/
-		public function __isset($var)
-		{
-			return isset($this->instance_vars[$var]) && is_object($this->instance_vars[$var]);
-		}
 
 		/**
 		 * Strips out html chars
