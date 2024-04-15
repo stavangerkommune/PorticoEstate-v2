@@ -86,7 +86,7 @@
 		public static function get_list()
 		{
 			$db	= \App\Database\Db::getInstance();
-			$Crypto = new App\modules\phpgwapi\services\Crypto();
+			$Crypto = \App\modules\phpgwapi\services\Crypto::getInstance();
 
 			// clean out the dead sessions
 			self::gc(ini_get('session.gc_maxlifetime'));

@@ -12,6 +12,11 @@
 	*/
 
 	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\services\Log;
+
+	phpgw::import_class('phpgwapi.js');
+	phpgw::import_class('phpgwapi.css');
+
 
 	/**
 	* Commononly used functions
@@ -158,7 +163,8 @@
 			{
 				$owner = $this->userSettings['account_id'];
 			}
-			$groups = $GLOBALS['phpgw']->accounts->membership(intval($owner));
+
+			$groups = (new \App\modules\phpgwapi\controllers\Accounts\Accounts())->membership(intval($owner));
 			if( is_array($groups) )
 			{
 				$s = " OR $table IN (0";
@@ -178,10 +184,12 @@
 		*/
 		public function getInstalledLanguages()
 		{
-			$GLOBALS['phpgw']->db->query('select distinct lang from phpgw_lang');
-			while ($GLOBALS['phpgw']->db->next_record())
+			$installedLanguages = array();
+			$db = \App\Database\Db::getInstance();
+			$db->query('select distinct lang from phpgw_lang');
+			while ($db->next_record())
 			{
-				$installedLanguages[$GLOBALS['phpgw']->db->f('lang')] = $GLOBALS['phpgw']->db->f('lang');
+				$installedLanguages[$db->f('lang')] = $db->f('lang');
 			}
 
 			return $installedLanguages;
@@ -248,43 +256,40 @@
 				$passwd = $this->serverSettings['ldap_root_pw'];
 			}
 
+			$log = new Log();
 			// connect to ldap server
 			if (! $ds = ldap_connect($host))
 			{
 				/* log does not exist in setup(, yet) */
-				if(is_object($GLOBALS['phpgw']->log))
-				{
-					$GLOBALS['phpgw']->log->message('F-Abort, Failed connecting to LDAP server');
-					$GLOBALS['phpgw']->log->commit();
-				}
+				
+				$log->message('F-Abort, Failed connecting to LDAP server');
+				$log->commit();
+				
 
 				printf("<b>Error: Can't connect to LDAP server %s!</b><br>",$host);
 				return False;
 			}
 			if(! @ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3))//LDAP protocol v3 support
 			{
-				if(is_object($GLOBALS['phpgw']->log))
-				{
-					//$GLOBALS['phpgw']->log->message('set_option(protocol v3) failed using v2');
-					//$GLOBALS['phpgw']->log->commit();
-				}
+				
+					//$log->message('set_option(protocol v3) failed using v2');
+					//$log->commit();
+				
 			}
 			else
 			{
-				if(is_object($GLOBALS['phpgw']->log))
-				{
-					//$GLOBALS['phpgw']->log->message('set_option(protocol v3) succeded using v3');
-					//$GLOBALS['phpgw']->log->commit();
-				}
+				
+					//$log->message('set_option(protocol v3) succeded using v3');
+					//$log->commit();
+				
 			}
 			// bind as admin, we not to able to do everything
 			if (! ldap_bind($ds,$dn,$passwd))
 			{
-				if(is_object($GLOBALS['phpgw']->log))
-				{
-					$GLOBALS['phpgw']->log->message('F-Abort, Failed binding to LDAP server');
-					$GLOBALS['phpgw']->log->commit();
-				}
+				
+				$log->message('F-Abort, Failed binding to LDAP server');
+				$log->commit();
+			
 
 				printf("<b>Error: Can't bind to LDAP server: %s!</b><br>",$dn);
 				return False;
@@ -331,8 +336,8 @@
 				{
 					ExecMethod('phpgwapi.asyncservice.check_run', 'fallback');
 				}
-				$GLOBALS['phpgw']->session->commit_session();
-				$GLOBALS['phpgw']->db->disconnect();
+
+				\App\modules\phpgwapi\security\Sessions::getInstance()->commit_session();
 				$final_called = true;
 			}
 		}
@@ -380,37 +385,6 @@ HTML;
 
 HTML;
 			return $html_error;
-		}
-
-		/**
-		* Create a link when user is the owner otherwise &nbsp;
-		*
-		* @param integer $record User or account id
-		* @param string $link URL
-		* @param string $label Link name
-		* @param array $extravars URL parameter
-		* @deprecated use ACL instead
-		*/
-		public function check_owner($record, $link, $label, $extravars = array())
-		{
-			echo 'check_owner() is a depreciated function - use ACL class instead <br>';
-			$s = '<a href="' . $GLOBALS['phpgw']->link($link,$extravars) . '"> ' . lang($label) . ' </a>';
-			if ( preg_match('/^[0-9]+$/',$record))
-			{
-				if ($record != $this->userSettings['account_id'])
-				{
-					$s = '&nbsp;';
-				}
-			}
-			else
-			{
-				if ($record != $this->userSettings['account_lid'])
-				{
-					$s = '&nbsp;';
-				}
-			}
-
-			return $s;
 		}
 
 		/**
@@ -510,7 +484,7 @@ HTML;
 		*/
 		public function grab_owner_name($accountid = null)
 		{
-			return (string) $GLOBALS['phpgw']->accounts->get($accountid);
+			return (string) (new \App\modules\phpgwapi\controllers\Accounts\Accounts())->get($accountid);			
 		}
 
 		/**
@@ -1045,10 +1019,8 @@ HTML;
 		public function get_css($cache_refresh_token = '')
 		{
 			$all_css = '';
-			if( isset($GLOBALS['phpgw']->css) && is_object($GLOBALS['phpgw']->css) )
-			{
-				$all_css .= $GLOBALS['phpgw']->css->get_css_links($cache_refresh_token);
-			}
+	
+			$all_css .= phpgwapi_css::getInstance()->get_css_links($cache_refresh_token);			
 
 			if ( isset($this->flags['css_link']) )
 			{
@@ -1057,14 +1029,14 @@ HTML;
 
 			//FIXME drop app_css, use the new css stuff
 			$app_css = '';
-			if ( isset($GLOBALS['phpgw_info']['menuaction']) )
+			if (!empty(Settings::getInstance()->get('menuaction')))
 			{
-				list($app,$class,$method) = explode('.',$GLOBALS['phpgw_info']['menuaction']);
-				if ( isset($GLOBALS[$class]->public_functions)
-					&& is_array($GLOBALS[$class]->public_functions)
-					&& isset($GLOBALS[$class]->public_functions['css']) )
+				list($app,$class,$method) = explode('.',Settings::getInstance()->get('menuaction'));
+				if ( isset($class::$public_functions)
+					&& is_array($class::$public_functions)
+					&& isset($class::$public_functions['css']) )
 				{
-					$app_css .= $GLOBALS[$class]->css();
+					$app_css .= $class::css();
 				}
 			}
 
@@ -1102,32 +1074,17 @@ HTML;
 		public function get_javascript($cache_refresh_token = '')
 		{
 			$js = '';
-			if( isset($GLOBALS['phpgw']->js) && is_object($GLOBALS['phpgw']->js))
-			{
-				$js .= $GLOBALS['phpgw']->js->get_script_links($cache_refresh_token);
-			}
-			if( isset($GLOBALS['phpgw']->yuical) && is_object($GLOBALS['phpgw']->yuical))
-			{
-				if($cal_script = $GLOBALS['phpgw']->yuical->get_script())
-				{
-					$this->flags['java_script'] .= "\n"
-						. '<script>' ."\n"
-						. '//<[CDATA[' ."\n"
-						. $cal_script ."\n"
-						. '//]]' ."\n"
-						. "</script>\n";
-				}
-			}
+			$js .= phpgwapi_js::getInstance()->get_script_links($cache_refresh_token);
 
-			if ( isset($GLOBALS['phpgw_info']['menuaction']) )
+			if (!empty(Settings::getInstance()->get('menuaction')))
 			{
-				list($app, $class, $method) = explode('.',$GLOBALS['phpgw_info']['menuaction']);
-				if ( isset($GLOBALS[$class]->public_functions)
-					&& is_array($GLOBALS[$class]->public_functions)
-					&& isset($GLOBALS[$class]->public_functions['java_script'])
-					&& $GLOBALS[$class]->public_functions['java_script'] )
+				list($app, $class, $method) = explode('.',Settings::getInstance()->get('menuaction'));
+				if ( isset($class::$public_functions)
+					&& is_array($class::$public_functions)
+					&& isset($class::$public_functions['java_script'])
+					&& $class::$public_functions['java_script'] )
 				{
-					$js .= $GLOBALS[$class]->java_script();
+					$js .= $class::java_script();
 				}
 			}
 
@@ -1151,11 +1108,8 @@ HTML;
 		*/
 		public function get_javascript_end($cache_refresh_token = '')
 		{
-			$js = '';
-			if( isset($GLOBALS['phpgw']->js) && is_object($GLOBALS['phpgw']->js))
-			{
-				$js .= $GLOBALS['phpgw']->js->get_script_links($cache_refresh_token, true);
-			}
+			$js = '';			
+			$js .= phpgwapi_js::getInstance()->get_script_links($cache_refresh_token, true);
 
 			if (isset($this->flags['java_script_end']))
 			{
@@ -1172,14 +1126,7 @@ HTML;
 		*/
 		public function get_on_events()
 		{
-			if(@is_object($GLOBALS['phpgw']->js))
-			{
-				return $GLOBALS['phpgw']->js->get_win_on_events();
-			}
-			else
-			{
-				return '';
-			}
+			return phpgwapi_js::getInstance()->get_win_on_events();
 		}
 
 		/**
@@ -1202,7 +1149,7 @@ HTML;
 		*/
 		public function encrypt($data)
 		{
-			return $GLOBALS['phpgw']->crypto->encrypt($data);
+			return \App\modules\phpgwapi\services\Crypto::getInstance()->encrypt($data);
 		}
 
 		/**
@@ -1212,7 +1159,7 @@ HTML;
 		*/
 		public function decrypt($data)
 		{
-			return $GLOBALS['phpgw']->crypto->decrypt($data);
+			return \App\modules\phpgwapi\services\Crypto::getInstance()->decrypt($data);
 		}
 
 		/**
@@ -1240,20 +1187,6 @@ HTML;
 			return -1;
 		}
 
-		/**
-		* Wrapper to the session->appsession()
-		*
-		* @param string $data Data
-		* @return mixed Result of $GLOBALS['phpgw']->session->appsession()
-		* @deprecated
-		*/
-		public function appsession($data = '##NOTHING##')
-		{
-			echo 'common::appsession() is a depreciated function'
-				. " - use session::appsession() instead<br>\n";
-
-			return $GLOBALS['phpgw']->session->appsession('default','',$data);
-		}
 
 		/**
 		* Show current date
@@ -1512,21 +1445,23 @@ HTML;
 				return -1;
 			}
 
-			$GLOBALS['phpgw']->db->query("SELECT id FROM phpgw_nextid WHERE appname='".$appname."'",__LINE__,__FILE__);
-			while( $GLOBALS['phpgw']->db->next_record() )
+			$db = \App\Database\Db::getInstance();
+
+			$db->query("SELECT id FROM phpgw_nextid WHERE appname='".$appname."'",__LINE__,__FILE__);
+			while( $db->next_record() )
 			{
-				$id = $GLOBALS['phpgw']->db->f('id');
+				$id = $db->f('id');
 			}
 
 			if (empty($id) || !$id)
 			{
 				$id = 1;
-				$GLOBALS['phpgw']->db->query("INSERT INTO phpgw_nextid (appname,id) VALUES ('".$appname."',".$id.")",__LINE__,__FILE__);
+				$db->query("INSERT INTO phpgw_nextid (appname,id) VALUES ('".$appname."',".$id.")",__LINE__,__FILE__);
 			}
 			elseif($id<$min)
 			{
 				$id = $min;
-				$GLOBALS['phpgw']->db->query("UPDATE phpgw_nextid SET id=".$id." WHERE appname='".$appname."'",__LINE__,__FILE__);
+				$db->query("UPDATE phpgw_nextid SET id=".$id." WHERE appname='".$appname."'",__LINE__,__FILE__);
 			}
 			elseif ($max && ($id > $max))
 			{
@@ -1535,7 +1470,7 @@ HTML;
 			else
 			{
 				$id = $id + 1;
-				$GLOBALS['phpgw']->db->query("UPDATE phpgw_nextid SET id=".$id." WHERE appname='".$appname."'",__LINE__,__FILE__);
+				$db->query("UPDATE phpgw_nextid SET id=".$id." WHERE appname='".$appname."'",__LINE__,__FILE__);
 			}
 
 			return intval($id);
@@ -1555,11 +1490,12 @@ HTML;
 			{
 				return -1;
 			}
+			$db = \App\Database\Db::getInstance();
 
-			$GLOBALS['phpgw']->db->query("SELECT id FROM phpgw_nextid WHERE appname='".$appname."'",__LINE__,__FILE__);
-			if ( $GLOBALS['phpgw']->db->next_record() )
+			$db->query("SELECT id FROM phpgw_nextid WHERE appname='".$appname."'",__LINE__,__FILE__);
+			if ( $db->next_record() )
 			{
-				$id = $GLOBALS['phpgw']->db->f('id');
+				$id = $db->f('id');
 			}
 
 			if ( empty($id) )
@@ -1570,13 +1506,13 @@ HTML;
 					$id = $min;
 				}
 
-				$GLOBALS['phpgw']->db->query("INSERT INTO phpgw_nextid (appname,id) VALUES ('{$appname}', {$id})", __LINE__, __FILE__);
+				$db->query("INSERT INTO phpgw_nextid (appname,id) VALUES ('{$appname}', {$id})", __LINE__, __FILE__);
 				return $id;
 			}
 			else if ( $id < $min )
 			{
 				$id = $min;
-				$GLOBALS['phpgw']->db->query("UPDATE phpgw_nextid SET id = {$id} WHERE appname='{$appname}'", __LINE__, __FILE__);
+				$db->query("UPDATE phpgw_nextid SET id = {$id} WHERE appname='{$appname}'", __LINE__, __FILE__);
 				return $id;
 			}
 			else if ( $max && ($id > $max) )

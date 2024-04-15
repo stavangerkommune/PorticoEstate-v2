@@ -14,10 +14,7 @@
 	*
 	* Only instanstiate this class using:
 	* <code>
-	*  if ( !isset($GLOBALS['phpgw']->css) || !is_object($GLOBALS['phpgw']->css) )
-	*  {
-	*    $GLOBALS['phpgw']->css = createObject('phpgwapi.css');
-	*  }
+	*  phpgwapi_css::getInstance()
 	* </code>
 	*
 	* This way a theme can see if this is a defined object and include the data,

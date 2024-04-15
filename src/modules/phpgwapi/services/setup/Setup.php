@@ -84,7 +84,11 @@
 			$temp_dir = sys_get_temp_dir();
 			$this->hack_file_name = "$temp_dir/setup_login_hack_prevention.json";
 			$this->hooks = new Hooks();
-			$this->crypto = new Crypto();
+			
+			$this->_key = $this->serverSetting['encryptkey'];
+			$this->_iv  = $this->serverSetting['mcrypt_iv'];
+
+			$this->crypto = Crypto::getInstance(array($this->_key, $this->_iv));
             $this->db = Db::getInstance();
 			$this->locations = new Locations();
 

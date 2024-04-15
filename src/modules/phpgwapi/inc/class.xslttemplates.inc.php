@@ -11,6 +11,8 @@
 	* @version $Id$
 	*/
 
+	use App\modules\phpgwapi\inc\phpgwapi_common;
+	use App\modules\phpgwapi\services\Settings;
 	if( !extension_loaded('xsl') )
 	{
 		die('PHP CONFIGURATION. xslt-extension is not loaded. Please contact the system administrator.');
@@ -58,6 +60,9 @@
 		var $xmlvars = array();
 		var $xmldata = '';
 		var $print = false;
+		private $serverSettings;
+		private $userSettings;
+		private $flags;
 
 		private static $instance = null;
 
@@ -69,8 +74,11 @@
 		*/
 		private function __construct($root = '.')
 		{
+			$this->serverSettings = Settings::getInstance()->get('server');
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->flags = Settings::getInstance()->get('flags');
 			//FIXME Print view/mode should be handled by CSS not different markup
-			if ( isset($GLOBALS['phpgw_info']['flags']['printview']) && $GLOBALS['phpgw_info']['flags']['printview'] )
+			if ( isset($this->flags['printview']) && $this->flags['printview'] )
 			{
 				$this->print = true;
 			}
@@ -176,11 +184,11 @@
 				switch($time)
 				{
 					case 2:
-						$new_root = PHPGW_SERVER_ROOT . str_replace($GLOBALS['phpgw_info']['server']['template_set'], 'base', substr($rootdir,strlen(PHPGW_SERVER_ROOT)));
+						$new_root = PHPGW_SERVER_ROOT . str_replace($this->serverSettings['template_set'], 'base', substr($rootdir,strlen(PHPGW_SERVER_ROOT)));
 						$this->add_file($filename, $new_root, 3);
 						return true;
 					case 3:
-						$new_root = PHPGW_SERVER_ROOT . '/phpgwapi/templates/' . $GLOBALS['phpgw_info']['server']['template_set'];
+						$new_root = PHPGW_SERVER_ROOT . '/phpgwapi/templates/' . $this->serverSettings['template_set'];
 						$this->add_file($filename, $new_root, 4);
 						return true;
 					case 4:
@@ -389,13 +397,13 @@ XSLT;
 
 		function parse($parsexsl = true, $parsexml = true)
 		{
-			$output_header = !(isset($GLOBALS['phpgw_info']['flags']['noframework']) && $GLOBALS['phpgw_info']['flags']['noframework']);
+			$output_header = !(isset($this->flags['noframework']) && $this->flags['noframework']);
 			
 			$stripped_htm	= Sanitizer::get_var('phpgw_return_as') == 'stripped_html';
 			
 			if ( $this->output != 'wml' && !$stripped_htm)
 			{
-				$GLOBALS['phpgw']->common->phpgw_header($output_header);
+				(new \App\modules\phpgwapi\inc\phpgwapi_common())->phpgw_header($output_header);
 			}
 
 			if($parsexsl)
@@ -429,7 +437,7 @@ XSLT;
 			{
 				$message ='Systemfeil - kontakt adminstrator';
 
-				if(!isset($GLOBALS['phpgw_info']['user']['apps']['admin']) || !$GLOBALS['phpgw_info']['user']['apps']['admin'])
+				if(!isset($this->userSettings['apps']['admin']) || !$this->userSettings['apps']['admin'])
 				{
 					\App\modules\phpgwapi\services\Cache::message_set($message, 'error');
 				}

@@ -23,7 +23,8 @@
 	  You should have received a copy of the GNU General Public License
 	  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
-
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\services\Log;
 	/**
 	 * phpGroupWare javascript support class
 	 *
@@ -83,6 +84,9 @@
 		 */
 		protected $external_end_files;
 		protected $webserver_url;
+		protected $serverSettings;
+		protected $cache_refresh_token = '';
+
 
 	    /**
      * @var ClassName reference to singleton instance
@@ -95,9 +99,12 @@
 		 */
 		private function __construct()
 		{
+			$this->serverSettings = Settings::getInstance()->get('server');
 			$this->validate_file('core', 'base', 'phpgwapi', false, array('combine' => true));
-			$webserver_url		 = $GLOBALS['phpgw_info']['server']['webserver_url'];
+			$webserver_url		 = $this->serverSettings['webserver_url'];
 			$this->webserver_url = $webserver_url;
+			$this->cache_refresh_token = '?v=' . $this->serverSettings['version'];
+			$this->log = new Log();
 		}
 
 		/**
@@ -186,7 +193,7 @@
 
 			$combine = true;
 
-			if (!empty($GLOBALS['phpgw_info']['server']['no_jscombine']))
+			if (!empty($this->serverSettings['no_jscombine']))
 			{
 				$combine = false;
 			}
@@ -203,9 +210,9 @@
 
 			if ($combine)
 			{
-				$cachedir = "{$GLOBALS['phpgw_info']['server']['temp_dir']}/combine_cache";
+				$cachedir = "{$this->serverSettings['temp_dir']}/combine_cache";
 
-				if (is_dir($GLOBALS['phpgw_info']['server']['temp_dir']) && !is_dir($cachedir))
+				if (is_dir($this->serverSettings['temp_dir']) && !is_dir($cachedir))
 				{
 					mkdir($cachedir, 0770);
 				}
@@ -435,9 +442,8 @@ HTML;
 
 			if ($end_of_page === "text/javascript")
 			{
-
 				$bt = debug_backtrace();
-				$GLOBALS['phpgw']->log->error(array(
+				$this->log->error(array(
 					'text' => 'js::%1 Called from file: %2 line: %3',
 					'p1'   => $bt[0]['function'],
 					'p2'   => $bt[0]['file'],
@@ -459,7 +465,7 @@ HTML;
 				$config = array_merge((array)$config, array('type' => 'text/javascript'));
 			}
 
-			$template_set = $GLOBALS['phpgw_info']['server']['template_set'];
+			$template_set = $this->serverSettings['template_set'];
 //            if($file === "resource") {
 //                _debug_array(array(
 //                    "file" => $file,
@@ -537,15 +543,16 @@ HTML;
 				. $code . "\n"
 				. '//]]' . "\n"
 				. "</script>\n";
-
-			if (isset($GLOBALS['phpgw_info']['flags'][$key]))
+			$flags = Settings::getInstance()->get('flags');
+			if (isset($flags[$key]))
 			{
-				$GLOBALS['phpgw_info']['flags'][$key] .= $script;
+				$flags[$key] .= $script;
 			}
 			else
 			{
-				$GLOBALS['phpgw_info']['flags'][$key] = $script;
+				$flags[$key] = $script;
 			}
+			Settings::getInstance()->set('flags', $flags);
 		}
 
 		/**

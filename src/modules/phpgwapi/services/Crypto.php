@@ -22,6 +22,45 @@ if (!empty($serverSettings['mcrypt_enabled']) || (isset($serverSettings['enable_
 	//Fall back
 	class Crypto extends Crypto_
 	{
+       /**
+         * @var Crypto reference to singleton instance
+         */
+        private static $instance;
+
+        /**
+         * Constructor
+         */
+        private function __construct()
+        {
+           parent::__construct();
+        }
+
+        /**
+         * Gets the instance via lazy initialization (created on first usage)
+         */
+        public static function getInstance(): Crypto
+        {
+            if (null === static::$instance) {
+                static::$instance = new static();
+            }
+
+            return static::$instance;
+        }
+
+        /**
+         * Prevent the instance from being cloned (which would create a second instance of it)
+         */
+        private function __clone()
+        {
+        }
+
+        /**
+         * Prevent from being unserialized (which would create a second instance of it)
+         */
+        private function __wakeup()
+        {
+        }
+
 	}
 }
 

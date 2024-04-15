@@ -21,11 +21,44 @@ namespace App\modules\phpgwapi\services;
 
 class Crypto extends Crypto_
 {
+	      /**
+         * @var Crypto reference to singleton instance
+         */
+        private static $instance;
 
-	function __construct($vars = '')
-	{
-		parent::__construct($vars);
-	}
+        /**
+         * Constructor
+         */
+        private function __construct($vars = '')
+        {
+			parent::__construct($vars);
+        }
+
+        /**
+         * Gets the instance via lazy initialization (created on first usage)
+         */
+        public static function getInstance($vars = ''): Crypto
+        {
+            if (null === static::$instance) {
+                static::$instance = new static($vars = '');
+            }
+            return static::$instance;
+        }
+
+        /**
+         * Prevent the instance from being cloned (which would create a second instance of it)
+         */
+        private function __clone()
+        {
+        }
+
+        /**
+         * Prevent from being unserialized (which would create a second instance of it)
+         */
+        private function __wakeup()
+        {
+        }
+
 
 	function init($vars)
 	{

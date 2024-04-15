@@ -69,9 +69,8 @@ class ManageHeader
 		Settings::getInstance()->set('server', $this->serverSettings); // used in crypto
 		if ($_key)
 		{
-			$this->crypto = new Crypto(array($_key, $_iv));
+			$this->crypto = Crypto::getInstance(array($_key, $_iv));
 		}
-
 
 		$this->db = Db::getInstance();
 		$this->detection = new Detection();

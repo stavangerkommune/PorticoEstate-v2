@@ -273,8 +273,7 @@ class Sessions
 		$this->_key = md5($this->_sessionid . $this->serverSetting['encryptkey']);
 		$this->_iv  = $this->serverSetting['mcrypt_iv'];
 		
-		$this->Crypto = new Crypto();
-		$this->Crypto->init(array($this->_key, $this->_iv));
+		$this->Crypto = Crypto::getInstance(array($this->_key, $this->_iv));
 
 		$this->read_repositories(true);
 //\App\helpers\DebugArray::debug($this->_data);die();
@@ -426,9 +425,7 @@ class Sessions
 		$this->_key = $this->serverSetting['encryptkey'];
 		$this->_iv  = $this->serverSetting['mcrypt_iv'];
 
-		$this->Crypto = new Crypto();
-		$this->Crypto->init(array($this->_key, $this->_iv));
-
+		$this->Crypto = Crypto::getInstance(array($this->_key, $this->_iv));
 
 		$use_cache = false;
 		if (isset($this->serverSetting['cache_phpgw_info'])) {
@@ -966,8 +963,8 @@ class Sessions
 			return $data;
 		}
 
-		$GLOBALS['phpgw']->session->sort_by = $sort;
-		$GLOBALS['phpgw']->session->sort_order = $order;
+//		$GLOBALS['phpgw']->session->sort_by = $sort;
+//		$GLOBALS['phpgw']->session->sort_order = $order;
 
 		uasort($data, array($this, 'session_sort'));
 
@@ -1093,6 +1090,16 @@ class Sessions
 				}
 			}
 			return $this->_history_id;
+		}
+		/**
+		* commit the sessiondata to the session handler
+		*
+		* @return bool
+		*/
+		function commit_session()
+		{
+			session_write_close();
+			return true;
 		}
 
 		/**
