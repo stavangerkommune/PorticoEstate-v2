@@ -34,11 +34,13 @@
 
 		protected $webserver_url;
 		protected $serverSettings;
+		protected $flags;
 
 		public function __construct()
 		{
 			$this->serverSettings = Settings::getInstance()->get('server');
 			$this->userSettings = Settings::getInstance()->get('user');
+			$this->flags = Settings::getInstance()->get('flags');
 			$webserver_url = isset($this->serverSettings['webserver_url']) ? $this->serverSettings['webserver_url'] : '/';
 			$this->webserver_url = $webserver_url;
 		}
@@ -537,14 +539,14 @@ HTML;
 		/**
 		* Get directory of application
 		*
-		* @param string $appname Name of application defaults to $GLOBALS['phpgw_info']['flags']['currentapp']
+		* @param string $appname Name of application defaults to $this->flags['currentapp']
 		* @return string|boolean Application directory or false
 		*/
 		public function get_app_dir($appname = '')
 		{
 			if ($appname == '')
 			{
-				$appname = $GLOBALS['phpgw_info']['flags']['currentapp'];
+				$appname = $this->flags['currentapp'];
 			}
 			if ($appname == 'home' || $appname == 'logout' || $appname == 'login')
 			{
@@ -571,14 +573,14 @@ HTML;
 		/**
 		* Get include directory of application
 		*
-		* @param string $appname Name of application, defaults to $GLOBALS['phpgw_info']['flags']['currentapp']
+		* @param string $appname Name of application, defaults to $this->flags['currentapp']
 		* @return string|boolean Include directory or false
 		*/
 		public function get_inc_dir($appname = '')
 		{
 			if (! $appname)
 			{
-				$appname = $GLOBALS['phpgw_info']['flags']['currentapp'];
+				$appname = $this->flags['currentapp'];
 			}
 			if ($appname == 'home' || $appname == 'logout' || $appname == 'login')
 			{
@@ -678,9 +680,11 @@ HTML;
 		{
 			$serverSettings = Settings::getInstance()->get('server');
 			$userSettings = Settings::getInstance()->get('user');
+			$flags = Settings::getInstance()->get('flags');
+
 			if (! $appname)
 			{
-				$appname = $GLOBALS['phpgw_info']['flags']['currentapp'];
+				$appname = $flags['currentapp'];
 			}
 			if ($appname == 'home' || $appname == 'logout' || $appname == 'login' || $appname == 'about' || $appname == 'help')
 			{
@@ -762,14 +766,14 @@ HTML;
 		/**
 		* Get image directory of an application
 		*
-		* @param string $appname Application name, defaults to $GLOBALS['phpgw_info']['flags']['currentapp']
+		* @param string $appname Application name, defaults to $this->flags['currentapp']
 		* @return string|boolean Image directory of given application or false
 		*/
 		public function get_image_dir($appname = '')
 		{
 			if ($appname == '')
 			{
-				$appname = $GLOBALS['phpgw_info']['flags']['currentapp'];
+				$appname = $this->flags['currentapp'];
 			}
 			if (empty($this->serverSettings['template_set']))
 			{
@@ -796,14 +800,14 @@ HTML;
 		/**
 		* Get image path of an application
 		*
-		* @param string $appname Appication name, defaults to $GLOBALS['phpgw_info']['flags']['currentapp']
+		* @param string $appname Appication name, defaults to $this->flags['currentapp']
 		* @return string|boolean Image directory path of given application or false
 		*/
 		public function get_image_path($appname = '')
 		{
 			if ($appname == '')
 			{
-				$appname = $GLOBALS['phpgw_info']['flags']['currentapp'];
+				$appname = $this->flags['currentapp'];
 			}
 
 			if (empty($this->serverSettings['template_set']))
@@ -998,7 +1002,7 @@ HTML;
 			}
 
 			/* used for xslt apps without xslt framework */
-			if ( isset($GLOBALS['phpgw_info']['flags']['xslt_app']) && $GLOBALS['phpgw_info']['flags']['xslt_app'] )
+			if ( isset($this->flags['xslt_app']) && $this->flags['xslt_app'] )
 			{
 				phpgwapi_xslttemplates::getInstance()->add_file('app_data');
 			}
@@ -1014,14 +1018,14 @@ HTML;
 			{
 				$footer_rendered = true;
 				/* used for xslt apps without xslt framework */
-				if ( isset($GLOBALS['phpgw_info']['flags']['xslt_app'])
-					&& $GLOBALS['phpgw_info']['flags']['xslt_app'] )
+				if ( isset($this->flags['xslt_app'])
+					&& $this->flags['xslt_app'] )
 				{
 					phpgwapi_xslttemplates::getInstance()->pparse();
 				}
 
-				if ( !isset($GLOBALS['phpgw_info']['flags']['nofooter'])
-					|| !$GLOBALS['phpgw_info']['flags']['nofooter'] )
+				if ( !isset($this->flags['nofooter'])
+					|| !$this->flags['nofooter'] )
 				{
 					require_once PHPGW_API_INC . '/footer.inc.php';
 				}
@@ -1046,9 +1050,9 @@ HTML;
 				$all_css .= $GLOBALS['phpgw']->css->get_css_links($cache_refresh_token);
 			}
 
-			if ( isset($GLOBALS['phpgw_info']['flags']['css_link']) )
+			if ( isset($this->flags['css_link']) )
 			{
-				$all_css .= $GLOBALS['phpgw_info']['flags']['css_link'] . "\n";
+				$all_css .= $this->flags['css_link'] . "\n";
 			}
 
 			//FIXME drop app_css, use the new css stuff
@@ -1064,9 +1068,9 @@ HTML;
 				}
 			}
 
-			if ( isset($GLOBALS['phpgw_info']['flags']['css']) )
+			if ( isset($this->flags['css']) )
 			{
-				$app_css .= $GLOBALS['phpgw_info']['flags']['css'] . "\n";
+				$app_css .= $this->flags['css'] . "\n";
 			}
 
 			if($app_css)
@@ -1106,7 +1110,7 @@ HTML;
 			{
 				if($cal_script = $GLOBALS['phpgw']->yuical->get_script())
 				{
-					$GLOBALS['phpgw_info']['flags']['java_script'] .= "\n"
+					$this->flags['java_script'] .= "\n"
 						. '<script>' ."\n"
 						. '//<[CDATA[' ."\n"
 						. $cal_script ."\n"
@@ -1127,10 +1131,11 @@ HTML;
 				}
 			}
 
-			if (isset($GLOBALS['phpgw_info']['flags']['java_script']))
+			if (isset($this->flags['java_script']))
 			{
-				$js .= $GLOBALS['phpgw_info']['flags']['java_script'] . "\n";
+				$js .= $this->flags['java_script'] . "\n";
 			}
+			Settings::getInstance()->set('java_script', $js);
 			return $js;
 		}
 
@@ -1152,9 +1157,9 @@ HTML;
 				$js .= $GLOBALS['phpgw']->js->get_script_links($cache_refresh_token, true);
 			}
 
-			if (isset($GLOBALS['phpgw_info']['flags']['java_script_end']))
+			if (isset($this->flags['java_script_end']))
 			{
-				$js .= $GLOBALS['phpgw_info']['flags']['java_script_end'] . "\n";
+				$js .= $this->flags['java_script_end'] . "\n";
 			}
 			return $js;
 		}
@@ -1641,10 +1646,10 @@ HTML;
 					break;
 			}
 
-			if ($text=='' && @isset($GLOBALS['phpgw_info']['flags']['msgbox_data']))
+			if ($text=='' && @isset($this->flags['msgbox_data']))
 			{
-				$text = $GLOBALS['phpgw_info']['flags']['msgbox_data'];
-				unset($GLOBALS['phpgw_info']['flags']['msgbox_data']);
+				$text = $this->flags['msgbox_data'];
+				unset($this->flags['msgbox_data']);
 			}
 			elseif($text=='')
 			{
