@@ -412,13 +412,14 @@
 		{
 			if ( !$url )
 			{
-				$url = self::get_var('PHP_SELF', 'string', 'SERVER');
+				$url = \Sanitizer::get_var('PHP_SELF', 'string', 'SERVER');
 			}
 
 			if ( headers_sent($filename, $linenum) )
 			{
+				$log = new \App\modules\phpgwapi\services\Log();
 
-				$GLOBALS['phpgw']->log->error(array(
+				$log->error(array(
 				'text'	=> 'Headers already sent in %1 on line %2.',
 				'p1'	=> $filename,
 				'p2'	=> $linenum,

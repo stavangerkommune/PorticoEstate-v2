@@ -207,12 +207,12 @@ HTML;
 		*/
 		function validate_file($file, $app='phpgwapi')
 		{
-			if(is_readable(PHPGW_INCLUDE_ROOT . "/$app/templates/" . $this->userSettings['preferences']['common']['template_set'] . "/css/$file.css"))
+			if(is_readable(PHPGW_SERVER_ROOT . "/$app/templates/" . $this->userSettings['preferences']['common']['template_set'] . "/css/$file.css"))
 			{
 				$this->files[$app][$this->userSettings['preferences']['common']['template_set']][$file] = True;
 				return True;
 			}
-			else if ( is_readable(PHPGW_INCLUDE_ROOT . "/$app/templates/base/css/$file.css") )
+			else if ( is_readable(PHPGW_SERVER_ROOT . "/$app/templates/base/css/$file.css") )
 			{
 				$this->files[$app]['base'][$file] = True;
 				return True;

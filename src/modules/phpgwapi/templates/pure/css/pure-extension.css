@@ -1,0 +1,225 @@
+/*!
+Pure v0.5.0
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+https://github.com/yui/pure/blob/master/LICENSE.md
+*/
+
+/* Aligned Forms */
+
+.pure-form-aligned .pure-custom {
+	display: inline-block;
+	vertical-align: top;
+}
+
+.loading {
+	background: url("../images/loader.gif") center center no-repeat;;
+	width: 16px;
+	height: 16px;
+	display:inline-block;
+	margin-left: 10px;
+	vertical-align:middle;
+	visibility:hidden;
+}
+
+.custom-message {
+	display:inline-block;
+	vertical-align:middle;
+}
+
+.custom-container {
+	display:inline-block;
+	vertical-align: top;
+}
+
+.custom-label {
+	font-weight: bold;
+}
+
+.pure-control-group > label {
+	font-weight: bold;
+}
+
+.p0{padding-left: 0px !important;padding-top: 0px !important;padding-bottom: 0px !important;}
+
+.pure-form.pure-form-aligned label h4{margin: 0.66em 0;}
+.pure-g [class*="pure-u"] {padding: 1px 5px;box-sizing: border-box;}
+.pure-g [class*="pure-u"] .pure-g [class*="pure-u"],
+.pure-control-group [class*="pure-u"] {padding: 0px;box-sizing: border-box;}
+
+fieldset .heading legend h3 {margin-bottom: 0.4em;}
+fieldset h4 {margin-bottom: 0;}
+.pure-control-group dd {margin: 0px;}
+.pure-form input.input50 {width: 50px;}
+
+
+input[class*="pure-u"],
+textarea[class*="pure-u"],
+select[class*="pure-u"] {box-sizing: border-box;padding: 0.5em 0.6em !important;}
+/*
+textarea
+{
+	width: 235px;
+	height: 150px;
+}
+*/
+input[type="checkbox"],
+input[type="radio"] {margin-right: 2px;}
+
+.pure-table th {background: #e0e0e0 none repeat scroll 0 0;}
+.pure-table thead th{text-align: center;}
+.pure-table tbody th{border-top: 1px solid #cbcbcb;text-align: right;font-weight: bold;color: #000;}
+
+#schedule_container {color: #000;}
+#schedule_container .pure-table thead th {line-height: 1.4;}
+p.conflicts {margin: 0;color: #000;}
+#schedule_container .cellInfo:hover {background-image: url("../images/info.png");background-position: 100% 0;background-repeat: no-repeat;cursor: pointer;}
+#schedule_container .free:hover {cursor: pointer;}
+#schedule_overlay {background-color: #fff;border: 1px solid #000;height: auto;left: 0;margin: auto;padding: 20px;position: absolute;right: 0;width: 400px;z-index: 9;}
+#schedule_overlay img {bottom: 0;display: block;left: 0;margin: auto;position: absolute;right: 0;top: 0;}
+#content_overlay {display: block;height: 100%;left: 0;position: fixed;top: 0;width: 100%;}
+
+.date-container {position: relative;}
+        
+#dates-container .date-container .pure-control-group input.datetime,
+#dates-container .date-container .pure-control-group input.time {
+    display: inline-block;
+}
+
+.date-container .close-btn {
+    background: transparent url("../../../../phpgwapi/js/yui3/assets/skins/sam/sprite.png") no-repeat scroll 0 -300px;
+    border: medium none;
+    color: white;
+    cursor: pointer;
+    height: 15px;
+    position: absolute;
+    right: 0;
+    text-decoration: none;
+    top: 0;
+    width: 25px;
+}
+
+/*ul.ui-autocomplete {
+    background-color: #fff;
+    border: 1px solid;
+    list-style: outside none none;
+    padding: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: default;
+}
+.ui-autocomplete li.ui-menu-item:hover {
+    background: #426fd9 none repeat scroll 0 0;
+    color: #fff;
+}
+.ui-autocomplete li.ui-menu-item {
+    padding: 2px 10px;
+}*/
+
+
+ul.pathway {
+    font-size: 110%;
+    font-weight: bolder;
+    margin: 1em 0;
+}
+ul.pathway li a {
+    color: #000;
+    text-decoration: none;
+}
+ul.pathway li a:hover {
+    color: #008;
+}
+ul.pathway li {
+    background: rgba(0, 0, 0, 0) url("../images/pathwaysep.png") no-repeat scroll 0 50%;
+    display: inline;
+    padding-left: 16px;
+}
+ul.pathway li:first-child {
+    background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+    padding-left: 0;
+}
+
+
+.list-left {padding-left: 20px;text-align: left;margin-top: 0px;}
+
+button.pure-button {margin-right: 5px;}
+a.pure-button {text-decoration: none;}
+.pure-button {margin-right: 5px;margin-top: 5px;text-shadow: none;box-shadow: none;display: inline-block;vertical-align: top;}
+
+div.allocation-list {border: 1px solid #555;height: 10em;max-width: 30em;overflow: auto;padding: 0.4em;width: 100%;}
+
+button.ui-button {box-shadow: none;text-shadow: none;}
+
+ul#audience {list-style: none;padding-left: 10px;}
+/* AUTOCOMPLETE */
+.ui-widget.ui-autocomplete {max-height: 224px;overflow-x: hidden;overflow-y: auto;}
+
+
+.pure-form input[type="text"][disabled], .pure-form input[type="password"][disabled], .pure-form input[type="email"][disabled], .pure-form input[type="url"][disabled], .pure-form input[type="date"][disabled], .pure-form input[type="month"][disabled], .pure-form input[type="time"][disabled], .pure-form input[type="datetime"][disabled], .pure-form input[type="datetime-local"][disabled], .pure-form input[type="week"][disabled], .pure-form input[type="number"][disabled], .pure-form input[type="search"][disabled], .pure-form input[type="tel"][disabled], .pure-form input[type="color"][disabled], .pure-form select[disabled], .pure-form textarea[disabled]
+{
+	color: #050000;
+}
+
+@media only screen and (max-width : 768px) {
+    .pure-form button[type="submit"] {
+        margin: 0.7em 0 0;
+    }
+
+    .pure-form input:not([type]),
+    .pure-form input[type="text"],
+    .pure-form input[type="password"],
+    .pure-form input[type="email"],
+    .pure-form input[type="url"],
+    .pure-form input[type="date"],
+    .pure-form input[type="month"],
+    .pure-form input[type="time"],
+    .pure-form input[type="datetime"],
+    .pure-form input[type="datetime-local"],
+    .pure-form input[type="week"],
+    .pure-form input[type="number"],
+    .pure-form input[type="search"],
+    .pure-form input[type="tel"],
+    .pure-form input[type="color"],
+    .pure-form label {
+        margin-bottom: 0.3em;
+        display: block;
+    }
+
+    .pure-group input:not([type]),
+    .pure-group input[type="text"],
+    .pure-group input[type="password"],
+    .pure-group input[type="email"],
+    .pure-group input[type="url"],
+    .pure-group input[type="date"],
+    .pure-group input[type="month"],
+    .pure-group input[type="time"],
+    .pure-group input[type="datetime"],
+    .pure-group input[type="datetime-local"],
+    .pure-group input[type="week"],
+    .pure-group input[type="number"],
+    .pure-group input[type="search"],
+    .pure-group input[type="tel"],
+    .pure-group input[type="color"] {
+        margin-bottom: 0;
+    }
+
+    .pure-form-aligned .pure-control-group label {
+        margin-bottom: 0.3em;
+        text-align: left;
+        display: block;
+        width: 100%;
+    }
+
+    .pure-form-aligned .pure-controls {
+        margin: 1.5em 0 0 0;
+    }
+
+    .pure-form-message-inline,
+    .pure-form-message {
+        display: block;
+        font-size: 0.75em;
+        /* Increased bottom padding to make it group with its related input element. */
+        padding: 0.2em 0 0.8em;
+    }
+}

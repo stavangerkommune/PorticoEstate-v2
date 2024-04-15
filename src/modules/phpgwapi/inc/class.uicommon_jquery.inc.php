@@ -414,7 +414,7 @@
 				$filename = $path . '/' . $tmpl . '.xsl';
 				if (file_exists($filename))
 				{
-					$GLOBALS['phpgw']->xslttpl->xslfiles[$tmpl] = $filename;
+					phpgwapi_xslttemplates::getInstance()->add_file($tmpl, $path);
 					return;
 				}
 			}
@@ -572,10 +572,10 @@
 			}
 
 			$output = \Sanitizer::get_var('output', 'string', 'REQUEST', 'html');
-			$GLOBALS['phpgw']->xslttpl->set_output($output);
+			phpgwapi_xslttemplates::getInstance()->set_output($output);
 			self::add_template_file($files);
 
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array($base => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array($base => $data));
 		}
 
 		// Add link key to a result array

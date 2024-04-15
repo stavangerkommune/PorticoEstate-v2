@@ -3,6 +3,7 @@
     include_once SRC_ROOT_PATH . '/modules/phpgwapi/inc/class.object_factory.inc.php';
     include_once SRC_ROOT_PATH . '/modules/phpgwapi/inc/class.ofphpgwapi.inc.php';
     include_once SRC_ROOT_PATH . '/helpers/phpgw.php';
+	include_once SRC_ROOT_PATH . '/modules/phpgwapi/inc/class.xslttemplates.inc.php';
 
 
     /**
@@ -37,9 +38,9 @@
 	 */
 	function include_class($module, $class_name, $includes_path = 'inc/')
 	{
-		if ( is_file(PHPGW_INCLUDE_ROOT . "/{$module}/{$includes_path}class.{$class_name}.inc.php") )
+		if ( is_file(PHPGW_SERVER_ROOT . "/{$module}/{$includes_path}class.{$class_name}.inc.php") )
 		{
-			return require_once(PHPGW_INCLUDE_ROOT . "/{$module}/{$includes_path}class.{$class_name}.inc.php");
+			return require_once(PHPGW_SERVER_ROOT . "/{$module}/{$includes_path}class.{$class_name}.inc.php");
 		}
 		//trigger_error(lang('Unable to locate file: %1', "{$module}/{$includes_path}class.{$class_name}.inc.php"), E_USER_ERROR);
 		return false;

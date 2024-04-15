@@ -23,7 +23,7 @@ class Sanitizer
 			$base_url = $serverSettings['webserver_url'];
 		}
 
-		//require_once PHPGW_INCLUDE_ROOT . '/phpgwapi/inc/htmlpurifier/vendor/ezyang/htmlpurifier/library/HTMLPurifier.auto.php';
+		//require_once PHPGW_SERVER_ROOT . '/phpgwapi/inc/htmlpurifier/vendor/ezyang/htmlpurifier/library/HTMLPurifier.auto.php';
 
 		$config = HTMLPurifier_Config::createDefault();
 		$config->set('Core', 'DefinitionCache', null);

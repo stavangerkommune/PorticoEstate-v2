@@ -87,8 +87,8 @@ class StartPoint
             'currentapp' => $app
 		];
 
-		Settings::getInstance()->set('flags', $flags);	
-        
+		Settings::getInstance()->set('flags', $flags);
+		require_once SRC_ROOT_PATH . '/helpers/LegacyObjectHandler.php';      
         if ($app == 'home' && ! $api_requested)
         {
             $GLOBALS['phpgw']->redirect_link('/home.php');
@@ -131,6 +131,14 @@ class StartPoint
                     Settings::getInstance()->set('flags', $flags);
                 }
                 $Object->$method();
+
+				$return_data =  \phpgwapi_xslttemplates::getInstance()->parse();
+
+				$response->getBody()->write($return_data);
+				return $response->withHeader('Content-Type', 'text/html');
+
+
+
                 return;
             }
             unset($app);

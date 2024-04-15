@@ -466,14 +466,14 @@ HTML;
 //                    "template_set" => $template_set,
 //                    "config" => $config,
 //                    "end_of_page" => $end_of_page ? 'T' : 'F',
-//                    (PHPGW_INCLUDE_ROOT . "/$app/js/$template_set/$file.js") => is_readable(PHPGW_INCLUDE_ROOT . "/$app/js/$template_set/$file.js") ? 'T' : 'F',
-//                    (PHPGW_INCLUDE_ROOT . "/$app/js/$template_set/dist/{$file}.bundle.js") => is_readable(PHPGW_INCLUDE_ROOT . "/$app/js/$template_set/dist/{$file}.bundle.js") ? 'T' : 'F',
-//                    (PHPGW_INCLUDE_ROOT . "/$app/js/$package/$file.js") => is_readable(PHPGW_INCLUDE_ROOT . "/$app/js/$package/$file.js") ? 'T' : 'F',
+//                    (PHPGW_SERVER_ROOT . "/$app/js/$template_set/$file.js") => is_readable(PHPGW_SERVER_ROOT . "/$app/js/$template_set/$file.js") ? 'T' : 'F',
+//                    (PHPGW_SERVER_ROOT . "/$app/js/$template_set/dist/{$file}.bundle.js") => is_readable(PHPGW_SERVER_ROOT . "/$app/js/$template_set/dist/{$file}.bundle.js") ? 'T' : 'F',
+//                    (PHPGW_SERVER_ROOT . "/$app/js/$package/$file.js") => is_readable(PHPGW_SERVER_ROOT . "/$app/js/$package/$file.js") ? 'T' : 'F',
 //                ));die();
 //            }
 
 
-			if (is_readable(PHPGW_INCLUDE_ROOT . "/$app/js/$template_set/$file.js"))
+			if (is_readable(PHPGW_SERVER_ROOT . "/$app/js/$template_set/$file.js"))
 			{
 				if ($end_of_page)
 				{
@@ -485,7 +485,7 @@ HTML;
 				}
 				return True;
 			} // New check for the bundled file in the /dist/js directory
-			else if (is_readable(PHPGW_INCLUDE_ROOT . "/$app/js/$template_set/dist/{$file}.bundle.js"))
+			else if (is_readable(PHPGW_SERVER_ROOT . "/$app/js/$template_set/dist/{$file}.bundle.js"))
 			{
 				if ($end_of_page)
 				{
@@ -497,7 +497,7 @@ HTML;
 				}
 				return true;
 			}
-			else if (is_readable(PHPGW_INCLUDE_ROOT . "/$app/js/$package/$file.js"))
+			else if (is_readable(PHPGW_SERVER_ROOT . "/$app/js/$package/$file.js"))
 			{
 				if ($end_of_page)
 				{
@@ -511,7 +511,7 @@ HTML;
 			}
 			elseif ($app != 'phpgwapi')
 			{
-				if (is_readable(PHPGW_INCLUDE_ROOT . "/phpgwapi/js/$package/$file.js"))
+				if (is_readable(PHPGW_SERVER_ROOT . "/phpgwapi/js/$package/$file.js"))
 				{
 					if ($end_of_page)
 					{
