@@ -153,6 +153,10 @@
 		 */
 		function auth($auth_type='Config')
 		{
+			$cookie_config = [
+				'expires' => 0,//session cookie
+				'path' => '/',
+			];
 
 			$this->setup_data = Settings::getInstance()->get('setup'); //refresh the setup data
 
@@ -225,8 +229,8 @@
 				if($FormPW == $this->crypto->decrypt($this->serverSettings['header_admin_password']))
 				{
 					$hash = password_hash($FormPW, PASSWORD_BCRYPT);
-					setcookie('HeaderPW',$hash,$expire);
-					setcookie('ConfigLang',$ConfigLang,$expire);
+					setcookie('HeaderPW',$hash,	$cookie_config);
+					setcookie('ConfigLang',$ConfigLang, $cookie_config);
 					if(isset($hack_prevention[$ip]['accepted'][$now]))
 					{
 						$hack_prevention[$ip]['accepted'][$now] +=1;
@@ -268,9 +272,9 @@
 				if($FormPW == $this->crypto->decrypt($phpgw_domain[$logindomain]['config_passwd']))
 				{
 					$hash = password_hash($FormPW, PASSWORD_BCRYPT);
-					setcookie('ConfigPW', $hash, $expire);
-					setcookie('ConfigDomain', $logindomain, $expire);
-					setcookie('ConfigLang', $ConfigLang, $expire);
+					setcookie('ConfigPW', $hash, $cookie_config);
+					setcookie('ConfigDomain', $logindomain, $cookie_config);
+					setcookie('ConfigLang', $ConfigLang, $cookie_config);
 					if(isset($hack_prevention[$ip]['accepted'][$now]))
 					{
 						$hack_prevention[$ip]['accepted'][$now] +=1;
@@ -311,11 +315,11 @@
 				if($FormLogout == 'config')
 				{
 					/* config logout */
-					setcookie('ConfigPW','');
+					setcookie('ConfigPW','', $cookie_config);
 					$this->setup_data['LastDomain'] = isset($_COOKIE['ConfigDomain']) ? $_COOKIE['ConfigDomain'] : '';
-					setcookie('ConfigDomain','');
+					setcookie('ConfigDomain','', $cookie_config);
 					$this->setup_data['ConfigLoginMSG'] = $this->lang('You have successfully logged out');
-					setcookie('ConfigLang','');
+					setcookie('ConfigLang','', $cookie_config);
 					$this->setup_data['HeaderLoginMSG'] = '';
 					Settings::getInstance()->set('setup', $this->setup_data);
 
@@ -324,9 +328,9 @@
 				elseif($FormLogout == 'header')
 				{
 					/* header admin logout */
-					setcookie('HeaderPW','');
+					setcookie('HeaderPW','', $cookie_config);
 					$this->setup_data['HeaderLoginMSG'] = $this->lang('You have successfully logged out');
-					setcookie('ConfigLang','');
+					setcookie('ConfigLang','', $cookie_config);
 					$this->setup_data['ConfigLoginMSG'] = '';
 					Settings::getInstance()->set('setup', $this->setup_data);
 
@@ -339,9 +343,9 @@
 				$config_passwd = $this->crypto->decrypt($phpgw_domain[$ConfigDomain]['config_passwd']);
 				if(password_verify($config_passwd, $ConfigPW))
 				{
-					setcookie('ConfigPW', $ConfigPW,  $expire);
-					setcookie('ConfigDomain', $ConfigDomain, $expire);
-					setcookie('ConfigLang', $ConfigLang, $expire);
+					setcookie('ConfigPW', $ConfigPW,  $cookie_config);
+					setcookie('ConfigDomain', $ConfigDomain, $cookie_config);
+					setcookie('ConfigLang', $ConfigLang, $cookie_config);
 					return True;
 				}
 				else
@@ -358,14 +362,14 @@
 				$header_admin_password = $this->crypto->decrypt($this->serverSettings['header_admin_password']);
 				if(password_verify($header_admin_password, $HeaderPW))
 				{
-					setcookie('HeaderPW', $HeaderPW , $expire);
-					setcookie('ConfigLang', $ConfigLang, $expire);
+					setcookie('HeaderPW', $HeaderPW , $cookie_config);
+					setcookie('ConfigLang', $ConfigLang, $cookie_config);
 					return True;
 				}
 				else if(password_verify(stripslashes($this->serverSettings['header_admin_password']), $HeaderPW))
 				{
-					setcookie('HeaderPW', $HeaderPW , $expire);
-					setcookie('ConfigLang', $ConfigLang, $expire);
+					setcookie('HeaderPW', $HeaderPW , $cookie_config);
+					setcookie('ConfigLang', $ConfigLang, $cookie_config);
 					return True;
 				}
 				else

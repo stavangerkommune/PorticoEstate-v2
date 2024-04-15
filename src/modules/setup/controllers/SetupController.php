@@ -71,8 +71,6 @@ class SetupController
 	{
 		$this->setup->auth('Config');
 
-		setcookie('ConfigPW', '', time() - 3600);
-
 		//write a Html text with status logged out - with link to login
 		$htmlText = '<p>Status: Logged out</p>';
 		$htmlText .= '<p><a href="/setup/">Click here to login to setup</a></p>';
