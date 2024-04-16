@@ -1,9 +1,27 @@
 <?php
 
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\Cache;
+use App\helpers\Template;
+use App\modules\phpgwapi\security\Acl;
+use App\modules\phpgwapi\services\Hooks;
+use App\modules\phpgwapi\services\Translation;
+use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
+
+
+
 	function parse_navbar($force = False)
 	{
+		
+		$serverSettings = Settings::getInstance()->get('server');
+		$flags = Settings::getInstance()->get('flags');
+		$userSettings = Settings::getInstance()->get('user');
+		$phpgwapi_common = new phpgwapi_common();
+
+
 		$nonavbar = false;
-		if(isset($GLOBALS['phpgw_info']['flags']['nonavbar']) && $GLOBALS['phpgw_info']['flags']['nonavbar'])
+		if(isset($flags['nonavbar']) && $flags['nonavbar'])
 		{
 			$nonavbar	= true;
 		}
@@ -14,35 +32,35 @@
 			$navbar = execMethod('phpgwapi.menu.get', 'navbar');
 		}
 
-		$user = $GLOBALS['phpgw']->accounts->get( $GLOBALS['phpgw_info']['user']['id'] );
+		$user = (new Accounts())->get( $userSettings['id'] );
 
 		$var = array
 		(
-			'webserver_url'	=> $GLOBALS['phpgw_info']['server']['webserver_url']
+			'webserver_url'	=> $serverSettings['webserver_url']
 		);
 
 		$extra_vars = array();
 		foreach($_GET as $name => $value)
 		{
-			$extra_vars[$name] = phpgw::clean_value($value);
+			$extra_vars[$name] = Sanitizer::clean_value($value);
 		}
 
 		$print_url = "{$_SERVER['PHP_SELF']}?" . http_build_query(array_merge($extra_vars, array('phpgw_return_as' => 'noframes')));
 		$user_fullname	= $user->__toString();
 		$print_text		= lang('print');
-		$home_url		= $GLOBALS['phpgw']->link('/home.php');
+		$home_url		= phpgw::link('/home.php');
 		$home_text		= lang('home');
 		$home_icon		= 'icon icon-home';
-		$about_url	= $GLOBALS['phpgw']->link('/about.php', array('app' => $GLOBALS['phpgw_info']['flags']['currentapp']) );
+		$about_url	= phpgw::link('/about.php', array('app' => $flags['currentapp']) );
 		$about_text	= lang('about');
-//		$var['logout_url']	= $GLOBALS['phpgw']->link('/logout.php');
+//		$var['logout_url']	= phpgw::link('/logout.php');
 		$var['logout_text']	= lang('logout');
 		$var['user_fullname'] = $user_fullname;
-		$preferences_url = $GLOBALS['phpgw']->link('/preferences/index.php');
+		$preferences_url = phpgw::link('/preferences/index.php');
 		$preferences_text = lang('preferences');
-		$undraw_profile = $GLOBALS['phpgw']->common->find_image('phpgwapi', 'undraw_profile.svg');
+		$undraw_profile = $phpgwapi_common->find_image('phpgwapi', 'undraw_profile.svg');
 
-		switch($GLOBALS['phpgw_info']['user']['preferences']['common']['template_set'])
+		switch($userSettings['preferences']['common']['template_set'])
 		{
 			case 'portico':
 				$selecte_portico = ' selected = "selected"';
@@ -62,11 +80,11 @@
 	   </select>
 HTML;
 
-		$GLOBALS['phpgw']->template->set_root(PHPGW_TEMPLATE_DIR);
-		$GLOBALS['phpgw']->template->set_file('navbar', 'navbar.tpl');
+		$template = new Template(PHPGW_TEMPLATE_DIR);
 
-		$flags = &$GLOBALS['phpgw_info']['flags'];
-		$var['current_app_title'] = isset($flags['app_header']) ? $flags['app_header'] : lang($GLOBALS['phpgw_info']['flags']['currentapp']);
+		$template->set_file('navbar', 'navbar.tpl');
+
+		$var['current_app_title'] = isset($flags['app_header']) ? $flags['app_header'] : lang($flags['currentapp']);
 		$flags['menu_selection'] = isset($flags['menu_selection']) ? $flags['menu_selection'] : '';
 		$breadcrumb_selection = !empty($flags['breadcrumb_selection']) ? $flags['breadcrumb_selection'] : $flags['menu_selection'];
 		// breadcrumbs
@@ -76,7 +94,7 @@ HTML;
 			'url'	=> 	"{$_SERVER['PHP_SELF']}?" . http_build_query($extra_vars),
 			'name'	=> $var['current_app_title']
 		);
-		$breadcrumbs = phpgwapi_cache::session_get('phpgwapi','breadcrumbs');
+		$breadcrumbs = Cache::session_get('phpgwapi','breadcrumbs');
 		$breadcrumbs = $breadcrumbs ? $breadcrumbs : array(); // first one
 
 
@@ -88,12 +106,12 @@ HTML;
 		{
 			array_pop($breadcrumbs);
 		}
-		phpgwapi_cache::session_set('phpgwapi','breadcrumbs', $breadcrumbs);
+		Cache::session_set('phpgwapi','breadcrumbs', $breadcrumbs);
 		$breadcrumbs = array_reverse($breadcrumbs);
-		phpgwapi_cache::session_set('navbar', 'menu_selection',$GLOBALS['phpgw_info']['flags']['menu_selection']);
+		Cache::session_set('navbar', 'menu_selection',$flags['menu_selection']);
 
 		$navigation = array();
-		if( !isset($GLOBALS['phpgw_info']['user']['preferences']['property']['nonavbar']) || $GLOBALS['phpgw_info']['user']['preferences']['property']['nonavbar'] != 'yes' )
+		if( !isset($userSettings['preferences']['property']['nonavbar']) || $userSettings['preferences']['property']['nonavbar'] != 'yes' )
 		{
 			prepare_navbar($navbar);
 		}
@@ -108,13 +126,13 @@ HTML;
 		if (!$nonavbar)
 		{
 
-			$bookmarks = phpgwapi_cache::user_get('phpgwapi', "bookmark_menu", $GLOBALS['phpgw_info']['user']['id']);
+			$bookmarks = Cache::user_get('phpgwapi', "bookmark_menu", $userSettings['id']);
 //			_debug_array($bookmarks);
 			$lang_bookmarks = lang('bookmarks');
 
 			$_treemenu = '';
 
-			if($GLOBALS['phpgw_info']['user']['preferences']['common']['sidecontent'] !== 'ajax_menu')
+			if($userSettings['preferences']['common']['sidecontent'] !== 'ajax_menu')
 			{
 				$navigation = execMethod('phpgwapi.menu.get', 'navigation');
 				foreach($navbar as $app => $app_data)
@@ -132,7 +150,7 @@ HTML;
 			<ul id="menutree" class="list-unstyled components">
 HTML;
 			$preferences_option = '';
-			if ( $GLOBALS['phpgw']->acl->check('run', PHPGW_ACL_READ, 'preferences') )
+			if (Acl::getInstance()->check('run', ACL_READ, 'preferences') )
 			{
 				$preferences_option .= <<<HTML
 				<a class="dropdown-item" href="{$preferences_url}">
@@ -152,7 +170,7 @@ HTML;
 		}
 		$breadcrumb_html = "";
 
-		if((phpgw::get_var('phpgw_return_as') != 'json'  && $breadcrumbs && is_array($breadcrumbs)) && !$nonavbar)// && isset($GLOBALS['phpgw_info']['user']['preferences']['common']['show_breadcrumbs']) && $GLOBALS['phpgw_info']['user']['preferences']['common']['show_breadcrumbs'])
+		if((Sanitizer::get_var('phpgw_return_as') != 'json'  && $breadcrumbs && is_array($breadcrumbs)) && !$nonavbar)// && isset($userSettings['preferences']['common']['show_breadcrumbs']) && $userSettings['preferences']['common']['show_breadcrumbs'])
 		{
 			$breadcrumb_html = <<<HTML
 			<div class="clearfix">
@@ -183,13 +201,13 @@ HTML;
 
 		$manual_option = '';
 
-		if ( isset($GLOBALS['phpgw_info']['user']['apps']['manual']) )
+		if ( isset($userSettings['apps']['manual']) )
 		{
 			$help_file = execMethod('manual.uimanual.help_file_exist');
 			if($help_file['file_exist'])
 			{
 				$help_url= "javascript:openwindow('"
-				. $GLOBALS['phpgw']->link('/index.php', array
+				. phpgw::link('/index.php', array
 				(
 					'menuaction'=> 'manual.uimanual.help',
 					'app' => $help_file['app'],
@@ -207,13 +225,13 @@ HTML;
 		}
 
 		$support_option = '';
-		if(isset($GLOBALS['phpgw_info']['server']['support_address']) && $GLOBALS['phpgw_info']['server']['support_address'])
+		if(isset($serverSettings['support_address']) && $serverSettings['support_address'])
 		{
 			$support_text = lang('support');
-			$support_link = $GLOBALS['phpgw']->link('/index.php', array
+			$support_link = phpgw::link('/index.php', array
 				(
 					'menuaction'=> 'manual.uisupport.send',
-					'app' => $GLOBALS['phpgw_info']['flags']['currentapp'],
+					'app' => $flags['currentapp'],
 					'form_type' => 'stacked',
 					'width' => 700,
 					'height' => 540
@@ -226,13 +244,13 @@ HTML;
 		}
 
 		$debug_option = '';
-		if ( isset($GLOBALS['phpgw_info']['user']['apps']['admin']) )
+		if ( isset($userSettings['apps']['admin']) )
 		{
 			$debug_url = "javascript:openwindow('"
-			 . $GLOBALS['phpgw']->link('/index.php', array
+			 . phpgw::link('/index.php', array
 			 (
 			 	'menuaction'=> 'property.uidebug_json.index',
-			 	'app'		=> $GLOBALS['phpgw_info']['flags']['currentapp']
+			 	'app'		=> $flags['currentapp']
 			 )) . "','','')";
 
 			$debug_text = lang('debug');
@@ -246,13 +264,13 @@ HTML;
 		 * Modal-version
 		 */
 //		$debug_option = '';
-//		if(isset($GLOBALS['phpgw_info']['server']['support_address']) && $GLOBALS['phpgw_info']['server']['support_address'])
+//		if(isset($serverSettings['support_address']) && $serverSettings['support_address'])
 //		{
 //			$debug_text = lang('debug');
-//			$debug_link = $GLOBALS['phpgw']->link('/index.php', array
+//			$debug_link = phpgw::link('/index.php', array
 //				(
 //					'menuaction'=> 'property.uidebug_json.index',
-//					'app' => $GLOBALS['phpgw_info']['flags']['currentapp'],
+//					'app' => $flags['currentapp'],
 //					'width' => 700,
 //					'height' => 800
 //				));
@@ -265,7 +283,7 @@ HTML;
 
 
 		$bookmark_option = '';
-		$collected_bm = phpgwapi_cache::user_get('phpgwapi', "bookmark_menu", $GLOBALS['phpgw_info']['user']['id']);
+		$collected_bm = Cache::user_get('phpgwapi', "bookmark_menu", $userSettings['id']);
 
 		if($collected_bm)
 		{
@@ -291,8 +309,8 @@ HTML;
 					$icon = !empty($entry['icon']) ? "<i class='{$entry['icon']} me-2'></i>": '<i class="fas fa-cogs fa-sm fa-fw me-2"></i>';
 
 
-					if ( $bookmark_id == "navbar::{$GLOBALS['phpgw_info']['flags']['menu_selection']}"
-					|| ( !empty($entry['nav_location']) && $entry['nav_location'] == $GLOBALS['phpgw_info']['flags']['menu_selection'] ))
+					if ( $bookmark_id == "navbar::{$flags['menu_selection']}"
+					|| ( !empty($entry['nav_location']) && $entry['nav_location'] == $flags['menu_selection'] ))
 					{
 						$seleced_bm .= ' text-secondary';
 					}
@@ -321,7 +339,7 @@ HTML;
 		}
 
 		$messenger_option = '';
-		if ( isset($GLOBALS['phpgw_info']['user']['apps']['messenger']) )
+		if ( isset($userSettings['apps']['messenger']) )
 		{
 			$bomessenger	 = CreateObject('messenger.bomessenger');
 			$total_messages	 = $bomessenger->total_messages(" AND message_status = 'N'");
@@ -336,10 +354,10 @@ HTML;
 				$new_messages_alert	 = '';
 			}
 
-			$link_messages = $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'messenger.uimessenger.index' ));
+			$link_messages = phpgw::link('/index.php', array('menuaction'=> 'messenger.uimessenger.index' ));
 
-			$lang_messenger = $GLOBALS['phpgw']->translation->translate('messenger', array(), true);
-			$lang_read_messages = $GLOBALS['phpgw']->translation->translate('read messages', array(), false, 'messenger');
+			$lang_messenger = Translation::getInstance()->translate('messenger', array(), true);
+			$lang_read_messages = Translation::getInstance()->translate('read messages', array(), false, 'messenger');
 
 			$messenger_option = <<<HTML
                         <li class="nav-item dropdown no-arrow mt-1" onClick="get_messages();">
@@ -419,7 +437,7 @@ HTML;
 			$navbar_state = execMethod('phpgwapi.template_portico.retrieve_local', 'menu_state');
 			$var['menu_state'] = !empty($navbar_state['menu_state']) ? 'sb-sidenav-toggled' : '';
 
-			if($GLOBALS['phpgw_info']['user']['preferences']['common']['sidecontent'] == 'ajax_menu')
+			if($userSettings['preferences']['common']['sidecontent'] == 'ajax_menu')
 			{
 				$lang_collapse_all	= lang('collapse all');
 				$var['sidebar'] = <<<HTML
@@ -458,7 +476,7 @@ HTML;
 			else
 			{
 				$var['sidebar'] = <<<HTML
-				<nav id="sidebar" class="{$menu_state}">
+				<nav id="sidebar" class="{$var['menu_state']}">
 					<div class="sidebar-header">
 						<h1>{$user_fullname}</h1>
 					</div>
@@ -474,17 +492,17 @@ HTML;
 	            <!-- Sidebar Toggle-->
 		        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" ><i class="fas fa-bars"></i></button>
 		        <!--  Brand-->
-				<a class="navbar-brand ps-3" href="#">{$GLOBALS['phpgw_info']['server']['site_title']}</a>
+				<a class="navbar-brand ps-3" href="#">{$serverSettings['site_title']}</a>
 		        <!-- Navbar-->
 				{$topmenu}
 			</nav>
 HTML;
 		}
 
-		$GLOBALS['phpgw']->template->set_var($var);
-		$GLOBALS['phpgw']->template->pfp('out','navbar');
+		$template->set_var($var);
+		$template->pfp('out','navbar');
 
-		if( phpgw::get_var('phpgw_return_as') != 'json' && $global_message = phpgwapi_cache::system_get('phpgwapi', 'phpgw_global_message'))
+		if( Sanitizer::get_var('phpgw_return_as') != 'json' && $global_message = Cache::system_get('phpgwapi', 'phpgw_global_message'))
 		{
 			echo "<div class='text-center alert alert-success' role='alert'>";
 			echo nl2br($global_message);
@@ -492,11 +510,11 @@ HTML;
 		}
 
 
-		if( phpgw::get_var('phpgw_return_as') != 'json' && $receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
+		if( Sanitizer::get_var('phpgw_return_as') != 'json' && $receipt = Cache::session_get('phpgwapi', 'phpgw_messages'))
 		{
-			phpgwapi_cache::session_clear('phpgwapi', 'phpgw_messages');
-			$msgbox_data = $GLOBALS['phpgw']->common->msgbox_data($receipt);
-			$msgbox_data = $GLOBALS['phpgw']->common->msgbox($msgbox_data);
+			Cache::session_clear('phpgwapi', 'phpgw_messages');
+			$msgbox_data = $phpgwapi_common->msgbox_data($receipt);
+			$msgbox_data = $phpgwapi_common->msgbox($msgbox_data);
 			foreach($msgbox_data as & $message)
 			{
 				echo "<div class='text-center {$message['msgbox_class']}' role='alert'>";
@@ -505,7 +523,8 @@ HTML;
 			}
 		}
 
-		$GLOBALS['phpgw']->hooks->process('after_navbar');
+		// Hooks
+		(new Hooks())->process('after_navbar');
 		register_shutdown_function('parse_footer_end');
 	}
 
@@ -521,11 +540,12 @@ HTML;
 
 	function render_item($item, $id='', $children='', $bookmarks = array())
 	{
+		$flags = Settings::getInstance()->get('flags');
 		$selected_node = false;
 		$current_class = 'nav-item';
 
-		if ( $id == "navbar::{$GLOBALS['phpgw_info']['flags']['menu_selection']}"
-		|| ( !empty($item['nav_location']) && $item['nav_location'] == $GLOBALS['phpgw_info']['flags']['menu_selection'] ))
+		if ( $id == "navbar::{$flags['menu_selection']}"
+		|| ( !empty($item['nav_location']) && $item['nav_location'] == $flags['menu_selection'] ))
 		{
 			$current_class .= ' active';
 			$item['selected'] = true;
@@ -579,6 +599,7 @@ HTML;
 
 	function render_submenu($parent, $menu, $bookmarks = array(), $parent_name = '')
 	{
+		$flags = Settings::getInstance()->get('flags');
 		static $id = 0;
 		$out = '';
 
@@ -595,9 +616,9 @@ HTML;
 						break;
 					}
 
-					if("navbar::{$parent}::{$key}" == "navbar::{$GLOBALS['phpgw_info']['flags']['menu_selection']}")
+					if("navbar::{$parent}::{$key}" == "navbar::{$flags['menu_selection']}")
 					{
-						$GLOBALS['phpgw_info']['flags']['menu_selection'] .= "::{$key}";
+						$flags['menu_selection'] .= "::{$key}";
 					}
 				}
 
@@ -659,6 +680,8 @@ HTML;
 
 	function parse_footer_end()
 	{
+		$userSettings = Settings::getInstance()->get('user');
+		$serverSettings = Settings::getInstance()->get('server');
 		// Stop the register_shutdown_function causing the footer to be included twice - skwashd dec07
 		static $footer_included = false;
 		if ( $footer_included )
@@ -666,14 +689,14 @@ HTML;
 			return true;
 		}
 
-		$GLOBALS['phpgw']->template->set_root(PHPGW_TEMPLATE_DIR);
-		$GLOBALS['phpgw']->template->set_file('footer', 'footer.tpl');
+		$template = new Template(PHPGW_TEMPLATE_DIR);
+		$template->set_file('footer', 'footer.tpl');
 
-		$version = isset($GLOBALS['phpgw_info']['server']['versions']['system']) ? $GLOBALS['phpgw_info']['server']['versions']['system'] : $GLOBALS['phpgw_info']['server']['versions']['phpgwapi'];
+		$version = isset($serverSettings['versions']['system']) ? $serverSettings['versions']['system'] : $serverSettings['versions']['phpgwapi'];
 
-		if(isset($GLOBALS['phpgw_info']['server']['system_name']))
+		if(isset($serverSettings['system_name']))
 		{
-			 $powered_by = $GLOBALS['phpgw_info']['server']['system_name'] . ' ' . lang('version') . ' ' . $version;
+			 $powered_by = $serverSettings['system_name'] . ' ' . lang('version') . ' ' . $version;
 		}
 		else
 		{
@@ -681,25 +704,26 @@ HTML;
 		}
 
 		$cache_refresh_token = '';
-		if(!empty($GLOBALS['phpgw_info']['server']['cache_refresh_token']))
+		if(!empty($serverSettings['cache_refresh_token']))
 		{
-			$cache_refresh_token = "?n={$GLOBALS['phpgw_info']['server']['cache_refresh_token']}";
+			$cache_refresh_token = "?n={$serverSettings['cache_refresh_token']}";
 		}
+		$phpgwapi_common = new phpgwapi_common();
 
 		$var = array
 		(
-	//		'user_fullname'	=> $GLOBALS['phpgw']->accounts->get( $GLOBALS['phpgw_info']['user']['id'] )->__toString(),
+	//		'user_fullname'	=> $GLOBALS['phpgw']->accounts->get( $userSettings['id'] )->__toString(),
 			'lang_logout_header' => lang('Choose "Log out" if you want to end the session'),
-			'logout_url'	=> $GLOBALS['phpgw']->link('/logout.php'),
+			'logout_url'	=> phpgw::link('/logout.php'),
 			'logout_text'	=> lang('logout'),
 			'powered_by'	=> $powered_by,
 			'lang_login'	=> lang('login'),
-			'javascript_end'=> $GLOBALS['phpgw']->common->get_javascript_end($cache_refresh_token)
+			'javascript_end'=> $phpgwapi_common->get_javascript_end($cache_refresh_token)
 		);
 
-		$GLOBALS['phpgw']->template->set_var($var);
+		$template->set_var($var);
 
-		$GLOBALS['phpgw']->template->pfp('out', 'footer');
+		$template->pfp('out', 'footer');
 
 		$footer_included = true;
 	}

@@ -40,6 +40,7 @@
 		protected $webserver_url;
 		protected $serverSettings;
 		protected $flags;
+		protected $userSettings;
 
 		public function __construct()
 		{
@@ -204,7 +205,7 @@
 		public function getPreferredLanguage()
 		{
 			// create a array of languages the user is accepting
-			$userLanguages = explode(',', phpgw::get_var('HTTP_ACCEPT_LANGUAGE', 'string', 'SERVER'));
+			$userLanguages = explode(',', Sanitizer::get_var('HTTP_ACCEPT_LANGUAGE', 'string', 'SERVER'));
 			$supportedLanguages = $this->getInstalledLanguages();
 
 			// find usersupported language
@@ -688,6 +689,8 @@ HTML;
 				$serverSettings['template_set'] = 'base';
 			}
 
+			Settings::getInstance()->set('server', $serverSettings);
+
 			$tpldir         = PHPGW_SERVER_ROOT . "/{$appname}/templates/{$serverSettings['template_set']}";
 			$tpldir_default = PHPGW_SERVER_ROOT . "/{$appname}/templates/base";
 
@@ -752,6 +755,7 @@ HTML;
 			if (empty($this->serverSettings['template_set']))
 			{
 				$this->serverSettings['template_set'] = 'base';
+				Settings::getInstance()->set('server', $this->serverSettings);
 			}
 
 			$imagedir			= PHPGW_SERVER_ROOT . '/' . $appname . '/templates/' . $this->serverSettings['template_set'] . '/images';
@@ -787,6 +791,7 @@ HTML;
 			if (empty($this->serverSettings['template_set']))
 			{
 				$this->serverSettings['template_set'] = 'simple';
+				Settings::getInstance()->set('server', $this->serverSettings);
 			}
 
 			$imagedir			= PHPGW_SERVER_ROOT . '/'.$appname.'/templates/'.$this->serverSettings['template_set'].'/images';
@@ -1032,11 +1037,12 @@ HTML;
 			if (!empty(Settings::getInstance()->get('menuaction')))
 			{
 				list($app,$class,$method) = explode('.',Settings::getInstance()->get('menuaction'));
-				if ( isset($class::$public_functions)
-					&& is_array($class::$public_functions)
-					&& isset($class::$public_functions['css']) )
+				$app_class = "{$app}_{$class}";
+				if ( isset($app_class::$public_functions)
+					&& is_array($app_class::$public_functions)
+					&& isset($app_class::$public_functions['css']) )
 				{
-					$app_css .= $class::css();
+					$app_css .= $app_class::css();
 				}
 			}
 
@@ -1079,12 +1085,14 @@ HTML;
 			if (!empty(Settings::getInstance()->get('menuaction')))
 			{
 				list($app, $class, $method) = explode('.',Settings::getInstance()->get('menuaction'));
-				if ( isset($class::$public_functions)
-					&& is_array($class::$public_functions)
-					&& isset($class::$public_functions['java_script'])
-					&& $class::$public_functions['java_script'] )
+				$app_class = "{$app}_{$class}";
+
+				if ( isset($app_class::$public_functions)
+					&& is_array($app_class::$public_functions)
+					&& isset($app_class::$public_functions['java_script'])
+					&& $app_class::$public_functions['java_script'] )
 				{
-					$js .= $class::java_script();
+					$js .= $app_class::java_script();
 				}
 			}
 

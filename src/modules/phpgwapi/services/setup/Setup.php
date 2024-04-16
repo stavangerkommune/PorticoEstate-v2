@@ -55,6 +55,8 @@
 		private $crypto;
 		private $translation;
 		private $locations;
+		private $_key, $_iv;
+		
 
 		public $setup_info;
 
@@ -85,8 +87,8 @@
 			$this->hack_file_name = "$temp_dir/setup_login_hack_prevention.json";
 			$this->hooks = new Hooks();
 			
-			$this->_key = $this->serverSetting['encryptkey'];
-			$this->_iv  = $this->serverSetting['mcrypt_iv'];
+			$this->_key = $this->serverSettings['encryptkey'];
+			$this->_iv  = $this->serverSettings['mcrypt_iv'];
 
 			$this->crypto = Crypto::getInstance(array($this->_key, $this->_iv));
             $this->db = Db::getInstance();

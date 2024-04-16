@@ -10,14 +10,14 @@ class Db
 {
 	private static $instance = null;
 	private $db;
-	private $isTransactionActive = false;
-	private static $domain;
-	private static $config;
-	private $affected_rows = 0;
-	private $fetch_single = false;
-	private $pdo_fetchmode = PDO::FETCH_ASSOC;
-	private $delayPointer = false;
-	private $statement_object = null;
+	protected $isTransactionActive = false;
+	protected static $domain;
+	protected static $config;
+	protected $affected_rows = 0;
+	protected $fetch_single = false;
+	protected $pdo_fetchmode = PDO::FETCH_ASSOC;
+	protected $delayPointer = false;
+	protected $statement_object = null;
 	public $Halt_On_Error = 'yes';
 	public $Exception_On_Error = false;
 	public $fetchmode = 'ASSOC';

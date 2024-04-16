@@ -74,7 +74,7 @@ $app->post('/login', function (Request $request, Response $response) {
 
 
 $app->get('/logout[/{params:.*}]', function (Request $request, Response $response) {
-    $sessions = new \App\modules\phpgwapi\security\Sessions();
+    $sessions = \App\modules\phpgwapi\security\Sessions::getInstance();
     if (!$sessions->verify()) {
         $response_str = json_encode(['message' => 'Du er ikke logget inn']);
         $response->getBody()->write($response_str);

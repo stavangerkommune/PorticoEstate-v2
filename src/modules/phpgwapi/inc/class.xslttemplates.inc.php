@@ -19,6 +19,7 @@
 	}
 
 	phpgw::import_class('phpgwapi.browser');	
+	phpgw::import_class('phpgwapi.common');
 
 	/**
 	* Include xml tool
@@ -403,7 +404,7 @@ XSLT;
 			
 			if ( $this->output != 'wml' && !$stripped_htm)
 			{
-				(new \App\modules\phpgwapi\inc\phpgwapi_common())->phpgw_header($output_header);
+				(new \phpgwapi_common())->phpgw_header($output_header);
 			}
 
 			if($parsexsl)

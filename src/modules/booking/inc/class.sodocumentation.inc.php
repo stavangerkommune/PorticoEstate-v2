@@ -1,4 +1,8 @@
 <?php
+
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\Cache;
+
 	phpgw::import_class('booking.socommon');
 
 	class booking_sodocumentation extends booking_socommon
@@ -26,9 +30,9 @@
 				'description' => array('type' => 'string', 'required' => false),
 				)
 			);
-			$this->account = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->account = $this->userSettings['account_id'];
 
-			$server_files_dir = $this->_chomp_dir_sep($GLOBALS['phpgw_info']['server']['files_dir']);
+			$server_files_dir = $this->_chomp_dir_sep($this->serverSettings['files_dir']);
 
 			if (!file_exists($server_files_dir) || !is_dir($server_files_dir))
 			{
@@ -198,7 +202,7 @@
 		{
 
 			$db = $this->db;
-			$db->limit_query("SELECT role FROM bb_permission_root WHERE id=" . intval($GLOBALS['phpgw_info']['user']['account_id']), 0, __LINE__, __FILE__, 1);
+			$db->limit_query("SELECT role FROM bb_permission_root WHERE id=" . intval($this->userSettings['account_id']), 0, __LINE__, __FILE__, 1);
 			if ($db->next_record())
 			{
 				return $db->f('role', false);
@@ -212,7 +216,7 @@
 			if ($this->db->next_record())
 			{
 				$id = $this->db->f('id', false);
-				return $GLOBALS['phpgw']->link('/bookingfrontend/index.php', array('menuaction' => 'bookingfrontend.uidocumentation.download', 'id'=> $id));
+				return phpgw::link('/bookingfrontend/index.php', array('menuaction' => 'bookingfrontend.uidocumentation.download', 'id'=> $id));
 			}
 			return null;
 		}
@@ -223,7 +227,7 @@
 			if ($this->db->next_record())
 			{
 				$id = $this->db->f('id', false);
-				return $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uidocumentation.download', 'id'=> $id));
+				return phpgw::link('/index.php', array('menuaction' => 'booking.uidocumentation.download', 'id'=> $id));
 			}
 			return null;
 		}
