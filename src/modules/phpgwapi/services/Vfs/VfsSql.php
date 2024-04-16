@@ -13,6 +13,10 @@
 	*/
 	namespace App\modules\phpgwapi\services\vfs;
 	use App\modules\phpgwapi\services\Vfs\VfsFileoperationFilesystem;
+	use App\Database\Db;
+	use App\Database\Db2;
+	use PDO;
+	use Exception;
 
 	/**
 	* VFS SQL select
@@ -58,14 +62,14 @@
 			   set_attributes now uses this array().   07-Dec-01 skeeter
 			*/
 
-			$this->db = \App\Database\Db::getInstance();
+			$this->db = Db::getInstance();
 
 			$db_config = $this->db->get_config();
 			//create a new pdo  $this->db2 of the database based on the configuration
-			$this->db2 = new \PDO("pgsql:host={$db_config['db_host']};port={$db_config['db_port']};dbname={$db_config['db_name']}", $db_config['db_user'], $db_config['db_pass']);
-			$this->db2->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-			$this->db2->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
-			$this->db2->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+			$this->db2 = new Db2("pgsql:host={$db_config['db_host']};port={$db_config['db_port']};dbname={$db_config['db_name']}", $db_config['db_user'], $db_config['db_pass']);
+			$this->db2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$this->db2->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+			$this->db2->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
 			$this->attributes[] = 'deleteable';
 			$this->attributes[] = 'content';
@@ -2536,7 +2540,7 @@
 				$params = array(':directory' => $p->fake_leading_dirs_clean, ':name' => $p->fake_name_clean);
 				$params = array_merge($params, $extraSql['params']);
 
-				$stmt->execute($params);
+				$ret = $stmt->execute($params);
 				if($this->file_actions)
 				{
 					$rr = $this->fileoperation->unlink($p);
@@ -2546,7 +2550,7 @@
 					$rr = true;
 				}
 
-				if($query || $rr)
+				if($ret || $rr)
 				{
 					return true;
 				}

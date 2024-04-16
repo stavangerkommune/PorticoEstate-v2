@@ -3,6 +3,7 @@
 
 	use \App\Database\Db;
 	use \App\Database\Db2;
+	use PDO;
 	use App\modules\phpgwapi\services\Settings;
 	use App\modules\phpgwapi\services\Cache;
 
@@ -57,9 +58,9 @@
 			$db_config = $this->db->get_config();
 			//create a new pdo  $this->db2 of the database based on the configuration
 			$this->db2 = new Db2("pgsql:host={$db_config['db_host']};port={$db_config['db_port']};dbname={$db_config['db_name']}", $db_config['db_user'], $db_config['db_pass']);
-			$this->db2->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-			$this->db2->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
-			$this->db2->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
+			$this->db2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$this->db2->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+			$this->db2->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
 			$this->join = & $this->db->join;
 			$this->like = & $this->db->like;

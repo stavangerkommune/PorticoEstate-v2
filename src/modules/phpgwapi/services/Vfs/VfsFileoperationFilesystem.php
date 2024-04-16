@@ -26,6 +26,8 @@
 
 	class VfsFileoperationFilesystem
 	{
+		public  $external_ref = false;
+
 		public function __construct()
 		{
 
