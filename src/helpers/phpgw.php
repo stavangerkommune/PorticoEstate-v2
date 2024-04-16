@@ -131,7 +131,7 @@
 
 			if($external || $serverSettings['webserver_url'] == '/')
 			{
-				$server_port = !empty($serverSettings['enforce_ssl']) ? 443 : phpgw::get_var('SERVER_PORT', 'int','SERVER');
+				$server_port = !empty($serverSettings['enforce_ssl']) ? 443 : Sanitizer::get_var('SERVER_PORT', 'int','SERVER');
 
 				if($server_port == 443)
 				{
@@ -388,6 +388,7 @@
 		 */
 		public static function no_access($appname = '', $message = '')
 		{
+			$phpgwapi_common = new phpgwapi_common();
 			$flags = Settings::getInstance()->get('flags');
 			$message = $message ? $message : lang('no access');
 			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
@@ -396,12 +397,14 @@
 			}
 			else
 			{
-				phpgwapi_cache::message_set($message, 'error');
+				\App\modules\phpgwapi\services\Cache::message_set($message, 'error');
+
 				$appname = $appname ? $appname : $flags['currentapp'];
 				$flags['app_header'] = lang($appname) . '::' . lang('No access');
 				$flags['xslt_app'] = false;
-				$GLOBALS['phpgw']->common->phpgw_header(true);
+				Settings::getInstance()->set('flags', $flags);
+				$phpgwapi_common->phpgw_header(true);
 			}
-			$GLOBALS['phpgw']->common->phpgw_exit();
+			$phpgwapi_common->phpgw_exit();
 		}
 	}

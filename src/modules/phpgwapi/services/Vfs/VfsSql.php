@@ -3145,12 +3145,12 @@
 			$sql = "SELECT file_id FROM phpgw_vfs_filetags WHERE file_id IN (" . implode(',', $ids) . ")"
 				. " AND tags @> '[{$json_string}]'::jsonb";
 
-			$stmt = $this->db->query($sql);
+			$this->db->query($sql);
 
 			$ids_with_tag = array();
-			while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+			while ($this->db->next_record())
 			{
-				$ids_with_tag[] = $row['file_id'];
+				$ids_with_tag[] = $this->db->f('file_id');
 			}
 
 			if($ids_with_tag)
@@ -3220,12 +3220,12 @@
 				$sql = "SELECT file_id FROM phpgw_vfs_filetags WHERE file_id IN (" . implode(',', $existing_ids) . ")"
 					. " AND tags @> '[" . json_encode($tag) ."]'::jsonb";
 
-				$stmt = $this->db->query($sql);
+				$this->db->query($sql);
 
 				$ids_with_tag = array();
-				while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+				while ($this->db->next_record())
 				{
-					$ids_with_tag[] = $row['file_id'];
+					$ids_with_tag[] = $this->db->f('file_id');
 				}
 			}
 
