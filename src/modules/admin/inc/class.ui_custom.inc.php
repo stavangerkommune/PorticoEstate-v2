@@ -94,7 +94,7 @@
 	
 			}
 
-			if($GLOBALS['phpgw_info']['flags']['menu_selection'] = phpgw::get_var('menu_selection'))
+			if($GLOBALS['phpgw_info']['flags']['menu_selection'] = Sanitizer::get_var('menu_selection'))
 			{
 				$this->menu_selection = $GLOBALS['phpgw_info']['flags']['menu_selection'];
 			}
@@ -104,7 +104,7 @@
 				$this->local_menu_selection = true;
 			}
 
-			if(phpgw::get_var('return_to_referer', 'bool'))
+			if(Sanitizer::get_var('return_to_referer', 'bool'))
 			{
 				$referer = $_SERVER['HTTP_REFERER'];
 				phpgwapi_cache::session_set('phpgwapi','ui_custom_referer', $referer);
@@ -136,15 +136,15 @@
 
 			$appname	= $this->appname;
 			$location	= $this->location;
-			$id			= phpgw::get_var('id', 'int');
-			$resort		= phpgw::get_var('resort');
+			$id			= Sanitizer::get_var('id', 'int');
+			$resort		= Sanitizer::get_var('resort');
 
 			if($this->local_menu_selection)
 			{
 	//			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::list_atrribs';
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array(
+			phpgwapi_xslttemplates::getInstance()->add_file(array(
 								'custom',
 								'nextmatchs',
 								'search_field'));
@@ -168,15 +168,15 @@
 						'group_id'			 => $entry['group_id'],
 						'sorting'				=> $entry['attrib_sort'],
 						'search'				=> $entry['search'],
-						'link_up'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.ui_custom.list_attribute',
+						'link_up'			 => phpgw::link('/index.php', array('menuaction' => 'admin.ui_custom.list_attribute',
 							'resort' => 'up', 'appname' => $appname, 'location' => $location, 'id' => $entry['id'],
 							'allrows' => $this->allrows, 'menu_selection' => $GLOBALS['phpgw_info']['flags']['menu_selection'])),
-						'link_down'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.ui_custom.list_attribute',
+						'link_down'			 => phpgw::link('/index.php', array('menuaction' => 'admin.ui_custom.list_attribute',
 							'resort' => 'down', 'appname' => $appname, 'location' => $location, 'id' => $entry['id'],
 							'allrows' => $this->allrows, 'menu_selection' => $GLOBALS['phpgw_info']['flags']['menu_selection'])),
-						'link_edit'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.ui_custom.edit_attrib',
+						'link_edit'			 => phpgw::link('/index.php', array('menuaction' => 'admin.ui_custom.edit_attrib',
 							'appname' => $appname, 'location' => $location, 'id' => $entry['id'], 'menu_selection' => $GLOBALS['phpgw_info']['flags']['menu_selection'])),
-						'link_delete'		 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.ui_custom.delete',
+						'link_delete'		 => phpgw::link('/index.php', array('menuaction' => 'admin.ui_custom.delete',
 							'appname' => $appname, 'location' => $location, 'attrib_id' => $entry['id'],
 							'menu_selection' => $GLOBALS['phpgw_info']['flags']['menu_selection'])),
 						'lang_up_text'			=> lang('shift up'),
@@ -239,7 +239,7 @@
 			}
 			else
 			{
-				$done_action	 = $GLOBALS['phpgw']->link('/admin/index.php');
+				$done_action	 = phpgw::link('/admin/index.php');
 
 			}
 
@@ -247,7 +247,7 @@
 			(
 				'lang_add'				=> lang('add'),
 				'lang_add_attribtext'	=> lang('add an attrib'),
-				'add_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.ui_custom.edit_attrib',
+				'add_action'			 => phpgw::link('/index.php', array('menuaction' => 'admin.ui_custom.edit_attrib',
 					'appname' => $appname, 'location' => $location, 'menu_selection' => $GLOBALS['phpgw_info']['flags']['menu_selection'])),
 				'lang_done'				=> lang('done'),
 				'lang_done_attribtext'	=> lang('Return to admin'),
@@ -285,7 +285,7 @@
 				'start_record'						=> $this->start,
 				'num_records'						=> count($attrib_list),
 				'all_records'						=> $this->bo->total_records,
-				'link_url'						 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'link_url'						 => phpgw::link('/index.php', $link_data),
 				'img_path'						 => $GLOBALS['phpgw']->common->get_image_path('phpgwapi', 'default'),
 				'lang_searchfield_attribtext'		=> lang('Enter the search string. To show all entries, empty this field and press the SUBMIT button again'),
 				'lang_searchbutton_attribtext'		=> lang('Submit the search string'),
@@ -303,7 +303,7 @@
 			$function_msg	= lang('list custom attribute');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('admin') . ' - ' . lang('attribute') . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('list_attribute' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('list_attribute' => $data));
 			$this->save_sessiondata();
 		}
 
@@ -316,10 +316,10 @@
 
 			$appname	= $this->appname;
 			$location	= $this->location;
-			$id			= phpgw::get_var('id', 'int');
-			$values		= phpgw::get_var('values', 'string', 'POST', array());
+			$id			= Sanitizer::get_var('id', 'int');
+			$values		= Sanitizer::get_var('values', 'string', 'POST', array());
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('custom'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('custom'));
 
 			if(isset($values['save']) && $values['save'])
 			{
@@ -395,7 +395,7 @@
 					{
 						$id = $receipt['id'];
 					}
-				//	$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'admin.ui_custom.edit_attrib', 'appname' => $values['appname'], 'location' => $values['location'], 'id' => $id, 'menu_selection' => $GLOBALS['phpgw_info']['flags']['menu_selection']));
+				//	phpgw::redirect_link('/index.php', array('menuaction' => 'admin.ui_custom.edit_attrib', 'appname' => $values['appname'], 'location' => $values['location'], 'id' => $id, 'menu_selection' => $GLOBALS['phpgw_info']['flags']['menu_selection']));
 				}
 				else
 				{
@@ -448,7 +448,7 @@
 
 			$msgbox_data = (isset($receipt) ? $GLOBALS['phpgw']->common->msgbox_data($receipt) : '');
 
-			$done_action	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.ui_custom.list_attribute',
+			$done_action	 = phpgw::link('/index.php', array('menuaction' => 'admin.ui_custom.list_attribute',
 				'appname' => $appname, 'location' => $location, 'menu_selection' => $GLOBALS['phpgw_info']['flags']['menu_selection']));
 
 			$data = array
@@ -466,7 +466,7 @@
 				'lang_value'						=> lang('value'),
 				'lang_delete_choice_statustext'		=> lang('Delete this value from the list of multiple choice'),
 				'msgbox_data'						=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'						 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'form_action'						 => phpgw::link('/index.php', $link_data),
 				'done_action'						 => $done_action,
 				'lang_entity_type'					=> lang('Entity type'),
 				'lang_no_entity_type'				=> lang('No entity type'),
@@ -530,7 +530,7 @@
 			$appname	= lang($this->appname);
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('edit_attrib' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit_attrib' => $data));
 		}
 
 		function list_custom_function()
@@ -547,10 +547,10 @@
 
 			$appname	= $this->appname;
 			$location	= $this->location;
-			$id			= phpgw::get_var('id', 'int');
-			$resort		= phpgw::get_var('resort');
+			$id			= Sanitizer::get_var('id', 'int');
+			$resort		= Sanitizer::get_var('resort');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array(
+			phpgwapi_xslttemplates::getInstance()->add_file(array(
 								'custom',
 								'nextmatchs',
 								'search_field'));
@@ -575,7 +575,7 @@
 						'client_side'			 => $entry['client_side'] ? 'X' : '',
 						'pre_commit'			 => $entry['pre_commit'] ? 'X' : '',
 						'ajax'					 => $entry['ajax'] ? 'X' : '',
-						'link_up'				 => $GLOBALS['phpgw']->link('/index.php', array
+						'link_up'				 => phpgw::link('/index.php', array
 														(
 															'menuaction'		=> 'admin.ui_custom.list_custom_function',
 															'resort'			=> 'up',
@@ -585,7 +585,7 @@
 															'allrows'			=> $this->allrows,
 															'menu_selection'	=> $GLOBALS['phpgw_info']['flags']['menu_selection']
 														)),
-						'link_down'				 => $GLOBALS['phpgw']->link('/index.php', array
+						'link_down'				 => phpgw::link('/index.php', array
 														(
 															'menuaction'		=> 'admin.ui_custom.list_custom_function',
 															'resort'			=> 'down',
@@ -595,7 +595,7 @@
 															'allrows'			=> $this->allrows,
 															'menu_selection'	=> $GLOBALS['phpgw_info']['flags']['menu_selection']
 														)),
-						'link_edit'				 => $GLOBALS['phpgw']->link('/index.php', array
+						'link_edit'				 => phpgw::link('/index.php', array
 														(
 															'menuaction'		=> 'admin.ui_custom.edit_custom_function',
 															'appname'			=> $appname,
@@ -603,7 +603,7 @@
 															'id'				=> $entry['id'],
 															'menu_selection'	=> $GLOBALS['phpgw_info']['flags']['menu_selection']
 															)),
-						'link_delete'			 => $GLOBALS['phpgw']->link('/index.php', array
+						'link_delete'			 => phpgw::link('/index.php', array
 														(
 															'menuaction'		=> 'admin.ui_custom.delete',
 															'appname'			=> $appname,
@@ -666,11 +666,11 @@
 			(
 				'lang_add'						=> lang('add'),
 				'lang_add_custom_functiontext'	=> lang('add a custom_function'),
-				'add_action'					 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.ui_custom.edit_custom_function',
+				'add_action'					 => phpgw::link('/index.php', array('menuaction' => 'admin.ui_custom.edit_custom_function',
 					'appname' => $appname, 'location' => $location, 'menu_selection' => $GLOBALS['phpgw_info']['flags']['menu_selection'])),
 				'lang_done'						=> lang('done'),
 				'lang_done_custom_functiontext'	=> lang('Return to admin'),
-				'done_action'					=> $GLOBALS['phpgw']->link('/admin/index.php'),
+				'done_action'					=> phpgw::link('/admin/index.php'),
 			);
 
 			if(!$this->allrows)
@@ -704,7 +704,7 @@
 				'start_record'								=> $this->start,
 				'num_records'								=> count($custom_function_list),
 				'all_records'								=> $this->bo->total_records,
-				'link_url'								 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'link_url'								 => phpgw::link('/index.php', $link_data),
 				'img_path'								 => $GLOBALS['phpgw']->common->get_image_path('phpgwapi', 'default'),
 				'lang_searchfield_custom_functiontext'		=> lang('Enter the search string. To show all entries, empty this field and press the SUBMIT button again'),
 				'lang_searchbutton_custom_functiontext'		=> lang('Submit the search string'),
@@ -722,7 +722,7 @@
 			$function_msg	= lang('list custom function');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('admin') . ' - ' . lang('custom function') . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('list_custom_function' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('list_custom_function' => $data));
 			$this->save_sessiondata();
 		}
 
@@ -736,10 +736,10 @@
 			//		$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::list_functions';
 			$appname	= $this->appname;
 			$location	= $this->location;
-			$id			= phpgw::get_var('id', 'int');
-			$values		= phpgw::get_var('values', 'string', 'POST');
+			$id			= Sanitizer::get_var('id', 'int');
+			$values		= Sanitizer::get_var('values', 'string', 'POST');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('custom'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('custom'));
 
 			if(isset($values['save']) && $values['save'])
 			{
@@ -820,8 +820,8 @@
 				'lang_location'						=> lang('location'),
 				'location'							=> $location,
 				'msgbox_data'						=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'						=> $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'done_action'						=> $GLOBALS['phpgw']->link('/index.php', array(
+				'form_action'						=> phpgw::link('/index.php', $link_data),
+				'done_action'						=> phpgw::link('/index.php', array(
 															'menuaction'		=> 'admin.ui_custom.list_custom_function',
 															'appname'			=> $appname,
 															'location'			=> $location,
@@ -852,7 +852,7 @@
 
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('admin') . ' - ' . lang('custom function') . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('edit_custom_function' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit_custom_function' => $data));
 		}
 
 		function delete()
@@ -862,10 +862,10 @@
 				phpgw::no_access($this->appname);
 			}
 
-			$appname				= phpgw::get_var('appname');
-			$location				= phpgw::get_var('location');
-			$attrib_id				= phpgw::get_var('attrib_id', 'int');
-			$custom_function_id		= phpgw::get_var('custom_function_id', 'int');
+			$appname				= Sanitizer::get_var('appname');
+			$location				= Sanitizer::get_var('location');
+			$attrib_id				= Sanitizer::get_var('attrib_id', 'int');
+			$custom_function_id		= Sanitizer::get_var('custom_function_id', 'int');
 
 			$function = 'list_attribute';
 			if($custom_function_id)
@@ -883,18 +883,18 @@
 				'menu_selection' => $GLOBALS['phpgw_info']['flags']['menu_selection']
 			);
 
-			if(phpgw::get_var('confirm', 'bool', 'POST'))
+			if(Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete($location, $appname, $attrib_id, $custom_function_id);
-				$GLOBALS['phpgw']->redirect_link('/index.php', $redirect_args);
+				phpgw::redirect_link('/index.php', $redirect_args);
 			}
 
-			if(phpgw::get_var('cancel', 'bool', 'POST'))
+			if(Sanitizer::get_var('cancel', 'bool', 'POST'))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', $redirect_args);
+				phpgw::redirect_link('/index.php', $redirect_args);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('confirm_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('confirm_delete'));
 
 			$link_data = array
 			(
@@ -909,7 +909,7 @@
 
 			$data = array
 			(
-				'form_action'				=> $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'form_action'				=> phpgw::link('/index.php', $link_data),
 				'lang_confirm_msg'			=> lang('do you really want to delete this entry'),
 				'lang_yes'					=> lang('yes'),
 				'lang_yes_standardtext'		=> lang('Delete the entry'),
@@ -921,7 +921,7 @@
 			$function_msg	= lang('delete entity type');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 
 		function delete_attrib_group()
@@ -933,10 +933,10 @@
 				return "NO ACCESS";
 			}
 
-			$group_id			 = phpgw::get_var('group_id', 'int');
-			$confirm			 = phpgw::get_var('confirm', 'bool', 'POST');
+			$group_id			 = Sanitizer::get_var('group_id', 'int');
+			$confirm			 = Sanitizer::get_var('confirm', 'bool', 'POST');
 
-			if(phpgw::get_var('phpgw_return_as') == 'json')
+			if(Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$this->bo->delete_attrib_group($this->appname, $this->location, $group_id);
 				return lang("this record has been deleted");
@@ -956,8 +956,8 @@
 				phpgwapi_cache::session_clear('admin_custom', 'location');
 			}
 
-			$id		 = phpgw::get_var('id', 'int');
-			$resort	 = phpgw::get_var('resort');
+			$id		 = Sanitizer::get_var('id', 'int');
+			$resort	 = Sanitizer::get_var('resort');
 			if($resort && $this->acl_edit)
 			{
 				phpgwapi_cache::session_set('admin_custom', 'location', $this->location);
@@ -978,7 +978,7 @@
 			{
 				phpgw::no_access($this->appname);
 			}
-			phpgwapi_cache::session_set('admin_custom', 'location', phpgw::get_var('location', 'string'));
+			phpgwapi_cache::session_set('admin_custom', 'location', Sanitizer::get_var('location', 'string'));
 
 			$location_list = $this->bolocation->select_location('filter', $this->location, false, true);
 			foreach($location_list as &$entry)
@@ -1120,7 +1120,7 @@
 				'my_name'	 => 'edit',
 				'statustext' => lang('Edit'),
 				'text'		 => lang('Edit'),
-				'action'	 => $GLOBALS['phpgw']->link
+				'action'	 => phpgw::link
 				(
 				'/index.php', array
 					(
@@ -1137,7 +1137,7 @@
 				'statustext'	 => lang('Delete'),
 				'text'			 => lang('Delete'),
 				'confirm_msg'	 => lang('do you really want to delete this entry'),
-				'action'		 => $GLOBALS['phpgw']->link
+				'action'		 => phpgw::link
 				(
 				'/index.php', array
 					(
@@ -1153,7 +1153,7 @@
 				'my_name'	 => 'list_attribute',
 				'statustext' => lang('list attribute'),
 				'text'		 => lang('list attribute'),
-				'action'	 => $GLOBALS['phpgw']->link
+				'action'	 => phpgw::link
 				(
 				'/index.php', array
 					(
@@ -1169,7 +1169,7 @@
 				'my_name'	 => 'new_attribute',
 				'statustext' => lang('new attribute'),
 				'text'		 => lang('new attribute'),
-				'action'	 => $GLOBALS['phpgw']->link
+				'action'	 => phpgw::link
 				(
 				'/index.php', array
 					(
@@ -1197,8 +1197,8 @@
 			$location = $this->location;
 			$appname = $this->appname;
 
-			$id		 = phpgw::get_var('id', 'int');
-			$values	 = phpgw::get_var('values');
+			$id		 = Sanitizer::get_var('id', 'int');
+			$values	 = Sanitizer::get_var('values');
 
 			$tabs			 = array();
 			$tabs['general'] = array('label' => lang('general'), 'link' => '#general');
@@ -1209,8 +1209,8 @@
 				$values = array();
 			}
 
-//			$GLOBALS['phpgw']->xslttpl->add_file(array('admin_entity'));
-			$GLOBALS['phpgw']->xslttpl->add_file(array('custom'));
+//			phpgwapi_xslttemplates::getInstance()->add_file(array('admin_entity'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('custom'));
 
 
 			if(isset($values['save']) && $values['save'])
@@ -1325,8 +1325,8 @@
 				'appname'					 => $appname,
 				'value_location'			 => $location,
 				'msgbox_data'				 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'				 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'done_action'				 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.ui_custom.list_attribute_group',
+				'form_action'				 => phpgw::link('/index.php', $link_data),
+				'done_action'				 => phpgw::link('/index.php', array('menuaction' => 'admin.ui_custom.list_attribute_group',
 												'appname'		=> $appname,
 												'menu_selection'=> $this->menu_selection)),
 				'value_id'					 => $id,
@@ -1345,7 +1345,7 @@
 
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang($appname) . ' - ' . $location . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('edit_attrib_group' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit_attrib_group' => $data));
 		}
 
 		public function query($data = array())
@@ -1355,19 +1355,19 @@
 				phpgw::no_access($this->appname);
 			}
 
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 
 			$params = array(
 				'start'		 => $this->start,
-				'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'		 => $search['value'],
 				'sort'		 => $order[0]['dir'],
 				'order'		 => $columns[$order[0]['column']]['data'],
-				'allrows'	 => phpgw::get_var('length', 'int') == -1,
+				'allrows'	 => Sanitizer::get_var('length', 'int') == -1,
 				'location'	 => $data['location'],
 				'appname'	 => $this->appname
 			);
@@ -1399,7 +1399,7 @@
 				$value['location'] = $this->location;
 			}
 
-			if(phpgw::get_var('export', 'bool'))
+			if(Sanitizer::get_var('export', 'bool'))
 			{
 				return $values;
 			}

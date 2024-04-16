@@ -64,7 +64,7 @@ class CreateAccount
 			//reserve fallback
 			if (\Sanitizer::get_var('OIDC_pid', 'bool', 'SERVER')) {
 				throw new Exception('FIX me: OIDC_pid is set, redirect to login.php?');
-				//$GLOBALS['phpgw']->redirect_link('login.php', array('skip_remote' => true));
+				//phpgw::redirect_link('login.php', array('skip_remote' => true));
 			}
 			//fallback failed
 			throw new Exception(lang('Did not find any username'));
@@ -75,7 +75,7 @@ class CreateAccount
 			if (($account = $this->mapping->exist_mapping($this->login)) != '') {
 
 				throw new Exception('FIX me:rediredt to login.php? with create_mapping=true and cd=21 and phpgw_account=account_lid');
-				$GLOBALS['phpgw']->redirect_link('login.php', array('create_mapping' => true, 'cd' => '21', 'phpgw_account' => $account));
+				phpgw::redirect_link('login.php', array('create_mapping' => true, 'cd' => '21', 'phpgw_account' => $account));
 			}
 		}
 	}
@@ -192,7 +192,7 @@ class CreateAccount
 					));
 				}
 				throw new Exception('FIX me: redirect to login.php');
-				$GLOBALS['phpgw']->redirect_link('/login.php');
+				phpgw::redirect_link('/login.php');
 			}
 		}
 
@@ -222,7 +222,7 @@ class CreateAccount
 		$variables['extra_vars']			 = array('create_account' => true);
 		if (!($this->serverSettings['mapping'] == 'id')) {
 			$variables['lang_additional_url']	 = lang('new mapping');
-			$variables['additional_url']		 = $GLOBALS['phpgw']->link('login.php', array('create_mapping' => true));
+			$variables['additional_url']		 = phpgw::link('login.php', array('create_mapping' => true));
 		}
 
 		$uilogin->phpgw_display_login($variables);

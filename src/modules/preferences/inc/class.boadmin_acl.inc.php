@@ -48,17 +48,17 @@
 				$this->use_session = True;
 			}
 
-			$acl_app	= phpgw::get_var('acl_app');
-			$start		= phpgw::get_var('start', 'int');
-			$query		= phpgw::get_var('query');
-			$sort		= phpgw::get_var('sort');
-			$order		= phpgw::get_var('order');
-			$filter		= phpgw::get_var('filter');
-			$cat_id		= phpgw::get_var('cat_id');
-			$permission	= phpgw::get_var('permission');
-			$module		= phpgw::get_var('module');
-			$granting_group	= phpgw::get_var('granting_group');
-			$allrows	= phpgw::get_var('allrows');
+			$acl_app	= Sanitizer::get_var('acl_app');
+			$start		= Sanitizer::get_var('start', 'int');
+			$query		= Sanitizer::get_var('query');
+			$sort		= Sanitizer::get_var('sort');
+			$order		= Sanitizer::get_var('order');
+			$filter		= Sanitizer::get_var('filter');
+			$cat_id		= Sanitizer::get_var('cat_id');
+			$permission	= Sanitizer::get_var('permission');
+			$module		= Sanitizer::get_var('module');
+			$granting_group	= Sanitizer::get_var('granting_group');
+			$allrows	= Sanitizer::get_var('allrows');
 
 			$this->allrows = $allrows ? $allrows : '';
 
@@ -138,10 +138,10 @@
 			switch($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('select_location'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('select_location'));
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('filter_location'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('filter_location'));
 					break;
 			}
 
@@ -206,10 +206,10 @@
 			switch($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('cat_select'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('cat_select'));
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('cat_filter'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('cat_filter'));
 					break;
 			}
 
@@ -300,7 +300,7 @@
 
 		function set_permission($values,$r_processed,$set_grant = false)
 		{
-			$this->acl->enable_inheritance = phpgw::get_var('enable_inheritance', 'bool', 'POST');
+			$this->acl->enable_inheritance = Sanitizer::get_var('enable_inheritance', 'bool', 'POST');
 
 			$process = explode('_', $r_processed);
 
@@ -346,7 +346,7 @@
 
 		function get_users()
 		{
-			$page = phpgw::get_var('page', 'int');
+			$page = Sanitizer::get_var('page', 'int');
 			$length = $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
 			$this->start = ($page - 1) * $length;
 
@@ -495,10 +495,10 @@
 			switch($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('group_select'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('group_select'));
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('group_filter'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('group_filter'));
 					break;
 			}
 

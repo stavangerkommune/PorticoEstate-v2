@@ -178,7 +178,7 @@ JS;
 	$test = $GLOBALS['phpgw']->common->get_on_events();
     $test = str_replace('window.onload = function()','$(document).ready(function()',$test);
     $test = str_replace("\n}\n","\n})\n",$test);
-	$site_url	= $GLOBALS['phpgw']->link("/{$app}/", array());
+	$site_url	= phpgw::link("/{$app}/", array());
 	$home_text		= lang('home');
 	$manual_text = lang('manual');
 
@@ -250,7 +250,7 @@ HTML;
 		'img_icon'      => $GLOBALS['phpgw']->common->find_image('phpgwapi', 'favicon.ico'),
 		'site_title'	=> $site_title,
 		'home_text'		=> $home_text,
-		'str_base_url'	=> $GLOBALS['phpgw']->link('/', array(), true),
+		'str_base_url'	=> phpgw::link('/', array(), true),
 		'site_url'	=> $site_url,
 		'userlang'				 => $GLOBALS['phpgw_info']['user']['preferences']['common']['lang'],
 		'webserver_url'	=> $webserver_url,

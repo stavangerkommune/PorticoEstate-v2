@@ -105,7 +105,7 @@
 
 		function aclprefs()
 		{
-			$GLOBALS['phpgw']->xslttpl->add_file(array('admin_acl','nextmatchs',
+			phpgwapi_xslttemplates::getInstance()->add_file(array('admin_acl','nextmatchs',
 										'search_field'));
 
 			$values 	= get_var('values',array('POST'));
@@ -262,13 +262,13 @@
 				'nm_data'						=> $this->nextmatchs->xslt_nm($nm),
 				'search_data'					=> $this->nextmatchs->xslt_search(array('query' => $this->query, 'link_data' => $link_data)),
 				'msgbox_data'					=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'					=> $GLOBALS['phpgw']->link('/index.php',$link_data),
-				'done_action'					=> $GLOBALS['phpgw']->link('/preferences/index.php'),
+				'form_action'					=> phpgw::link('/index.php',$link_data),
+				'done_action'					=> phpgw::link('/preferences/index.php'),
 				'lang_save'						=> lang('save'),
 				'lang_done'						=> lang('done'),
 				'processed'						=> (isset($processed)?$processed:''),
 				'location'						=> $this->location,
-				'link_url'						=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'link_url'						=> phpgw::link('/index.php',$link_data),
 				'img_path'						=> $GLOBALS['phpgw']->common->get_image_path('phpgwapi','default'),
 
 				'lang_groups'					=> lang('groups'),
@@ -277,7 +277,7 @@
 				'lang_cat_statustext'			=> lang('Select the category the permissions belongs to. To do not use a category select NO CATEGORY'),
 				'select_name'					=> 'cat_id',
 				'cat_list'						=> $this->bo->select_category_list('filter',$this->cat_id),
-				'select_action'					=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'select_action'					=> phpgw::link('/index.php',$link_data),
 				'cat_id'						=> $this->cat_id,
 				'permission'					=> False,
 				'grant'							=> 1,
@@ -308,13 +308,13 @@
 			phpgwapi_jquery::load_widget('select2');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('admin') . ' - ' . $this->acl_app . ': ' . $function_msg . ': ' . $owner_name;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('list_permission' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('list_permission' => $data));
 			$this->save_sessiondata();
 		}
 
 		function list_acl()
 		{
-			$GLOBALS['phpgw']->xslttpl->add_file(array('admin_acl','nextmatchs','search_field'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('admin_acl','nextmatchs','search_field'));
 
 			$values 		= get_var('values',array('POST'));
 			$r_processed	= get_var('processed',array('POST'));
@@ -519,21 +519,21 @@
 				'search_data'					=> $this->nextmatchs->xslt_search(array('query' => $this->query, 'link_data' => $link_data)),
 
 				'msgbox_data'					=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'					=> $GLOBALS['phpgw']->link('/index.php',$link_data),
-				'done_action'					=> $GLOBALS['phpgw']->link('/admin/index.php'),
+				'form_action'					=> phpgw::link('/index.php',$link_data),
+				'done_action'					=> phpgw::link('/admin/index.php'),
 				'lang_save'						=> lang('save'),
 				'lang_done'						=> lang('done'),
 				'processed'						=> $processed,
 				'location'						=> $this->location,
 
-				'link_url'						=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'link_url'						=> phpgw::link('/index.php',$link_data),
 				'img_path'						=> $GLOBALS['phpgw']->common->get_image_path('phpgwapi','default'),
 
 				'lang_no_cat'					=> lang('no category'),
 				'lang_cat_statustext'			=> lang('Select the category the permissions belongs to. To do not use a category select NO CATEGORY'),
 				'select_name'					=> 'cat_id',
 				'cat_list'						=> $this->bo->select_category_list('filter',$this->cat_id),
-				'select_action'					=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'select_action'					=> phpgw::link('/index.php',$link_data),
 				'cat_id'						=> $this->cat_id,
 				'permission'					=> 1,
 
@@ -559,7 +559,7 @@
 			phpgwapi_jquery::load_widget('select2');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('admin') . ' - ' . $this->acl_app . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('list_permission' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('list_permission' => $data));
 			$this->save_sessiondata();
 		}
 	}

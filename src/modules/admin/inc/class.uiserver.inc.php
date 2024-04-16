@@ -105,13 +105,13 @@
 			$GLOBALS['phpgw']->template->set_block('server_list_t','server_list','list');
 
 			$GLOBALS['phpgw']->template->set_var('lang_action',lang('Server List'));
-			$GLOBALS['phpgw']->template->set_var('add_action',$GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiserver.edit')));
+			$GLOBALS['phpgw']->template->set_var('add_action',phpgw::link('/index.php', array('menuaction' => 'admin.uiserver.edit')));
 			$GLOBALS['phpgw']->template->set_var('lang_add',lang('Add'));
 			$GLOBALS['phpgw']->template->set_var('title_servers',lang('Peer Servers'));
 			$GLOBALS['phpgw']->template->set_var('lang_search',lang('Search'));
-			$GLOBALS['phpgw']->template->set_var('actionurl',$GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiserver.list_servers')));
+			$GLOBALS['phpgw']->template->set_var('actionurl',phpgw::link('/index.php', array('menuaction' => 'admin.uiserver.list_servers')));
 			$GLOBALS['phpgw']->template->set_var('lang_done',lang('Done'));
-			$GLOBALS['phpgw']->template->set_var('doneurl',$GLOBALS['phpgw']->link('/admin/index.php'));
+			$GLOBALS['phpgw']->template->set_var('doneurl',phpgw::link('/admin/index.php'));
 
 			if(!$this->start)
 			{
@@ -167,10 +167,10 @@
 					'server_mode' => strtoupper($server['server_mode'])
 				));
 
-				$GLOBALS['phpgw']->template->set_var('edit',$GLOBALS['phpgw']->link('/index.php',array('menuaction' => 'admin.uiserver.edit', 'server_id' => $server_id)));
+				$GLOBALS['phpgw']->template->set_var('edit',phpgw::link('/index.php',array('menuaction' => 'admin.uiserver.edit', 'server_id' => $server_id)));
 				$GLOBALS['phpgw']->template->set_var('lang_edit_entry',lang('Edit'));
 
-				$GLOBALS['phpgw']->template->set_var('delete',$GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'admin.uiserver.delete','server_id' =>  $server_id)));
+				$GLOBALS['phpgw']->template->set_var('delete',phpgw::link('/index.php',array('menuaction'=>'admin.uiserver.delete','server_id' =>  $server_id)));
 				$GLOBALS['phpgw']->template->set_var('lang_delete_entry',lang('Delete'));
 				$GLOBALS['phpgw']->template->parse('list','server_list',True);
 			}
@@ -256,9 +256,9 @@
 			$GLOBALS['phpgw']->common->phpgw_header();
 
 			$GLOBALS['phpgw']->template->set_var('title_servers',$_GET['server_id'] ? lang('Edit Peer Server') : lang('Add Peer Server'));
-			$GLOBALS['phpgw']->template->set_var('actionurl',$GLOBALS['phpgw']->link('/index.php',array('menuaction' => 'admin.uiserver.edit' , 'server_id' => $_GET['server_id'])));
-			$GLOBALS['phpgw']->template->set_var('deleteurl',$GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'admin.uiserver.delete', 'server_id' =>  $_GET['server_id'])));
-			$GLOBALS['phpgw']->template->set_var('doneurl',$GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiserver.list_servers')));
+			$GLOBALS['phpgw']->template->set_var('actionurl',phpgw::link('/index.php',array('menuaction' => 'admin.uiserver.edit' , 'server_id' => $_GET['server_id'])));
+			$GLOBALS['phpgw']->template->set_var('deleteurl',phpgw::link('/index.php',array('menuaction'=>'admin.uiserver.delete', 'server_id' =>  $_GET['server_id'])));
+			$GLOBALS['phpgw']->template->set_var('doneurl',phpgw::link('/index.php', array('menuaction' => 'admin.uiserver.list_servers')));
 
 			$GLOBALS['phpgw']->template->set_var('lang_name',lang('Server name'));
 			$GLOBALS['phpgw']->template->set_var('lang_url',lang('Server URL'));
@@ -302,7 +302,7 @@
 			if ($_POST['confirm'])
 			{
 				$this->bo->delete($server_id);
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'admin.uiserver.list_servers') );
+				phpgw::redirect_link('/index.php', array('menuaction' => 'admin.uiserver.list_servers') );
 			}
 			else
 			{
@@ -311,9 +311,9 @@
 				$GLOBALS['phpgw']->template->set_root(PHPGW_APP_TPL);
 				$GLOBALS['phpgw']->template->set_file(array('server_delete' => 'delete_common.tpl'));
 
-				$nolink = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiserver.list_servers'));
+				$nolink = phpgw::link('/index.php', array('menuaction' => 'admin.uiserver.list_servers'));
 
-				$yeslink = '<form method="POST" name="yesbutton" action="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiserver.delete')) . '">'
+				$yeslink = '<form method="POST" name="yesbutton" action="' . phpgw::link('/index.php', array('menuaction' => 'admin.uiserver.delete')) . '">'
 					. '<input type="hidden" name="server_id" value="' . $server_id . '">'
 					. '<input type="hidden" name="confirm" value="True">'
 					. '<input type="submit" name="yesbutton" value=Yes>'

@@ -30,15 +30,15 @@
 		$print_url = "{$_SERVER['PHP_SELF']}?" . http_build_query(array_merge($extra_vars, array('phpgw_return_as' => 'noframes')));
 		$user_fullname	= $user->__toString();
 		$print_text		= lang('print');
-		$home_url		= $GLOBALS['phpgw']->link('/home.php');
+		$home_url		= phpgw::link('/home.php');
 		$home_text		= lang('home');
 		$home_icon		= 'icon icon-home';
-		$about_url	= $GLOBALS['phpgw']->link('/about.php', array('app' => $GLOBALS['phpgw_info']['flags']['currentapp']) );
+		$about_url	= phpgw::link('/about.php', array('app' => $GLOBALS['phpgw_info']['flags']['currentapp']) );
 		$about_text	= lang('about');
-		$logout_url	= $GLOBALS['phpgw']->link('/logout.php');
+		$logout_url	= phpgw::link('/logout.php');
 		$logout_text	= lang('logout');
 		$var['user_fullname'] = $user_fullname;
-		$preferences_url = $GLOBALS['phpgw']->link('/preferences/index.php');
+		$preferences_url = phpgw::link('/preferences/index.php');
 		$preferences_text = lang('preferences');
 
 
@@ -70,12 +70,12 @@ HTML;
 		if ( isset($GLOBALS['phpgw_info']['user']['apps']['manual']) )
 		{
 			$help_url= "javascript:openwindow('"
-			 . $GLOBALS['phpgw']->link('/index.php', array
+			 . phpgw::link('/index.php', array
 			 (
 			 	'menuaction'=> 'manual.uimanual.help',
 			 	'app' => $GLOBALS['phpgw_info']['flags']['currentapp'],
 			 	'section' => isset($GLOBALS['phpgw_info']['apps']['manual']['section']) ? $GLOBALS['phpgw_info']['apps']['manual']['section'] : '',
-			 	'referer' => phpgw::get_var('menuaction')
+			 	'referer' => Sanitizer::get_var('menuaction')
 			 )) . "','700','600')";
 
 			$help_text = lang('help');
@@ -90,7 +90,7 @@ HTML;
 		if(isset($GLOBALS['phpgw_info']['server']['support_address']) && $GLOBALS['phpgw_info']['server']['support_address'])
 		{
 			$support_url = "javascript:openwindow('"
-			 . $GLOBALS['phpgw']->link('/index.php', array
+			 . phpgw::link('/index.php', array
 			 (
 			 	'menuaction'=> 'manual.uisupport.send',
 			 	'app' => $GLOBALS['phpgw_info']['flags']['currentapp'],
@@ -108,7 +108,7 @@ HTML;
 		if ( isset($GLOBALS['phpgw_info']['user']['apps']['admin']) )
 		{
 			$debug_url = "javascript:openwindow('"
-			 . $GLOBALS['phpgw']->link('/index.php', array
+			 . phpgw::link('/index.php', array
 			 (
 			 	'menuaction'=> 'property.uidebug_json.index',
 			 	'app'		=> $GLOBALS['phpgw_info']['flags']['currentapp']
@@ -250,13 +250,13 @@ HTML;
 		$GLOBALS['phpgw']->template->set_var($var);
 		$GLOBALS['phpgw']->template->pfp('out','navbar');
 
-		if( phpgw::get_var('phpgw_return_as') != 'json' && $global_message = phpgwapi_cache::system_get('phpgwapi', 'phpgw_global_message'))
+		if( Sanitizer::get_var('phpgw_return_as') != 'json' && $global_message = phpgwapi_cache::system_get('phpgwapi', 'phpgw_global_message'))
 		{
 			echo "<div class='msg_good'>";
 			echo nl2br($global_message);
 			echo '</div>';
 		}
-		if(phpgw::get_var('phpgw_return_as') != 'json' && $breadcrumbs)// && isset($GLOBALS['phpgw_info']['user']['preferences']['common']['show_breadcrumbs']) && $GLOBALS['phpgw_info']['user']['preferences']['common']['show_breadcrumbs'])
+		if(Sanitizer::get_var('phpgw_return_as') != 'json' && $breadcrumbs)// && isset($GLOBALS['phpgw_info']['user']['preferences']['common']['show_breadcrumbs']) && $GLOBALS['phpgw_info']['user']['preferences']['common']['show_breadcrumbs'])
 		{
 			$history_url = array();
 			foreach($breadcrumbs as $breadcrumb)
@@ -268,7 +268,7 @@ HTML;
 		}
 
 
-		if( phpgw::get_var('phpgw_return_as') != 'json' && $receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
+		if( Sanitizer::get_var('phpgw_return_as') != 'json' && $receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
 		{
 			phpgwapi_cache::session_clear('phpgwapi', 'phpgw_messages');
 			$msgbox_data = $GLOBALS['phpgw']->common->msgbox_data($receipt);

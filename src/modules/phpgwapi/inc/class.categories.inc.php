@@ -753,7 +753,7 @@ use App\modules\phpgwapi\services\Hooks;
 			}
 
 			
-			$GLOBALS['phpgw']->xslttpl->add_file($GLOBALS['phpgw']->common->get_tpl_dir('phpgwapi','base') . '/categories');
+			phpgwapi_xslttemplates::getInstance()->add_file($GLOBALS['phpgw']->common->get_tpl_dir('phpgwapi','base') . '/categories');
 
 			if($self)
 			{

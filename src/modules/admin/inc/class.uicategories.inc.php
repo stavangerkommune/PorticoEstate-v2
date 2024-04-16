@@ -36,9 +36,9 @@
 		{
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = True;
 
-			$appname = phpgw::get_var('appname', 'string', 'REQUEST', 'admin');
+			$appname = Sanitizer::get_var('appname', 'string', 'REQUEST', 'admin');
 
-			if(!$GLOBALS['phpgw_info']['flags']['menu_selection'] = phpgw::get_var('menu_selection'))
+			if(!$GLOBALS['phpgw_info']['flags']['menu_selection'] = Sanitizer::get_var('menu_selection'))
 			{
 				$GLOBALS['phpgw_info']['flags']['menu_selection'] = "admin::{$appname}::categories";
 			}
@@ -87,11 +87,11 @@
 
 		function index()
 		{
-			$appname = phpgw::get_var('appname');
-			$location = phpgw::get_var('location');
-			$global_cats  = phpgw::get_var('global_cats');
+			$appname = Sanitizer::get_var('appname');
+			$location = Sanitizer::get_var('location');
+			$global_cats  = Sanitizer::get_var('global_cats');
 
-			$GLOBALS['phpgw']->xslttpl->add_file('cats');
+			phpgwapi_xslttemplates::getInstance()->add_file('cats');
 
 			$link_data = array
 			(
@@ -102,16 +102,16 @@
 				'menu_selection' => $GLOBALS['phpgw_info']['flags']['menu_selection']
 			);
 
-			if ( phpgw::get_var('add', 'bool') )
+			if ( Sanitizer::get_var('add', 'bool') )
 			{
 				$link_data['menuaction'] = 'admin.uicategories.edit';
 				$link_data['menu_selection'] = $GLOBALS['phpgw_info']['flags']['menu_selection'];
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 
-			if ( phpgw::get_var('done', 'bool') )
+			if ( Sanitizer::get_var('done', 'bool') )
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'admin.uimainscreen.mainscreen') );
+				phpgw::redirect_link('/index.php', array('menuaction' => 'admin.uimainscreen.mainscreen') );
 			}
 
 			if ( $appname )
@@ -207,11 +207,11 @@
 					$link_data['cat_id']		= $cat['id'];
 					$link_data['menuaction']	= 'admin.uicategories.edit';
 					$link_data['menu_selection'] = $GLOBALS['phpgw_info']['flags']['menu_selection'];
-					$edit_url			= $GLOBALS['phpgw']->link('/index.php',$link_data);
+					$edit_url			= phpgw::link('/index.php',$link_data);
 					$lang_edit			= lang('edit');
 
 					$link_data['menuaction']	= 'admin.uicategories.delete';
-					$delete_url			= $GLOBALS['phpgw']->link('/index.php',$link_data);
+					$delete_url			= phpgw::link('/index.php',$link_data);
 					$lang_delete			= lang('delete');
 				}
 				else
@@ -226,7 +226,7 @@
 				$link_data['parent'] = $cat['id'];
 				$link_data['menu_selection'] = $GLOBALS['phpgw_info']['flags']['menu_selection'];
 				unset($link_data['cat_id']);
-				$add_sub_url = $GLOBALS['phpgw']->link('/index.php',$link_data);
+				$add_sub_url = phpgw::link('/index.php',$link_data);
 
 				$content[] = array
 				(
@@ -254,7 +254,7 @@
 			(
 				'lang_add'				=> lang('add'),
 				'lang_add_statustext'	=> lang('add a category'),
-				'action_url'			=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'action_url'			=> phpgw::link('/index.php',$link_data),
 				'lang_done'				=> lang('done'),
 				'lang_done_statustext'	=> lang('return to admin mainscreen')
 			);
@@ -279,16 +279,16 @@
 			);
 
 			$this->save_sessiondata();
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('cat_list' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('cat_list' => $data));
 		}
 
 		function edit()
 		{
-			$appname		= phpgw::get_var('appname');
-			$location		= phpgw::get_var('location');
-			$global_cats	= phpgw::get_var('global_cats');
-			$parent			= phpgw::get_var('parent', 'int', 'GET', 0);
-			$values			= phpgw::get_var('values', 'string', 'POST');
+			$appname		= Sanitizer::get_var('appname');
+			$location		= Sanitizer::get_var('location');
+			$global_cats	= Sanitizer::get_var('global_cats');
+			$parent			= Sanitizer::get_var('parent', 'int', 'GET', 0);
+			$values			= Sanitizer::get_var('values', 'string', 'POST');
 
 			$message = '';
 			$link_data = array
@@ -302,7 +302,7 @@
 
 			if ( isset($values['cancel']) && $values['cancel'] )
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php',$link_data);
+				phpgw::redirect_link('/index.php',$link_data);
 			}
 
 			if ( (isset($values['save']) && $values['save'] )
@@ -325,7 +325,7 @@
 					}
 					else
 					{
-						$GLOBALS['phpgw']->redirect_link('/index.php',$link_data);
+						phpgw::redirect_link('/index.php',$link_data);
 					}
 				}
 			}
@@ -369,7 +369,7 @@
 				$GLOBALS['phpgw_info']['flags']['app_header'] = lang('global categories') . "::$function";
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file('cats');
+			phpgwapi_xslttemplates::getInstance()->add_file('cats');
 
 /*
 			if ( $appname )
@@ -435,16 +435,16 @@
 			{
 				$link_data['cat_id']	= $this->cat_id;
 			}
-			$data['edit_url'] = $GLOBALS['phpgw']->link('/index.php',$link_data);
+			$data['edit_url'] = phpgw::link('/index.php',$link_data);
 
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('cat_edit' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('cat_edit' => $data));
 		}
 
 		function delete()
 		{
-			$appname = phpgw::get_var('appname');
-			$location= phpgw::get_var('location');
-			$global_cats  = phpgw::get_var('global_cats');
+			$appname = Sanitizer::get_var('appname');
+			$location= Sanitizer::get_var('location');
+			$global_cats  = Sanitizer::get_var('global_cats');
 			$receipt = array();
 			$link_data = array
 			(
@@ -455,25 +455,25 @@
 				'menu_selection' => $GLOBALS['phpgw_info']['flags']['menu_selection']
 			);
 
-			if ( phpgw::get_var('cancel', 'bool') || !$this->cat_id )
+			if ( Sanitizer::get_var('cancel', 'bool') || !$this->cat_id )
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 
-			if ( phpgw::get_var('confirm', 'bool') )
+			if ( Sanitizer::get_var('confirm', 'bool') )
 			{
-				$subs = phpgw::get_var('subs');
+				$subs = Sanitizer::get_var('subs');
 				if ( $subs )
 				{
 					switch ( $subs )
 					{
 						case 'move':
 							$this->bo->delete($this->cat_id, false, true);
-							$GLOBALS['phpgw']->redirect_link('/index.php',$link_data);
+							phpgw::redirect_link('/index.php',$link_data);
 							break;
 						case 'drop':
 							$this->bo->delete($this->cat_id, true);
-							$GLOBALS['phpgw']->redirect_link('/index.php',$link_data);
+							phpgw::redirect_link('/index.php',$link_data);
 							break;
 						default:
 							$receipt['error'][]=array('msg'=>'Please choose one of the methods to handle the subcategories');
@@ -483,11 +483,11 @@
 				else
 				{
 					$this->bo->delete($this->cat_id);
-					$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+					phpgw::redirect_link('/index.php', $link_data);
 				}
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('confirm_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('confirm_delete'));
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = ( $appname ? lang($appname) . ' ' : '' ) .($location?"::{$location}":'') . lang('global categories') . ': ' . lang('delete category');
 
@@ -546,7 +546,7 @@
 			$msgbox_data = $GLOBALS['phpgw']->common->msgbox_data($receipt);
 			$data = array
 			(
-				'form_action'			=> $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'form_action'			=> phpgw::link('/index.php', $link_data),
 				'show_done'				=> $show_done,
 				'msgbox_data'			=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
 				'lang_delete'			=> lang('delete'),
@@ -561,6 +561,6 @@
 				'lang_yes_statustext'	=> lang('delete the category')
 			);
 
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('delete' => $data));
 		}
 	}

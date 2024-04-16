@@ -19,7 +19,7 @@
 
 	$template_set = '';
 
-	$account_id = phpgw::get_var('account_id', 'int');
+	$account_id = Sanitizer::get_var('account_id', 'int');
 
 	if($account_id)
 	{

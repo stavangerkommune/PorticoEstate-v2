@@ -49,7 +49,7 @@
 			$this->set_current_node_id(0);
 			$this->bookmarks = phpgwapi_cache::user_get('phpgwapi', "bookmark_menu", $GLOBALS['phpgw_info']['user']['id']);
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$this->menu_selection = phpgwapi_cache::session_get('navbar', 'menu_selection');
 			}

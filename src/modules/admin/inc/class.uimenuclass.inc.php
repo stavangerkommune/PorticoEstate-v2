@@ -53,11 +53,11 @@
 				{
 					if (!empty($value['extradata']))
 					{
-						$link = $GLOBALS['phpgw']->link($value['url'], 'account_id=' . $GLOBALS['account_id'] . '&' . $value['extradata']);
+						$link = phpgw::link($value['url'], 'account_id=' . $GLOBALS['account_id'] . '&' . $value['extradata']);
 					}
 					else
 					{
-						$link = $GLOBALS['phpgw']->link($value['url'], 'account_id=' . $GLOBALS['account_id']);
+						$link = phpgw::link($value['url'], 'account_id=' . $GLOBALS['account_id']);
 					}
 					$this->section_item($link, lang($value['description']), $this->rowColor[($i % 2)]);
 					$i++;
@@ -74,7 +74,7 @@
 			{
 				$destination = 'groups';
 			}
-			$this->t->set_var('link_done', $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiaccounts.list_') . $destination));
+			$this->t->set_var('link_done', phpgw::link('/index.php', array('menuaction' => 'admin.uiaccounts.list_') . $destination));
 			$this->t->set_var('lang_done', lang('Back'));
 
 			$this->t->set_var('row_on', $this->rowColor[0]);

@@ -35,9 +35,9 @@
 		public function link( $data )
 		{
 			if ($GLOBALS['phpgw_info']['flags']['currentapp'] == 'bookingfrontend')
-				return $GLOBALS['phpgw']->link('/bookingfrontend/', $data);
+				return phpgw::link('/bookingfrontend/', $data);
 			else
-				return $GLOBALS['phpgw']->link('/index.php', $data);
+				return phpgw::link('/index.php', $data);
 		}
 
 		function read($params = array())

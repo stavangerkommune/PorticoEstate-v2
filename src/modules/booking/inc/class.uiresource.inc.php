@@ -545,8 +545,8 @@
 			$data = array(
 				'attributes_group' => $organized_fields,
 			);
-			$GLOBALS['phpgw']->xslttpl->add_file(array("attributes_{$type}"));
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('custom_fields' => $data));
+			phpgwapi_xslttemplates::getInstance()->add_file(array("attributes_{$type}"));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('custom_fields' => $data));
 		}
 
 

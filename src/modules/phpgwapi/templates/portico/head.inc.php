@@ -156,7 +156,7 @@ HTML;
 
 	$_navbar_config			= json_encode($navbar_config);
 
-	if (phpgw::get_var('phpgw_return_as') == 'json')
+	if (Sanitizer::get_var('phpgw_return_as') == 'json')
 	{
 		$menu_selection = phpgwapi_cache::session_get('navbar', 'menu_selection');
 	}
@@ -172,7 +172,7 @@ HTML;
 		'javascript'	=> $GLOBALS['phpgw']->common->get_javascript($cache_refresh_token),
 		'img_icon'  => $GLOBALS['phpgw']->common->find_image('phpgwapi', 'favicon.ico'),
 		'site_title'	=> "{$GLOBALS['phpgw_info']['server']['site_title']}",
-		'str_base_url'	=> $GLOBALS['phpgw']->link('/', array(), true),
+		'str_base_url'	=> phpgw::link('/', array(), true),
 		'webserver_url'	=> $webserver_url,
 		'userlang'		=> $GLOBALS['phpgw_info']['user']['preferences']['common']['lang'],
 		'win_on_events'	=> $GLOBALS['phpgw']->common->get_on_events(),

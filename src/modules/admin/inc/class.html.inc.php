@@ -16,7 +16,7 @@
 	{
 		function hash_table($rows,$head='',$obj, $frtn)
 		{
-			$start = phpgw::get_var('start', 'int');
+			$start = Sanitizer::get_var('start', 'int');
 
 			$html = '';
 			$edittable =$head['_edittable'];
@@ -30,7 +30,7 @@
 				else
 				{
 					$html .= '<form method="post" action="'
-						 . $GLOBALS['phpgw']->link('/index.php')
+						 . phpgw::link('/index.php')
 						 . '">' . "\n";
 					$bo = CreateObject('admin.bolog',True);
 					if (!isset($start))
@@ -52,7 +52,7 @@
 					$html .= '<table width="98%"><tr>';
 					$html .= '<td align="left">' . $left . '</td>';
 					$html .= '<td align="right"> ' . $hits . ' </td>';
-					$html .= '<td align="left"> <a href=' . $GLOBALS['phpgw']->link('/index.php','menuaction=admin.uilog.list_log&editable=true') .'> ' . lang('Edit Table format') . '</a></td>';
+					$html .= '<td align="left"> <a href=' . phpgw::link('/index.php','menuaction=admin.uilog.list_log&editable=true') .'> ' . lang('Edit Table format') . '</a></td>';
 					$html .= '<td align="right">' . $right . '</td>';
 					$html .= '</tr></table>';
 				}
@@ -261,15 +261,15 @@
 
 		function edit_table($rows,$head='',$obj, $frtn)
 		{
-			$nocols = phpgw::get_var('nocols');
-			$noflds = phpgw::get_var('noflds');
-			$norows = phpgw::get_var('norows');
-			$layout = phpgw::get_var('layout');
-			$_cols  = phpgw::get_var('_cols');
+			$nocols = Sanitizer::get_var('nocols');
+			$noflds = Sanitizer::get_var('noflds');
+			$norows = Sanitizer::get_var('norows');
+			$layout = Sanitizer::get_var('layout');
+			$_cols  = Sanitizer::get_var('_cols');
 
 			$html = '';
 			$html .= '<form method="post" action="'
-				 . $GLOBALS['phpgw']->link('/index.php','menuaction=admin.uilog.list_log&editable=true')
+				 . phpgw::link('/index.php','menuaction=admin.uilog.list_log&editable=true')
 				 . '">' . "\n";
 
 			$params = $head['_table_parms'];

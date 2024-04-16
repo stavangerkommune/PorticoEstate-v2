@@ -16,14 +16,14 @@
 		$config_controller = CreateObject('phpgwapi.config', 'controller')->read();
 		if( isset($config_controller['home_alternative']) && $config_controller['home_alternative'] == 1 )
 		{
-			$controller_url = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'controller.uicomponent.index'));
+			$controller_url = phpgw::link('/index.php', array('menuaction' => 'controller.uicomponent.index'));
 		}
 		else
 		{
-			$controller_url = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'controller.uicontrol.control_list'));
+			$controller_url = phpgw::link('/index.php', array('menuaction' => 'controller.uicontrol.control_list'));
 		}
 
-		$controller_test_url = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'controller.uicalendar_planner.start_inspection'));
+		$controller_test_url = phpgw::link('/index.php', array('menuaction' => 'controller.uicalendar_planner.start_inspection'));
 
 		$extra_vars = array();
 		foreach($_GET as $name => $value)
@@ -31,21 +31,21 @@
 			$extra_vars[$name] = phpgw::clean_value($value);
 		}
 
-		$site_url	= $GLOBALS['phpgw']->link('/home.php', array());
+		$site_url	= phpgw::link('/home.php', array());
 
 		$var['home_url'] = $site_url;
 		$user = $GLOBALS['phpgw']->accounts->get( $GLOBALS['phpgw_info']['user']['id'] );
 
 		$controller_text = lang('controller');
-		$tts_url = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uitts.index'));
+		$tts_url = phpgw::link('/index.php', array('menuaction' => 'property.uitts.index'));
 		$tts_text = lang('ticket');
-		$condition_survey_url = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uicondition_survey.index'));
+		$condition_survey_url = phpgw::link('/index.php', array('menuaction' => 'property.uicondition_survey.index'));
 		$condition_survey_text = $GLOBALS['phpgw']->translation->translate('condition survey', array(), false, 'property');
-		$movein_url = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'rental.uimovein.index'));
+		$movein_url = phpgw::link('/index.php', array('menuaction' => 'rental.uimovein.index'));
 		$movein_text = $GLOBALS['phpgw']->translation->translate('movein', array(), false, 'rental');
-		$moveout_url = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'rental.uimoveout.index'));
+		$moveout_url = phpgw::link('/index.php', array('menuaction' => 'rental.uimoveout.index'));
 		$moveout_text = $GLOBALS['phpgw']->translation->translate('moveout', array(), false, 'rental');
-		$logout_url	= $GLOBALS['phpgw']->link('/logout.php');
+		$logout_url	= phpgw::link('/logout.php');
 
 		$acl = & $GLOBALS['phpgw']->acl;
 		$anonymous = $acl->check('anonymous', 1, 'phpgwapi');
@@ -207,7 +207,7 @@ HTML;
 
 		if($acl->check('run', PHPGW_ACL_READ, 'frontend'))
 		{
-			$rental_frontend_url = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'frontend.uihelpdesk.index'));
+			$rental_frontend_url = phpgw::link('/index.php', array('menuaction' => 'frontend.uihelpdesk.index'));
 			$rental_frontend_text = $GLOBALS['phpgw']->translation->translate('rental', array(), false, 'rental frontend');
 
 			$topmenu .= <<<HTML
@@ -231,7 +231,7 @@ HTML;
 
 		if($acl->check('.document.import', PHPGW_ACL_ADD, 'property'))
 		{
-			$property_documents_url = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiimport_documents.step_1_import'));
+			$property_documents_url = phpgw::link('/index.php', array('menuaction' => 'property.uiimport_documents.step_1_import'));
 			$property_documents_text = $GLOBALS['phpgw']->translation->translate('import documents', array(), false, 'property');
 
 			$topmenu .= <<<HTML
@@ -255,7 +255,7 @@ HTML;
 
 		if($acl->check('run', PHPGW_ACL_READ, 'helpdesk'))
 		{
-			$helpdesk_url = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'helpdesk.uitts.index'));
+			$helpdesk_url = phpgw::link('/index.php', array('menuaction' => 'helpdesk.uitts.index'));
 
 			$config_helpdesk = CreateObject('phpgwapi.config','helpdesk')->read();
 			if (!empty($config_helpdesk['app_name']))
@@ -354,7 +354,7 @@ HTML;
 HTML;
 			if (false)// $GLOBALS['phpgw']->acl->check('run', PHPGW_ACL_READ, 'preferences') )
 			{
-				$preferences_url = $GLOBALS['phpgw']->link('/preferences/index.php');
+				$preferences_url = phpgw::link('/preferences/index.php');
 				$preferences_text = lang('preferences');
 				$sidebar_content .= <<<HTML
 
@@ -404,7 +404,7 @@ HTML;
 
 		$breadcrumb_html = "";
 
-		if(phpgw::get_var('phpgw_return_as') != 'json' && $breadcrumbs && is_array($breadcrumbs))// && isset($GLOBALS['phpgw_info']['user']['preferences']['common']['show_breadcrumbs']) && $GLOBALS['phpgw_info']['user']['preferences']['common']['show_breadcrumbs'])
+		if(Sanitizer::get_var('phpgw_return_as') != 'json' && $breadcrumbs && is_array($breadcrumbs))// && isset($GLOBALS['phpgw_info']['user']['preferences']['common']['show_breadcrumbs']) && $GLOBALS['phpgw_info']['user']['preferences']['common']['show_breadcrumbs'])
 		{
 			$breadcrumb_html = <<<HTML
 				<nav aria-label="breadcrumb">
@@ -435,7 +435,7 @@ HTML;
 		$GLOBALS['phpgw']->template->set_var($var);
 
 		$GLOBALS['phpgw']->template->pfp('out','navbar');
-		if( phpgw::get_var('phpgw_return_as') != 'json' && $receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
+		if( Sanitizer::get_var('phpgw_return_as') != 'json' && $receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
 		{
 			phpgwapi_cache::session_clear('phpgwapi', 'phpgw_messages');
 			$msgbox_data = $GLOBALS['phpgw']->common->msgbox_data($receipt);

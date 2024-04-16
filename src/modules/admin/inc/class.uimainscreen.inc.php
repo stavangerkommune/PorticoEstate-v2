@@ -55,7 +55,7 @@
 		 */
 		public function __construct()
 		{
-			$menuaction = phpgw::get_var('menuaction', 'location');
+			$menuaction = Sanitizer::get_var('menuaction', 'location');
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = false;
 			$GLOBALS['phpgw']->nextmatchs = CreateObject('phpgwapi.nextmatchs');
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = 'admin';
@@ -91,9 +91,9 @@
 		 */
 		public function index()
 		{
-			if ( phpgw::get_var('cancel', 'bool', 'POST') )
+			if ( Sanitizer::get_var('cancel', 'bool', 'POST') )
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'admin.uimainscreen.mainscreen'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'admin.uimainscreen.mainscreen'));
 			}
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::admin::mainscreen';
@@ -105,12 +105,12 @@
 			$GLOBALS['phpgw']->template->set_block('message','row_2','row_2');
 
 			$GLOBALS['phpgw']->common->phpgw_header(true);
-			$select_lang = phpgw::get_var('select_lang', 'string', 'POST');
-			$section     = phpgw::get_var('section', 'string', 'POST');
+			$select_lang = Sanitizer::get_var('select_lang', 'string', 'POST');
+			$section     = Sanitizer::get_var('section', 'string', 'POST');
 
-			if ( phpgw::get_var('update', 'bool', 'POST') )
+			if ( Sanitizer::get_var('update', 'bool', 'POST') )
 			{
-				$message     = phpgw::get_var('message', 'string', 'POST');
+				$message     = Sanitizer::get_var('message', 'string', 'POST');
 
 				$GLOBALS['phpgw']->db->query("DELETE FROM phpgw_lang WHERE message_id='$section" . "_message' AND app_name='"
 					. "$section' AND lang='$select_lang'",__LINE__,__FILE__);
@@ -123,7 +123,7 @@
 			if (empty($select_lang))
 			{
 				$GLOBALS['phpgw']->template->set_var('header_lang',lang('Main screen message'));
-				$GLOBALS['phpgw']->template->set_var('form_action',$GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uimainscreen.index')));
+				$GLOBALS['phpgw']->template->set_var('form_action',phpgw::link('/index.php', array('menuaction' => 'admin.uimainscreen.index')));
 				$GLOBALS['phpgw']->template->set_var('tr_class', 'th');
 				$GLOBALS['phpgw']->template->set_var('value','&nbsp;');
 				$GLOBALS['phpgw']->template->fp('rows','row_2',True);
@@ -176,7 +176,7 @@
 					$GLOBALS['phpgw']->template->set_var('header_lang',lang('Edit login screen message'));
 				}
 
-				$GLOBALS['phpgw']->template->set_var('form_action',$GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uimainscreen.index')));
+				$GLOBALS['phpgw']->template->set_var('form_action',phpgw::link('/index.php', array('menuaction' => 'admin.uimainscreen.index')));
 				$GLOBALS['phpgw']->template->set_var('select_lang',$select_lang);
 				$GLOBALS['phpgw']->template->set_var('section',$section);
 				$GLOBALS['phpgw']->template->set_var('tr_class', 'th');

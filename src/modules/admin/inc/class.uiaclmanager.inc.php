@@ -68,13 +68,13 @@
 		 */
 		public function __construct()
 		{
-			$this->account_id = phpgw::get_var('account_id', 'int', 'GET',
+			$this->account_id = Sanitizer::get_var('account_id', 'int', 'GET',
 								$GLOBALS['phpgw_info']['user']['account_id']);
 
 			if ( !$this->account_id
 				|| $GLOBALS['phpgw']->acl->check('account_access', 64, 'admin') )
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php');
+				phpgw::redirect_link('/index.php');
 			}
 
 			$this->_template	=& $GLOBALS['phpgw']->template;
@@ -162,7 +162,7 @@
 							'account_id' => $GLOBALS['account_id']
 						);
 
-						$this->_template->set_var('link_location', $GLOBALS['phpgw']->link('/index.php', $link_values));
+						$this->_template->set_var('link_location', phpgw::link('/index.php', $link_values));
 						$this->_template->set_var('lang_location', lang($value['name']));
 						$this->_template->fp('rows', 'link_row', true);
 					}
@@ -182,10 +182,10 @@
 		 */
 		public function access_form()
 		{
-			$acl_app	= phpgw::get_var('acl_app');
-			$location	= phpgw::get_var('location');
-			$account_id	= phpgw::get_var('account_id', 'int');
-			$acl_man	= phpgw::get_var('acl_manager');
+			$acl_app	= Sanitizer::get_var('acl_app');
+			$location	= Sanitizer::get_var('location');
+			$account_id	= Sanitizer::get_var('account_id', 'int');
+			$acl_man	= Sanitizer::get_var('acl_manager');
 
 			$acl_manager = $acl_man[$acl_app][$location];
 
@@ -204,14 +204,14 @@
 			(
 				'menuaction' => 'admin._boaclmanager.submit',
 				'acl_app'    => $acl_app,
-				'location'   => phpgw::get_var('location', 'string'),
+				'location'   => Sanitizer::get_var('location', 'string'),
 				'account_id' => $account_id
 			);
 
 			$acl    = createobject('phpgwapi.acl', $account_id);
 			$acl->read();
 
-			$this->_template->set_var('form_action', $GLOBALS['phpgw']->link('/index.php', $link_values));
+			$this->_template->set_var('form_action', phpgw::link('/index.php', $link_values));
 			$this->_template->set_var('lang_title', lang('ACL Manager'));
 
 			$grants = $acl->get_rights($location, $acl_app);
@@ -266,18 +266,18 @@ HTML;
 				'account_id'	=> $GLOBALS['phpgw_info']['user']['account_id']
 			);
 
-			if ( phpgw::get_var('edit', 'bool', 'POST') )
+			if ( Sanitizer::get_var('edit', 'bool', 'POST') )
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 
-			if ( phpgw::get_var('done', 'bool', 'POST') )
+			if ( Sanitizer::get_var('done', 'bool', 'POST') )
 			{
-				$GLOBALS['phpgw']->redirect_link('/admin/index.php');
+				phpgw::redirect_link('/admin/index.php');
 			}
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('admin') . ': ' . lang('list addressmasters');
-			$GLOBALS['phpgw']->xslttpl->add_file('addressmaster');
+			phpgwapi_xslttemplates::getInstance()->add_file('addressmaster');
 
 			try
 			{
@@ -341,9 +341,9 @@ HTML;
 				'addressmaster_group'	=> $groups,
 				'lang_edit'				=> lang('edit'),
 				'lang_done'				=> lang('done'),
-				'action_url'			=> $GLOBALS['phpgw']->link('/index.php', $link_data)
+				'action_url'			=> phpgw::link('/index.php', $link_data)
 			);
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('addressmaster_list' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('addressmaster_list' => $data));
 		}
 
 		/**
@@ -371,10 +371,10 @@ HTML;
 				'account_id'	=> $GLOBALS['phpgw_info']['user']['account_id']
 			);
 
-			if ( phpgw::get_var('save', 'bool', 'POST') )
+			if ( Sanitizer::get_var('save', 'bool', 'POST') )
 			{
-				$account_addressmaster = phpgw::get_var('account_addressmaster', 'string', 'POST', array());
-				$group_addressmaster = phpgw::get_var('group_addressmaster', 'int', 'POST', array());
+				$account_addressmaster = Sanitizer::get_var('account_addressmaster', 'string', 'POST', array());
+				$group_addressmaster = Sanitizer::get_var('group_addressmaster', 'int', 'POST', array());
 
 				$error = array();//$this->_boacl->check_values($account_addressmaster, $group_addressmaster);
 				if ( count($error) )
@@ -384,17 +384,17 @@ HTML;
 				else
 				{
 					$this->_boacl->edit_addressmasters($account_addressmaster, $group_addressmaster);
-					$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+					phpgw::redirect_link('/index.php', $link_data);
 				}
 			}
 
-			if ( phpgw::get_var('cancel', 'bool', 'POST') )
+			if ( Sanitizer::get_var('cancel', 'bool', 'POST') )
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('admin') . ': ' . lang('edit addressmaster list');
-			$GLOBALS['phpgw']->xslttpl->add_file('addressmaster');
+			phpgwapi_xslttemplates::getInstance()->add_file('addressmaster');
 
 			$popwin_user = array();
 			$select_user = array();
@@ -414,7 +414,7 @@ HTML;
 
 				$popwin_user = array
 				(
-					'url'				=> $GLOBALS['phpgw']->link('/index.php',
+					'url'				=> phpgw::link('/index.php',
 											array('menuaction' => 'admin.uiaclmanager.accounts_popup'), true),
 					'width'				=> '800',
 					'height'			=> '600',
@@ -492,10 +492,10 @@ HTML;
 				'lang_select_addressmasters'	=> lang('Select addressmasters'),
 				'lang_save'						=> lang('save'),
 				'lang_cancel'					=> lang('cancel'),
-				'action_url'					=> $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'action_url'					=> phpgw::link('/index.php', $link_data),
 				'popwin_user'					=> $popwin_user,
 				'select_user'					=> $select_user
 			);
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('addressmaster_edit' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('addressmaster_edit' => $data));
 		}
 	}

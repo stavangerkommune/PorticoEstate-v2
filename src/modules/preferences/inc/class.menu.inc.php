@@ -23,6 +23,10 @@
 	   You should have received a copy of the GNU General Public License
 	   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
+use App\modules\phpgwapi\services\Translation;
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\security\Acl;
+use App\modules\phpgwapi\controllers\Locations;
 
 
 	/**
@@ -39,14 +43,21 @@
 		 */
 		function get_menu()
 		{
+			$translation = Translation::getInstance();
+	//		$userSettings = Settings::getInstance()->get('user');
+			$serverSettings = Settings::getInstance()->get('server');
+	//		$flags = Settings::getInstance()->get('flags');
+			$acl = Acl::getInstance();
+
+
 			$menus = array();
 
 			$menus['navbar'] = array
 			(
 				'preferences' => array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
-					'url'	=> $GLOBALS['phpgw']->link('/preferences/index.php'),
+					'text'	=> $translation->translate('Preferences', array(), true),
+					'url'	=> phpgw::link('/preferences/index.php'),
 					'image'	=> array('preferences', 'navbar'),
 					'order'	=> 0,
 					'group'	=> 'office'
@@ -58,17 +69,17 @@
 			$menus['navigation'] = array();
 			$menus['navigation'][] = array
 			(
-				'text'	=> $GLOBALS['phpgw']->translation->translate('My Preferences', array(), true),
-				'url'	=> $GLOBALS['phpgw']->link('/preferences/preferences.php', array('appname'	=> 'preferences')),
+				'text'	=> $translation->translate('My Preferences', array(), true),
+				'url'	=> phpgw::link('/preferences/preferences.php', array('appname'	=> 'preferences')),
 				'image'	=> array('preferences', 'preferences')
 			);
 
-			if ( !$GLOBALS['phpgw']->acl->check('changepassword', phpgwapi_acl::READ, 'preferences') )
+			if ( !$acl->check('changepassword', Acl::READ, 'preferences') )
 			{
 				$menus['navigation'][] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Change your Password', array(), true),
-					'url'	=> $GLOBALS['phpgw']->link('/preferences/changepassword.php')
+					'text'	=> $translation->translate('Change your Password', array(), true),
+					'url'	=> phpgw::link('/preferences/changepassword.php')
 				);
 			}
 
@@ -76,13 +87,13 @@
 			{
 				$menus['navigation'][] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Default Preferences', array(), true),
-					'url'	=> $GLOBALS['phpgw']->link('/preferences/index.php', array('type' => 'default'))
+					'text'	=> $translation->translate('Default Preferences', array(), true),
+					'url'	=> phpgw::link('/preferences/index.php', array('type' => 'default'))
 				);
 				$menus['navigation'][] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Forced Preferences', array(), true),
-					'url'	=> $GLOBALS['phpgw']->link('/preferences/index.php', array('type' => 'forced'))
+					'text'	=> $translation->translate('Forced Preferences', array(), true),
+					'url'	=> phpgw::link('/preferences/index.php', array('type' => 'forced'))
 				);
 			}
 
@@ -90,30 +101,30 @@
 			(
 				array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
-					'url'	=> $GLOBALS['phpgw']->link('/preferences/preferences.php',
+					'text'	=> $translation->translate('Preferences', array(), true),
+					'url'	=> phpgw::link('/preferences/preferences.php',
 									array('appname'	=> 'preferences')),
 					'image'	=> array('preferences', 'preferences')
 				),
 				array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Change your Password', array(), true),
-					'url'	=> $GLOBALS['phpgw']->link('/preferences/changepassword.php')
+					'text'	=> $translation->translate('Change your Password', array(), true),
+					'url'	=> phpgw::link('/preferences/changepassword.php')
 				)
 			);
 
-			if ( (isset($GLOBALS['phpgw_info']['server']['auth_type'])
-					&& in_array($GLOBALS['phpgw_info']['server']['auth_type'],  array('remoteuser', 'azure')))
-				|| (isset($GLOBALS['phpgw_info']['server']['half_remote_user'])
-					&& $GLOBALS['phpgw_info']['server']['half_remote_user'] == 'remoteuser') )
+			if ( (isset($serverSettings['auth_type'])
+					&& in_array($serverSettings['auth_type'],  array('remoteuser', 'azure')))
+				|| (isset($serverSettings['half_remote_user'])
+					&& $serverSettings['half_remote_user'] == 'remoteuser') )
 			{
-				if ( $GLOBALS['phpgw_info']['server']['mapping'] == 'table'
-					|| $GLOBALS['phpgw_info']['server']['mapping'] == 'all' )
+				if ( $serverSettings['mapping'] == 'table'
+					|| $serverSettings['mapping'] == 'all' )
 				{
 					$menus['preferences'][] = array
 					(
-						'text'	=> $GLOBALS['phpgw']->translation->translate('Mapping', array(), true),
-						'url'	=> $GLOBALS['phpgw']->link('/index.php', array
+						'text'	=> $translation->translate('Mapping', array(), true),
+						'url'	=> phpgw::link('/index.php', array
 									(
 										'menuaction' => 'preferences.uimapping.index',
 										'appname' => 'preferences'

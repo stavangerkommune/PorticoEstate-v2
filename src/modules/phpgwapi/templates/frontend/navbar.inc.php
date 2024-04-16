@@ -40,7 +40,7 @@ HTML;
 
 		$GLOBALS['phpgw']->hooks->process('after_navbar');
 
-		if( phpgw::get_var('phpgw_return_as') != 'json' && $receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
+		if( Sanitizer::get_var('phpgw_return_as') != 'json' && $receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
 		{
 			phpgwapi_cache::session_clear('phpgwapi', 'phpgw_messages');
 			$msgbox_data = $GLOBALS['phpgw']->common->msgbox_data($receipt);

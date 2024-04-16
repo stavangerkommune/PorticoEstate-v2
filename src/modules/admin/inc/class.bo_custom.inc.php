@@ -66,15 +66,15 @@
 				$this->use_session = True;
 			}
 
-			$start		= phpgw::get_var('start', 'int');
-			$query		= phpgw::get_var('query');
-			$sort		= phpgw::get_var('sort');
-			$order		= phpgw::get_var('order');
-			$filter		= phpgw::get_var('filter');
-			$location	= phpgw::get_var('location');
-			$location_id= phpgw::get_var('location_id', 'int');
-			$allrows	= phpgw::get_var('allrows', 'bool');
-			$appname	= phpgw::get_var('appname');
+			$start		= Sanitizer::get_var('start', 'int');
+			$query		= Sanitizer::get_var('query');
+			$sort		= Sanitizer::get_var('sort');
+			$order		= Sanitizer::get_var('order');
+			$filter		= Sanitizer::get_var('filter');
+			$location	= Sanitizer::get_var('location');
+			$location_id= Sanitizer::get_var('location_id', 'int');
+			$allrows	= Sanitizer::get_var('allrows', 'bool');
+			$appname	= Sanitizer::get_var('appname');
 
 			if ($start)
 			{

@@ -246,11 +246,11 @@
 
 			if ($GLOBALS['phpgw_info']['flags']['currentapp'] == 'bookingfrontend')
 			{
-				$GLOBALS['phpgw']->redirect_link('/bookingfrontend/', $link_data);
+				phpgw::redirect_link('/bookingfrontend/', $link_data);
 			}
 			else
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 		}
 

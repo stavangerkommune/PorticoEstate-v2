@@ -33,12 +33,12 @@
 					$tpl->set_var(array
 					(
 						'url' => "javascript:openwindow('"
-							 . $GLOBALS['phpgw']->link('/index.php', array
+							 . phpgw::link('/index.php', array
 							 (
 							 	'menuaction'=> 'manual.uimanual.help',
 							 	'app' => $GLOBALS['phpgw_info']['flags']['currentapp'],
 							 	'section' => isset($GLOBALS['phpgw_info']['apps']['manual']['section']) ? $GLOBALS['phpgw_info']['apps']['manual']['section'] : '',
-							 	'referer' => phpgw::get_var('menuaction')
+							 	'referer' => Sanitizer::get_var('menuaction')
 							 )) . "','700','600')",
 
 						'text' => lang('help'),
@@ -126,7 +126,7 @@
 			&& isset($GLOBALS['phpgw_info']['user']['preferences']['common']['show_currentusers'])
 			&& $GLOBALS['phpgw_info']['user']['preferences']['common']['show_currentusers'])
 		{
-			$var['current_users'] = '<a href="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uicurrentsessions.list_sessions'))
+			$var['current_users'] = '<a href="' . phpgw::link('/index.php', array('menuaction' => 'admin.uicurrentsessions.list_sessions'))
 				. '">&nbsp;' . lang('Current users') . ': ' . $GLOBALS['phpgw']->session->total() . '</a>';
 		}
 		$now = time();

@@ -62,7 +62,7 @@ class CreateMapping
 				if ($this->mapping->valid_user($login, $password)) {
 					$this->mapping->add_mapping($_SERVER['REMOTE_USER'], $login);
 //FIXME: redirect..?
-					$GLOBALS['phpgw']->redirect_link('/login.php');
+					phpgw::redirect_link('/login.php');
 				} else {
 					$_GET['cd'] = 5;
 				}
@@ -83,7 +83,7 @@ class CreateMapping
 		$variables['extra_vars']	 = array('create_mapping' => true);
 		if (isset($this->serverSettings['auto_create_acct']) && $this->serverSettings['auto_create_acct'] == True) {
 			$variables['lang_additional_url']	 = lang('new account');
-			$variables['additional_url']		 = $GLOBALS['phpgw']->link('login.php', array('create_account' => true));
+			$variables['additional_url']		 = phpgw::link('login.php', array('create_account' => true));
 		}
 		$uilogin->phpgw_display_login($variables);
 */

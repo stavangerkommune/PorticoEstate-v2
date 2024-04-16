@@ -181,8 +181,8 @@
 
 			$GLOBALS['phpgw']->template->set_var('title_categories',lang('categories for'));
 			$GLOBALS['phpgw']->template->set_var('lang_app',lang($cats_app));
-			$GLOBALS['phpgw']->template->set_var('actionurl',$GLOBALS['phpgw']->link('/index.php', $link_data));
-			$GLOBALS['phpgw']->template->set_var('doneurl',$GLOBALS['phpgw']->link('/preferences/index.php'));
+			$GLOBALS['phpgw']->template->set_var('actionurl',phpgw::link('/index.php', $link_data));
+			$GLOBALS['phpgw']->template->set_var('doneurl',phpgw::link('/preferences/index.php'));
 
 			if(!$this->start)
 			{
@@ -282,7 +282,7 @@
 					'descr' => $descr
 				));
 
-				$GLOBALS['phpgw']->template->set_var('app_url', $GLOBALS['phpgw']->link("/{$cats_app}/index.php", array('cat_id' => (int)$cats[$i]['id'] ) ) );
+				$GLOBALS['phpgw']->template->set_var('app_url', phpgw::link("/{$cats_app}/index.php", array('cat_id' => (int)$cats[$i]['id'] ) ) );
 
 				if ($cats_level || ($level == 0))
 				{
@@ -290,7 +290,7 @@
 					{
 						$link_data['menuaction'] = 'preferences.uicategories.add';
 						$link_data['cat_parent'] = $cats[$i]['id'];
-						$GLOBALS['phpgw']->template->set_var('add_sub',$GLOBALS['phpgw']->link('/index.php',$link_data));
+						$GLOBALS['phpgw']->template->set_var('add_sub',phpgw::link('/index.php',$link_data));
 						$GLOBALS['phpgw']->template->set_var('lang_sub_entry',lang('Add sub'));
 					}
 				}
@@ -304,11 +304,11 @@
 				if ($cats[$i]['owner'] == $this->account && $cats[$i]['app_name'] != 'phpgw')
 				{
 					$link_data['menuaction'] = 'preferences.uicategories.edit';
-					$GLOBALS['phpgw']->template->set_var('edit',$GLOBALS['phpgw']->link('/index.php',$link_data));
+					$GLOBALS['phpgw']->template->set_var('edit',phpgw::link('/index.php',$link_data));
 					$GLOBALS['phpgw']->template->set_var('lang_edit_entry',lang('Edit'));
 
 					$link_data['menuaction'] = 'preferences.uicategories.delete';
-					$GLOBALS['phpgw']->template->set_var('delete',$GLOBALS['phpgw']->link('/index.php',$link_data));
+					$GLOBALS['phpgw']->template->set_var('delete',phpgw::link('/index.php',$link_data));
 					$GLOBALS['phpgw']->template->set_var('lang_delete_entry',lang('Delete'));
 				}
 				else
@@ -322,7 +322,7 @@
 				$GLOBALS['phpgw']->template->fp('list','cat_list',True);
 			}
 			$link_data['menuaction'] = 'preferences.uicategories.add';
-			$GLOBALS['phpgw']->template->set_var('add_action',$GLOBALS['phpgw']->link('/index.php',$link_data));
+			$GLOBALS['phpgw']->template->set_var('add_action',phpgw::link('/index.php',$link_data));
 			$this->save_sessiondata($cats_app);
 
 			$GLOBALS['phpgw']->template->pfp('out','cat_list_t');
@@ -402,7 +402,7 @@
 				}
 			}
 
-			$GLOBALS['phpgw']->template->set_var('actionurl',$GLOBALS['phpgw']->link('/index.php',$link_data));
+			$GLOBALS['phpgw']->template->set_var('actionurl',phpgw::link('/index.php',$link_data));
 
 			if ($cats_level)
 			{
@@ -433,7 +433,7 @@
 			}
 
 			$link_data['menuaction'] = 'preferences.uicategories.index';
-			$GLOBALS['phpgw']->template->set_var('cancel_url',$GLOBALS['phpgw']->link('/index.php',$link_data));
+			$GLOBALS['phpgw']->template->set_var('cancel_url',phpgw::link('/index.php',$link_data));
 			$GLOBALS['phpgw']->template->set_var('edithandle','');
 			$GLOBALS['phpgw']->template->set_var('addhandle','');
 			$GLOBALS['phpgw']->template->pfp('out','form');
@@ -483,7 +483,7 @@
 			$GLOBALS['phpgw']->template->set_block('form','edit','edithandle');
 
 			$this->set_langs();
-			$GLOBALS['phpgw']->template->set_var('cancel_url',$GLOBALS['phpgw']->link('/index.php',$link_data));
+			$GLOBALS['phpgw']->template->set_var('cancel_url',phpgw::link('/index.php',$link_data));
 
 			if ($new_parent)
 			{
@@ -525,7 +525,7 @@
 			$cats = $this->bo->cats->return_single($cat_id);
 
 			$link_data['menuaction'] = 'preferences.uicategories.edit';
-			$GLOBALS['phpgw']->template->set_var('actionurl',$GLOBALS['phpgw']->link('/index.php',$link_data));
+			$GLOBALS['phpgw']->template->set_var('actionurl',phpgw::link('/index.php',$link_data));
 
 			$GLOBALS['phpgw']->template->set_var('cat_name',$GLOBALS['phpgw']->strip_html($cats[0]['name']));
 			$GLOBALS['phpgw']->template->set_var('cat_description',$GLOBALS['phpgw']->strip_html($cats[0]['description']));
@@ -563,7 +563,7 @@
 			if ($cats[0]['owner'] == $this->account)
 			{
 				$link_data['menuaction'] = 'preferences.uicategories.delete';
-				$GLOBALS['phpgw']->template->set_var('delete','<form method="post" action="' . $GLOBALS['phpgw']->link('/index.php',$link_data)
+				$GLOBALS['phpgw']->template->set_var('delete','<form method="post" action="' . phpgw::link('/index.php',$link_data)
 					. '"><input type="submit" value="' . lang('Delete') .'" /></form>');
 			}
 			else
@@ -597,7 +597,7 @@
 
 			if (!$cat_id || $_POST['cancel'])
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php',$link_data);
+				phpgw::redirect_link('/index.php',$link_data);
 			}
 
 			if ($_POST['confirm'])
@@ -610,7 +610,7 @@
 				{
 					$this->bo->delete($cat_id,False);
 				}
-				$GLOBALS['phpgw']->redirect_link('/index.php',$link_data);
+				phpgw::redirect_link('/index.php',$link_data);
 			}
 			else
 			{
@@ -642,7 +642,7 @@
 
 				$GLOBALS['phpgw']->template->set_var('lang_no',lang('No'));
 				$link_data['menuaction'] = 'preferences.uicategories.delete';
-				$GLOBALS['phpgw']->template->set_var('action_url',$GLOBALS['phpgw']->link('/index.php',$link_data));
+				$GLOBALS['phpgw']->template->set_var('action_url',phpgw::link('/index.php',$link_data));
 				$GLOBALS['phpgw']->template->set_var('lang_yes',lang('Yes'));
 				$GLOBALS['phpgw']->template->pfp('out','category_delete');
 			}

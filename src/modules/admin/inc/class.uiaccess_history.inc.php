@@ -27,17 +27,17 @@
 		{
 			if ($GLOBALS['phpgw']->acl->check('access_log_access',1,'admin'))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php');
+				phpgw::redirect_link('/index.php');
 			}
 
 			$bo         = createobject('admin.boaccess_history');
 			$nextmatches = createobject('phpgwapi.nextmatchs');
 
-			$account_id	= phpgw::get_var('account_id', 'int', 'REQUEST', 0);
-			$start		= phpgw::get_var('start', 'int', 'GET', 0);
-			$sort		= phpgw::get_var('sort', 'int', 'POST', 0);
-			$order		= phpgw::get_var('order', 'int', 'POST', 0);
-			$query		= phpgw::get_var('query');
+			$account_id	= Sanitizer::get_var('account_id', 'int', 'REQUEST', 0);
+			$start		= Sanitizer::get_var('start', 'int', 'GET', 0);
+			$sort		= Sanitizer::get_var('sort', 'int', 'POST', 0);
+			$order		= Sanitizer::get_var('order', 'int', 'POST', 0);
+			$query		= Sanitizer::get_var('query');
 
 			if(!$account_id && $query)
 			{
@@ -142,7 +142,7 @@ HTML;
 
 			if ($account_id)
 			{
-				$var['link_return_to_view_account'] = '<a href="' . $GLOBALS['phpgw']->link('/index.php',
+				$var['link_return_to_view_account'] = '<a href="' . phpgw::link('/index.php',
 					Array(
 						'menuaction' => 'admin.uiaccounts.view',
 						'account_id' => $account_id
@@ -155,7 +155,7 @@ HTML;
 				$var['lang_last_x_logins'] = lang('Last %1 logins',$total_records);
 			}
 
-			$var['actionurl']	= $GLOBALS['phpgw']->link('/index.php',array('menuaction' => 'admin.uiaccess_history.list_history'));
+			$var['actionurl']	= phpgw::link('/index.php',array('menuaction' => 'admin.uiaccess_history.list_history'));
 
 			$t->set_var($var);
 

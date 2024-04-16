@@ -25,7 +25,7 @@
 
 			if ($GLOBALS['phpgw']->acl->check('error_log_access',1,'admin'))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php');
+				phpgw::redirect_link('/index.php');
 			}
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = 'admin::admin::log_levels';
@@ -47,7 +47,7 @@
 		{
 			if ($GLOBALS['phpgw']->acl->check('error_log_access',1,'admin'))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php');
+				phpgw::redirect_link('/index.php');
 			}
 
 			// If log_levels have ever been set before, go ahead and set them.
@@ -59,24 +59,24 @@
 			}
 
 			// If they've updated something, save the change.
-			$level_type = phpgw::get_var('level_type');
+			$level_type = Sanitizer::get_var('level_type');
 		    if ( $level_type )
 		    {
-		    	$level_key = phpgw::get_var('level_key');
-		    	$new_level = phpgw::get_var( $level_type . '_' . $level_key . '_select');
+		    	$level_key = Sanitizer::get_var('level_key');
+		    	$new_level = Sanitizer::get_var( $level_type . '_' . $level_key . '_select');
 		    	$this->update_level($level_type, $level_key, $new_level);
 		    }
 			else
 			{
-				$level_key = phpgw::get_var('module_add_name_select');
+				$level_key = Sanitizer::get_var('module_add_name_select');
 				if ( $level_key )
 				{
-					$this->update_level('module', $level_key, phpgw::get_var('module_add_level_select'));
+					$this->update_level('module', $level_key, Sanitizer::get_var('module_add_level_select'));
 				}
-				$level_key = phpgw::get_var('user_add_name_select');
+				$level_key = Sanitizer::get_var('user_add_name_select');
 				if ( $level_key )
 				{
-					$this->update_level('user', $level_key, phpgw::get_var('user_add_level_select'));
+					$this->update_level('user', $level_key, Sanitizer::get_var('user_add_level_select'));
 				}
 			}
 
@@ -124,7 +124,7 @@
 						'type'   		=> 'module',
 						'module_name'   => $title,
 						'module_option' => $this->create_select_box('module', $app, $GLOBALS['phpgw_info']['server']['log_levels']['module'][$app]),
-						'remove_url' 	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiloglevels.edit_log_levels', 'level_type' => 'module', 'level_key' => $app) ),
+						'remove_url' 	=> phpgw::link('/index.php', array('menuaction' => 'admin.uiloglevels.edit_log_levels', 'level_type' => 'module', 'level_key' => $app) ),
 						'lang_remove'   => lang('remove')
 					);
 					$this->template->set_var($var);
@@ -150,7 +150,7 @@
 				$var = array(
 					'tr_class' 		=> $tr_class,
 					'type'   		=> 'module',
-					'module_add_link' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiloglevels.edit_log_levels') ),
+					'module_add_link' => phpgw::link('/index.php', array('menuaction' => 'admin.uiloglevels.edit_log_levels') ),
 					'lang_add' => lang('add'),
 					'module_add_options'   => $add_options,
 					'lang_fatal'    => lang('fatal'),
@@ -183,7 +183,7 @@
 						'tr_class' 		=> $tr_class,
 						'module_name'   => (string) $account,
 						'module_option' => $this->create_select_box('user', $account_lid, $GLOBALS['phpgw_info']['server']['log_levels']['user'][$account_lid]),
-						'remove_url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiloglevels.edit_log_levels', 'level_type' => 'user', 'level_key' => $account_lid) ),
+						'remove_url' => phpgw::link('/index.php', array('menuaction' => 'admin.uiloglevels.edit_log_levels', 'level_type' => 'user', 'level_key' => $account_lid) ),
 						'lang_remove'   => lang('remove')
 					);
 
@@ -210,7 +210,7 @@
 				$var = array(
 					'type'   		=> 'user',
 					'tr_class' 		=> $tr_class,
-					'module_add_link' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiloglevels.edit_log_levels') ),
+					'module_add_link' => phpgw::link('/index.php', array('menuaction' => 'admin.uiloglevels.edit_log_levels') ),
 					'lang_add' => lang('add'),
 					'module_add_options'   => $add_options,
 					'lang_fatal'    => lang('fatal'),
@@ -233,7 +233,7 @@
 			(
 				'level_type'	=> $level_type,
 				'level_key'		=> $level_key,
-				'select_link'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiloglevels.edit_log_levels') ),
+				'select_link'	=> phpgw::link('/index.php', array('menuaction' => 'admin.uiloglevels.edit_log_levels') ),
 				'select_name'	=> $select_name,
 				'lang_fatal'	=> lang('fatal'),
 				'lang_error'	=> lang('error'),

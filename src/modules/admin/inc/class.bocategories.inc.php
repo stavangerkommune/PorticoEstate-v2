@@ -29,8 +29,8 @@
 
 		function __construct()
 		{
-			$appname = phpgw::get_var('appname');
-			$location = phpgw::get_var('location');
+			$appname = Sanitizer::get_var('appname');
+			$location = Sanitizer::get_var('location');
 			if ( $appname )
 			{
 				$this->cats = CreateObject('phpgwapi.categories', -1, $appname, $location);
@@ -42,12 +42,12 @@
 
 			$this->read_sessiondata();
 
-			$start	= phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query  = phpgw::get_var('query');
-			$sort   = phpgw::get_var('sort');
-			$order  = phpgw::get_var('order');
-			$cat_id = phpgw::get_var('cat_id', 'int');
-			$allrows  = phpgw::get_var('allrows', 'bool');
+			$start	= Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query  = Sanitizer::get_var('query');
+			$sort   = Sanitizer::get_var('sort');
+			$order  = Sanitizer::get_var('order');
+			$cat_id = Sanitizer::get_var('cat_id', 'int');
+			$allrows  = Sanitizer::get_var('allrows', 'bool');
 
 			$this->allrows	= $allrows ? $allrows : false;
 

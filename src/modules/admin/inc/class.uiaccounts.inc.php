@@ -26,6 +26,11 @@
 	   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+	use App\modules\phpgwapi\security\Acl;
+
+
 	phpgw::import_class('phpgwapi.jquery');
 	phpgw::import_class('phpgwapi.uicommon_jquery');
 
@@ -90,6 +95,7 @@
 		 * @var boolean $_ldap_extended Use LDAP extended attributes
 		 */
 		protected $_ldap_extended = false;
+		protected $accounts;
 
 		/**
 		 * Constructor
@@ -100,39 +106,43 @@
 		{
 			parent::__construct();
 
-			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] = 'admin::admin';
+			$this->flags['xslt_app'] = true;
+			$this->flags['menu_selection'] = 'admin::admin';
+			Settings::getInstance()->set('flags', $this->flags);
 
 			$this->_bo = createObject('admin.boaccounts');
 			$this->_nextmatches =createObject('phpgwapi.nextmatchs');
 
-			$this->_ldap_extended = $GLOBALS['phpgw_info']['server']['account_repository'] == 'ldap'
-				&& isset($GLOBALS['phpgw_info']['server']['ldap_extra_attributes'])
-				&& $GLOBALS['phpgw_info']['server']['ldap_extra_attributes'];
-			$this->_acl = & $GLOBALS['phpgw']->acl;
-			$this->account = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->_ldap_extended = $this->serverSettings['account_repository'] == 'ldap'
+				&& isset($this->serverSettings['ldap_extra_attributes'])
+				&& $this->serverSettings['ldap_extra_attributes'];
+
+			$this->_acl = Acl::getInstance();
+
+			$this->account = $this->userSettings['account_id'];
+			$this->accounts = new Accounts();
 		}
 
 		function query( )
 		{
-			$account_id		= phpgw::get_var('group_id', 'int');
+			$account_id		= Sanitizer::get_var('group_id', 'int');
 
 			if ( !$account_id
-				&& !$this->_acl->check('group_access', phpgwapi_acl::EDIT, 'admin')
-				&& !$this->_acl->check('group_access', phpgwapi_acl::PRIV, 'admin') )
+				&& !$this->_acl->check('group_access', Acl::EDIT, 'admin')
+				&& !$this->_acl->check('group_access', Acl::PRIV, 'admin') )
 			{
 				return $this->jquery_results(array('results' => array(), 'total_records' => 0));
 			}
 
-			$type = phpgw::get_var('type');
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
+			$type = Sanitizer::get_var('type');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
 			$dir = strtoupper($order[0]['dir']);
-			$columns = phpgw::get_var('columns');
-			$results = phpgw::get_var('length', 'int', 'REQUEST', 0);
-			$allrows = phpgw::get_var('length', 'int') == -1;
+			$columns = Sanitizer::get_var('columns');
+			$results = Sanitizer::get_var('length', 'int', 'REQUEST', 0);
+			$allrows = Sanitizer::get_var('length', 'int') == -1;
 			$query = $search['value'];
-			$start = phpgw::get_var('start', 'int', 'REQUEST', 0);
+			$start = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
 
 
 			switch ($columns[$order[0]['column']]['data'])
@@ -151,20 +161,20 @@
 					break;
 			}
 
-			$accounts =& $GLOBALS['phpgw']->accounts;
+			$accounts = new Accounts();
 
 			$group_members = $accounts->member($account_id);
 
 			//local application admin
-			if(!$this->_acl->check('run', phpgwapi_acl::READ, 'admin'))
+			if(!$this->_acl->check('run', Acl::READ, 'admin'))
 			{
 				$available_apps = $GLOBALS['phpgw_info']['apps'];
 				$valid_users = array();
 				foreach($available_apps as $_app => $dummy)
 				{
-					if($this->_acl->check('admin', phpgwapi_acl::ADD, $_app))
+					if($this->_acl->check('admin', Acl::ADD, $_app))
 					{
-						$_valid_users	= $this->_acl->get_user_list_right(phpgwapi_acl::READ, 'run', $_app);
+						$_valid_users	= $this->_acl->get_user_list_right(Acl::READ, 'run', $_app);
 						$this->_acl->set_account_id($this->account);
 
 						foreach($_valid_users as $_user)
@@ -187,7 +197,7 @@
 				}
 				$valid_users = array_unique($valid_users);
 
-				$account_list = $GLOBALS['phpgw']->accounts->get_list('accounts', -1,$dir, $order,  $query);
+				$account_list = $this->accounts->get_list('accounts', -1,$dir, $order,  $query);
 				foreach($account_list as  $user)
 				{
 					if(!in_array($user->id, $valid_users))
@@ -251,7 +261,7 @@
 				}
 				else
 				{
-					$num_rows = isset($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs']) ? intval($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs']) : 15;
+					$num_rows = isset($this->userSettings['preferences']['common']['maxmatchs']) ? intval($this->userSettings['preferences']['common']['maxmatchs']) : 15;
 				}
 				//_debug_array(array($start,$this->total_records,$this->total_records,$num_rows));
 				$page = ceil(( $start / $total_records ) * ($total_records / $num_rows));
@@ -270,7 +280,7 @@
 			);
 
 			$result_data['total_records'] = $total_records;
-			$result_data['draw'] = phpgw::get_var('draw', 'int');
+			$result_data['draw'] = Sanitizer::get_var('draw', 'int');
 
 			array_walk($result_data['results'], array($this, '_add_links'), $link_data);
 			return $this->jquery_results($result_data);
@@ -283,33 +293,36 @@
 		 */
 		public function list_groups()
 		{
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::groups';
+			$this->flags['menu_selection'] .= '::groups';
+			Settings::getInstance()->set('flags', $this->flags);
 
-			if ( phpgw::get_var('done', 'bool', 'POST')
+
+			if ( Sanitizer::get_var('done', 'bool', 'POST')
 				|| $this->_acl->check('group_access', PHPGW_ACL_READ, 'admin'))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php',
+				phpgw::redirect_link('/index.php',
 						array('menuaction' => 'admin.uimainscreen.mainscreen'));
 			}
 
-			if ( phpgw::get_var('add', 'bool', 'POST') )
+			if ( Sanitizer::get_var('add', 'bool', 'POST') )
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php',
+				phpgw::redirect_link('/index.php',
 						array('menuaction' => 'admin.uiaccounts.edit_group', 'account_id' => 0));
 			}
 
-			$start = phpgw::get_var('start', 'int');
-			$order = phpgw::get_var('order', 'string', 'GET', 'account_lid');
-			$sort = phpgw::get_var('sort', 'string', 'GET', 'ASC');
+			$start = Sanitizer::get_var('start', 'int');
+			$order = Sanitizer::get_var('order', 'string', 'GET', 'account_lid');
+			$sort = Sanitizer::get_var('sort', 'string', 'GET', 'ASC');
 			$total = 0;
-			$query = phpgw::get_var('query', 'string');
-			$GLOBALS['cd'] = phpgw::get_var('cd', 'int', 'GET');
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('administration')
-															. ': ' . lang('list groups');
-			$GLOBALS['phpgw']->xslttpl->add_file('groups');
+			$query = Sanitizer::get_var('query', 'string');
+			$GLOBALS['cd'] = Sanitizer::get_var('cd', 'int', 'GET');
+			$this->flags['app_header'] = lang('administration')	. ': ' . lang('list groups');
+			Settings::getInstance()->set('flags', $this->flags);
+
+			phpgwapi_xslttemplates::getInstance()->add_file('groups');
 
 			$is_admin = true;
-			if(!$this->_acl->check('run', phpgwapi_acl::READ, 'admin'))
+			if(!$this->_acl->check('run', Acl::READ, 'admin'))
 			{
 				$is_admin = false;
 				$available_apps = $GLOBALS['phpgw_info']['apps'];
@@ -320,17 +333,17 @@
 					{
 						continue;
 					}
-					if($this->_acl->check('admin', phpgwapi_acl::ADD, $_app))
+					if($this->_acl->check('admin', Acl::ADD, $_app))
 					{
-						$valid_users	= array_merge($valid_users, $this->_acl->get_ids_for_location('run', phpgwapi_acl::READ, $_app));
+						$valid_users	= array_merge($valid_users, $this->_acl->get_ids_for_location('run', Acl::READ, $_app));
 					}
 				}
 
 				$valid_users = array_unique($valid_users);
 
-				$admin_groups	= $this->_acl->get_ids_for_location('run', phpgwapi_acl::READ, 'admin');
+				$admin_groups	= $this->_acl->get_ids_for_location('run', Acl::READ, 'admin');
 
-				$allusers = $GLOBALS['phpgw']->accounts->get_list('groups', -1,$this->sort, $this->order, $this->query);
+				$allusers = $this->accounts->get_list('groups', -1,$this->sort, $this->order, $this->query);
 				foreach($allusers as  $user)
 				{
 					if(!in_array($user->id, $valid_users) || in_array($user->id, $admin_groups))
@@ -341,9 +354,9 @@
 				unset($user);
 			}
 
-			$account_info = $GLOBALS['phpgw']->accounts->get_list('groups', $start, $sort,
+			$account_info = $this->accounts->get_list('groups', $start, $sort,
 																$order, $query, $total);
-			$total = $GLOBALS['phpgw']->accounts->total;
+			$total = $this->accounts->total;
 
 
 			$link_data = array
@@ -376,7 +389,7 @@
 					'account_id' => '#ID'
 				);
 
-				$url_edit = $GLOBALS['phpgw']->link('/index.php', $edit_args);
+				$url_edit = phpgw::link('/index.php', $edit_args);
 			}
 
 			$delete_rights = $this->_bo->check_rights('delete');
@@ -389,7 +402,7 @@
 					'account_id' => '#ID'
 				);
 
-				$url_delete = $GLOBALS['phpgw']->link('/index.php', $del_args);
+				$url_delete = phpgw::link('/index.php', $del_args);
 			}
 
 			$edit_url = '';
@@ -429,9 +442,9 @@
 			$group_add = array
 			(
 				'lang_add'			=> lang('add'),
-				'add_url'			=> $GLOBALS['phpgw']->link('/index.php',
+				'add_url'			=> phpgw::link('/index.php',
 										array('menuaction' => 'admin.uiaccounts.edit_group')),
-				'done_url'			=> $GLOBALS['phpgw']->link('/admin/index.php'),
+				'done_url'			=> phpgw::link('/admin/index.php'),
 				'lang_done'			=> lang('done'),
 				'add_access'		=> (int) $this->_bo->check_rights('add')
 			);
@@ -454,7 +467,7 @@
 				'group_add'		=> $group_add,
 				'search_access'	=> $this->_bo->check_rights('search')
 			);
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('group_list' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('group_list' => $data));
 		}
 
 		/**
@@ -466,27 +479,29 @@
 		 */
 		public function list_users($cd = 0)
 		{
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::users';
+			$this->flags['menu_selection'] .= '::users';
+			Settings::getInstance()->set('flags', $this->flags);
 
-			if ( phpgw::get_var('done', 'bool', 'POST')
-				|| $this->_acl->check('account_access', phpgwapi_acl::READ, 'admin') )
+
+			if ( Sanitizer::get_var('done', 'bool', 'POST')
+				|| $this->_acl->check('account_access', Acl::READ, 'admin') )
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php',
+				phpgw::redirect_link('/index.php',
 						array('menuaction' => 'admin.uimainscreen.mainscreen'));
 			}
 
-			if ( phpgw::get_var('add', 'bool', 'POST') )
+			if ( Sanitizer::get_var('add', 'bool', 'POST') )
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php',
+				phpgw::redirect_link('/index.php',
 						array('menuaction' => 'admin.uiaccounts.edit_user'));
 			}
 
-			$status		= phpgw::get_var('status', 'int');
-			$query		= phpgw::get_var('query', 'string');
-			$start		= phpgw::get_var('start', 'int', 'GET', 0);
-			$order		= phpgw::get_var('order', 'string', 'GET', 'account_lid');
-			$sort		= phpgw::get_var('sort', 'string', 'GET', 'ASC');
-			$allrows	= phpgw::get_var('allrows', 'bool');
+			$status		= Sanitizer::get_var('status', 'int');
+			$query		= Sanitizer::get_var('query', 'string');
+			$start		= Sanitizer::get_var('start', 'int', 'GET', 0);
+			$order		= Sanitizer::get_var('order', 'string', 'GET', 'account_lid');
+			$sort		= Sanitizer::get_var('sort', 'string', 'GET', 'ASC');
+			$allrows	= Sanitizer::get_var('allrows', 'bool');
 
 			//this is a work around hack for the ugly nextmatch code
 			$GLOBALS['query'] = $query;
@@ -498,19 +513,20 @@
 				$total = -1;
 			}
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('administration') . ': ' . lang('list users');
+			$this->flags['app_header'] = lang('administration') . ': ' . lang('list users');
+			Settings::getInstance()->set('flags', $this->flags);
 
-			$GLOBALS['phpgw']->xslttpl->add_file('users');
+			phpgwapi_xslttemplates::getInstance()->add_file('users');
 
-			if(!$this->_acl->check('run', phpgwapi_acl::READ, 'admin'))
+			if(!$this->_acl->check('run', Acl::READ, 'admin'))
 			{
 				$available_apps = $GLOBALS['phpgw_info']['apps'];
 				$valid_users = array();
 				foreach($available_apps as $_app => $dummy)
 				{
-					if($this->_acl->check('admin', phpgwapi_acl::ADD, $_app))
+					if($this->_acl->check('admin', Acl::ADD, $_app))
 					{
-						$_valid_users	= $this->_acl->get_user_list_right(phpgwapi_acl::READ, 'run', $_app);
+						$_valid_users	= $this->_acl->get_user_list_right(Acl::READ, 'run', $_app);
 						$this->_acl->set_account_id($this->account);
 	
 						foreach($_valid_users as $_user)
@@ -524,7 +540,7 @@
 
 				$valid_users = array_unique($valid_users);
 
-				$allusers = $GLOBALS['phpgw']->accounts->get_list('accounts', -1,$sort, $order, $query, -1, array('active' => $status));
+				$allusers = $this->accounts->get_list('accounts', -1,$sort, $order, $query, -1, array('active' => $status));
 				foreach($allusers as  $user)
 				{
 					if(!in_array($user->id, $valid_users))
@@ -535,7 +551,7 @@
 				unset($user);
 
 				$total = count($allusers);
-				$length = $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
+				$length = $this->userSettings['preferences']['common']['maxmatchs'];
 
 				if ($allrows)
 				{
@@ -548,8 +564,8 @@
 			}
 			else
 			{
-				$account_info = $GLOBALS['phpgw']->accounts->get_list('accounts', $start, $sort, $order, $query, $total, array('active' => $status));
-				$total = $GLOBALS['phpgw']->accounts->total;
+				$account_info = $this->accounts->get_list('accounts', $start, $sort, $order, $query, $total, array('active' => $status));
+				$total = $this->accounts->total;
 			}
 
 			$link_data = array
@@ -633,7 +649,7 @@
 					'menuaction' => 'admin.uiaccounts.view_user',
 					'account_id' => '#ID'
 				);
-				$url_view	= $GLOBALS['phpgw']->link('/index.php', $view_args);
+				$url_view	= phpgw::link('/index.php', $view_args);
 				$lang_view	= $lang['view'];
 				unset($view_args);
 			}
@@ -648,7 +664,7 @@
 					'menuaction' => 'admin.uiaccounts.edit_user',
 					'account_id' => '#ID'
 				);
-				$url_edit	= $GLOBALS['phpgw']->link('/index.php', $edit_args);
+				$url_edit	= phpgw::link('/index.php', $edit_args);
 				$lang_edit	= $lang['edit'];
 				unset($edit_args);
 			}
@@ -663,7 +679,7 @@
 					'menuaction' => 'admin.uiaccounts.delete_user',
 					'account_id' => '#ID'
 				);
-				$url_delete		= $GLOBALS['phpgw']->link('/index.php', $delete_args);
+				$url_delete		= phpgw::link('/index.php', $delete_args);
 				$lang_delete	= $lang['delete'];
 				unset($delete_args);
 			}
@@ -718,9 +734,9 @@
 				'add_access'	=> $this->_bo->check_rights('add', 'account_access'),
 				'lang_add'		=> lang('add'),
 				'lang_done'		=> lang('done'),
-				'url_add'		=> $GLOBALS['phpgw']->link('/index.php',
+				'url_add'		=> phpgw::link('/index.php',
 										array('menuaction' => 'admin.uiaccounts.edit_user')),
-				'url_done'		=> 	$GLOBALS['phpgw']->link('/index.php',
+				'url_done'		=> 	phpgw::link('/index.php',
 										array('menuaction' => 'admin.uimainscreen.mainscreen'))
 			);
 
@@ -755,9 +771,9 @@
 				'user_add'		=> $user_add,
 				'search_access'	=> $this->_bo->check_rights('search', 'account_access'),
 				'status_list'	 => array('options' => $status_list),
-				'status_action'	 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'status_action'	 => phpgw::link('/index.php', $link_data),
 			);
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('account_list' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('account_list' => $data));
 		}
 
 		/**
@@ -767,26 +783,27 @@
 		 */
 		public function edit_group()
 		{
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::groups';
+			$this->flags['menu_selection'] .= '::groups';
+			Settings::getInstance()->set('flags', $this->flags);
 
 			$account_apps	= array();
-			$account_id		= phpgw::get_var('account_id', 'int');
+			$account_id		= Sanitizer::get_var('account_id', 'int');
 			$error_list		= array();
 
-			if ( phpgw::get_var('cancel', 'bool', 'POST')
+			if ( Sanitizer::get_var('cancel', 'bool', 'POST')
 				|| ( !$account_id
-					&& $this->_acl->check('group_access', phpgwapi_acl::EDIT, 'admin') )
+					&& $this->_acl->check('group_access', Acl::EDIT, 'admin') )
 				|| ( $account_id
-					&& $this->_acl->check('group_access', phpgwapi_acl::PRIV, 'admin') ) )
+					&& $this->_acl->check('group_access', Acl::PRIV, 'admin') ) )
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php',
+				phpgw::redirect_link('/index.php',
 						array('menuaction' => 'admin.uiaccounts.list_groups'));
 			}
 
-			if ( phpgw::get_var('save', 'bool', 'POST') )
+			if ( Sanitizer::get_var('save', 'bool', 'POST') )
 			{
-				$values			= phpgw::get_var('values', 'string', 'POST', array());
-				$account_apps	= phpgw::get_var('account_apps', 'string', 'POST');
+				$values			= Sanitizer::get_var('values', 'string', 'POST', array());
+				$account_apps	= Sanitizer::get_var('account_apps', 'string', 'POST');
 
 				$values['account_apps'] = array();
 				if ( is_array($account_apps) && count($account_apps) )
@@ -806,7 +823,7 @@
 				$account_id = $this->_bo->save_group($values);
 				if ( $account_id )
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array
+					phpgw::redirect_link('/index.php', array
 					(
 						'menuaction' => 'admin.uiaccounts.edit_group',
 						'account_id' => $account_id
@@ -820,7 +837,7 @@
 			$js->validate_file('base', 'groups', 'admin');
 			$js->validate_file('base', 'move', 'admin');
 
-			$accounts =& $GLOBALS['phpgw']->accounts;
+			$accounts =& $this->accounts;
 
 			$group = $accounts->get($account_id);
 			if ( !$account_id && !is_object($group) )
@@ -831,15 +848,15 @@
 			$group_members = $accounts->member($account_id);
 
 /*			//local application admin
-			if(!$this->_acl->check('run', phpgwapi_acl::READ, 'admin'))
+			if(!$this->_acl->check('run', Acl::READ, 'admin'))
 			{
 				$available_apps = $GLOBALS['phpgw_info']['apps'];
 				$valid_users = array();
 				foreach($available_apps as $_app => $dummy)
 				{
-					if($this->_acl->check('admin', phpgwapi_acl::ADD, $_app))
+					if($this->_acl->check('admin', Acl::ADD, $_app))
 					{
-						$_valid_users	= $this->_acl->get_user_list_right(phpgwapi_acl::READ, 'run', $_app);
+						$_valid_users	= $this->_acl->get_user_list_right(Acl::READ, 'run', $_app);
 						$this->_acl->set_account_id($this->account);
 	
 						foreach($_valid_users as $_user)
@@ -853,7 +870,7 @@
 
 				$valid_users = array_unique($valid_users);
 
-				$account_list = $GLOBALS['phpgw']->accounts->get_list('accounts', -1,$this->sort, $this->order, $this->query);
+				$account_list = $this->accounts->get_list('accounts', -1,$this->sort, $this->order, $this->query);
 				foreach($account_list as  $user)
 				{
 					if(!in_array($user->id, $valid_users))
@@ -913,9 +930,9 @@
 			$apps = array_keys($GLOBALS['phpgw_info']['apps']);
 			asort($apps);
 
-			if(!$this->_acl->check('run', phpgwapi_acl::READ, 'admin'))
+			if(!$this->_acl->check('run', Acl::READ, 'admin'))
 			{
-				$valid_apps = $this->_acl->get_app_list_for_id('admin', phpgwapi_acl::ADD, $GLOBALS['phpgw_info']['user']['account_id']);
+				$valid_apps = $this->_acl->get_app_list_for_id('admin', Acl::ADD, $this->userSettings['account_id']);
 			}
 			else
 			{
@@ -929,7 +946,7 @@
 			$img_grants_grey = $GLOBALS['phpgw']->common->image('admin', 'dot-grey', '.png', false);
 			$lang_grants = lang('grant access');
 
-			$url_acl = $GLOBALS['phpgw']->link('/index.php', array
+			$url_acl = phpgw::link('/index.php', array
 			(
 				'menuaction'		=> 'preferences.uiadmin_acl.list_acl',
 				'acl_app'			=> '##APP##',
@@ -937,7 +954,7 @@
 				'module'			=> '.'
 			));
 
-			$url_grant = $GLOBALS['phpgw']->link('/index.php', array
+			$url_grant = phpgw::link('/index.php', array
 			(
 				'menuaction'		=> 'preferences.uiadmin_acl.aclprefs',
 				'acl_app'			=> '##APP##',
@@ -988,14 +1005,15 @@
 			);
 
 			// this is in the api, so lets not waste loops looking for it the app tpl dirs
-			$GLOBALS['phpgw']->xslttpl->add_file('msgbox', PHPGW_TEMPLATE_DIR, 3);
-//			$GLOBALS['phpgw']->xslttpl->add_file('groups');
+			phpgwapi_xslttemplates::getInstance()->add_file('msgbox', PHPGW_TEMPLATE_DIR, 3);
+//			phpgwapi_xslttemplates::getInstance()->add_file('groups');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] =  lang('edit group');
+			$this->flags['app_header'] =  lang('edit group');
 			if ( $account_id )
 			{
-				$GLOBALS['phpgw_info']['flags']['app_header'] = lang('add group');
+				$this->flags['app_header'] = lang('add group');
 			}
+			Settings::getInstance()->set('flags', $this->flags);
 
 			$data = array
 			(
@@ -1003,7 +1021,7 @@
 				'page_title'		=> $account_id ? lang('edit group') : lang('add group'),
 				'account_id'		=> $account_id,
 				'app_list'			=> $app_list,
-				'edit_url'			=> $GLOBALS['phpgw']->link('/index.php', array
+				'edit_url'			=> phpgw::link('/index.php', array
 										(
 											'menuaction' => 'admin.uiaccounts.edit_group',
 											'account_id' => $account_id
@@ -1026,12 +1044,12 @@
 
 		function remove_group_user(  )
 		{
-			$group_id		= phpgw::get_var('group_id', 'int');
-			$account_user	= (array)phpgw::get_var('account_user', 'int');
+			$group_id		= Sanitizer::get_var('group_id', 'int');
+			$account_user	= (array)Sanitizer::get_var('account_user', 'int');
 
 			if ( !$group_id
-				&& !$this->_acl->check('group_access', phpgwapi_acl::EDIT, 'admin')
-				&& !$this->_acl->check('group_access', phpgwapi_acl::PRIV, 'admin') )
+				&& !$this->_acl->check('group_access', Acl::EDIT, 'admin')
+				&& !$this->_acl->check('group_access', Acl::PRIV, 'admin') )
 			{
 				return array('error' => 'error');
 			}
@@ -1039,15 +1057,15 @@
 			/**
 			 * Go away
 			 */
-			$test_admins = $this->_acl->get_ids_for_location('run', phpgwapi_acl::READ, 'admin');
-			if(in_array($group_id, $test_admins) && !$this->_acl->check('run', phpgwapi_acl::READ, 'admin'))
+			$test_admins = $this->_acl->get_ids_for_location('run', Acl::READ, 'admin');
+			if(in_array($group_id, $test_admins) && !$this->_acl->check('run', Acl::READ, 'admin'))
 			{
 					return array('error' => 'error');
 			}
 
 			$acl = createObject('phpgwapi.acl', $group_id);
-			$is_admin_group = $acl->check('run', phpgwapi_acl::READ, 'admin');
-			$current_user = $GLOBALS['phpgw_info']['user']['account_id'];
+			$is_admin_group = $acl->check('run', Acl::READ, 'admin');
+			$current_user = $this->userSettings['account_id'];
 
 			if($group_id && isset($_POST['account_user']))
 			{
@@ -1058,7 +1076,7 @@
 					{
 						continue;
 					}
-					$GLOBALS['phpgw']->accounts->delete_account4group($user_id, $group_id);
+					$this->accounts->delete_account4group($user_id, $group_id);
 					//Delete cached menu for members of group
 					phpgwapi_cache::user_clear('phpgwapi', 'menu', $user_id);
 					$this->_acl->clear_user_cache($user_id);
@@ -1069,23 +1087,23 @@
 
 		function reset_group_users(  )
 		{
-			$group_id		= phpgw::get_var('group_id', 'int');
+			$group_id		= Sanitizer::get_var('group_id', 'int');
 			$account_user	= array();
 
 			if ( !$group_id
-				&& !$this->_acl->check('group_access', phpgwapi_acl::EDIT, 'admin')
-				&& !$this->_acl->check('group_access', phpgwapi_acl::PRIV, 'admin') )
+				&& !$this->_acl->check('group_access', Acl::EDIT, 'admin')
+				&& !$this->_acl->check('group_access', Acl::PRIV, 'admin') )
 			{
 				return array('error' => 'error');
 			}
 
 			$acl = createObject('phpgwapi.acl', $group_id);
-			$is_admin_group = $acl->check('run', phpgwapi_acl::READ, 'admin');
-			$current_user = $GLOBALS['phpgw_info']['user']['account_id'];
+			$is_admin_group = $acl->check('run', Acl::READ, 'admin');
+			$current_user = $this->userSettings['account_id'];
 
 			if($group_id && isset($_POST))
 			{
-				$members = $GLOBALS['phpgw']->accounts->member($group_id);
+				$members = $this->accounts->member($group_id);
 				foreach($members as $entry)
 				{
 					//Don't lock your self out
@@ -1093,7 +1111,7 @@
 					{
 						continue;
 					}
-					$GLOBALS['phpgw']->accounts->delete_account4group($entry['account_id'], $group_id);
+					$this->accounts->delete_account4group($entry['account_id'], $group_id);
 					//Delete cached menu for members of group
 					phpgwapi_cache::user_clear('phpgwapi', 'menu', $entry['account_id']);
 					$this->_acl->clear_user_cache($entry['account_id']);
@@ -1104,12 +1122,12 @@
 
 		function add_group_users(  )
 		{
-			$group_id		= phpgw::get_var('group_id', 'int');
-			$account_user	= (array)phpgw::get_var('account_user', 'int');
+			$group_id		= Sanitizer::get_var('group_id', 'int');
+			$account_user	= (array)Sanitizer::get_var('account_user', 'int');
 
 			if ( !$group_id
-				&& !$this->_acl->check('group_access', phpgwapi_acl::EDIT, 'admin')
-				&& !$this->_acl->check('group_access', phpgwapi_acl::PRIV, 'admin') )
+				&& !$this->_acl->check('group_access', Acl::EDIT, 'admin')
+				&& !$this->_acl->check('group_access', Acl::PRIV, 'admin') )
 			{
 				return array('error' => 'error');
 			}
@@ -1117,8 +1135,8 @@
 			/**
 			 * Do not get to elevate to admin rights
 			 */
-			$test_admins = $this->_acl->get_ids_for_location('run', phpgwapi_acl::READ, 'admin');
-			if(in_array($group_id, $test_admins) && !$this->_acl->check('run', phpgwapi_acl::READ, 'admin'))
+			$test_admins = $this->_acl->get_ids_for_location('run', Acl::READ, 'admin');
+			if(in_array($group_id, $test_admins) && !$this->_acl->check('run', Acl::READ, 'admin'))
 			{
 					return array('error' => 'error');
 			}
@@ -1127,7 +1145,7 @@
 			{
 				foreach ($account_user as $user_id)
 				{
-					$GLOBALS['phpgw']->accounts->add_user2group($user_id, $group_id);
+					$this->accounts->add_user2group($user_id, $group_id);
 					//Delete cached menu for members of group
 					phpgwapi_cache::user_clear('phpgwapi', 'menu', $user_id);
 					$this->_acl->clear_user_cache($user_id);
@@ -1259,27 +1277,28 @@
 		 */
 		public function edit_user()
 		{
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::users';
+			$this->flags['menu_selection'] .= '::users';
+			Settings::getInstance()->set('flags', $this->flags);
 
-			if ( phpgw::get_var('save', 'bool', 'POST') )
+			if ( Sanitizer::get_var('save', 'bool', 'POST') )
 			{
 				$this->_user_save();
 				return true;
 			}
 
-			if ( phpgw::get_var('cancel', 'bool', 'POST') )
+			if ( Sanitizer::get_var('cancel', 'bool', 'POST') )
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php',
+				phpgw::redirect_link('/index.php',
 						array('menuaction' => 'admin.uiaccounts.list_users'));
 				return true;
 			}
 
-			$account_id = phpgw::get_var('account_id', 'int');
-			$id = phpgw::get_var('id', 'int');
+			$account_id = Sanitizer::get_var('account_id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 			$account_id = $account_id ? $account_id : $id;
 			if ( $account_id )
 			{
-				$user = $GLOBALS['phpgw']->accounts->get($account_id);
+				$user = $this->accounts->get($account_id);
 			}
 			else
 			{
@@ -1296,16 +1315,16 @@
 		 */
 		public function _user_save()
 		{
-			$values									= phpgw::get_var('values', 'string', 'POST');
+			$values									= Sanitizer::get_var('values', 'string', 'POST');
 			if(!empty($values['passwd']))
 			{
 				// remove entities to stop mangling
 				$values['passwd'] = html_entity_decode($values['passwd']);
 				$values['passwd_2'] = html_entity_decode($values['passwd_2']);
 			}
-			$values['account_groups']				= (array) phpgw::get_var('account_groups', 'int', 'POST');
-			$account_permissions					= phpgw::get_var('account_permissions', 'int', 'POST');
-			$account_permissions_admin				= phpgw::get_var('account_permissions_admin', 'int', 'POST');
+			$values['account_groups']				= (array) Sanitizer::get_var('account_groups', 'int', 'POST');
+			$account_permissions					= Sanitizer::get_var('account_permissions', 'int', 'POST');
+			$account_permissions_admin				= Sanitizer::get_var('account_permissions_admin', 'int', 'POST');
 
 			$values['account_permissions'] = array();
 			if ( is_array($account_permissions) && count($account_permissions) )
@@ -1334,10 +1353,10 @@
 			unset($account_permissions_admin);
 
 			//FIXME Caeies fix waiting for JSCAL
-			$values['account_expires_year']	= phpgw::get_var('account_expires_year', 'int', 'POST');
+			$values['account_expires_year']	= Sanitizer::get_var('account_expires_year', 'int', 'POST');
 			// we use string here to allow for MMM formatted months
-			$values['account_expires_month']= phpgw::get_var('account_expires_month', 'string', 'POST');
-			$values['account_expires_day']	= phpgw::get_var('account_expires_day', 'int', 'POST');
+			$values['account_expires_month']= Sanitizer::get_var('account_expires_month', 'string', 'POST');
+			$values['account_expires_day']	= Sanitizer::get_var('account_expires_day', 'int', 'POST');
 
 			$errors = array();
 			try
@@ -1382,7 +1401,7 @@
 				$this->_user_form($user, $errors);
 				return;
 			}
-			$GLOBALS['phpgw']->redirect_link('/index.php',
+			phpgw::redirect_link('/index.php',
 					array('menuaction' => 'admin.uiaccounts.edit_user', 'account_id' => $account_id));
 		}
 
@@ -1402,9 +1421,9 @@
 
 			$sbox = CreateObject('phpgwapi.sbox');
 
-			$GLOBALS['phpgw']->xslttpl->add_file('users');
+			phpgwapi_xslttemplates::getInstance()->add_file('users');
 			// no point in wasting loops
-			$GLOBALS['phpgw']->xslttpl->add_file('msgbox', PHPGW_TEMPLATE_DIR, 3);
+			phpgwapi_xslttemplates::getInstance()->add_file('msgbox', PHPGW_TEMPLATE_DIR, 3);
 
 			$acl = createObject('phpgwapi.acl', $account_id);
 			
@@ -1415,7 +1434,7 @@
 
 			$user_groups = array();
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('administration') . ': ';
+			$this->flags['app_header'] = lang('administration') . ': ';
 			if ( $account_id )
 			{
 				$user_data['anonymous'] = $acl->check('anonymous', 1, 'phpgwapi');
@@ -1423,17 +1442,18 @@
 				$user_data['account_permissions'] = $this->_bo->load_apps($account_id, false);
 				$user_groups = $account->membership($account_id);
 
-				$GLOBALS['phpgw_info']['flags']['app_header'] .= lang('edit user account');
+				$this->flags['app_header'] .= lang('edit user account');
 			}
 			else
 			{
-				$GLOBALS['phpgw_info']['flags']['app_header'] .= lang('add user account');
+				$this->flags['app_header'] .= lang('add user account');
 			}
+			Settings::getInstance()->set('flags', $this->flags);
 
 			if ( !$user_data['expires'] )
 			{
 				// we assume this is a sane value
-				$user_data['expires'] = time() + (int)$GLOBALS['phpgw_info']['server']['auto_create_expire'];
+				$user_data['expires'] = time() + (int)$this->serverSettings['auto_create_expire'];
 			}
 
 			if ($user_data['expires'] == -1) //switch to js cal - skwashd
@@ -1455,7 +1475,7 @@
 			$lang_shell = '';
 			if ( $this->_ldap_extended )
 			{
-				$server =& $GLOBALS['phpgw_info']['server'];
+				$server =& $this->serverSettings;
 				if ( !$account_id )
 				{
 					$user_data['homedirectory'] = "{$server['ldap_account_home']}/{$account_lid}";
@@ -1469,20 +1489,20 @@
 			}
 
 			$add_masters	= $this->_acl->get_ids_for_location('addressmaster', 7, 'addressbook');
-			$add_users		= $GLOBALS['phpgw']->accounts->return_members($add_masters);
+			$add_users		= $this->accounts->return_members($add_masters);
 			$masters		= $add_users['users'];
 
 			if ( is_array($masters)
-				&& in_array($GLOBALS['phpgw_info']['user']['account_id'], $masters) )
+				&& in_array($this->userSettings['account_id'], $masters) )
 			{
 				if ( $user_data['person_id'] )
 				{
 					$url_contacts_text = lang('Edit entry');
-					$url_contacts =   $GLOBALS['phpgw']->link('/index.php', array
+					$url_contacts =   phpgw::link('/index.php', array
 					(
 						'menuaction'    => 'addressbook.uiaddressbook_persons.edit',
 						'ab_id'         => $user_data['person_id'],
-						'referer'       => $GLOBALS['phpgw']->link('/index.php', array
+						'referer'       => phpgw::link('/index.php', array
 											(
 												'menuaction' => 'admin.uiaccounts.edit_user',
 												'account_id' =>  $account_id
@@ -1498,11 +1518,11 @@
 			else
 			{
 				$url_contacts_text = lang('You do not have edit access to addressmaster contacts');
-				$url_contacts =   $GLOBALS['phpgw']->link('/index.php', array
+				$url_contacts =   phpgw::link('/index.php', array
 				(
 					'menuaction'    => 'admin.uiaclmanager.edit_addressmasters',
-					'account_id'    => $GLOBALS['phpgw_info']['user']['account_id'],
-					'referer'       => $GLOBALS['phpgw']->link('/index.php', array
+					'account_id'    => $this->userSettings['account_id'],
+					'referer'       => phpgw::link('/index.php', array
 										(
 											'menuaction' => 'admin.uiaccounts.edit_user',
 											'account_id' =>  $account_id
@@ -1520,9 +1540,9 @@
 
 
 			$all_groups = $account->get_list('groups');
-			if(!$this->_acl->check('run', phpgwapi_acl::READ, 'admin'))
+			if(!$this->_acl->check('run', Acl::READ, 'admin'))
 			{
-				$test_admins = $this->_acl->get_ids_for_location('run', phpgwapi_acl::READ, 'admin');
+				$test_admins = $this->_acl->get_ids_for_location('run', Acl::READ, 'admin');
 				foreach ($test_admins as $test_admin)
 				{
 					unset($all_groups[$test_admin]); // not allowed to elevate privileges
@@ -1531,9 +1551,9 @@
 				$valid_groups = array();
 				foreach($available_apps as $_app => $dummy)
 				{
-					if($this->_acl->check('admin', phpgwapi_acl::ADD, $_app))
+					if($this->_acl->check('admin', Acl::ADD, $_app))
 					{
-						$valid_groups	= array_merge($valid_groups,$this->_acl->get_ids_for_location('run', phpgwapi_acl::READ, $_app));
+						$valid_groups	= array_merge($valid_groups,$this->_acl->get_ids_for_location('run', Acl::READ, $_app));
 					}
 				}
 
@@ -1573,13 +1593,13 @@
 //			$apps = createObject('phpgwapi.applications', $account_id ? $account_id : -1);
 //			$db_perms = $apps->read_account_specific();
 
-			$apps_admin = $this->_acl->get_app_list_for_id('admin', phpgwapi_acl::ADD, $account_id ? $account_id : -1, false);
+			$apps_admin = $this->_acl->get_app_list_for_id('admin', Acl::ADD, $account_id ? $account_id : -1, false);
 			
 			$available_apps = $GLOBALS['phpgw_info']['apps'];
 			asort($available_apps);
-			if(!$this->_acl->check('run', phpgwapi_acl::READ, 'admin'))
+			if(!$this->_acl->check('run', Acl::READ, 'admin'))
 			{
-				$valid_apps = $this->_acl->get_app_list_for_id('admin', phpgwapi_acl::ADD, $GLOBALS['phpgw_info']['user']['account_id']);
+				$valid_apps = $this->_acl->get_app_list_for_id('admin', Acl::ADD, $this->userSettings['account_id']);
 			}
 			else
 			{
@@ -1636,7 +1656,7 @@
 			(
 				'page_title'			=> $account_id ? lang('edit user') : lang('add user'),
 				'msgbox_data'			=> array('msgbox_text' => $GLOBALS['phpgw']->common->error_list($errors)),
-				'edit_url'				=> $GLOBALS['phpgw']->link('/index.php',
+				'edit_url'				=> phpgw::link('/index.php',
 												array('menuaction' => 'admin.uiaccounts.edit_user')),
 				'lang_lid'				=> lang('loginid'),
 				'lang_account_active'	=> lang('account active'),
@@ -1683,7 +1703,7 @@
 				This is now using ExecMethod()
 				$t->set_var('rows',ExecMethod('admin.uimenuclass.createHTMLCode','edit_user'));
 			*/
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('account_edit' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('account_edit' => $data));
 		}
 
 		/**
@@ -1693,17 +1713,18 @@
 		 */
 		public function view_user()
 		{
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::users';
+			$this->flags['menu_selection'] .= '::users';
+			Settings::getInstance()->set('flags', $this->flags);
 
-			$account_id = phpgw::get_var('account_id', 'int', 'GET');
-			if ( $this->_acl->check('account_access', phpgwapi_acl::DELETE, 'admin')
+			$account_id = Sanitizer::get_var('account_id', 'int', 'GET');
+			if ( $this->_acl->check('account_access', Acl::DELETE, 'admin')
 					|| !$account_id )
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php',
+				phpgw::redirect_link('/index.php',
 						array('menuaction' => 'admin.uiaccounts.list_users'));
 			}
 
-			$user_data = $GLOBALS['phpgw']->accounts->get($account_id)->toArray();
+			$user_data = $this->accounts->get($account_id)->toArray();
 
 			$lang_never = lang('never');
 			$lang_disabled = lang('disabled');
@@ -1738,7 +1759,7 @@
 			}
 
 			// Find out which groups they are members of
-			$usergroups = $GLOBALS['phpgw']->accounts->membership($account_id);
+			$usergroups = $this->accounts->membership($account_id);
 			foreach ( $usergroups as $group )
 			{
 				$user_data['groups'][$group->id] = (string) $group;
@@ -1791,12 +1812,13 @@
 			$user_data['l_applications']	= lang('applications');
 
 			// Interactions
-			$user_data['i_back']			= $GLOBALS['phpgw']->link('/index.php',
+			$user_data['i_back']			= phpgw::link('/index.php',
 												array('menuaction' => 'admin.uiaccounts.list_users'));
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('account "%1" properties', $user_data['lid']);
-			$GLOBALS['phpgw']->xslttpl->add_file('users');
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('account_view' => $user_data));
+			$this->flags['app_header'] = lang('account "%1" properties', $user_data['lid']);
+			Settings::getInstance()->set('flags', $this->flags);
+			phpgwapi_xslttemplates::getInstance()->add_file('users');
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('account_view' => $user_data));
 		}
 
 		/**
@@ -1806,38 +1828,39 @@
 		 */
 		public function delete_group()
 		{
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::groups';
+			$this->flags['menu_selection'] .= '::groups';
 
-			$account_id = phpgw::get_var('account_id', 'int');
+			$account_id = Sanitizer::get_var('account_id', 'int');
 
-			if ( phpgw::get_var('cancel', 'bool', 'POST')
-				|| $this->_acl->check('group_access', phpgwapi_acl::GROUP_MANAGERS, 'admin') )
+			if ( Sanitizer::get_var('cancel', 'bool', 'POST')
+				|| $this->_acl->check('group_access', Acl::GROUP_MANAGERS, 'admin') )
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php',
+				phpgw::redirect_link('/index.php',
 						array('menuaction' => 'admin.uiaccounts.list_groups'));
 			}
 
-			$group = $GLOBALS['phpgw']->accounts->get($account_id);
+			$group = $this->accounts->get($account_id);
 			if ( !is_object($group) )
 			{
 				// FIXME add proper error handling here
 				die('Invalid Group');
 			}
 
-			if ($account_id && phpgw::get_var('confirm', 'bool', 'POST') )
+			if ($account_id && Sanitizer::get_var('confirm', 'bool', 'POST') )
 			{
 				$this->_bo->delete_group($account_id);
-				$GLOBALS['phpgw']->redirect_link('/index.php',
+				phpgw::redirect_link('/index.php',
 						array('menuaction' => 'admin.uiaccounts.list_groups'));
 			}
 
-			$GLOBALS['phpgw']->xslttpl->set_root(PHPGW_APP_TPL);
-			$GLOBALS['phpgw']->xslttpl->add_file('confirm_delete');
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('administration') . ': ' . lang('delete group');
+			phpgwapi_xslttemplates::getInstance()->set_root(PHPGW_APP_TPL);
+			phpgwapi_xslttemplates::getInstance()->add_file('confirm_delete');
+			$this->flags['app_header'] = lang('administration') . ': ' . lang('delete group');
+			Settings::getInstance()->set('flags', $this->flags);
 
 			$data = array
 			(
-				'form_action'				=> $GLOBALS['phpgw']->link('/index.php', array
+				'form_action'				=> phpgw::link('/index.php', array
 												(
 													'menuaction' => 'admin.uiaccounts.delete_group',
 													'account_id' => $account_id
@@ -1847,7 +1870,7 @@
 				'lang_confirm_msg'			=> lang('are you sure you want to delete group "%1"?', $group->lid)
 			);
 
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 
 		/**
@@ -1858,35 +1881,35 @@
 		public function delete_user()
 		{
 			phpgw::no_access();
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::users';
+			$this->flags['menu_selection'] .= '::users';
 
-			if ( $this->_acl->check('account_access', phpgwapi_acl::GROUP_MANAGERS, 'admin')
-				|| $GLOBALS['phpgw_info']['user']['account_id'] == phpgw::get_var('account_id', 'int', 'GET') )
+			if ( $this->_acl->check('account_access', Acl::GROUP_MANAGERS, 'admin')
+				|| $this->userSettings['account_id'] == Sanitizer::get_var('account_id', 'int', 'GET') )
 			{
 				$this->list_users();
 				return false;
 			}
 
-			if ( phpgw::get_var('deleteAccount', 'bool') )
+			if ( Sanitizer::get_var('deleteAccount', 'bool') )
 			{
-				if ( !$this->_bo->delete_user(phpgw::get_var('account_id', 'int'), phpgw::get_var('account', 'int')) )
+				if ( !$this->_bo->delete_user(Sanitizer::get_var('account_id', 'int'), Sanitizer::get_var('account', 'int')) )
 				{
 					//TODO Make this nicer
 					echo 'Failed to delete user';
 				}
 				else
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php',
+					phpgw::redirect_link('/index.php',
 						array('menuaction' => 'admin.uiaccounts.list_users'));
 				}
 			}
-			if( phpgw::get_var('cancel', 'bool') )
+			if( Sanitizer::get_var('cancel', 'bool') )
 			{
 				$this->list_users();
 			}
 			else
 			{
-				$GLOBALS['phpgw_info']['flags']['app_header'] = lang('administration');
+				$this->flags['app_header'] = lang('administration');
 
 				//Add list entry to delete all references to this account (user)
 				$alist = array();
@@ -1900,7 +1923,7 @@
 				$accounts = CreateObject('phpgwapi.accounts');
 				$accounts_list = $accounts->get_list('accounts');
 
-				$account_id = phpgw::get_var('account_id', 'int');
+				$account_id = Sanitizer::get_var('account_id', 'int');
 				foreach ( $accounts_list as $account )
 				{
 					if ( (int) $account->id != $account_id )
@@ -1920,14 +1943,16 @@
 				(
 					'account_id'		=> $account_id,
 					'accountlist'		=> $alist,
-					'form_action'		=> $GLOBALS['phpgw']->link('/index.php',
+					'form_action'		=> phpgw::link('/index.php',
 											array('menuaction' => 'admin.uiaccounts.delete_user')),
 					'lang_new_owner'	=> $new_owner,
 					'l_cancel'			=> lang('cancel'),
 					'l_delete'			=> lang('delete')
 				);
-				$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('new_owner_list' => $data));
+				phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('new_owner_list' => $data));
 			}
+			Settings::getInstance()->set('flags', $this->flags);
+
 		}
 
 		/**
@@ -1944,7 +1969,7 @@
 		protected function _row_action($action, $type, $account_id)
 		{
 			$lang_action = lang($action);
-			$url = $GLOBALS['phpgw']->link('/index.php', array
+			$url = phpgw::link('/index.php', array
 			(
 				'menuaction' => "admin.uiaccounts.{$action}_{$type}",
 				'account_id' => $account_id
@@ -1961,34 +1986,35 @@
 
 		function sync_accounts_contacts()
 		{
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::sync_account';
+			$this->flags['menu_selection'] .= '::sync_account';
 
-			if(!$this->_acl->check('run', phpgwapi_acl::READ, 'admin') )
+			if(!$this->_acl->check('run', Acl::READ, 'admin') )
 			{
 				phpgw::no_access();
 			}
-			if ( phpgw::get_var('cancel', 'bool', 'POST'))
+			if ( Sanitizer::get_var('cancel', 'bool', 'POST'))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php',
+				phpgw::redirect_link('/index.php',
 						array('menuaction' => 'admin.uimainscreen.mainscreen'));
 			}
 
-			if (phpgw::get_var('confirm', 'bool', 'POST') )
+			if (Sanitizer::get_var('confirm', 'bool', 'POST') )
 			{
 
-				$GLOBALS['phpgw']->accounts->sync_accounts_contacts();
+				$this->accounts->sync_accounts_contacts();
 
-				$GLOBALS['phpgw']->redirect_link('/index.php',
+				phpgw::redirect_link('/index.php',
 						array('menuaction' => 'admin.uimainscreen.mainscreen'));
 			}
 
-			$GLOBALS['phpgw']->xslttpl->set_root(PHPGW_APP_TPL);
-			$GLOBALS['phpgw']->xslttpl->add_file('confirm_delete');
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('administration') . ': ' . lang('Sync Account-Contact');
+			phpgwapi_xslttemplates::getInstance()->set_root(PHPGW_APP_TPL);
+			phpgwapi_xslttemplates::getInstance()->add_file('confirm_delete');
+			$this->flags['app_header'] = lang('administration') . ': ' . lang('Sync Account-Contact');
+			Settings::getInstance()->set('flags', $this->flags);
 
 			$data = array
 			(
-				'form_action'				=> $GLOBALS['phpgw']->link('/index.php', array
+				'form_action'				=> phpgw::link('/index.php', array
 												(
 													'menuaction' => 'admin.uiaccounts.sync_accounts_contacts',
 												)),
@@ -1997,10 +2023,10 @@
 				'lang_confirm_msg'			=> lang('are you sure you want to sync account-contact')
 			);
 
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 
 
-//			$GLOBALS['phpgw']->redirect_link('/admin/index.php');
+//			phpgw::redirect_link('/admin/index.php');
 		}
 
 		/**
@@ -2011,16 +2037,16 @@
 
 		function clear_user_cache()
 		{
-			if(	$this->_acl->check('run', phpgwapi_acl::READ, 'admin') )
+			if(	$this->_acl->check('run', Acl::READ, 'admin') )
 			{
 				set_time_limit(1500);
-				$account_list = $GLOBALS['phpgw']->accounts->get_list('both', -1);
+				$account_list = $this->accounts->get_list('both', -1);
 				foreach ( $account_list as  $id => $account)
 				{
 					$this->_acl->clear_user_cache($id);
 				}
 			}
-			$GLOBALS['phpgw']->redirect_link('/admin/index.php');
+			phpgw::redirect_link('/admin/index.php');
 		}
 		/**
 		* Set a message on top of all screens
@@ -2030,35 +2056,37 @@
 
 		function global_message()
 		{
-			if(	!$this->_acl->check('run', phpgwapi_acl::READ, 'admin') )
+			if(	!$this->_acl->check('run', Acl::READ, 'admin') )
 			{
-				$GLOBALS['phpgw']->redirect_link('/admin/index.php');
+				phpgw::redirect_link('/admin/index.php');
 			}
 
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] = 'admin::admin::global_message';
+			$this->flags['menu_selection'] = 'admin::admin::global_message';
 
-			if(phpgw::get_var('message', 'string') && phpgw::get_var('confirm', 'bool'))
+			if(Sanitizer::get_var('message', 'string') && Sanitizer::get_var('confirm', 'bool'))
 			{
-				phpgwapi_cache::system_set('phpgwapi', 'phpgw_global_message',phpgw::get_var('message', 'string'));			
+				phpgwapi_cache::system_set('phpgwapi', 'phpgw_global_message',Sanitizer::get_var('message', 'string'));			
 			}
 
-			if(phpgw::get_var('delete_message', 'bool') && phpgw::get_var('confirm', 'bool'))
+			if(Sanitizer::get_var('delete_message', 'bool') && Sanitizer::get_var('confirm', 'bool'))
 			{
 				phpgwapi_cache::system_clear('phpgwapi', 'phpgw_global_message');
 			}
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('administration');
+			$this->flags['app_header'] = lang('administration');
+
+			Settings::getInstance()->set('flags', $this->flags);
 
 			$data = array
 			(
 				'value_message'		=> phpgwapi_cache::system_get('phpgwapi', 'phpgw_global_message'),
-				'form_action'		=> $GLOBALS['phpgw']->link('/index.php',
+				'form_action'		=> phpgw::link('/index.php',
 										array('menuaction' => 'admin.uiaccounts.global_message')),
 				'lang_cancel'		=> lang('cancel'),
 				'lang_submit'		=> lang('submit')
 			);
-			$GLOBALS['phpgw']->xslttpl->add_file('global_message');
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('global_message' => $data));
+			phpgwapi_xslttemplates::getInstance()->add_file('global_message');
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('global_message' => $data));
 		}
                 
                 /**
@@ -2069,48 +2097,50 @@
 
 		function home_screen_message()
 		{
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] = 'admin::admin::home_screen_message';
+			$this->flags['menu_selection'] = 'admin::admin::home_screen_message';
 
-			if (!$this->_acl->check('run', phpgwapi_acl::READ, 'admin'))
+			if (!$this->_acl->check('run', Acl::READ, 'admin'))
 			{
-				$GLOBALS['phpgw']->redirect_link('/admin/index.php');
+				phpgw::redirect_link('/admin/index.php');
 			}
 
-			if (phpgw::get_var('msg_title', 'string'))
+			if (Sanitizer::get_var('msg_title', 'string'))
 			{
-				$msg_title = phpgw::get_var('msg_title', 'string');
+				$msg_title = Sanitizer::get_var('msg_title', 'string');
 			}
 			else
 			{
 				$msg_title = lang("important message");
 			}
 
-			if(phpgw::get_var('message', 'string') && phpgw::get_var('confirm', 'bool'))
+			if(Sanitizer::get_var('message', 'string') && Sanitizer::get_var('confirm', 'bool'))
 			{
 				phpgwapi_cache::system_set('phpgwapi', 'phpgw_home_screen_message_title', $msg_title);
-				phpgwapi_cache::system_set('phpgwapi', 'phpgw_home_screen_message', phpgw::get_var('message', 'html'));
+				phpgwapi_cache::system_set('phpgwapi', 'phpgw_home_screen_message', Sanitizer::get_var('message', 'html'));
 			}
 
-			if (phpgw::get_var('delete_message', 'bool') && phpgw::get_var('confirm', 'bool'))
+			if (Sanitizer::get_var('delete_message', 'bool') && Sanitizer::get_var('confirm', 'bool'))
 			{
 				phpgwapi_cache::system_clear('phpgwapi', 'phpgw_home_screen_message_title');
 				phpgwapi_cache::system_clear('phpgwapi', 'phpgw_home_screen_message');
 			}
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('administration');
+			$this->flags['app_header'] = lang('administration');
 
 			$data = array(
 				'value_title'	 => phpgwapi_cache::system_get('phpgwapi', 'phpgw_home_screen_message_title'),
 				'value_message'	 => phpgwapi_cache::system_get('phpgwapi', 'phpgw_home_screen_message'),
-				'form_action'	 => $GLOBALS['phpgw']->link('/index.php',
+				'form_action'	 => phpgw::link('/index.php',
 											  array('menuaction' => 'admin.uiaccounts.home_screen_message')),
 				'lang_cancel'	 => lang('cancel'),
 				'lang_submit'	 => lang('submit')
 			);
 
 //			phpgwapi_jquery::init_quill('message');
-			$GLOBALS['phpgw']->xslttpl->add_file('home_screen_message');
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('home_screen_message' => $data));
+			Settings::getInstance()->set('flags', $this->flags);
+
+			phpgwapi_xslttemplates::getInstance()->add_file('home_screen_message');
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('home_screen_message' => $data));
 		}
 
 		/**
@@ -2120,18 +2150,18 @@
 		 */
 		public function clear_cache()
 		{
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::clear_cache';
+			$this->flags['menu_selection'] .= '::clear_cache';
 
-			$account_id = phpgw::get_var('account_id', 'int');
+			$account_id = Sanitizer::get_var('account_id', 'int');
 
-			if ( phpgw::get_var('cancel', 'bool', 'POST')
-				|| $this->_acl->check('group_access', phpgwapi_acl::GROUP_MANAGERS, 'admin') )
+			if ( Sanitizer::get_var('cancel', 'bool', 'POST')
+				|| $this->_acl->check('group_access', Acl::GROUP_MANAGERS, 'admin') )
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php',
+				phpgw::redirect_link('/index.php',
 						array('menuaction' => 'admin.uimainscreen.mainscreen'));
 			}
 
-			$dir = new DirectoryIterator($GLOBALS['phpgw_info']['server']['temp_dir']); 
+			$dir = new DirectoryIterator($this->serverSettings['temp_dir']); 
 			$myfilearray = array();
 
 			$number_of_files = 0;
@@ -2153,19 +2183,19 @@
 
 //					$myfilearray[] = array
 //					(
-//						'last_modified'=> date($GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'],$file->getMTime()),
+//						'last_modified'=> date($this->userSettings['preferences']['common']['dateformat'],$file->getMTime()),
 //						'file_path'=> $file->getPathname(),
 //					);
 				}
 			}
 
-			if (phpgw::get_var('confirm', 'bool', 'POST') )
+			if (Sanitizer::get_var('confirm', 'bool', 'POST') )
 			{
 				$myfilearray = array();
 
 				phpgwapi_cache::system_clear_all();
 
-				$GLOBALS['phpgw']->redirect_link('/index.php',
+				phpgw::redirect_link('/index.php',
 						array('menuaction' => 'admin.uimainscreen.mainscreen'));
 			}
 
@@ -2191,13 +2221,14 @@
 HTML;
 			}
 
-			$GLOBALS['phpgw']->xslttpl->set_root(PHPGW_APP_TPL);
-			$GLOBALS['phpgw']->xslttpl->add_file('confirm_delete');
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('administration') . ': ' . lang('clear cache');
+			phpgwapi_xslttemplates::getInstance()->set_root(PHPGW_APP_TPL);
+			phpgwapi_xslttemplates::getInstance()->add_file('confirm_delete');
+			$this->flags['app_header'] = lang('administration') . ': ' . lang('clear cache');
+			Settings::getInstance()->set('flags', $this->flags);
 
 			$data = array
 			(
-				'form_action'				=> $GLOBALS['phpgw']->link('/index.php', array
+				'form_action'				=> phpgw::link('/index.php', array
 												(
 													'menuaction' => 'admin.uiaccounts.clear_cache',
 													'account_id' => $account_id
@@ -2208,7 +2239,7 @@ HTML;
 				'message'					=> $html
 			);
 
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 
 	}

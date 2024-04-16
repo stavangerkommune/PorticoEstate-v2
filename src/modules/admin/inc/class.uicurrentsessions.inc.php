@@ -66,7 +66,7 @@
 			);
 			foreach ( $vars as $var => $type )
 			{
-				$val = phpgw::get_var($var, $type, 'GET');
+				$val = Sanitizer::get_var($var, $type, 'GET');
 				if ( $val )
 				{
 					$info[$var] = $val;
@@ -118,7 +118,7 @@
 
 				if ( $can_kill && $value['id'] != $GLOBALS['phpgw_info']['user']['sessionid'] )
 				{
-					$kill_url = $GLOBALS['phpgw']->link('/index.php', array
+					$kill_url = phpgw::link('/index.php', array
 					(
 						'menuaction'	=> 'admin.uicurrentsessions.kill',
 						'ksession'		=> $value['id'],
@@ -147,8 +147,8 @@
 			$this->template->set_file('form','kill_session.tpl');
 
 			$this->template->set_var('lang_message',lang('Are you sure you want to kill this session ?'));
-			$this->template->set_var('link_no','<a href="' . $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'admin.uicurrentsessions.list_sessions')) . '">' . lang('No') . '</a>');
-			$this->template->set_var('link_yes','<a href="' . $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'admin.bocurrentsessions.kill', 'ksession'=> $_GET['ksession'])) . '">' . lang('Yes') . '</a>');
+			$this->template->set_var('link_no','<a href="' . phpgw::link('/index.php',array('menuaction'=>'admin.uicurrentsessions.list_sessions')) . '">' . lang('No') . '</a>');
+			$this->template->set_var('link_yes','<a href="' . phpgw::link('/index.php',array('menuaction'=>'admin.bocurrentsessions.kill', 'ksession'=> $_GET['ksession'])) . '">' . lang('Yes') . '</a>');
 
 			$this->template->pfp('out','form');
 		}

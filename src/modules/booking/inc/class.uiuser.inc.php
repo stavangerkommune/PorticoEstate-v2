@@ -88,15 +88,15 @@
 				$lang_confirm_msg	 = lang('update user address');
 				$lang_yes			 = lang('yes');
 			}
-			$GLOBALS['phpgw']->xslttpl->add_file(array('confirm'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('confirm'));
 
 			$msgbox_data = createObject('property.bocommon')->msgbox_data($receipt);
 
 			$data = array
 				(
 				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uiuser.index')),
-				'update_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uiuser.update_user_address')),
+				'done_action'			 => phpgw::link('/index.php', array('menuaction' => 'booking.uiuser.index')),
+				'update_action'			 => phpgw::link('/index.php', array('menuaction' => 'booking.uiuser.update_user_address')),
 				'message'				 => $receipt['message'],
 				'lang_confirm_msg'		 => $lang_confirm_msg,
 				'lang_yes'				 => $lang_yes,
@@ -107,7 +107,7 @@
 
 			$function_msg									 = lang('users');
 			$GLOBALS['phpgw_info']['flags']['app_header']	 = lang('booking') . ':: ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('confirm' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('confirm' => $data));
 
 		}
 
@@ -155,15 +155,15 @@
 				$lang_confirm_msg	 = lang('export customer');
 				$lang_yes			 = lang('yes');
 			}
-			$GLOBALS['phpgw']->xslttpl->add_file(array('confirm'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('confirm'));
 
 			$msgbox_data = createObject('property.bocommon')->msgbox_data($receipt);
 
 			$data = array
 				(
 				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uiuser.index')),
-				'update_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uiuser.export_customer')),
+				'done_action'			 => phpgw::link('/index.php', array('menuaction' => 'booking.uiuser.index')),
+				'update_action'			 => phpgw::link('/index.php', array('menuaction' => 'booking.uiuser.export_customer')),
 				'message'				 => $receipt['message'],
 				'lang_confirm_msg'		 => $lang_confirm_msg,
 				'lang_yes'				 => $lang_yes,
@@ -174,7 +174,7 @@
 
 			$function_msg									 = lang('export customer');
 			$GLOBALS['phpgw_info']['flags']['app_header']	 = lang('booking') . ':: ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('confirm' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('confirm' => $data));
 
 		}
 		public function collect_users()
@@ -198,15 +198,15 @@
 				$lang_confirm_msg	 = lang('Do you really want to collect users');
 				$lang_yes			 = lang('yes');
 			}
-			$GLOBALS['phpgw']->xslttpl->add_file(array('confirm'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('confirm'));
 
 			$msgbox_data = createObject('property.bocommon')->msgbox_data($receipt);
 
 			$data = array
 				(
 				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uiuser.index')),
-				'update_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uiuser.collect_users')),
+				'done_action'			 => phpgw::link('/index.php', array('menuaction' => 'booking.uiuser.index')),
+				'update_action'			 => phpgw::link('/index.php', array('menuaction' => 'booking.uiuser.collect_users')),
 				'message'				 => $receipt['message'],
 				'lang_confirm_msg'		 => $lang_confirm_msg,
 				'lang_yes'				 => $lang_yes,
@@ -217,7 +217,7 @@
 
 			$function_msg									 = lang('collect users');
 			$GLOBALS['phpgw_info']['flags']['app_header']	 = lang('booking') . ':: ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('confirm' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('confirm' => $data));
 
 		}
 

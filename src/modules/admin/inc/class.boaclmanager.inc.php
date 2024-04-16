@@ -60,17 +60,17 @@
 		 */
 		public function submit()
 		{
-			if ( phpgw::get_var('cancel', 'bool') )
+			if ( Sanitizer::get_var('cancel', 'bool') )
 			{
 				return false;
 			}
 
-			$app = phpgw::get_var('acl_app', 'string');
-			$account_id = phpgw::get_var('account_id', 'int');
-			$location = phpgw::get_var('location', 'string');
+			$app = Sanitizer::get_var('acl_app', 'string');
+			$account_id = Sanitizer::get_var('account_id', 'int');
+			$location = Sanitizer::get_var('location', 'string');
 
 			$total_rights = 0;
-			$acl_rights = phpgw::get_var('acl_rights', 'int');
+			$acl_rights = Sanitizer::get_var('acl_rights', 'int');
 			if ( !is_array($acl_rights) )
 			{
 				return;

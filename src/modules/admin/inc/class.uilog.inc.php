@@ -23,7 +23,7 @@
 		{
 			if ($GLOBALS['phpgw']->acl->check('error_log_access',1,'admin'))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php');
+				phpgw::redirect_link('/index.php');
 			}
 			
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = 'admin::admin::error_log';
@@ -33,15 +33,15 @@
 		{
 			if ($GLOBALS['phpgw']->acl->check('error_log_access',1,'admin'))
 			{
-				$GLOBALS['phpgw']->redirect_link('/admin/index.php');
+				phpgw::redirect_link('/admin/index.php');
 			}
 			
-			$account_id		= phpgw::get_var('account_id', 'int');
-			$date			= phpgw::get_var('date', 'date');
-			$date_string	= phpgw::get_var('date', 'string');
-			$start			= phpgw::get_var('start', 'int');
-			$sort			= phpgw::get_var('sort', 'int');
-			$order			= phpgw::get_var('order', 'int');
+			$account_id		= Sanitizer::get_var('account_id', 'int');
+			$date			= Sanitizer::get_var('date', 'date');
+			$date_string	= Sanitizer::get_var('date', 'string');
+			$start			= Sanitizer::get_var('start', 'int');
+			$sort			= Sanitizer::get_var('sort', 'int');
+			$order			= Sanitizer::get_var('order', 'int');
 			
 		
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('Admin').' - '.lang('View error log');
@@ -156,7 +156,7 @@
 					</script>
 HTML;
 			$var['select_user'] =  $account_list;
-			$var['value_date']	= phpgw::get_var('date');
+			$var['value_date']	= Sanitizer::get_var('date');
 			$t->set_var($var);
 
 			$records = $bo->list_log($account_id, $start, $order, $sort, $date);
@@ -197,7 +197,7 @@ HTML;
 					$var = array
 					(
 						'submit_button'			=> lang('Delete'),
-						'action_url_button'     => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uilog.purge_log', 'account_id' => $account_id)),
+						'action_url_button'     => phpgw::link('/index.php', array('menuaction' => 'admin.uilog.purge_log', 'account_id' => $account_id)),
 						'action_text_button'    => ' '.lang('Delete all log records for %1', $GLOBALS['phpgw']->common->grab_owner_name($account_id)),
 						'action_confirm_button' => '',
 						'action_extra_field'    => ''
@@ -208,7 +208,7 @@ HTML;
 					$var = array
 					(
 						'submit_button'			=> lang('Delete'),
-						'action_url_button'     => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uilog.purge_log') ),
+						'action_url_button'     => phpgw::link('/index.php', array('menuaction' => 'admin.uilog.purge_log') ),
 						'action_text_button'    => ' '.lang('Delete all log records'),
 						'action_confirm_button' => '',
 						'action_extra_field'    => ''
@@ -241,9 +241,9 @@ HTML;
 		{
 			if ($GLOBALS['phpgw']->acl->check('error_log_access',1,'admin'))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php');
+				phpgw::redirect_link('/index.php');
 			}
-			execMethod('admin.bolog.purge_log', phpgw::get_var('account_id', 'int') );
-			$GLOBALS['phpgw']->redirect_link('index.php', array('menuaction', 'admin.uilog.list_log'));
+			execMethod('admin.bolog.purge_log', Sanitizer::get_var('account_id', 'int') );
+			phpgw::redirect_link('index.php', array('menuaction', 'admin.uilog.list_log'));
 		}
 	}

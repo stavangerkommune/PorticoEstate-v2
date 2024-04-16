@@ -449,7 +449,7 @@
 					 */
 					$enforce_ssl = $GLOBALS['phpgw_info']['server']['enforce_ssl'];
 					$GLOBALS['phpgw_info']['server']['enforce_ssl'] = true;
-					$link_backend =  $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uiapplication.show','id' => $application['id']), false, true, true);
+					$link_backend =  phpgw::link('/index.php', array('menuaction' => 'booking.uiapplication.show','id' => $application['id']), false, true, true);
 					$GLOBALS['phpgw_info']['server']['enforce_ssl'] = $enforce_ssl;
 
 					$new_body = "<h1>NB!! KOPI av epost til {$application['contact_email']}</h1>"
@@ -633,7 +633,7 @@
 			 */
 			$enforce_ssl = $GLOBALS['phpgw_info']['server']['enforce_ssl'];
 			$GLOBALS['phpgw_info']['server']['enforce_ssl'] = true;
-			$link =  $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uiapplication.show','id' => $application['id']), false, true, true);
+			$link =  phpgw::link('/index.php', array('menuaction' => 'booking.uiapplication.show','id' => $application['id']), false, true, true);
 
 			/**
 			 * Text-version

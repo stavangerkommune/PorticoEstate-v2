@@ -516,7 +516,7 @@
 					'statustext'	 => lang('delete application'),
 					'text'			 => lang('delete'),
 					'confirm_msg'	 => lang('do you really want to delete this application'),
-					'action'		 => $GLOBALS['phpgw']->link('/index.php', array(
+					'action'		 => phpgw::link('/index.php', array(
 						'menuaction' => 'booking.uiapplication.delete'
 					)),
 					'parameters'	 => json_encode($parameters)

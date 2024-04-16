@@ -117,13 +117,13 @@
 				$this->use_session = true;
 			}
 
-			$start			= phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query			= phpgw::get_var('query');
-			$sort			= phpgw::get_var('sort');
-			$order			= phpgw::get_var('order');
-			$filter			= phpgw::get_var('filter', 'int');
-			$allrows		= phpgw::get_var('allrows', 'bool');
-			$location_id	= phpgw::get_var('location_id', 'int', 'REQUEST', 0);
+			$start			= Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query			= Sanitizer::get_var('query');
+			$sort			= Sanitizer::get_var('sort');
+			$order			= Sanitizer::get_var('order');
+			$filter			= Sanitizer::get_var('filter', 'int');
+			$allrows		= Sanitizer::get_var('allrows', 'bool');
+			$location_id	= Sanitizer::get_var('location_id', 'int', 'REQUEST', 0);
 
 			$this->start		= $start ? $start : 0;
 			$this->location_id	= $location_id ? $location_id : 0;

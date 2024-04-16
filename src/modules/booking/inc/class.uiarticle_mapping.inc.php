@@ -688,7 +688,7 @@ JS;
 					'file_id'	 => $_entry['file_id']
 				);
 
-				$link_view_file = $GLOBALS['phpgw']->link('/index.php', $link_file_data);
+				$link_view_file = phpgw::link('/index.php', $link_file_data);
 
 				$content_files[] = array(
 					'file_id'		 => $_entry['file_id'],

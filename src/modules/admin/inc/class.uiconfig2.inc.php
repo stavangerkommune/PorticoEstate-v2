@@ -82,7 +82,7 @@
 				return;
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('config','nextmatchs',
+			phpgwapi_xslttemplates::getInstance()->add_file(array('config','nextmatchs',
 										'search_field'));
 
 			$receipt = $GLOBALS['phpgw']->session->appsession('session_data','admin_c_section_receipt');
@@ -105,10 +105,10 @@
 				$content[] = array
 				(
 					'name'						=> $entry['name'],
-					'link_attribute'			=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'admin.uiconfig2.list_attrib', 'section_id'=> $entry['id'] , 'location_id' => $this->location_id)),
-					'link_edit'					=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'admin.uiconfig2.edit_section', 'section_id'=> $entry['id'] , 'location_id' => $this->location_id)),
-					'link_delete'				=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'admin.uiconfig2.delete_section', 'section_id'=> $entry['id'] , 'location_id' => $this->location_id)),
-					'link_view'					=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'admin.uiconfig2.view_section', 'section_id'=> $entry['id'] , 'location_id' => $this->location_id)),
+					'link_attribute'			=> phpgw::link('/index.php',array('menuaction'=> 'admin.uiconfig2.list_attrib', 'section_id'=> $entry['id'] , 'location_id' => $this->location_id)),
+					'link_edit'					=> phpgw::link('/index.php',array('menuaction'=> 'admin.uiconfig2.edit_section', 'section_id'=> $entry['id'] , 'location_id' => $this->location_id)),
+					'link_delete'				=> phpgw::link('/index.php',array('menuaction'=> 'admin.uiconfig2.delete_section', 'section_id'=> $entry['id'] , 'location_id' => $this->location_id)),
+					'link_view'					=> phpgw::link('/index.php',array('menuaction'=> 'admin.uiconfig2.view_section', 'section_id'=> $entry['id'] , 'location_id' => $this->location_id)),
 					'lang_view_config_text'		=> $lang_view_config_text,
 					'lang_edit_config_text'		=> $lang_edit_config_text,
 					'text_view'					=> $text_view,
@@ -165,7 +165,7 @@
 			(
 				'lang_add'		=> lang('add'),
 				'lang_add_statustext'	=> lang('add a section'),
-				'add_action'		=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'admin.uiconfig2.edit_section', 'location_id' => $this->location_id)),
+				'add_action'		=> phpgw::link('/index.php',array('menuaction'=> 'admin.uiconfig2.edit_section', 'location_id' => $this->location_id)),
 			);
 
 			$msgbox_data = $GLOBALS['phpgw']->common->msgbox_data($receipt);
@@ -179,7 +179,7 @@
 				'record_limit'					=> $record_limit,
 				'num_records'					=> count($config_info),
 				'all_records'					=> $this->bo->total_records,
-				'link_url'						=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'link_url'						=> phpgw::link('/index.php',$link_data),
 				'img_path'						=> $GLOBALS['phpgw']->common->get_image_path('phpgwapi','default'),
 				'lang_searchfield_statustext'	=> lang('Enter the search string. To show all entries, empty this field and press the SUBMIT button again'),
 				'lang_searchbutton_statustext'	=> lang('Submit the search string'),
@@ -194,7 +194,7 @@
 			$function_msg	= lang('list section');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('list_section' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('list_section' => $data));
 			$this->save_sessiondata();
 		}
 
@@ -207,10 +207,10 @@
 				return;
 			}
 
-			$section_id	= phpgw::get_var('section_id', 'int');
-			$values		= phpgw::get_var('values');
+			$section_id	= Sanitizer::get_var('section_id', 'int');
+			$values		= Sanitizer::get_var('values');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('config'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('config'));
 
 			if (is_array($values))
 			{
@@ -236,13 +236,13 @@
 						if ($values['save'])
 						{
 							$GLOBALS['phpgw']->session->appsession('session_data','admin_c_section_receipt',$receipt);
-							$GLOBALS['phpgw']->redirect_link('/index.php',array('menuaction'=> 'admin.uiconfig2.index', 'section_id'=> $section_id, 'location_id' => $this->location_id));
+							phpgw::redirect_link('/index.php',array('menuaction'=> 'admin.uiconfig2.index', 'section_id'=> $section_id, 'location_id' => $this->location_id));
 						}
 					}
 				}
 				else
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php',array('menuaction'=> 'admin.uiconfig2.index', 'section_id'=> $section_id, 'location_id' => $this->location_id));
+					phpgw::redirect_link('/index.php',array('menuaction'=> 'admin.uiconfig2.index', 'section_id'=> $section_id, 'location_id' => $this->location_id));
 				}
 			}
 
@@ -281,7 +281,7 @@
 				'lang_descr'				=> lang('descr'),
 
 				'msgbox_data'				=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'				=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'form_action'				=> phpgw::link('/index.php',$link_data),
 				'lang_id'					=> lang('ID'),
 				'lang_save'					=> lang('save'),
 				'lang_cancel'				=> lang('cancel'),
@@ -295,7 +295,7 @@
 			$appname					= lang('config');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('edit_section' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('edit_section' => $data));
 		}
 
 		function view_section()
@@ -306,10 +306,10 @@
 				return;
 			}
 
-			$section_id	= phpgw::get_var('section_id', 'int');
-			$values		= phpgw::get_var('values');
+			$section_id	= Sanitizer::get_var('section_id', 'int');
+			$values		= Sanitizer::get_var('values');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('config'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('config'));
 
 			if ($section_id)
 			{
@@ -329,7 +329,7 @@
 				'lang_id'				=> lang('section ID'),
 				'lang_name'				=> lang('name'),
 				'lang_descr'			=> lang('descr'),
-				'form_action'			=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'admin.uiconfig2.index', 'location_id' => $this->location_id)),
+				'form_action'			=> phpgw::link('/index.php',array('menuaction'=> 'admin.uiconfig2.index', 'location_id' => $this->location_id)),
 				'lang_cancel'			=> lang('cancel'),
 				'value_id'				=> $section_id,
 			);
@@ -337,7 +337,7 @@
 			$appname					= lang('config');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('view_section' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('view_section' => $data));
 		}
 
 		function list_attrib()
@@ -348,14 +348,14 @@
 				return;
 			}
 
-			$section_id	= phpgw::get_var('section_id', 'int');
+			$section_id	= Sanitizer::get_var('section_id', 'int');
 
 			if(!$section_id)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php',array('menuaction'=> 'admin.uiconfig2.index', 'location_id' => $this->location_id));
+				phpgw::redirect_link('/index.php',array('menuaction'=> 'admin.uiconfig2.index', 'location_id' => $this->location_id));
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('config','nextmatchs',
+			phpgwapi_xslttemplates::getInstance()->add_file(array('config','nextmatchs',
 										'search_field'));
 
 			$receipt = $GLOBALS['phpgw']->session->appsession('session_data','admin_c_attrib_receipt');
@@ -368,9 +368,9 @@
 				$content[] = array
 				(
 					'name'						=> $entry['name'],
-					'link_value'				=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'admin.uiconfig2.edit_value', 'section_id'=> $section_id, 'attrib_id'=> $entry['id'], 'id'=> $entry['value_id'], 'location_id' => $this->location_id)),
-					'link_edit'					=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'admin.uiconfig2.edit_attrib', 'section_id'=> $section_id, 'attrib_id'=> $entry['id'], 'location_id' => $this->location_id)),
-					'link_delete'				=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'admin.uiconfig2.delete_attrib', 'section_id'=> $section_id, 'attrib_id'=> $entry['id'], 'location_id' => $this->location_id)),
+					'link_value'				=> phpgw::link('/index.php',array('menuaction'=> 'admin.uiconfig2.edit_value', 'section_id'=> $section_id, 'attrib_id'=> $entry['id'], 'id'=> $entry['value_id'], 'location_id' => $this->location_id)),
+					'link_edit'					=> phpgw::link('/index.php',array('menuaction'=> 'admin.uiconfig2.edit_attrib', 'section_id'=> $section_id, 'attrib_id'=> $entry['id'], 'location_id' => $this->location_id)),
+					'link_delete'				=> phpgw::link('/index.php',array('menuaction'=> 'admin.uiconfig2.delete_attrib', 'section_id'=> $section_id, 'attrib_id'=> $entry['id'], 'location_id' => $this->location_id)),
 					'lang_edit_config_text'		=> lang('edit the config'),
 					'text_edit'					=> lang('edit'),
 					'text_delete'				=> lang('delete'),
@@ -425,10 +425,10 @@
 			(
 				'lang_add'				=> lang('add'),
 				'lang_add_statustext'	=> lang('add a value'),
-				'add_action'			=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'admin.uiconfig2.edit_attrib', 'section_id'=> $section_id, 'location_id' => $this->location_id)),
+				'add_action'			=> phpgw::link('/index.php',array('menuaction'=> 'admin.uiconfig2.edit_attrib', 'section_id'=> $section_id, 'location_id' => $this->location_id)),
 				'lang_done'				=> lang('done'),
 				'lang_done_statustext'	=> lang('back to the list'),
-				'done_action'			=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'admin.uiconfig2.index', 'location_id' => $this->location_id)),
+				'done_action'			=> phpgw::link('/index.php',array('menuaction'=> 'admin.uiconfig2.index', 'location_id' => $this->location_id)),
 			);
 
 			$msgbox_data = $GLOBALS['phpgw']->common->msgbox_data($receipt);
@@ -444,7 +444,7 @@
 				'record_limit'						=> $record_limit,
 				'num_records'						=> count($config_info),
 				'all_records'						=> $this->bo->total_records,
-				'link_url'							=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'link_url'							=> phpgw::link('/index.php',$link_data),
 				'img_path'							=> $GLOBALS['phpgw']->common->get_image_path('phpgwapi','default'),
 				'lang_searchfield_statustext'		=> lang('Enter the search string. To show all entries, empty this field and press the SUBMIT button again'),
 				'lang_searchbutton_statustext'		=> lang('Submit the search string'),
@@ -459,7 +459,7 @@
 			$function_msg	= lang('list attribute');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('list_attrib' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('list_attrib' => $data));
 			$this->save_sessiondata();
 		}
 
@@ -471,11 +471,11 @@
 				return;
 			}
 
-			$section_id	= phpgw::get_var('section_id', 'int');
-			$attrib_id	= phpgw::get_var('attrib_id', 'int');
-			$values		= phpgw::get_var('values');
+			$section_id	= Sanitizer::get_var('section_id', 'int');
+			$attrib_id	= Sanitizer::get_var('attrib_id', 'int');
+			$values		= Sanitizer::get_var('values');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('config'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('config'));
 
 			if (is_array($values))
 			{
@@ -503,13 +503,13 @@
 						if ($values['save'])
 						{
 							$GLOBALS['phpgw']->session->appsession('session_data','admin_c_attrib_receipt',$receipt);
-							$GLOBALS['phpgw']->redirect_link('/index.php',array('menuaction'=> 'admin.uiconfig2.list_attrib', 'section_id'=> $section_id, 'location_id' => $this->location_id));
+							phpgw::redirect_link('/index.php',array('menuaction'=> 'admin.uiconfig2.list_attrib', 'section_id'=> $section_id, 'location_id' => $this->location_id));
 						}
 					}
 				}
 				else
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php',array('menuaction'=> 'admin.uiconfig2.list_attrib', 'section_id'=> $section_id, 'location_id' => $this->location_id));
+					phpgw::redirect_link('/index.php',array('menuaction'=> 'admin.uiconfig2.list_attrib', 'section_id'=> $section_id, 'location_id' => $this->location_id));
 				}
 			}
 
@@ -571,7 +571,7 @@
 				'lang_delete_choice_statustext'		=> lang('Delete this value from the list of multiple choice'),
 
 				'msgbox_data'						=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'						=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'form_action'						=> phpgw::link('/index.php',$link_data),
 				'lang_id'							=> lang('ID'),
 				'lang_save'							=> lang('save'),
 				'lang_cancel'						=> lang('cancel'),
@@ -587,7 +587,7 @@
 			$appname	= lang('config');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('edit_attrib' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('edit_attrib' => $data));
 		}
 
 		function list_value()
@@ -598,15 +598,15 @@
 				return;
 			}
 
-			$section_id	= phpgw::get_var('section_id', 'int');
-			$attrib_id	= phpgw::get_var('attrib_id', 'int');
+			$section_id	= Sanitizer::get_var('section_id', 'int');
+			$attrib_id	= Sanitizer::get_var('attrib_id', 'int');
 
 			if(!$section_id && !$attrib_id)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php',array('menuaction'=> 'admin.uiconfig2.index', 'location_id' => $this->location_id));
+				phpgw::redirect_link('/index.php',array('menuaction'=> 'admin.uiconfig2.index', 'location_id' => $this->location_id));
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('config','nextmatchs',
+			phpgwapi_xslttemplates::getInstance()->add_file(array('config','nextmatchs',
 										'search_field'));
 
 			$receipt = $GLOBALS['phpgw']->session->appsession('session_data','admin_c_value_receipt');
@@ -619,9 +619,9 @@
 				$content[] = array
 				(
 					'value'							=> $entry['value'],
-					'link_edit'						=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'admin.uiconfig2.edit_value', 'section_id'=> $entry['section_id'], 'attrib_id'=> $entry['attrib_id'], 'id'=> $entry['id'], 'location_id' => $this->location_id)),
-					'link_delete'					=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'admin.uiconfig2.delete_value', 'section_id'=> $entry['section_id'], 'attrib_id'=> $entry['attrib_id'], 'id'=> $entry['id'], 'location_id' => $this->location_id)),
-					'link_view'						=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'admin.uiconfig2.view_value', 'section_id'=> $entry['section_id'], 'attrib_id'=> $entry['attrib_id'], 'id'=> $entry['id'], 'location_id' => $this->location_id)),
+					'link_edit'						=> phpgw::link('/index.php',array('menuaction'=> 'admin.uiconfig2.edit_value', 'section_id'=> $entry['section_id'], 'attrib_id'=> $entry['attrib_id'], 'id'=> $entry['id'], 'location_id' => $this->location_id)),
+					'link_delete'					=> phpgw::link('/index.php',array('menuaction'=> 'admin.uiconfig2.delete_value', 'section_id'=> $entry['section_id'], 'attrib_id'=> $entry['attrib_id'], 'id'=> $entry['id'], 'location_id' => $this->location_id)),
+					'link_view'						=> phpgw::link('/index.php',array('menuaction'=> 'admin.uiconfig2.view_value', 'section_id'=> $entry['section_id'], 'attrib_id'=> $entry['attrib_id'], 'id'=> $entry['id'], 'location_id' => $this->location_id)),
 					'lang_view_config_text'			=> lang('view the config'),
 					'lang_edit_config_text'			=> lang('edit the config'),
 					'text_view'						=> lang('view'),
@@ -684,7 +684,7 @@
 				(
 					'lang_add'		=> lang('add'),
 					'lang_add_statustext'	=> lang('add a value'),
-					'add_action'		=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'admin.uiconfig2.edit_value', 'section_id'=> $section_id, 'attrib_id'=> $attrib_id, 'location_id' => $this->location_id)),
+					'add_action'		=> phpgw::link('/index.php',array('menuaction'=> 'admin.uiconfig2.edit_value', 'section_id'=> $section_id, 'attrib_id'=> $attrib_id, 'location_id' => $this->location_id)),
 				);
 			}
 
@@ -692,7 +692,7 @@
 
 			$data = array
 			(
-				'link_section' 					=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'admin.uiconfig2.list_attrib', 'section_id'=> $section_id, 'location_id' => $this->location_id)),
+				'link_section' 					=> phpgw::link('/index.php',array('menuaction'=> 'admin.uiconfig2.list_attrib', 'section_id'=> $section_id, 'location_id' => $this->location_id)),
 				'lang_section'						=> lang('section'),
 				'value_section_name'				=> $section['name'],
 				'lang_attrib'					=> lang('attribute'),
@@ -705,7 +705,7 @@
 				'record_limit'					=> $record_limit,
 				'num_records'					=> count($config_info),
 				'all_records'					=> $this->bo->total_records,
-				'link_url'						=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'link_url'						=> phpgw::link('/index.php',$link_data),
 				'img_path'						=> $GLOBALS['phpgw']->common->get_image_path('phpgwapi','default'),
 				'lang_searchfield_statustext'	=> lang('Enter the search string. To show all entries, empty this field and press the SUBMIT button again'),
 				'lang_searchbutton_statustext'	=> lang('Submit the search string'),
@@ -720,7 +720,7 @@
 			$function_msg	= lang('list values');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('list_value' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('list_value' => $data));
 			$this->save_sessiondata();
 		}
 
@@ -733,12 +733,12 @@
 				return;
 			}
 
-			$section_id	= phpgw::get_var('section_id', 'int');
-			$attrib_id	= phpgw::get_var('attrib_id', 'int');
-			$id			= phpgw::get_var('id', 'int');
-			$values		= phpgw::get_var('values', 'raw');
+			$section_id	= Sanitizer::get_var('section_id', 'int');
+			$attrib_id	= Sanitizer::get_var('attrib_id', 'int');
+			$id			= Sanitizer::get_var('id', 'int');
+			$values		= Sanitizer::get_var('values', 'raw');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('config'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('config'));
 
 			if (is_array($values))
 			{
@@ -767,13 +767,13 @@
 						if ($values['save'])
 						{
 							$GLOBALS['phpgw']->session->appsession('session_data','admin_c_attrib_receipt',$receipt);
-							$GLOBALS['phpgw']->redirect_link('/index.php',array('menuaction'=> 'admin.uiconfig2.list_attrib', 'section_id'=> $section_id, 'attrib_id'=> $attrib_id, 'location_id' => $this->location_id));
+							phpgw::redirect_link('/index.php',array('menuaction'=> 'admin.uiconfig2.list_attrib', 'section_id'=> $section_id, 'attrib_id'=> $attrib_id, 'location_id' => $this->location_id));
 						}
 					}
 				}
 				else
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php',array('menuaction'=> 'admin.uiconfig2.list_attrib', 'section_id'=> $section_id, 'attrib_id'=> $attrib_id, 'location_id' => $this->location_id));
+					phpgw::redirect_link('/index.php',array('menuaction'=> 'admin.uiconfig2.list_attrib', 'section_id'=> $section_id, 'attrib_id'=> $attrib_id, 'location_id' => $this->location_id));
 				}
 			}
 
@@ -840,7 +840,7 @@
 				'lang_datetitle'			=> lang('Select date'),
 
 				'msgbox_data'				=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'				=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'form_action'				=> phpgw::link('/index.php',$link_data),
 				'lang_id'					=> lang('ID'),
 				'lang_save'					=> lang('save'),
 				'lang_cancel'				=> lang('cancel'),
@@ -859,7 +859,7 @@
 			$appname	= lang('config');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('edit_value' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('edit_value' => $data));
 		}
 
 		function delete_section()
@@ -870,8 +870,8 @@
 				return;
 			}
 
-			$section_id	= phpgw::get_var('section_id', 'int');
-			$confirm	= phpgw::get_var('confirm', 'bool', 'POST');
+			$section_id	= Sanitizer::get_var('section_id', 'int');
+			$confirm	= Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 			(
@@ -880,18 +880,18 @@
 				'location_id' => $this->location_id
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete_section($section_id);
-				$GLOBALS['phpgw']->redirect_link('/index.php',$link_data);
+				phpgw::redirect_link('/index.php',$link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('config'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('config'));
 
 			$data = array
 			(
-				'done_action'			=> $GLOBALS['phpgw']->link('/index.php',$link_data),
-				'delete_action'			=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'admin.uiconfig2.delete_section', 'section_id'=> $section_id, 'location_id' => $this->location_id)),
+				'done_action'			=> phpgw::link('/index.php',$link_data),
+				'delete_action'			=> phpgw::link('/index.php',array('menuaction'=> 'admin.uiconfig2.delete_section', 'section_id'=> $section_id, 'location_id' => $this->location_id)),
 				'lang_confirm_msg'		=> lang('do you really want to delete this entry'),
 				'lang_yes'			=> lang('yes'),
 				'lang_yes_statustext'		=> lang('Delete the entry'),
@@ -903,7 +903,7 @@
 			$function_msg	= lang('delete section');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('delete' => $data));
 		}
 
 		function delete_attrib()
@@ -914,9 +914,9 @@
 				return;
 			}
 
-			$section_id	= phpgw::get_var('section_id', 'int');
-			$attrib_id	= phpgw::get_var('attrib_id', 'int');
-			$confirm	= phpgw::get_var('confirm', 'bool', 'POST');
+			$section_id	= Sanitizer::get_var('section_id', 'int');
+			$attrib_id	= Sanitizer::get_var('attrib_id', 'int');
+			$confirm	= Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 			(
@@ -925,18 +925,18 @@
 				'location_id' => $this->location_id
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete_attrib($section_id,$attrib_id);
-				$GLOBALS['phpgw']->redirect_link('/index.php',$link_data);
+				phpgw::redirect_link('/index.php',$link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('config'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('config'));
 
 			$data = array
 			(
-				'done_action'			=> $GLOBALS['phpgw']->link('/index.php',$link_data),
-				'delete_action'			=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'admin.uiconfig2.delete_attrib','section_id'=> $section_id, 'attrib_id'=> $attrib_id, 'location_id' => $this->location_id)),
+				'done_action'			=> phpgw::link('/index.php',$link_data),
+				'delete_action'			=> phpgw::link('/index.php',array('menuaction'=> 'admin.uiconfig2.delete_attrib','section_id'=> $section_id, 'attrib_id'=> $attrib_id, 'location_id' => $this->location_id)),
 				'lang_confirm_msg'		=> lang('do you really want to delete this entry'),
 				'lang_yes'			=> lang('yes'),
 				'lang_yes_statustext'		=> lang('Delete the entry'),
@@ -948,7 +948,7 @@
 			$function_msg	= lang('delete attribute');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('delete' => $data));
 		}
 
 
@@ -960,10 +960,10 @@
 				return;
 			}
 
-			$section_id	= phpgw::get_var('section_id', 'int');
-			$attrib_id	= phpgw::get_var('attrib_id', 'int');
-			$id		= phpgw::get_var('id', 'int');
-			$confirm	= phpgw::get_var('confirm', 'bool', 'POST');
+			$section_id	= Sanitizer::get_var('section_id', 'int');
+			$attrib_id	= Sanitizer::get_var('attrib_id', 'int');
+			$id		= Sanitizer::get_var('id', 'int');
+			$confirm	= Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 			(
@@ -974,18 +974,18 @@
 				'location_id' => $this->location_id
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete_value($section_id,$attrib_id,$id);
-				$GLOBALS['phpgw']->redirect_link('/index.php',$link_data);
+				phpgw::redirect_link('/index.php',$link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('config'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('config'));
 
 			$data = array
 			(
-				'done_action'			=> $GLOBALS['phpgw']->link('/index.php',$link_data),
-				'delete_action'			=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'admin.uiconfig2.delete_section', 'section_id'=> $section_id, 'attrib_id'=> $attrib_id, 'id'=> $id, 'location_id' => $this->location_id)),
+				'done_action'			=> phpgw::link('/index.php',$link_data),
+				'delete_action'			=> phpgw::link('/index.php',array('menuaction'=> 'admin.uiconfig2.delete_section', 'section_id'=> $section_id, 'attrib_id'=> $attrib_id, 'id'=> $id, 'location_id' => $this->location_id)),
 				'lang_confirm_msg'		=> lang('do you really want to delete this entry'),
 				'lang_yes'			=> lang('yes'),
 				'lang_yes_statustext'		=> lang('Delete the entry'),
@@ -997,12 +997,12 @@
 			$function_msg	= lang('delete value');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('delete' => $data));
 		}
 
 		function no_access($message = '')
 		{
-			$GLOBALS['phpgw']->xslttpl->add_file(array('no_access'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('no_access'));
 
 			$receipt['error'][]=array('msg'=>lang('NO ACCESS'));
 			if($message)
@@ -1021,7 +1021,7 @@
 			$msg	= lang('No access');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= lang('admin') . ' - ' . $msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('no_access' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('no_access' => $data));
 		}
 
 	}

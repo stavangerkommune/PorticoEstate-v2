@@ -1172,6 +1172,6 @@
 					'resource' => $allocation['resource']));
 			$allocation['when'] = pretty_timestamp($allocation['from_']) . ' - ' . pretty_timestamp($allocation['to_']);
 			self::render_template_xsl('allocation_info', array('allocation' => $allocation));
-			$GLOBALS['phpgw']->xslttpl->set_output('wml'); // Evil hack to disable page chrome
+			phpgwapi_xslttemplates::getInstance()->set_output('wml'); // Evil hack to disable page chrome
 		}
 	}

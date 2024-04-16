@@ -39,7 +39,7 @@
 		function index()
 		{
 
-			$GLOBALS['phpgw']->xslttpl->add_file('mapping');
+			phpgwapi_xslttemplates::getInstance()->add_file('mapping');
 			$table_head = array('lang_ext_user'		 => lang('ext_user'),
 				'lang_location'		 => lang('location'),
 				'lang_auth_type'	 => lang('auth type'),
@@ -76,7 +76,7 @@
 					$auth_type	 = $item['auth_type'];
 					if ($item['status'] == 'A')
 					{
-						$item['allow_deny_url']	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'preferences.uimapping.index',
+						$item['allow_deny_url']	 = phpgw::link('/index.php', array('menuaction' => 'preferences.uimapping.index',
 							'appname'	 => 'preferences',
 							'action'	 => 'deny',
 							'ext_user'	 => $ext_user,
@@ -86,7 +86,7 @@
 					}
 					else
 					{
-						$item['allow_deny_url']	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'preferences.uimapping.index',
+						$item['allow_deny_url']	 = phpgw::link('/index.php', array('menuaction' => 'preferences.uimapping.index',
 							'appname'	 => 'preferences',
 							'action'	 => 'allow',
 							'ext_user'	 => $ext_user,
@@ -95,7 +95,7 @@
 						$item['lang_action']	 = lang('allow');
 					}
 					$item['lang_del']	 = lang('delete');
-					$item['delete_url']	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'preferences.uimapping.index',
+					$item['delete_url']	 = phpgw::link('/index.php', array('menuaction' => 'preferences.uimapping.index',
 						'appname'	 => 'preferences',
 						'action'	 => 'delete',
 						'ext_user'	 => $ext_user,
@@ -124,7 +124,7 @@
 				if (isset($_SERVER['REMOTE_USER']) && ($ext_user == $_SERVER['REMOTE_USER']) && ($phpgw_map_location == $location) && ($phpgw_map_authtype == $auth_type))
 				{
 					$msg = lang('Action denied');
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'preferences.uimapping.index',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'preferences.uimapping.index',
 						'appname'	 => 'preferences',
 						'msg'		 => $msg));
 				}
@@ -144,7 +144,7 @@
 					{
 						$msg = lang('mapping is not exist');
 					}
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'preferences.uimapping.index',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'preferences.uimapping.index',
 						'appname'	 => 'preferences',
 						'msg'		 => $msg));
 				}
@@ -164,7 +164,7 @@
 					{
 						$msg = lang('mapping is not exist');
 					}
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'preferences.uimapping.index',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'preferences.uimapping.index',
 						'appname'	 => 'preferences',
 						'msg'		 => $msg));
 				}
@@ -181,14 +181,14 @@
 					{
 						$msg = lang('mapping is not exist');
 					}
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'preferences.uimapping.index',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'preferences.uimapping.index',
 						'appname'	 => 'preferences',
 						'msg'		 => $msg));
 				}
 			}
 			else
 			{
-				$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('app_data' => $app_data));
+				phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('app_data' => $app_data));
 			}
 		}
 	}

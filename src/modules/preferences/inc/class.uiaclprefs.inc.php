@@ -68,12 +68,12 @@
 		 */
 		function index()
 		{
-			$acl_app	= phpgw::get_var('acl_app', 'string');
-			$start		= phpgw::get_var('start', 'int');
-			$query		= phpgw::get_var('query', 'string');
-			$s_groups	= phpgw::get_var('s_groups', 'int');
-			$s_users	= phpgw::get_var('s_users', 'int');
-			$owner		= phpgw::get_var('owner', 'int');
+			$acl_app	= Sanitizer::get_var('acl_app', 'string');
+			$start		= Sanitizer::get_var('start', 'int');
+			$query		= Sanitizer::get_var('query', 'string');
+			$s_groups	= Sanitizer::get_var('s_groups', 'int');
+			$s_users	= Sanitizer::get_var('s_users', 'int');
+			$owner		= Sanitizer::get_var('owner', 'int');
 
 			$acl_app_not_passed = false;
 			if (! $acl_app)
@@ -131,7 +131,7 @@
 
 			$errors = '';
 
-			if ( phpgw::get_var('submit', 'bool', 'POST') )
+			if ( Sanitizer::get_var('submit', 'bool', 'POST') )
 			{
 				$processed = $_POST['processed'];
 				$to_remove = unserialize($processed);
@@ -142,7 +142,7 @@
 				}
 
 				/* Group records */
-				$group_variable = phpgw::get_var("g_{$acl_app}", 'string', 'POST');
+				$group_variable = Sanitizer::get_var("g_{$acl_app}", 'string', 'POST');
 
 				if ( !$group_variable )
 				{
@@ -157,7 +157,7 @@
 				}
 
 				/* User records */
-				$user_variable = phpgw::get_var("u_{$acl_app}", 'string', 'POST');
+				$user_variable = Sanitizer::get_var("u_{$acl_app}", 'string', 'POST');
 
 				if (!$user_variable)
 				{
@@ -234,7 +234,7 @@ HTML;
 			(
 				'errors'					=> $errors,
 				'title'						=> '<br>',
-				'action_url'				=> $GLOBALS['phpgw']->link('/index.php', array
+				'action_url'				=> phpgw::link('/index.php', array
 												(
 													'menuaction'	=> 'preferences.uiaclprefs.index',
 													'acl_app'		=> $acl_app

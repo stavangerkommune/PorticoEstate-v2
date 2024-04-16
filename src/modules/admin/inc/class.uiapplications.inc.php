@@ -42,9 +42,9 @@
 			$GLOBALS['phpgw']->template->set_block('applications','list','list');
 			$GLOBALS['phpgw']->template->set_block('applications','row','row');
 
-			$start	= phpgw::get_var('start', 'int', 'GET');
-			$sort	= phpgw::get_var('sort', 'string', 'GET');
-			$order	= phpgw::get_var('order', 'string', 'GET');
+			$start	= Sanitizer::get_var('start', 'int', 'GET');
+			$sort	= Sanitizer::get_var('sort', 'string', 'GET');
+			$order	= Sanitizer::get_var('order', 'string', 'GET');
 			$offset	= $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
 
 			$apps = $this->bo->get_list();
@@ -108,7 +108,7 @@
 			$GLOBALS['phpgw']->template->set_var('lang_delete',lang('Delete'));
 			$GLOBALS['phpgw']->template->set_var('lang_enabled',lang('Enabled'));
 
-			$GLOBALS['phpgw']->template->set_var('new_action',$GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'admin.uiapplications.add')));
+			$GLOBALS['phpgw']->template->set_var('new_action',phpgw::link('/index.php',array('menuaction'=>'admin.uiapplications.add')));
 			$GLOBALS['phpgw']->template->set_var('lang_note',lang('(To install new applications use<br><a href="setup/" target="setup">Setup</a> [Manage Applications] !!!)'));
 			$GLOBALS['phpgw']->template->set_var('lang_add',lang('add'));
 
@@ -134,8 +134,8 @@
 				$GLOBALS['phpgw']->template->set_var('name',$name);
 				$GLOBALS['phpgw']->template->set_var('version',$app['version']);
 
-				$GLOBALS['phpgw']->template->set_var('edit','<a href="' . $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'admin.uiapplications.edit','app_name'=>urlencode($app['name']))) . '"> ' . lang('Edit') . ' </a>');
-				$GLOBALS['phpgw']->template->set_var('delete','<a href="' . $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'admin.uiapplications.delete','app_name'=>urlencode($app['name']))) . '"> ' . lang('Delete') . ' </a>');
+				$GLOBALS['phpgw']->template->set_var('edit','<a href="' . phpgw::link('/index.php',array('menuaction'=>'admin.uiapplications.edit','app_name'=>urlencode($app['name']))) . '"> ' . lang('Edit') . ' </a>');
+				$GLOBALS['phpgw']->template->set_var('delete','<a href="' . phpgw::link('/index.php',array('menuaction'=>'admin.uiapplications.delete','app_name'=>urlencode($app['name']))) . '"> ' . lang('Delete') . ' </a>');
 
 				if ($app['status']==1)
 				{
@@ -174,14 +174,14 @@
 			$GLOBALS['phpgw']->template->set_block('application','form','form');
 			$GLOBALS['phpgw']->template->set_block('application','row','row');
 
-			if ( phpgw::get_var('submit', 'bool', 'POST') )
+			if ( Sanitizer::get_var('submit', 'bool', 'POST') )
 			{
 				$totalerrors = 0;
 
-				$app_order    = phpgw::get_var('app_order', 'int', 'POST');
-				$n_app_name   = phpgw::get_var('n_app_name', 'string', 'POST');
-				$n_app_title  = phpgw::get_var('n_app_title', 'string', 'POST');
-				$n_app_status = phpgw::get_var('n_app_status', 'int', 'POST');
+				$app_order    = Sanitizer::get_var('app_order', 'int', 'POST');
+				$n_app_name   = Sanitizer::get_var('n_app_name', 'string', 'POST');
+				$n_app_title  = Sanitizer::get_var('n_app_title', 'string', 'POST');
+				$n_app_status = Sanitizer::get_var('n_app_status', 'int', 'POST');
 
 				if ($this->bo->exists($n_app_name))
 				{
@@ -205,7 +205,7 @@
 					));
 
 					$GLOBALS['phpgw_info']['flags']['nodisplay'] = True;
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'admin.uiapplications.get_list') );
+					phpgw::redirect_link('/index.php', array('menuaction' => 'admin.uiapplications.get_list') );
 					exit;
 				}
 				else
@@ -224,7 +224,7 @@
 			$GLOBALS['phpgw']->template->set_var('lang_header',lang('Add new application'));
 
 			$GLOBALS['phpgw']->template->set_var('hidden_vars','');
-			$GLOBALS['phpgw']->template->set_var('form_action',$GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'admin.uiapplications.add')));
+			$GLOBALS['phpgw']->template->set_var('form_action',phpgw::link('/index.php',array('menuaction'=>'admin.uiapplications.add')));
 
 			$this->display_row(lang('application name'),'<input name="n_app_name" value="' . $n_app_name . '">');
 
@@ -254,22 +254,22 @@
 		{
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::apps';
 
-			$app_name = phpgw::get_var('app_name', 'string', 'GET');
+			$app_name = Sanitizer::get_var('app_name', 'string', 'GET');
 
 			$GLOBALS['phpgw']->template->set_root(PHPGW_APP_TPL);
 			$GLOBALS['phpgw']->template->set_file(array('application' => 'application_form.tpl'));
 			$GLOBALS['phpgw']->template->set_block('application','form','form');
 			$GLOBALS['phpgw']->template->set_block('application','row','row');
 
-			if ( phpgw::get_var('submit', 'bool', 'POST') )
+			if ( Sanitizer::get_var('submit', 'bool', 'POST') )
 			{
 				$totalerrors = 0;
 
-				$old_app_name = phpgw::get_var('old_app_name', 'string', 'POST');
-				$app_order    = phpgw::get_var('app_order', 'int', 'POST');
-				$n_app_name   = phpgw::get_var('n_app_name', 'string', 'POST');
-				$n_app_title  = phpgw::get_var('n_app_title', 'string', 'POST');
-				$n_app_status = phpgw::get_var('n_app_status', 'int', 'POST');
+				$old_app_name = Sanitizer::get_var('old_app_name', 'string', 'POST');
+				$app_order    = Sanitizer::get_var('app_order', 'int', 'POST');
+				$n_app_name   = Sanitizer::get_var('n_app_name', 'string', 'POST');
+				$n_app_title  = Sanitizer::get_var('n_app_title', 'string', 'POST');
+				$n_app_status = Sanitizer::get_var('n_app_status', 'int', 'POST');
 
 				if (! $n_app_name)
 				{
@@ -294,7 +294,7 @@
 					));
 
 					$GLOBALS['phpgw_info']['flags']['nodisplay'] = True;
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'admin.uiapplications.get_list') );
+					phpgw::redirect_link('/index.php', array('menuaction' => 'admin.uiapplications.get_list') );
 					exit;
 				}
 			}
@@ -314,7 +314,7 @@
 
 			$GLOBALS['phpgw']->template->set_var('lang_header',lang('Edit application'));
 			$GLOBALS['phpgw']->template->set_var('hidden_vars','<input type="hidden" name="old_app_name" value="' . $old_app_name . '">');
-			$GLOBALS['phpgw']->template->set_var('form_action',$GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'admin.uiapplications.edit')));
+			$GLOBALS['phpgw']->template->set_var('form_action',phpgw::link('/index.php',array('menuaction'=>'admin.uiapplications.edit')));
 
 			$this->display_row(lang('application name'),'<input name="n_app_name" value="' . $n_app_name . '">');
 
@@ -337,20 +337,20 @@
 		{
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::apps';
 
-			$app_name = phpgw::get_var('app_name', 'string', 'GET');
+			$app_name = Sanitizer::get_var('app_name', 'string', 'GET');
 
 			if (!$app_name)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'admin.uiapplications.get_list') );
+				phpgw::redirect_link('/index.php', array('menuaction' => 'admin.uiapplications.get_list') );
 			}
 
 			$GLOBALS['phpgw']->template->set_root(PHPGW_APP_TPL);
 			$GLOBALS['phpgw']->template->set_file(array('body' => 'delete_common.tpl'));
 
-			if ( phpgw::get_var('confirm', 'bool') )
+			if ( Sanitizer::get_var('confirm', 'bool') )
 			{
 				$this->bo->delete($app_name);
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'admin.uiapplications.get_list') );
+				phpgw::redirect_link('/index.php', array('menuaction' => 'admin.uiapplications.get_list') );
 				$GLOBALS['phpgw_info']['flags']['nodisplay'] = True;
 				exit;
 			}
@@ -358,8 +358,8 @@
 			$GLOBALS['phpgw']->common->phpgw_header(true);
 
 			$GLOBALS['phpgw']->template->set_var('messages',lang('Are you sure you want to delete this application ?'));
-			$GLOBALS['phpgw']->template->set_var('no','<a href="' . $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'admin.uiapplications.get_list')) . '">' . lang('No') . '</a>');
-			$GLOBALS['phpgw']->template->set_var('yes','<a href="' . $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'admin.uiapplications.delete','app_name'=> urlencode($app_name), 'confirm'=>'True')) . '">' . lang('Yes') . '</a>');
+			$GLOBALS['phpgw']->template->set_var('no','<a href="' . phpgw::link('/index.php',array('menuaction'=>'admin.uiapplications.get_list')) . '">' . lang('No') . '</a>');
+			$GLOBALS['phpgw']->template->set_var('yes','<a href="' . phpgw::link('/index.php',array('menuaction'=>'admin.uiapplications.delete','app_name'=> urlencode($app_name), 'confirm'=>'True')) . '">' . lang('Yes') . '</a>');
 			$GLOBALS['phpgw']->template->pparse('out','body');
 		}
 

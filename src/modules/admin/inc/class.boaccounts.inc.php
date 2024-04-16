@@ -142,7 +142,7 @@
 			if ( $GLOBALS['phpgw']->acl->check('group_access', phpgwapi_acl::EDIT, 'admin') )
 			{
 				$link_args = array('menuaction' => 'admin.uiaccounts.list_groups');
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_args);
+				phpgw::redirect_link('/index.php', $link_args);
 			}
 
 			if ( $values['account_id'] == 0
@@ -395,7 +395,7 @@
 		{
 			if ( $GLOBALS['phpgw']->acl->check('group_access', phpgwapi_acl::GROUP_MANAGERS, 'admin') )
 			{
-				$GLOBALS['phpgw']->redirect_link('index.php',
+				phpgw::redirect_link('index.php',
 						array('menuaction' => 'admin.uiaccounts.list_groups'));
 			}
 			return $GLOBALS['phpgw']->accounts->delete($group_id);
@@ -413,7 +413,7 @@
 		{
 			if ( $GLOBALS['phpgw']->acl->check('account_access', phpgwapi_acl::GROUP_MANAGERS, 'admin') )
 			{
-				$GLOBALS['phpgw']->redirect_link('index.php',
+				phpgw::redirect_link('index.php',
 						array('menuaction' => 'admin.uiaccounts.list_users'));
 			}
 			return $GLOBALS['phpgw']->accounts->delete($id);

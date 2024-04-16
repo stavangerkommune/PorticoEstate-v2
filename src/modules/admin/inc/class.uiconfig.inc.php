@@ -21,7 +21,7 @@
 		public function __construct()
 		{
 
-			$appname = phpgw::get_var('appname', 'string');
+			$appname = Sanitizer::get_var('appname', 'string');
 
 			$this->appname = $appname;
 
@@ -44,7 +44,7 @@
 		function index()
 		{
 			$errors	 = '';
-			$referer = phpgw::get_var('referer', 'url', 'GET');
+			$referer = Sanitizer::get_var('referer', 'url', 'GET');
 
 			if ($referer)
 			{
@@ -58,7 +58,7 @@
 				{
 					$referer = '';
 				}
-				$_redir = $referer ? $referer : $GLOBALS['phpgw']->link('/admin/index.php');
+				$_redir = $referer ? $referer : phpgw::link('/admin/index.php');
 			}
 
 			$appname											 = $this->appname;
@@ -195,7 +195,7 @@
 
 			$t->set_var(array
 				(
-				'action_url'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiconfig.index',
+				'action_url'	 => phpgw::link('/index.php', array('menuaction' => 'admin.uiconfig.index',
 					'appname' => $appname)),
 				'lang_cancel'	 => lang('cancel'),
 				'lang_submit'	 => lang('save'),

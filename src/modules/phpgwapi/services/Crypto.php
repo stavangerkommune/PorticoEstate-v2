@@ -54,12 +54,14 @@ if (!empty($serverSettings['mcrypt_enabled']) || (isset($serverSettings['enable_
         {
         }
 
-        /**
-         * Prevent from being unserialized (which would create a second instance of it)
-         */
-        private function __wakeup()
-        {
-        }
+		/**
+		 * Prevent from being unserialized (which would create a second instance of it)
+		 */
+		public function __wakeup()
+		{
+			// throw an exception to prevent unserialization
+			throw new \Exception("Cannot unserialize a singleton.");
+		}
 
 	}
 }

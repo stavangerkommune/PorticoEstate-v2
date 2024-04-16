@@ -40,7 +40,7 @@
 		{
 			if ($GLOBALS['phpgw']->acl->check('asyncservice_access',1,'admin'))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php');
+				phpgw::redirect_link('/index.php');
 			}
 
 			$GLOBALS['phpgw_info']['flags']['current_selection'] = 'admin::admin::async';
@@ -48,11 +48,11 @@
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('Admin').' - '.lang('Asynchronous timed services');
 			$GLOBALS['phpgw']->common->phpgw_header(true);
 
-			$manual_run = phpgw::get_var('manual_run', 'bool', 'POST');
+			$manual_run = Sanitizer::get_var('manual_run', 'bool', 'POST');
 
 			$async = clone($GLOBALS['phpgw']->asyncservice);	// use an own instance, as we might set debug=True
 
-			$async->debug = phpgw::get_var('debug', 'bool', 'POST');
+			$async->debug = Sanitizer::get_var('debug', 'bool', 'POST');
 
 			$units = array
 			(
@@ -64,14 +64,14 @@
 				'min'   => lang('Minute')
 			);
 
-			$debug = phpgw::get_var('debug', 'bool', 'POST');
+			$debug = Sanitizer::get_var('debug', 'bool', 'POST');
 
-			$send		= phpgw::get_var('send', 'bool', 'POST');
-			$test		= phpgw::get_var('test', 'bool', 'POST');
-			$cancel		= phpgw::get_var('cancel', 'bool', 'POST');
-			$install	= phpgw::get_var('install', 'bool', 'POST');
-			$update		= phpgw::get_var('update', 'bool', 'POST');
-			$asyncservice = phpgw::get_var('asyncservice', 'string', 'POST');
+			$send		= Sanitizer::get_var('send', 'bool', 'POST');
+			$test		= Sanitizer::get_var('test', 'bool', 'POST');
+			$cancel		= Sanitizer::get_var('cancel', 'bool', 'POST');
+			$install	= Sanitizer::get_var('install', 'bool', 'POST');
+			$update		= Sanitizer::get_var('update', 'bool', 'POST');
+			$asyncservice = Sanitizer::get_var('asyncservice', 'string', 'POST');
 
 			if ( $send || $test || $cancel || $install || $update || $asyncservice || $manual_run)
 			{
@@ -90,7 +90,7 @@
 				$times = array();
 				foreach ( array_keys($units) as $u )
 				{
-					$times[$u] = phpgw::get_var($u, 'string', 'POST');
+					$times[$u] = Sanitizer::get_var($u, 'string', 'POST');
 					if ( $times[$u] === '' )
 					{
 						unset($times[$u]);
@@ -99,7 +99,7 @@
 
 				if ( $test )
 				{
-					$email = phpgw::get_var('email', 'string', 'POST');
+					$email = Sanitizer::get_var('email', 'string', 'POST');
 					if(!$email)
 					{
 						$prefs = $GLOBALS['phpgw']->preferences->create_email_preferences();
@@ -158,7 +158,7 @@
 			{
 				$times = array('min' => '*/5');		// set some default
 			}
-			echo '<form action="'.$GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'admin.uiasyncservice.index')).'" method="POST">'."\n<p>";
+			echo '<form action="'.phpgw::link('/index.php',array('menuaction'=>'admin.uiasyncservice.index')).'" method="POST">'."\n<p>";
 			echo '<div style="text-align: left; margin: 10px;">'."\n";
 
 			$last_run = $async->last_check_run();

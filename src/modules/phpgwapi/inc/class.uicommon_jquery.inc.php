@@ -33,6 +33,7 @@
 	use App\modules\phpgwapi\controllers\Locations;
 	use App\modules\phpgwapi\services\Cache;
 	use App\modules\phpgwapi\services\Settings;
+	
 
 	phpgw::import_class('phpgwapi.jquery');
 
@@ -319,7 +320,7 @@
 		public static function redirect( $link_data )
 		{
 			$base = self::get_link_base();
-			$GLOBALS['phpgw']->redirect_link($base, $link_data);
+			phpgw::redirect_link($base, $link_data);
 		}
 
 		public function flash( $msg, $type = 'success' )

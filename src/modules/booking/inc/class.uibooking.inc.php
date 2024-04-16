@@ -1180,7 +1180,7 @@
 			$booking['when'] = pretty_timestamp($booking['from_']) . ' - ' . pretty_timestamp($booking['to_']);
 
             self::render_template_xsl('booking_info', array('booking' => $booking));
-			$GLOBALS['phpgw']->xslttpl->set_output('wml'); // Evil hack to disable page chrome
+			phpgwapi_xslttemplates::getInstance()->set_output('wml'); // Evil hack to disable page chrome
 		}
 
 		protected function add_cost_history( &$booking, $comment = '', $cost = '0.00' )

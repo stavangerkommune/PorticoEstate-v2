@@ -27,6 +27,6 @@
 	 */
 
 	// Delete all records for a user
-	$account_id = phpgw::get_var('account_id', 'int');
+	$account_id = Sanitizer::get_var('account_id', 'int');
 	$sql = "DELETE FROM phpgw_preferences WHERE preference_owner = {$account_id}";
 	$GLOBALS['phpgw']->db->query($sql, __LINE__, __FILE__);

@@ -572,7 +572,7 @@
 		{
 	//		$GLOBALS['phpgw']->accounts	= createObject('phpgwapi.accounts');
 			$accountsobj = new Accounts();
-			$aclobj = new Acl();
+			$aclobj = Acl::getInstance();
 
 	//		$GLOBALS['phpgw']->acl		= CreateObject('phpgwapi.acl');
 
