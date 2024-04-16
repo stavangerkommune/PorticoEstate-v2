@@ -29,6 +29,7 @@
 	use App\modules\phpgwapi\services\Settings;
 	use App\modules\phpgwapi\controllers\Accounts\Accounts;
 	use App\modules\phpgwapi\security\Acl;
+	use App\modules\phpgwapi\services\Cache;
 
 
 	phpgw::import_class('phpgwapi.jquery');
@@ -1078,7 +1079,7 @@
 					}
 					$this->accounts->delete_account4group($user_id, $group_id);
 					//Delete cached menu for members of group
-					phpgwapi_cache::user_clear('phpgwapi', 'menu', $user_id);
+					Cache::user_clear('phpgwapi', 'menu', $user_id);
 					$this->_acl->clear_user_cache($user_id);
 				}
 				return array('message' => 'OK');
@@ -1113,7 +1114,7 @@
 					}
 					$this->accounts->delete_account4group($entry['account_id'], $group_id);
 					//Delete cached menu for members of group
-					phpgwapi_cache::user_clear('phpgwapi', 'menu', $entry['account_id']);
+					Cache::user_clear('phpgwapi', 'menu', $entry['account_id']);
 					$this->_acl->clear_user_cache($entry['account_id']);
 				}
 				return array('message' => 'OK');
@@ -1147,7 +1148,7 @@
 				{
 					$this->accounts->add_user2group($user_id, $group_id);
 					//Delete cached menu for members of group
-					phpgwapi_cache::user_clear('phpgwapi', 'menu', $user_id);
+					Cache::user_clear('phpgwapi', 'menu', $user_id);
 					$this->_acl->clear_user_cache($user_id);
 				}
 				return array('message' => 'OK');
@@ -2065,12 +2066,12 @@
 
 			if(Sanitizer::get_var('message', 'string') && Sanitizer::get_var('confirm', 'bool'))
 			{
-				phpgwapi_cache::system_set('phpgwapi', 'phpgw_global_message',Sanitizer::get_var('message', 'string'));			
+				Cache::system_set('phpgwapi', 'phpgw_global_message',Sanitizer::get_var('message', 'string'));			
 			}
 
 			if(Sanitizer::get_var('delete_message', 'bool') && Sanitizer::get_var('confirm', 'bool'))
 			{
-				phpgwapi_cache::system_clear('phpgwapi', 'phpgw_global_message');
+				Cache::system_clear('phpgwapi', 'phpgw_global_message');
 			}
 
 			$this->flags['app_header'] = lang('administration');
@@ -2079,7 +2080,7 @@
 
 			$data = array
 			(
-				'value_message'		=> phpgwapi_cache::system_get('phpgwapi', 'phpgw_global_message'),
+				'value_message'		=> Cache::system_get('phpgwapi', 'phpgw_global_message'),
 				'form_action'		=> phpgw::link('/index.php',
 										array('menuaction' => 'admin.uiaccounts.global_message')),
 				'lang_cancel'		=> lang('cancel'),
@@ -2115,21 +2116,21 @@
 
 			if(Sanitizer::get_var('message', 'string') && Sanitizer::get_var('confirm', 'bool'))
 			{
-				phpgwapi_cache::system_set('phpgwapi', 'phpgw_home_screen_message_title', $msg_title);
-				phpgwapi_cache::system_set('phpgwapi', 'phpgw_home_screen_message', Sanitizer::get_var('message', 'html'));
+				Cache::system_set('phpgwapi', 'phpgw_home_screen_message_title', $msg_title);
+				Cache::system_set('phpgwapi', 'phpgw_home_screen_message', Sanitizer::get_var('message', 'html'));
 			}
 
 			if (Sanitizer::get_var('delete_message', 'bool') && Sanitizer::get_var('confirm', 'bool'))
 			{
-				phpgwapi_cache::system_clear('phpgwapi', 'phpgw_home_screen_message_title');
-				phpgwapi_cache::system_clear('phpgwapi', 'phpgw_home_screen_message');
+				Cache::system_clear('phpgwapi', 'phpgw_home_screen_message_title');
+				Cache::system_clear('phpgwapi', 'phpgw_home_screen_message');
 			}
 
 			$this->flags['app_header'] = lang('administration');
 
 			$data = array(
-				'value_title'	 => phpgwapi_cache::system_get('phpgwapi', 'phpgw_home_screen_message_title'),
-				'value_message'	 => phpgwapi_cache::system_get('phpgwapi', 'phpgw_home_screen_message'),
+				'value_title'	 => Cache::system_get('phpgwapi', 'phpgw_home_screen_message_title'),
+				'value_message'	 => Cache::system_get('phpgwapi', 'phpgw_home_screen_message'),
 				'form_action'	 => phpgw::link('/index.php',
 											  array('menuaction' => 'admin.uiaccounts.home_screen_message')),
 				'lang_cancel'	 => lang('cancel'),
@@ -2193,7 +2194,7 @@
 			{
 				$myfilearray = array();
 
-				phpgwapi_cache::system_clear_all();
+				Cache::system_clear_all();
 
 				phpgw::redirect_link('/index.php',
 						array('menuaction' => 'admin.uimainscreen.mainscreen'));
