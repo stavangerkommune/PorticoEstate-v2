@@ -548,6 +548,7 @@
 					':tables' => $tables,
 					':version' => $setup_info[$appname]['version']
 				]);
+				
 			}
 			$this->locations->add('run', "Automatically added on install - run {$appname}", $appname, false);
 			$this->locations->add('admin', "Allow app admins - {$appname}", $appname, false);

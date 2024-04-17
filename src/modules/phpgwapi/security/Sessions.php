@@ -848,7 +848,7 @@ class Sessions
 	{
 		$blocked = false;
 		$block_time = time() - $this->serverSetting['block_time'] * 60;
-		$ip = $this->db->quote($ip);
+		$ip = $this->db->db_addslashes($ip);
 
 		if (isset($this->serverSetting['sessions_checkip']) && $this->serverSetting['sessions_checkip']) {
 			$sql = 'SELECT COUNT(*) AS cnt FROM phpgw_access_log'
@@ -863,7 +863,7 @@ class Sessions
 			}
 		}
 		
-		$login = $this->db->quote($login);
+		$login = $this->db->db_addslashes($login);
 		$sql = 'SELECT COUNT(*) AS cnt FROM phpgw_access_log'
 			. " WHERE account_id = 0 AND (loginid=:login OR loginid LIKE :loginLike)"
 			. " AND li > :block_time";

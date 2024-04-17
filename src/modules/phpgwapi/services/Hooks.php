@@ -209,7 +209,7 @@ class Hooks
 			return false;
 		}
 
-		$db_appname = $this->db->quote($appname);
+		$db_appname = $this->db->db_addslashes($appname);
 		$stmt = $this->db->prepare("DELETE FROM phpgw_hooks WHERE hook_appname = :appname");
 		$stmt->execute([':appname' => $db_appname]);
 

@@ -440,7 +440,11 @@ abstract class Accounts_
 			throw new Exception('Invalid account id specified');
 		}
 
-		switch (get_class($account))
+		$class = get_class($account);
+		$parts = explode('\\', $class);
+		$finalElement = end($parts);
+	
+		switch ($finalElement)
 		{
 			case phpgwapi_account::CLASS_TYPE_USER:
 				return phpgwapi_account::TYPE_USER;

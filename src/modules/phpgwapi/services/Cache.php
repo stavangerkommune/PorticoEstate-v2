@@ -502,7 +502,7 @@
 		{
 			$db = \App\Database\Db::getInstance();
 
-			$key = $db->quote(self::_gen_key($module, $id));
+			$key = $db->db_addslashes(self::_gen_key($module, $id));
 			$uid = (int) $uid;
 
 			$sql = "DELETE FROM phpgw_cache_user WHERE item_key = :key";
@@ -532,7 +532,7 @@
 		{
 			$db = \App\Database\Db::getInstance();
 
-			$key = $db->quote(self::_gen_key($module, $id));
+			$key = $db->db_addslashes(self::_gen_key($module, $id));
 			$uid = (int) $uid;
 
 			$ret = null;
@@ -572,7 +572,7 @@
 			}
 			$db = \App\Database\Db::getInstance();
 
-			$key = $db->quote(self::_gen_key($module, $id));
+			$key = $db->db_addslashes(self::_gen_key($module, $id));
 			$value = self::_value_prepare($value, $bypass);
 			if($compress && function_exists('gzcompress'))
 			{
@@ -580,7 +580,7 @@
 			}
 			else
 			{
-				$value = $db->quote($value);
+				$value = $db->db_addslashes($value);
 			}
 
 			$now = time();

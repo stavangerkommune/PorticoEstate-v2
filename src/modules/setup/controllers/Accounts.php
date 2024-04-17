@@ -209,7 +209,7 @@
 	{
 	
 		if (\Sanitizer::get_var('cancel', 'bool', 'POST')) {
-			Header('Location: ../setup');
+			Header('Location: /setup');
 			exit;
 		}
 		// set some sane default values

@@ -70,7 +70,7 @@ class Config
 			$module = $serverFlags['currentapp'];
 		}
 		$this->db = \App\Database\Db::getInstance();
-		$this->module =	$this->db->quote($module);
+		$this->module =	$this->db->db_addslashes($module);
 	}
 
 

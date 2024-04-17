@@ -1129,8 +1129,8 @@
 				$account_sel = " AND (acl_account = :account_id OR acl_grantor = :account_id)";
 			}
 
-			$app = $this->_db->quote($app);
-			$location = $this->_db->quote($location);
+			$app = $this->_db->db_addslashes($app);
+			$location = $this->_db->db_addslashes($location);
 
 			$sql = 'SELECT location_id FROM phpgw_locations'
 				. " JOIN phpgw_applications ON phpgw_locations.app_id = phpgw_applications.app_id"
@@ -1201,7 +1201,7 @@
 				$cache_accountid[$accountid] = $account_id;
 			}
 
-			$location = $this->_db->quote($location);
+			$location = $this->_db->db_addslashes($location);
 			$rights = 0;
 			$apps = array();
 
@@ -1209,7 +1209,7 @@
 				. " {$this->_join} phpgw_locations ON phpgw_acl.location_id = phpgw_locations.location_id"
 				. " {$this->_join} phpgw_applications ON phpgw_locations.app_id = phpgw_applications.app_id";
 
-			$filtermethod = " WHERE phpgw_locations.name = {$location}"
+			$filtermethod = " WHERE phpgw_locations.name = '{$location}'"
 				. " AND (acl_account = :account_id";
 
 			if($inherited)
@@ -1224,7 +1224,6 @@
 			}
 
 			$sql .=" $filtermethod";
-
 			$stmt = $this->_db->prepare($sql);
 			$stmt->bindValue(':account_id', $account_id, PDO::PARAM_INT);
 			$stmt->execute();

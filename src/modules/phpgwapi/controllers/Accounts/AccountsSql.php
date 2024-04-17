@@ -466,7 +466,7 @@ class Accounts extends Accounts_
 			if (ctype_digit($query)) {
 				$whereclause .= 'person_id =' . (int)$query . ')';
 			} else {
-				$query = $this->db->quote($query);
+				$query = $this->db->db_addslashes($query);
 
 				if (strpos($query, ',')) {
 					$whereclause .= "account_lastname || ', ' || account_firstname ILIKE '$query%'"

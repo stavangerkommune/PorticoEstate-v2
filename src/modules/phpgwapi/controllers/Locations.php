@@ -101,15 +101,18 @@ class Locations
 	 */
 	public function add($location, $descr, $appname, $allow_grant = true, $custom_tbl = null, $c_function = false, $c_attrib = false)
 	{
-		$app = (new Applications)->name2id($appname);
+		$appplications = new Applications;
+		$appplications->read_installed_apps();
+		$app_id = $appplications->name2id($appname);
 
-		$location = $this->_db->quote($location);
-		$descr = $this->_db->quote($descr);
+		$location = $this->_db->db_addslashes($location);
+
+		$descr = $this->_db->db_addslashes($descr);
 		$allow_grant = (int) $allow_grant;
 		$c_function = (int) $c_function;
 
-		$stmt = $this->_db->prepare('SELECT location_id FROM phpgw_locations WHERE app_id = :app AND name = :location');
-		$stmt->execute([':app' => $app, ':location' => $location]);
+		$stmt = $this->_db->prepare('SELECT location_id FROM phpgw_locations WHERE app_id = :app_id AND name = :location');
+		$stmt->execute([':app_id' => $app_id, ':location' => $location]);
 
 		$location_id = null;
 		if ($row = $stmt->fetch(PDO::FETCH_ASSOC))
@@ -119,12 +122,12 @@ class Locations
 
 		if ($custom_tbl)
 		{
-			$custom_tbl = $this->_db->quote($custom_tbl);
+			$custom_tbl = $this->_db->db_addslashes($custom_tbl);
 			$c_attrib = 1;
 		}
 
 		$value_set = [
-			'app_id'            => $app,
+			'app_id'            => $app_id,
 			'name'              => $location,
 			'descr'             => $descr,
 			'allow_grant'       => $allow_grant,
@@ -169,7 +172,7 @@ class Locations
 	{
 		$app = (new Applications)->name2id($appname);
 
-		$location = $this->_db->quote($location);
+		$location = $this->_db->db_addslashes($location);
 
 		$stmt = $this->_db->prepare('SELECT c_attrib_table FROM phpgw_locations WHERE app_id = :app AND name = :location');
 		$stmt->execute([':app' => $app, ':location' => $location]);
@@ -229,8 +232,8 @@ class Locations
 	 */
 	public function get_attrib_table($appname, $location)
 	{
-		$appname  = $this->_db->quote($appname);
-		$location = $this->_db->quote($location);
+		$appname  = $this->_db->db_addslashes($appname);
+		$location = $this->_db->db_addslashes($location);
 
 		$sql = 'SELECT c_attrib_table '
 			. ' FROM phpgw_locations '
@@ -474,7 +477,7 @@ class Locations
 	 */
 	public function verify($apps, $location = '.')
 	{
-		$location = $this->_db->quote($location);
+		$location = $this->_db->db_addslashes($location);
 
 		if (!is_array($apps))
 		{
@@ -484,7 +487,7 @@ class Locations
 
 		foreach ($apps as $appname => $values)
 		{
-			$appname = $this->_db->quote($appname);
+			$appname = $this->_db->db_addslashes($appname);
 			$app_id = $applications->name2id($appname);
 
 			if ($app_id > 0)

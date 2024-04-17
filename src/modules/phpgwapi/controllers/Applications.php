@@ -433,7 +433,6 @@ class Applications
 	public function name2id($appname)
 	{
 		$installed_apps = Settings::getInstance()->get('apps');
-
 		if (empty($installed_apps) || !is_array($installed_apps))
 		{
 			$this->read_installed_apps();
