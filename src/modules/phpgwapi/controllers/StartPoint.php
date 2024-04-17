@@ -99,6 +99,7 @@ class StartPoint
 		Settings::getInstance()->set('flags', $flags);
 
 		/* A few hacker resistant constants that will be used throught the program */
+
 		define('PHPGW_TEMPLATE_DIR', ExecMethod('phpgwapi.phpgw.common.get_tpl_dir', 'phpgwapi'));
 		define('PHPGW_IMAGES_DIR', ExecMethod('phpgwapi.phpgw.common.get_image_path', 'phpgwapi'));
 		define('PHPGW_IMAGES_FILEDIR', ExecMethod('phpgwapi.phpgw.common.get_image_dir', 'phpgwapi'));
@@ -109,10 +110,22 @@ class StartPoint
 		define('PHPGW_APP_IMAGES_DIR', ExecMethod('phpgwapi.phpgw.common.get_image_dir'));
 
 
+		$phpgwapi_common = new \phpgwapi_common();
+
+		// define('PHPGW_TEMPLATE_DIR', $phpgwapi_common->get_tpl_dir('phpgwapi'));
+		// define('PHPGW_IMAGES_DIR', $phpgwapi_common->get_image_path('phpgwapi'));
+		// define('PHPGW_IMAGES_FILEDIR', $phpgwapi_common->get_image_dir('phpgwapi'));
+		// define('PHPGW_APP_ROOT', $phpgwapi_common->get_app_dir());
+		// define('PHPGW_APP_INC', $phpgwapi_common->get_inc_dir());
+		// define('PHPGW_APP_TPL', $phpgwapi_common->get_tpl_dir());
+		// define('PHPGW_IMAGES', $phpgwapi_common->get_image_path());
+		// define('PHPGW_APP_IMAGES_DIR', $phpgwapi_common->get_image_dir());
+
+
 
         if ($app == 'home' && ! $api_requested)
         {
-            phpgw::redirect_link('/home.php');
+            \phpgw::redirect_link('/home.php');
         }
     
         if ($api_requested)
