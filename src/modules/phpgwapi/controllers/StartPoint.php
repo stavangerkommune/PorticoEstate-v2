@@ -188,7 +188,7 @@ class StartPoint
             {
                 $this->log->message(array(
                     'text' => 'W-BadmenuactionVariable, menuaction missing or corrupt: %1',
-                    'p1'   => $menuaction,
+                    'p1'   => Sanitizer::get_var('menuaction', 'string'),
                     'line' => __LINE__,
                     'file' => __FILE__
                 ));

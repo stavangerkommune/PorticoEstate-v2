@@ -469,12 +469,12 @@ class phpgwapi_nextmatchs extends phpgwapi_nextmatchs_xslt
 	 */
 	public static function filterobj($filtertable, $idxfieldname, $strfieldname)
 	{
-		$db = \App\App\Database\Db::getInstance();
+		$db = \App\Database\Db::getInstance();
 
 		$filter_obj = array(array('none', 'show all'));
 		$index = 0;
 
-		$stmt = $pdo->prepare("SELECT :idxfieldname, :strfieldname FROM :filtertable");
+		$stmt = $db->prepare("SELECT :idxfieldname, :strfieldname FROM :filtertable");
 		$stmt->execute(['idxfieldname' => $idxfieldname, 'strfieldname' => $strfieldname, 'filtertable' => $filtertable]);
 
 		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
