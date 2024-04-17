@@ -9,7 +9,7 @@
 	 * @version $Id$
 	 */
 
-	/*
+/*
 	   This program is free software: you can redistribute it and/or modify
 	   it under the terms of the GNU General Public License as published by
 	   the Free Software Foundation, either version 2 of the License, or
@@ -24,6 +24,10 @@
 	   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
+	use App\modules\phpgwapi\services\Translation;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\security\Acl;
+	use App\modules\phpgwapi\controllers\Locations;
 
 	/**
 	 * Menus
@@ -39,13 +43,20 @@
 		 */
 		function get_menu()
 		{
+			$translation = Translation::getInstance();
+			$userSettings = Settings::getInstance()->get('user');
+			$serverSettings = Settings::getInstance()->get('server');
+			$flags = Settings::getInstance()->get('flags');
+			$acl = Acl::getInstance();
+			$locations = new Locations();
+
 			$menus = array();
 
 			$menus['navbar'] = array
 			(
 				'admin'	=> array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Administration', array(), true),
+					'text'	=> $translation->translate('Administration', array(), true),
 					'url'	=> phpgw::link('/index.php',
 								array('menuaction'=> 'admin.uimainscreen.mainscreen')),
 					'image'	=> array('admin', 'navbar'),
@@ -55,13 +66,13 @@
 			);
 
 			$local_admin = false;
-			$is_admin = $GLOBALS['phpgw']->acl->check('run', phpgwapi_acl::READ, 'admin');
+			$is_admin = $acl->check('run', Acl::READ, 'admin');
 			if(!$is_admin)
 			{
 				$available_apps = $GLOBALS['phpgw_info']['apps'];
 				foreach($available_apps as $_app => $dummy)
 				{
-					if($GLOBALS['phpgw']->acl->check('admin', phpgwapi_acl::ADD, $_app))
+					if($acl->check('admin', Acl::ADD, $_app))
 					{
 						$local_admin = true;
 						break;
@@ -74,26 +85,26 @@
 			{
 				$menus['admin']['index'] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('global configuration', array(), true),
+					'text'	=> $translation->translate('global configuration', array(), true),
 					'url'	=> phpgw::link('/index.php',
 								array('menuaction' => 'admin.uiconfig.index', 'appname' => 'admin'))
 				);
 				$menus['admin']['file_config'] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('file configuration', array(), true),
-					'nav_location' => 'navbar#' . $GLOBALS['phpgw']->locations->get_id('admin', 'vfs_filedata'),
+					'text'	=> $translation->translate('file configuration', array(), true),
+					'nav_location' => 'navbar#' . $locations->get_id('admin', 'vfs_filedata'),
 					'url'	=> phpgw::link('/index.php',
 						array
 						(
 							'menuaction' => 'admin.uiconfig2.index',
-							'location_id' => $GLOBALS['phpgw']->locations->get_id('admin', 'vfs_filedata')
+							'location_id' => $locations->get_id('admin', 'vfs_filedata')
 						)
 					)
 				);
 
 				$menus['admin']['file_attribs']	= array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('file attributes', array(), true),
+					'text'	=> $translation->translate('file attributes', array(), true),
 					'url'	=> phpgw::link('/index.php',
 						array
 						(
@@ -106,7 +117,7 @@
 				);
 				$menus['admin']['file_cats']	= array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('file categories', array(), true),
+					'text'	=> $translation->translate('file categories', array(), true),
 					'url'	=> phpgw::link('/index.php',
 						array
 						(
@@ -124,7 +135,7 @@
 			{
 				$menus['admin']['global_message'] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('global message', array(), true),
+					'text'	=> $translation->translate('global message', array(), true),
 					'url'	=> phpgw::link('/index.php',
 								array('menuaction' => 'admin.uiaccounts.global_message'))
 				);
@@ -134,7 +145,7 @@
 			{
 				$menus['admin']['home_screen_message'] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('home screen message', array(), true),
+					'text'	=> $translation->translate('home screen message', array(), true),
 					'url'	=> phpgw::link('/index.php',
 								array('menuaction' => 'admin.uiaccounts.home_screen_message'))
 				);
@@ -144,13 +155,13 @@
 			{
 				$menus['admin']['users'] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('manage users', array(), true),
+					'text'	=> $translation->translate('manage users', array(), true),
 					'url'	=> phpgw::link('/index.php',
 								array('menuaction' => 'admin.uiaccounts.list_users'))
 				);
 				$menus['admin']['groups'] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('manage groups', array(), true),
+					'text'	=> $translation->translate('manage groups', array(), true),
 					'url'	=> phpgw::link('/index.php',
 								array('menuaction' => 'admin.uiaccounts.list_groups'))
 				);
@@ -170,7 +181,7 @@
 			{
 				$menus['admin']['clear_cache'] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('clear cache', array(), true),
+					'text'	=> $translation->translate('clear cache', array(), true),
 					'url'	=> phpgw::link('/index.php', array('menuaction' => 'admin.uiaccounts.clear_cache') )
 				);
 			}
@@ -179,7 +190,7 @@
 			{
 				$menus['admin']['sync_account'] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Sync Account-Contact', array(), true),
+					'text'	=> $translation->translate('Sync Account-Contact', array(), true),
 					'url'	=> phpgw::link('/index.php', array('menuaction' => 'admin.uiaccounts.sync_accounts_contacts') )
 				);
 			}
@@ -188,7 +199,7 @@
 			{
 				$menus['admin']['apps'] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Applications', array(), true),
+					'text'	=> $translation->translate('Applications', array(), true),
 					'url'	=> phpgw::link('/index.php',
 								array('menuaction' => 'admin.uiapplications.get_list'))
 				);
@@ -198,7 +209,7 @@
 			{
 				$menus['admin']['categories'] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Global Categories', array(), true),
+					'text'	=> $translation->translate('Global Categories', array(), true),
 					'url'	=> phpgw::link('/index.php',
 								array('menuaction' => 'admin.uicategories.index'))
 				);
@@ -208,7 +219,7 @@
 			{
 				$menus['admin']['addressmasters'] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('addressmasters', array(), true),
+					'text'	=> $translation->translate('addressmasters', array(), true),
 					'url'	=> phpgw::link('/index.php', array
 								(
 									'menuaction' => 'admin.uiaclmanager.list_addressmasters',
@@ -221,7 +232,7 @@
 			{
 				$menus['admin']['mainscreen'] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Change Main Screen Message', array(), true),
+					'text'	=> $translation->translate('Change Main Screen Message', array(), true),
 					'url'	=> phpgw::link('/index.php',
 								array('menuaction' => 'admin.uimainscreen.index'))
 				);
@@ -231,7 +242,7 @@
 			{
 				$menus['admin']['sessions'] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('View Sessions', array(), true),
+					'text'	=> $translation->translate('View Sessions', array(), true),
 					'url'	=> phpgw::link('/index.php',
 								array('menuaction' => 'admin.uicurrentsessions.list_sessions'))
 				);
@@ -241,7 +252,7 @@
 			{
 				$menus['admin']['access_log'] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('View Access Log', array(), true),
+					'text'	=> $translation->translate('View Access Log', array(), true),
 					'url'	=> phpgw::link('/index.php',
 								array('menuaction' => 'admin.uiaccess_history.list_history'))
 				);
@@ -251,7 +262,7 @@
 			{
 				$menus['admin']['error_log'] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('View Error Log', array(), true),
+					'text'	=> $translation->translate('View Error Log', array(), true),
 					'url'	=> phpgw::link('/index.php',
 								array('menuaction' => 'admin.uilog.list_log'))
 				);
@@ -261,7 +272,7 @@
 			{
 				$menus['admin']['log_levels'] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Edit Log Levels', array(), true),
+					'text'	=> $translation->translate('Edit Log Levels', array(), true),
 					'url'	=> phpgw::link('/index.php',
 								array('menuaction' => 'admin.uiloglevels.edit_log_levels'))
 				);
@@ -269,7 +280,7 @@
 
 			if ( $is_admin)
 			{
-				$text = $GLOBALS['phpgw']->translation->translate('Find and Register all Application Hooks',
+				$text = $translation->translate('Find and Register all Application Hooks',
 						array(), true);
 
 				$menus['admin']['hooks'] = array
@@ -284,7 +295,7 @@
 			{
 				$menus['admin']['async'] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Asynchronous timed services', array(), true),
+					'text'	=> $translation->translate('Asynchronous timed services', array(), true),
 					'url'	=> phpgw::link('/index.php',
 								array('menuaction' => 'admin.uiasyncservice.index'))
 				);
@@ -295,7 +306,7 @@
 			{
 				$menus['admin']['phpinfo'] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('PHP Configuration', array(), true),
+					'text'	=> $translation->translate('PHP Configuration', array(), true),
 					'url'	=> phpgw::link('/admin/phpinfo.php'),
 				);
 			}
@@ -313,36 +324,36 @@
 			}
 
 			$menus['toolbar'] = array();
-			if ( $GLOBALS['phpgw']->acl->check('account_access', phpgwapi_acl::ADD, 'admin')
-					|| $GLOBALS['phpgw']->acl->check('account_access', phpgwapi_acl::PRIV, 'admin') )
+			if ( $acl->check('account_access', Acl::ADD, 'admin')
+					|| $acl->check('account_access', Acl::PRIV, 'admin') )
 			{
 				$menus['toolbar'][] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Add User', array(), true),
+					'text'	=> $translation->translate('Add User', array(), true),
 					'url'	=> phpgw::link('/index.php',
 								array('menuaction' => 'admin.uiaccounts.edit_account', 'account_id' => 0)),
 					'image'	=> array('admin', 'user')
 				);
 			}
 
-			if ( $GLOBALS['phpgw']->acl->check('group_access', phpgwapi_acl::ADD, 'admin')
-				|| $GLOBALS['phpgw']->acl->check('group_access', phpgwapi_acl::PRIV, 'admin') )
+			if ( $acl->check('group_access', Acl::ADD, 'admin')
+				|| $acl->check('group_access', Acl::PRIV, 'admin') )
 			{
 				$menus['toolbar'][] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Add Group', array(), true),
+					'text'	=> $translation->translate('Add Group', array(), true),
 					'url'	=> phpgw::link('/index.php',
 								array('menuaction' => 'admin.uiaccounts.edit_group', 'account_id' => 0)),
 					'image'	=> array('admin', 'group')
 				);
 			}
 
-			if ( !$GLOBALS['phpgw']->acl->check('info_access', phpgwapi_acl::READ, 'admin')
+			if ( !$acl->check('info_access', Acl::READ, 'admin')
 					&& function_exists('phpinfo') )
 			{
 				$menus['toolbar'][] = array
 				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('phpInfo', array(), true),
+					'text'	=> $translation->translate('phpInfo', array(), true),
 					'url'	=> phpgw::link('/admin/phpinfo.php')
 								. '" onclick="window.open(\''
 								. phpgw::link('/admin/phpinfo.php')

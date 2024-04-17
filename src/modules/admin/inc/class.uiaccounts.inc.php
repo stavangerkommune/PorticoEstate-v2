@@ -111,6 +111,8 @@
 			$this->flags['menu_selection'] = 'admin::admin';
 			Settings::getInstance()->set('flags', $this->flags);
 
+			phpgwapi_xslttemplates::getInstance()->set_root(PHPGW_APP_TPL);
+
 			$this->_bo = createObject('admin.boaccounts');
 			$this->_nextmatches =createObject('phpgwapi.nextmatchs');
 
@@ -299,7 +301,7 @@
 
 
 			if ( Sanitizer::get_var('done', 'bool', 'POST')
-				|| $this->_acl->check('group_access', PHPGW_ACL_READ, 'admin'))
+				|| $this->_acl->check('group_access', Acl::READ, 'admin'))
 			{
 				phpgw::redirect_link('/index.php',
 						array('menuaction' => 'admin.uimainscreen.mainscreen'));
