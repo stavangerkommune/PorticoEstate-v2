@@ -15,10 +15,16 @@ $app->post('/index.php', StartPoint::class . ':run')->add(new SessionsMiddleware
 $app->get('/preferences/', Preferences::class . ':index')->add(new SessionsMiddleware($app->getContainer()));
 $app->post('/preferences/', Preferences::class . ':index')->add(new SessionsMiddleware($app->getContainer()));
 
+// Define a factory for the Preferences singleton in the container
+$container->set(Preferences::class, function ($container) {
+    return Preferences::getInstance();
+});
+
 $app->get('/preferences/section', Preferences::class . ':section')->add(new SessionsMiddleware($app->getContainer()));
 $app->post('/preferences/section', Preferences::class . ':section')->add(new SessionsMiddleware($app->getContainer()));
 $app->get('/preferences/changepassword', Preferences::class . ':changepassword')->add(new SessionsMiddleware($app->getContainer()));
 $app->post('/preferences/changepassword', Preferences::class . ':changepassword')->add(new SessionsMiddleware($app->getContainer()));
+
 
 
 $app->get('/swagger[/{params:.*}]', function (Request $request, Response $response)

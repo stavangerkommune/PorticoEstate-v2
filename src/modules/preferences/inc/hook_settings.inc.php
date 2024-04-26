@@ -12,9 +12,9 @@ use App\modules\preferences\controllers\Preferences;
  */
 
 phpgw::import_class('phpgwapi.country');
-phpgw::import_class('phpgwapi.common');
+//phpgw::import_class('phpgwapi.common');
 
-$preferences = new Preferences();
+$preferences = Preferences::getInstance();
 
 $_templates = array();
 foreach (phpgwapi_common::list_templates() as $key => $value)

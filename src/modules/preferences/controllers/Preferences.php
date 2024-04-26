@@ -22,12 +22,18 @@ use Exception;
 
 //phpgw::import_class('phpgwapi.common');
 
+
 class Preferences
 {
-	private $serverSettings, $userSettings, $hooks, $preferences;
+	private $serverSettings, $userSettings, $hooks, $preferences, $prefs;
 	private $flags, $template, $acl, $phpgwapi_common, $translation, $nextmatchs;
+	/**
+     * @var Template reference to singleton instance
+     */
+	private static $instance = null;
 
-	function __construct()
+
+	private function __construct()
 	{
 		$this->serverSettings = Settings::getInstance()->get('server');
 		$this->userSettings = Settings::getInstance()->get('user');
@@ -39,17 +45,24 @@ class Preferences
 		Settings::getInstance()->set('flags', $this->flags);
 		require_once SRC_ROOT_PATH . '/helpers/LegacyObjectHandler.php';
 
-		$this->acl = acl::getInstance();
+		$this->acl = Acl::getInstance();
 		$this->phpgwapi_common = new \phpgwapi_common();
 		$this->template = Template::getInstance(PHPGW_APP_TPL);
 		$this->translation = Translation::getInstance();
 		$this->hooks = new Hooks();
+//		\_debug_array($this->userSettings['account_id']);
 		$this->preferences = Prefs::getInstance($this->userSettings['account_id']);
 		$this->nextmatchs	= CreateObject('phpgwapi.nextmatchs');
-		
-
 	}
 
+	public static function getInstance()
+	{
+		if (self::$instance === null)
+		{
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
 
 	public function changepassword(Request $request, Response $response, array $args)
 	{
@@ -249,7 +262,7 @@ class Preferences
 				$session_data['notifys'] = array();
 			}
 
-			$account_id = Sanitizer::get_var('account_id', 'int', 'POST');
+			$account_id = Sanitizer::get_var('account_id', 'int', 'POST', $this->userSettings['account_id']);
 			if ($this->is_admin() && $account_id)
 			{
 				$this->preferences->setAccountId($account_id, true);
@@ -337,24 +350,24 @@ class Preferences
 		switch ($GLOBALS['type']) // set up some globals to be used by the hooks
 		{
 			case 'forced':
-				$prefs	 = &$this->preferences->forced[$this->check_app()];
+				$this->prefs	 = &$this->preferences->forced[$this->check_app()];
 				break;
 			case 'default':
-				$prefs	 = &$this->preferences->default[$this->check_app()];
+				$this->prefs	 = &$this->preferences->default[$this->check_app()];
 				break;
 			default:
-				$prefs	 = &$this->preferences->user[$this->check_app()];
+				$this->prefs	 = &$this->preferences->user[$this->check_app()];
 				// use prefix if given in the url, used for email extra-accounts
 				if ($prefix != '')
 				{
 					$prefix_arr = explode('/', $prefix);
 					foreach ($prefix_arr as $pre)
 					{
-						$prefs = &$prefs[$pre];
+						$this->prefs = &$this->prefs[$pre];
 					}
 				}
 		}
-		//echo "prefs=<pre>"; print_r($prefs); echo "</pre>\n";
+		//echo "prefs=<pre>"; print_r($this->prefs); echo "</pre>\n";
 
 		$notifys = array();
 		if (!$this->hooks->single('settings', $appname))
@@ -545,9 +558,8 @@ CSS;
 
 		$this->phpgwapi_common->phpgw_footer(true);
 
-		$text = 'section';
 		$response = $response->withHeader('Content-Type', 'text/plain');
-		$response->getBody()->write($text);
+//		$response->getBody()->write($text);
 		return $response;
 	}
 
@@ -624,7 +636,6 @@ CSS;
 	 */
 	function create_input_box($label, $name, $help = '', $default = '', $size = '', $maxsize = '', $type = '', $run_lang = true)
 	{
-		global $prefs;
 
 		$t = $this->template;
 
@@ -651,9 +662,9 @@ CSS;
 		}
 
 		$default = '';
-		if (isset($prefs[$name]) || $GLOBALS['type'] != 'user')
+		if (isset($this->prefs[$name]) || $GLOBALS['type'] != 'user')
 		{
-			$default = isset($prefs[$name]) && $prefs[$name] ? $prefs[$name] : '';
+			$default = isset($this->prefs[$name]) && $this->prefs[$name] ? $this->prefs[$name] : '';
 		}
 
 		if ($GLOBALS['type'] == 'user')
@@ -710,15 +721,14 @@ CSS;
 	function create_check_box($label, $name, $help = '', $default = '')
 	{
 		// checkboxes itself can't be use as they return nothing if uncheckt !!!
-		global $prefs;
 
 		if ($GLOBALS['type'] != 'user')
 		{
 			$default = ''; // no defaults for default or forced prefs
 		}
-		if (isset($prefs[$name]))
+		if (isset($this->prefs[$name]))
 		{
-			$prefs[$name] = intval(!!$prefs[$name]); // to care for '' and 'True'
+			$this->prefs[$name] = intval(!!$this->prefs[$name]); // to care for '' and 'True'
 		}
 
 		return $this->create_select_box($label, $name, array(
@@ -765,7 +775,6 @@ CSS;
 	 */
 	function create_select_box($label, $name, $values, $help = '', $default = '')
 	{
-		global $prefs;
 		$t = $this->template;
 
 		$_appname = $this->check_app();
@@ -774,9 +783,9 @@ CSS;
 			return True;
 		}
 
-		if (isset($prefs[$name]) || $GLOBALS['type'] != 'user')
+		if (isset($this->prefs[$name]) || $GLOBALS['type'] != 'user')
 		{
-			$default = (isset($prefs[$name]) ? $prefs[$name] : '');
+			$default = (isset($this->prefs[$name]) ? $this->prefs[$name] : '');
 		}
 
 		switch ($GLOBALS['type'])
@@ -819,7 +828,7 @@ CSS;
 	 */
 	function create_notify($label, $name, $rows, $cols, $help = '', $default = '', $vars2 = '', $subst_help = True)
 	{
-		global $prefs, $notifys;
+		global $notifys;
 		$t = $this->template;
 
 
@@ -828,7 +837,7 @@ CSS;
 		{
 			$vars = array_merge($vars, $vars2);
 		}
-		$prefs[$name] = $this->preferences->lang_notify($prefs[$name], $vars);
+		$this->prefs[$name] = $this->preferences->lang_notify($this->prefs[$name], $vars);
 
 		$notifys[$name] = $vars; // this gets saved in the app_session for re-translation
 
@@ -867,7 +876,7 @@ CSS;
 	 */
 	function create_text_area($label, $name, $rows, $cols, $help = '', $default = '', $run_lang = True)
 	{
-		global $prefs, $notifys;
+		global $notifys;
 		$t = $this->template;
 
 
@@ -877,9 +886,9 @@ CSS;
 			return True;
 		}
 
-		if (isset($prefs[$name]) || $GLOBALS['type'] != 'user')
+		if (isset($this->prefs[$name]) || $GLOBALS['type'] != 'user')
 		{
-			$default = $prefs[$name];
+			$default = $this->prefs[$name];
 		}
 
 		if ($GLOBALS['type'] == 'user')
@@ -912,17 +921,17 @@ CSS;
 	{
 		$_appname = $this->check_app();
 
-		$prefs = &$repository[$_appname];
+		$this->prefs = &$repository[$_appname];
 
 		if ($prefix != '')
 		{
 			$prefix_arr = explode('/', $prefix);
 			foreach ($prefix_arr as $pre)
 			{
-				$prefs = &$prefs[$pre];
+				$this->prefs = &$this->prefs[$pre];
 			}
 		}
-		unset($prefs['']);
+		unset($this->prefs['']);
 		//echo "array:<pre>"; print_r($array); echo "</pre>\n";
 		//while (is_array($array) && list($var,$value) = each($array))
 		if (is_array($array))
@@ -939,16 +948,16 @@ CSS;
 							continue; // dont write empty password-fields
 						}
 					}
-					$prefs[$var] = stripslashes($value);
+					$this->prefs[$var] = stripslashes($value);
 
 					if (isset($notifys[$var]) && $notifys[$var]) // need to translate the key-words back
 					{
-						$prefs[$var] = $this->preferences->lang_notify($prefs[$var], $notifys[$var], True);
+						$this->prefs[$var] = $this->preferences->lang_notify($this->prefs[$var], $notifys[$var], True);
 					}
 				}
 				else
 				{
-					unset($prefs[$var]);
+					unset($this->prefs[$var]);
 				}
 			}
 		}
@@ -1031,6 +1040,7 @@ CSS;
 
 		if (!$this->acl->check('run', 1, 'preferences'))
 		{
+//			\_debug_array($this->acl);
 			die(lang('You do not have access to preferences'));
 		}
 
