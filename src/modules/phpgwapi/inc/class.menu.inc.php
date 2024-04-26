@@ -76,7 +76,7 @@ use App\modules\phpgwapi\services\Translation;
 
 			if(!$menu)
 			{
-				$menu = Cache::user_get('phpgwapi', 'menu', $account_id, true, true);
+	//			$menu = Cache::user_get('phpgwapi', 'menu', $account_id, true, true);
 			}
 
 			if(!$menu)

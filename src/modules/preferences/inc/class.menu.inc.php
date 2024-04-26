@@ -70,7 +70,7 @@ use App\modules\phpgwapi\controllers\Locations;
 			$menus['navigation'][] = array
 			(
 				'text'	=> $translation->translate('My Preferences', array(), true),
-				'url'	=> phpgw::link('/preferences/preferences.php', array('appname'	=> 'preferences')),
+				'url'	=> phpgw::link('/preferences/section', array('appname'	=> 'preferences')),
 				'image'	=> array('preferences', 'preferences')
 			);
 
@@ -79,7 +79,7 @@ use App\modules\phpgwapi\controllers\Locations;
 				$menus['navigation'][] = array
 				(
 					'text'	=> $translation->translate('Change your Password', array(), true),
-					'url'	=> phpgw::link('/preferences/changepassword.php')
+					'url'	=> phpgw::link('/preferences/changepassword')
 				);
 			}
 
@@ -102,14 +102,14 @@ use App\modules\phpgwapi\controllers\Locations;
 				array
 				(
 					'text'	=> $translation->translate('Preferences', array(), true),
-					'url'	=> phpgw::link('/preferences/preferences.php',
+					'url'	=> phpgw::link('/preferences/section',
 									array('appname'	=> 'preferences')),
 					'image'	=> array('preferences', 'preferences')
 				),
 				array
 				(
 					'text'	=> $translation->translate('Change your Password', array(), true),
-					'url'	=> phpgw::link('/preferences/changepassword.php')
+					'url'	=> phpgw::link('/preferences/changepassword')
 				)
 			);
 

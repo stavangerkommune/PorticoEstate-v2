@@ -907,11 +907,13 @@ abstract class Accounts_
 		}
 
 		// preferences - this is ugly - but the def_pref hook is ugly too
-		$GLOBALS['hook_values'] = array(
+		$hook_values = array(
 			'account_id'	=> $user->id,
 			'account_lid'	=> $user->lid,
 			'new_passwd'	=> $user->passwd
 		);
+
+		Settings::getInstance()->set('hook_values', $hook_values);
 
 		//FIXME
 		//$GLOBALS['pref'] = CreateObject('phpgwapi.preferences', $user->id);

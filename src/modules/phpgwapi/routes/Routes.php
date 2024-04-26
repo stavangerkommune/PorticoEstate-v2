@@ -4,17 +4,30 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\modules\phpgwapi\controllers\StartPoint;
 use App\modules\phpgwapi\middleware\SessionsMiddleware;
+use App\modules\preferences\controllers\Preferences;
+
 
 
 $app->get('/', StartPoint::class . ':run')->add(new SessionsMiddleware($app->getContainer()));
 $app->post('/', StartPoint::class . ':run')->add(new SessionsMiddleware($app->getContainer()));
+$app->get('/index.php', StartPoint::class . ':run')->add(new SessionsMiddleware($app->getContainer()));
+$app->post('/index.php', StartPoint::class . ':run')->add(new SessionsMiddleware($app->getContainer()));
+$app->get('/preferences/', Preferences::class . ':index')->add(new SessionsMiddleware($app->getContainer()));
+$app->post('/preferences/', Preferences::class . ':index')->add(new SessionsMiddleware($app->getContainer()));
 
-$app->get('/swagger[/{params:.*}]', function (Request $request, Response $response) {
-    $json_file = __DIR__ . '/../../swagger.json';
-    $json = file_get_contents($json_file);
-    $response = $response->withHeader('Content-Type', 'application/json');
-    $response->getBody()->write($json);
-    return $response;
+$app->get('/preferences/section', Preferences::class . ':section')->add(new SessionsMiddleware($app->getContainer()));
+$app->post('/preferences/section', Preferences::class . ':section')->add(new SessionsMiddleware($app->getContainer()));
+$app->get('/preferences/changepassword', Preferences::class . ':changepassword')->add(new SessionsMiddleware($app->getContainer()));
+$app->post('/preferences/changepassword', Preferences::class . ':changepassword')->add(new SessionsMiddleware($app->getContainer()));
+
+
+$app->get('/swagger[/{params:.*}]', function (Request $request, Response $response)
+{
+	$json_file = __DIR__ . '/../../swagger.json';
+	$json = file_get_contents($json_file);
+	$response = $response->withHeader('Content-Type', 'application/json');
+	$response->getBody()->write($json);
+	return $response;
 });
 
 $app->get('/login[/{params:.*}]', function (Request $request, Response $response) use ($phpgw_domain) {

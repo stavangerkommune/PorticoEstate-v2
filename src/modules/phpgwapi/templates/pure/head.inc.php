@@ -2,7 +2,7 @@
 	$javascripts = array();
 	$stylesheets = array();
 
-	$webserver_url = $GLOBALS['phpgw_info']['server']['webserver_url'];
+	$webserver_url = $GLOBALS['phpgw_info']['server']['webserver_url'] . PHPGW_MODULES_PATH;
 
 	phpgw::import_class('phpgwapi.jquery');
 	phpgwapi_jquery::load_widget('core');

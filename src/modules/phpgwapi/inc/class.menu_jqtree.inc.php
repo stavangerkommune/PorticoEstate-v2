@@ -23,6 +23,9 @@
 	  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
+	use \App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+
 	/**
 	 * Menus
 	 *
@@ -36,10 +39,12 @@
 
 		private $current_node_id;
 		private $navbar = array();
-		private $menu, $bookmarks, $menu_selection ;
+		private $menu, $bookmarks, $menu_selection, $userSettings;
 
 		function __construct( $navbar = array() )
 		{
+			$this->userSettings = Settings::getInstance()->get('user');
+			$flags = Settings::getInstance()->get('flags');
 			$this->menu = createObject('phpgwapi.menu');
 			if (!$navbar)
 			{
@@ -47,22 +52,22 @@
 			}
 			$this->set_navbar($navbar);
 			$this->set_current_node_id(0);
-			$this->bookmarks = phpgwapi_cache::user_get('phpgwapi', "bookmark_menu", $GLOBALS['phpgw_info']['user']['id']);
+			$this->bookmarks = Cache::user_get('phpgwapi', "bookmark_menu", $this->userSettings['id']);
 
 			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				$this->menu_selection = phpgwapi_cache::session_get('navbar', 'menu_selection');
+				$this->menu_selection = Cache::session_get('navbar', 'menu_selection');
 			}
 			else
 			{
-				$this->menu_selection = $GLOBALS['phpgw_info']['flags']['menu_selection'];
+				$this->menu_selection = $flags['menu_selection'];
 			}
 		}
 
 		private function get_navbar()
 		{
 			$navbar = $this->menu->get('navbar');
-			if (empty($GLOBALS['phpgw_info']['user']['preferences']['property']['nonavbar']))
+			if (empty($this->userSettings['preferences']['property']['nonavbar']))
 			{
 				$this->prepare_navbar($navbar);
 			}
@@ -132,7 +137,6 @@
 			$treemenu	 = array();
 			$navbar		 = $this->navbar;
 			$navigation	 = $this->menu->get('navigation');
-
 			foreach ($navbar as $app => $app_data)
 			{
 				if (!in_array($app, array('logout', 'about', 'preferences')))

@@ -47,7 +47,7 @@
 			$this->serverSettings = Settings::getInstance()->get('server');
 			$this->userSettings = Settings::getInstance()->get('user');
 			$this->flags = Settings::getInstance()->get('flags');
-			$webserver_url = isset($this->serverSettings['webserver_url']) ? $this->serverSettings['webserver_url'] : '/';
+			$webserver_url = isset($this->serverSettings['webserver_url']) ? $this->serverSettings['webserver_url'] . PHPGW_MODULES_PATH : '/';
 			$this->webserver_url = $webserver_url;
 		}
 
@@ -827,7 +827,7 @@ HTML;
 
 			if(!$webserver_url)
 			{
-				$webserver_url = $serverSettings['webserver_url'];
+				$webserver_url = $serverSettings['webserver_url'] . PHPGW_MODULES_PATH;
 			}
 
 			static $found_files = null;

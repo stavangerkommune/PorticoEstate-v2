@@ -18,7 +18,7 @@
 
 		$var = array
 		(
-			'webserver_url'	=> $GLOBALS['phpgw_info']['server']['webserver_url']
+			'webserver_url'	=> $GLOBALS['phpgw_info']['server']['webserver_url'] . PHPGW_MODULES_PATH
 		);
 
 		$extra_vars = array();

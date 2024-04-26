@@ -47,6 +47,8 @@
 		* Include root directory - legacy support
 		*/
 		define('PHPGW_INCLUDE_ROOT', PHPGW_SERVER_ROOT);
+		define('PHPGW_MODULES_PATH', '/src/modules');//Internal structure of the modules directory
+
 	}
 
 	//We only let preset flags remain everything else is killed

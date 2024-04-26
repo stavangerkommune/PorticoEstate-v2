@@ -40,7 +40,7 @@ use App\modules\phpgwapi\controllers\Locations;
 				array
 				(
 					'text' => $translation->translate('Preferences', array(), true),
-					'url' => phpgw::link('/preferences/preferences.php', array('appname' => 'booking',
+					'url' => phpgw::link('/preferences/section', array('appname' => 'booking',
 						'type' => 'user'))
 				)
 			);

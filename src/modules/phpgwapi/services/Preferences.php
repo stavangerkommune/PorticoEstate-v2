@@ -17,9 +17,9 @@ class Preferences
 	private $db;
 	private $translation;
 	private $config_data;
-	private $forced;
-	private $default;
-	private $user;
+	public $forced;
+	public $default;
+	public $user;
 	private $data;
 	private $values;
 	private $vars;

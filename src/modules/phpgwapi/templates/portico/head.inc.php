@@ -6,7 +6,7 @@
 		$GLOBALS['phpgw_info']['server']['site_title'] = lang('please set a site name in admin &gt; siteconfig');
 	}
 
-	$webserver_url = $GLOBALS['phpgw_info']['server']['webserver_url'];
+	$webserver_url = $GLOBALS['phpgw_info']['server']['webserver_url'] . PHPGW_MODULES_PATH;
 
 	$app = $GLOBALS['phpgw_info']['flags']['currentapp'];
 

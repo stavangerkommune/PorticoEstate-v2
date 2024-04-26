@@ -555,7 +555,7 @@
 			self::reset_flash_msgs();
 
 			self::add_jquery_translation($data);
-			$data['webserver_url'] = Settings::getInstance()->get('server')['webserver_url'];
+			$data['webserver_url'] = Settings::getInstance()->get('server')['webserver_url'] . PHPGW_MODULES_PATH;
 
 			if (preg_match("/(Trident\/(\d{2,}|7|8|9)(.*)rv:(\d{2,}))|(MSIE\ (\d{2,}|8|9)(.*)Tablet\ PC)|(Trident\/(\d{2,}|7|8|9))/", $_SERVER["HTTP_USER_AGENT"]))
 			{

@@ -36,7 +36,7 @@ use App\modules\phpgwapi\controllers\Accounts\Accounts;
 
 		$var = array
 		(
-			'webserver_url'	=> $serverSettings['webserver_url']
+			'webserver_url'	=> $serverSettings['webserver_url']// . PHPGW_MODULES_PATH
 		);
 
 		$extra_vars = array();
@@ -132,7 +132,7 @@ HTML;
 
 			$_treemenu = '';
 
-			if($userSettings['preferences']['common']['sidecontent'] !== 'ajax_menu')
+			if(false)//$userSettings['preferences']['common']['sidecontent'] !== 'ajax_menu')
 			{
 				$navigation = execMethod('phpgwapi.menu.get', 'navigation');
 				foreach($navbar as $app => $app_data)
@@ -437,7 +437,7 @@ HTML;
 			$navbar_state = execMethod('phpgwapi.template_portico.retrieve_local', 'menu_state');
 			$var['menu_state'] = !empty($navbar_state['menu_state']) ? 'sb-sidenav-toggled' : '';
 
-			if($userSettings['preferences']['common']['sidecontent'] == 'ajax_menu')
+			if(true)//$userSettings['preferences']['common']['sidecontent'] == 'ajax_menu')
 			{
 				$lang_collapse_all	= lang('collapse all');
 				$var['sidebar'] = <<<HTML

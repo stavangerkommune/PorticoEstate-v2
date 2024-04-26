@@ -42,7 +42,7 @@
 		var $external_files;
 
 		/**
-		 * @var ClassName reference to singleton instance
+		 * @var phpgwapi_css reference to singleton instance
 		 */
 		private static $instance;
 
@@ -72,7 +72,7 @@
 			$this->serverSettings = Settings::getInstance()->get('server');
 			$this->userSettings = Settings::getInstance()->get('user');
 			$webserver_url = Settings::getInstance()->get('server')['webserver_url'];
-			$this->webserver_url = $webserver_url;
+			$this->webserver_url = $webserver_url . PHPGW_MODULES_PATH;
 		}
 		/**
 		 * Gets the instance via lazy initialization (created on first usage)

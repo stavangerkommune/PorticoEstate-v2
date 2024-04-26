@@ -67,6 +67,8 @@
 		*/
 		public static function link($url, $extravars = array(), $redirect=false, $external = false, $force_backend = false)
 		{
+
+			$url = preg_replace("/\/index.php/", "/", $url);
 			$flags = Settings::getInstance()->get('flags');
 			$serverSettings = Settings::getInstance()->get('server');
 			$userSettings = Settings::getInstance()->get('user');

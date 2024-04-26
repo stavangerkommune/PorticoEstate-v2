@@ -86,6 +86,7 @@
 		protected $webserver_url;
 		protected $serverSettings;
 		protected $cache_refresh_token = '';
+		protected $log;
 
 
 	    /**
@@ -101,7 +102,7 @@
 		{
 			$this->serverSettings = Settings::getInstance()->get('server');
 			$this->validate_file('core', 'base', 'phpgwapi', false, array('combine' => true));
-			$webserver_url		 = $this->serverSettings['webserver_url'];
+			$webserver_url		 = $this->serverSettings['webserver_url'] . PHPGW_MODULES_PATH;
 			$this->webserver_url = $webserver_url;
 			$this->cache_refresh_token = '?v=' . $this->serverSettings['version'];
 			$this->log = new Log();

@@ -438,7 +438,7 @@
 				});
 			});
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $js);
+			phpgwapi_js::getInstance()->add_code('', $js);
 			$times_loaded++;
 		}
 
@@ -550,7 +550,7 @@ HTML;
 
 			};
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $js);
+			phpgwapi_js::getInstance()->add_code('', $js);
 			return $output;
 		}
 
@@ -595,7 +595,7 @@ JS;
 //			);
 		} );
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $js);
+			phpgwapi_js::getInstance()->add_code('', $js);
 		}
 
 		public static function init_summernote( $target )
@@ -681,7 +681,7 @@ JS;
 			});
 		});
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $js);
+			phpgwapi_js::getInstance()->add_code('', $js);
 			$init	 = true;
 		}
 
@@ -740,7 +740,7 @@ JS;
 
 		});
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $js);
+			phpgwapi_js::getInstance()->add_code('', $js);
 
 			$init = true;
 		}
@@ -823,7 +823,7 @@ JS;
 			});
 
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $js);
+			phpgwapi_js::getInstance()->add_code('', $js);
 
 
 		}

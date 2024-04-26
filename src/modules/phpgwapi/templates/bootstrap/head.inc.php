@@ -17,7 +17,7 @@
 		$serverSettings['site_title'] = lang('please set a site name in admin &gt; siteconfig');
 	}
 
-	$webserver_url = $serverSettings['webserver_url'];
+	$webserver_url = $serverSettings['webserver_url'] . PHPGW_MODULES_PATH;
 
 	$app = $flags['currentapp'];
 

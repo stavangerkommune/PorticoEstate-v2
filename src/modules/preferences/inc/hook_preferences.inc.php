@@ -11,7 +11,7 @@
 
 	if ($GLOBALS['phpgw']->acl->check('changepassword',1))
 	{
-		$file['Change your Password'] = phpgw::link('/preferences/changepassword.php');
+		$file['Change your Password'] = phpgw::link('/preferences/changepassword');
 	}
 	if((isset($GLOBALS['phpgw_info']['server']['auth_type']) && $GLOBALS['phpgw_info']['server']['auth_type'] == 'remoteuser') || (isset($GLOBALS['phpgw_info']['server']['half_remote_user']) && $GLOBALS['phpgw_info']['server']['half_remote_user'] == 'remoteuser'))
 	{
@@ -21,7 +21,7 @@
 		}
 	}
 												
-	$file['change your settings'] = phpgw::link('/preferences/preferences.php',array('appname'=> 'preferences'));
+	$file['change your settings'] = phpgw::link('/preferences/section',array('appname'=> 'preferences'));
 
 	display_section('preferences',$file);
 

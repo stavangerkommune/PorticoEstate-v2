@@ -1,8 +1,63 @@
 <?php
 
-    include_once SRC_ROOT_PATH . '/modules/phpgwapi/inc/class.object_factory.inc.php';
-    include_once SRC_ROOT_PATH . '/modules/phpgwapi/inc/class.ofphpgwapi.inc.php';
-    include_once SRC_ROOT_PATH . '/helpers/phpgw.php';
+use App\modules\phpgwapi\services\Settings;
+
+include_once SRC_ROOT_PATH . '/modules/phpgwapi/inc/class.object_factory.inc.php';
+include_once SRC_ROOT_PATH . '/modules/phpgwapi/inc/class.ofphpgwapi.inc.php';
+include_once SRC_ROOT_PATH . '/helpers/phpgw.php';
+
+
+
+	if (isset($_GET['menuaction']) || isset($_POST['menuaction']))
+	{
+		if (isset($_GET['menuaction']))
+		{
+			list($app, $class, $method) = explode('.', $_GET['menuaction']);
+		}
+		else
+		{
+			list($app, $class, $method) = explode('.', $_POST['menuaction']);
+		}
+		if (!$app || !$class || !$method)
+		{
+			$invalid_data = true;
+		}
+	}
+	else
+	{
+
+		$app = 'home';
+		$invalid_data = true;
+	}
+
+	$api_requested = false;
+	if ($app == 'phpgwapi')
+	{
+		$app = 'home';
+		$api_requested = true;
+	}
+
+	$flags = Settings::getInstance()->get('flags');
+	$flags['noheader']   = true;
+	if (empty($flags['currentapp']))
+	{
+		$flags['currentapp']   = $app;
+	}
+	
+	Settings::getInstance()->set('flags', $flags);
+
+
+
+
+define('PHPGW_TEMPLATE_DIR', ExecMethod('phpgwapi.phpgw.common.get_tpl_dir', 'phpgwapi'));
+define('PHPGW_IMAGES_DIR', ExecMethod('phpgwapi.phpgw.common.get_image_path', 'phpgwapi'));
+define('PHPGW_IMAGES_FILEDIR', ExecMethod('phpgwapi.phpgw.common.get_image_dir', 'phpgwapi'));
+define('PHPGW_APP_ROOT', ExecMethod('phpgwapi.phpgw.common.get_app_dir'));
+define('PHPGW_APP_INC', ExecMethod('phpgwapi.phpgw.common.get_inc_dir'));
+define('PHPGW_APP_TPL', ExecMethod('phpgwapi.phpgw.common.get_tpl_dir'));
+define('PHPGW_IMAGES', ExecMethod('phpgwapi.phpgw.common.get_image_path'));
+define('PHPGW_APP_IMAGES_DIR', ExecMethod('phpgwapi.phpgw.common.get_image_dir'));
+ 
 	include_once SRC_ROOT_PATH . '/modules/phpgwapi/inc/class.xslttemplates.inc.php';
 
 
