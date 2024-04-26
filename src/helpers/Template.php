@@ -149,6 +149,12 @@ class Template
 	 */
 	var $last_error = "";
 	var $serverSettings = array();
+	
+	/**
+     * @var Template reference to singleton instance
+     */
+	private static $instance = null;
+
 
 	/*		 * ****************************************************************************
 		 * Class constructor. May be called with two optional parameters.
@@ -174,6 +180,19 @@ class Template
 		$this->set_root($root);
 		$this->set_unknowns($unknowns);
 	}
+
+    /**
+     * Gets the instance via lazy initialization (created on first usage)
+     */
+    public static function getInstance($root = ".", $unknowns = "remove"): Template
+    {
+		if (self::$instance === null)
+		{
+			self::$instance = new self($root, $unknowns);
+		}
+		return self::$instance;
+
+    }
 	/*		 * ****************************************************************************
 		 * Checks that $root is a valid directory and if so sets this directory as the
 		 * base directory from which templates are loaded by storing the value in

@@ -41,12 +41,12 @@ class Preferences
 
 		$this->acl = acl::getInstance();
 		$this->phpgwapi_common = new \phpgwapi_common();
-		$this->template = new Template(PHPGW_APP_TPL);
+		$this->template = Template::getInstance(PHPGW_APP_TPL);
 		$this->translation = Translation::getInstance();
 		$this->hooks = new Hooks();
 		$this->preferences = Prefs::getInstance($this->userSettings['account_id']);
 		$this->nextmatchs	= CreateObject('phpgwapi.nextmatchs');
-
+		
 
 	}
 
@@ -152,8 +152,18 @@ class Preferences
 		$response = $response->withHeader('Content-Type', 'text/plain');
 //		$response->getBody()->write($text);
 		return $response;
+	}
 
-
+	public function init_display_settings()
+	{
+		$t = $this->template;
+		$t->set_root($this->phpgwapi_common->get_tpl_dir('preferences'));
+		$t->set_file('preferences', 'preferences.tpl');
+		$t->set_block('preferences', 'list', 'lists');
+		$t->set_block('preferences', 'row', 'rowhandle');
+		$t->set_block('preferences', 'help_row', 'help_rowhandle');
+		$t->set_var(array('rowhandle' => '', 'help_rowhandle' => '', 'messages' => ''));
+		return $t;
 	}
 
 	public function section(Request $request, Response $response, array $args)
@@ -165,17 +175,11 @@ class Preferences
 			\phpgw::redirect_link('/preferences/index.php');
 		}
 
+		$t = $this->init_display_settings();
 		$user	 = Sanitizer::get_var('user', 'string', 'POST');
 		$forced	 = Sanitizer::get_var('forced', 'string', 'POST');
 		$default = Sanitizer::get_var('default', 'string', 'POST');
 
-		$t = &$this->template;
-		$t->set_root($this->phpgwapi_common->get_tpl_dir('preferences'));
-		$t->set_file('preferences', 'preferences.tpl');
-		$t->set_block('preferences', 'list', 'lists');
-		$t->set_block('preferences', 'row', 'rowhandle');
-		$t->set_block('preferences', 'help_row', 'help_rowhandle');
-		$t->set_var(array('rowhandle' => '', 'help_rowhandle' => '', 'messages' => ''));
 
 		if ($appname != 'preferences')
 		{
@@ -621,10 +625,12 @@ CSS;
 	function create_input_box($label, $name, $help = '', $default = '', $size = '', $maxsize = '', $type = '', $run_lang = true)
 	{
 		global $prefs;
+
 		$t = $this->template;
 
 		$def_text	 = '';
 		$_appname	 = $this->check_app();
+
 		if ($this->is_forced_value($_appname, $name))
 		{
 			return true;
