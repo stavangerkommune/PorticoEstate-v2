@@ -129,7 +129,9 @@ class Preferences
 			}
 
 			$o_passwd = $this->userSettings['passwd'];
-			$passwd_changed = $GLOBALS['phpgw']->auth->change_password($o_passwd, $n_passwd);
+			$Auth = new \App\modules\phpgwapi\security\Auth\Auth();
+
+			$passwd_changed = $Auth->change_password($o_passwd, $n_passwd);
 			if (!$passwd_changed)
 			{
 				// This need to be changed to show a different message based on the result
@@ -137,7 +139,7 @@ class Preferences
 			}
 			else
 			{
-				$this->userSettings['passwd'] = $GLOBALS['phpgw']->auth->change_password($o_passwd, $n_passwd);
+				$this->userSettings['passwd'] = $Auth->change_password($o_passwd, $n_passwd);
 				Settings::getInstance()->set('user', $this->userSettings);
 				$hook_values = array();
 				$hook_values['account_id'] = $this->userSettings['account_id'];
@@ -694,7 +696,8 @@ CSS;
 	 */
 	function process_help($help, $run_lang = True)
 	{
-		global $t, $show_help, $has_help;
+		global $show_help, $has_help;
+		$t = $this->template;
 
 		if (!empty($help))
 		{

@@ -10,6 +10,8 @@ use App\modules\preferences\controllers\Preferences;
  * @package preferences
  * @version $Id$
  */
+use App\modules\phpgwapi\services\Preferences as Prefs;
+use App\modules\phpgwapi\services\Settings;
 
 phpgw::import_class('phpgwapi.country');
 //phpgw::import_class('phpgwapi.common');
@@ -28,8 +30,12 @@ $account_id = Sanitizer::get_var('account_id', 'int');
 
 if ($account_id)
 {
-	$user_pref = createObject('phpgwapi.preferences', $account_id)->read();
+	$orig_account_id = Settings::getInstance()->get('user')['account_id'];
+	$prefs = Prefs::getInstance();
+	$prefs->setAccountId($account_id);
+	$user_pref = $prefs->get('preferences');
 	$template_set = $user_pref['common']['template_set'];
+	$prefs->setAccountId($orig_account_id);
 }
 
 $_themes = array();

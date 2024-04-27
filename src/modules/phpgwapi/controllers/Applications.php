@@ -178,6 +178,7 @@ class Applications
 			}
 		}
 		Settings::getInstance()->set('apps', $this->data);
+		$this->acl->set_apps($this->data);
 		return $this->data;
 	}
 

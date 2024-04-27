@@ -203,6 +203,11 @@
    
 		   return self::$instance;
 	   }
+
+	   public function set_apps($apps)
+	   {
+		   $this->apps = $apps;
+	   }
    
 	   private function _get_app_id($appname)
 	   {
