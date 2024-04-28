@@ -119,7 +119,7 @@ class StartPoint
 
         if ($app == 'home' && ! $api_requested)
         {
-            \phpgw::redirect_link('/home.php');
+            \phpgw::redirect_link('/home/');
         }
     
         if ($api_requested)
@@ -204,7 +204,7 @@ class StartPoint
             }
             $this->log->commit();
     
-           // phpgw::redirect_link('/home.php');
+           // phpgw::redirect_link('/home/');
         }
      //   $GLOBALS['phpgw']->common->phpgw_footer();
     

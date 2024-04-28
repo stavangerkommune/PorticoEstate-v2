@@ -31,7 +31,7 @@
 			$extra_vars[$name] = phpgw::clean_value($value);
 		}
 
-		$site_url	= phpgw::link('/home.php', array());
+		$site_url	= phpgw::link('/home/', array());
 
 		$var['home_url'] = $site_url;
 		$user = $GLOBALS['phpgw']->accounts->get( $GLOBALS['phpgw_info']['user']['id'] );

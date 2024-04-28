@@ -127,7 +127,7 @@
 		'javascript'	=> $GLOBALS['phpgw']->common->get_javascript($cache_refresh_token),
 		'img_icon'      => $GLOBALS['phpgw']->common->find_image('phpgwapi', 'favicon.ico'),
 		'site_title'	=> "{$GLOBALS['phpgw_info']['server']['site_title']}",
-		'site_url'		=> phpgw::link('/home.php', array()),
+		'site_url'		=> phpgw::link('/home/', array()),
 		'str_base_url'	=> phpgw::link('/', array(), true),
 		'userlang'		=> $GLOBALS['phpgw_info']['user']['preferences']['common']['lang'],
 		'webserver_url'	=> $webserver_url,

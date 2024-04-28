@@ -1,6 +1,6 @@
 <?php
 
-use App\modules\preferences\controllers\Preferences;
+use App\modules\preferences\helpers\PreferenceHelper;
 
 /**
  * Preferences - settings hook
@@ -13,10 +13,12 @@ use App\modules\preferences\controllers\Preferences;
 use App\modules\phpgwapi\services\Preferences as Prefs;
 use App\modules\phpgwapi\services\Settings;
 
+$userSettings = Settings::getInstance()->get('user');
+
 phpgw::import_class('phpgwapi.country');
 //phpgw::import_class('phpgwapi.common');
 
-$preferences = Preferences::getInstance();
+$preferenceHelper = PreferenceHelper::getInstance();
 
 $_templates = array();
 foreach (phpgwapi_common::list_templates() as $key => $value)
@@ -45,20 +47,20 @@ foreach (phpgwapi_common::list_themes($template_set) as $theme)
 }
 
 
-$preferences->create_input_box(
+$preferenceHelper->create_input_box(
 	'Max matches per page',
 	'maxmatchs',
 	'Any listing in phpGW will show you this number of entries or lines per page.<br>To many slow down the page display, to less will cost you the overview.',
 	'',
 	3
 );
-$preferences->create_select_box(
+$preferenceHelper->create_select_box(
 	'Interface/Template Selection',
 	'template_set',
 	$_templates,
 	'A template defines the layout of phpGroupWare and it contains icons for each application.'
 );
-$preferences->create_select_box(
+$preferenceHelper->create_select_box(
 	'Theme (colors/fonts) Selection',
 	'theme',
 	$_themes,
@@ -67,9 +69,9 @@ $preferences->create_select_box(
 
 
 /*
-	$format = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+	$format = $userSettings['preferences']['common']['dateformat'];
 	$format = ($format ? $format : 'Y/m/d') . ', ';
-	if ($GLOBALS['phpgw_info']['user']['preferences']['common']['timeformat'] == '12')
+	if ($userSettings['preferences']['common']['timeformat'] == '12')
 	{
 		$format .= 'h:i a';
 	}
@@ -93,7 +95,7 @@ foreach ($timezone_identifiers as $identifier)
 {
 	$timezone[$identifier] = $identifier;
 }
-$preferences->create_select_box(
+$preferenceHelper->create_select_box(
 	'Time zone',
 	'timezone',
 	$timezone,
@@ -115,7 +117,7 @@ $date_formats = array(
 	'd-m-Y' => 'd-m-Y',
 	'd.m.Y' => 'd.m.Y'
 );
-$preferences->create_select_box(
+$preferenceHelper->create_select_box(
 	'Date format',
 	'dateformat',
 	$date_formats,
@@ -126,14 +128,14 @@ $time_formats = array(
 	'12' => lang('12 hour'),
 	'24' => lang('24 hour')
 );
-$preferences->create_select_box(
+$preferenceHelper->create_select_box(
 	'Time format',
 	'timeformat',
 	$time_formats,
 	'Do you prefer a 24 hour time format, or a 12 hour one with am/pm attached.'
 );
 
-$preferences->create_select_box(
+$preferenceHelper->create_select_box(
 	'Country',
 	'country',
 	phpgwapi_country::get_translated_list(),
@@ -149,7 +151,7 @@ foreach ($langs as $key => $name)	// if we have a translation use it
 		$langs[$key] = $trans;
 	}
 }
-$preferences->create_select_box(
+$preferenceHelper->create_select_box(
 	'Language',
 	'lang',
 	$langs,
@@ -157,35 +159,36 @@ $preferences->create_select_box(
 );
 
 // preference.php handles this function
-if ($preferences->is_admin())
+if ($preferenceHelper->is_admin())
 {
-	$preferences->create_check_box(
+	$preferenceHelper->create_check_box(
 		'Show number of current users',
 		'show_currentusers',
 		'Should the number of active sessions be displayed for you all the time.'
 	);
 }
 
-//reset($GLOBALS['phpgw_info']['user']['apps']);
-//while (list($app) = each($GLOBALS['phpgw_info']['user']['apps']))
-if (is_array($GLOBALS['phpgw_info']['user']['apps']))
+//reset($userSettings['apps']);
+//while (list($app) = each($userSettings['apps']))
+if (is_array($userSettings['apps']))
 {
-	foreach ($GLOBALS['phpgw_info']['user']['apps'] as $app => $value)
+	$apps = Settings::getInstance()->get('apps');
+	foreach ($userSettings['apps'] as $app => $value)
 	{
-		if ($GLOBALS['phpgw_info']['apps'][$app]['status'] != 2 && $app)
+		if ($apps[$app]['status'] != 2 && $app)
 		{
-			$user_apps[$app] = $GLOBALS['phpgw_info']['apps'][$app]['title'] ? $GLOBALS['phpgw_info']['apps'][$app]['title'] : lang($app);
+			$user_apps[$app] = $apps[$app]['title'] ? $apps[$app]['title'] : lang($app);
 		}
 	}
 }
-$preferences->create_select_box(
+$preferenceHelper->create_select_box(
 	'Default application',
 	'default_app',
 	$user_apps,
 	"The default application will be started when you enter phpGroupWare or click on the homepage icon.<br>You can also have more than one application showing up on the homepage, if you don't choose a specific application here (has to be configured in the preferences of each application)."
 );
 
-$preferences->create_input_box(
+$preferenceHelper->create_input_box(
 	'Currency',
 	'currency',
 	'Which currency symbol or name should be used in phpGroupWare.'
@@ -195,7 +198,7 @@ $account_sels = array(
 	'selectbox' => lang('Selectbox'),
 	'popup'     => lang('Popup with search')
 );
-$preferences->create_select_box(
+$preferenceHelper->create_select_box(
 	'How do you like to select accounts',
 	'account_selection',
 	$account_sels,
@@ -206,7 +209,7 @@ $account_display = array(
 	'firstname' => lang('Firstname') . ' ' . lang('Lastname'),
 	'lastname'  => lang('Lastname') . ', ' . lang('Firstname'),
 );
-$preferences->create_select_box(
+$preferenceHelper->create_select_box(
 	'How do you like to display accounts',
 	'account_display',
 	$account_display,
@@ -220,20 +223,20 @@ $rteditors = array(
 	'summernote'	=> 'Summernote',
 	'quill'	=> 'quill'
 );
-$preferences->create_select_box(
+$preferenceHelper->create_select_box(
 	'Rich text (WYSIWYG) editor',
 	'rteditor',
 	$rteditors,
 	'Which editor would you like to use for editing html and other rich content?'
 );
 
-$preferences->create_check_box(
+$preferenceHelper->create_check_box(
 	'CSV download button',
 	'csv_download',
 	'Do you want av CSV download button for main tables?'
 );
 
-$preferences->create_check_box(
+$preferenceHelper->create_check_box(
 	'Show helpmessages by default',
 	'show_help',
 	'Should this help messages shown up always, when you enter the preferences or only on request.'
@@ -245,29 +248,29 @@ $menu_formats = array(
 	'ajax_menu' => lang('ajax menu'),
 	'no_sidecontent' => lang('No SideContent')
 );
-$preferences->create_select_box(
+$preferenceHelper->create_select_box(
 	'SideContent',
 	'sidecontent',
 	$menu_formats,
 	'Do you want your menues as sidecontent'
 );
-$preferences->create_check_box(
+$preferenceHelper->create_check_box(
 	'Show breadcrumbs',
 	'show_breadcrumbs',
 	'Should history navigation urls as breadcrumbs'
 );
-$preferences->create_check_box(
+$preferenceHelper->create_check_box(
 	'activate nowrap in YUI-tables',
 	'yui_table_nowrap',
 	'activate nowrap in YUI-tables'
 );
 
-$preferences->create_select_box('Tabel export format', 'export_format', array(
+$preferenceHelper->create_select_box('Tabel export format', 'export_format', array(
 	'excel' => 'Excel',
 	'csv' => 'CSV', 'ods' => 'ODS'
 ), 'Choose which format to export from the system for tables');
 
-$preferences->create_input_box('Your Cellphone', 'cellphone');
-$preferences->create_input_box('Your Email', 'email', 'Insert your email address');
-$preferences->create_input_box('Your archive user id', 'archive_user_id', 'Insert your archive user id');
-$preferences->create_input_box('Your job title', 'job_title', 'Insert job title');
+$preferenceHelper->create_input_box('Your Cellphone', 'cellphone');
+$preferenceHelper->create_input_box('Your Email', 'email', 'Insert your email address');
+$preferenceHelper->create_input_box('Your archive user id', 'archive_user_id', 'Insert your archive user id');
+$preferenceHelper->create_input_box('Your job title', 'job_title', 'Insert job title');

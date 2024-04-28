@@ -183,7 +183,7 @@ JS;
 	$manual_text = lang('manual');
 
 
-	if(preg_match('/home.php$/i', $_SERVER['SCRIPT_NAME']))
+	if(preg_match('/home/$/i', $_SERVER['SCRIPT_NAME']))
 	{
 		$home_text	= '';
 	}

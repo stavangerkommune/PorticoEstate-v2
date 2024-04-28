@@ -46,7 +46,7 @@
 				'home' => array
 				(
 					'text'	=> lang('Home'),
-					'url'	=> phpgw::link('/home.php'),
+					'url'	=> phpgw::link('/home/'),
 					'image'	=> array('phpgwapi', 'home'),
 					'order'	=> -100,
 					'group'	=> 'core'

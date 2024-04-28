@@ -4,7 +4,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\modules\phpgwapi\controllers\StartPoint;
 use App\modules\phpgwapi\middleware\SessionsMiddleware;
-use App\modules\preferences\controllers\Preferences;
+use App\modules\preferences\helpers\PreferenceHelper;
+use App\modules\phpgwapi\helpers\HomeHelper;
 
 
 
@@ -12,19 +13,20 @@ $app->get('/', StartPoint::class . ':run')->add(new SessionsMiddleware($app->get
 $app->post('/', StartPoint::class . ':run')->add(new SessionsMiddleware($app->getContainer()));
 $app->get('/index.php', StartPoint::class . ':run')->add(new SessionsMiddleware($app->getContainer()));
 $app->post('/index.php', StartPoint::class . ':run')->add(new SessionsMiddleware($app->getContainer()));
-$app->get('/preferences/', Preferences::class . ':index')->add(new SessionsMiddleware($app->getContainer()));
-$app->post('/preferences/', Preferences::class . ':index')->add(new SessionsMiddleware($app->getContainer()));
+$app->get('/preferences/', PreferenceHelper::class . ':index')->add(new SessionsMiddleware($app->getContainer()));
+$app->post('/preferences/', PreferenceHelper::class . ':index')->add(new SessionsMiddleware($app->getContainer()));
 
 // Define a factory for the Preferences singleton in the container
-$container->set(Preferences::class, function ($container) {
-    return Preferences::getInstance();
+$container->set(PreferenceHelper::class, function ($container) {
+    return PreferenceHelper::getInstance();
 });
 
-$app->get('/preferences/section', Preferences::class . ':section')->add(new SessionsMiddleware($app->getContainer()));
-$app->post('/preferences/section', Preferences::class . ':section')->add(new SessionsMiddleware($app->getContainer()));
-$app->get('/preferences/changepassword', Preferences::class . ':changepassword')->add(new SessionsMiddleware($app->getContainer()));
-$app->post('/preferences/changepassword', Preferences::class . ':changepassword')->add(new SessionsMiddleware($app->getContainer()));
+$app->get('/preferences/section', PreferenceHelper::class . ':section')->add(new SessionsMiddleware($app->getContainer()));
+$app->post('/preferences/section', PreferenceHelper::class . ':section')->add(new SessionsMiddleware($app->getContainer()));
+$app->get('/preferences/changepassword', PreferenceHelper::class . ':changepassword')->add(new SessionsMiddleware($app->getContainer()));
+$app->post('/preferences/changepassword', PreferenceHelper::class . ':changepassword')->add(new SessionsMiddleware($app->getContainer()));
 
+$app->get('/home/', HomeHelper::class . ':processHome')->add(new SessionsMiddleware($app->getContainer()));
 
 
 $app->get('/swagger[/{params:.*}]', function (Request $request, Response $response)

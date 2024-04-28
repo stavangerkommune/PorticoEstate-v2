@@ -230,6 +230,68 @@ class Preferences
 		return $this->data;
 	}
 
+		/**
+		 * delete preference from $app_name
+		 *
+		 * @param $app_name name of app
+		 * @param $var variable to be deleted
+		 * @param $type of preference to set: forced, default, user
+		 * the effektive prefs ($this->data) are updated to reflect the change
+		 * @return the new effective prefs (even when forced or default prefs are deleted!)
+		 */
+		public function delete($app_name, $var = false,$type = 'user')
+		{
+			//echo "<p>delete('$app_name','$var')</p>\n";
+			$set_via = array(
+					'forced'  => array('user','default'),
+					'default' => array('forced','user'),
+					'user'    => array('forced','default')
+					);
+			if (!isset($set_via[$type]))
+			{
+				$type = 'user';
+			}
+			if ($all = !$var)
+			{
+				unset($this->{$type}[$app_name]);
+				unset($this->data[$app_name]);
+			}
+			else
+			{
+				if ( isset($this->{$type}[$app_name][$var]) )
+				{
+					unset($this->{$type}[$app_name][$var]);
+				}
+
+				if ( isset($this->data[$app_name][$var]) )
+				{
+					unset($this->data[$app_name][$var]);
+				}
+			}
+			// set the effectiv pref again if needed
+			//
+			foreach ($set_via[$type] as $set_from)
+			{
+				if ($all)
+				{
+					if (isset($this->{$set_from}[$app_name]))
+					{
+						$this->data[$app_name] = $this->{$set_from}[$app_name];
+						break;
+					}
+				}
+				else
+				{
+					if (isset($this->{$set_from}[$app_name][$var]) && $this->{$set_from}[$app_name][$var] !== '')
+					{
+						$this->data[$app_name][$var] = $this->{$set_from}[$app_name][$var];
+						break;
+					}
+				}
+			}
+			reset ($this->data);
+			return $this->data;
+		}
 
 	/**
 	 * parses a notify and replaces the substitutes

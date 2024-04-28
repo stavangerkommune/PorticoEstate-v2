@@ -19,7 +19,7 @@
 		(
 			'print_url'		=> "{$_SERVER['PHP_SELF']}?" . http_build_query(array_merge($extra_vars, array('phpgw_return_as' => 'noframes'))),
 			'print_text'	=> lang('print'),
-			'home_url'		=> phpgw::link('/home.php'),
+			'home_url'		=> phpgw::link('/home/'),
 			'home_text'		=> lang('home'),
 			'home_icon'		=> 'icon icon-home',
 			'about_url'		=> phpgw::link('/about.php', array('app' => $GLOBALS['phpgw_info']['flags']['currentapp']) ),

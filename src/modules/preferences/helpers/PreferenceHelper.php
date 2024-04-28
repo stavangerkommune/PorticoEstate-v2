@@ -1,6 +1,6 @@
 <?php
 
-namespace App\modules\preferences\controllers;
+namespace App\modules\preferences\helpers;
 
 use App\modules\phpgwapi\services\Settings;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -12,20 +12,13 @@ use App\modules\phpgwapi\controllers\Accounts\phpgwapi_user;
 use App\modules\phpgwapi\services\Translation;
 use App\modules\phpgwapi\services\Hooks;
 use App\modules\phpgwapi\services\Preferences as Prefs;
-
-
-
-
 use Sanitizer;
 use Exception;
 
 
-//phpgw::import_class('phpgwapi.common');
-
-
-class Preferences
+class PreferenceHelper
 {
-	private $serverSettings, $userSettings, $hooks, $preferences, $prefs;
+	private $serverSettings, $userSettings, $hooks, $preferences, $prefs,$type, $show_help, $has_help, $prefix, $notifys,$list_shown;
 	private $flags, $template, $acl, $phpgwapi_common, $translation, $nextmatchs;
 	/**
      * @var Template reference to singleton instance
@@ -205,7 +198,6 @@ class Preferences
 		/* Only check this once */
 		if ($this->acl->check('run', 1, 'admin') || $this->acl->check('admin', Acl::ADD, $this->check_app()))
 		{
-			/* Don't use a global variable for this ... */
 			define('HAS_ADMIN_RIGHTS', 1);
 		}
 		else
@@ -215,10 +207,10 @@ class Preferences
 
 		$session_data = Cache::session_get('preferences', 'session_data');
 
-		$prefix = Sanitizer::get_var('prefix', 'string', 'GET');
-		if (!$prefix && (isset($session_data['appname']) && $session_data['appname'] == Sanitizer::get_var('appname', 'string', 'GET')))
+		$this->prefix = Sanitizer::get_var('prefix', 'string', 'GET');
+		if (!$this->prefix && (isset($session_data['appname']) && $session_data['appname'] == Sanitizer::get_var('appname', 'string', 'GET')))
 		{
-			$prefix = $session_data['prefix'];
+			$this->prefix = $session_data['prefix'];
 		}
 
 		if ($this->is_admin())
@@ -226,34 +218,34 @@ class Preferences
 			/* This is where we will keep track of our postion. */
 			/* Developers won't have to pass around a variable then */
 
-			$GLOBALS['type'] = Sanitizer::get_var('type', 'string', 'REQUEST', $session_data['type']);
+			$this->type = Sanitizer::get_var('type', 'string', 'REQUEST', $session_data['type']);
 
-			if (empty($GLOBALS['type']))
+			if (empty($this->type))
 			{
-				$GLOBALS['type'] = 'user';
+				$this->type = 'user';
 			}
 		}
 		else
 		{
-			$GLOBALS['type'] = 'user';
+			$this->type = 'user';
 		}
 
-		$show_help = false;
+		$this->show_help = false;
 		if (isset($session_data['show_help']) && $session_data['show_help'] != '' && $session_data['appname'] == $appname)
 		{
-			$show_help = $session_data['show_help'];
+			$this->show_help = $session_data['show_help'];
 		}
 		else if (isset($this->userSettings['preferences']['common']['show_help']))
 		{
-			$show_help = !!$this->userSettings['preferences']['common']['show_help'];
+			$this->show_help = !!$this->userSettings['preferences']['common']['show_help'];
 		}
 
 		$toggle_help = Sanitizer::get_var('toggle_help', 'bool', 'POST');
 		if ($toggle_help)
 		{
-			$show_help = !$show_help;
+			$this->show_help = !$this->show_help;
 		}
-		$has_help = 0;
+		$this->has_help = 0;
 
 		$error = '';
 		if (Sanitizer::get_var('submit', 'bool', 'POST'))
@@ -271,17 +263,17 @@ class Preferences
 			}
 
 			/* Don't use a switch here, we need to check some permissions durring the ifs */
-			if ($GLOBALS['type'] == 'user' || !($GLOBALS['type']))
+			if ($this->type == 'user' || !($this->type))
 			{
-				$error = $this->process_array($this->preferences->user, $user, $session_data['notifys'], $prefix);
+				$error = $this->process_array($this->preferences->user, $user, $session_data['notifys'], $this->prefix);
 			}
 
-			if ($GLOBALS['type'] == 'default' && $this->is_admin())
+			if ($this->type == 'default' && $this->is_admin())
 			{
 				$error = $this->process_array($this->preferences->default, $default, $session_data['notifys']);
 			}
 
-			if ($GLOBALS['type'] == 'forced' && $this->is_admin())
+			if ($this->type == 'forced' && $this->is_admin())
 			{
 				$error = $this->process_array($this->preferences->forced, $forced, $session_data['notifys']);
 			}
@@ -309,21 +301,21 @@ class Preferences
 				\phpgw::redirect_link('/preferences/index.php');
 			}
 
-			if ($GLOBALS['type'] == 'user' && $appname == 'preferences' && (isset($user['show_help']) && $user['show_help'] != ''))
+			if ($this->type == 'user' && $appname == 'preferences' && (isset($user['show_help']) && $user['show_help'] != ''))
 			{
-				$show_help = $user['show_help']; // use it, if admin changes his help-prefs
+				$this->show_help = $user['show_help']; // use it, if admin changes his help-prefs
 			}
 		}
 
 		Cache::session_set('preferences', 'session_data',
 		 array(
-			'type'		 => $GLOBALS['type'], // save our state in the app-session
-			'show_help'	 => $show_help,
-			'prefix'	 => $prefix,
+			'type'		 => $this->type, // save our state in the app-session
+			'show_help'	 => $this->show_help,
+			'prefix'	 => $this->prefix,
 			'appname'	 => $appname  // we use this to reset prefix on appname-change
 		));
 		// changes for the admin itself, should have immediate feedback ==> redirect
-		if (!$error && (Sanitizer::get_var('submit', 'bool', 'POST')) && $GLOBALS['type'] == 'user' && $appname == 'preferences')
+		if (!$error && (Sanitizer::get_var('submit', 'bool', 'POST')) && $this->type == 'user' && $appname == 'preferences')
 		{
 			\phpgw::redirect_link('/preferences/section', array(
 				'appname'	 => $appname,
@@ -346,10 +338,10 @@ class Preferences
 
 		$t->set_var('messages', $error);
 		$t->set_var('action_url', \phpgw::link('/preferences/section', array(
-			'appname'	 => $appname, 'type'		 => $GLOBALS['type']
+			'appname'	 => $appname, 'type'		 => $this->type
 		)));
 
-		switch ($GLOBALS['type']) // set up some globals to be used by the hooks
+		switch ($this->type) // set up some globals to be used by the hooks
 		{
 			case 'forced':
 				$this->prefs	 = &$this->preferences->forced[$this->check_app()];
@@ -360,9 +352,9 @@ class Preferences
 			default:
 				$this->prefs	 = &$this->preferences->user[$this->check_app()];
 				// use prefix if given in the url, used for email extra-accounts
-				if ($prefix != '')
+				if ($this->prefix != '')
 				{
-					$prefix_arr = explode('/', $prefix);
+					$prefix_arr = explode('/', $this->prefix);
 					foreach ($prefix_arr as $pre)
 					{
 						$this->prefs = &$this->prefs[$pre];
@@ -371,7 +363,7 @@ class Preferences
 		}
 		//echo "prefs=<pre>"; print_r($this->prefs); echo "</pre>\n";
 
-		$notifys = array();
+		$this->notifys = array();
 		if (!$this->hooks->single('settings', $appname))
 		{
 			$t->set_block('preferences', 'form', 'formhandle'); // skip the form
@@ -384,16 +376,16 @@ class Preferences
 			));
 		}
 
-		if (count($notifys)) // there have been notifys in the hook, we need to save in the session
+		if (count($this->notifys)) // there have been notifys in the hook, we need to save in the session
 		{
 			Cache::session_get('preferences', 'session_data', array(
-				'type'		 => $GLOBALS['type'], // save our state in the app-session
-				'show_help'	 => $show_help,
-				'prefix'	 => $prefix,
+				'type'		 => $this->type, // save our state in the app-session
+				'show_help'	 => $this->show_help,
+				'prefix'	 => $this->prefix,
 				'appname'	 => $appname, // we use this to reset prefix on appname-change
-				'notifys'	 => $notifys
+				'notifys'	 => $this->notifys
 			));
-			//echo "notifys:<pre>"; print_r($notifys); echo "</pre>\n";
+			//echo "notifys:<pre>"; print_r($this->notifys); echo "</pre>\n";
 		}
 
 		$tabs = array();
@@ -423,7 +415,7 @@ class Preferences
 				))
 			);
 
-			switch ($GLOBALS['type'])
+			switch ($this->type)
 			{
 				case 'user':
 					$accounts	 = array();
@@ -526,14 +518,14 @@ HTML;
 		$t->set_var('pre_div', $pre_div);
 		$t->set_var('post_div', $post_div);
 
-		$t->set_var('tabs', $this->phpgwapi_common->create_tabs($tabs, $GLOBALS['type']));
+		$t->set_var('tabs', $this->phpgwapi_common->create_tabs($tabs, $this->type));
 		$t->set_var('lang_submit', lang('save'));
 		$t->set_var('lang_cancel', lang('cancel'));
-		$t->set_var('show_help', intval($show_help));
-		$t->set_var('help_button', $has_help ? '<input type="submit" name="toggle_help" value="' .
-		($show_help ? lang('help off') : lang('help')) . '" />' : '');
+		$t->set_var('show_help', intval($this->show_help));
+		$t->set_var('help_button', $this->has_help ? '<input type="submit" name="toggle_help" value="' .
+		($this->show_help ? lang('help off') : lang('help')) . '" />' : '');
 
-		if (!isset($list_shown) || !$list_shown)
+		if (!isset($this->list_shown) || !$this->list_shown)
 		{
 			$this->show_list();
 		}
@@ -592,7 +584,7 @@ CSS;
 	 */
 	function is_forced_value($_appname, $preference_name)
 	{
-		if (isset($this->preferences->forced[$_appname][$preference_name]) && $GLOBALS['type'] != 'forced')
+		if (isset($this->preferences->forced[$_appname][$preference_name]) && $this->type != 'forced')
 		{
 			return True;
 		}
@@ -614,7 +606,6 @@ CSS;
 	 */
 	function create_password_box($label_name, $preference_name, $help = '', $size = '', $max_size = '')
 	{
-		global $user, $forced, $default;
 
 		$_appname = $this->check_app();
 		if ($this->is_forced_value($_appname, $preference_name))
@@ -664,23 +655,23 @@ CSS;
 		}
 
 		$default = '';
-		if (isset($this->prefs[$name]) || $GLOBALS['type'] != 'user')
+		if (isset($this->prefs[$name]) || $this->type != 'user')
 		{
 			$default = isset($this->prefs[$name]) && $this->prefs[$name] ? $this->prefs[$name] : '';
 		}
 
-		if ($GLOBALS['type'] == 'user')
+		if ($this->type == 'user')
 		{
 			$def_text = (!isset($this->preferences->user[$_appname][$name]) || !$this->preferences->user[$_appname][$name]) ?
 				(isset($this->preferences->data[$_appname][$name]) ? $this->preferences->data[$_appname][$name] : '') : (isset($this->preferences->default[$_appname][$name]) ? $this->preferences->default[$_appname][$name] : '');
 
-			if (isset($notifys[$name])) // translate the substitution names
+			if (isset($this->notifys[$name])) // translate the substitution names
 			{
-				$def_text = $this->preferences->lang_notify($def_text, $notifys[$name]);
+				$def_text = $this->preferences->lang_notify($def_text, $this->notifys[$name]);
 			}
 			$def_text = ($def_text != '') ? lang('default') . ": $def_text" : '';
 		}
-		$t->set_var('row_value', "<input class=\"pure-input-1-2\" name=\"{$GLOBALS['type']}[$name]\" value=\"" . htmlentities($default, ENT_COMPAT, 'UTF-8') . "\"$options />$def_text");
+		$t->set_var('row_value', "<input class=\"pure-input-1-2\" name=\"{$this->type}[$name]\" value=\"" . htmlentities($default, ENT_COMPAT, 'UTF-8') . "\"$options />$def_text");
 		$t->set_var('row_name', lang($label));
 		$this->nextmatchs->template_alternate_row_class($t);
 
@@ -696,14 +687,13 @@ CSS;
 	 */
 	function process_help($help, $run_lang = True)
 	{
-		global $show_help, $has_help;
 		$t = $this->template;
 
 		if (!empty($help))
 		{
-			$has_help = True;
+			$this->has_help = True;
 
-			if ($show_help)
+			if ($this->show_help)
 			{
 				$t->set_var('help_value', $run_lang ? lang($help) : $help);
 
@@ -725,7 +715,7 @@ CSS;
 	{
 		// checkboxes itself can't be use as they return nothing if uncheckt !!!
 
-		if ($GLOBALS['type'] != 'user')
+		if ($this->type != 'user')
 		{
 			$default = ''; // no defaults for default or forced prefs
 		}
@@ -786,12 +776,12 @@ CSS;
 			return True;
 		}
 
-		if (isset($this->prefs[$name]) || $GLOBALS['type'] != 'user')
+		if (isset($this->prefs[$name]) || $this->type != 'user')
 		{
 			$default = (isset($this->prefs[$name]) ? $this->prefs[$name] : '');
 		}
 
-		switch ($GLOBALS['type'])
+		switch ($this->type)
 		{
 			case 'user':
 				$s	 = '<option value="">' . lang('Use default') . '</option>';
@@ -805,12 +795,12 @@ CSS;
 		}
 		$s			 .= $this->create_option_string($default, $values);
 		$def_text	 = '';
-		if ($GLOBALS['type'] == 'user' && isset($this->preferences->default[$_appname][$name]))
+		if ($this->type == 'user' && isset($this->preferences->default[$_appname][$name]))
 		{
 			$def_text	 = $this->preferences->default[$_appname][$name];
 			$def_text	 = $def_text != '' ? ' <i>' . lang('default') . ':&nbsp;' . (isset($values[$def_text]) ? $values[$def_text] : '') . '</i>' : '';
 		}
-		$t->set_var('row_value', "<select class=\"pure-input-1-2\" name=\"{$GLOBALS['type']}[$name]\">$s</select>$def_text");
+		$t->set_var('row_value', "<select class=\"pure-input-1-2\" name=\"{$this->type}[$name]\">$s</select>$def_text");
 		$t->set_var('row_name', lang($label));
 		$this->nextmatchs->template_alternate_row_class($t);
 
@@ -831,7 +821,6 @@ CSS;
 	 */
 	function create_notify($label, $name, $rows, $cols, $help = '', $default = '', $vars2 = '', $subst_help = True)
 	{
-		global $notifys;
 		$t = $this->template;
 
 
@@ -842,7 +831,7 @@ CSS;
 		}
 		$this->prefs[$name] = $this->preferences->lang_notify($this->prefs[$name], $vars);
 
-		$notifys[$name] = $vars; // this gets saved in the app_session for re-translation
+		$this->notifys[$name] = $vars; // this gets saved in the app_session for re-translation
 
 		$help = $help ? lang($help) : '';
 		if ($subst_help)
@@ -879,9 +868,7 @@ CSS;
 	 */
 	function create_text_area($label, $name, $rows, $cols, $help = '', $default = '', $run_lang = True)
 	{
-		global $notifys;
 		$t = $this->template;
-
 
 		$_appname = $this->check_app();
 		if ($this->is_forced_value($_appname, $name))
@@ -889,22 +876,22 @@ CSS;
 			return True;
 		}
 
-		if (isset($this->prefs[$name]) || $GLOBALS['type'] != 'user')
+		if (isset($this->prefs[$name]) || $this->type != 'user')
 		{
 			$default = $this->prefs[$name];
 		}
 
-		if ($GLOBALS['type'] == 'user')
+		if ($this->type == 'user')
 		{
 			$def_text = !isset($this->preferences->user[$_appname][$name]) || !$this->preferences->user[$_appname][$name] ? (isset($this->preferences->data[$_appname][$name]) ? $this->preferences->data[$_appname][$name] : '') : (isset($this->preferences->default[$_appname][$name]) ? $this->preferences->default[$_appname][$name] : '');
 
-			if (isset($notifys[$name])) // translate the substitution names
+			if (isset($this->notifys[$name])) // translate the substitution names
 			{
-				$def_text = $this->preferences->lang_notify($def_text, $notifys[$name]);
+				$def_text = $this->preferences->lang_notify($def_text, $this->notifys[$name]);
 			}
 			$def_text = $def_text != '' ? '<br><i><font size="-1"><b>' . lang('default') . '</b>:<br>' . nl2br($def_text) . '</font></i>' : '';
 		}
-		$t->set_var('row_value', "<textarea class=\"pure-input-1-2 pure-custom\" rows=\"$rows\" cols=\"$cols\" name=\"{$GLOBALS['type']}[$name]\">" . htmlentities($default, ENT_QUOTES, isset($this->serverSettings['charset']) && $this->serverSettings['charset'] ? $this->serverSettings['charset'] : 'UTF-8') . "</textarea>$def_text");
+		$t->set_var('row_value', "<textarea class=\"pure-input-1-2 pure-custom\" rows=\"$rows\" cols=\"$cols\" name=\"{$this->type}[$name]\">" . htmlentities($default, ENT_QUOTES, isset($this->serverSettings['charset']) && $this->serverSettings['charset'] ? $this->serverSettings['charset'] : 'UTF-8') . "</textarea>$def_text");
 		$t->set_var('row_name', lang($label));
 		$this->nextmatchs->template_alternate_row_class($t);
 
@@ -973,13 +960,13 @@ CSS;
 			'location'	 => 'verify_settings',
 			'prefs'		 => $repository[$_appname],
 			'prefix'	 => $prefix,
-			'type'		 => $GLOBALS['type']
+			'type'		 => $this->type
 		), $_GET['appname']))
 		{
 			return $error;
 		}
 
-		$this->preferences->save_repository(True, $GLOBALS['type']);
+		$this->preferences->save_repository(True, $this->type);
 
 		return False;
 	}
@@ -993,9 +980,8 @@ CSS;
 	 */
 	function is_admin()
 	{
-		global $prefix;
 
-		if (HAS_ADMIN_RIGHTS == 1 && empty($prefix)) // tabs only without prefix
+		if (HAS_ADMIN_RIGHTS == 1 && empty($this->prefix)) // tabs only without prefix
 		{
 			return True;
 		}
@@ -1012,17 +998,15 @@ CSS;
 	 */
 	function show_list($header = '&nbsp;')
 	{
-		global $list_shown;
 		$t = $this->template;
 
-
-		$tab_id = $GLOBALS['type'];
+		$tab_id = $this->type;
 		$t->set_var('tab_id', $tab_id);
 		$t->set_var('list_header', $header);
-		$t->parse('lists', 'list', $list_shown);
+		$t->parse('lists', 'list', $this->list_shown);
 
 		$t->set_var('rows', '');
-		$list_shown = True;
+		$this->list_shown = True;
 	}
 
 	

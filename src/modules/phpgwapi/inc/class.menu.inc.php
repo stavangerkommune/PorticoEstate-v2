@@ -610,7 +610,7 @@ HTML;
 			$bookmark_candidate_arr = explode('bookmark_', Sanitizer::get_var('bookmark_candidate', 'string'));
 
 			$bookmark_candidate = empty($bookmark_candidate_arr[1]) ? $bookmark_candidate_arr[0] : $bookmark_candidate_arr[1];
-
+			$userSettings = Settings::getInstance()->get('user');
 			$user_id = $userSettings['account_id'];
 
 			$bookmarks = Cache::user_get('phpgwapi', "bookmark_menu", $user_id);
