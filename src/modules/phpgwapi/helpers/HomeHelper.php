@@ -14,6 +14,8 @@ class HomeHelper
 	private $serverSettings;
 	private $userSettings;
 	private $hooks;
+	private $phpgwapi_common;
+	private $apps;
 
 
 	public function __construct()
