@@ -20,10 +20,11 @@
  * Using with Single Sign-On(Shibbolelt, CAS, ...)
  */
 
- namespace App\modules\phpgwapi\security\Sso;
+namespace App\modules\phpgwapi\security\Sso;
 
 use App\modules\phpgwapi\services\Settings;
-use App\modules\phpgwapi\security\Mapping;
+use App\modules\phpgwapi\security\Sso\Mapping;
+
 use Exception;
 
 class CreateMapping
@@ -37,16 +38,19 @@ class CreateMapping
 	public function __construct()
 	{
 		$this->serverSettings = Settings::getInstance()->get('server');
-		if (!isset($this->serverSettings['mapping']) || $this->serverSettings['mapping'] == 'id') {
+		if (!isset($this->serverSettings['mapping']) || $this->serverSettings['mapping'] == 'id')
+		{
 			throw new Exception(lang('Access denied'));
 		}
 
 		$this->mapping = new Mapping();
 
-		if (!isset($_SERVER['REMOTE_USER'])) {
+		if (!isset($_SERVER['REMOTE_USER']))
+		{
 			throw new Exception(lang('Wrong configuration') . " REMOTE_USER not set");
 		}
-		if ($this->mapping->get_mapping($_SERVER['REMOTE_USER']) != '') {
+		if ($this->mapping->get_mapping($_SERVER['REMOTE_USER']) != '')
+		{
 			throw new Exception(lang('Username already taken'));
 		}
 	}
@@ -54,25 +58,32 @@ class CreateMapping
 	public function create_mapping()
 	{
 		$error = array();
-		if (isset($_POST) && isset($_POST['submitit'])) {
+		if (isset($_POST) && isset($_POST['submitit']))
+		{
 			$login		 = $_POST['login'];
 			$password	 = $_POST['passwd'];
 			$account_lid = $this->mapping->exist_mapping($_SERVER['REMOTE_USER']);
-			if ($account_lid == '' || $account_lid == $login) {
-				if ($this->mapping->valid_user($login, $password)) {
+			if ($account_lid == '' || $account_lid == $login)
+			{
+				if ($this->mapping->valid_user($login, $password))
+				{
 					$this->mapping->add_mapping($_SERVER['REMOTE_USER'], $login);
-//FIXME: redirect..?
+					//FIXME: redirect..?
 					phpgw::redirect_link('/login.php');
-				} else {
+				}
+				else
+				{
 					$_GET['cd'] = 5;
 				}
-			} else {
+			}
+			else
+			{
 				$_GET['cd']				 = 21;
 				$_GET['phpgw_account']	 = $account_lid;
 			}
 		}
 
-/* FIXME: present the form ????
+		/* FIXME: present the form ????
 		$uilogin = new phpgw_uilogin(false);
 
 		//Build vars :

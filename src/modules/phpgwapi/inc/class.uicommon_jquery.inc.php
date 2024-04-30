@@ -45,7 +45,7 @@
 		public static $tmpl_search_path;
 
 		protected
-			$filesArray, $url_prefix,$acl, $locations;
+			$filesArray, $url_prefix,$acl, $locations, $phpgwapi_common;
 		public $dateFormat;
 		public $type_of_user;
 		public $flags;
@@ -55,6 +55,7 @@
 
 		public function __construct( $currentapp = '', $yui = '' )
 		{
+			$this->phpgwapi_common = new \phpgwapi_common();
 
 			$this->flags = Settings::getInstance()->get('flags');
 			$this->serverSettings = Settings::getInstance()->get('server');

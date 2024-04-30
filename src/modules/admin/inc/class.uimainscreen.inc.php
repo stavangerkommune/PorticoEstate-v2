@@ -105,8 +105,8 @@ class admin_uimainscreen
 	 */
 	function mainscreen()
 	{
-//		$this->flags['menu_selection'] .= '::admin::index';
-//		Settings::getInstance()->set('flags', $this->flags);
+		$this->flags['menu_selection'] .= '::admin::index';
+		Settings::getInstance()->set('flags', $this->flags);
 		$menu		= createObject('phpgwapi.menu');
 		$navbar		= $menu->get('navbar');
 		$navigation = $menu->get('admin');

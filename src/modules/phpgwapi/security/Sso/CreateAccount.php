@@ -75,7 +75,7 @@ class CreateAccount
 			if (($account = $this->mapping->exist_mapping($this->login)) != '') {
 
 				throw new Exception('FIX me:rediredt to login.php? with create_mapping=true and cd=21 and phpgw_account=account_lid');
-				phpgw::redirect_link('login.php', array('create_mapping' => true, 'cd' => '21', 'phpgw_account' => $account));
+				\phpgw::redirect_link('login.php', array('create_mapping' => true, 'cd' => '21', 'phpgw_account' => $account));
 			}
 		}
 	}
@@ -192,7 +192,7 @@ class CreateAccount
 					));
 				}
 				throw new Exception('FIX me: redirect to login.php');
-				phpgw::redirect_link('/login.php');
+				\phpgw::redirect_link('/login.php');
 			}
 		}
 

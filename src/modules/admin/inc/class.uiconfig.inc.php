@@ -31,12 +31,14 @@ class admin_uiconfig
 	private $hooks;
 	private $translation;
 	private $phpgwapi_common;
+	private $apps;
 
 
 	public function __construct()
 	{
 		$this->serverSettings = Settings::getInstance()->get('server');
 		$this->flags = Settings::getInstance()->get('flags');
+		$this->apps = Settings::getInstance()->get('apps');
 		$appname = Sanitizer::get_var('appname', 'string');
 		$this->appname = $appname;
 		$acl = Acl::getInstance();
@@ -83,7 +85,7 @@ class admin_uiconfig
 		$appname											 = $this->appname;
 		$this->flags['menu_selection']	 = "admin::{$appname}::index";
 
-		$GLOBALS['phpgw_info']['apps']['manual']['app'] = $appname; // override the appname fetched from the referer for the manual.
+		$this->apps['manual']['app'] = $appname; // override the appname fetched from the referer for the manual.
 
 		switch ($appname)
 		{
@@ -174,7 +176,9 @@ class admin_uiconfig
 			}
 			if (isset($this->serverSettings['found_validation_hook']) && $this->serverSettings['found_validation_hook'] && function_exists('final_validation'))
 			{
-				final_validation($newsettings);
+				final_validation($_POST['newsettings']);
+				//FIXME: this is a hack to get the error message from the final_validation hook
+
 				if ($GLOBALS['config_error'])
 				{
 					$errors					 .= lang($GLOBALS['config_error']) . '&nbsp;';
