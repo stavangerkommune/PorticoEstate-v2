@@ -12,6 +12,11 @@
  	* @version $Id$
 	*/
 
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\controllers\Locations;
+
+
 	/**
 	 * Description
 	 * @package property
@@ -55,10 +60,16 @@
 			)
 		);
 
+		private $locations;
+		private $custom_functions;
 		public function __construct($session=False)
 		{
-			$this->currentapp	= $GLOBALS['phpgw_info']['flags']['currentapp'];
+			
+			$flags = Settings::getInstance()->get('flags');
+			$this->locations = new Locations();
+			$this->currentapp	= $flags['currentapp'];
 			$this->so			= createObject('phpgwapi.custom_fields');
+			$this->custom_functions = createObject('phpgwapi.custom_functions');
 
 			if ($session)
 			{
@@ -95,11 +106,8 @@
 			//find the location from the location_id
 			if($location_id && !$location)
 			{
-				$this->location = $GLOBALS['phpgw']->locations->get_location($location_id);
+				$this->location = $this->locations->get_location($location_id);
 			}
-
-
-
 
 		}
 
@@ -107,13 +115,13 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data','cust_attrib',$data);
+				Cache::session_set('cust_attrib', 'session_data',$data);
 			}
 		}
 
 		function read_sessiondata()
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data','cust_attrib');
+			$data = Cache::session_get('cust_attrib', 'session_data');
 
 			$this->start	= (isset($data['start'])?$data['start']:'');
 			$this->query	= (isset($data['query'])?$data['query']:'');
@@ -148,7 +156,7 @@
 			}
 			else if ( $custom_function_id )
 			{
-				$GLOBALS['phpgw']->custom_functions->delete($appname, $location, $custom_function_id);
+				$this->custom_functions->delete($appname, $location, $custom_function_id);
 			}
 		}
 
@@ -270,9 +278,9 @@
 				'allrows'	=> $this->allrows
 			);
 
-			$custom_function = $GLOBALS['phpgw']->custom_functions->find($criteria);
+			$custom_function = $this->custom_functions->find($criteria);
 
-			$this->total_records = $GLOBALS['phpgw']->custom_functions->total_records;
+			$this->total_records = $this->custom_functions->total_records;
 
 			return $custom_function;
 		}
@@ -287,7 +295,7 @@
 		 */
 		public function resort_custom_function($id, $resort)
 		{
-			$GLOBALS['phpgw']->custom_functions->resort($id, $resort, $this->appname, $this->location);
+			$this->custom_functions->resort($id, $resort, $this->appname, $this->location);
 		}
 
 		/**
@@ -298,7 +306,7 @@
 		 */
 		public function save_custom_function($custom_function, $action = '')
 		{
-			$cfuncs =& $GLOBALS['phpgw']->custom_functions;
+			$cfuncs =& $this->custom_functions;
 
 			if ( $action == 'edit' )
 			{
@@ -377,7 +385,7 @@
 		 */
 		function read_single_custom_function($id,$appname, $location)
 		{
-			return $GLOBALS['phpgw']->custom_functions->get($appname, $location, $id);
+			return $this->custom_functions->get($appname, $location, $id);
 		}
 
 		function select_datatype($selected='')

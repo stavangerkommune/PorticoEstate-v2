@@ -382,7 +382,7 @@ class Db
 			$values = ':' . implode(', :', array_keys($params));
 			$stmt = $this->db->prepare("INSERT INTO $table (id, $columns) VALUES (:next_id, $values)");
 			$stmt->execute(array_merge(['next_id' => $next_id], $params));
-	//		_debug_array(array_merge(['next_id' => $next_id], $params));
+			//		_debug_array(array_merge(['next_id' => $next_id], $params));
 		}
 		else
 		{
@@ -399,7 +399,6 @@ class Db
 			// update the table {$table} SET id = {$next id} +1
 			$stmt = $this->db->prepare("UPDATE $table SET id = id +1 $where");
 			$stmt->execute($params);
-
 		}
 		return $next_id;
 	}
@@ -1053,5 +1052,19 @@ class Db
 		}
 	*/
 		return (int) $id;
+	}
+
+	/**
+	 * Number of rows in current result set
+	 *
+	 * @return integer number of rows
+	 */
+	public function num_rows()
+	{
+		if ($this->resultSet)
+		{
+			return count($this->resultSet);
+		}
+		return 0;
 	}
 }

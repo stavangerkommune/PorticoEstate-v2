@@ -26,4 +26,12 @@ class Db2 extends Db
 			throw new Exception($e->getMessage());
 		}
 	}
+	/**
+	 * Forwards method invocations to db object
+	 */
+	public function __call($method, $arguments)
+	{
+		return call_user_func_array(array($this->db, $method), $arguments);
+	}
+
 }

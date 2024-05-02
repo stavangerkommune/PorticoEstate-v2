@@ -11,6 +11,12 @@
  	* @version $Id$
 	*/
 
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\controllers\Locations;
+use App\modules\phpgwapi\security\Acl;
+use App\modules\phpgwapi\services\Cache;
+use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
 	/**
 	 * Description
 	 * @package property
@@ -35,11 +41,21 @@
 			'get_users'  => True,
 		);
 
+		private $apps;
+		private $locations;
+		private $userSettings;
+		private $accounts;
+
 		function __construct($session='')
 		{
-			$this->currentapp	= $GLOBALS['phpgw_info']['flags']['currentapp'];
+			
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->apps = Settings::getInstance()->get('apps');
+			$this->currentapp	= $this->apps['currentapp'];
+			$this->locations	= new Locations();
+			$this->accounts 	=	new Accounts();
 
-			$this->acl 		= $GLOBALS['phpgw']->acl;
+			$this->acl 		= Acl::getInstance();
 			$this->right		= array(1,2,4,8,16);
 
 			if ($session)
@@ -112,7 +128,7 @@
 
 		function read_sessiondata()
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data','fm_admin');
+			$data = Cache::session_get('fm_admin', 'session_data');
 
 			$this->start		= $data['start'];
 			$this->query		= $data['query'];
@@ -128,7 +144,7 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data','fm_admin',$data);
+				Cache::session_set('fm_admin', 'session_data', $data);
 			}
 		}
 
@@ -147,7 +163,7 @@
 
 			$location_list = array();
 
-			$locations = $GLOBALS['phpgw']->locations->get_locations($grant, $this->acl_app, $allow_c_attrib, $allow_c_functions);
+			$locations = $this->locations->get_locations($grant, $this->acl_app, $allow_c_attrib, $allow_c_functions);
 			$i = 0;
 			foreach ( $locations as $loc_id => $loc_descr )
 			{
@@ -181,12 +197,12 @@
 	
 			$grant				= isset($data['grant']) && $data['grant'] ? $data['grant'] : false;
 			$grant				= isset($data['allow_c_attrib']) && $data['allow_c_attrib'] ? $data['allow_c_attrib'] : false;
-			$acl_app			= isset($data['acl_app']) && $data['acl_app'] ? $data['acl_app'] : $GLOBALS['phpgw_info']['flags']['currentapp'];
+			$acl_app			= isset($data['acl_app']) && $data['acl_app'] ? $data['acl_app'] : $this->apps['currentapp'];
 			$selected			= isset($data['selected']) && $data['selected'] ? $data['selected'] : '';
 			$c_function			= isset($data['$c_function']) && $data['$c_function'] ? true : false;
 			$have_categories	= isset($data['have_categories']) && $data['have_categories'] ? true : false;
 
-			$locations = $GLOBALS['phpgw']->locations->get_locations($grant, $acl_app, $allow_c_attrib, $c_function, $have_categories);
+			$locations = $this->locations->get_locations($grant, $acl_app, $allow_c_attrib, $c_function, $have_categories);
 
 			foreach ( $locations as $loc_id => $loc_descr )
 			{
@@ -323,7 +339,7 @@
 				}
 				else
 				{
-					$grantor = $GLOBALS['phpgw_info']['user']['account_id'];
+					$grantor = $this->userSettings['account_id'];
 				}
 			}
 
@@ -338,7 +354,7 @@
 				$receipt['message'][] = array('msg' => lang('%1 userlists cleared from cache',$cleared));
 			}
 
-			phpgwapi_cache::user_clear('phpgwapi', 'menu', -1);
+			Cache::user_clear('phpgwapi', 'menu', -1);
 
 			return $receipt;
 		}
@@ -347,11 +363,11 @@
 		function get_users()
 		{
 			$page = Sanitizer::get_var('page', 'int');
-			$length = $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
+			$length = $this->userSettings['preferences']['common']['maxmatchs'];
 			$this->start = ($page - 1) * $length;
 
-			$accounts = $GLOBALS['phpgw']->accounts->get_list('accounts', $this->start,$this->sort, $this->order, $this->query);
-			$total = $GLOBALS['phpgw']->accounts->total;
+			$accounts = $this->accounts->get_list('accounts', $this->start,$this->sort, $this->order, $this->query);
+			$total = $this->accounts->total;
 			
 			$results = array();
 			foreach ($accounts as $account)
@@ -384,13 +400,13 @@
 			{
 				$check_account_type = array('accounts');
 				$acl_account_type = 'accounts';
-				$valid_users	= $GLOBALS['phpgw']->acl->get_ids_for_location('run', phpgwapi_acl::READ, $this->acl_app);
+				$valid_users	= $this->acl->get_ids_for_location('run', Acl::READ, $this->acl_app);
 			}
 			else
 			{
 				$check_account_type = array('groups','accounts');
 				$acl_account_type = 'both';
-				$_valid_users	= $GLOBALS['phpgw']->acl->get_user_list_right(phpgwapi_acl::READ, 'run', $this->acl_app);
+				$_valid_users	= $this->acl->get_user_list_right(Acl::READ, 'run', $this->acl_app);
 				$valid_users = array();
 				foreach($_valid_users as $_user)
 				{
@@ -409,13 +425,13 @@
 				}
 				else
 				{
-					$grantor = $GLOBALS['phpgw_info']['user']['account_id'];
+					$grantor = $this->userSettings['account_id'];
 				}
 			}
 
 			$right=$this->right;
 
-			$allusers = $GLOBALS['phpgw']->accounts->get_list($type, -1,$this->sort, $this->order, $this->query);
+			$allusers = $this->accounts->get_list($type, -1,$this->sort, $this->order, $this->query);
 
 //_debug_array($type);die();
 //_debug_array($valid_users);die();
@@ -432,7 +448,7 @@
 			reset($allusers);
 
 			$this->total_records = count($allusers);
-			$length = $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
+			$length = $this->userSettings['preferences']['common']['maxmatchs'];
 
 			if ($this->allrows)
 			{
@@ -502,7 +518,7 @@
 					break;
 			}
 
-			$groups = $GLOBALS['phpgw']->accounts->get_list('groups', $start, $sort, $order, $query,$offset);
+			$groups = $this->accounts->get_list('groups', $start, $sort, $order, $query,$offset);
 
 			unset($accounts);
 			if (isset($groups) AND is_array($groups))

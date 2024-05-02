@@ -12,29 +12,37 @@
 
 	/* $Id$ */
 
+	use App\modules\phpgwapi\services\Settings;
+	use App\Database\Db;
 	/* Check currentapp and API upgrade status */
 
-	if ($GLOBALS['phpgw_info']['flags']['currentapp'] != 'home'
-		&& $GLOBALS['phpgw_info']['flags']['currentapp'] != 'welcome'
-		&& $GLOBALS['phpgw_info']['flags']['currentapp'] != 'about'
-//		&& (isset($GLOBALS['phpgw_info']['server']['checkappversions']) &&	$GLOBALS['phpgw_info']['server']['checkappversions'])
+	$flags = Settings::getInstance()->get('flags');
+	$userSettings = Settings::getInstance()->get('user');
+	$serverSettings = Settings::getInstance()->get('server');
+	$db = Db::getInstance();
+	$phpgwapi_common = new phpgwapi_common();
+
+	if ($flags['currentapp'] != 'home'
+		&& $flags['currentapp'] != 'welcome'
+		&& $flags['currentapp'] != 'about'
+//		&& (isset($serverSettings['checkappversions']) &&	$serverSettings['checkappversions'])
 		)
 	{
-		if ((isset($GLOBALS['phpgw_info']['user']['apps']['admin']) &&
-			$GLOBALS['phpgw_info']['user']['apps']['admin']) ||
-			$GLOBALS['phpgw_info']['server']['checkappversions'] == 'All')
+		if ((isset($userSettings['apps']['admin']) &&
+			$userSettings['apps']['admin']) ||
+			$serverSettings['checkappversions'] == 'All')
 		{
 			$require_upgrade = false;
 			$_current = array();
-			$app_name = $GLOBALS['phpgw_info']['flags']['currentapp'];
-			$GLOBALS['phpgw']->db->query("SELECT app_name,app_version FROM phpgw_applications WHERE app_name='$app_name' OR app_name='phpgwapi'",__LINE__,__FILE__);
+			$app_name = $flags['currentapp'];
+			$db->query("SELECT app_name,app_version FROM phpgw_applications WHERE app_name='$app_name' OR app_name='phpgwapi'",__LINE__,__FILE__);
 			$app_info = array();
-			while($GLOBALS['phpgw']->db->next_record())
+			while($db->next_record())
 			{
 				$app_info[] = array
 				(
-					'db_version'	=> $GLOBALS['phpgw']->db->f('app_version'),
-					'app_name'		=> $GLOBALS['phpgw']->db->f('app_name')
+					'db_version'	=> $db->f('app_version'),
+					'app_name'		=> $db->f('app_name')
 				); 
 			}
 			
@@ -42,7 +50,7 @@
 			{
 				$_db_version  = $app['db_version'];
 				$app_name	  = $app['app_name'];
-				$_versionfile = $GLOBALS['phpgw']->common->get_app_dir($app_name) . '/setup/setup.inc.php';
+				$_versionfile = $phpgwapi_common->get_app_dir($app_name) . '/setup/setup.inc.php';
 				if(file_exists($_versionfile))
 				{
 					include($_versionfile);
@@ -52,7 +60,7 @@
 					unset($setup_info);
 
 					/* echo '<br>' . $app_name . ',' . $_db_version . ',' . $_file_version; */
-					$test = $GLOBALS['phpgw']->common->cmp_version_long($_db_version,$_file_version);
+					$test = $phpgwapi_common->cmp_version_long($_db_version,$_file_version);
 					if($test == '')
 					{
 						$_current[$app_name] = True;
@@ -76,9 +84,9 @@
 				unset($_db_version);
 				unset($_versionfile);
 			}
-			if(!isset($_current[$GLOBALS['phpgw_info']['flags']['currentapp']]))
+			if(!isset($_current[$flags['currentapp']]))
 			{
-				$app_str  = '<li>' . lang('This application requires an upgrade') . ": {$GLOBALS['phpgw_info']['flags']['currentapp']}</li>";
+				$app_str  = '<li>' . lang('This application requires an upgrade') . ": {$flags['currentapp']}</li>";
 //				$app_str .= '<br>' . lang('Please run setup to become current') . '.' . "\n";
 				$require_upgrade = true;
 			}
@@ -101,8 +109,8 @@
 	if( Sanitizer::get_var('phpgw_return_as') != 'json' && $receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
 	{
 		phpgwapi_cache::session_clear('phpgwapi', 'phpgw_messages');
-		$msgbox_data = $GLOBALS['phpgw']->common->msgbox_data($receipt);
-		$msgbox_data = $GLOBALS['phpgw']->common->msgbox($msgbox_data);
+		$msgbox_data = $phpgwapi_common->msgbox_data($receipt);
+		$msgbox_data = $phpgwapi_common->msgbox($msgbox_data);
 		foreach($msgbox_data as & $message)
 		{
 			echo "<div class='{$message['msgbox_class']}'>";

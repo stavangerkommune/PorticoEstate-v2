@@ -47,8 +47,8 @@
 			$this->serverSettings = Settings::getInstance()->get('server');
 			$this->userSettings = Settings::getInstance()->get('user');
 			$this->flags = Settings::getInstance()->get('flags');
-			$webserver_url = isset($this->serverSettings['webserver_url']) ? $this->serverSettings['webserver_url'] . PHPGW_MODULES_PATH : '/';
-			$this->webserver_url = $webserver_url;
+			$webserver_url = isset($this->serverSettings['webserver_url']) ? $this->serverSettings['webserver_url'] : '/';
+			$this->webserver_url = str_replace("//", "/",$webserver_url . PHPGW_MODULES_PATH);
 		}
 
 		/**
