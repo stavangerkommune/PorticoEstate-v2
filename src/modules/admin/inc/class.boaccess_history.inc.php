@@ -14,10 +14,13 @@
 	class boaccess_history
 	{
 		var $so;
+		var $phpgwapi_common;
 
 		function __construct()
 		{
 			$this->so = createobject('admin.soaccess_history');
+			$this->phpgwapi_common = new \phpgwapi_common();
+
 		}
 
 		function list_history( $account_id, $start, $order, $sort )
@@ -47,12 +50,12 @@
 
 					if ($record['li'])
 					{
-						$record['li'] = $GLOBALS['phpgw']->common->show_date($record['li']);
+						$record['li'] = $this->phpgwapi_common->show_date($record['li']);
 					}
 
 					if ($record['lo'])
 					{
-						$record['lo'] = $GLOBALS['phpgw']->common->show_date($record['lo']);
+						$record['lo'] = $this->phpgwapi_common->show_date($record['lo']);
 					}
 					else
 					{

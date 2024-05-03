@@ -212,8 +212,8 @@
 		protected static function _value_prepare($value, $bypass = true)
 		{
 			$serverSettings = Settings::getInstance()->get('server');
-			$_key = $serverSetting['encryptkey'];
-			$_iv  = $serverSetting['mcrypt_iv'];
+			$_key = $serverSettings['encryptkey'];
+			$_iv  = $serverSettings['mcrypt_iv'];
 			$crypto = Crypto::getInstance(array($_key, $_iv));
 			return $crypto->encrypt($value, $bypass);
 		}
@@ -234,8 +234,8 @@
 
 		// crypto class unserializes the data for us
 			$serverSettings = Settings::getInstance()->get('server');
-			$_key = $serverSetting['encryptkey'];
-			$_iv  = $serverSetting['mcrypt_iv'];
+			$_key = $serverSettings['encryptkey'];
+			$_iv  = $serverSettings['mcrypt_iv'];
 			$crypto = Crypto::getInstance(array($_key, $_iv));
 			return $crypto->decrypt($str, $bypass);
 		}

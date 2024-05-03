@@ -968,17 +968,17 @@ class admin_ui_custom extends phpgwapi_uicommon_jquery
 			phpgw::no_access($this->appname);
 		}
 
-		if ($location = phpgwapi_cache::session_get('admin_custom', 'location'))
+		if ($location = Cache::session_get('admin_custom', 'location'))
 		{
 			$this->location = $location;
-			phpgwapi_cache::session_clear('admin_custom', 'location');
+			Cache::session_clear('admin_custom', 'location');
 		}
 
 		$id		 = Sanitizer::get_var('id', 'int');
 		$resort	 = Sanitizer::get_var('resort');
 		if ($resort && $this->acl_edit)
 		{
-			phpgwapi_cache::session_set('admin_custom', 'location', $this->location);
+			Cache::session_set('admin_custom', 'location', $this->location);
 			$this->bo->resort_attrib_group($id, $resort);
 		}
 
@@ -994,7 +994,7 @@ class admin_ui_custom extends phpgwapi_uicommon_jquery
 		{
 			phpgw::no_access($this->appname);
 		}
-		phpgwapi_cache::session_set('admin_custom', 'location', Sanitizer::get_var('location', 'string'));
+		Cache::session_set('admin_custom', 'location', Sanitizer::get_var('location', 'string'));
 
 		$location_list = $this->bolocation->select_location('filter', $this->location, false, true);
 		foreach ($location_list as &$entry)

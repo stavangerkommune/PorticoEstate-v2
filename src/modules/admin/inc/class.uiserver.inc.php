@@ -161,8 +161,8 @@
 				$server_id = $server['server_id'];
 
 				$GLOBALS['phpgw']->template->set_var(array(
-					'server_name' => $GLOBALS['phpgw']->strip_html($server['server_name']),
-					'server_url'  => $GLOBALS['phpgw']->strip_html($server['server_url']),
+					'server_name' => phpgw::strip_html($server['server_name']),
+					'server_url'  => phpgw::strip_html($server['server_url']),
 					'server_security' => $server['server_security'] ? strtoupper($server['server_security']) : lang('none'),
 					'server_mode' => strtoupper($server['server_mode'])
 				));
@@ -285,8 +285,8 @@
 			$GLOBALS['phpgw']->template->set_var('pass_note',lang('(Stored password will not be shown here)'));
 			$GLOBALS['phpgw']->template->set_var('trust_level',$this->formatted_list('trust_level',$is->trust_levels,$server['trust_level']));
 			$GLOBALS['phpgw']->template->set_var('trust_relationship',$this->formatted_list('trust_rel',$is->trust_relationships,$server['trust_rel'],True));
-			$GLOBALS['phpgw']->template->set_var('admin_name',$GLOBALS['phpgw']->strip_html($server['admin_name']));
-			$GLOBALS['phpgw']->template->set_var('admin_email',$GLOBALS['phpgw']->strip_html($server['admin_email']));
+			$GLOBALS['phpgw']->template->set_var('admin_name',phpgw::strip_html($server['admin_name']));
+			$GLOBALS['phpgw']->template->set_var('admin_email',phpgw::strip_html($server['admin_email']));
 			$GLOBALS['phpgw']->template->set_var('server_id',$_GET['server_id']);
 
 			$GLOBALS['phpgw']->template->set_var('edithandle','');

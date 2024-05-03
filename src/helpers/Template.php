@@ -26,6 +26,7 @@
  */
 
 namespace App\helpers;
+use App\modules\phpgwapi\services\Settings;
 
 class Template
 {
@@ -173,7 +174,12 @@ class Template
 		 
 	function __construct($root = ".", $unknowns = "remove")
 	{
-		$this->serverSettings = \App\modules\phpgwapi\services\Settings::getInstance()->get('server');
+		if ($root == '.' && defined('PHPGW_APP_TPL'))
+		{
+			$root = PHPGW_APP_TPL;
+		}
+		
+		$this->serverSettings = Settings::getInstance()->get('server');
 		if ($this->debug & 4) {
 			echo "<p><b>Template:</b> root = $root, unknowns = $unknowns</p>\n";
 		}

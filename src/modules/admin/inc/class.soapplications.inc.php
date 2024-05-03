@@ -11,13 +11,16 @@
 
   /* $Id$ */
 
+  use App\Database\Db;
+
 	class soapplications
 	{
 		var $db;
 
 		function __construct()
 		{
-			$this->db = $GLOBALS['phpgw']->db;
+			$this->db = Db::getInstance();
+			
 		}
 
 		function read($app_name)

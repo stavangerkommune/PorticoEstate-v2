@@ -250,10 +250,10 @@
 				{
 					$space = '&nbsp;&nbsp;';
 					$spaceset = str_repeat($space,$level);
-					$name = $spaceset . $GLOBALS['phpgw']->strip_html($cats[$i]['name']) . $appendix;
+					$name = $spaceset . phpgw::strip_html($cats[$i]['name']) . $appendix;
 				}
 
-				$descr = $GLOBALS['phpgw']->strip_html($cats[$i]['description']);
+				$descr = phpgw::strip_html($cats[$i]['description']);
 				if (!$descr) { $descr = '&nbsp;'; }
 
 				if (is_array($edata))
@@ -273,7 +273,7 @@
 
 				if ($level == 0)
 				{
-					$name = '<font color="FF0000"><b>' . $GLOBALS['phpgw']->strip_html($cats[$i]['name']) . '</b></font>' . $appendix;
+					$name = '<font color="FF0000"><b>' . phpgw::strip_html($cats[$i]['name']) . '</b></font>' . $appendix;
 					$descr = '<font color="FF0000"><b>' . $descr . '</b></font>';
 				}
 
@@ -527,8 +527,8 @@
 			$link_data['menuaction'] = 'preferences.uicategories.edit';
 			$GLOBALS['phpgw']->template->set_var('actionurl',phpgw::link('/index.php',$link_data));
 
-			$GLOBALS['phpgw']->template->set_var('cat_name',$GLOBALS['phpgw']->strip_html($cats[0]['name']));
-			$GLOBALS['phpgw']->template->set_var('cat_description',$GLOBALS['phpgw']->strip_html($cats[0]['description']));
+			$GLOBALS['phpgw']->template->set_var('cat_name',phpgw::strip_html($cats[0]['name']));
+			$GLOBALS['phpgw']->template->set_var('cat_description',phpgw::strip_html($cats[0]['description']));
 
 			$GLOBALS['phpgw']->template->set_var('hidden_vars','<input type="hidden" name="old_parent" value="' . $cats[0]['parent'] . '">');
 

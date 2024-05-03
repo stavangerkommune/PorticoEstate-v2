@@ -201,6 +201,7 @@ use App\modules\phpgwapi\controllers\Accounts\Accounts;
 			$selected			= isset($data['selected']) && $data['selected'] ? $data['selected'] : '';
 			$c_function			= isset($data['$c_function']) && $data['$c_function'] ? true : false;
 			$have_categories	= isset($data['have_categories']) && $data['have_categories'] ? true : false;
+			$allow_c_attrib		= isset($data['allow_c_attrib']) && $data['allow_c_attrib'] ? true : false;
 
 			$locations = $this->locations->get_locations($grant, $acl_app, $allow_c_attrib, $c_function, $have_categories);
 

@@ -58,6 +58,11 @@ class phpgwapi_nextmatchs extends phpgwapi_nextmatchs_xslt
 	var $row_class = '';
 
 	/**
+	 * @var object $phpgwapi_common phpgwapi_common class
+	 */
+	var $phpgwapi_common;
+
+	/**
 	 * Constructor
 	 *
 	 * @param bool $website ???
@@ -91,9 +96,11 @@ class phpgwapi_nextmatchs extends phpgwapi_nextmatchs_xslt
 			$this->maxmatches = &$this->userSettings['preferences']['common']['maxmatchs'];
 		}
 
+		$this->phpgwapi_common = new \phpgwapi_common();
+
 		if (!empty(Settings::getInstance()->get('menuaction')))
 		{
-			$this->action = $GLOBALS['phpgw_info']['menuaction'];
+			$this->action = Settings::getInstance()->get('menuaction');
 		}
 	}
 
@@ -385,7 +392,7 @@ class phpgwapi_nextmatchs extends phpgwapi_nextmatchs_xslt
 
 		//$start = $localstart;
 		$var = array(
-			'form_action'  => ($this->action ? $this->page($extra) : phpgw::link($sn, $extra)),
+			'form_action'  => ($this->action ? $this->page($extra) : phpgw::link('/index.php', $extra)),
 			'filter_value' => $filter,
 			'qfield'       => $qfield,
 			'start_value'  => $start,
@@ -412,7 +419,7 @@ class phpgwapi_nextmatchs extends phpgwapi_nextmatchs_xslt
 		//$start = $localstart;
 		$cats  = createObject('phpgwapi.categories');
 		$var = array(
-			'form_action'   => ($this->action ? $this->page($extra) : phpgw::link($sn, $extra)),
+			'form_action'   => ($this->action ? $this->page($extra) : phpgw::link('/index.php', $extra)),
 			'lang_category' => lang('Category'),
 			'lang_all'      => lang('All'),
 			'lang_select'   => lang('Select'),
@@ -953,7 +960,7 @@ class phpgwapi_nextmatchs extends phpgwapi_nextmatchs_xslt
 	{
 		$var = array(
 			'align'  => $align,
-			'img'    => $GLOBALS['phpgw']->common->image('phpgwapi', $img),
+			'img'    => $this->phpgwapi_common->image('phpgwapi', $img),
 			'label'  => lang($label),
 		);
 
@@ -972,7 +979,7 @@ class phpgwapi_nextmatchs extends phpgwapi_nextmatchs_xslt
 	 */
 	protected function _set_icon_imap($align, $img, $alt_text)
 	{
-		$img_full = $GLOBALS['phpgw']->common->image('phpgwapi', $img);
+		$img_full = $this->phpgwapi_common->image('phpgwapi', $img);
 
 		return "<img src=\"{$img_full}\" alt=\"{$alt_text}\">\n";
 	}

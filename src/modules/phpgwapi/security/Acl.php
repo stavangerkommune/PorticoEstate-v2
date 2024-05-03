@@ -1644,9 +1644,11 @@
 			}
 
 			$at_location = '';
-			if ($location)
-			{
+			$params = [':app' => $app, ':mask' => $mask];
+
+			if ($location) {
 				$at_location = " AND phpgw_locations.name = :location";
+				$params[':location'] = $location;
 			}
 
 			$accts =& $this->accounts;
@@ -1665,7 +1667,7 @@
 				. " AND acl_account IN ($ids)";
 
 			$stmt = $this->_db->prepare($sql);
-			$stmt->execute([':app' => $app, ':location' => $location, ':mask' => $mask]);
+			$stmt->execute($params);
 
 			if ($stmt->rowCount() == 0 && $mask == 0  && !empty($this->_account_id))
 			{

@@ -11,13 +11,14 @@
 
 	/* $Id$ */
 
+	use App\Database\Db;
 	class soaccess_history
 	{
 		var $db;
 
 		function __construct()
 		{
-			$this->db =& $GLOBALS['phpgw']->db;
+			$this->db = Db::getInstance();
 		}
 
 		function test_account_id($account_id)
