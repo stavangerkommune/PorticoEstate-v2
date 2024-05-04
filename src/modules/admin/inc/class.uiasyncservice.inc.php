@@ -22,35 +22,44 @@
 
 	/* $Id$ */
 
+	use App\modules\phpgwapi\services\AsyncService;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\security\Sessions;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+	use App\modules\phpgwapi\security\Acl;
+
 	class admin_uiasyncservice
 	{
 		public $public_functions = array('index' => True);
 
 		public function __construct()
 		{
-			if ( !isset($GLOBALS['phpgw']->asyncservice)
-				|| !is_object($GLOBALS['phpgw']->asyncservice) )
-			{
-				$GLOBALS['phpgw']->asyncservice = CreateObject('phpgwapi.asyncservice');
-			}
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] = 'admin::admin::async';
+			$this->flags = Settings::getInstance()->get('flags');
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->serverSettings = Settings::getInstance()->get('server');
+			$this->sessions = Sessions::getInstance();
+			$this->phpgwapi_common = new \phpgwapi_common();
+			$this->accounts = new Accounts();
+			$this->acl = Acl::getInstance();
+
 		}
 
 		public function index()
 		{
-			if ($GLOBALS['phpgw']->acl->check('asyncservice_access',1,'admin'))
+			if($this->acl->check('asyncservice_access',1,'admin'))
 			{
 				phpgw::redirect_link('/index.php');
 			}
 
-			$GLOBALS['phpgw_info']['flags']['current_selection'] = 'admin::admin::async';
+			$this->flags['current_selection'] = 'admin::admin::async';
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('Admin').' - '.lang('Asynchronous timed services');
-			$GLOBALS['phpgw']->common->phpgw_header(true);
+			$this->flags['app_header'] = lang('Admin').' - '.lang('Asynchronous timed services');
+			Settings::getInstance()->set('flags', $this->flags);
+			$this->phpgwapi_common->phpgw_header(true);
 
 			$manual_run = Sanitizer::get_var('manual_run', 'bool', 'POST');
 
-			$async = clone($GLOBALS['phpgw']->asyncservice);	// use an own instance, as we might set debug=True
+			$async = AsyncService::getInstance();
 
 			$async->debug = Sanitizer::get_var('debug', 'bool', 'POST');
 
@@ -78,13 +87,14 @@
 
 				if($manual_run)
 				{
-					$account_id = $GLOBALS['phpgw_info']['user']['account_id'];
+					$account_id = $this->userSettings['account_id'];
 					$num = $async->check_run('crontab');
 					echo "<p><b>{$num} jobs found</b></p>\n";
 					//reset your environment
-					$GLOBALS['phpgw']->session->set_account_id($account_id);
-					$GLOBALS['phpgw']->session->read_repositories(False,False);
-					$GLOBALS['phpgw_info']['user']  = $GLOBALS['phpgw']->session->get_user();
+					$this->sessions->set_account_id($job['account_id']);
+					$this->sessions->read_repositories(False,False);
+					$this->userSettings  = $this->sessions->get_user();
+					Settings::getInstance()->set('user', $this->userSettings);
 				}
 
 				$times = array();
@@ -102,8 +112,8 @@
 					$email = Sanitizer::get_var('email', 'string', 'POST');
 					if(!$email)
 					{
-						$prefs = $GLOBALS['phpgw']->preferences->create_email_preferences();
-						$email = $prefs['email']['address'];
+						$email = isset($this->userSettings['preferences']['common']['email']) ? $this->userSettings['preferences']['common']['email'] : '';
+
 					}
 					$validator = CreateObject('phpgwapi.EmailAddressValidator');
 					if(!$validator->check_email_address($email))
@@ -137,15 +147,17 @@
 
 				if ( $asyncservice )
 				{
-					if (!isset($GLOBALS['phpgw_info']['server']['asyncservice'])
-						|| $asyncservice != $GLOBALS['phpgw_info']['server']['asyncservice'] )
+					if (!isset($this->serverSettings['asyncservice'])
+						|| $asyncservice != $this->serverSettings['asyncservice'] )
 					{
-						$config = CreateObject('phpgwapi.config','phpgwapi');
+						//$config = CreateObject('phpgwapi.config','phpgwapi');
+						$config = new \App\modules\phpgwapi\services\Config('phpgwapi');
 						$config->read();
 						$config->value('asyncservice', $asyncservice);
 						$config->save_repository();
 						unset($config);
-						$GLOBALS['phpgw_info']['server']['asyncservice'] = $asyncservice;
+						$this->serverSettings['asyncservice'] = $asyncservice;
+						Settings::getInstance()->set('server', $this->serverSettings);
 					}
 
 					if(($asyncservice == 'off' || $asyncservice == 'fallback') && !$install)
@@ -162,7 +174,7 @@
 			echo '<div style="text-align: left; margin: 10px;">'."\n";
 
 			$last_run = $async->last_check_run();
-			$lr_date = $last_run['end'] ? $GLOBALS['phpgw']->common->show_date($last_run['end']) : lang('never');
+			$lr_date = $last_run['end'] ? $this->phpgwapi_common->show_date($last_run['end']) : lang('never');
 			echo '<p><b>'.lang('Async services last executed').'</b>: '.$lr_date.' ('.$last_run['run_by'].")</p>\n<hr>\n";
 
 			if (!$async->only_fallback)
@@ -176,7 +188,7 @@
 			$async_use['fallback']    = lang('fallback (after each pageview)');
 			$async_use['off'] = lang('disabled (not recomended)');
 
-			$_config_asyncservice = $GLOBALS['phpgw_info']['server']['asyncservice'] == 'cron' && ! isset($async_use['cron']) ? 'off' :  $GLOBALS['phpgw_info']['server']['asyncservice'];
+			$_config_asyncservice = $this->serverSettings['asyncservice'] == 'cron' && ! isset($async_use['cron']) ? 'off' :  $this->serverSettings['asyncservice'];
 
 			echo '<p><b>'.lang('Run Asynchronous services').'</b>'.
 				' <select name="asyncservice" onChange="this.form.submit();">';
@@ -226,7 +238,7 @@
 			{
 				$next = $async->next_run($times,True);
 
-				echo "<p>asyncservice::next_run(";print_r($times);echo")=".($next === False ? 'False':"'$next'=".$GLOBALS['phpgw']->common->show_date($next))."</p>\n";
+				echo "<p>asyncservice::next_run(";print_r($times);echo")=".($next === False ? 'False':"'$next'=".$this->phpgwapi_common->show_date($next))."</p>\n";
 			}
 			echo '<hr><p><input type="submit" name="cancel" value="'.lang('Cancel TestJob!')."\"> &nbsp;\n";
 			echo lang('email') . '<input type="text" name="email" value="">'."\n";
@@ -240,11 +252,11 @@
 				echo "<table  class=\"pure-table  pure-table-bordered\" border=1>\n<tr>\n<th>Id</th><th>".lang('Next run').'</th><th>'.lang('Times').'</th><th>'.lang('Method').'</th><th>'.lang('Data')."</th><th>".lang('LoginID')."</th></tr>\n";
 				foreach($jobs as $job)
 				{
-					echo "<tr>\n<td>{$job['id']}</td><td>".$GLOBALS['phpgw']->common->show_date($job['next'])."</td><td>";
+					echo "<tr>\n<td>{$job['id']}</td><td>".$this->phpgwapi_common->show_date($job['next'])."</td><td>";
 					print_r($job['times']); 
 					echo "</td><td>{$job['method']}</td><td>"; 
 					print_r($job['data']); 
-					echo "</td><td align=\"center\">".$GLOBALS['phpgw']->accounts->id2name($job['account_id'])."</td></tr>\n"; 
+					echo "</td><td align=\"center\">".$this->accounts->id2name($job['account_id'])."</td></tr>\n"; 
 				}
 				echo "</table>\n";
 			}
@@ -261,22 +273,19 @@
 		public function test($data)
 		{
 			$to = $data['to'];
-			$from = $GLOBALS['phpgw']->preferences->values['email'];
+			$from = isset($this->userSettings['preferences']['common']['email']) ? $this->userSettings['preferences']['common']['email'] : '';
 
 			if (!CreateObject('phpgwapi.EmailAddressValidator')->check_email_address($from))
 			{
 				$from = "Noreply@notdefined.org";
 			}
-			if (!is_object($GLOBALS['phpgw']->send))
-			{
-				$GLOBALS['phpgw']->send = CreateObject('phpgwapi.send');
-			}
-			$returncode = $GLOBALS['phpgw']->send->msg('email', $to, $subject='Asynchronous timed services', 'Greatings from cron ;-)', '', '', '', $from);
+			$send = new \App\modules\phpgwapi\services\Send();
+			$returncode = $send->msg('email', $to, $subject='Asynchronous timed services', 'Greatings from cron ;-)', '', '', '', $from);
 
 			if (!$returncode)	// not nice, but better than failing silently
 			{
 				echo "<p>uiasynservice::test: sending message to '$to' subject='$subject' failed !!!<br>\n";
-				echo $GLOBALS['phpgw']->send->err['desc']."</p>\n";
+				echo $send->err['desc']."</p>\n";
 			}
 		}
 	}

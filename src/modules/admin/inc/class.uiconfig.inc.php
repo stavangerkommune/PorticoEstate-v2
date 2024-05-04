@@ -24,7 +24,10 @@ use App\modules\phpgwapi\services\Config;
 class admin_uiconfig
 {
 
-	public $public_functions = array('index' => True);
+	public $public_functions = array(
+		'index' => True,
+		'phpinfo' => True,
+	);
 	private $appname;
 	private $serverSettings;
 	private $flags;
@@ -62,6 +65,69 @@ class admin_uiconfig
 		}
 	}
 
+	function phpinfo()
+	{
+		if (isset($_GET['noheader']) && $_GET['noheader'])
+		{
+			$this->flags = array(
+				'nofooter'		 => true,
+				'noframework'	 => true,
+				'noheader'		 => true,
+				'nonavbar'		 => true,
+			);
+		}
+		$this->flags['menu_selection']	 = "admin::admin::phpinfo";
+		Settings::getInstance()->set('flags', $this->flags);
+
+
+		if (Sanitizer::get_var('noheader', 'bool', 'GET') && !Sanitizer::get_var('iframe', 'bool', 'GET'))
+		{
+			$close = lang('close window');
+
+			echo <<<HTML
+					<div style="text-align: center;">
+						<a href="javascript:window.close();">{$close}</a>
+					</div>
+HTML;
+		}
+
+		if (function_exists('phpinfo'))
+		{
+			if (Sanitizer::get_var('get_info', 'bool', 'GET'))
+			{
+				phpinfo();
+			}
+			else
+			{
+				$this->phpgwapi_common->phpgw_header(true);
+
+				$link = phpgw::link('/index.php', array('menuaction' => 'admin.uiconfig.phpinfo', 'get_info' => true, 'noheader' => true, 'iframe' => true));
+				echo <<<HTML
+
+				<script>
+					function resizeIframe(obj)
+					{
+						obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 'px';
+					}
+				</script>
+
+				<iframe id="phpinfo" src="{$link}" width="100%" frameborder="0" scrolling="no" onload="resizeIframe(this)" ></iframe>
+HTML;
+			}
+		}
+		else
+		{
+			$error = lang('phpinfo is not available on this system!');
+			echo <<<HTML
+					<div class="error"><h1>$error</h1><div>
+		
+HTML;
+		}
+
+	}
+
+
+
 	function index()
 	{
 		$errors	 = '';
@@ -82,8 +148,9 @@ class admin_uiconfig
 			$_redir = $referer ? $referer : phpgw::link('/index.php', array('menuaction' => 'admin.uimainscreen.mainscreen'));
 		}
 
-		$appname											 = $this->appname;
+		$appname	= $this->appname;
 		$this->flags['menu_selection']	 = "admin::{$appname}::index";
+		Settings::getInstance()->set('flags', $this->flags);
 
 		$this->apps['manual']['app'] = $appname; // override the appname fetched from the referer for the manual.
 

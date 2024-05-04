@@ -223,7 +223,7 @@
 					'url'	=> phpgw::link('/index.php', array
 								(
 									'menuaction' => 'admin.uiaclmanager.list_addressmasters',
-									'account_id' => $GLOBALS['phpgw_info']['user']['account_id']
+									'account_id' => $userSettings['account_id']
 								))
 				);
 			}
@@ -307,7 +307,8 @@
 				$menus['admin']['phpinfo'] = array
 				(
 					'text'	=> $translation->translate('PHP Configuration', array(), true),
-					'url'	=> phpgw::link('/admin/phpinfo.php'),
+					'url'	=> phpgw::link('/index.php',
+								array('menuaction' => 'admin.uiconfig.phpinfo')),
 				);
 			}
 
@@ -318,7 +319,7 @@
 				unset($menus['admin']);
 			}
 
-			if ( isset($GLOBALS['phpgw_info']['user']['apps']['preferences']) )
+			if ( isset($userSettings['apps']['preferences']) )
 			{
 				$menus['preferences'] = array();
 			}

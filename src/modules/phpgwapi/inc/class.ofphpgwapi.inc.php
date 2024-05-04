@@ -108,6 +108,13 @@ class phpgwapi_ofphpgwapi extends phpgwapi_object_factory
 			case 'hooks':
 				$db = ($p1 !== '_UNDEF_') ? $p1 : null;
 				return new \App\modules\phpgwapi\services\Hooks($db);
+			case 'asyncservice':
+				return \App\modules\phpgwapi\services\AsyncService::getInstance();
+			case 'config':
+				$app = ($p1 !== '_UNDEF_') ? $p1 : null;
+				return new \App\modules\phpgwapi\services\Config($app);
+			case 'send':
+				return new \App\modules\phpgwapi\services\Send();
 			default:
 				return parent::createObject(
 					$class,

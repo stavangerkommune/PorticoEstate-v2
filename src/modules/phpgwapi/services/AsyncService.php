@@ -9,6 +9,8 @@
 	* @version $Id$
 	*/
 
+	namespace App\modules\phpgwapi\services;
+
 	use App\modules\phpgwapi\services\Cache;
 	use App\modules\phpgwapi\security\Acl;
 	use App\modules\phpgwapi\services\Settings;
@@ -17,8 +19,9 @@
 	use App\modules\phpgwapi\services\Translation;
 	use App\modules\phpgwapi\services\Config;
 	use App\Database\Db;
+	use PDO;
 	use App\modules\phpgwapi\security\Sessions;
-use App\modules\phpgwapi\services\Log;
+	use App\modules\phpgwapi\services\Log;
 
 
 	/**
@@ -29,7 +32,7 @@ use App\modules\phpgwapi\services\Log;
 	* @subpackage application
 	* @link http://www.phpgroupware.org/wiki/TimedAsyncServices
 	*/
-	class asyncservice
+	class AsyncService
 	{
 		var $public_functions = array
 		(
@@ -54,10 +57,12 @@ use App\modules\phpgwapi\services\Log;
 		var $sessions;
 		var $log;
 
+		private static $instance = null;
+
 		/**
 		* Constructor
 		*/
-		function __construct()
+		private function __construct()
 		{
 			$this->db = Db::getInstance();
 			$this->userSettings = Settings::getInstance()->get('user');
@@ -69,6 +74,15 @@ use App\modules\phpgwapi\services\Log;
 			$this->Exception_On_Error =	$this->db->Exception_On_Error; // continue on dberror
 			$this->sessions = Sessions::getInstance();
 			$this->log = new Log();
+		}
+
+		public static function getInstance()
+		{
+			if (self::$instance === null)
+			{
+				self::$instance = new self();
+			}
+			return self::$instance;
 		}
 
 		/**
@@ -581,32 +595,36 @@ use App\modules\phpgwapi\services\Log;
 			$id = $this->db->db_addslashes($id);
 			if (strpos($id,'%') !== False || strpos($id,'_') !== False)
 			{
-				$where = "id LIKE '$id' AND id!='##last-check-run##'";
+				$where = "id LIKE :id AND id!='##last-check-run##'";
 			}
 			elseif (!$id)
 			{
-				$where = 'next<='.time()." AND id!='##last-check-run##'";
+				$where = 'next<=:time AND id!="##last-check-run##"';
 			}
 			else
 			{
-				$where = "id='$id'";
+				$where = "id=:id";
 			}
-			$this->db->query($sql="SELECT * FROM $this->db_table WHERE $where",__LINE__,__FILE__);
+			$stmt = $this->db->prepare("SELECT * FROM $this->db_table WHERE $where");
+			$params = ['id' => $id];
+			if (!$id) {
+				$params['time'] = time();
+			}
+			$stmt->execute($params);
 
 			$jobs = array();
-			while ($this->db->next_record())
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 			{
-				$id = $this->db->f('id');
+				$id = $row['id'];
 
 				$jobs[$id] = array(
 					'id'     => $id,
-					'next'   => $this->db->f('next'),
-					'times'  => unserialize($this->db->f('times')),
-					'method' => $this->db->f('method'),
-					'data'   => unserialize($this->db->f('data')),
-					'account_id'   => $this->db->f('account_id')
+					'next'   => $row['next'],
+					'times'  => unserialize($row['times']),
+					'method' => $row['method'],
+					'data'   => unserialize($row['data']),
+					'account_id'   => $row['account_id']
 				);
-				//echo "job id='$id'<pre>"; print_r($jobs[$id]); echo "</pre>\n";
 			}
 			if (!count($jobs))
 			{
@@ -621,24 +639,37 @@ use App\modules\phpgwapi\services\Log;
 		* @param array $job DB-row as array
 		* @param boolean $exits If True we do an update otherwise we check if update or insert necesary
 		*/
-		function write($job,$exists = False)
+		function write($job, $exists = False)
 		{
-			$job['times'] = (isset($job['times'])?$this->db->db_addslashes(serialize($job['times'])):'');
-			$job['data'] = (isset($job['data'])?$this->db->db_addslashes(serialize($job['data'])):'');
-			$job['next']  = (isset($job['next'])?intval($job['next']):0);
-			$job['account_id']  = (isset($job['account_id'])?intval($job['account_id']):0);
-			$job['method']  = (isset($job['method'])?$job['method']:'');
-			$job['id']  = (isset($job['id'])?$job['id']:'');
+			$job['times'] = isset($job['times']) ? serialize($job['times']) : '';
+			$job['data'] = isset($job['data']) ? serialize($job['data']) : '';
+			$job['next'] = isset($job['next']) ? intval($job['next']) : 0;
+			$job['account_id'] = isset($job['account_id']) ? intval($job['account_id']) : 0;
+			$job['method'] = isset($job['method']) ? $job['method'] : '';
+			$job['id'] = isset($job['id']) ? $job['id'] : '';
 
-			if ($exists || $this->read($job['id']))
-			{
-				$this->db->query("UPDATE $this->db_table SET next={$job['next']},times='{$job['times']}',".
-					"method='{$job['method']}',data='{$job['data']}',account_id={$job['account_id']} WHERE id='{$job['id']}'",__LINE__,__FILE__);
+			if ($exists || $this->read($job['id'])) {
+				$stmt = $this->db->prepare("UPDATE $this->db_table SET next=:next, times=:times, method=:method, data=:data, account_id=:account_id WHERE id=:id");
+				$stmt->execute([
+					'next' => $job['next'],
+					'times' => $job['times'],
+					'method' => $job['method'],
+					'data' => $job['data'],
+					'account_id' => $job['account_id'],
+					'id' => $job['id']
+				]);
 			}
 			else
-			{
-				$this->db->query("INSERT INTO $this->db_table (id,next,times,method,data,account_id) VALUES ".
-					"('$job[id]',$job[next],'$job[times]','$job[method]','$job[data]',$job[account_id])",__LINE__,__FILE__);
+		{
+				$stmt = $this->db->prepare("INSERT INTO $this->db_table (id, next, times, method, data, account_id) VALUES (:id, :next, :times, :method, :data, :account_id)");
+				$stmt->execute([
+					'id' => $job['id'],
+					'next' => $job['next'],
+					'times' => $job['times'],
+					'method' => $job['method'],
+					'data' => $job['data'],
+					'account_id' => $job['account_id']
+				]);
 			}
 		}
 
@@ -650,9 +681,10 @@ use App\modules\phpgwapi\services\Log;
 		*/
 		function delete($id)
 		{
-			$this->db->query("DELETE FROM $this->db_table WHERE id='$id'",__LINE__,__FILE__);
+			$stmt = $this->db->prepare("DELETE FROM $this->db_table WHERE id=:id");
+			$stmt->execute(['id' => $id]);
 
-			return $this->db->affected_rows();
+			return $stmt->rowCount();
 		}
 
 		function find_binarys()
