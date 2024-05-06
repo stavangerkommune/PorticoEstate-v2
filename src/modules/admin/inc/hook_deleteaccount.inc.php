@@ -13,21 +13,21 @@
 	/* $Id$ */
 
 	$account_id = Sanitizer::get_var('account_id', 'int');
+	$serverSettings = \App\modules\phpgwapi\services\Settings::getInstance()->get('server');
 	if ( $account_id )
 	{
 		// delete all mapping to account
 		// Using Single Sign-On
-		if(isset($GLOBALS['phpgw_info']['server']['mapping']) && ($GLOBALS['phpgw_info']['server']['mapping'] == 'all' || $GLOBALS['phpgw_info']['server']['mapping'] == 'table'))
+		if(isset($serverSettings['mapping']) && ($serverSettings['mapping'] == 'all' || $serverSettings['mapping'] == 'table'))
 		{
 			$phpgw_map_location = isset($_SERVER['HTTP_SHIB_ORIGIN_SITE']) ? $_SERVER['HTTP_SHIB_ORIGIN_SITE'] : 'local';
 			$phpgw_map_authtype = isset($_SERVER['HTTP_SHIB_ORIGIN_SITE']) ? 'shibboleth':'remoteuser';
-			if(!is_object($GLOBALS['phpgw']->mapping))
-			{
-				$GLOBALS['phpgw']->mapping = CreateObject('phpgwapi.mapping', array('auth_type'=> $phpgw_map_authtype, 'location' => $phpgw_map_location));
-			}
+
+			$mapping  = CreateObject('phpgwapi.mapping', array('auth_type'=> $phpgw_map_authtype, 'location' => $phpgw_map_location));
+
 			$account = CreateObject('phpgwapi.accounts', $account_id, 'u');
 			$data = $account->read();
 			$account_lid = $data['account_lid'];
-			$GLOBALS['phpgw']->mapping->delete_mapping(array('account_lid' => $account_lid));
+			$mapping ->delete_mapping(array('account_lid' => $account_lid));
 		}
 	}

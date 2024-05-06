@@ -75,12 +75,14 @@ class bocurrentsessions
 	function kill()
 	{
 		$acl = Acl::getInstance();
+		$sessions = Sessions::getInstance();
+
 		if ((isset($_GET['ksession']) && $_GET['ksession']) &&
-			($GLOBALS['sessionid'] != $_GET['ksession']) &&
+			($sessions->get_session_id() != $_GET['ksession']) &&
 			!$acl->check('current_sessions_access', 8, 'admin')
 		)
 		{
-			Sessions::getInstance()->destroy($_GET['ksession']);
+			$sessions->destroy($_GET['ksession']);
 		}
 		$this->ui = createobject('admin.uicurrentsessions');
 		$this->ui->list_sessions();

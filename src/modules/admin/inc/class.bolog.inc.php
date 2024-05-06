@@ -16,9 +16,6 @@ use App\modules\phpgwapi\services\Log;
 use App\modules\phpgwapi\security\Acl;
 use App\modules\phpgwapi\services\Settings;
 
-
-
-
 class bolog
 {
 	var $public_functions = array(

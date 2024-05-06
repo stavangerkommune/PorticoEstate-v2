@@ -28,12 +28,9 @@
 
 //FIXME define constants for rights so we can fuck off all these magic numbers
 
-use App\modules\phpgwapi\security\Sessions;
-use App\modules\phpgwapi\services\Settings;
 use App\modules\phpgwapi\security\Acl;
 use App\modules\phpgwapi\controllers\Accounts\phpgwapi_group;
 use App\modules\phpgwapi\controllers\Accounts\phpgwapi_user;
-use App\modules\phpgwapi\controllers\Accounts\phpgwapi_account;
 use App\modules\phpgwapi\controllers\Accounts\Accounts;
 use App\modules\phpgwapi\services\Cache;
 use Exception;

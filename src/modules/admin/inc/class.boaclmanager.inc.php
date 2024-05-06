@@ -11,7 +11,7 @@
 	 * @version $Id$
 	 */
 
-	/*
+/*
 	   This program is free software: you can redistribute it and/or modify
 	   it under the terms of the GNU General Public License as published by
 	   the Free Software Foundation, either version 2 of the License, or
@@ -25,6 +25,8 @@
 	   You should have received a copy of the GNU General Public License
 	   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
+
+	use App\modules\phpgwapi\security\Acl;
 
 	/*
 	 * phpGroupWare - Administration - ACL manager logic
@@ -44,13 +46,18 @@
 		);
 
 		/**
+		 * The ACL object
+		 */
+		private $acl;
+
+		/**
 		 * Constructor
 		 *
 		 * @return void
 		 */
 		public function __construct()
 		{
-			//i do nothing!
+			$this->acl = Acl::getInstance();
 		}
 
 		/**
@@ -65,7 +72,7 @@
 				return false;
 			}
 
-			$app = Sanitizer::get_var('acl_app', 'string');
+			$acl_app = Sanitizer::get_var('acl_app', 'string');
 			$account_id = Sanitizer::get_var('account_id', 'int');
 			$location = Sanitizer::get_var('location', 'string');
 
@@ -81,7 +88,7 @@
 				$total_rights += $rights;
 			}
 
-			$GLOBALS['phpgw']->acl->add_repository($acl_app, $location, $account_id, $total_rights);
+			$this->acl->add_repository($acl_app, $location, $account_id, $total_rights);
 		}
 
 		/**
@@ -91,7 +98,7 @@
 		 */
 		public function get_addressmaster_ids()
 		{
-			return $GLOBALS['phpgw']->acl->get_ids_for_location('addressmaster', 7, 'addressbook');
+			return $this->acl->get_ids_for_location('addressmaster', 7, 'addressbook');
 		}
 
 		/**
@@ -102,12 +109,14 @@
 		public function list_addressmasters()
 		{
 			$admins = $this->get_addressmaster_ids();
+			$accunts = new \App\modules\phpgwapi\controllers\Accounts\Accounts();
+
 			//_debug_array($admins);
 
 			$data = array();
 			foreach ( $admins as $admin )
 			{
-				$acct = $GLOBALS['phpgw']->accounts->get($admin);
+				$acct = $accunts->get($admin);
 
 				if ( is_object($acct) )
 				{
@@ -151,16 +160,16 @@
 		 */
 		public function edit_addressmasters($masters, $groups = array())
 		{
-			$GLOBALS['phpgw']->acl->delete_repository('addressbook', 'addressmaster', false);
+			$this->acl->delete_repository('addressbook', 'addressmaster', false);
 
 			foreach ( $masters as $master )
 			{
-				$GLOBALS['phpgw']->acl->add_repository('addressbook', 'addressmaster', $master, 7);
+				$this->acl->add_repository('addressbook', 'addressmaster', $master, 7);
 			}
 
 			foreach ( $groups as $group )
 			{
-				$GLOBALS['phpgw']->acl->add_repository('addressbook', 'addressmaster', $group, 7);
+				$this->acl->add_repository('addressbook', 'addressmaster', $group, 7);
 			}
 		}
 	}

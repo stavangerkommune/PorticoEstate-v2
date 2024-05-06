@@ -31,6 +31,14 @@
 	class admin_uiasyncservice
 	{
 		public $public_functions = array('index' => True);
+		private $flags;
+		private $userSettings;
+		private $serverSettings;
+		private $sessions;
+		private $phpgwapi_common;
+		private $accounts;
+		private $acl;
+
 
 		public function __construct()
 		{
@@ -91,7 +99,7 @@
 					$num = $async->check_run('crontab');
 					echo "<p><b>{$num} jobs found</b></p>\n";
 					//reset your environment
-					$this->sessions->set_account_id($job['account_id']);
+					$this->sessions->set_account_id($account_id);
 					$this->sessions->read_repositories(False,False);
 					$this->userSettings  = $this->sessions->get_user();
 					Settings::getInstance()->set('user', $this->userSettings);

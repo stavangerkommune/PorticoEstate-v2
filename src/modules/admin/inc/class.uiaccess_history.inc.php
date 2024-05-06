@@ -31,7 +31,6 @@ class admin_uiaccess_history
 	{
 		$this->flags = Settings::getInstance()->get('flags');
 		$this->phpgwapi_common = new \phpgwapi_common();
-
 	}
 
 	public function list_history()
@@ -222,9 +221,6 @@ HTML;
 		{
 			$var['lang_percent'] = lang('Percent of users that logged out') . ': ' . $percent . '%';
 		}
-
-		// create the menu on the left, if needed
-//		$var['rows'] = createObject('admin.uimenuclass')->createHTMLCode('view_user');
 
 		$t->set_var($var);
 		$t->pfp('out', 'list');

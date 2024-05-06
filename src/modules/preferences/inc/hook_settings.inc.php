@@ -10,6 +10,7 @@ use App\modules\preferences\helpers\PreferenceHelper;
  * @package preferences
  * @version $Id$
  */
+
 use App\modules\phpgwapi\services\Preferences as Prefs;
 use App\modules\phpgwapi\services\Settings;
 

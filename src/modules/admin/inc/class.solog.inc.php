@@ -81,7 +81,7 @@ class solog
 
 	function purge_log($account_id)
 	{
-		$where = $this->test_account_id($account_id);
+		$where = $this->test_account_id((int)$account_id);
 
 		$this->db->query("delete from phpgw_log $where", __LINE__, __FILE__);
 		if (isset($this->db->Errno) && $this->db->Errno)

@@ -14,7 +14,7 @@
 /* $Source$ */
 
 use App\modules\phpgwapi\services\Cache;
-
+use App\modules\phpgwapi\services\Settings;
 
 class admin_bocategories
 {
@@ -33,6 +33,7 @@ class admin_bocategories
 
 	function __construct()
 	{
+		$userSettings = Settings::getInstance()->get('user');
 		$appname = Sanitizer::get_var('appname');
 		$location = Sanitizer::get_var('location');
 		if ($appname)
@@ -41,7 +42,7 @@ class admin_bocategories
 		}
 		else
 		{
-			$this->cats = CreateObject('phpgwapi.categories', $GLOBALS['phpgw_info']['user']['account_id'], 'phpgw');
+			$this->cats = CreateObject('phpgwapi.categories', $userSettings['account_id'], 'phpgw');
 		}
 
 		$this->read_sessiondata();

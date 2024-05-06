@@ -33,9 +33,6 @@ use App\modules\phpgwapi\security\Acl;
 use App\modules\phpgwapi\services\Cache;
 use App\modules\phpgwapi\controllers\Accounts\phpgwapi_group;
 use App\modules\phpgwapi\controllers\Accounts\phpgwapi_user;
-use App\modules\phpgwapi\controllers\Accounts\phpgwapi_account;
-
-
 
 phpgw::import_class('phpgwapi.jquery');
 phpgw::import_class('phpgwapi.uicommon_jquery');
@@ -329,7 +326,6 @@ class admin_uiaccounts extends phpgwapi_uicommon_jquery
 		$sort = Sanitizer::get_var('sort', 'string', 'GET', 'ASC');
 		$total = 0;
 		$query = Sanitizer::get_var('query', 'string');
-		$GLOBALS['cd'] = Sanitizer::get_var('cd', 'int', 'GET');
 		$this->flags['app_header'] = lang('administration')	. ': ' . lang('list groups');
 		Settings::getInstance()->set('flags', $this->flags);
 
@@ -521,9 +517,6 @@ class admin_uiaccounts extends phpgwapi_uicommon_jquery
 		$order		= Sanitizer::get_var('order', 'string', 'GET', 'account_lid');
 		$sort		= Sanitizer::get_var('sort', 'string', 'GET', 'ASC');
 		$allrows	= Sanitizer::get_var('allrows', 'bool');
-
-		//this is a work around hack for the ugly nextmatch code
-		$GLOBALS['query'] = $query;
 
 		$total = 0;
 		if ($allrows)
@@ -1435,6 +1428,7 @@ class admin_uiaccounts extends phpgwapi_uicommon_jquery
 	protected function _user_form($user, $errors = array())
 	{
 		$account_id = $user->id;
+		$account_lid = $user->lid;
 		$user_data = $user->toArray();
 		$account = createObject('phpgwapi.accounts', $account_id, 'u');
 
@@ -1717,12 +1711,6 @@ class admin_uiaccounts extends phpgwapi_uicommon_jquery
 			'tabs'					=> phpgwapi_jquery::tabview_generate($tabs, 'data', 'account_edit_tabview')
 		);
 
-		/*
-				create the menu on the left, if needed
-				$menuClass = CreateObject('admin.uimenuclass');
-				This is now using ExecMethod()
-				$t->set_var('rows',ExecMethod('admin.uimenuclass.createHTMLCode','edit_user'));
-			*/
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('account_edit' => $data));
 	}
 
@@ -1794,7 +1782,7 @@ class admin_uiaccounts extends phpgwapi_uicommon_jquery
 
 		//Permissions
 		$available_apps = $this->apps;
-	//	$apps  = CreateObject('phpgwapi.applications', $account_id);
+		//	$apps  = CreateObject('phpgwapi.applications', $account_id);
 		$apps = new App\modules\phpgwapi\controllers\Applications($account_id);
 		$perms = array_keys($apps->read_account_specific());
 		if (is_array($available_apps) && count($available_apps))
@@ -1957,7 +1945,7 @@ class admin_uiaccounts extends phpgwapi_uicommon_jquery
 
 			// get account list for new owner
 			$accounts = $this->accounts;
-			
+
 			$accounts_list = $accounts->get_list('accounts');
 
 			$account_id = Sanitizer::get_var('account_id', 'int');

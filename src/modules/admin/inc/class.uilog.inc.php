@@ -245,8 +245,6 @@ HTML;
 			$var = array('footer_total' => lang('Total records: %1', $total_records));
 		}
 
-		// create the menu on the left, if needed
-		//$var['rows'] = createObject('admin.uimenuclass')->createHTMLCode('view_account');
 
 		//$t->set_var($var);
 		$t->pfp('out', 'list');

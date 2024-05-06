@@ -15,7 +15,6 @@
 
 use App\modules\phpgwapi\services\Settings;
 use App\modules\phpgwapi\security\Acl;
-use App\modules\phpgwapi\controllers\Locations;
 use App\modules\phpgwapi\services\Cache;
 
 /**
@@ -1130,12 +1129,12 @@ class admin_ui_custom extends phpgwapi_uicommon_jquery
 			'statustext' => lang('Edit'),
 			'text'		 => lang('Edit'),
 			'action'	 => phpgw::link(
-					'/index.php',
-					array(
-						'menuaction'	 => 'admin.ui_custom.edit_attrib_group',
-						'menu_selection'	 => $this->menu_selection
-					)
-				),
+				'/index.php',
+				array(
+					'menuaction'	 => 'admin.ui_custom.edit_attrib_group',
+					'menu_selection'	 => $this->menu_selection
+				)
+			),
 			'parameters' => json_encode($parameters)
 		);
 
@@ -1145,12 +1144,12 @@ class admin_ui_custom extends phpgwapi_uicommon_jquery
 			'text'			 => lang('Delete'),
 			'confirm_msg'	 => lang('do you really want to delete this entry'),
 			'action'		 => phpgw::link(
-					'/index.php',
-					array(
-						'menuaction'	 => 'admin.ui_custom.delete_attrib_group',
-						'menu_selection'	 => $this->menu_selection
-					)
-				),
+				'/index.php',
+				array(
+					'menuaction'	 => 'admin.ui_custom.delete_attrib_group',
+					'menu_selection'	 => $this->menu_selection
+				)
+			),
 			'parameters'	 => json_encode($parameters2)
 		);
 
@@ -1159,12 +1158,12 @@ class admin_ui_custom extends phpgwapi_uicommon_jquery
 			'statustext' => lang('list attribute'),
 			'text'		 => lang('list attribute'),
 			'action'	 => phpgw::link(
-					'/index.php',
-					array(
-						'menuaction'	 => 'admin.ui_custom.list_attribute',
-						'menu_selection' => str_replace('custom_field_groups', 'custom_fields', $this->menu_selection)
-					)
-				),
+				'/index.php',
+				array(
+					'menuaction'	 => 'admin.ui_custom.list_attribute',
+					'menu_selection' => str_replace('custom_field_groups', 'custom_fields', $this->menu_selection)
+				)
+			),
 			'parameters' => json_encode($parameters2)
 		);
 
@@ -1173,12 +1172,12 @@ class admin_ui_custom extends phpgwapi_uicommon_jquery
 			'statustext' => lang('new attribute'),
 			'text'		 => lang('new attribute'),
 			'action'	 => phpgw::link(
-					'/index.php',
-					array(
-						'menuaction'	 => 'admin.ui_custom.edit_attrib',
-						'menu_selection' => str_replace('custom_field_groups', 'custom_fields', $this->menu_selection)
-					)
-				),
+				'/index.php',
+				array(
+					'menuaction'	 => 'admin.ui_custom.edit_attrib',
+					'menu_selection' => str_replace('custom_field_groups', 'custom_fields', $this->menu_selection)
+				)
+			),
 			'parameters' => json_encode($parameters2)
 		);
 
