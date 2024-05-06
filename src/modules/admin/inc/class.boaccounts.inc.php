@@ -36,7 +36,6 @@ use App\modules\phpgwapi\services\Cache;
 use Exception;
 
 
-
 class admin_boaccounts
 {
 	public $public_functions = array(

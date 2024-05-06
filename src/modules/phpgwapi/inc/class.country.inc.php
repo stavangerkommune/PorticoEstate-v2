@@ -335,7 +335,7 @@
 		*/
 		function xslt_continent_select($selected = '',$select_name='')
 		{
-			$GLOBALS['phpgw']->xslttpl->add_file('countries');
+			phpgwapi_xslttemplates::getInstance()->add_file('countries');
 
 			foreach(self::$continent_array as $cname => $ctitle)
 			{
@@ -364,7 +364,7 @@
 		*/
 		function xslt_country_select($selected = '', $select_name='')
 		{
-			$GLOBALS['phpgw']->xslttpl->add_file('countries');
+			phpgwapi_xslttemplates::getInstance()->add_file('countries');
 
 			foreach(self::$country_array as $ccode => $cname)
 			{

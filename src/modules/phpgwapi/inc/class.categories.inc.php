@@ -17,9 +17,6 @@ use App\modules\phpgwapi\security\Acl;
 use App\modules\phpgwapi\controllers\Locations;
 use App\modules\phpgwapi\services\Hooks;
 
-
-
-
 /**
  * Add ability for applications to make use of categories
  *
