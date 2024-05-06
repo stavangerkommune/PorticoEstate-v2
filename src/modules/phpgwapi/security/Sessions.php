@@ -1151,7 +1151,7 @@ class Sessions
 			// skip invalid or anonymous sessions
 			if (
 				!isset($data['phpgw_session'])
-				|| $data['phpgw_session']['session_install_id'] != $GLOBALS['phpgw_info']['server']['install_id']
+				|| $data['phpgw_session']['session_install_id'] != $this->serverSetting['install_id']
 				|| !isset($data['phpgw_session']['session_flags'])
 				|| $data['phpgw_session']['session_flags'] == 'A'
 			)
@@ -1225,7 +1225,7 @@ class Sessions
 			$this->_history_id = md5($this->_login . time());
 			$history = (array)Cache::session_get('phpgwapi', 'history');
 
-			if (count($history) >= $GLOBALS['phpgw_info']['server']['max_history'])
+			if (count($history) >= $this->serverSetting['max_history'])
 			{
 				array_shift($history);
 				Cache::session_set('phpgwapi', 'history', $history);

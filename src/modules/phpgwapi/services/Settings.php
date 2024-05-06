@@ -110,6 +110,11 @@ class Settings
 		}
 
         $this->config_data['server']['default_domain'] = $this->db->get_domain();
+
+		if(!isset($this->config_data['server']['webserver_url']))
+		{
+			$this->config_data['server']['webserver_url'] = '';
+		}
         $data_cache[$modules[0]] = $this->config_data;
 	//	DebugArray::debug($this->config_data);
 
