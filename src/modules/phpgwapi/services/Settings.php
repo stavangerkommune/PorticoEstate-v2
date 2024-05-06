@@ -34,17 +34,18 @@ class Settings
 
     private function loadSettingsFromDatabase()
     {
-       return $this->read_repository('phpgwapi');
+       return $this->read_repository();
     }
 
-    private function read_repository($module)
+    private function read_repository()
     {
+		$modules = array('phpgwapi', 'admin');
 
         static $data_cache = array();
 
-        if(!empty($data_cache[$module]))
-        {
-            $this->config_data = $data_cache[$module];
+        if(!empty($data_cache[$modules[0]]))
+		{
+            $this->config_data = $data_cache[$modules[0]];
             return $this->config_data;
         }
 
@@ -72,10 +73,12 @@ class Settings
 		}
 		else
 		{
-        
-			$stmt = $this->db->prepare("SELECT * FROM phpgw_config WHERE config_app=:module");
-			$stmt->execute([':module' => $module]);
-		
+
+			$placeholders = implode(',', array_fill(0, count($modules), '?'));
+			$sql = "SELECT * FROM phpgw_config WHERE config_app IN ($placeholders)";
+			$stmt = $this->db->prepare($sql);
+			$stmt->execute($modules);
+
 			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 				$test = @unserialize($row['config_value']);
 				if ($test) {
@@ -87,12 +90,12 @@ class Settings
 		}
 		
 		//check if the temp_dir is set and is writable
-		if($module == 'phpgwapi' && (empty($this->config_data['temp_dir']) || !is_writable($this->config_data['temp_dir'])))
+		if($modules[0] == 'phpgwapi' && (empty($this->config_data['temp_dir']) || !is_writable($this->config_data['temp_dir'])))
 		{
 			$this->config_data['server']['temp_dir'] = '/tmp';
 		}
 
-		if($module == 'phpgwapi' && isset($this->config_data['server']['versions']['header']))
+		if($modules[0] == 'phpgwapi' && isset($this->config_data['server']['versions']['header']))
 		{
 			if($this->config_data['server']['versions']['header'] < $setup_info['phpgwapi']['versions']['current_header'] )
 			{
@@ -107,7 +110,7 @@ class Settings
 		}
 
         $this->config_data['server']['default_domain'] = $this->db->get_domain();
-        $data_cache[$module] = $this->config_data;
+        $data_cache[$modules[0]] = $this->config_data;
 	//	DebugArray::debug($this->config_data);
 
         return $this->config_data;

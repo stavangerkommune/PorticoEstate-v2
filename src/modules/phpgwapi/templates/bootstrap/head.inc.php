@@ -3,8 +3,6 @@
 	use App\modules\phpgwapi\services\Cache;
 	use App\helpers\Template;
 
-
-
 	phpgw::import_class('phpgwapi.template_portico');
 	phpgw::import_class('phpgwapi.common');
 
