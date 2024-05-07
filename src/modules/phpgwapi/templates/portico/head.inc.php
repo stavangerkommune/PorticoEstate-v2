@@ -1,217 +1,228 @@
 <?php
-	phpgw::import_class('phpgwapi.template_portico');
 
-	if ( !isset($GLOBALS['phpgw_info']['server']['site_title']) )
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\Cache;
+use App\helpers\Template;
+
+phpgw::import_class('phpgwapi.template_portico');
+
+$serverSettings = Settings::getInstance()->get('server');
+$flags = Settings::getInstance()->get('flags');
+$userSettings = Settings::getInstance()->get('user');
+
+if (!isset($serverSettings['site_title']))
+{
+	$serverSettings['site_title'] = lang('please set a site name in admin &gt; siteconfig');
+}
+
+$webserver_url = isset($serverSettings['webserver_url']) ? $serverSettings['webserver_url'] . PHPGW_MODULES_PATH : PHPGW_MODULES_PATH;
+
+$app = $flags['currentapp'];
+
+$cache_refresh_token = '';
+if (!empty($serverSettings['cache_refresh_token']))
+{
+	$cache_refresh_token = "?n={$serverSettings['cache_refresh_token']}";
+}
+
+$template = new Template(PHPGW_TEMPLATE_DIR);
+$template->set_unknowns('remove');
+$template->set_file('head', 'head.tpl');
+$template->set_block('head', 'stylesheet', 'stylesheets');
+$template->set_block('head', 'javascript', 'javascripts');
+
+$serverSettings['no_jscombine'] = false;
+
+$javascripts = array();
+
+$stylesheets = array();
+
+phpgw::import_class('phpgwapi.jquery');
+phpgwapi_jquery::load_widget('core');
+
+if (!isset($flags['noframework']))
+{
+	//		$javascripts[] = "/phpgwapi/templates/portico/js/base.js";
+	//https://medium.com/@fbnlsr/how-to-get-rid-of-the-flash-of-unstyled-content-d6b79bf5d75f
+	phpgwapi_js::getInstance()->add_external_file("/phpgwapi/templates/portico/js/base.js", $end_of_page = true, array('combine' => true));
+}
+
+if (!$flags['noframework'] && !$flags['nonavbar'])
+{
+	phpgwapi_jquery::load_widget('layout');
+	phpgwapi_jquery::load_widget('jqtree');
+	phpgwapi_jquery::load_widget('contextMenu');
+
+	$userSettings['preferences']['common']['sidecontent'] = 'ajax_menu'; //ajax_menu|jsmenu
+	if (isset($userSettings['preferences']['common']['sidecontent']) && $userSettings['preferences']['common']['sidecontent'] == 'ajax_menu')
 	{
-		$GLOBALS['phpgw_info']['server']['site_title'] = lang('please set a site name in admin &gt; siteconfig');
+		$javascripts[] = "/phpgwapi/templates/portico/js/jqtree_jsmenu.js";
 	}
-
-	$webserver_url = $GLOBALS['phpgw_info']['server']['webserver_url'] . PHPGW_MODULES_PATH;
-
-	$app = $GLOBALS['phpgw_info']['flags']['currentapp'];
-
-	$cache_refresh_token = '';
-	if(!empty($GLOBALS['phpgw_info']['server']['cache_refresh_token']))
-	{
-		$cache_refresh_token = "?n={$GLOBALS['phpgw_info']['server']['cache_refresh_token']}";
-	}
-
-	$GLOBALS['phpgw']->template->set_root(PHPGW_TEMPLATE_DIR);
-	$GLOBALS['phpgw']->template->set_unknowns('remove');
-	$GLOBALS['phpgw']->template->set_file('head', 'head.tpl');
-	$GLOBALS['phpgw']->template->set_block('head', 'stylesheet', 'stylesheets');
-	$GLOBALS['phpgw']->template->set_block('head', 'javascript', 'javascripts');
-
-	$GLOBALS['phpgw_info']['server']['no_jscombine']=false;
-
-	$javascripts = array();
-
-	$stylesheets = array();
-
-	phpgw::import_class('phpgwapi.jquery');
-	phpgwapi_jquery::load_widget('core');
-
-	if( !isset($GLOBALS['phpgw_info']['flags']['noframework']) )
-	{
-//		$javascripts[] = "/phpgwapi/templates/portico/js/base.js";
-		//https://medium.com/@fbnlsr/how-to-get-rid-of-the-flash-of-unstyled-content-d6b79bf5d75f
-		$GLOBALS['phpgw']->js->add_external_file("/phpgwapi/templates/portico/js/base.js", $end_of_page = true, array('combine' => true ));
-	}
-
-	if( !$GLOBALS['phpgw_info']['flags']['noframework'] && !$GLOBALS['phpgw_info']['flags']['nonavbar'] )
-	{
-		phpgwapi_jquery::load_widget('layout');
-		phpgwapi_jquery::load_widget('jqtree');
-		phpgwapi_jquery::load_widget('contextMenu');
-
-		$GLOBALS['phpgw_info']['user']['preferences']['common']['sidecontent'] = 'ajax_menu';//ajax_menu|jsmenu
-		if (isset($GLOBALS['phpgw_info']['user']['preferences']['common']['sidecontent']) && $GLOBALS['phpgw_info']['user']['preferences']['common']['sidecontent'] == 'ajax_menu')
-		{
-			$javascripts[] = "/phpgwapi/templates/portico/js/jqtree_jsmenu.js";
-		}
-
-	}
+}
 
 
-	$stylesheets = array();
-	$stylesheets[] = "/phpgwapi/templates/pure/css/global.css";
-	$stylesheets[] = "/phpgwapi/templates/pure/css/version_3/pure-min.css";
-	$stylesheets[] = "/phpgwapi/templates/pure/css/pure-extension.css";
-	$stylesheets[] = "/phpgwapi/templates/pure/css/version_3/grids-responsive-min.css";
+$stylesheets = array();
+$stylesheets[] = "/phpgwapi/templates/pure/css/global.css";
+$stylesheets[] = "/phpgwapi/templates/pure/css/version_3/pure-min.css";
+$stylesheets[] = "/phpgwapi/templates/pure/css/pure-extension.css";
+$stylesheets[] = "/phpgwapi/templates/pure/css/version_3/grids-responsive-min.css";
 
-	$stylesheets[] = "/phpgwapi/js/DataTables/DataTables/css/jquery.dataTables.min.css";
-	$stylesheets[] = "/phpgwapi/js/DataTables/DataTables/css/dataTables.jqueryui.min.css";
-	$stylesheets[] = "/phpgwapi/js/DataTables/Responsive/css/responsive.dataTables.min.css";
-	$stylesheets[] = "/phpgwapi/templates/base/css/fontawesome/css/all.min.css";
+$stylesheets[] = "/phpgwapi/js/DataTables/DataTables/css/jquery.dataTables.min.css";
+$stylesheets[] = "/phpgwapi/js/DataTables/DataTables/css/dataTables.jqueryui.min.css";
+$stylesheets[] = "/phpgwapi/js/DataTables/Responsive/css/responsive.dataTables.min.css";
+$stylesheets[] = "/phpgwapi/templates/base/css/fontawesome/css/all.min.css";
 
-	$stylesheets[] = "/phpgwapi/templates/base/css/base.css";
-	$stylesheets[] = "/phpgwapi/templates/portico/css/base.css";
+$stylesheets[] = "/phpgwapi/templates/base/css/base.css";
+$stylesheets[] = "/phpgwapi/templates/portico/css/base.css";
 
 
-    if(isset($GLOBALS['phpgw_info']['user']['preferences']['common']['theme']))
-	{
-		$stylesheets[] = "/phpgwapi/templates/portico/css/{$GLOBALS['phpgw_info']['user']['preferences']['common']['theme']}.css";
-	}
-	$stylesheets[] = "/{$app}/templates/base/css/base.css";
-	$stylesheets[] = "/{$app}/templates/portico/css/base.css";
-	if(isset($GLOBALS['phpgw_info']['user']['preferences']['common']['theme']))
-	{
-		$stylesheets[] = "/{$app}/templates/portico/css/{$GLOBALS['phpgw_info']['user']['preferences']['common']['theme']}.css";
-	}
+if (isset($userSettings['preferences']['common']['theme']))
+{
+	$stylesheets[] = "/phpgwapi/templates/portico/css/{$userSettings['preferences']['common']['theme']}.css";
+}
+$stylesheets[] = "/{$app}/templates/base/css/base.css";
+$stylesheets[] = "/{$app}/templates/portico/css/base.css";
+if (isset($userSettings['preferences']['common']['theme']))
+{
+	$stylesheets[] = "/{$app}/templates/portico/css/{$userSettings['preferences']['common']['theme']}.css";
+}
 
-//	if(isset($GLOBALS['phpgw_info']['user']['preferences']['common']['yui_table_nowrap']) && $GLOBALS['phpgw_info']['user']['preferences']['common']['yui_table_nowrap'])
+//	if(isset($userSettings['preferences']['common']['yui_table_nowrap']) && $userSettings['preferences']['common']['yui_table_nowrap'])
 //	{
 //		$stylesheets[] = "/phpgwapi/templates/base/css/yui_table_nowrap.css";
 //	}
 
-	foreach ( $stylesheets as $stylesheet )
+foreach ($stylesheets as $stylesheet)
+{
+	if (file_exists(PHPGW_SERVER_ROOT . $stylesheet))
 	{
-		if( file_exists( PHPGW_SERVER_ROOT . $stylesheet ) )
-		{
-			$GLOBALS['phpgw']->template->set_var( 'stylesheet_uri', $webserver_url . $stylesheet . $cache_refresh_token);
-			$GLOBALS['phpgw']->template->parse('stylesheets', 'stylesheet', true);
-		}
+		$template->set_var('stylesheet_uri', $webserver_url . $stylesheet . $cache_refresh_token);
+		$template->parse('stylesheets', 'stylesheet', true);
 	}
+}
 
-	foreach ( $javascripts as $javascript )
+foreach ($javascripts as $javascript)
+{
+	if (file_exists(PHPGW_SERVER_ROOT . $javascript))
 	{
-		if( file_exists( PHPGW_SERVER_ROOT . $javascript ) )
-		{
-			$GLOBALS['phpgw']->template->set_var( 'javascript_uri', $webserver_url . $javascript . $cache_refresh_token );
-			$GLOBALS['phpgw']->template->parse('javascripts', 'javascript', true);
-		}
+		$template->set_var('javascript_uri', $webserver_url . $javascript . $cache_refresh_token);
+		$template->parse('javascripts', 'javascript', true);
 	}
+}
 
 
-	switch($GLOBALS['phpgw_info']['user']['preferences']['common']['template_set'])
-	{
-		case 'portico':
-			$selecte_portico = ' selected = "selected"';
-			$selecte_pure = '';
-			break;
-		case 'bootstrap':
-			$selecte_portico = '';
-			$selecte_bootstrap = ' selected = "selected"';
-			break;
-	}
+switch ($userSettings['preferences']['common']['template_set'])
+{
+	case 'portico':
+		$selecte_portico = ' selected = "selected"';
+		$selecte_pure = '';
+		break;
+	case 'bootstrap':
+		$selecte_portico = '';
+		$selecte_bootstrap = ' selected = "selected"';
+		break;
+}
 
-	$template_selector = <<<HTML
+$template_selector = <<<HTML
 
    <select id = "template_selector">
 	<option value="bootstrap"{$selecte_bootstrap}>Bootstrap</option>
 	<option value="portico"{$selecte_portico}>Portico</option>
    </select>
 HTML;
-	// Construct navbar_config by taking into account the current selected menu
-	// The only problem with this loop is that leafnodes will be included
-	$navbar_config = execMethod('phpgwapi.template_portico.retrieve_local', 'navbar_config');
+// Construct navbar_config by taking into account the current selected menu
+// The only problem with this loop is that leafnodes will be included
+$navbar_config = execMethod('phpgwapi.template_portico.retrieve_local', 'navbar_config');
 
-	if( isset($GLOBALS['phpgw_info']['flags']['menu_selection']) )
+if (isset($flags['menu_selection']))
+{
+	if (!isset($navbar_config))
 	{
-		if(!isset($navbar_config))
-		{
-			$navbar_config = array();
-		}
-
-		$current_selection = $GLOBALS['phpgw_info']['flags']['menu_selection'];
-
-		while($current_selection)
-		{
-			$navbar_config["navbar::$current_selection"] = true;
-			$current_selection = implode("::", explode("::", $current_selection, -1));
-		}
-
-		phpgwapi_template_portico::store_local('navbar_config', $navbar_config);
+		$navbar_config = array();
 	}
 
-	$_border_layout_config	= execMethod('phpgwapi.template_portico.retrieve_local', 'border_layout_config');
+	$current_selection = $flags['menu_selection'];
 
-	if(isset($GLOBALS['phpgw_info']['flags']['nonavbar']) && $GLOBALS['phpgw_info']['flags']['nonavbar'])
+	while ($current_selection)
 	{
-		//FIXME This one removes the sidepanels - but the previous settings are forgotten
-		$_border_layout_config = true;
+		$navbar_config["navbar::$current_selection"] = true;
+		$current_selection = implode("::", explode("::", $current_selection, -1));
 	}
 
-	$_border_layout_config = json_encode($_border_layout_config);
+	phpgwapi_template_portico::store_local('navbar_config', $navbar_config);
+}
 
-	$_navbar_config			= json_encode($navbar_config);
+$_border_layout_config	= execMethod('phpgwapi.template_portico.retrieve_local', 'border_layout_config');
 
-	if (Sanitizer::get_var('phpgw_return_as') == 'json')
+if (isset($flags['nonavbar']) && $flags['nonavbar'])
+{
+	//FIXME This one removes the sidepanels - but the previous settings are forgotten
+	$_border_layout_config = true;
+}
+
+$_border_layout_config = json_encode($_border_layout_config);
+
+$_navbar_config			= json_encode($navbar_config);
+
+if (Sanitizer::get_var('phpgw_return_as') == 'json')
+{
+	$menu_selection = Cache::session_get('navbar', 'menu_selection');
+}
+else
+{
+	$menu_selection = $flags['menu_selection'];
+}
+$phpgwapi_common = new phpgwapi_common();
+
+$tpl_vars = array(
+	'noheader'		=> isset($flags['noheader_xsl']) && $flags['noheader_xsl'] ? 'true' : 'false',
+	'nofooter'		=> isset($flags['nofooter']) && $flags['nofooter'] ? 'true' : 'false',
+	'css'			=> $phpgwapi_common->get_css($cache_refresh_token),
+	'javascript'	=> $phpgwapi_common->get_javascript($cache_refresh_token),
+	'img_icon'  => $phpgwapi_common->find_image('phpgwapi', 'favicon.ico'),
+	'site_title'	=> "{$serverSettings['site_title']}",
+	'str_base_url'	=> phpgw::link('/', array(), true),
+	'webserver_url'	=> $webserver_url,
+	'userlang'		=> $userSettings['preferences']['common']['lang'],
+	'win_on_events'	=> $phpgwapi_common->get_on_events(),
+	'border_layout_config' => $_border_layout_config,
+	'navbar_config' => $_navbar_config,
+	'menu_selection'	 => "navbar::{$menu_selection}",
+	'lang_collapse_all'	=> lang('collapse all'),
+	'lang_expand_all'	=> lang('expand all'),
+	'template_selector'	=> $template_selector,
+	'sessionid'			 => $userSettings['sessionid']
+);
+
+$template->set_var($tpl_vars);
+
+$template->pfp('out', 'head');
+unset($tpl_vars);
+
+flush();
+
+
+if (isset($flags['noframework']))
+{
+	echo '<body>';
+	register_shutdown_function('parse_footer_end_noframe');
+}
+
+function parse_footer_end_noframe()
+{
+	$phpgwapi_common = new phpgwapi_common();
+
+	$cache_refresh_token = '';
+	if (!empty($serverSettings['cache_refresh_token']))
 	{
-		$menu_selection = phpgwapi_cache::session_get('navbar', 'menu_selection');
+		$cache_refresh_token = "?n={$serverSettings['cache_refresh_token']}";
 	}
-	else
-	{
-		$menu_selection = $GLOBALS['phpgw_info']['flags']['menu_selection'];
-	}
-	$tpl_vars = array
-	(
-		'noheader'		=> isset($GLOBALS['phpgw_info']['flags']['noheader_xsl']) && $GLOBALS['phpgw_info']['flags']['noheader_xsl'] ? 'true' : 'false',
-		'nofooter'		=> isset($GLOBALS['phpgw_info']['flags']['nofooter']) && $GLOBALS['phpgw_info']['flags']['nofooter'] ? 'true' : 'false',
-		'css'			=> $GLOBALS['phpgw']->common->get_css($cache_refresh_token),
-		'javascript'	=> $GLOBALS['phpgw']->common->get_javascript($cache_refresh_token),
-		'img_icon'  => $GLOBALS['phpgw']->common->find_image('phpgwapi', 'favicon.ico'),
-		'site_title'	=> "{$GLOBALS['phpgw_info']['server']['site_title']}",
-		'str_base_url'	=> phpgw::link('/', array(), true),
-		'webserver_url'	=> $webserver_url,
-		'userlang'		=> $GLOBALS['phpgw_info']['user']['preferences']['common']['lang'],
-		'win_on_events'	=> $GLOBALS['phpgw']->common->get_on_events(),
-		'border_layout_config' => $_border_layout_config,
-		'navbar_config' => $_navbar_config,
-		'menu_selection'	 => "navbar::{$menu_selection}",
-		'lang_collapse_all'	=> lang('collapse all'),
-		'lang_expand_all'	=> lang('expand all'),
-		'template_selector'	=> $template_selector,
-		'sessionid'			 => $GLOBALS['phpgw_info']['user']['sessionid']
-	);
+	$javascript_end = $phpgwapi_common->get_javascript_end($cache_refresh_token);
 
-	$GLOBALS['phpgw']->template->set_var($tpl_vars);
-
-	$GLOBALS['phpgw']->template->pfp('out', 'head');
-	unset($tpl_vars);
-
-	flush();
-
-
-	if( isset($GLOBALS['phpgw_info']['flags']['noframework']) )
-	{
-		echo '<body>';
-		register_shutdown_function('parse_footer_end_noframe');
-	}
-
-	function parse_footer_end_noframe()
-	{
-		$cache_refresh_token = '';
-		if(!empty($GLOBALS['phpgw_info']['server']['cache_refresh_token']))
-		{
-			$cache_refresh_token = "?n={$GLOBALS['phpgw_info']['server']['cache_refresh_token']}";
-		}
-		$javascript_end = $GLOBALS['phpgw']->common->get_javascript_end($cache_refresh_token);
-
-		$footer = <<<HTML
+	$footer = <<<HTML
 		</body>
 		{$javascript_end}
 	</html>
 HTML;
-		echo $footer;
-	}
+	echo $footer;
+}

@@ -1,172 +1,171 @@
 <?php
-	use App\modules\phpgwapi\services\Settings;
-	use App\modules\phpgwapi\services\Cache;
-	use App\helpers\Template;
 
-	phpgw::import_class('phpgwapi.template_portico');
-	phpgw::import_class('phpgwapi.common');
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\Cache;
+use App\helpers\Template;
 
-	$serverSettings = Settings::getInstance()->get('server');
-	$flags = Settings::getInstance()->get('flags');
-	$userSettings = Settings::getInstance()->get('user');
+phpgw::import_class('phpgwapi.template_portico');
+phpgw::import_class('phpgwapi.common');
 
-	if ( !isset($serverSettings['site_title']) )
+$serverSettings = Settings::getInstance()->get('server');
+$flags = Settings::getInstance()->get('flags');
+$userSettings = Settings::getInstance()->get('user');
+
+if (!isset($serverSettings['site_title']))
+{
+	$serverSettings['site_title'] = lang('please set a site name in admin &gt; siteconfig');
+}
+
+$webserver_url = isset($serverSettings['webserver_url']) ? $serverSettings['webserver_url'] . PHPGW_MODULES_PATH : PHPGW_MODULES_PATH;
+
+$app = $flags['currentapp'];
+
+$cache_refresh_token = '';
+if (!empty($serverSettings['cache_refresh_token']))
+{
+	$cache_refresh_token = "?n={$serverSettings['cache_refresh_token']}";
+}
+
+$template = new Template(PHPGW_TEMPLATE_DIR);
+
+$template->set_unknowns('remove');
+$template->set_file('head', 'head.tpl');
+$template->set_block('head', 'stylesheet', 'stylesheets');
+$template->set_block('head', 'javascript', 'javascripts');
+
+$serverSettings['no_jscombine'] = false;
+Settings::getInstance()->set('server', $serverSettings);
+
+
+phpgw::import_class('phpgwapi.jquery');
+phpgwapi_jquery::load_widget('core');
+phpgwapi_jquery::load_widget('jqtree');
+
+$javascripts = array();
+$javascripts[]	 = "/phpgwapi/js/popper/popper2.min.js";
+$javascripts[]	 = "/phpgwapi/js/bootstrap5/vendor/twbs/bootstrap/dist/js/bootstrap.min.js";
+
+$userSettings['preferences']['common']['sidecontent'] = 'ajax_menu'; //ajax_menu|jsmenu
+if (empty($flags['noframework']) && empty($flags['nonavbar']))
+{
+	phpgwapi_jquery::load_widget('contextMenu');
+	$javascripts[] = "/phpgwapi/templates/bootstrap/js/sidenav.js";
+}
+
+
+if (!$serverSettings['no_jscombine'])
+{
+	$_jsfiles = array();
+	foreach ($javascripts as $javascript)
 	{
-		$serverSettings['site_title'] = lang('please set a site name in admin &gt; siteconfig');
-	}
-
-	$webserver_url = isset($serverSettings['webserver_url']) ? $serverSettings['webserver_url'] . PHPGW_MODULES_PATH : PHPGW_MODULES_PATH;
-
-	$app = $flags['currentapp'];
-
-	$cache_refresh_token = '';
-	if(!empty($serverSettings['cache_refresh_token']))
-	{
-		$cache_refresh_token = "?n={$serverSettings['cache_refresh_token']}";
-	}
-
-	$setup_tpl = new Template(PHPGW_TEMPLATE_DIR);
-
-	$setup_tpl->set_unknowns('remove');
-	$setup_tpl->set_file('head', 'head.tpl');
-	$setup_tpl->set_block('head', 'stylesheet', 'stylesheets');
-	$setup_tpl->set_block('head', 'javascript', 'javascripts');
-
-	$serverSettings['no_jscombine']=false;
-	Settings::getInstance()->set('server', $serverSettings);
-
-
-	phpgw::import_class('phpgwapi.jquery');
-	phpgwapi_jquery::load_widget('core');
-	phpgwapi_jquery::load_widget('jqtree');
-
-	$javascripts = array();
-	$javascripts[]	 = "/phpgwapi/js/popper/popper2.min.js";
-	$javascripts[]	 = "/phpgwapi/js/bootstrap5/vendor/twbs/bootstrap/dist/js/bootstrap.min.js";
-
-	$userSettings['preferences']['common']['sidecontent'] = 'ajax_menu';//ajax_menu|jsmenu
-	if( empty($flags['noframework']) && empty($flags['nonavbar']) )
-	{
-		phpgwapi_jquery::load_widget('contextMenu');
-		$javascripts[] = "/phpgwapi/templates/bootstrap/js/sidenav.js";
-	}
-
-
-	if (!$serverSettings['no_jscombine'])
-	{
-		$_jsfiles = array();
-		foreach ($javascripts as $javascript)
+		if (file_exists(PHPGW_SERVER_ROOT . $javascript))
 		{
-			if (file_exists(PHPGW_SERVER_ROOT . $javascript))
-			{
-				// Add file path to array and replace path separator with "--" for URL-friendlyness
-				$_jsfiles[] = str_replace('/', '--', ltrim($javascript, '/'));
-			}
+			// Add file path to array and replace path separator with "--" for URL-friendlyness
+			$_jsfiles[] = str_replace('/', '--', ltrim($javascript, '/'));
 		}
+	}
 
-		$cachedir	 = urlencode("{$serverSettings['temp_dir']}/combine_cache");
-		$jsfiles	 = implode(',', $_jsfiles);
-		$setup_tpl->set_var('javascript_uri', "{$webserver_url}/phpgwapi/inc/combine.php?cachedir={$cachedir}&type=javascript&files={$jsfiles}");
-		$setup_tpl->parse('javascripts', 'javascript', true);
-		unset($jsfiles);
-		unset($_jsfiles);
+	$cachedir	 = urlencode("{$serverSettings['temp_dir']}/combine_cache");
+	$jsfiles	 = implode(',', $_jsfiles);
+	$template->set_var('javascript_uri', "{$webserver_url}/phpgwapi/inc/combine.php?cachedir={$cachedir}&type=javascript&files={$jsfiles}");
+	$template->parse('javascripts', 'javascript', true);
+	unset($jsfiles);
+	unset($_jsfiles);
+}
+else
+{
+	foreach ($javascripts as $javascript)
+	{
+		if (file_exists(PHPGW_SERVER_ROOT . $javascript))
+		{
+			$template->set_var('javascript_uri', $webserver_url . $javascript . $cache_refresh_token);
+			$template->parse('javascripts', 'javascript', true);
+		}
+	}
+}
+
+
+$stylesheets = array();
+$stylesheets[] = "/phpgwapi/templates/pure/css/global.css";
+$stylesheets[] = "/phpgwapi/templates/pure/css/version_3/pure-min.css";
+$stylesheets[] = "/phpgwapi/templates/pure/css/pure-extension.css";
+$stylesheets[] = "/phpgwapi/templates/pure/css/version_3/grids-responsive-min.css";
+
+$stylesheets[]	 = "/phpgwapi/js/bootstrap5/vendor/twbs/bootstrap/dist/css/bootstrap.min.css";
+
+$stylesheets[] = "/phpgwapi/templates/base/css/fontawesome/css/all.min.css";
+
+if ($app != 'frontend')
+{
+	$stylesheets[] = "/phpgwapi/templates/bootstrap/css/base.css";
+	$stylesheets[] = "/phpgwapi/templates/bootstrap/css/sidebar.css";
+
+	if ($userSettings['preferences']['common']['sidecontent'] == 'ajax_menu')
+	{
+		$stylesheets[] = "/phpgwapi/templates/bootstrap/css/navbar_jqtree.css";
 	}
 	else
 	{
-		foreach ($javascripts as $javascript)
-		{
-			if (file_exists(PHPGW_SERVER_ROOT . $javascript))
-			{
-				$setup_tpl->set_var('javascript_uri', $webserver_url . $javascript . $cache_refresh_token);
-				$setup_tpl->parse('javascripts', 'javascript', true);
-			}
-		}
+		$stylesheets[] = "/phpgwapi/templates/bootstrap/css/navbar_bootstrap.css";
+	}
+}
+
+
+if (isset($userSettings['preferences']['common']['theme']))
+{
+	$stylesheets[] = "/phpgwapi/templates/bootstrap/css/{$userSettings['preferences']['common']['theme']}.css";
+}
+
+$stylesheets[] = "/{$app}/templates/bootstrap/css/base.css";
+if (isset($userSettings['preferences']['common']['theme']))
+{
+	$stylesheets[] = "/{$app}/templates/bootstrap/css/{$userSettings['preferences']['common']['theme']}.css";
+}
+
+foreach ($stylesheets as $stylesheet)
+{
+	if (file_exists(PHPGW_SERVER_ROOT . $stylesheet))
+	{
+		$template->set_var('stylesheet_uri', $webserver_url . $stylesheet . $cache_refresh_token);
+		$template->parse('stylesheets', 'stylesheet', true);
+	}
+}
+
+// Construct navbar_config by taking into account the current selected menu
+// The only problem with this loop is that leafnodes will be included
+$navbar_config = execMethod('phpgwapi.template_portico.retrieve_local', 'navbar_config');
+
+if (isset($flags['menu_selection']))
+{
+	if (!isset($navbar_config))
+	{
+		$navbar_config = array();
 	}
 
+	$current_selection = $flags['menu_selection'];
 
-	$stylesheets = array();
-	$stylesheets[] = "/phpgwapi/templates/pure/css/global.css";
-	$stylesheets[] = "/phpgwapi/templates/pure/css/version_3/pure-min.css";
-	$stylesheets[] = "/phpgwapi/templates/pure/css/pure-extension.css";
-	$stylesheets[] = "/phpgwapi/templates/pure/css/version_3/grids-responsive-min.css";
-
-	$stylesheets[]	 = "/phpgwapi/js/bootstrap5/vendor/twbs/bootstrap/dist/css/bootstrap.min.css";
-
-	$stylesheets[] = "/phpgwapi/templates/base/css/fontawesome/css/all.min.css";
-	
-	if($app != 'frontend')
+	while ($current_selection)
 	{
-		$stylesheets[] = "/phpgwapi/templates/bootstrap/css/base.css";
-		$stylesheets[] = "/phpgwapi/templates/bootstrap/css/sidebar.css";
-
-		if($userSettings['preferences']['common']['sidecontent'] == 'ajax_menu')
-		{
-			$stylesheets[] = "/phpgwapi/templates/bootstrap/css/navbar_jqtree.css";
-		}
-		else
-		{
-			$stylesheets[] = "/phpgwapi/templates/bootstrap/css/navbar_bootstrap.css";
-		}
-
-
+		$navbar_config["navbar::$current_selection"] = true;
+		$current_selection = implode("::", explode("::", $current_selection, -1));
 	}
 
+	phpgwapi_template_portico::store_local('navbar_config', $navbar_config);
+}
 
-    if(isset($userSettings['preferences']['common']['theme']))
-	{
-		$stylesheets[] = "/phpgwapi/templates/bootstrap/css/{$userSettings['preferences']['common']['theme']}.css";
-	}
+$_navbar_config			= json_encode($navbar_config);
+$concent_script = '';
+$privacy_url		= !empty($serverSettings['privacy_url']) ? $serverSettings['privacy_url'] : ''; //https://www.bergen.kommune.no/omkommunen/personvern';
 
-	$stylesheets[] = "/{$app}/templates/bootstrap/css/base.css";
-	if(isset($userSettings['preferences']['common']['theme']))
-	{
-		$stylesheets[] = "/{$app}/templates/bootstrap/css/{$userSettings['preferences']['common']['theme']}.css";
-	}
+if ($privacy_url)
+{
+	$privacy_message	= !empty($serverSettings['privacy_message']) ? $serverSettings['privacy_message'] : 'Personvern ved bruk av elektroniske skjema.';
+	$lang_decline		= lang('decline');
+	$lang_approve		= lang('approve');
+	$lang_read_more		= lang('read more');
+	$lang_privacy_policy = lang('privacy policy');
 
-	foreach ( $stylesheets as $stylesheet )
-	{
-		if( file_exists( PHPGW_SERVER_ROOT . $stylesheet ) )
-		{
-			$setup_tpl->set_var( 'stylesheet_uri', $webserver_url . $stylesheet . $cache_refresh_token);
-			$setup_tpl->parse('stylesheets', 'stylesheet', true);
-		}
-	}
-	
-	// Construct navbar_config by taking into account the current selected menu
-	// The only problem with this loop is that leafnodes will be included
-	$navbar_config = execMethod('phpgwapi.template_portico.retrieve_local', 'navbar_config');
-
-	if( isset($flags['menu_selection']) )
-	{
-		if(!isset($navbar_config))
-		{
-			$navbar_config = array();
-		}
-
-		$current_selection = $flags['menu_selection'];
-
-		while($current_selection)
-		{
-			$navbar_config["navbar::$current_selection"] = true;
-			$current_selection = implode("::", explode("::", $current_selection, -1));
-		}
-
-		phpgwapi_template_portico::store_local('navbar_config', $navbar_config);
-	}
-
-	$_navbar_config			= json_encode($navbar_config);
-	$concent_script = '';
-	$privacy_url		= !empty($serverSettings['privacy_url']) ? $serverSettings['privacy_url'] : '';//https://www.bergen.kommune.no/omkommunen/personvern';
-
-	if($privacy_url)
-	{
-		$privacy_message	= !empty($serverSettings['privacy_message']) ? $serverSettings['privacy_message'] : 'Personvern ved bruk av elektroniske skjema.';
-		$lang_decline		= lang('decline');
-		$lang_approve		= lang('approve');
-		$lang_read_more		= lang('read more');
-		$lang_privacy_policy = lang('privacy policy');
-
-		$concent_script = <<<JS
+	$concent_script = <<<JS
 		<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
 		<script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js" data-cfasync="false"></script>
 		<script>
@@ -216,67 +215,66 @@
 
 		</script>
 JS;
-	}
+}
 
-	if (Sanitizer::get_var('phpgw_return_as') == 'json')
+if (Sanitizer::get_var('phpgw_return_as') == 'json')
+{
+	$menu_selection = Cache::session_get('navbar', 'menu_selection');
+}
+else
+{
+	$menu_selection = $flags['menu_selection'];
+}
+
+$phpgwapi_common = new phpgwapi_common();
+
+$tpl_vars = array(
+	'noheader'			 => isset($flags['noheader_xsl']) && $flags['noheader_xsl'] ? 'true' : 'false',
+	'nofooter'			 => isset($flags['nofooter']) && $flags['nofooter'] ? 'true' : 'false',
+	'css'				 => $phpgwapi_common->get_css($cache_refresh_token),
+	'javascript'		 => $phpgwapi_common->get_javascript($cache_refresh_token),
+	'img_icon'			 => $phpgwapi_common->find_image('phpgwapi', 'favicon.ico'),
+	'site_title'		 => "{$serverSettings['site_title']}",
+	'str_base_url'		 => phpgw::link('/', array(), true),
+	'webserver_url'		 => $webserver_url,
+	'userlang'			 => $userSettings['preferences']['common']['lang'],
+	'win_on_events'		 => $phpgwapi_common->get_on_events(),
+	'navbar_config'		 => $_navbar_config,
+	'menu_selection'	 => "navbar::{$menu_selection}",
+	'lang_collapse_all'	 => lang('collapse all'),
+	'lang_expand_all'	 => lang('expand all'),
+	'concent_script'	 => $concent_script,
+	'sessionid'			 => $userSettings['sessionid']
+);
+
+$template->set_var($tpl_vars);
+
+$template->pfp('out', 'head');
+unset($tpl_vars);
+
+flush();
+
+
+if (isset($flags['noframework']))
+{
+	//		echo '<body style="margin-left: 35px;">';
+	echo '<body class="container-fluid">';
+	register_shutdown_function('parse_footer_end_noframe');
+}
+
+function parse_footer_end_noframe()
+{
+	$serverSettings = Settings::getInstance()->get('server');
+	$cache_refresh_token = '';
+	if (!empty($serverSettings['cache_refresh_token']))
 	{
-		$menu_selection = Cache::session_get('navbar', 'menu_selection');
-	}
-	else
-	{
-		$menu_selection = $flags['menu_selection'];
+		$cache_refresh_token = "?n={$serverSettings['cache_refresh_token']}";
 	}
 
 	$phpgwapi_common = new phpgwapi_common();
+	$javascript_end = $phpgwapi_common->get_javascript_end($cache_refresh_token);
 
-	$tpl_vars = array
-		(
-		'noheader'			 => isset($flags['noheader_xsl']) && $flags['noheader_xsl'] ? 'true' : 'false',
-		'nofooter'			 => isset($flags['nofooter']) && $flags['nofooter'] ? 'true' : 'false',
-		'css'				 => $phpgwapi_common->get_css($cache_refresh_token),
-		'javascript'		 => $phpgwapi_common->get_javascript($cache_refresh_token),
-		'img_icon'			 => $phpgwapi_common->find_image('phpgwapi', 'favicon.ico'),
-		'site_title'		 => "{$serverSettings['site_title']}",
-		'str_base_url'		 => phpgw::link('/', array(), true),
-		'webserver_url'		 => $webserver_url,
-		'userlang'			 => $userSettings['preferences']['common']['lang'],
-		'win_on_events'		 => $phpgwapi_common->get_on_events(),
-		'navbar_config'		 => $_navbar_config,
-		'menu_selection'	 => "navbar::{$menu_selection}",
-		'lang_collapse_all'	 => lang('collapse all'),
-		'lang_expand_all'	 => lang('expand all'),
-		'concent_script'	 => $concent_script,
-		'sessionid'			 => $userSettings['sessionid']
-	);
-
-	$setup_tpl->set_var($tpl_vars);
-
-	$setup_tpl->pfp('out', 'head');
-	unset($tpl_vars);
-
-	flush();
-
-
-	if( isset($flags['noframework']) )
-	{
-//		echo '<body style="margin-left: 35px;">';
-		echo '<body class="container-fluid">';
-		register_shutdown_function('parse_footer_end_noframe');
-	}
-
-	function parse_footer_end_noframe()
-	{
-		$serverSettings = Settings::getInstance()->get('server');
-		$cache_refresh_token = '';
-		if(!empty($serverSettings['cache_refresh_token']))
-		{
-			$cache_refresh_token = "?n={$serverSettings['cache_refresh_token']}";
-		}
-
-		$phpgwapi_common = new phpgwapi_common();
-		$javascript_end = $phpgwapi_common->get_javascript_end($cache_refresh_token);
-
-		$footer = <<<HTML
+	$footer = <<<HTML
 
 			<div class="modal fade" id="popupModal" tabindex="-1" role="dialog" aria-hidden="true">
 				<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
@@ -298,5 +296,5 @@ JS;
 		{$javascript_end}
 	</html>
 HTML;
-		echo $footer;
-	}
+	echo $footer;
+}
