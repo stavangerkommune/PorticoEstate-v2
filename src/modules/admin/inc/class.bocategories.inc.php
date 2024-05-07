@@ -107,10 +107,10 @@ class admin_bocategories
 			_debug_array($data);
 		}
 
-		$this->start  = $data['start'];
-		$this->query  = $data['query'];
-		$this->sort   = $data['sort'];
-		$this->order  = $data['order'];
+		$this->start  = isset($data['start']) ? $data['start'] : 0;
+		$this->query  = isset($data['query']) ? $data['query'] : '';
+		$this->sort   = isset($data['sort']) ? $data['sort'] : '';
+		$this->order  = isset($data['order']) ? $data['order'] : '';
 		if (isset($data['cat_id']))
 		{
 			$this->cat_id = $data['cat_id'];

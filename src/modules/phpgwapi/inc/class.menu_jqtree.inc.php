@@ -170,7 +170,7 @@
 			/*
 			 * navbar#{$location_id}
 			 */
-			if ($id == "navbar::{$menu_selection}" || ($item['nav_location'] && $item['nav_location'] == $menu_selection))
+			if ($id == "navbar::{$menu_selection}" || (isset($item['nav_location']) && $item['nav_location'] == $menu_selection))
 			{
 				$selected = true;
 			}
@@ -196,10 +196,11 @@
 				$item['url'] = 'file:///' . str_replace(':', '|', $item['url']);
 			}
 
-			$icon = !empty($entry['icon']) ? "<i class='{$entry['icon']} mr-2 text-gray-400'></i>": '<i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>';
+			$icon = !empty($item['icon']) ? "<i class='{$item['icon']} mr-2 text-gray-400'></i>": '<i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>';
+			$nav_location = isset($item['nav_location']) ? $item['nav_location'] : '';
 
 			$ret = array(
-				'name'		 => "<a id='{$id}' href='{$item['url']}' {$link_class} icon='{$item['icon']}' nav_location='{$item['nav_location']}' style='white-space:nowrap; color:inherit;'{$target}>{$item['text']}</a>",
+				'name'		 => "<a id='{$id}' href='{$item['url']}' {$link_class} icon='{$icon}' nav_location='{$nav_location}' style='white-space:nowrap; color:inherit;'{$target}>{$item['text']}</a>",
 				'id'		 => !empty($item['nav_location']) ? $item['nav_location'] : $id,
 				'text'		 => $item['text'],
 				'selected'	 => $selected ? 1 : 0,

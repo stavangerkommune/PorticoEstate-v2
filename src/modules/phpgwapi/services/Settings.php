@@ -57,11 +57,16 @@ class Settings
 
 		$settings = require $rootDir . '/config/header.inc.php';
 		$this->config_data = $settings['phpgw_info'];
-
-//		_debug_array($this->config_data);die();
 		
 		//$this->config_data  = require_once SRC_ROOT_PATH . '/../config/config.php';
 		require_once (SRC_ROOT_PATH . '/modules/phpgwapi/setup/setup.inc.php');
+
+		$this->config_data['server']['versions'] =  $setup_info['phpgwapi']['versions'];
+
+
+		$this->config_data['server']['db_type'] = $this->db->get_config()['db_type'];
+
+//		_debug_array($this->config_data);die();
 
 		/**
 		 * check if the config table phpgw_config exists

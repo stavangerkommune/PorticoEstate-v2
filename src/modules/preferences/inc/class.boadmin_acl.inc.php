@@ -41,17 +41,18 @@ use App\modules\phpgwapi\controllers\Accounts\Accounts;
 			'get_users'  => True,
 		);
 
-		private $apps;
+		private $flags;
 		private $locations;
 		private $userSettings;
 		private $accounts;
 
 		function __construct($session='')
 		{
-			
+	
 			$this->userSettings = Settings::getInstance()->get('user');
-			$this->apps = Settings::getInstance()->get('apps');
-			$this->currentapp	= $this->apps['currentapp'];
+			$this->flags = Settings::getInstance()->get('flags');
+
+			$this->currentapp	= $this->flags['currentapp'];
 			$this->locations	= new Locations();
 			$this->accounts 	=	new Accounts();
 
@@ -197,7 +198,7 @@ use App\modules\phpgwapi\controllers\Accounts\Accounts;
 	
 			$grant				= isset($data['grant']) && $data['grant'] ? $data['grant'] : false;
 			$grant				= isset($data['allow_c_attrib']) && $data['allow_c_attrib'] ? $data['allow_c_attrib'] : false;
-			$acl_app			= isset($data['acl_app']) && $data['acl_app'] ? $data['acl_app'] : $this->apps['currentapp'];
+			$acl_app			= isset($data['acl_app']) && $data['acl_app'] ? $data['acl_app'] : $this->flags['currentapp'];
 			$selected			= isset($data['selected']) && $data['selected'] ? $data['selected'] : '';
 			$c_function			= isset($data['$c_function']) && $data['$c_function'] ? true : false;
 			$have_categories	= isset($data['have_categories']) && $data['have_categories'] ? true : false;

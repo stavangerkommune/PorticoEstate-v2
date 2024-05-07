@@ -426,6 +426,7 @@
 	class phpgwapi_user extends phpgwapi_account
 	{
 		private $serverSettings;
+		private $userSettings;
 
 		public function __construct()
 		{

@@ -434,7 +434,7 @@ class admin_ui_custom extends phpgwapi_uicommon_jquery
 		$link_data = array(
 			'menuaction'	=> 'admin.ui_custom.edit_attrib',
 			'appname'		=> $appname,
-			'location'		=> $values['location'],
+			'location'		=> isset($values['location']) ? $values['location'] : '',
 			'id'			=> $id,
 			'menu_selection' => $this->flags['menu_selection']
 		);
@@ -442,22 +442,25 @@ class admin_ui_custom extends phpgwapi_uicommon_jquery
 		$multiple_choice = false;
 		$custom_get_list = false;
 		$custom_get_single = false;
-		switch ($values['column_info']['type'])
+		if(isset($values['column_info']['type']))
 		{
-			case 'R':
-			case 'CH':
-			case 'LB':
-				$multiple_choice = true;
-				break;
-			case 'custom1':
-				$custom_get_list = true;
-				break;
-			case 'custom2':
-			case 'custom3':
-				$custom_get_list = true;
-				$custom_get_single = true;
-				break;
-			default:
+			switch ($values['column_info']['type'])
+			{
+				case 'R':
+				case 'CH':
+				case 'LB':
+					$multiple_choice = true;
+					break;
+				case 'custom1':
+					$custom_get_list = true;
+					break;
+				case 'custom2':
+				case 'custom3':
+					$custom_get_list = true;
+					$custom_get_single = true;
+					break;
+				default:
+			}
 		}
 
 		//_debug_array($values);
@@ -475,7 +478,7 @@ class admin_ui_custom extends phpgwapi_uicommon_jquery
 			'lang_new_value'					=> lang('New value'),
 			'lang_new_value_statustext'			=> lang('New value for multiple choice'),
 			'multiple_choice'					=> $multiple_choice,
-			'value_table_filter'				=> $values['table_filter'],
+			'value_table_filter'				=> isset($values['table_filter']) ? $values['table_filter'] : '',
 			'value_choice'					 => (isset($values['choice']) ? $values['choice'] : ''),
 			'custom_get_list' => $custom_get_list,
 			'custom_get_single' => $custom_get_single,

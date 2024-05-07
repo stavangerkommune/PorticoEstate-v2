@@ -69,6 +69,7 @@ class phpgwapi_nextmatchs extends phpgwapi_nextmatchs_xslt
 	 */
 	public function __construct($website = false)
 	{
+		parent::__construct();
 		if (!$website)
 		{
 			$this->template = new Template(PHPGW_TEMPLATE_DIR);

@@ -144,7 +144,7 @@
 				'title_last'		=> lang('last page'),
 				'title_all'			=> lang('show all'),
 				'lang_showing'		=> $this->show_hits((int)$values['all_records'],$start,(int)$values['num_records']),
-				'query'				=> $values['query']
+				'query'				=> isset($values['query']) ? $values['query'] : '',
 			);
 			return $nm_data;
 		}

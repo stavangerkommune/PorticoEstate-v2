@@ -33,7 +33,6 @@ use App\modules\phpgwapi\controllers\Accounts\phpgwapi_group;
 use App\modules\phpgwapi\controllers\Accounts\phpgwapi_user;
 use App\modules\phpgwapi\controllers\Accounts\Accounts;
 use App\modules\phpgwapi\services\Cache;
-use Exception;
 
 
 class admin_boaccounts
