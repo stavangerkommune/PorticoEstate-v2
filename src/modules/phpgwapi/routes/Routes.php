@@ -13,6 +13,10 @@ $app->get('/', StartPoint::class . ':run')->add(new SessionsMiddleware($app->get
 $app->post('/', StartPoint::class . ':run')->add(new SessionsMiddleware($app->getContainer()));
 $app->get('/index.php', StartPoint::class . ':run')->add(new SessionsMiddleware($app->getContainer()));
 $app->post('/index.php', StartPoint::class . ':run')->add(new SessionsMiddleware($app->getContainer()));
+
+$app->get('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer()));
+$app->post('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer()));
+
 $app->get('/preferences/', PreferenceHelper::class . ':index')->add(new SessionsMiddleware($app->getContainer()));
 $app->post('/preferences/', PreferenceHelper::class . ':index')->add(new SessionsMiddleware($app->getContainer()));
 
