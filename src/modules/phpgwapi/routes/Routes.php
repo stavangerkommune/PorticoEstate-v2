@@ -14,8 +14,15 @@ $app->post('/', StartPoint::class . ':run')->add(new SessionsMiddleware($app->ge
 $app->get('/index.php', StartPoint::class . ':run')->add(new SessionsMiddleware($app->getContainer()));
 $app->post('/index.php', StartPoint::class . ':run')->add(new SessionsMiddleware($app->getContainer()));
 
-$app->get('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer()));
-$app->post('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer()));
+$settings = [
+	'session_name' => ['bookingfrontend' => 'bookingfrontendsession',
+		'eventplannerfrontend' => 'eventplannerfrontendsession',
+		'activitycalendarfrontend' => 'activitycalendarfrontendsession']
+	// Add more settings as needed
+];
+
+$app->get('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer(), $settings));
+$app->post('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer(), $settings));
 
 $app->get('/preferences/', PreferenceHelper::class . ':index')->add(new SessionsMiddleware($app->getContainer()));
 $app->post('/preferences/', PreferenceHelper::class . ':index')->add(new SessionsMiddleware($app->getContainer()));
@@ -51,6 +58,14 @@ $app->get('/login[/{params:.*}]', function (Request $request, Response $response
         $domainOptions .= "<option value=\"$domain\" $selected>$domain</option>";
     }
 
+	$sectionOptions = '';
+	$sections = ['activitycalendarfrontend', 'bookingfrontend', 'eventplannerfrontend'];
+	foreach ($sections as $section)
+	{
+		$sectionOptions .= "<option value=\"$section\">$section</option>";
+	}
+
+
     $html = '
         <!DOCTYPE html>
         <html>
@@ -74,6 +89,12 @@ $app->get('/login[/{params:.*}]', function (Request $request, Response $response
                             ' . $domainOptions . '
                         </select>
                     </div>
+					<div class="mb-3">
+						<label for="section">Section:</label>
+						<select class="form-select" id="section" name="section">
+							' . $sectionOptions . '
+						</select>
+					</div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>
@@ -95,7 +116,7 @@ $app->post('/login', function (Request $request, Response $response) {
     $response->getBody()->write($json);
     return $response;
 })
-->addMiddleware(new App\modules\phpgwapi\middleware\LoginMiddleware($container));
+->addMiddleware(new App\modules\phpgwapi\middleware\LoginMiddleware($container, $settings));
 
 
 $app->get('/logout[/{params:.*}]', function (Request $request, Response $response) {

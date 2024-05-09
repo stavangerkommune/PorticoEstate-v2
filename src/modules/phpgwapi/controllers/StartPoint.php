@@ -109,7 +109,7 @@ class StartPoint
 				|| Sanitizer::get_var('phpgw_return_as', 'string', 'GET') == 'json'
 			)
 			{
-				$return_data = $Object->$this->method();
+				$return_data = $Object->{$this->method}();
 				$response_str = json_encode($return_data);
 				$response->getBody()->write($response_str);
 				return $response->withHeader('Content-Type', 'application/json');
@@ -127,7 +127,7 @@ class StartPoint
 					$flags['headonly'] = true;
 					Settings::getInstance()->set('flags', $flags);
 				}
-				$Object->$this->method();
+				$Object->{$this->method}();
 
 				if (!empty(Settings::getInstance()->get('flags')['xslt_app']))
 				{
@@ -425,7 +425,7 @@ HTML;
 				|| Sanitizer::get_var('phpgw_return_as', 'string', 'GET') == 'json'
 			)
 			{
-				$return_data = $Object->$this->method();
+				$return_data = $Object->{$this->method}();
 				$response_str = json_encode($return_data);
 				$response->getBody()->write($response_str);
 				return $response->withHeader('Content-Type', 'application/json');
@@ -442,7 +442,7 @@ HTML;
 					$flags['headonly'] = true;
 					Settings::getInstance()->set('flags', $flags);
 				}
-				$Object->$this->method();
+				$Object->{$this->method}();
 
 				if (!empty(Settings::getInstance()->get('flags')['xslt_app']))
 				{

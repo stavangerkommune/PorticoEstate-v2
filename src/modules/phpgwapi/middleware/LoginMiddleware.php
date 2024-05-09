@@ -42,8 +42,11 @@
 	*/
 	class LoginMiddleware implements MiddlewareInterface
 	{
-		public function __construct($container)
+		private $settings;
+		public function __construct($container,  $settings = [])
 		{
+			$this->settings = $settings;
+
 		}
 
 		function check_cdcode($code)
@@ -80,7 +83,7 @@
 				return $this->sendErrorResponse(['msg' => 'route not found'], 404);
 			}
 
-			$Login = new Login();
+			$Login = new Login($this->settings);
 			$sessionid = $Login->login();
 			if(!$sessionid)
 			{

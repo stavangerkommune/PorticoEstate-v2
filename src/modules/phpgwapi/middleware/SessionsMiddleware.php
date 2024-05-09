@@ -46,16 +46,20 @@ class SessionsMiddleware implements MiddlewareInterface
 	private $Auth;
 	private $Crypto;
 	private $Log;
+	private $flags;
+	private $settings;
 		
 	
 
 
-    public function __construct($container)
+    public function __construct($container,  $settings = [])
     {
         $this->container = $container;
 		$this->db = \App\Database\Db::getInstance();
 		
 		$this->serverSetting = Settings::getInstance()->get('server');
+		$this->settings = $settings;
+
 
 //		\App\helpers\DebugArray::debug($this->serverSetting);
 
@@ -76,11 +80,27 @@ class SessionsMiddleware implements MiddlewareInterface
 			return $this->sendErrorResponse(['msg' => 'route not found'], 404);
 		}
 
-        //get the route path
-        $this->routePath = $route->getPattern();
-        $routePath_arr = explode('/', $this->routePath);
-        $currentApp = $routePath_arr[1];       
-		$this->read_initial_settings( $currentApp);
+		//get the route path
+
+		if (isset($_GET['menuaction']) || isset($_POST['menuaction']))
+		{
+			if (isset($_GET['menuaction']))
+			{
+				list($currentApp, $class, $method) = explode('.', $_GET['menuaction']);
+			}
+			else
+			{
+				list($currentApp, $class, $method) = explode('.', $_POST['menuaction']);
+			}
+		}
+		else
+		{
+			$this->routePath = $route->getPattern();
+			$routePath_arr = explode('/', $this->routePath);
+			$currentApp = $routePath_arr[1];
+		}
+
+ 		$this->read_initial_settings( $currentApp);
 		$sessions = Sessions::getInstance();
 		if ($currentApp == 'login' && isset($_POST['login']) && isset($_POST['passwd'])){
 			$login = $request->getParsedBody()['login'];
@@ -119,6 +139,11 @@ class SessionsMiddleware implements MiddlewareInterface
 		$flags = [
 			'currentapp' => $currentApp
 		];
+
+		if(isset($this->settings['session_name'][$currentApp]))
+		{
+			$flags['session_name'] = $this->settings['session_name'][$currentApp];
+		}
 
 		Settings::getInstance()->set('flags', $flags);		
 		

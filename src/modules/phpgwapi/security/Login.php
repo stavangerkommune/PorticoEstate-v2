@@ -46,7 +46,7 @@ class Login
 	private $_sessionid = null;
 	private $logindomain;
 
-	public function __construct()
+	public function __construct($settings = [])
 	{
 		$this->flags = Settings::getInstance()->get('flags');
 		$this->serverSetting = Settings::getInstance()->get('server');
@@ -81,18 +81,10 @@ class Login
 	//		$_POST['submitit'] = true;
 		$phpgw_remote_user_fallback	 = 'sql';
 		$section = \Sanitizer::get_var('section', 'string', 'POST');
-		switch ($section) {
-			case 'activitycalendarfrontend':
-				$this->flags['session_name'] = 'activitycalendarfrontendsession';
-				break;
-			case 'bookingfrontend':
-				$this->flags['session_name'] = 'bookingfrontendsession';
-				break;
-			case 'eventplannerfrontend':
-				$this->flags['session_name'] = 'eventplannerfrontendsession';
-				break;
-			default: //nothing
-				break;
+
+		if (isset($settings['session_name'][$section]))
+		{
+			$this->flags['session_name'] = $settings['session_name'][$section];
 		}
 
 		if(!empty($_POST['login']) &&in_array($this->serverSetting['auth_type'],  array('remoteuser', 'azure', 'customsso')))
