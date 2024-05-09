@@ -2,70 +2,22 @@
 namespace App\modules\phpgwapi\middleware;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-use Psr\Container\ContainerInterface;
 use Slim\Psr7\Response;
 use Slim\Routing\RouteContext;
-use Slim\Exception\HttpForbiddenException;
-use App\modules\phpgwapi\security\Auth\Auth;
 use App\modules\phpgwapi\security\Sessions;
-use PDO;
 use App\modules\phpgwapi\services\Settings;
 use Psr\Http\Server\MiddlewareInterface;
-use Slim\Exception\NotFoundException;
-Use App\modules\phpgwapi\services\Preferences;
-use App\modules\phpgwapi\services\Cache;
-use App\modules\phpgwapi\controllers\Accounts\phpgwapi_account;
-use App\modules\phpgwapi\controllers\Accounts\Accounts;
-use App\modules\phpgwapi\services\Crypto;
-use App\modules\phpgwapi\services\Log;
-
-
 
 class SessionsMiddleware implements MiddlewareInterface
 {
     protected $container;
-    private $db;
-	private $_account_lid;
-	private $_account_domain;
-	private $_sessionid;
-	private $_use_cookies;
-	private $_cookie_domain;
-	private $config;
-	private $routePath;
-    private $_session_flags;
-    private $_data;
-    private $_account_id;
-    private $_key;
-    private $_iv;
-    private $_verified;
-    private $cd_reason;
-	private $reason;
-	private $_login;
-	private $_passwd;
-	private $serverSetting;
-	private $Auth;
-	private $Crypto;
-	private $Log;
-	private $flags;
-	private $settings;
-		
-	
-
+ 	private $routePath;
+ 	private $settings;
 
     public function __construct($container,  $settings = [])
     {
-        $this->container = $container;
-		$this->db = \App\Database\Db::getInstance();
-		
-		$this->serverSetting = Settings::getInstance()->get('server');
 		$this->settings = $settings;
-
-
-//		\App\helpers\DebugArray::debug($this->serverSetting);
-
     }
-
-
 
 	public function process(Request $request, RequestHandler $handler): Response
     {

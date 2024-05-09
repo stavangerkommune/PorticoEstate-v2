@@ -58,7 +58,7 @@ $app->get('/login[/{params:.*}]', function (Request $request, Response $response
         $domainOptions .= "<option value=\"$domain\" $selected>$domain</option>";
     }
 
-	$sectionOptions = '';
+	$sectionOptions =	"<option value=\"\">None</option>";
 	$sections = ['activitycalendarfrontend', 'bookingfrontend', 'eventplannerfrontend'];
 	foreach ($sections as $section)
 	{

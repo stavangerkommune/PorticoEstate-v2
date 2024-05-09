@@ -88,7 +88,7 @@ class StartPoint
 
 		if ($this->api_requested)
 		{
-			$app = 'phpgwapi';
+			$this->app = 'phpgwapi';
 		}
 
 		$Object = CreateObject("{$this->app}.{$this->class}");
