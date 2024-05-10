@@ -5,6 +5,8 @@ namespace App\Database;
 use PDO;
 use Exception;
 use PDOException;
+use ReflectionClass;
+use ReflectionProperty;
 
 class Db
 {
@@ -59,6 +61,27 @@ class Db
 		return self::$instance;
 	}
 
+
+	public function __debugInfo()
+	{
+		$reflectionClass = new ReflectionClass($this);
+		$publicProperties = $reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC);
+		$privateProperties = $reflectionClass->getProperties(ReflectionProperty::IS_PRIVATE | ReflectionProperty::IS_PROTECTED);
+
+		$propertyValues = [];
+		foreach ($publicProperties as $property)
+		{
+			$property->setAccessible(true);
+			$propertyValues[$property->getName()] = $property->getValue($this);
+		}
+
+		foreach ($privateProperties as $property)
+		{
+			$propertyValues[$property->getName()] = 'Private/Protected';
+		}
+
+		return $propertyValues;
+	}
 	public function transaction_begin()
 	{
 		if (!$this->isTransactionActive)

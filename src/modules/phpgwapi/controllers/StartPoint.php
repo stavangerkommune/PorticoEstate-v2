@@ -217,9 +217,11 @@ class StartPoint
 
 	public function bookingfrontend(Request $request, Response $response)
 	{
+	//	_debug_array($response);
 
 		// Make sure we're always logged in
 		$sessions = \App\modules\phpgwapi\security\Sessions::getInstance();
+
 		$phpgwapi_common = new \phpgwapi_common();
 
 		if (!Sanitizer::get_var(session_name(), 'string', 'COOKIE') || !$sessions->verify())
@@ -236,8 +238,8 @@ class StartPoint
 			$passwd				 = $config['anonymous_passwd'];
 			$_POST['submitit']	 = "";
 
-			$GLOBALS['sessionid'] = $sessions->create($login, $passwd);
-			if (!$GLOBALS['sessionid'])
+			$sessionid = $sessions->create($login, $passwd);
+			if (!$sessionid)
 			{
 				$lang_denied = lang('Anonymous access not correctly configured');
 				if ($sessions->reason)
@@ -325,10 +327,6 @@ HTML;
 		$flags['currentapp'] = 'bookingfrontend';
 		Settings::getInstance()->set('flags', $flags);
 
-		/////////////////////////////////////////////////////////////////////////////
-		// BEGIN Stuff copied from functions.inc.php
-		/////////////////////////////////////////////////////////////////////////////
-
 		$selected_lang = Sanitizer::get_var('selected_lang', 'string', 'COOKIE');
 
 		if (Sanitizer::get_var('lang', 'bool', 'GET'))
@@ -375,7 +373,7 @@ HTML;
 				break;
 		}
 
-
+		Settings::getInstance()->set('user', $userSettings);
 
 		$this->validate_object_method();
 

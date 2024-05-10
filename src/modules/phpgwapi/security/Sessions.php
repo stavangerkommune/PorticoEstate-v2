@@ -1,19 +1,11 @@
 <?php
 
 namespace App\modules\phpgwapi\security;
-//use Psr\Http\Message\ServerRequestInterface as Request;
-//use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Psr\Http\Message\ResponseInterface as Response;
-//use Psr\Container\ContainerInterface;
-//use Slim\Psr7\Response as Psr7Response;
-//use Slim\Routing\RouteContext;
-//use Slim\Exception\HttpNotFoundException;
-//use Slim\Exception\HttpForbiddenException;
 use App\modules\phpgwapi\security\Auth\Auth;
+use App\Database\Db;
 //use PDO;
 use App\modules\phpgwapi\services\Settings;
-//use Psr\Http\Server\MiddlewareInterface;
-//use Slim\Exception\NotFoundException;
 use App\modules\phpgwapi\services\Preferences;
 use App\modules\phpgwapi\services\Cache;
 use App\modules\phpgwapi\controllers\Accounts\phpgwapi_account;
@@ -21,6 +13,8 @@ use App\modules\phpgwapi\controllers\Accounts\Accounts;
 use App\modules\phpgwapi\services\Crypto;
 use App\modules\phpgwapi\services\Log;
 use App\modules\phpgwapi\services\Translation;
+use ReflectionClass;
+use ReflectionProperty;
 
 
 $serverSetting = Settings::getInstance()->get('server');
@@ -67,7 +61,7 @@ class Sessions
 	private $_iv;
 	private $_verified;
 	public $cd_reason;
-	private $reason;
+	public $reason;
 	private $_login;
 	private $_passwd;
 	private $serverSetting;
@@ -81,21 +75,17 @@ class Sessions
 
 	private function __construct()
 	{
-		$this->db = \App\Database\Db::getInstance();
+		$this->db = Db::getInstance();
 
 		$this->serverSetting = Settings::getInstance()->get('server');
-
-		//		\App\helpers\DebugArray::debug($this->db->get_transaction());
 
 		$this->Log = new Log();
 
 		$this->Auth = new Auth($this->db);
 
-
 		$this->_use_cookies = false;
 
 		$this->_phpgw_set_cookie_params();
-
 
 		if (
 			!empty($this->serverSetting['usecookies'])  && !\Sanitizer::get_var('api_mode', 'bool')
@@ -132,6 +122,25 @@ class Sessions
 		return self::$instance;
 	}
 
+	public function __debugInfo()
+	{
+		$reflectionClass = new ReflectionClass($this);
+		$publicAndProtectedProperties = $reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
+		$privateProperties = $reflectionClass->getProperties(ReflectionProperty::IS_PRIVATE);
+
+		$propertyValues = [];
+		foreach ($publicAndProtectedProperties as $property) {
+			$property->setAccessible(true);
+			$propertyValues[$property->getName()] = $property->getValue($this);
+		}
+
+		foreach ($privateProperties as $property) {
+			$propertyValues[$property->getName()] = 'private';
+		}
+
+		return $propertyValues;
+	}
+	
 	public function get_session_id()
 	{
 		return $this->_sessionid;
