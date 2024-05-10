@@ -18,6 +18,7 @@
  */
 
 namespace App\modules\phpgwapi\security\Sso;
+
 use PDO;
 
 class Mapping extends Mapping_
@@ -41,7 +42,8 @@ class Mapping extends Mapping_
 	 */
 	function mapping_uniqueid($ext_user)
 	{
-		if (empty($this->serverSettings['mapping_field'])) {
+		if (empty($this->serverSettings['mapping_field']))
+		{
 			$this->serverSettings['mapping_field'] = 'account_lid';
 		}
 
@@ -49,9 +51,12 @@ class Mapping extends Mapping_
 		$stmt->execute([':ext_user' => $ext_user]);
 
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		if ($row && isset($row['account_lid'])) {
+		if ($row && isset($row['account_lid']))
+		{
 			return $row['account_lid'];
-		} else {
+		}
+		else
+		{
 			return '';
 		}
 	}
@@ -78,6 +83,5 @@ class Mapping extends Mapping_
 		\App\modules\phpgwapi\services\Settings::getInstance()->set('server', $this->serverSettings);
 
 		return $ret;
-
 	}
 }

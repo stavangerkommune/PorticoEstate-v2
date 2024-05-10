@@ -475,7 +475,7 @@ class uicategories
 
 		if (!$cat_id)
 		{
-			phpgw::redirect('/index.php', $link_data);
+			phpgw::redirect_link('/index.php', $link_data);
 		}
 
 		$this->flags['app_header'] = lang(

@@ -20,6 +20,7 @@
  */
 
 namespace App\modules\phpgwapi\security\Sso;
+
 use App\modules\phpgwapi\security\Sso\Mapping;
 use App\modules\phpgwapi\services\Settings;
 use Exception;
@@ -35,47 +36,59 @@ class CreateAccount
 	{
 		$phpgw_map_location = isset($_SERVER['HTTP_SHIB_ORIGIN_SITE']) ? $_SERVER['HTTP_SHIB_ORIGIN_SITE'] : 'local';
 		$phpgw_map_authtype = isset($_SERVER['HTTP_SHIB_ORIGIN_SITE']) ? 'shibboleth' : 'remoteuser';
-	
+
 		$this->mapping = new Mapping(array('auth_type' => $phpgw_map_authtype, 'location' => $phpgw_map_location));
 
 		$this->serverSettings = Settings::getInstance()->get('server');
 
-		if (!isset($this->serverSettings['auto_create_acct']) || $this->serverSettings['auto_create_acct'] != True) {
+		if (!isset($this->serverSettings['auto_create_acct']) || $this->serverSettings['auto_create_acct'] != True)
+		{
 			throw new Exception(lang('Access denied'));
 		}
-		if (!is_object($this->mapping)) {
+		if (!is_object($this->mapping))
+		{
 			throw new Exception(lang('Access denied'));
 		}
 
-		if (isset($_SERVER["OIDC_groups"])) {
+		if (isset($_SERVER["OIDC_groups"]))
+		{
 			$OIDC_groups = mb_convert_encoding(mb_convert_encoding($_SERVER["OIDC_groups"], 'ISO-8859-1', 'UTF-8'), 'UTF-8', 'ISO-8859-1');
 			$ad_groups	= explode(",", $OIDC_groups);
 			$default_group_lid	 = !empty($this->serverSettings['default_group_lid']) ? $this->serverSettings['default_group_lid'] : 'Default';
-			if (!in_array($default_group_lid, $ad_groups)) {
+			if (!in_array($default_group_lid, $ad_groups))
+			{
 				throw new Exception(lang('missing membership: "%1" is not in the list', $default_group_lid));
 			}
-		} else {
+		}
+		else
+		{
 			throw new Exception(lang('Access denied'));
 		}
 
 		$this->login = $GLOBALS['phpgw']->auth->get_username(true);
 
-		if (empty($this->login)) {
+		if (empty($this->login))
+		{
 			//reserve fallback
-			if (\Sanitizer::get_var('OIDC_pid', 'bool', 'SERVER')) {
-				throw new Exception('FIX me: OIDC_pid is set, redirect to login.php?');
-				//phpgw::redirect_link('login.php', array('skip_remote' => true));
+			if (\Sanitizer::get_var('OIDC_pid', 'bool', 'SERVER'))
+			{
+				throw new Exception('FIX me: OIDC_pid is set, redirect to login_ui?');
+				//phpgw::redirect_link('login_ui', array('skip_remote' => true));
 			}
 			//fallback failed
 			throw new Exception(lang('Did not find any username'));
-		} else {
-			if ($this->mapping->get_mapping($this->login) != '') {
+		}
+		else
+		{
+			if ($this->mapping->get_mapping($this->login) != '')
+			{
 				throw new Exception(lang('Username already taken'));
 			}
-			if (($account = $this->mapping->exist_mapping($this->login)) != '') {
+			if (($account = $this->mapping->exist_mapping($this->login)) != '')
+			{
 
-				throw new Exception('FIX me:rediredt to login.php? with create_mapping=true and cd=21 and phpgw_account=account_lid');
-				\phpgw::redirect_link('login.php', array('create_mapping' => true, 'cd' => '21', 'phpgw_account' => $account));
+				throw new Exception('FIX me:rediredt to login_ui? with create_mapping=true and cd=21 and phpgw_account=account_lid');
+				\phpgw::redirect_link('login_ui', array('create_mapping' => true, 'cd' => '21', 'phpgw_account' => $account));
 			}
 		}
 	}
@@ -86,24 +99,29 @@ class CreateAccount
 
 		$firstname	 = '';
 		$lastname	 = '';
-		if (isset($_SERVER["HTTP_SHIB_GIVENNAME"])) {
+		if (isset($_SERVER["HTTP_SHIB_GIVENNAME"]))
+		{
 			$firstname = $_SERVER["HTTP_SHIB_GIVENNAME"];
 		}
-		if (isset($_SERVER["HTTP_SHIB_SURNAME"])) {
+		if (isset($_SERVER["HTTP_SHIB_SURNAME"]))
+		{
 			$lastname = $_SERVER["HTTP_SHIB_SURNAME"];
 		}
 
-		if (isset($_SERVER["OIDC_given_name"])) {
+		if (isset($_SERVER["OIDC_given_name"]))
+		{
 			$firstname = \Sanitizer::get_var('OIDC_given_name', 'string', 'SERVER');
 		}
-		if (isset($_SERVER["OIDC_family_name"])) {
+		if (isset($_SERVER["OIDC_family_name"]))
+		{
 			$lastname = \Sanitizer::get_var('OIDC_family_name', 'string', 'SERVER');
 		}
 
 		$email	 = \Sanitizer::get_var('OIDC_email', 'string', 'SERVER');
 		$cellphone = '';
 
-		if ($_SERVER['REQUEST_METHOD'] == 'POST' && \Sanitizer::get_var('submitit', 'bool', 'POST')) {
+		if ($_SERVER['REQUEST_METHOD'] == 'POST' && \Sanitizer::get_var('submitit', 'bool', 'POST'))
+		{
 			$submit = \Sanitizer::get_var('submitit', 'bool', 'POST');
 			if (!$this->serverSettings['mapping'] == 'id') // using REMOTE_USER for account_lid
 			{
@@ -118,40 +136,52 @@ class CreateAccount
 		}
 
 		$error = array();
-		if (isset($submit) && $submit) {
-			if (!$login) {
+		if (isset($submit) && $submit)
+		{
+			if (!$login)
+			{
 				$error[] = lang('You have to choose a login');
 			}
 
-			if (!preg_match("/^[0-9_a-z]*$/i", $login)) {
+			if (!preg_match("/^[0-9_a-z]*$/i", $login))
+			{
 				$error[] = lang('Please submit just letters and numbers for your login');
 			}
-			if (!$password1) {
+			if (!$password1)
+			{
 				$error[] = lang('You have to choose a password');
 			}
 
-			if ($password1 != $password2) {
+			if ($password1 != $password2)
+			{
 				$error[] = lang('Please, check your password');
 			}
 
 			$account = new \App\modules\phpgwapi\controllers\Accounts\phpgwapi_user();
-			try {
+			try
+			{
 				$account->validate_password($password1);
-			} catch (Exception $e) {
+			}
+			catch (Exception $e)
+			{
 				$error[] = $e->getMessage();
 			}
 
 			$Accounts = new \App\modules\phpgwapi\controllers\Accounts\Accounts();
 
-			if ($Accounts->exists($login)) {
+			if ($Accounts->exists($login))
+			{
 				$error[] = lang("user %1 already exists, please try another login", $login);
 			}
 
-			if (!is_array($error) || count($error) == 0) {
-				if (!$firstname) {
+			if (!is_array($error) || count($error) == 0)
+			{
+				if (!$firstname)
+				{
 					$firstname = $login;
 				}
-				if (!$lastname) {
+				if (!$lastname)
+				{
 					$lastname = $login;
 				}
 
@@ -160,26 +190,34 @@ class CreateAccount
 				if ($this->serverSettings['mapping'] == 'table') // using only mapping by table
 				{
 					$this->mapping->add_mapping($_SERVER['REMOTE_USER'], $login);
-				} else if ($this->serverSettings['mapping'] == 'all' && $login != $_SERVER['REMOTE_USER']) {
+				}
+				else if ($this->serverSettings['mapping'] == 'all' && $login != $_SERVER['REMOTE_USER'])
+				{
 					$this->mapping->add_mapping($_SERVER['REMOTE_USER'], $login);
 				}
 
-				if ($account_id) {
-					if (!empty($email)) {
+				if ($account_id)
+				{
+					if (!empty($email))
+					{
 						$title	 = lang('User access');
 						$message = lang('account has been created');
 						$from	 = "noreply<noreply@{$this->serverSettings['hostname']}>";
 						$send = new \App\modules\phpgwapi\services\Send();
 
-						try {
+						try
+						{
 							$send->msg('email', $email, $title, stripslashes(nl2br($message)), '', '', '', $from, 'System message', 'html', '', array(), false);
-						} catch (Exception $ex) {
+						}
+						catch (Exception $ex)
+						{
 						}
 					}
 					$preferences = new \App\modules\phpgwapi\services\Preferences($account_id);
 
 					$preferences->add('common', 'email', $email);
-					if ($cellphone) {
+					if ($cellphone)
+					{
 						$preferences->add('common', 'cellphone', $cellphone);
 					}
 
@@ -191,8 +229,8 @@ class CreateAccount
 						'p1'	 => $login
 					));
 				}
-				throw new Exception('FIX me: redirect to login.php');
-				\phpgw::redirect_link('/login.php');
+				throw new Exception('FIX me: redirect to login_ui');
+				\phpgw::redirect_link('/login_ui');
 			}
 		}
 
@@ -204,7 +242,8 @@ class CreateAccount
 			$variables['login_read_only'] = true;
 		}
 		$variables['lang_message'] = lang('your account doesn\'t exist, please fill in infos !');
-		if (count($error)) {
+		if (count($error))
+		{
 			$variables['lang_message'] .= $GLOBALS['phpgw']->common->error_list($error);
 		}
 		$variables['lang_login']			 = lang('new account and login');
@@ -218,11 +257,12 @@ class CreateAccount
 		$variables['email']					 = $email;
 		$variables['cellphone']				 = $cellphone;
 		$variables['lang_confirm_password']	 = lang('confirm password');
-		$variables['partial_url']			 = 'login.php';
+		$variables['partial_url']			 = 'login_ui';
 		$variables['extra_vars']			 = array('create_account' => true);
-		if (!($this->serverSettings['mapping'] == 'id')) {
+		if (!($this->serverSettings['mapping'] == 'id'))
+		{
 			$variables['lang_additional_url']	 = lang('new mapping');
-			$variables['additional_url']		 = phpgw::link('login.php', array('create_mapping' => true));
+			$variables['additional_url']		 = \phpgw::link('/login_ui', array('create_mapping' => true));
 		}
 
 		$uilogin->phpgw_display_login($variables);

@@ -88,7 +88,7 @@
 		 * Ask azure for credential - and return the username
 		 * @return string $usernamer
 		 */
-		public function get_username($primary = false)
+		public function get_username($primary = false): string
 		{
 			$remote_user_1 = explode('@', \Sanitizer::get_var('OIDC_upn', 'string', 'SERVER'));
 			$remote_user_2 = \Sanitizer::get_var('OIDC_onpremisessamaccountname', 'string', 'SERVER');
@@ -125,7 +125,7 @@
 			 */
 			if(!$ssn)
 			{
-				return;
+				return '';
 			}
 
 			$ssn_hash = "{SHA}" . base64_encode(self::hex2bin(sha1($ssn)));

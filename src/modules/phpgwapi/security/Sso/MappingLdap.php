@@ -41,7 +41,8 @@ class Mapping extends Mapping_
 	 */
 	function mapping_uniqueid($ext_user)
 	{
-		if (!isset($this->serverSettings['mapping_field']) || $this->serverSettings['mapping_field'] == '') {
+		if (!isset($this->serverSettings['mapping_field']) || $this->serverSettings['mapping_field'] == '')
+		{
 			$this->serverSettings['mapping_field'] = 'uid';
 		}
 		$ds = $GLOBALS['phpgw']->common->ldapConnect();

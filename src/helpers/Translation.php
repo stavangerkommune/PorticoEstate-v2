@@ -44,6 +44,5 @@ function lang($key, $m1 = '', $m2 = '', $m3 = '', $m4 = '', $m5 = '', $m6 = '', 
 	{
 		$translation = Translation::getInstance();
 	}
-
 	return $translation->translate($key, $vars);
 }

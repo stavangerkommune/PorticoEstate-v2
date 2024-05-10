@@ -71,8 +71,10 @@
 			return $this->verify_hash($passwd, $hash);
 		}
 
-		public function get_username()
-		{}
+		public function get_username(): string
+		{
+			return '';
+		}
 
 		/**
 		* Set the user's password to a new value

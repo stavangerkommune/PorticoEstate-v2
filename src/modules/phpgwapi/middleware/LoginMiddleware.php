@@ -1,8 +1,6 @@
 <?php
 	/**
-	* phpGroupWare - Login
-	* @author Dan Kuykendall <seek3r@phpgroupware.org>
-	* @author Joseph Engo <jengo@phpgroupware.org>
+	* PorticoEstate - Login
 	* @author Sigurd Nes <sigurdne@online.no>
 	* @copyright Copyright (C) 2000-2013 Free Software Foundation, Inc. http://www.fsf.org/
 	* @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License v2 or later
@@ -33,6 +31,7 @@
 	use Slim\Routing\RouteContext;
 	use Psr\Http\Server\MiddlewareInterface;
 	use App\modules\phpgwapi\security\Login;
+	use App\modules\phpgwapi\security\Sessions;
 
 	/**
 	* Login - enables common handling of the login process from different part of the system

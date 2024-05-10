@@ -55,7 +55,8 @@ class Login
 		/*
 			 * Generic include for login.php like pages
 			 */
-		if (!empty($this->flags['session_name'])) {
+		if (!empty($this->flags['session_name']))
+		{
 			$session_name = $this->flags['session_name'];
 		}
 
@@ -65,20 +66,23 @@ class Login
 			'currentapp'             => 'login',
 			'noheader'               => true
 		);
-		if (!empty($session_name)) {
+		if (!empty($session_name))
+		{
 			$this->flags['session_name'] = $session_name;
 		}
 
 		/**
 		 * check for emailaddress as username
 		 */
-		if (isset($_POST['login']) && $_POST['login'] != '') {
-			if (!filter_var($_POST['login'], FILTER_VALIDATE_EMAIL)) {
+		if (isset($_POST['login']) && $_POST['login'] != '')
+		{
+			if (!filter_var($_POST['login'], FILTER_VALIDATE_EMAIL))
+			{
 				$_POST['login'] = str_replace('@', '#', $_POST['login']);
 			}
 		}
 
-	//		$_POST['submitit'] = true;
+		//		$_POST['submitit'] = true;
 		$phpgw_remote_user_fallback	 = 'sql';
 		$section = \Sanitizer::get_var('section', 'string', 'POST');
 
@@ -87,7 +91,7 @@ class Login
 			$this->flags['session_name'] = $settings['session_name'][$section];
 		}
 
-		if(!empty($_POST['login']) &&in_array($this->serverSetting['auth_type'],  array('remoteuser', 'azure', 'customsso')))
+		if (!empty($_POST['login']) && in_array($this->serverSetting['auth_type'],  array('remoteuser', 'azure', 'customsso')))
 		{
 			$this->serverSetting['auth_type'] = $phpgw_remote_user_fallback;
 		}
@@ -121,18 +125,21 @@ class Login
 
 	public function login()
 	{
-		if ($this->serverSetting['auth_type'] == 'http' && isset($_SERVER['PHP_AUTH_USER'])) {
+		if ($this->serverSetting['auth_type'] == 'http' && isset($_SERVER['PHP_AUTH_USER']))
+		{
 			$login	 = $_SERVER['PHP_AUTH_USER'];
 			$passwd	 = $_SERVER['PHP_AUTH_PW'];
-			
-			if (strstr($login, '#') === false && $this->logindomain) {
+
+			if (strstr($login, '#') === false && $this->logindomain)
+			{
 				$login .= "#{$this->logindomain}";
 			}
 			$this->_sessionid = $this->sessions->create($login, '');
 			return $this->_sessionid;
 		}
 
-		if ($this->serverSetting['auth_type'] == 'ntlm' && isset($_SERVER['REMOTE_USER']) && empty($_REQUEST['skip_remote']) ) {
+		if ($this->serverSetting['auth_type'] == 'ntlm' && isset($_SERVER['REMOTE_USER']) && empty($_REQUEST['skip_remote']))
+		{
 			$remote_user = explode('@', $_SERVER['REMOTE_USER']);
 			$login   = $remote_user[0]; //$_SERVER['REMOTE_USER'];
 			$passwd	 = '';
@@ -141,8 +148,9 @@ class Login
 			Settings::getInstance()->set('hook_values', array('account_lid' => $login));
 			//------------------Start login ntlm
 
-			
-			if (strstr($login, '#') === false && $this->logindomain) {
+
+			if (strstr($login, '#') === false && $this->logindomain)
+			{
 				$login .= "#{$this->logindomain}";
 			}
 
@@ -154,28 +162,33 @@ class Login
 
 		# Apache + mod_ssl style SSL certificate authentication
 		# Certificate (chain) verification occurs inside mod_ssl
-		if ($this->serverSetting['auth_type'] == 'sqlssl' && isset($_SERVER['SSL_CLIENT_S_DN']) && !isset($_GET['cd'])) {
+		if ($this->serverSetting['auth_type'] == 'sqlssl' && isset($_SERVER['SSL_CLIENT_S_DN']) && !isset($_GET['cd']))
+		{
 			# an X.509 subject looks like:
 			# /CN=john.doe/OU=Department/O=Company/C=xx/Email=john@comapy.tld/L=City/
 			# the username is deliberately lowercase, to ease LDAP integration
 			$sslattribs	 = explode('/', $_SERVER['SSL_CLIENT_S_DN']);
 			# skip the part in front of the first '/' (nothing)
-			while ($sslattrib	 = next($sslattribs)) {
+			while ($sslattrib	 = next($sslattribs))
+			{
 				list($key, $val) = explode('=', $sslattrib);
 				$sslattributes[$key] = $val;
 			}
 
-			if (isset($sslattributes['Email'])) {
+			if (isset($sslattributes['Email']))
+			{
 
 				# login will be set here if the user logged out and uses a different username with
 				# the same SSL-certificate.
-				if (!isset($_POST['login']) && isset($sslattributes['Email'])) {
+				if (!isset($_POST['login']) && isset($sslattributes['Email']))
+				{
 					$login	 = $sslattributes['Email'];
 					# not checked against the database, but delivered to authentication module
 					$passwd	 = $_SERVER['SSL_CLIENT_S_DN'];
 				}
-				
-				if (strstr($login, '#') === false && $this->logindomain) {
+
+				if (strstr($login, '#') === false && $this->logindomain)
+				{
 					$login .= "#{$this->logindomain}";
 				}
 
@@ -187,15 +200,18 @@ class Login
 			return $this->_sessionid;
 		}
 
-		if ($this->serverSetting['auth_type'] == 'customsso' &&  empty($_REQUEST['skip_remote'])) {
+		if ($this->serverSetting['auth_type'] == 'customsso' &&  empty($_REQUEST['skip_remote']))
+		{
 			//Reset auth object
 			$Auth = new \App\modules\phpgwapi\security\Auth\Auth();
 			$login = $Auth->get_username();
-			
 
-			if ($login) {
+
+			if ($login)
+			{
 				Settings::getInstance()->set('hook_values', array('account_lid' => $login));
-				if (strstr($login, '#') === false && $this->logindomain) {
+				if (strstr($login, '#') === false && $this->logindomain)
+				{
 					$login .= "#{$this->logindomain}";
 				}
 
@@ -211,42 +227,54 @@ class Login
 			in_array($this->serverSetting['auth_type'],  array('remoteuser', 'azure'))
 			&& (isset($_SERVER['OIDC_upn']) || isset($_SERVER['REMOTE_USER']) || isset($_SERVER['OIDC_pid']))
 			&& empty($_REQUEST['skip_remote'])
-		) {
-		//	print_r($this->serverSetting);
+		)
+		{
+			//	print_r($this->serverSetting);
 
 			$Auth = new \App\modules\phpgwapi\security\Auth\Auth();
 			$login = $Auth->get_username();
-			
 
-			if ($login) {
-				if (strstr($login, '#') === false && $this->logindomain) {
+
+			if ($login)
+			{
+				if (strstr($login, '#') === false && $this->logindomain)
+				{
 					$login .= "#{$this->logindomain}";
 				}
 
 				/**
 				 * One last check...
 				 */
-				if (!\Sanitizer::get_var('OIDC_pid', 'string', 'SERVER')) {
+				if (!\Sanitizer::get_var('OIDC_pid', 'string', 'SERVER'))
+				{
 					$ad_groups = array();
-					if (!empty($_SERVER["OIDC_groups"])) {
+					if (!empty($_SERVER["OIDC_groups"]))
+					{
 						$OIDC_groups = mb_convert_encoding(mb_convert_encoding($_SERVER["OIDC_groups"], 'ISO-8859-1', 'UTF-8'), 'UTF-8', 'ISO-8859-1');
 						$ad_groups	= explode(",", $OIDC_groups);
 					}
 					$default_group_lid	 = !empty($this->serverSetting['default_group_lid']) ? $this->serverSetting['default_group_lid'] : 'Default';
 
-					if (!in_array($default_group_lid, $ad_groups)) {
+					if (!in_array($default_group_lid, $ad_groups))
+					{
 						throw new \Exception(lang('missing membership: "%1" is not in the list', $default_group_lid));
 					}
 				}
 
 				$this->_sessionid = $this->sessions->create($login, '');
-			} else if (!$login || empty($this->_sessionid)) {
-				if (!empty($this->serverSetting['auto_create_acct'])) {
+			}
+			else if (!$login || empty($this->_sessionid))
+			{
+				if (!empty($this->serverSetting['auto_create_acct']))
+				{
 
-					if ($this->serverSetting['mapping'] == 'id') {
+					if ($this->serverSetting['mapping'] == 'id')
+					{
 						// Redirection to create the new account :
 						return $this->create_account();
-					} else if ($this->serverSetting['mapping'] == 'table' || $this->serverSetting['mapping'] == 'all') {
+					}
+					else if ($this->serverSetting['mapping'] == 'table' || $this->serverSetting['mapping'] == 'all')
+					{
 						// Redirection to create a new mapping :
 						return $this->create_mapping();
 					}
@@ -256,14 +284,16 @@ class Login
 			return $this->_sessionid;
 		}
 
-		if (isset($_POST['login']) && $this->serverSetting['auth_type'] == 'sql') {
+		if (isset($_POST['login']) && $this->serverSetting['auth_type'] == 'sql')
+		{
 
 			$login	 = \Sanitizer::get_var('login', 'string', 'POST');
 			// remove entities to stop mangling
 			$passwd	 = html_entity_decode(\Sanitizer::get_var('passwd', 'string', 'POST'));
 
 			$this->logindomain = \Sanitizer::get_var('logindomain', 'string', 'POST');
-			if (strstr($login, '#') === false && $this->logindomain) {
+			if (strstr($login, '#') === false && $this->logindomain)
+			{
 				$login .= "#{$this->logindomain}";
 			}
 
@@ -271,8 +301,10 @@ class Login
 			if (
 				isset($this->serverSetting['usecookies'])
 				&& $this->serverSetting['usecookies']
-			) {
-				if (isset($_COOKIE['domain']) && $_COOKIE['domain'] != $this->logindomain) {
+			)
+			{
+				if (isset($_COOKIE['domain']) && $_COOKIE['domain'] != $this->logindomain)
+				{
 					$this->sessions->phpgw_setcookie('domain');
 
 					$receipt[] = lang('Info: you have changed domain from "%1" to "%2"', $_COOKIE['domain'], $this->logindomain);
@@ -281,7 +313,8 @@ class Login
 
 			$this->_sessionid = $this->sessions->create($login, $passwd);
 
-			if ($receipt) {
+			if ($receipt)
+			{
 				\App\modules\phpgwapi\services\Cache::message_set($receipt, 'message');
 			}
 			return $this->_sessionid;

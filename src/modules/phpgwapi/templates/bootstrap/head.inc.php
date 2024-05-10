@@ -207,7 +207,7 @@ if ($privacy_url)
 						if(!this.hasConsented())
 						{
 							document.cookie = "cookieconsent_backend=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-							window.location.replace(phpGWLink('logout.php'));
+							window.location.replace(phpGWLink('/logout_ui'));
 						}
 					 }
 				})

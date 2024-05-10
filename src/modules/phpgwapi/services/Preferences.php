@@ -181,6 +181,22 @@ class Preferences
 		return $this->data;
 	}
 
+	/**
+	 * public - read preferences from repository and stores in an array
+	 *
+	 * Syntax array read(); <>
+	 * Example1: preferences->read();
+	 * @return $data array containing user preferences
+	 */
+	public function read()
+	{
+		if (count($this->data) == 0)
+		{
+			$this->Readpreferences();
+		}
+		reset($this->data);
+		return $this->data;
+	}
 
 	/**
 	 * add preference to $app_name a particular app

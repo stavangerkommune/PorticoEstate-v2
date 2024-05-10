@@ -50,7 +50,7 @@ function parse_navbar($force = False)
 	$home_icon		= 'icon icon-home';
 	$about_url	= phpgw::link('/about.php', array('app' => $flags['currentapp']));
 	$about_text	= lang('about');
-	//		$var['logout_url']	= phpgw::link('/logout.php');
+	//		$var['logout_url']	= phpgw::link('/logout_ui');
 	$var['logout_text']	= lang('logout');
 	$var['user_fullname'] = $user_fullname;
 	$preferences_url = phpgw::link('/preferences/index.php');
@@ -697,7 +697,7 @@ function parse_footer_end()
 
 	$var = array(
 		'lang_logout_header' => lang('Choose "Log out" if you want to end the session'),
-		'logout_url'	=> phpgw::link('/logout.php'),
+		'logout_url'	=> phpgw::link('/logout_ui'),
 		'logout_text'	=> lang('logout'),
 		'powered_by'	=> $powered_by,
 		'lang_login'	=> lang('login'),

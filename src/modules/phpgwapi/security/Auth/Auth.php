@@ -56,9 +56,10 @@
 			{
 				// Implementation of the authenticate method
 			}
-			public function get_username()
+			public function get_username(): string
 			{
 				// Implementation of the get_username method
+				return '';
 			}
 
 			public function change_password($old_passwd, $new_passwd, $account_id = 0)
@@ -110,7 +111,7 @@
 		*/
 		abstract public function change_password($old_passwd, $new_passwd, $account_id = 0);
 
-		abstract public function get_username();
+		abstract public function get_username(): string;
 
 		/**
 		* Generate random salt

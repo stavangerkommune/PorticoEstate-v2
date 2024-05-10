@@ -1,4 +1,5 @@
 <?php
+
 namespace App\modules\phpgwapi\security;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -27,14 +28,15 @@ class AccessVerifier  implements MiddlewareInterface
 
 	//public function process
 
-    public function process(Request $request, RequestHandler $handler): Response
-    {
+	public function process(Request $request, RequestHandler $handler): Response
+	{
 
 		$routeContext = RouteContext::fromRequest($request);
 		$route = $routeContext->getRoute();
 
 		// If there is no route, return 404
-		if (empty($route)) {
+		if (empty($route))
+		{
 			return $this->sendErrorResponse(['msg' => 'route not found'], 404);
 		}
 
@@ -47,7 +49,7 @@ class AccessVerifier  implements MiddlewareInterface
 		$flags = Settings::getInstance()->get('flags');
 		$account_id = Settings::getInstance()->get('account_id');
 
-	//	print_r(__CLASS__);
+		//	print_r(__CLASS__);
 
 		$acl = Acl::getInstance();
 
@@ -55,20 +57,19 @@ class AccessVerifier  implements MiddlewareInterface
 
 
 
-        // Perform access verification here
+		// Perform access verification here
 
-  
+
 		// Check if the user has permission to access the route
-	//	if (!$this->acl->hasPermission($routeName))
-	{
-    //        throw new HttpForbiddenException($request, "You do not have permission to access this route.");
+		//	if (!$this->acl->hasPermission($routeName))
+		{
+			//        throw new HttpForbiddenException($request, "You do not have permission to access this route.");
 
-	//		return $this->sendErrorResponse(['msg' => 'You do not have permission to access this route.']);
+			//		return $this->sendErrorResponse(['msg' => 'You do not have permission to access this route.']);
 		}
 
 		return $handler->handle($request);
-
-    }
+	}
 
 
 	private function sendErrorResponse($error, $statusCode = 401)
