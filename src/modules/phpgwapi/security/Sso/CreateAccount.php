@@ -65,7 +65,9 @@ class CreateAccount
 			throw new Exception(lang('Access denied'));
 		}
 
-		$this->login = $GLOBALS['phpgw']->auth->get_username(true);
+		$Auth = new \App\modules\phpgwapi\security\Auth\Auth();
+
+		$this->login = $Auth->get_username(true);
 
 		if (empty($this->login))
 		{
@@ -234,7 +236,7 @@ class CreateAccount
 			}
 		}
 
-		$uilogin = new phpgw_uilogin(false);
+		$uilogin = new  \App\modules\phpgwapi\helpers\LoginUi(false);
 
 		$variables = array();
 		if ($this->serverSettings['mapping'] == 'id') // using REMOTE_USER for account_lid
@@ -242,9 +244,11 @@ class CreateAccount
 			$variables['login_read_only'] = true;
 		}
 		$variables['lang_message'] = lang('your account doesn\'t exist, please fill in infos !');
+
 		if (count($error))
 		{
-			$variables['lang_message'] .= $GLOBALS['phpgw']->common->error_list($error);
+			$phpgwapi_common = new \phpgwapi_common();
+			$variables['lang_message'] .= $phpgwapi_common->error_list($error);
 		}
 		$variables['lang_login']			 = lang('new account and login');
 		$variables['login']					 = $login;

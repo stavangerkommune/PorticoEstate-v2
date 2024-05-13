@@ -7,6 +7,8 @@ use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Psr7\Response;
 use Slim\Routing\RouteContext;
 use App\modules\phpgwapi\security\Sessions;
+use App\modules\phpgwapi\security\Login;
+use App\modules\phpgwapi\services\Cache;
 use App\modules\phpgwapi\services\Settings;
 use Psr\Http\Server\MiddlewareInterface;
 
@@ -23,7 +25,7 @@ class SessionsMiddleware implements MiddlewareInterface
 
 	public function process(Request $request, RequestHandler $handler): Response
 	{
-		//	print_r(__CLASS__);
+		$second_pass = Cache::session_get('login', 'second_pass');
 
 		$routeContext = RouteContext::fromRequest($request);
 		$route = $routeContext->getRoute();
@@ -77,9 +79,18 @@ class SessionsMiddleware implements MiddlewareInterface
 			{
 				return $handler->handle($request);
 			}
-			else
+			else if($second_pass)
 			{
 				return $this->sendErrorResponse(['msg' => 'A valid session could not be found'], 401);
+			}
+			else
+			{
+				$second_pass = Cache::session_set('login', 'second_pass', true);
+				$process_login = new Login();
+				$process_login->login();
+				$response = new Response();
+				return $response->withHeader('Content-Type', 'text/html');
+
 			}
 		}
 

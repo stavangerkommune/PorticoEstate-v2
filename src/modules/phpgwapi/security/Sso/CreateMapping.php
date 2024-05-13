@@ -83,20 +83,20 @@ class CreateMapping
 			}
 		}
 
-		/* FIXME: present the form ????
-		$uilogin = new phpgw_uilogin(false);
+		$uilogin = new  \App\modules\phpgwapi\helpers\LoginUi(false);
+
 
 		//Build vars :
 		$variables					 = array();
 		$variables['lang_message']	 = lang('this page let you build a mapping to an existing account !');
 		$variables['lang_login']	 = lang('new mapping and login');
-		$variables['partial_url']	 = 'login.php';
+		$variables['partial_url']	 = 'login_ui';
 		$variables['extra_vars']	 = array('create_mapping' => true);
 		if (isset($this->serverSettings['auto_create_acct']) && $this->serverSettings['auto_create_acct'] == True) {
 			$variables['lang_additional_url']	 = lang('new account');
-			$variables['additional_url']		 = phpgw::link('login.php', array('create_account' => true));
+			$variables['additional_url']		 = phpgw::link('/login_ui', array('create_account' => true));
 		}
 		$uilogin->phpgw_display_login($variables);
-*/
+
 	}
 }

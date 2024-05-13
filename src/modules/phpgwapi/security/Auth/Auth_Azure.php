@@ -103,11 +103,11 @@
 				return $_remote_user;
 			}
 
-			$username = $GLOBALS['phpgw']->mapping->get_mapping($_remote_user);
+			$username = $this->mapping->get_mapping($_remote_user);
 
 			if(!$username)
 			{
-				$username = $GLOBALS['phpgw']->mapping->get_mapping($_SERVER['REMOTE_USER']);
+				$username = $this->mapping->get_mapping($_SERVER['REMOTE_USER']);
 			}
 
 			$ssn = \Sanitizer::get_var('OIDC_pid', 'string', 'SERVER');
