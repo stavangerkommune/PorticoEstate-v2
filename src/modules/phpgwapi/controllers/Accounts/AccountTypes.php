@@ -51,10 +51,8 @@
 	namespace App\modules\phpgwapi\controllers\Accounts;
 	use App\modules\phpgwapi\services\Settings;	
 	use Exception;
-	
-
-	namespace App\modules\phpgwapi\controllers\Accounts;
 	use App\modules\phpgwapi\services\Translation;
+
 	abstract class phpgwapi_account
 	{
 		/**

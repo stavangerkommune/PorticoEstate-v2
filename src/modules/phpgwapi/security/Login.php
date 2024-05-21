@@ -91,7 +91,7 @@ class Login
 			$this->flags['session_name'] = $settings['session_name'][$section];
 		}
 
-		if (!empty($_POST['login']) && in_array($this->serverSetting['auth_type'],  array('remoteuser', 'azure', 'customsso')))
+		if (empty($_GET['create_account']) && !empty($_POST['login']) && in_array($this->serverSetting['auth_type'],  array('remoteuser', 'azure', 'customsso')))
 		{
 			$this->serverSetting['auth_type'] = $phpgw_remote_user_fallback;
 		}

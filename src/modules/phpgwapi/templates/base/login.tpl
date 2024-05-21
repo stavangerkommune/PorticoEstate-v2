@@ -180,7 +180,7 @@
 								<!-- BEGIN button_block -->
 
 								<div class="pure-controls">
-									<button type="submit" class="pure-button pure-button-primary" name="submitit_" onclick="do_login();">
+									<button type="button" class="pure-button pure-button-primary" name="submitit_" onclick="do_login();">
 										<i class="fas fa-sign-in-alt fa-sm fa-fw text-gray-400"></i>
 										{lang_login}
 									</button>

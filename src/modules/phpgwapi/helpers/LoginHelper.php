@@ -2,6 +2,8 @@
 
 	namespace App\modules\phpgwapi\helpers;
 
+	require_once SRC_ROOT_PATH . '/helpers/LegacyObjectHandler.php';
+
 	use App\modules\phpgwapi\helpers\LoginUi;
 	use Psr\Http\Message\ServerRequestInterface as Request;
 	use Psr\Http\Message\ResponseInterface as Response;

@@ -39,9 +39,6 @@
 	use App\modules\phpgwapi\services\Settings;
 
 	$serverSettings = Settings::getInstance()->get('server');
-		_debug_array($serverSettings);
-	//\App\helpers\DebugArray::debug($serverSettings['auth_type']);
-
 
 	if (!empty($serverSettings['auth_type'])) {
 		

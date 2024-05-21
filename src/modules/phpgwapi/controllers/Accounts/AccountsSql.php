@@ -32,6 +32,7 @@
 namespace App\modules\phpgwapi\controllers\Accounts;
 
 use App\modules\phpgwapi\security\Acl;
+use App\modules\phpgwapi\services\Cache;
 use App\modules\phpgwapi\controllers\Accounts\Accounts_;
 use App\modules\phpgwapi\controllers\Accounts\phpgwapi_group;
 use App\modules\phpgwapi\controllers\Accounts\phpgwapi_user;
@@ -251,7 +252,7 @@ class Accounts extends Accounts_
 			}
 
 			// The cached object is needed for the hooks
-			\App\modules\phpgwapi\services\Cache::system_clear('phpgwapi', "account_{$account_id}");
+			Cache::system_clear('phpgwapi', "account_{$account_id}");
 
 			// delete the group mappings
 			if ($stmt->execute([':account_id' => $account_id]))
@@ -357,8 +358,8 @@ class Accounts extends Accounts_
 
 		if ($use_cache)
 		{
-			$account = \App\modules\phpgwapi\services\Cache::system_get('phpgwapi', "account_{$id}");
-			if (is_object($account))
+			$account = Cache::system_get('phpgwapi', "account_{$id}");
+			if (is_object($account) && get_class($account) !== '__PHP_Incomplete_Class')
 			{
 				$account->firstname = stripslashes($account->firstname);
 				$account->lastname = stripslashes($account->lastname);
@@ -398,7 +399,7 @@ class Accounts extends Accounts_
 			}
 			$account->init($record);
 
-			\App\modules\phpgwapi\services\Cache::system_set('phpgwapi', "account_{$id}", $account);
+			Cache::system_set('phpgwapi', "account_{$id}", $account);
 		}
 		else
 		{

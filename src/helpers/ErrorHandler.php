@@ -13,7 +13,7 @@ use Throwable;
 use ErrorException;
 use App\modules\phpgwapi\services\Settings;
 
-$serverSettings  = \App\modules\phpgwapi\services\Settings::getInstance()->get('server');
+$serverSettings  = Settings::getInstance()->get('server');
 
 if (isset($serverSettings['log_levels']['global_level'])) {
 	switch ($serverSettings['log_levels']['global_level']) {
@@ -77,8 +77,8 @@ class ErrorHandler
 	public function __construct(ResponseFactoryInterface $responseFactory)
 	{
 		$this->responseFactory = $responseFactory;
-		$this->serverSettings  = \App\modules\phpgwapi\services\Settings::getInstance()->get('server');		
-		$this->userSettings  = \App\modules\phpgwapi\services\Settings::getInstance()->get('user');
+		$this->serverSettings  = Settings::getInstance()->get('server');		
+		$this->userSettings  = Settings::getInstance()->get('user');
 		$this->Log = new Log();
 		$this->db = Db::getInstance();		
 	}

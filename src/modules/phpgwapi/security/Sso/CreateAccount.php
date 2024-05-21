@@ -23,6 +23,10 @@ namespace App\modules\phpgwapi\security\Sso;
 
 use App\modules\phpgwapi\security\Sso\Mapping;
 use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\controllers\Accounts\Accounts;
+use App\modules\phpgwapi\controllers\Accounts\phpgwapi_user;
+use App\modules\phpgwapi\helpers\LoginUi;
+
 use Exception;
 
 class CreateAccount
@@ -88,9 +92,7 @@ class CreateAccount
 			}
 			if (($account = $this->mapping->exist_mapping($this->login)) != '')
 			{
-
-				throw new Exception('FIX me:rediredt to login_ui? with create_mapping=true and cd=21 and phpgw_account=account_lid');
-				\phpgw::redirect_link('login_ui', array('create_mapping' => true, 'cd' => '21', 'phpgw_account' => $account));
+				\phpgw::redirect_link('/login_ui', array('create_mapping' => true, 'cd' => '21', 'phpgw_account' => $account));
 			}
 		}
 	}
@@ -159,7 +161,10 @@ class CreateAccount
 				$error[] = lang('Please, check your password');
 			}
 
-			$account = new \App\modules\phpgwapi\controllers\Accounts\phpgwapi_user();
+			$Accounts = new Accounts();
+
+			$account = new phpgwapi_user();
+
 			try
 			{
 				$account->validate_password($password1);
@@ -168,8 +173,6 @@ class CreateAccount
 			{
 				$error[] = $e->getMessage();
 			}
-
-			$Accounts = new \App\modules\phpgwapi\controllers\Accounts\Accounts();
 
 			if ($Accounts->exists($login))
 			{
@@ -231,12 +234,11 @@ class CreateAccount
 						'p1'	 => $login
 					));
 				}
-				throw new Exception('FIX me: redirect to login_ui');
-				\phpgw::redirect_link('/login_ui');
+				\phpgw::redirect_link('/home');
 			}
 		}
 
-		$uilogin = new  \App\modules\phpgwapi\helpers\LoginUi(false);
+		$uilogin = new LoginUi(false);
 
 		$variables = array();
 		if ($this->serverSettings['mapping'] == 'id') // using REMOTE_USER for account_lid
