@@ -28,7 +28,8 @@ class Mapping extends Mapping_
 	 * constructor, sets up variables
 	 *
 	 **/
-	function __construct($auth_info = '')
+	#[\Override]
+	function __construct($auth_info = [])
 	{
 		parent::__construct($auth_info);
 	}
@@ -76,7 +77,7 @@ class Mapping extends Mapping_
 		$this->serverSettings['auth_type'] = 'sql';
 		\App\modules\phpgwapi\services\Settings::getInstance()->set('server', $this->serverSettings);
 
-		$Auth = new \App\modules\phpgwapi\security\Auth\Aauth();
+		$Auth = new \App\modules\phpgwapi\security\Auth\Auth();
 		$ret = $Auth->authenticate($uid, $password);
 
 		$this->serverSettings['auth_type'] = $auth_type;

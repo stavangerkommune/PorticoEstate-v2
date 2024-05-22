@@ -254,6 +254,8 @@ class Login
 						$ad_groups	= explode(",", $OIDC_groups);
 					}
 					$default_group_lid	 = !empty($this->serverSetting['default_group_lid']) ? $this->serverSetting['default_group_lid'] : 'Default';
+					$default_group_lid = strtolower($default_group_lid);
+					$ad_groups = array_map('strtolower', $ad_groups);
 
 					if (!in_array($default_group_lid, $ad_groups))
 					{

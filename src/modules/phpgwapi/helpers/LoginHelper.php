@@ -101,6 +101,10 @@
 				{
 					$Login->create_account();
 				}
+				else if(Sanitizer::get_var('create_mapping', 'bool'))
+				{
+					$Login->create_mapping();
+				}
 				else
 				{
 

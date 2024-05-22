@@ -43,7 +43,10 @@ class CreateMapping
 			throw new Exception(lang('Access denied'));
 		}
 
-		$this->mapping = new Mapping();
+		$phpgw_map_location = isset($_SERVER['HTTP_SHIB_ORIGIN_SITE']) ? $_SERVER['HTTP_SHIB_ORIGIN_SITE'] : 'local';
+		$phpgw_map_authtype = isset($_SERVER['HTTP_SHIB_ORIGIN_SITE']) ? 'shibboleth' : 'remoteuser';
+
+		$this->mapping = new Mapping(array('auth_type' => $phpgw_map_authtype, 'location' => $phpgw_map_location));
 
 		if (!isset($_SERVER['REMOTE_USER']))
 		{
@@ -69,7 +72,7 @@ class CreateMapping
 				{
 					$this->mapping->add_mapping($_SERVER['REMOTE_USER'], $login);
 					//FIXME: redirect..?
-					phpgw::redirect_link('/login.php');
+					\phpgw::redirect_link('/login_ui');
 				}
 				else
 				{
@@ -94,7 +97,7 @@ class CreateMapping
 		$variables['extra_vars']	 = array('create_mapping' => true);
 		if (isset($this->serverSettings['auto_create_acct']) && $this->serverSettings['auto_create_acct'] == True) {
 			$variables['lang_additional_url']	 = lang('new account');
-			$variables['additional_url']		 = phpgw::link('/login_ui', array('create_account' => true));
+			$variables['additional_url']		 = \phpgw::link('/login_ui', array('create_account' => true));
 		}
 		$uilogin->phpgw_display_login($variables);
 

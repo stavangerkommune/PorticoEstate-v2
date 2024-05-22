@@ -85,8 +85,8 @@ abstract class Mapping_
 	 */
 	function mapping_table($ext_user)
 	{
-		$location = &$this->location;
-		$auth_type = &$this->auth_type;
+		$location = $this->location;
+		$auth_type = $this->auth_type;
 
 		$stmt = $this->db->prepare("SELECT * FROM phpgw_mapping WHERE ext_user = :ext_user AND status = 'A' AND location = :location AND auth_type = :auth_type");
 		$stmt->execute([':ext_user' => $ext_user, ':location' => $location, ':auth_type' => $auth_type]);
@@ -115,7 +115,7 @@ abstract class Mapping_
 	function get_mapping($ext_user)
 	{
 		$account_lid = '';
-		$mapping_type = &$GLOBALS['phpgw_info']['server']['mapping'];
+		$mapping_type = $this->serverSettings['mapping'];
 		if ($mapping_type == 'all' || $mapping_type == 'id') // using mapping by unique ID
 		{
 			$account_lid = $this->mapping_uniqueid($ext_user);
