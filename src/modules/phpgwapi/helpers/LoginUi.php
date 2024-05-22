@@ -391,13 +391,14 @@
 				$system_name .= "::{$variables['lang_frontend']}";
 			}
 
-			$webserver_url = rtrim($this->serverSettings['webserver_url'], '/') . PHPGW_MODULES_PATH;
+			$webserver_url_short = rtrim($this->serverSettings['webserver_url'], '/');
+			$webserver_url = $webserver_url_short . PHPGW_MODULES_PATH;
 			$partial_url   = ltrim($variables['partial_url'], '/');
 
 			//	$this->tmpl->set_var('login_url', $webserver_url . '/'.$partial_url.'?' . http_build_query($extra_vars) );
 			$this->tmpl->set_var('login_url', phpgw::link("/{$partial_url}", $extra_vars));
 
-			$this->tmpl->set_var('registration_url', $webserver_url . '/registration/');
+			$this->tmpl->set_var('registration_url', $webserver_url_short . '/registration/');
 			$this->tmpl->set_var('system', $system_name);
 			$this->tmpl->set_var('version', isset($this->serverSettings['versions']['system']) ? $this->serverSettings['versions']['system'] : $this->serverSettings['versions']['phpgwapi']);
 			$this->tmpl->set_var('instruction', lang('use a valid username and password to gain access to %1', $system_name));
@@ -468,7 +469,7 @@ JS;
 			}
 			else
 			{
-				$url_new_user	 = "{$webserver_url}/registration/main.php";
+				$url_new_user	 = "{$webserver_url_short}/registration/";
 				$action_new_user = 'javascript:new_user();';
 			}
 			$this->tmpl->set_var('url_new_user', $url_new_user);
@@ -480,7 +481,7 @@ JS;
 			}
 			else
 			{
-				$url_lost_password	  = "{$webserver_url}/registration/main.php?" . http_build_query(
+				$url_lost_password	  = "{$webserver_url_short}/registration/?" . http_build_query(
 						array(
 							'menuaction' => 'registration.uireg.lostpw1'
 						)
