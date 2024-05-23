@@ -25,7 +25,7 @@ class SessionsMiddleware implements MiddlewareInterface
 
 	public function process(Request $request, RequestHandler $handler): Response
 	{
-		$second_pass = Cache::session_get('login', 'second_pass');
+		$second_pass = \Sanitizer::get_var('login_second_pass', 'bool', 'COOKIE');
 
 		$routeContext = RouteContext::fromRequest($request);
 		$route = $routeContext->getRoute();
@@ -81,13 +81,17 @@ class SessionsMiddleware implements MiddlewareInterface
 			}
 			else if($second_pass)
 			{
+				$sessions->phpgw_setcookie('login_second_pass', false);
 				return $this->sendErrorResponse(['msg' => 'A valid session could not be found'], 401);
 			}
 			else
 			{
-				$second_pass = Cache::session_set('login', 'second_pass', true);
+				$sessions->phpgw_setcookie('login_second_pass', true, 0);
 				$process_login = new Login();
-				$process_login->login();
+				if($process_login->login())
+				{
+					return $handler->handle($request);
+				}
 				$response = new Response();
 				return $response->withHeader('Content-Type', 'text/html');
 
