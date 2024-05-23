@@ -939,17 +939,18 @@ abstract class Accounts_
 	protected function _get_nextid($account_type = 'u')
 	{
 
-		$min = !empty($this->serverSettings['account_min_id']) ? (int) $this->serverSettings['account_min_id'] : 0;
-
-		$max = !empty($this->serverSettings['account_max_id']) ? (int) $this->serverSettings['account_max_id'] : 2147483647;
 
 		if ($account_type == 'g')
 		{
 			$type = 'groups';
+			$min = !empty($this->serverSettings['group_min_id']) ? (int) $this->serverSettings['group_min_id'] : 0;
+			$max = !empty($this->serverSettings['group_max_id']) ? (int) $this->serverSettings['group_max_id'] : 999;
 		}
 		else
 		{
 			$type = 'accounts';
+			$min = !empty($this->serverSettings['account_min_id']) ? (int) $this->serverSettings['account_min_id'] : 1000;
+			$max = !empty($this->serverSettings['account_max_id']) ? (int) $this->serverSettings['account_max_id'] : 2147483647;
 		}
 
 		//	$nextid = (int) $GLOBALS['phpgw']->common->last_id($type, $min, $max);

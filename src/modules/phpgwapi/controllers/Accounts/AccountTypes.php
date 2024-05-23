@@ -211,6 +211,9 @@
 		 */
 		protected function _validate_contact_id($id, $type)
 		{
+			//Sigurd 20240523 - disabled for now:
+			//IMPLEMENT ME
+			return true;
 			$contacts = createObject('phpgwapi.contacts');
 			switch ( $type )
 			{
