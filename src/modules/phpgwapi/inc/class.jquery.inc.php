@@ -592,8 +592,8 @@ JS;
 		switch ($userSettings['preferences']['common']['template_set'])
 		{
 			case 'bootstrap':
-				phpgwapi_js::getInstance()->validate_file('summernote', 'dist/summernote-bs4');
-				phpgwapi_css::getInstance()->add_external_file("phpgwapi/js/summernote/dist/summernote-bs4.css");
+				phpgwapi_js::getInstance()->validate_file('summernote', 'dist/summernote-bs5');
+				phpgwapi_css::getInstance()->add_external_file("phpgwapi/js/summernote/dist/summernote-bs5.css");
 				break;
 			default:
 				phpgwapi_js::getInstance()->validate_file('summernote', 'dist/summernote-lite');
