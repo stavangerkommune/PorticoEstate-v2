@@ -1,0 +1,24 @@
+use App\Database\Db;
+
+$GLOBALS['phpgw']->db
+Db::getInstance()
+
+
+use App\modules\phpgwapi\services\Settings;
+$serverSettings = Settings::getInstance()->get('server');
+$userSettings = Settings::getInstance()->get('user');
+$flags = Settings::getInstance()->get('flags');
+
+
+$GLOBALS['phpgw_info']['user']
+$this->userSettings
+
+use App\modules\phpgwapi\security\Acl;
+$this->acl = Acl::getInstance();
+
+$GLOBALS['phpgw']->acl
+$this->acl
+
+PHPGW_ACL_
+ACL_
+
