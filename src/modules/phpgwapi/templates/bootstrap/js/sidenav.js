@@ -209,7 +209,7 @@ $(document).ready(function ()
 		var template = $(this).val();
 		//user[template_set] = template;
 		var oArgs = {appname: 'preferences', type: 'user'};
-		var requestUrl = phpGWLink('preferences/preferences.php', oArgs, true);
+		var requestUrl = phpGWLink('preferences/section', oArgs, true);
 		$.ajax({
 			type: 'POST',
 			dataType: 'json',

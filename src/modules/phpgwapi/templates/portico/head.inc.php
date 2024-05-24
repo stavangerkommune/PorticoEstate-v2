@@ -110,26 +110,6 @@ foreach ($javascripts as $javascript)
 	}
 }
 
-
-switch ($userSettings['preferences']['common']['template_set'])
-{
-	case 'portico':
-		$selecte_portico = ' selected = "selected"';
-		$selecte_pure = '';
-		break;
-	case 'bootstrap':
-		$selecte_portico = '';
-		$selecte_bootstrap = ' selected = "selected"';
-		break;
-}
-
-$template_selector = <<<HTML
-
-   <select id = "template_selector">
-	<option value="bootstrap"{$selecte_bootstrap}>Bootstrap</option>
-	<option value="portico"{$selecte_portico}>Portico</option>
-   </select>
-HTML;
 // Construct navbar_config by taking into account the current selected menu
 // The only problem with this loop is that leafnodes will be included
 $navbar_config = execMethod('phpgwapi.template_portico.retrieve_local', 'navbar_config');
@@ -188,9 +168,6 @@ $tpl_vars = array(
 	'border_layout_config' => $_border_layout_config,
 	'navbar_config' => $_navbar_config,
 	'menu_selection'	 => "navbar::{$menu_selection}",
-	'lang_collapse_all'	=> lang('collapse all'),
-	'lang_expand_all'	=> lang('expand all'),
-	'template_selector'	=> $template_selector,
 	'sessionid'			 => $userSettings['sessionid']
 );
 

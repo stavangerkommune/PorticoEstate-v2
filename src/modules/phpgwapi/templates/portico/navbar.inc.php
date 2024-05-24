@@ -1,11 +1,11 @@
 <?php
 
-use App\modules\phpgwapi\services\Settings;
-use App\modules\phpgwapi\services\Cache;
 use App\helpers\Template;
-use App\modules\phpgwapi\security\Acl;
-use App\modules\phpgwapi\services\Hooks;
 use App\modules\phpgwapi\controllers\Accounts\Accounts;
+use App\modules\phpgwapi\security\Acl;
+use App\modules\phpgwapi\services\Cache;
+use App\modules\phpgwapi\services\Hooks;
+use App\modules\phpgwapi\services\Settings;
 
 function parse_navbar($force = False)
 {
@@ -29,6 +29,26 @@ function parse_navbar($force = False)
 		$extra_vars[$name] = Sanitizer::clean_value($value);
 	}
 
+	switch ($userSettings['preferences']['common']['template_set'])
+	{
+		case 'portico':
+			$selecte_portico = ' selected = "selected"';
+			$selecte_pure = '';
+			break;
+		case 'bootstrap':
+			$selecte_portico = '';
+			$selecte_bootstrap = ' selected = "selected"';
+			break;
+	}
+
+	$template_selector = <<<HTML
+
+	   <select id = "template_selector">
+		<option value="bootstrap"{$selecte_bootstrap}>Bootstrap</option>
+		<option value="portico"{$selecte_portico}>Portico</option>
+	   </select>
+	HTML;
+
 	$var = array(
 		'print_url'		=> "{$_SERVER['PHP_SELF']}?" . http_build_query(array_merge($extra_vars, array('phpgw_return_as' => 'noframes'))),
 		'print_text'	=> lang('print'),
@@ -39,8 +59,13 @@ function parse_navbar($force = False)
 		'about_text'	=> lang('about'),
 		'logout_url'	=> phpgw::link('/logout.php'),
 		'logout_text'	=> lang('logout'),
+		'site_title'	=> "{$serverSettings['site_title']}",
 		'user_fullname' => $user->__toString(),
 		'top_level_menu_url' => phpgw::link('/index.php', array('menuaction' => 'phpgwapi.menu.get_local_menu_ajax', 'node' => 'top_level', 'phpgw_return_as' => 'json')),
+		'template_selector'	=> $template_selector,
+		'lang_collapse_all'	=> lang('collapse all'),
+		'lang_expand_all'	=> lang('expand all'),
+
 	);
 
 	if (Acl::getInstance()->check('run', ACL_READ, 'preferences'))
