@@ -62,30 +62,30 @@
 				$this->use_session = true;
 			}
 
-			$start			 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query			 = phpgw::get_var('query');
-			$sort			 = phpgw::get_var('sort');
-			$order			 = phpgw::get_var('order');
-			$filter			 = phpgw::get_var('filter', 'int');
-			$cat_id			 = phpgw::get_var('cat_id', 'int');
-			$user_lid		 = phpgw::get_var('user_lid');
-			$allrows		 = phpgw::get_var('allrows', 'bool');
-			$b_account_class = phpgw::get_var('b_account_class', 'int');
-			$district_id	 = phpgw::get_var('district_id', 'int');
-			$b_account		 = phpgw::get_var('b_account');
+			$start			 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query			 = Sanitizer::get_var('query');
+			$sort			 = Sanitizer::get_var('sort');
+			$order			 = Sanitizer::get_var('order');
+			$filter			 = Sanitizer::get_var('filter', 'int');
+			$cat_id			 = Sanitizer::get_var('cat_id', 'int');
+			$user_lid		 = Sanitizer::get_var('user_lid');
+			$allrows		 = Sanitizer::get_var('allrows', 'bool');
+			$b_account_class = Sanitizer::get_var('b_account_class', 'int');
+			$district_id	 = Sanitizer::get_var('district_id', 'int');
+			$b_account		 = Sanitizer::get_var('b_account');
 
 			//		$this->start			= $start ? $start : (int)$this->start;
 
 			$this->start = isset($_REQUEST['start']) ? $start : $this->start;
 
-			if (phpgw::get_var('workorder_id', 'int'))
+			if (Sanitizer::get_var('workorder_id', 'int'))
 			{
 				$this->start = 0;
 			}
 
 			$this->query = isset($query) ? $query : $query;
 
-			if (!phpgw::get_var('paid', 'bool'))
+			if (!Sanitizer::get_var('paid', 'bool'))
 			{
 				//			$voucher_id 	= $this->query && ctype_digit($this->query) ? $this->query : 0;
 			}
@@ -472,10 +472,10 @@
 			switch ($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('cat_select'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('cat_select'));
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('cat_filter'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('cat_filter'));
 					break;
 			}
 
@@ -494,10 +494,10 @@
 			switch ($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('user_lid_select'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('user_lid_select'));
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('user_lid_filter'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('user_lid_filter'));
 					break;
 			}
 			$users = $this->bocommon->get_user_list_right(array(32, 64, 128), $selected, '.invoice', $extra, $default);

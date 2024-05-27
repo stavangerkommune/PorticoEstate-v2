@@ -30,6 +30,13 @@
 	 * Description
 	 * @package property
 	 */
+
+	use App\Database\Db;
+	use \App\Database\Db2;
+	use App\modules\phpgwapi\security\Acl;
+
+	use App\modules\phpgwapi\services\Settings;
+
 	phpgw::import_class('phpgwapi.datetime');
 
 	class property_socommon
@@ -44,46 +51,14 @@
 		 * @var string $like the sql syntax to use for a case insensitive LIKE
 		 */
 		var $like = 'LIKE';
-		var $db, $account, $left_join;
+		var $db, $account, $left_join, $userSettings;
 
 		function __construct()
 		{
+			$this->db = Db::getInstance();
+			$this->userSettings = Settings::getInstance()->get('user');
 
-			if (is_object($GLOBALS['phpgw']->db))
-			{
-				$this->db = & $GLOBALS['phpgw']->db;
-			}
-			else // for setup
-			{
-				$this->db			 = CreateObject('phpgwapi.db');
-				$this->db->fetchmode = 'ASSOC';
-				if (isset($GLOBALS['phpgw_info']['server']['db_name']) && $GLOBALS['phpgw_info']['server']['db_name'])
-				{
-					$this->db->Host		 = $GLOBALS['phpgw_info']['server']['db_host'];
-					$this->db->Port		 = $GLOBALS['phpgw_info']['server']['db_port'];
-					$this->db->Type		 = $GLOBALS['phpgw_info']['server']['db_type'];
-					$this->db->Database	 = $GLOBALS['phpgw_info']['server']['db_name'];
-					$this->db->User		 = $GLOBALS['phpgw_info']['server']['db_user'];
-					$this->db->Password	 = $GLOBALS['phpgw_info']['server']['db_pass'];
-				}
-				else
-				{
-					$ConfigDomain = phpgw::get_var('ConfigDomain', 'string', 'COOKIE');
-					if (!$ConfigDomain)
-					{
-						$ConfigDomain = phpgw::get_var('ConfigDomain', 'string', 'POST');
-					}
-					$GLOBALS['phpgw_info']['user']['domain'] = $ConfigDomain;
-					$phpgw_domain							 = $GLOBALS['phpgw_domain'];
-					$this->db->Host							 = $phpgw_domain[$ConfigDomain]['db_host'];
-					$this->db->Port							 = $phpgw_domain[$ConfigDomain]['db_port'];
-					$this->db->Database						 = $phpgw_domain[$ConfigDomain]['db_name'];
-					$this->db->User							 = $phpgw_domain[$ConfigDomain]['db_user'];
-					$this->db->Password						 = $phpgw_domain[$ConfigDomain]['db_pass'];
-				}
-			}
-
-			$this->account	= isset($GLOBALS['phpgw_info']['user']['account_id']) ? (int)$GLOBALS['phpgw_info']['user']['account_id'] : -1;
+			$this->account	= isset($this->userSettings['account_id']) ? (int)$this->userSettings['account_id'] : -1;
 
 			switch ($GLOBALS['phpgw_info']['server']['db_type'])
 			{
@@ -114,7 +89,7 @@
 				}
 				else
 				{
-					$value = $GLOBALS['phpgw']->db->db_addslashes($value);
+					$value = $this->db->db_addslashes($value);
 				}
 
 				$this->db->query("SELECT value FROM fm_cache WHERE name='{$name}'");
@@ -409,46 +384,21 @@
 			return $next_id;
 		}
 
-		function new_db( $db = '' )
+		function new_db( $db = null )
 		{
 			if (is_object($db))
 			{
-				$db = clone($db);
-			}
-			else if (is_object($GLOBALS['phpgw']->db))
-			{
-				$db = & $GLOBALS['phpgw']->db;
+				$db_config = $db->get_config();
+				$db2 = new Db2("pgsql:host={$db_config['db_host']};port={$db_config['db_port']};dbname={$db_config['db_name']}", $db_config['db_user'], $db_config['db_pass']);
+				$db2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+				$db2->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+				$db2->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+				return $db2;
 			}
 			else
 			{
-				$db = CreateObject('phpgwapi.db');
-				if (isset($GLOBALS['phpgw_info']['server']['db_name']) && $GLOBALS['phpgw_info']['server']['db_name'])
-				{
-					$db->Host		 = $GLOBALS['phpgw_info']['server']['db_host'];
-					$db->Port		 = $GLOBALS['phpgw_info']['server']['db_port'];
-					$db->Type		 = $GLOBALS['phpgw_info']['server']['db_type'];
-					$db->Database	 = $GLOBALS['phpgw_info']['server']['db_name'];
-					$db->User		 = $GLOBALS['phpgw_info']['server']['db_user'];
-					$db->Password	 = $GLOBALS['phpgw_info']['server']['db_pass'];
-				}
-				else
-				{
-					$ConfigDomain = phpgw::get_var('ConfigDomain', 'string', 'COOKIE');
-					if (!$ConfigDomain)
-					{
-						$ConfigDomain = phpgw::get_var('ConfigDomain', 'string', 'POST');
-					}
-					$phpgw_domain							 = $GLOBALS['phpgw_domain'];
-					$GLOBALS['phpgw_info']['user']['domain'] = $ConfigDomain;
-					$db->Host								 = $phpgw_domain[$ConfigDomain]['db_host'];
-					$db->Port								 = $phpgw_domain[$ConfigDomain]['db_port'];
-					$db->Database							 = $phpgw_domain[$ConfigDomain]['db_name'];
-					$db->User								 = $phpgw_domain[$ConfigDomain]['db_user'];
-					$db->Password							 = $phpgw_domain[$ConfigDomain]['db_pass'];
-				}
+				return Db::getInstance();
 			}
-
-			return $db;
 		}
 
 		function get_max_location_level()
@@ -467,7 +417,8 @@
 		 */
 		public function get_location_list( $required )
 		{
-			$access_list = $GLOBALS['phpgw']->acl->get_location_list('property', $required);
+			$acl = Acl::getInstance();
+			$access_list = $acl->get_location_list('property', $required);
 
 			$needle			 = ".location.1.";
 			$needle_len		 = strlen($needle);

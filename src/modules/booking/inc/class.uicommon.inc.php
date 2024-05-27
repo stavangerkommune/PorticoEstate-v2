@@ -30,7 +30,7 @@
 				$array_key = $options['prefix'] . $write_key . $options['suffix'];
 				if (isset($array[$array_key]))
 				{
-					$result[($options['preserve_prefix'] ? $options['prefix'] : '') . $write_key . ($options['preserve_suffix'] ? $options['suffix'] : '')] = phpgw::clean_value($array[$array_key]);
+					$result[($options['preserve_prefix'] ? $options['prefix'] : '') . $write_key . ($options['preserve_suffix'] ? $options['suffix'] : '')] = Sanitizer::clean_value($array[$array_key]);
 				}
 			}
 		}
@@ -87,7 +87,7 @@
 				$array_key = $options['prefix'] . $write_key . $options['suffix'];
 				if (isset($array[$array_key]))
 				{
-					$result[($options['preserve_prefix'] ? $options['prefix'] : '') . $write_key . ($options['preserve_suffix'] ? $options['suffix'] : '')] = phpgw::clean_value($array[$array_key], $_type);
+					$result[($options['preserve_prefix'] ? $options['prefix'] : '') . $write_key . ($options['preserve_suffix'] ? $options['suffix'] : '')] = Sanitizer::clean_value($array[$array_key], $_type);
 				}
 			}
 		}
@@ -818,7 +818,7 @@
 			}
 
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $js);
+			phpgwapi_js::getInstance()->add_code('', $js);
 		}
 
 		public function adddatetimepicker( $type = 'datetime' )
@@ -967,6 +967,6 @@ JS;
 			}
 
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $js);
+			phpgwapi_js::getInstance()->add_code('', $js);
 		}
 	}

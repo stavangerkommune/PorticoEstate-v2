@@ -108,7 +108,7 @@
 				phpgw::no_access();
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -210,7 +210,7 @@
 				'my_name'	 => 'run',
 				'statustext' => lang('Run Now'),
 				'text'		 => lang('Run Now'),
-				'action'	 => $GLOBALS['phpgw']->link
+				'action'	 => phpgw::link
 					(
 					'/index.php', array
 					(
@@ -225,7 +225,7 @@
 				'my_name'	 => 'schedule',
 				'statustext' => lang('Schedule'),
 				'text'		 => lang('Schedule'),
-				'action'	 => $GLOBALS['phpgw']->link
+				'action'	 => phpgw::link
 					(
 					'/index.php', array
 					(
@@ -240,7 +240,7 @@
 				'my_name'	 => 'edit',
 				'statustext' => lang('Edit'),
 				'text'		 => lang('Edit'),
-				'action'	 => $GLOBALS['phpgw']->link
+				'action'	 => phpgw::link
 					(
 					'/index.php', array
 					(
@@ -256,7 +256,7 @@
 				'statustext'	 => lang('Delete'),
 				'text'			 => lang('Delete'),
 				'confirm_msg'	 => lang('do you really want to delete this entry'),
-				'action'		 => $GLOBALS['phpgw']->link
+				'action'		 => phpgw::link
 					(
 					'/index.php', array
 					(
@@ -271,7 +271,7 @@
 			  'my_name' 			=> 'add',
 			  'statustext' 	=> lang('add'),
 			  'text'			=> lang('add'),
-			  'action'		=> $GLOBALS['phpgw']->link('/index.php',array
+			  'action'		=> phpgw::link('/index.php',array
 			  (
 			  'menuaction'	=> 'property.uiasync.edit'
 			  ))
@@ -287,19 +287,19 @@
 
 		public function query()
 		{
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
-			$export	 = phpgw::get_var('export', 'bool');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
+			$export	 = Sanitizer::get_var('export', 'bool');
 
 			$params = array(
-				'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'		 => $search['value'],
 				'order'		 => $columns[$order[0]['column']]['data'],
 				'sort'		 => $order[0]['dir'],
-				'allrows'	 => phpgw::get_var('length', 'int') == -1 || $export,
+				'allrows'	 => Sanitizer::get_var('length', 'int') == -1 || $export,
 			);
 
 			$result_objects	 = array();
@@ -342,8 +342,8 @@
 				phpgw::no_access();
 			}
 
-			$id		 = phpgw::get_var('id', 'int');
-			$values	 = phpgw::get_var('values');
+			$id		 = Sanitizer::get_var('id', 'int');
+			$values	 = Sanitizer::get_var('values');
 
 
 			if ($id)
@@ -405,7 +405,7 @@
 			{
 				phpgw::no_access();
 			}
-			$id				 = phpgw::get_var('id', 'int');
+			$id				 = Sanitizer::get_var('id', 'int');
 			$tabs			 = array();
 			$tabs['general'] = array('label' => lang('general'), 'link' => '#general');
 			$active_tab		 = 'general';
@@ -445,8 +445,8 @@
 			$data = array
 				(
 				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiasync.index')),
+				'form_action'			 => phpgw::link('/index.php', $link_data),
+				'done_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uiasync.index')),
 				'lang_id'				 => lang('method ID'),
 				'lang_name'				 => lang('Name'),
 				'lang_descr'			 => lang('Descr'),
@@ -481,10 +481,10 @@
 
 		function delete()
 		{
-			$id		 = phpgw::get_var('id', 'int');
-			$confirm = phpgw::get_var('confirm', 'bool', 'POST');
+			$id		 = Sanitizer::get_var('id', 'int');
+			$confirm = Sanitizer::get_var('confirm', 'bool', 'POST');
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$this->bo->delete($id);
 				return "id " . $id . " " . lang("has been deleted");
@@ -495,12 +495,12 @@
 				'menuaction' => 'property.uiasync.index'
 			);
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 				(
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiasync.delete',
+				'done_action'			 => phpgw::link('/index.php', $link_data),
+				'delete_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uiasync.delete',
 					'id'		 => $id)),
 				'lang_confirm_msg'		 => lang('do you really want to delete this entry'),
 				'lang_yes'				 => lang('yes'),
@@ -513,6 +513,6 @@
 			$function_msg	 = lang('delete async method');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 	}

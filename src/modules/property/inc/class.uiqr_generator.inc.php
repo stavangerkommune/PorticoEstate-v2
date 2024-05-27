@@ -77,10 +77,10 @@
 		{
 			phpgwapi_jquery::formvalidator_generate(array('file'));
 
-			$step		 = phpgw::get_var('step', 'int', 'REQUEST');
-			$sheet_id	 = phpgw::get_var('sheet_id', 'int', 'REQUEST');
+			$step		 = Sanitizer::get_var('step', 'int', 'REQUEST');
+			$sheet_id	 = Sanitizer::get_var('sheet_id', 'int', 'REQUEST');
 
-			$sheet_id = $sheet_id ? $sheet_id : phpgw::get_var('selected_sheet_id', 'int', 'REQUEST');
+			$sheet_id = $sheet_id ? $sheet_id : Sanitizer::get_var('selected_sheet_id', 'int', 'REQUEST');
 
 			if (!$step)
 			{
@@ -92,7 +92,7 @@
 				}
 			}
 
-			if ($start_line = phpgw::get_var('start_line', 'int', 'REQUEST'))
+			if ($start_line = Sanitizer::get_var('start_line', 'int', 'REQUEST'))
 			{
 				phpgwapi_cache::system_set('property', 'import_sheet_start_line', $start_line);
 			}
@@ -103,7 +103,7 @@
 			}
 
 
-			if ($columns = phpgw::get_var('columns'))
+			if ($columns = Sanitizer::get_var('columns'))
 			{
 				phpgwapi_cache::system_set('property', 'import_sheet_columns', $columns);
 			}

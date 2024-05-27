@@ -73,13 +73,13 @@
 		{
 			$receipt = array();
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
 
 			$msgbox_data = array();
-			if (phpgw::get_var('phpgw_return_as') != 'json' && $receipt	 = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
+			if (Sanitizer::get_var('phpgw_return_as') != 'json' && $receipt	 = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
 			{
 				phpgwapi_cache::session_clear('phpgwapi', 'phpgw_messages');
 				$msgbox_data = $GLOBALS['phpgw']->common->msgbox_data($receipt);
@@ -202,17 +202,17 @@
 
 			self::add_javascript('property', 'base', 'ajax_dimb_role_user.js');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('dimb_role_user', 'datatable_inline'));
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('data' => $data));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('dimb_role_user', 'datatable_inline'));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('data' => $data));
 		}
 
 		public function query()
 		{
-			$user_id	 = phpgw::get_var('user_id', 'int');
-			$dimb_id	 = phpgw::get_var('dimb_id', 'int');
-			$role_id	 = phpgw::get_var('role_id', 'int');
-			$query_start = phpgw::get_var('query_start');
-			$query_end	 = phpgw::get_var('query_end');
+			$user_id	 = Sanitizer::get_var('user_id', 'int');
+			$dimb_id	 = Sanitizer::get_var('dimb_id', 'int');
+			$role_id	 = Sanitizer::get_var('role_id', 'int');
+			$query_start = Sanitizer::get_var('query_start');
+			$query_end	 = Sanitizer::get_var('query_end');
 
 //			$this->bo->allrows = true;
 			$values = $this->bo->read(array('user_id'		 => $user_id, 'dimb_id'		 => $dimb_id,
@@ -245,7 +245,7 @@
 				(
 				'results'		 => $values,
 				'total_records'	 => count($values),
-				'draw'			 => phpgw::get_var('draw', 'int')
+				'draw'			 => Sanitizer::get_var('draw', 'int')
 			);
 
 
@@ -256,12 +256,12 @@
 
 		public function edit()
 		{
-			$user_id = phpgw::get_var('user_id', 'int');
-			$dimb_id = phpgw::get_var('dimb_id', 'int');
-			$role_id = phpgw::get_var('role_id', 'int');
-			$query	 = phpgw::get_var('query');
+			$user_id = Sanitizer::get_var('user_id', 'int');
+			$dimb_id = Sanitizer::get_var('dimb_id', 'int');
+			$role_id = Sanitizer::get_var('role_id', 'int');
+			$query	 = Sanitizer::get_var('query');
 
-			if ($values = phpgw::get_var('values'))
+			if ($values = Sanitizer::get_var('values'))
 			{
 				if (!$GLOBALS['phpgw']->acl->check('.admin', PHPGW_ACL_EDIT, 'property'))
 				{
@@ -287,7 +287,7 @@
 				}
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				if ($receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
 				{

@@ -76,7 +76,7 @@
 			$this->acl_delete	 = $this->acl->check($this->acl_location, PHPGW_ACL_DELETE, 'property');
 			$this->acl_manage	 = $this->acl->check($this->acl_location, 16, 'property');
 
-			$this->start		 = (int)phpgw::get_var('start', 'int');
+			$this->start		 = (int)Sanitizer::get_var('start', 'int');
 			$this->maxmatches	 = 15;
 			if (isset($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs']) &&
 				(int)$GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] > 0)
@@ -97,8 +97,8 @@
 		function login()
 		{
 
-			$username	 = phpgw::get_var('external_username', 'string');
-			$password	 = phpgw::get_var('external_password', 'raw');
+			$username	 = Sanitizer::get_var('external_username', 'string');
+			$password	 = Sanitizer::get_var('external_password', 'raw');
 
 			$token = phpgwapi_cache::session_get('property', 'klassifikasjonssystemet_token');
 
@@ -110,7 +110,7 @@
 
 
 			$data = array(
-				'form_action'				 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiklassifikasjonssystemet.login')),
+				'form_action'				 => phpgw::link('/index.php', array('menuaction' => 'property.uiklassifikasjonssystemet.login')),
 				'value_external_username'	 => $username,
 				'value_token'				 => $token,
 				'tabs'						 => self::_generate_tabs('login', $_disable					 = array(
@@ -182,8 +182,8 @@
 			}
 			$this->nextmatchs = CreateObject('phpgwapi.nextmatchs');
 
-			$action	 = phpgw::get_var('action', 'string');
-			$allrows = phpgw::get_var('allrows', 'bool');
+			$action	 = Sanitizer::get_var('action', 'string');
+			$allrows = Sanitizer::get_var('allrows', 'bool');
 
 
 			if ($action)
@@ -299,7 +299,7 @@
 			$data = array
 			(
 				'nm_data'					 => $this->nextmatchs->xslt_nm($nm),
-				'form_action'				 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiklassifikasjonssystemet.' . __FUNCTION__)),
+				'form_action'				 => phpgw::link('/index.php', array('menuaction' => 'property.uiklassifikasjonssystemet.' . __FUNCTION__)),
 				'value_external_username'	 => $username,
 				'value_token'				 => $token,
 				'tabs'						 => self::_generate_tabs(__FUNCTION__),
@@ -346,9 +346,9 @@
 			unset($part_of_town);
 			if ($_POST)
 			{
-				$selected_categories	 = (array)phpgw::get_var('selected_categories');
+				$selected_categories	 = (array)Sanitizer::get_var('selected_categories');
 				phpgwapi_cache::system_set('klassifikasjonssystemet', 'selected_categories', $selected_categories, true);
-				$selected_part_of_towns	 = (array)phpgw::get_var('selected_part_of_towns');
+				$selected_part_of_towns	 = (array)Sanitizer::get_var('selected_part_of_towns');
 				phpgwapi_cache::system_set('klassifikasjonssystemet', 'selected_part_of_towns', $selected_part_of_towns, true);
 			}
 			else
@@ -372,7 +372,7 @@
 
 			$helseforetak = $this->get_all_from_external($token, 'helseforetak', true);
 
-			$helseforetak_id = phpgw::get_var('helseforetak_id', 'int');
+			$helseforetak_id = Sanitizer::get_var('helseforetak_id', 'int');
 
 			$helseforetak_list = array();
 			if ($helseforetak)
@@ -384,7 +384,7 @@
 				);
 			}
 
-			$action = phpgw::get_var('action', 'string');
+			$action = Sanitizer::get_var('action', 'string');
 
 			set_time_limit(900);
 
@@ -418,7 +418,7 @@
 			}
 
 			$data = array(
-				'form_action'				 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiklassifikasjonssystemet.' . __FUNCTION__)),
+				'form_action'				 => phpgw::link('/index.php', array('menuaction' => 'property.uiklassifikasjonssystemet.' . __FUNCTION__)),
 				'value_external_username'	 => $username,
 				'value_token'				 => $token,
 				'tabs'						 => self::_generate_tabs(__FUNCTION__),

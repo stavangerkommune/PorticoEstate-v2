@@ -68,7 +68,7 @@
 			$this->so				 = CreateObject('property.solocation', $this->bocommon);
 			$this->custom			 = & $this->so->custom;
 
-			$this->lookup = phpgw::get_var('lookup', 'bool');
+			$this->lookup = Sanitizer::get_var('lookup', 'bool');
 
 			if ($session && !$this->lookup)
 			{
@@ -76,19 +76,19 @@
 				$this->use_session = true;
 			}
 
-			$start			 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query			 = phpgw::get_var('query');
-			$sort			 = phpgw::get_var('sort');
-			$order			 = phpgw::get_var('order');
-			$filter			 = phpgw::get_var('filter', 'int');
-			$cat_id			 = phpgw::get_var('cat_id');
-			$lookup_tenant	 = phpgw::get_var('lookup_tenant', 'bool');
-			$district_id	 = phpgw::get_var('district_id', 'int');
-			$part_of_town_id = phpgw::get_var('part_of_town_id', 'int');
-			$status			 = phpgw::get_var('status');
-			$type_id		 = phpgw::get_var('type_id', 'int');
-			$allrows		 = phpgw::get_var('allrows', 'bool');
-			$location_code	 = phpgw::get_var('location_code');
+			$start			 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query			 = Sanitizer::get_var('query');
+			$sort			 = Sanitizer::get_var('sort');
+			$order			 = Sanitizer::get_var('order');
+			$filter			 = Sanitizer::get_var('filter', 'int');
+			$cat_id			 = Sanitizer::get_var('cat_id');
+			$lookup_tenant	 = Sanitizer::get_var('lookup_tenant', 'bool');
+			$district_id	 = Sanitizer::get_var('district_id', 'int');
+			$part_of_town_id = Sanitizer::get_var('part_of_town_id', 'int');
+			$status			 = Sanitizer::get_var('status');
+			$type_id		 = Sanitizer::get_var('type_id', 'int');
+			$allrows		 = Sanitizer::get_var('allrows', 'bool');
+			$location_code	 = Sanitizer::get_var('location_code');
 
 			if ($location_code && !$type_id)
 			{
@@ -121,7 +121,7 @@
 			$data = phpgwapi_cache::session_get('location', 'session_data');
 
 			$query	 = isset($data['query']) ? $data['query'] : '';
-			$type_id = phpgw::get_var('type_id', 'int', 'REQUEST', 1);
+			$type_id = Sanitizer::get_var('type_id', 'int', 'REQUEST', 1);
 
 			$query_temp = explode('-', $query);
 
@@ -206,10 +206,10 @@
 			switch ($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('status_select'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('status_select'));
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('status_filter'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('status_filter'));
 					break;
 			}
 
@@ -228,10 +228,10 @@
 			switch ($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('owner_select'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('owner_select'));
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('owner_filter'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('owner_filter'));
 					break;
 			}
 
@@ -246,10 +246,10 @@
 			switch ($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('owner_select'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('owner_select'));
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('owner_filter'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('owner_filter'));
 					break;
 			}
 
@@ -274,22 +274,22 @@
 				switch ($data['lookup_type'])
 				{
 					case 'form':
-						$GLOBALS['phpgw']->xslttpl->add_file(array('location_form'), ExecMethod('phpgwapi.phpgw.common.get_tpl_dir', 'property'));
+						phpgwapi_xslttemplates::getInstance()->add_file(array('location_form'), ExecMethod('phpgwapi.phpgw.common.get_tpl_dir', 'property'));
 						break;
 					case 'view':
-						$GLOBALS['phpgw']->xslttpl->add_file(array('location_view'), ExecMethod('phpgwapi.phpgw.common.get_tpl_dir', 'property'));
+						phpgwapi_xslttemplates::getInstance()->add_file(array('location_view'), ExecMethod('phpgwapi.phpgw.common.get_tpl_dir', 'property'));
 						break;
 					case 'form2':
-						$GLOBALS['phpgw']->xslttpl->add_file(array('location_form2'), ExecMethod('phpgwapi.phpgw.common.get_tpl_dir', 'property'));
+						phpgwapi_xslttemplates::getInstance()->add_file(array('location_form2'), ExecMethod('phpgwapi.phpgw.common.get_tpl_dir', 'property'));
 						break;
 					case 'view2':
-						$GLOBALS['phpgw']->xslttpl->add_file(array('location_view2'), ExecMethod('phpgwapi.phpgw.common.get_tpl_dir', 'property'));
+						phpgwapi_xslttemplates::getInstance()->add_file(array('location_view2'), ExecMethod('phpgwapi.phpgw.common.get_tpl_dir', 'property'));
 						break;
 				}
 			}
 
-			$GLOBALS['phpgw']->js->validate_file('tinybox2', 'packed', 'phpgwapi', false, array('combine' => true ));
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/tinybox2/style.css');
+			phpgwapi_js::getInstance()->validate_file('tinybox2', 'packed', 'phpgwapi', false, array('combine' => true ));
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/tinybox2/style.css');
 
 			$filter_location	 = isset($data['filter_location']) ? $data['filter_location'] : '';
 			$block_query		 = !!$filter_location;
@@ -382,7 +382,7 @@
 					}
 
 					$data['link_data']['query_location']	 = implode('-', $temp_location);
-					$location['location'][$i]['query_link']	 = $GLOBALS['phpgw']->link('/index.php', $data['link_data']);
+					$location['location'][$i]['query_link']	 = phpgw::link('/index.php', $data['link_data']);
 					unset($temp_location);
 				}
 
@@ -651,7 +651,7 @@
 				}
 				$function_blank_entity_values .= "}\n";
 
-				$GLOBALS['phpgw']->js->add_code('', $function_blank_entity_values);
+				phpgwapi_js::getInstance()->add_code('', $function_blank_entity_values);
 			}
 
 			phpgwapi_cache::session_set('property', 'insert_record', $insert_record);
@@ -729,7 +729,7 @@ JS;
 				}
 			}
 
-			$GLOBALS['phpgw']->js->add_code('', $_lookup_functions);
+			phpgwapi_js::getInstance()->add_code('', $_lookup_functions);
 
 			if (isset($location) && is_array($location))
 			{
@@ -1021,7 +1021,7 @@ JS;
 
 		function delete()
 		{
-			$location_code = phpgw::get_var('location_code', 'string', 'GET');
+			$location_code = Sanitizer::get_var('location_code', 'string', 'GET');
 			$this->so->delete($location_code);
 		}
 
@@ -1109,8 +1109,8 @@ JS;
 		public function get_locations_by_name()
 		{
 			$data = array(
-				'level'			 => phpgw::get_var('level', 'int'),
-				'location_name'	 => phpgw::get_var('location_name')
+				'level'			 => Sanitizer::get_var('level', 'int'),
+				'location_name'	 => Sanitizer::get_var('location_name')
 			);
 
 			return $this->so->get_locations_by_name($data);
@@ -1153,8 +1153,8 @@ JS;
 
 		public function get_locations()
 		{
-			$location_code = phpgw::get_var('query');
-			$level = phpgw::get_var('level', 'int');
+			$location_code = Sanitizer::get_var('query');
+			$level = Sanitizer::get_var('level', 'int');
 
 			$values = $this->so->get_locations($location_code, $level);
 			if ($values && !$level)

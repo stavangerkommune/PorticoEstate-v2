@@ -49,30 +49,30 @@
 
 		function get_pending_action_ajax()
 		{
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$sort	 = phpgw::get_var('sort');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$sort	 = Sanitizer::get_var('sort');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 			$data = array(
-				'start'				 => phpgw::get_var('startIndex', 'int', 'REQUEST', 0),
-				'results'			 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'				 => Sanitizer::get_var('startIndex', 'int', 'REQUEST', 0),
+				'results'			 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'				 => $search['value'],
 				'order'				 => is_array($order) ? $columns[$order[0]['column']]['data'] : $order,
 				'sort'				 => is_array($order) ? $order[0]['dir'] : $sort,
 				'dir'				 => is_array($order) ? $order[0]['dir'] : $sort,
-				'cat_id'			 => phpgw::get_var('cat_id', 'int', 'REQUEST', 0),
-				'allrows'			 => phpgw::get_var('length', 'int') == -1 || $export,
-				'appname'			 => phpgw::get_var('appname', 'string', 'REQUEST', 'property'),
-				'location'			 => phpgw::get_var('location'),
-				'id'				 => phpgw::get_var('id'),
-				'responsible'		 => phpgw::get_var('responsible'),
-				'responsible_type'	 => phpgw::get_var('responsible_type'),
-				'action'			 => phpgw::get_var('action'),
-				'deadline'			 => phpgw::get_var('deadline', 'int'),
-				'created_by'		 => phpgw::get_var('created_by', 'int'),
-				'closed'			 => phpgw::get_var('closed', 'bool'),
+				'cat_id'			 => Sanitizer::get_var('cat_id', 'int', 'REQUEST', 0),
+				'allrows'			 => Sanitizer::get_var('length', 'int') == -1 || $export,
+				'appname'			 => Sanitizer::get_var('appname', 'string', 'REQUEST', 'property'),
+				'location'			 => Sanitizer::get_var('location'),
+				'id'				 => Sanitizer::get_var('id'),
+				'responsible'		 => Sanitizer::get_var('responsible'),
+				'responsible_type'	 => Sanitizer::get_var('responsible_type'),
+				'action'			 => Sanitizer::get_var('action'),
+				'deadline'			 => Sanitizer::get_var('deadline', 'int'),
+				'created_by'		 => Sanitizer::get_var('created_by', 'int'),
+				'closed'			 => Sanitizer::get_var('closed', 'bool'),
 			);
 
 			$values			 = $this->so->get_pending_action($data);
@@ -86,7 +86,7 @@
 				$entry['created_by_name']	 = $entry['created_by'] ? $GLOBALS['phpgw']->accounts->get($entry['created_by'])->__toString() : '';
 				$entry['requested_date']	 = $GLOBALS['phpgw']->common->show_date($entry['action_requested']);//, $dateFormat);
 				$entry['link']				 = $entry['url'];
-				$entry['dellink']			 = $this->account == $entry['created_by'] || $this->account == $entry['responsible'] ? $GLOBALS['phpgw']->link(
+				$entry['dellink']			 = $this->account == $entry['created_by'] || $this->account == $entry['responsible'] ? phpgw::link(
 						'/index.php', array(
 						'menuaction'	 => 'property.bopending_action.cancel_pending_action',
 						'item_id'		 => $entry['item_id'],
@@ -100,7 +100,7 @@
 					"totalRecords"			 => $total_records,
 					"Result"				 => $values,
 					'recordsReturned'		 => count($values),
-					'pageSize'				 => phpgw::get_var('length', 'int'),
+					'pageSize'				 => Sanitizer::get_var('length', 'int'),
 					'startIndex'			 => $this->start,
 					'sortKey'				 => $this->order,
 					'sortDir'				 => $this->sort,
@@ -110,8 +110,8 @@
 
 		function cancel_pending_action()
 		{
-			$item_id	 = phpgw::get_var('item_id', 'int');
-			$location_id = phpgw::get_var('location_id', 'int');
+			$item_id	 = Sanitizer::get_var('item_id', 'int');
+			$location_id = Sanitizer::get_var('location_id', 'int');
 			$this->so->cancel_pending_action($location_id, $item_id);
 
 			$request_uri = phpgwapi_cache::session_get('property', 'return_to_self');

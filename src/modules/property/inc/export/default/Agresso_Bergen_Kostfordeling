@@ -321,7 +321,7 @@
 				$GLOBALS['phpgw_info']['flags']['nofooter']		 = true;
 				$GLOBALS['phpgw_info']['flags']['xslt_app']		 = false;
 				$GLOBALS['phpgw_info']['flags']['noframework']	 = true;
-				echo '&nbsp<a href="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiXport.export')) . '">' . lang('Back') . '</a></br>';
+				echo '&nbsp<a href="' . phpgw::link('/index.php', array('menuaction' => 'property.uiXport.export')) . '">' . lang('Back') . '</a></br>';
 				$GLOBALS['phpgw']->common->phpgw_exit();
 			}
 

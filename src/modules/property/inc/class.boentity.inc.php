@@ -82,32 +82,32 @@
 
 			if (!$type)
 			{
-				$type = phpgw::get_var('type');
+				$type = Sanitizer::get_var('type');
 			}
 			if (!$entity_id)
 			{
-				$entity_id = phpgw::get_var('entity_id', 'int');
+				$entity_id = Sanitizer::get_var('entity_id', 'int');
 			}
 			if (!$cat_id)
 			{
-				$cat_id = phpgw::get_var('cat_id', 'int');
+				$cat_id = Sanitizer::get_var('cat_id', 'int');
 			}
-			$start			 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query			 = phpgw::get_var('query');
-			$sort			 = phpgw::get_var('sort');
-			$order			 = phpgw::get_var('order');
-			$filter			 = phpgw::get_var('filter', 'int');
-			$district_id	 = phpgw::get_var('district_id', 'int');
-			$part_of_town_id = phpgw::get_var('part_of_town_id', 'int');
-			$status			 = phpgw::get_var('status');
-			$start_date		 = phpgw::get_var('start_date');
-			$end_date		 = phpgw::get_var('end_date');
-			$allrows		 = phpgw::get_var('allrows', 'bool');
-			$criteria_id	 = phpgw::get_var('criteria_id');
-			$p_num			 = phpgw::get_var('p_num');
-			$org_unit_id	 = phpgw::get_var('org_unit_id', 'int');
+			$start			 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query			 = Sanitizer::get_var('query');
+			$sort			 = Sanitizer::get_var('sort');
+			$order			 = Sanitizer::get_var('order');
+			$filter			 = Sanitizer::get_var('filter', 'int');
+			$district_id	 = Sanitizer::get_var('district_id', 'int');
+			$part_of_town_id = Sanitizer::get_var('part_of_town_id', 'int');
+			$status			 = Sanitizer::get_var('status');
+			$start_date		 = Sanitizer::get_var('start_date');
+			$end_date		 = Sanitizer::get_var('end_date');
+			$allrows		 = Sanitizer::get_var('allrows', 'bool');
+			$criteria_id	 = Sanitizer::get_var('criteria_id');
+			$p_num			 = Sanitizer::get_var('p_num');
+			$org_unit_id	 = Sanitizer::get_var('org_unit_id', 'int');
 
-			if ($location_id = phpgw::get_var('location_id', 'int'))
+			if ($location_id = Sanitizer::get_var('location_id', 'int'))
 			{
 				$location_info	 = $GLOBALS['phpgw']->locations->get_name($location_id);
 				$location_arr	 = explode('.', $location_info['location']);
@@ -118,7 +118,7 @@
 
 			$this->criteria_id = isset($criteria_id) && $criteria_id ? $criteria_id : '';
 
-			$location_code	 = phpgw::get_var('location_code');
+			$location_code	 = Sanitizer::get_var('location_code');
 			$this->so		 = CreateObject('property.soentity', $entity_id, $cat_id);
 			$this->type_app	 = $this->so->get_type_app();
 
@@ -246,10 +246,10 @@
 		 */
 		function set_geolocation()
 		{
-			$location_id = phpgw::get_var('location_id', 'int');
-			$component_id = phpgw::get_var('component_id', 'int');
-			$latitude = phpgw::get_var('latitude', 'float');
-			$longitude = phpgw::get_var('longitude', 'float');
+			$location_id = Sanitizer::get_var('location_id', 'int');
+			$component_id = Sanitizer::get_var('component_id', 'int');
+			$latitude = Sanitizer::get_var('latitude', 'float');
+			$longitude = Sanitizer::get_var('longitude', 'float');
 
 			$ok = false;
 			
@@ -338,10 +338,10 @@
 			switch ($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('cat_select'), $this->xsl_rootdir);
+					phpgwapi_xslttemplates::getInstance()->add_file(array('cat_select'), $this->xsl_rootdir);
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('cat_filter'), $this->xsl_rootdir);
+					phpgwapi_xslttemplates::getInstance()->add_file(array('cat_filter'), $this->xsl_rootdir);
 					break;
 			}
 
@@ -356,10 +356,10 @@
 			switch ($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('status_select'), $this->xsl_rootdir);
+					phpgwapi_xslttemplates::getInstance()->add_file(array('status_select'), $this->xsl_rootdir);
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('status_filter'), $this->xsl_rootdir);
+					phpgwapi_xslttemplates::getInstance()->add_file(array('status_filter'), $this->xsl_rootdir);
 					break;
 			}
 
@@ -446,7 +446,7 @@
 				{
 					if ($attrib['datatype'] == 'LB' || $attrib['datatype'] == 'R')
 					{
-						if ($_attrib_filter_value = phpgw::get_var($attrib['column_name'], 'int'))
+						if ($_attrib_filter_value = Sanitizer::get_var($attrib['column_name'], 'int'))
 						{
 							if ($category['is_eav'])
 							{
@@ -461,7 +461,7 @@
 					}
 					else if ($attrib['datatype'] == 'CH')
 					{
-						if ($_attrib_filter_value = phpgw::get_var($attrib['column_name'], 'int'))
+						if ($_attrib_filter_value = Sanitizer::get_var($attrib['column_name'], 'int'))
 						{
 							if ($category['is_eav'])
 							{
@@ -492,7 +492,7 @@ JS;
 							}
 JS;
 
-							$GLOBALS['phpgw']->js->add_code('', $js);
+							phpgwapi_js::getInstance()->add_code('', $js);
 						}
 					}
 				}
@@ -995,18 +995,18 @@ JS;
 
 		public function add_control()
 		{
-			$entity_id		 = phpgw::get_var('entity_id', 'int');
-			$cat_id			 = phpgw::get_var('cat_id', 'int');
-			$id				 = phpgw::get_var('id', 'int');
-			$type			 = phpgw::get_var('type', 'string', 'REQUEST', 'entity');
-			$control_id		 = phpgw::get_var('control_id', 'int');
-			$assigned_to	 = phpgw::get_var('control_responsible', 'int');
-			$start_date		 = phpgw::get_var('control_start_date', 'string');
-			$repeat_type	 = phpgw::get_var('repeat_type', 'int');
-			$repeat_interval = phpgw::get_var('repeat_interval', 'int');
+			$entity_id		 = Sanitizer::get_var('entity_id', 'int');
+			$cat_id			 = Sanitizer::get_var('cat_id', 'int');
+			$id				 = Sanitizer::get_var('id', 'int');
+			$type			 = Sanitizer::get_var('type', 'string', 'REQUEST', 'entity');
+			$control_id		 = Sanitizer::get_var('control_id', 'int');
+			$assigned_to	 = Sanitizer::get_var('control_responsible', 'int');
+			$start_date		 = Sanitizer::get_var('control_start_date', 'string');
+			$repeat_type	 = Sanitizer::get_var('repeat_type', 'int');
+			$repeat_interval = Sanitizer::get_var('repeat_interval', 'int');
 			$repeat_interval = $repeat_interval ? $repeat_interval : 1;
-			$controle_time	 = phpgw::get_var('controle_time', 'float');
-			$service_time	 = phpgw::get_var('service_time', 'float');
+			$controle_time	 = Sanitizer::get_var('controle_time', 'float');
+			$service_time	 = Sanitizer::get_var('service_time', 'float');
 
 			$component_arr = $this->so->read_single(array('entity_id'	 => $entity_id, 'cat_id'	 => $cat_id,
 				'id'		 => $id));
@@ -1093,7 +1093,7 @@ JS;
 			$type			 = 'component';
 			$comment		 = '';
 			$assigned_to	 = $data['assigned_to'];
-			$billable_hours	 = phpgw::get_var('billable_hours', 'float');
+			$billable_hours	 = Sanitizer::get_var('billable_hours', 'float');
 
 			$deadline_date_ts	 = $data['start_date'];
 			$planned_date_ts	 = $deadline_date_ts;
@@ -1128,7 +1128,7 @@ JS;
 
 		function update_control_serie()
 		{
-			if ($start_date = phpgw::get_var('control_start_date', 'string'))
+			if ($start_date = Sanitizer::get_var('control_start_date', 'string'))
 			{
 				phpgw::import_class('phpgwapi.datetime');
 				$start_date = phpgwapi_datetime::date_to_timestamp($start_date);
@@ -1138,14 +1138,14 @@ JS;
 
 			$values	 = array
 				(
-				'ids'				 => phpgw::get_var('ids', 'int'),
-				'action'			 => phpgw::get_var('action', 'string'),
-				'assigned_to'		 => phpgw::get_var('control_responsible', 'int'),
+				'ids'				 => Sanitizer::get_var('ids', 'int'),
+				'action'			 => Sanitizer::get_var('action', 'string'),
+				'assigned_to'		 => Sanitizer::get_var('control_responsible', 'int'),
 				'start_date'		 => $start_date,
-//				'repeat_type'		=> phpgw::get_var('repeat_type', 'int'),
-				'repeat_interval'	 => phpgw::get_var('repeat_interval', 'int'),
-				'controle_time'		 => phpgw::get_var('controle_time', 'float'),
-				'service_time'		 => phpgw::get_var('service_time', 'float')
+//				'repeat_type'		=> Sanitizer::get_var('repeat_type', 'int'),
+				'repeat_interval'	 => Sanitizer::get_var('repeat_interval', 'int'),
+				'controle_time'		 => Sanitizer::get_var('controle_time', 'float'),
+				'service_time'		 => Sanitizer::get_var('service_time', 'float')
 			);
 			$ret	 = $so_control->update_control_serie($values);
 
@@ -1197,7 +1197,7 @@ JS;
 				$entity_id	 = $type_arr[2];
 				$cat_id		 = $type_arr[3];
 
-				$entry['link'] = $GLOBALS['phpgw']->link('/index.php', array(
+				$entry['link'] = phpgw::link('/index.php', array(
 					'menuaction' => 'property.uientity.view',
 					'type'	 => $type,
 					'entity_id'	 => $entity_id,
@@ -1208,10 +1208,10 @@ JS;
 				$entry['register_name']  = $loc_arr['descr'];
 			}
 
-			$start			 = phpgw::get_var('startIndex', 'REQUEST', 'int', 0);
+			$start			 = Sanitizer::get_var('startIndex', 'REQUEST', 'int', 0);
 			$total_records	 = count($values);
 
-			$num_rows = phpgw::get_var('length', 'int', 'REQUEST', 0);
+			$num_rows = Sanitizer::get_var('length', 'int', 'REQUEST', 0);
 
 			if ($num_rows == -1)
 			{

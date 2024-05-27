@@ -28,6 +28,9 @@
 	 */
 
 	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\services\Config;
+	use App\modules\phpgwapi\controllers\Locations;
+	use App\modules\phpgwapi\services\Cache;
 	use App\modules\phpgwapi\security\Acl;
 	use App\Database\Db;
 
@@ -45,12 +48,17 @@
 		var $soadmin_location, $socommon, $uicols,$cols_return;
 		var $userSettings;
 		var $acl;
+		var $locations;
+		var $config;
+
 
 		function __construct( $bocommon = '' )
 		{
-
 			$this->userSettings = Settings::getInstance()->get('user');
 			$this->acl = Acl::getInstance();
+			$this->locations = new Locations();
+			$this->config = new Config('property');
+			$this->config->read();
 			$this->account	= isset($this->userSettings['account_id']) ? (int)$this->userSettings['account_id'] : -1;
 
 			$this->soadmin_location	 = CreateObject('property.soadmin_location');
@@ -108,7 +116,7 @@
 				{
 					if ($entry['is_eav'])
 					{
-						$location_id = $GLOBALS['phpgw']->locations->get_id($app, ".{$type}.{$entry['entity_id']}.{$entry['cat_id']}");
+						$location_id = $this->locations->get_id($app, ".{$type}.{$entry['entity_id']}.{$entry['cat_id']}");
 						$this->db->query("SELECT id as bim_type FROM fm_bim_type WHERE location_id = {$location_id}", __LINE__, __FILE__);
 						$this->db->next_record();
 						$bim_type	 = (int)$this->db->f('bim_type');
@@ -125,7 +133,7 @@
 					{
 						$entity['related'][] = array
 							(
-							'entity_link'	 => $GLOBALS['phpgw']->link('/index.php', array
+							'entity_link'	 => phpgw::link('/index.php', array
 								(
 								'menuaction'	 => 'property.uientity.index',
 								'entity_id'		 => $entry['entity_id'],
@@ -149,7 +157,7 @@
 				$hits				 = $this->db->f('hits');
 				$entity['related'][] = array
 					(
-					'entity_link'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uitts.index',
+					'entity_link'	 => phpgw::link('/index.php', array('menuaction' => 'property.uitts.index',
 						'query'		 => $location_code, 'status_id'	 => 'all')),
 					'name'			 => lang('Helpdesk') . " [{$hits}]",
 					'descr'			 => lang('Helpdesk')
@@ -164,7 +172,7 @@
 				$hits				 = $this->db->f('hits');
 				$entity['related'][] = array
 					(
-					'entity_link'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uirequest.index',
+					'entity_link'	 => phpgw::link('/index.php', array('menuaction' => 'property.uirequest.index',
 						'query'		 => $location_code, 'status_id'	 => 'all')),
 					'name'			 => lang('request') . " [{$hits}]",
 					'descr'			 => lang('request')
@@ -179,7 +187,7 @@
 				$hits				 = $this->db->f('hits');
 				$entity['related'][] = array
 					(
-					'entity_link'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uiproject.index',
+					'entity_link'	 => phpgw::link('/index.php', array('menuaction'	 => 'property.uiproject.index',
 						'query'			 => $location_code,
 						'criteria_id'	 => 4, //criteria 4 is for location_code
 						'status_id'		 => 'all',
@@ -198,7 +206,7 @@
 				$hits			 = $this->db->f('hits');
 				$entity['gab'][] = array
 					(
-					'entity_link'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uigab.index',
+					'entity_link'	 => phpgw::link('/index.php', array('menuaction'	 => 'property.uigab.index',
 						'location_code'	 => $location_code)),
 					'name'			 => lang('gabnr') . " [{$hits}]",
 					'descr'			 => lang('gab info')
@@ -217,7 +225,7 @@
 			{
 				$entity['related'][] = array
 					(
-					'entity_link'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uis_agreement.index',
+					'entity_link'	 => phpgw::link('/index.php', array('menuaction'	 => 'property.uis_agreement.index',
 						'location_code'	 => $location_code)),
 					'name'			 => lang('service agreement') . " [{$hits}]",
 					'descr'			 => lang('service agreement')
@@ -233,7 +241,7 @@
 			{
 				return;
 			}
-			$location_id = $GLOBALS['phpgw']->locations->get_id('property', ".location.{$type_id}");
+			$location_id = $this->locations->get_id('property', ".location.{$type_id}");
 
 			$sql = "SELECT phpgw_cust_choice.id, phpgw_cust_choice.value FROM phpgw_cust_attribute"
 				. " $this->join phpgw_cust_choice ON"
@@ -375,7 +383,7 @@
 
 			if ($location_id && !$type_id)
 			{
-				$location_info = $GLOBALS['phpgw']->locations->get_name($location_id);
+				$location_info = $this->locations->get_name($location_id);
 
 				if (substr($location_info['location'], 1, 8) == 'location')
 				{
@@ -413,7 +421,7 @@
 			$sql = $this->socommon->fm_cache('sql_' . $type_id . '_lt' . $lookup_tenant . '_l' . $lookup . '_f' . !!$filter_role_on_contact);
 			if (empty($location_id))
 			{
-				$location_id = $GLOBALS['phpgw']->locations->get_id('property', ".location.{$type_id}");
+				$location_id = $this->locations->get_id('property', ".location.{$type_id}");
 			}
 
 //			$choice_table = 'phpgw_cust_choice';
@@ -911,8 +919,7 @@
 			}
 
 
-			$GLOBALS['phpgw']->config->read();
-			if (isset($GLOBALS['phpgw']->config->config_data['acl_at_location']) && $GLOBALS['phpgw']->config->config_data['acl_at_location'])
+			if (isset($this->config->config_data['acl_at_location']) && $this->config->config_data['acl_at_location'])
 			{
 				$access_location = $this->bocommon->get_location_list(ACL_READ);
 				$filtermethod	 = " WHERE fm_location{$type_id}.loc1 in ('" . implode("','", $access_location) . "')";
@@ -1197,7 +1204,7 @@
 //			$this->db->next_record();
 //			$this->total_records = $this->db->f('cnt');
 
-			$cache_info = phpgwapi_cache::session_get('property', "location{$type_id}_listing_metadata");
+			$cache_info = Cache::session_get('property', "location{$type_id}_listing_metadata");
 
 			if (!isset($cache_info['sql_hash']) || $cache_info['sql_hash'] != md5($sql))
 			{
@@ -1214,7 +1221,7 @@
 					'total_records'	 => $this->db->f('cnt'),
 					'sql_hash'		 => md5($sql)
 				);
-				phpgwapi_cache::session_set('property', "location{$type_id}_listing_metadata", $cache_info);
+				Cache::session_set('property', "location{$type_id}_listing_metadata", $cache_info);
 			}
 
 			$this->total_records = $cache_info['total_records'];
@@ -1498,7 +1505,7 @@
 			 */
 			if ($location_id)
 			{
-				$location_info = $GLOBALS['phpgw']->locations->get_name($location_id);
+				$location_info = $this->locations->get_name($location_id);
 
 				if (substr($location_info['location'], 1, 8) == 'location')
 				{
@@ -1709,14 +1716,13 @@
 			$this->db->transaction_commit();
 			$receipt['message'][] = array('msg' => lang('Location %1 has been saved', $location['location_code']));
 
-			$GLOBALS['phpgw']->config->read();
 			// Keep it at level 1 for the moment
-			if (isset($GLOBALS['phpgw']->config->config_data['acl_at_location']) && $GLOBALS['phpgw']->config->config_data['acl_at_location'] && $type_id == 1)
+			if (isset($this->config->config_data['acl_at_location']) && $this->config->config_data['acl_at_location'] && $type_id == 1)
 			{
 				$acl_location = ".location.{$type_id}." . str_replace("-", '.', $location['location_code']);
-				if (!$GLOBALS['phpgw']->locations->get_id('property', $acl_location))
+				if (!$this->locations->get_id('property', $acl_location))
 				{
-					$GLOBALS['phpgw']->locations->add($acl_location, $location["loc{$type_id}_name"], 'property');
+					$this->locations->add($acl_location, $location["loc{$type_id}_name"], 'property');
 				}
 			}
 
@@ -1765,17 +1771,16 @@
 			$this->db->next_record();
 
 			$metadata = $this->db->metadata('fm_location' . $type_id);
-			if (isset($this->db->adodb))
+			
+			$i = 0;
+			foreach ($metadata as $key => $val)
 			{
-				$i = 0;
-				foreach ($metadata as $key => $val)
-				{
-					$metadata_temp[$i]['name'] = $key;
-					$i++;
-				}
-				$metadata = $metadata_temp;
-				unset($metadata_temp);
+				$metadata_temp[$i]['name'] = $key;
+				$i++;
 			}
+			$metadata = $metadata_temp;
+			unset($metadata_temp);
+	
 
 			for ($i = 0; $i < count($metadata); $i++)
 			{
@@ -1978,8 +1983,7 @@
 			unset($location);
 
 			// Check ACL-location - currently only level 1
-			$GLOBALS['phpgw']->config->read();
-			if (isset($GLOBALS['phpgw']->config->config_data['acl_at_location']) && $GLOBALS['phpgw']->config->config_data['acl_at_location'])
+			if (isset($this->config->config_data['acl_at_location']) && $this->config->config_data['acl_at_location'])
 			{
 				$level			 = 1;
 				$acl_locations	 = array();
@@ -1995,9 +1999,9 @@
 
 				foreach ($acl_locations as $acl_location)
 				{
-					if (!$GLOBALS['phpgw']->locations->get_id('property', $acl_location['id']))
+					if (!$this->locations->get_id('property', $acl_location['id']))
 					{
-						$GLOBALS['phpgw']->locations->add($acl_location['id'], $acl_location['name'], 'property');
+						$this->locations->add($acl_location['id'], $acl_location['name'], 'property');
 						$receipt['message'][] = array('msg' => lang('%1 added as ACL-location %2', $acl_location['name'], $acl_location['id']));
 					}
 				}
@@ -2266,7 +2270,7 @@
 			$table = "fm_location{$type_id}_history";
 
 			$table_category		 = "fm_location{$type_id}_category";
-			$location_id		 = $GLOBALS['phpgw']->locations->get_id('property', ".location.{$type_id}");
+			$location_id		 = $this->locations->get_id('property', ".location.{$type_id}");
 			$choice_table		 = 'phpgw_cust_choice';
 			$attribute_table	 = 'phpgw_cust_attribute';
 			$attribute_filter	 = "location_id = {$location_id}";
@@ -2412,7 +2416,7 @@
 				return $values;
 			}
 
-			$location_id = $GLOBALS['phpgw']->locations->get_id('property', ".location.{$child_level}");
+			$location_id = $this->locations->get_id('property', ".location.{$child_level}");
 
 			$this->db->query("SELECT $id_field AS id, {$field_name} AS name, fm_location{$child_level}.id AS item_id, location_code"
 			. " FROM fm_location{$child_level} {$join_method} WHERE location_code {$this->like} '{$location_code}%' {$filtermethod} ORDER BY {$field_name} ASC", __LINE__, __FILE__);
@@ -2890,7 +2894,7 @@
 				return;
 			}
 
-			$location_id = $GLOBALS['phpgw']->locations->get_id('property', ".location.{$type_id}");
+			$location_id = $this->locations->get_id('property', ".location.{$type_id}");
 
 			$this->db->query("SELECT * FROM phpgw_cust_attribute WHERE location_id = {$location_id} AND datatype IN ('I', 'V')");
 

@@ -73,18 +73,18 @@
 				$this->use_session = true;
 			}
 
-			$start			 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query			 = phpgw::get_var('query');
-			$sort			 = phpgw::get_var('sort');
-			$order			 = phpgw::get_var('order');
-			$filter			 = phpgw::get_var('filter', 'int');
-			$p_num			 = phpgw::get_var('p_num', 'int');
-			$cat_id			 = phpgw::get_var('cat_id', 'int');
-			$status_id		 = phpgw::get_var('status_id');
-			$entity_id		 = phpgw::get_var('entity_id', 'int');
-			$doc_type		 = phpgw::get_var('doc_type');
-			$query_location	 = phpgw::get_var('query_location');
-			$allrows		 = phpgw::get_var('allrows', 'bool');
+			$start			 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query			 = Sanitizer::get_var('query');
+			$sort			 = Sanitizer::get_var('sort');
+			$order			 = Sanitizer::get_var('order');
+			$filter			 = Sanitizer::get_var('filter', 'int');
+			$p_num			 = Sanitizer::get_var('p_num', 'int');
+			$cat_id			 = Sanitizer::get_var('cat_id', 'int');
+			$status_id		 = Sanitizer::get_var('status_id');
+			$entity_id		 = Sanitizer::get_var('entity_id', 'int');
+			$doc_type		 = Sanitizer::get_var('doc_type');
+			$query_location	 = Sanitizer::get_var('query_location');
+			$allrows		 = Sanitizer::get_var('allrows', 'bool');
 
 			$this->start			 = $start ? $start : 0;
 			$this->query			 = isset($query) ? $query : '';
@@ -130,10 +130,10 @@
 			switch ($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('status_select'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('status_select'));
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('status_filter'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('status_filter'));
 					break;
 			}
 

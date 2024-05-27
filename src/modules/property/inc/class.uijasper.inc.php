@@ -130,7 +130,7 @@
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
-			$jasper_id	 = phpgw::get_var('jasper_id', 'int');
+			$jasper_id	 = Sanitizer::get_var('jasper_id', 'int');
 			$values		 = $this->bo->read_single($jasper_id);
 
 			$bofiles = CreateObject('property.bofiles');
@@ -164,7 +164,7 @@
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -292,7 +292,7 @@
 					'my_name'	 => 'edit',
 					'statustext' => lang('edit the jasper entry'),
 					'text'		 => lang('edit'),
-					'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'	 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uijasper.edit'
 					)),
@@ -306,7 +306,7 @@
 					(
 					'my_name'	 => 'edit',
 					'text'		 => lang('open JasperReport %1 in new window', $report['title']),
-					'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'	 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uijasper.view',
 					)),
@@ -317,7 +317,7 @@
 					(
 					'my_name'	 => 'edit',
 					'text'		 => lang('download JasperReport %1 definition', $report['title']),
-					'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'	 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uijasper.get_file',
 					)),
@@ -334,7 +334,7 @@
 					'statustext'	 => lang('delete the jasper entry'),
 					'text'			 => lang('delete'),
 					'confirm_msg'	 => lang('do you really want to delete this entry'),
-					'action'		 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'		 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uijasper.delete'
 					)),
@@ -346,7 +346,7 @@
 			  (
 			  'my_name' 		=> 'add',
 			  'text' 			=> lang('add'),
-			  'action'		=> $GLOBALS['phpgw']->link('/index.php',array
+			  'action'		=> phpgw::link('/index.php',array
 			  (
 			  'menuaction'	=> 'property.uijasper.edit',
 			  'app'			=> $this->app
@@ -359,19 +359,19 @@
 
 		public function query()
 		{
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
-			$export	 = phpgw::get_var('export', 'bool');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
+			$export	 = Sanitizer::get_var('export', 'bool');
 
 			$params = array(
-				'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'		 => $search['value'],
 				'order'		 => $columns[$order[0]['column']]['data'],
 				'sort'		 => $order[0]['dir'],
-				'allrows'	 => phpgw::get_var('length', 'int') == -1 || $export,
+				'allrows'	 => Sanitizer::get_var('length', 'int') == -1 || $export,
 				'app'		 => $this->app
 			);
 
@@ -394,8 +394,8 @@
 
 		public function save()
 		{
-			$id		 = phpgw::get_var('id', 'int');
-			$values	 = phpgw::get_var('values');
+			$id		 = Sanitizer::get_var('id', 'int');
+			$values	 = Sanitizer::get_var('values');
 
 			if ((isset($values['save']) && $values['save']) || (isset($values['apply']) && $values['apply']))
 			{
@@ -531,8 +531,8 @@
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
 
-			$id		 = phpgw::get_var('id', 'int');
-			$values	 = phpgw::get_var('values');
+			$id		 = Sanitizer::get_var('id', 'int');
+			$values	 = Sanitizer::get_var('values');
 
 			$tabs			 = array();
 			$tabs['general'] = array('label' => lang('general'), 'link' => '#general');
@@ -643,8 +643,8 @@
 				(
 				'datatable_def'		 => $datatable_def,
 				'msgbox_data'		 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'		 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'form_cancel'		 => $GLOBALS['phpgw']->link('/index.php', $link_data_cancel),
+				'form_action'		 => phpgw::link('/index.php', $link_data),
+				'form_cancel'		 => phpgw::link('/index.php', $link_data_cancel),
 				'value_app'			 => $this->app,
 				'value_id'			 => $id,
 				'value_file_name'	 => $values['file_name'],
@@ -676,10 +676,10 @@
 
 		function view()
 		{
-			$jasper_id			 = phpgw::get_var('jasper_id', 'int');
+			$jasper_id			 = Sanitizer::get_var('jasper_id', 'int');
 			$values				 = $this->bo->read_single($jasper_id);
-			$values_attribute	 = phpgw::get_var('values_attribute');
-			$sel_format			 = phpgw::get_var('sel_format');
+			$values_attribute	 = Sanitizer::get_var('values_attribute');
+			$sel_format			 = Sanitizer::get_var('sel_format');
 			$first_run			 = true;
 
 			if ($values_attribute)
@@ -700,7 +700,7 @@
 				foreach ($values['input'] as &$input)
 				{
 					$input['name']	 = $input['input_name'];
-					if (!($input['value']	 = phpgw::get_var(strtolower($input['input_name']))) || !$input['is_id'])
+					if (!($input['value']	 = Sanitizer::get_var(strtolower($input['input_name']))) || !$input['is_id'])
 					{
 						$user_input = true;
 					}
@@ -719,7 +719,7 @@
 					{
 						$user_input		 = true;
 						$input['name']	 = $input['input_name'];
-						if (($input['value']	 = phpgw::get_var(strtolower($input['input_name']))))
+						if (($input['value']	 = Sanitizer::get_var(strtolower($input['input_name']))))
 						{
 							$user_input = false;
 						}
@@ -832,15 +832,15 @@
 				$data = array
 					(
 					'msgbox_data'		 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-					'form_action'		 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+					'form_action'		 => phpgw::link('/index.php', $link_data),
 					'attributes'		 => $values['attributes'],
 					'lookup_functions'	 => isset($values['lookup_functions']) ? $values['lookup_functions'] : '',
 					'formats'			 => $formats
 				);
 
 				$GLOBALS['phpgw_info']['flags']['app_header'] = $function_msg;
-				$GLOBALS['phpgw']->xslttpl->add_file(array('jasper'));
-				$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('user_input' => $data));
+				phpgwapi_xslttemplates::getInstance()->add_file(array('jasper'));
+				phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('user_input' => $data));
 			}
 		}
 
@@ -851,14 +851,14 @@
 				return lang('not allowed');
 			}
 
-			$id		 = phpgw::get_var('id'); // string
+			$id		 = Sanitizer::get_var('id'); // string
 			$values	 = $this->bo->read_single($id);
 			if (!$this->bocommon->check_perms2($values['user_id'], $this->grants, PHPGW_ACL_DELETE))
 			{
 				return lang('not allowed');
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$bofiles	 = CreateObject('property.bofiles');
 				if ($old_file	 = $bofiles->vfs->ls(array(

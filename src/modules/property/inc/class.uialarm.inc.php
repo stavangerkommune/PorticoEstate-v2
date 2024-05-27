@@ -99,21 +99,21 @@
 
 		public function query()
 		{
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 			$params = array
 				(
-				'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'		 => $search['value'],
 				'order'		 => $columns[$order[0]['column']]['data'],
 				'sort'		 => $order[0]['dir'],
 				'filter'	 => $this->filter,
 				'id'		 => '%',
-				'allrows'	 => phpgw::get_var('length', 'int') == -1
+				'allrows'	 => Sanitizer::get_var('length', 'int') == -1
 			);
 
 			$list = $this->bo->read($params);
@@ -125,7 +125,7 @@
 
 				if (substr($alarm['id'], 0, 8) == 'fm_async')
 				{
-					$link_edit	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uialarm.edit',
+					$link_edit	 = phpgw::link('/index.php', array('menuaction' => 'property.uialarm.edit',
 						'async_id'	 => urlencode($alarm['id'])));
 					$text_edit	 = lang('edit');
 					$link_edit	 = "<a href=\"$link_edit\">$text_edit</a>";
@@ -180,9 +180,9 @@
 
 		function index()
 		{
-			$values = phpgw::get_var('values');
+			$values = Sanitizer::get_var('values');
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -249,7 +249,7 @@
 			$data['datatable']['actions'][] = array(
 				'my_name'	 => 'edit',
 				'text'		 => lang('run'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'property.uialarm.run',
 				)),
@@ -365,10 +365,10 @@
 
 		public function query_list()
 		{
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 			switch ($columns[$order[0]['column']]['data'])
 			{
@@ -381,14 +381,14 @@
 
 			$params = array
 				(
-				'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'		 => $search['value'],
 				'order'		 => $order_field,
 				'sort'		 => $order[0]['dir'],
 				'filter'	 => $this->filter,
 				'id'		 => '%',
-				'allrows'	 => phpgw::get_var('length', 'int') == -1
+				'allrows'	 => Sanitizer::get_var('length', 'int') == -1
 			);
 
 			$list = $this->bo->read($params);
@@ -429,7 +429,7 @@
 
 					if ($id[0] == 's_agreement' || $id[0] == 'agreement')
 					{
-						$link_edit				 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.ui' . $id[0] . '.edit',
+						$link_edit				 = phpgw::link('/index.php', array('menuaction' => 'property.ui' . $id[0] . '.edit',
 							'id'		 => $id[1]));
 						$lang_edit_statustext	 = lang('edit the alarm');
 						$text_edit				 = lang('edit');
@@ -472,7 +472,7 @@
 			$receipt											 = $GLOBALS['phpgw']->session->appsession('session_data', 'alarm_receipt');
 			$GLOBALS['phpgw']->session->appsession('session_data', 'alarm_receipt', '');
 
-			$values = phpgw::get_var('values');
+			$values = Sanitizer::get_var('values');
 			if ($values['delete_alarm'] && count($values['alarm']))
 			{
 				$receipt = $this->bo->delete_alarm('fm_async', $values['alarm']);
@@ -486,7 +486,7 @@
 				$this->bo->test_cron();
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query_list();
 			}
@@ -573,7 +573,7 @@
 			$data['datatable']['actions'][] = array(
 				'my_name'	 => 'edit',
 				'text'		 => lang('edit'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'property.uis_agreement.edit',
 				)),
@@ -590,9 +590,9 @@
 
 		function edit()
 		{
-			$method_id	 = phpgw::get_var('method_id', 'int');
-			$async_id	 = urldecode(phpgw::get_var('async_id'));
-			$values		 = phpgw::get_var('values');
+			$method_id	 = Sanitizer::get_var('method_id', 'int');
+			$async_id	 = urldecode(Sanitizer::get_var('async_id'));
+			$values		 = Sanitizer::get_var('values');
 
 			if ($async_id)
 			{
@@ -606,7 +606,7 @@
 
 			$this->method_id = $method_id ? $method_id : $this->method_id;
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('alarm'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('alarm'));
 
 
 			if ($values['save'] || $values['apply'])
@@ -679,7 +679,7 @@
 				(
 				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
 				'abook_data'			 => $abook_data,
-				'edit_url'				 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'edit_url'				 => phpgw::link('/index.php', $link_data),
 				'lang_async_id'			 => lang('ID'),
 				'value_async_id'		 => $async_id,
 				'lang_method'			 => lang('method'),
@@ -714,7 +714,7 @@
 			//_debug_array($data);
 			$GLOBALS['phpgw_info']['flags']['app_header']	 = lang('async') . ': ' . ($async_id ? lang('edit timer') : lang('add timer'));
 
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('edit' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit' => $data));
 			//	$GLOBALS['phpgw']->xslttpl->pp();
 		}
 
@@ -723,26 +723,26 @@
 		 */
 		function delete()
 		{
-			$owner_id	 = phpgw::get_var('owner_id', 'int');
-			$confirm	 = phpgw::get_var('confirm', 'bool', 'POST');
+			$owner_id	 = Sanitizer::get_var('owner_id', 'int');
+			$confirm	 = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 				(
 				'menuaction' => 'property.uiowner.index'
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete($owner_id);
 				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 				(
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiowner.delete',
+				'done_action'			 => phpgw::link('/index.php', $link_data),
+				'delete_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uiowner.delete',
 					'owner_id'	 => $owner_id)),
 				'lang_confirm_msg'		 => lang('do you really want to delete this entry'),
 				'lang_yes'				 => lang('yes'),
@@ -755,23 +755,23 @@
 			$function_msg	 = lang('delete owner');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 			//	$GLOBALS['phpgw']->xslttpl->pp();
 		}
 
 		function view()
 		{
-			$owner_id = phpgw::get_var('owner_id', 'int', 'GET');
+			$owner_id = Sanitizer::get_var('owner_id', 'int', 'GET');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('owner') . ': ' . lang('view owner');
 
-			$GLOBALS['phpgw']->xslttpl->add_file('owner');
+			phpgwapi_xslttemplates::getInstance()->add_file('owner');
 
 			$owner = $this->bo->read_single($owner_id);
 
 			$data = array
 				(
-				'done_action'		 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiowner.index')),
+				'done_action'		 => phpgw::link('/index.php', array('menuaction' => 'property.uiowner.index')),
 				'lang_name'			 => lang('name'),
 				'lang_category'		 => lang('category'),
 				'lang_time_created'	 => lang('time created'),
@@ -781,31 +781,31 @@
 				'value_date'		 => $GLOBALS['phpgw']->common->show_date($owner['entry_date'])
 			);
 
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('view' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('view' => $data));
 			//	$GLOBALS['phpgw']->xslttpl->pp();
 		}
 
 		function run()
 		{
-			$id		 = phpgw::get_var('id');
-			$confirm = phpgw::get_var('confirm', 'bool', 'POST');
+			$id		 = Sanitizer::get_var('id');
+			$confirm = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 				(
 				'menuaction' => 'property.uialarm.index'
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->test_cron(array($id => $id));
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 				(
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uialarm.run',
+				'done_action'			 => phpgw::link('/index.php', $link_data),
+				'delete_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uialarm.run',
 					'id'		 => $id)),
 				'lang_confirm_msg'		 => lang('do you really want to run this entry'),
 				'lang_yes'				 => lang('yes'),
@@ -816,6 +816,6 @@
 
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . "::cron::run ::" . $id;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 	}

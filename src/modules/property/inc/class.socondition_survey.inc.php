@@ -525,14 +525,14 @@
 					$request['location_code']		 = $survey['location_code'];
 					$request['origin_id']			 = $origin_id;
 					$request['origin_item_id']		 = (int)$survey['id'];
-					$request['title']				 = phpgw::clean_value($entry['title']);
-					$request['descr']				 = phpgw::clean_value($entry['descr'], 'string');
-					$request['proposed_measures']	 = phpgw::clean_value($entry['proposed_measures']);
-					$request['remark']				 = phpgw::clean_value($entry['remark_1']);
+					$request['title']				 = Sanitizer::clean_value($entry['title']);
+					$request['descr']				 = Sanitizer::clean_value($entry['descr'], 'string');
+					$request['proposed_measures']	 = Sanitizer::clean_value($entry['proposed_measures']);
+					$request['remark']				 = Sanitizer::clean_value($entry['remark_1']);
 
 					if(!empty($entry['remark_2']))
 					{
-						$request['remark']			.= "\n" . phpgw::clean_value($entry['remark_2']);
+						$request['remark']			.= "\n" . Sanitizer::clean_value($entry['remark_2']);
 					}
 
 					$request['building_part']		 = (int)$entry['building_part'];

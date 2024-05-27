@@ -55,14 +55,14 @@
 				$this->use_session = true;
 			}
 
-			$start		 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query		 = phpgw::get_var('query');
-			$sort		 = phpgw::get_var('sort');
-			$order		 = phpgw::get_var('order');
-			$filter		 = phpgw::get_var('filter', 'int');
-			$cat_id		 = phpgw::get_var('cat_id', 'int');
-			$method_id	 = phpgw::get_var('method_id', 'int');
-			$allrows	 = phpgw::get_var('allrows', 'bool');
+			$start		 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query		 = Sanitizer::get_var('query');
+			$sort		 = Sanitizer::get_var('sort');
+			$order		 = Sanitizer::get_var('order');
+			$filter		 = Sanitizer::get_var('filter', 'int');
+			$cat_id		 = Sanitizer::get_var('cat_id', 'int');
+			$method_id	 = Sanitizer::get_var('method_id', 'int');
+			$allrows	 = Sanitizer::get_var('allrows', 'bool');
 
 			if ($start)
 			{
@@ -425,7 +425,7 @@
 
 			$body	 = lang('Alarm') . ' #' . $alarm['event_id'] . "\n";
 			$body	 .= lang('Name') . ': ' . $alarm['event_name'] . "\n";
-			$body	 .= '<a href ="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => "property.ui{$info[0]}.edit",
+			$body	 .= '<a href ="' . phpgw::link('/index.php', array('menuaction' => "property.ui{$info[0]}.edit",
 					'id'		 => $info[1]), false, true) . '">' . $alarm['event_name'] . "</a>\n";
 			if (!is_array($alarm['time']))
 			{

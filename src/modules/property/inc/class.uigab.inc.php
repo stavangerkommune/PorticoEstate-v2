@@ -98,10 +98,10 @@
 
 		private function _populate( $data = array() )
 		{
-			$gab_id				 = phpgw::get_var('gab_id');
-			$location_code		 = phpgw::get_var('location_code');
-			$values				 = (array)phpgw::get_var('values');
-			$values_attribute	 = (array)phpgw::get_var('values_attribute');
+			$gab_id				 = Sanitizer::get_var('gab_id');
+			$location_code		 = Sanitizer::get_var('location_code');
+			$values				 = (array)Sanitizer::get_var('values');
+			$values_attribute	 = (array)Sanitizer::get_var('values_attribute');
 
 			$insert_record	 = $GLOBALS['phpgw']->session->appsession('insert_record', 'property');
 			$values			 = $this->bocommon->collect_locationdata($values, $insert_record);
@@ -159,20 +159,20 @@
 
 		function download()
 		{
-			$address		 = phpgw::get_var('address');
-			$location_code	 = phpgw::get_var('location_code');
-			$gaards_nr		 = phpgw::get_var('gaards_nr', 'string');
-			$bruksnr		 = phpgw::get_var('bruksnr', 'int');
-			$feste_nr		 = phpgw::get_var('feste_nr', 'int');
-			$seksjons_nr	 = phpgw::get_var('seksjons_nr', 'int');
+			$address		 = Sanitizer::get_var('address');
+			$location_code	 = Sanitizer::get_var('location_code');
+			$gaards_nr		 = Sanitizer::get_var('gaards_nr', 'string');
+			$bruksnr		 = Sanitizer::get_var('bruksnr', 'int');
+			$feste_nr		 = Sanitizer::get_var('feste_nr', 'int');
+			$seksjons_nr	 = Sanitizer::get_var('seksjons_nr', 'int');
 
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$columns = phpgw::get_var('columns');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$columns = Sanitizer::get_var('columns');
 
 			$params = array(
-				'start'			 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'		 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'			 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'		 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'			 => $search['value'],
 				'order'			 => $columns[$order[0]['column']]['data'],
 				'sort'			 => $order[0]['dir'],
@@ -270,14 +270,14 @@
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
 
 			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
 			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
-			$location_code = phpgw::get_var('location_code');
+			$location_code = Sanitizer::get_var('location_code');
 
 			$appname		 = lang('gab');
 			$function_msg	 = lang('list gab');
@@ -353,7 +353,7 @@
 					(
 					'my_name'	 => 'view',
 					'text'		 => lang('view'),
-					'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'	 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uigab.list_detail'
 					)),
@@ -367,7 +367,7 @@
 			  (
 			  'my_name'			=> 'add',
 			  'text' 			=> lang('add'),
-			  'action'		=> $GLOBALS['phpgw']->link('/index.php',array
+			  'action'		=> phpgw::link('/index.php',array
 			  (
 			  'menuaction'	=> 'property.uigab.add',
 			  'from'			=> 'index'
@@ -431,7 +431,7 @@ JS;
 
 JS;
 
-			$GLOBALS['phpgw']->js->add_code('', $code, true);
+			phpgwapi_js::getInstance()->add_code('', $code, true);
 
 			//Title of Page
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
@@ -476,26 +476,26 @@ JS;
 
 		public function query()
 		{
-			$address		 = phpgw::get_var('address');
-			$location_code	 = phpgw::get_var('location_code');
-			$gaards_nr		 = phpgw::get_var('gaards_nr', 'string');
-			$bruksnr		 = phpgw::get_var('bruksnr', 'int');
-			$feste_nr		 = phpgw::get_var('feste_nr', 'int');
-			$seksjons_nr	 = phpgw::get_var('seksjons_nr', 'int');
+			$address		 = Sanitizer::get_var('address');
+			$location_code	 = Sanitizer::get_var('location_code');
+			$gaards_nr		 = Sanitizer::get_var('gaards_nr', 'string');
+			$bruksnr		 = Sanitizer::get_var('bruksnr', 'int');
+			$feste_nr		 = Sanitizer::get_var('feste_nr', 'int');
+			$seksjons_nr	 = Sanitizer::get_var('seksjons_nr', 'int');
 
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
-			$export	 = phpgw::get_var('export', 'bool');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
+			$export	 = Sanitizer::get_var('export', 'bool');
 
 			$params = array(
-				'start'			 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'		 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'			 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'		 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'			 => $search['value'],
 				'order'			 => $columns[$order[0]['column']]['data'],
 				'sort'			 => $order[0]['dir'],
-				'allrows'		 => phpgw::get_var('length', 'int') == -1 || $export,
+				'allrows'		 => Sanitizer::get_var('length', 'int') == -1 || $export,
 				'location_code'	 => $location_code ? $location_code : $search['value'],
 				'gaards_nr'		 => $gaards_nr,
 				'bruksnr'		 => $bruksnr,
@@ -643,12 +643,12 @@ JS;
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query_detail();
 			}
 
-			$gab_id = phpgw::get_var('gab_id');
+			$gab_id = Sanitizer::get_var('gab_id');
 
 			$top_toolbar = array
 				(
@@ -727,7 +727,7 @@ JS;
 					(
 					'my_name'	 => 'view',
 					'text'		 => lang('view'),
-					'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'	 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uigab.view',
 						'gab_id'	 => $gab_id
@@ -742,7 +742,7 @@ JS;
 					(
 					'my_name'	 => 'edit',
 					'text'		 => lang('edit'),
-					'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'	 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uigab.edit',
 						'from'		 => 'list_detail',
@@ -759,7 +759,7 @@ JS;
 					'my_name'		 => 'delete',
 					'text'			 => lang('delete'),
 					'confirm_msg'	 => lang('do you really want to delete this entry'),
-					'action'		 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'		 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uigab.delete',
 						'gab_id'	 => $gab_id
@@ -774,7 +774,7 @@ JS;
 			  (
 			  'my_name'			=> 'add',
 			  'text' 			=> lang('add'),
-			  'action'		=> $GLOBALS['phpgw']->link('/index.php',array
+			  'action'		=> phpgw::link('/index.php',array
 			  (
 			  'menuaction'	=> 'property.uigab.edit',
 			  'gab_id'		=>	$gab_id,
@@ -833,13 +833,13 @@ JS;
 
 		public function query_detail()
 		{
-			$gab_id	 = phpgw::get_var('gab_id');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$gab_id	 = Sanitizer::get_var('gab_id');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 			$params = array(
-				'start'	 => phpgw::get_var('start', 'int', 'REQUEST', 0),
+				'start'	 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
 				'order'	 => $columns[$order[0]['column']]['data'],
 				'sort'	 => $order[0]['dir'],
 				'dir'	 => $order[0]['dir'],
@@ -869,10 +869,10 @@ JS;
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
 
-			$from			 = phpgw::get_var('from');
-			$new			 = phpgw::get_var('new', 'bool');
-			$gab_id			 = phpgw::get_var('gab_id');
-			$location_code	 = phpgw::get_var('location_code');
+			$from			 = Sanitizer::get_var('from');
+			$new			 = Sanitizer::get_var('new', 'bool');
+			$gab_id			 = Sanitizer::get_var('gab_id');
+			$location_code	 = Sanitizer::get_var('location_code');
 
 			if (!$values && $location_code)
 			{
@@ -971,7 +971,7 @@ JS;
 			$i					 = -1;
 			$attributes			 = array();
 
-			$active_tab = phpgw::get_var('active_tab');
+			$active_tab = Sanitizer::get_var('active_tab');
 
 			foreach ($attributes_groups as $_key => $group)
 			{
@@ -1021,8 +1021,8 @@ JS;
 				'action'					 => $action,
 				'lookup_type'				 => $lookup_type,
 				'location_data2'			 => $location_data,
-				'form_action'				 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'done_action'				 => $GLOBALS['phpgw']->link('/index.php', $done_data),
+				'form_action'				 => phpgw::link('/index.php', $link_data),
+				'done_action'				 => phpgw::link('/index.php', $done_data),
 				'lang_save'					 => lang('save'),
 				'lang_done'					 => lang('done'),
 				'lang_propagate'			 => lang('propagate'),
@@ -1056,8 +1056,8 @@ JS;
 				return $this->edit();
 			}
 
-			$gab_id			 = phpgw::get_var('gab_id');
-			$location_code	 = phpgw::get_var('location_code');
+			$gab_id			 = Sanitizer::get_var('gab_id');
+			$location_code	 = Sanitizer::get_var('location_code');
 
 			/*
 			 * Overrides with incoming data from POST
@@ -1091,7 +1091,7 @@ JS;
 					self::message_set($receipt);
 					self::redirect(array('menuaction'	 => 'property.uigab.edit', 'gab_id'		 => $gab_id,
 						'location_code'	 => $location_code,
-						'from'			 => phpgw::get_var('from')));
+						'from'			 => Sanitizer::get_var('from')));
 				}
 
 				$this->edit($data);
@@ -1107,12 +1107,12 @@ JS;
 					'perm'			 => 8, 'acl_location'	 => $this->acl_location));
 			}
 
-			$gab_id			 = phpgw::get_var('gab_id');
-			$location_code	 = phpgw::get_var('location_code');
-			$confirm		 = phpgw::get_var('confirm', 'bool', 'POST');
+			$gab_id			 = Sanitizer::get_var('gab_id');
+			$location_code	 = Sanitizer::get_var('location_code');
+			$confirm		 = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			//cramirez add JsonCod for Delete
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$this->bo->delete($gab_id, $location_code);
 				return "gab_id " . $gab_id . " " . lang("has been deleted");
@@ -1124,18 +1124,18 @@ JS;
 				'gab_id'	 => $gab_id
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete($gab_id, $location_code);
 				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 				(
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uigab.delete',
+				'done_action'			 => phpgw::link('/index.php', $link_data),
+				'delete_action'			 => phpgw::link('/index.php', array('menuaction'	 => 'property.uigab.delete',
 					'gab_id'		 => $gab_id, 'location_code'	 => $location_code)),
 				'lang_confirm_msg'		 => lang('do you really want to delete this entry'),
 				'lang_yes'				 => lang('yes'),
@@ -1148,7 +1148,7 @@ JS;
 			$function_msg	 = lang('delete gab at:') . ' ' . $location_code;
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 
 		function view()
@@ -1159,10 +1159,10 @@ JS;
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
-			$gab_id			 = phpgw::get_var('gab_id');
-			$location_code	 = phpgw::get_var('location_code');
+			$gab_id			 = Sanitizer::get_var('gab_id');
+			$location_code	 = Sanitizer::get_var('location_code');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('gab'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('gab'));
 
 			//_debug_array($values);
 
@@ -1204,14 +1204,14 @@ JS;
 				'lang_seksjons_nr'		 => lang('Seksjons nr'),
 				'location_type'			 => $location_type,
 				'location_data'			 => $location_data,
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uigab.list_detail',
+				'done_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uigab.list_detail',
 					'gab_id'	 => $gab_id)),
 				'lang_save'				 => lang('save'),
 				'lang_done'				 => lang('done'),
 				'lang_remark'			 => lang('remark'),
 				'value_remark'			 => $values['remark'],
 				'lang_done_statustext'	 => lang('Back to the list'),
-				'edit_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uigab.edit',
+				'edit_action'			 => phpgw::link('/index.php', array('menuaction'	 => 'property.uigab.edit',
 					'from'			 => 'list_detail', 'gab_id'		 => $gab_id, 'location_code'	 => $location_code)),
 				'lang_edit_statustext'	 => lang('Edit this entry'),
 				'lang_edit'				 => lang('Edit'),
@@ -1221,6 +1221,6 @@ JS;
 			$appname = lang('gab');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('view' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('view' => $data));
 		}
 	}

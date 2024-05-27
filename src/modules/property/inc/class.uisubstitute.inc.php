@@ -69,13 +69,13 @@
 		{
 			$receipt = array();
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
 
 			$msgbox_data = array();
-			if (phpgw::get_var('phpgw_return_as') != 'json' && $receipt	 = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
+			if (Sanitizer::get_var('phpgw_return_as') != 'json' && $receipt	 = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
 			{
 				phpgwapi_cache::session_clear('phpgwapi', 'phpgw_messages');
 				$msgbox_data = $GLOBALS['phpgw']->common->msgbox_data($receipt);
@@ -150,14 +150,14 @@
 
 			self::add_jquery_translation($data);
 			$GLOBALS['phpgw']->jqcal2->add_listener('start_time', 'datetime');
-			$GLOBALS['phpgw']->xslttpl->add_file(array('substitute', 'datatable_inline'));
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('table' => $data));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('substitute', 'datatable_inline'));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('table' => $data));
 		}
 
 		public function query()
 		{
-			$user_id			 = phpgw::get_var('user_id', 'int');
-			$substitute_user_id	 = phpgw::get_var('substitute_user_id', 'int');
+			$user_id			 = Sanitizer::get_var('user_id', 'int');
+			$substitute_user_id	 = Sanitizer::get_var('substitute_user_id', 'int');
 
 			$values = $this->bo->read(array('user_id' => $user_id, 'substitute_user_id' => $substitute_user_id));
 
@@ -172,7 +172,7 @@
 				(
 				'results'		 => $values,
 				'total_records'	 => count($values),
-				'draw'			 => phpgw::get_var('draw', 'int')
+				'draw'			 => Sanitizer::get_var('draw', 'int')
 			);
 
 
@@ -189,11 +189,11 @@
 				phpgwapi_cache::message_set(lang('you are not approved for this task'), 'error');
 			}
 
-			$user_id			 = phpgw::get_var('user_id', 'int');
-			$substitute_user_id	 = phpgw::get_var('substitute_user_id', 'int');
-			$start_time			 = phpgw::get_var('start_time', 'date', 'POST', time());
+			$user_id			 = Sanitizer::get_var('user_id', 'int');
+			$substitute_user_id	 = Sanitizer::get_var('substitute_user_id', 'int');
+			$start_time			 = Sanitizer::get_var('start_time', 'date', 'POST', time());
 
-			$save = phpgw::get_var('save', 'string');
+			$save = Sanitizer::get_var('save', 'string');
 
 			if ($save && $user_id && $substitute_user_id)
 			{
@@ -206,7 +206,7 @@
 				}
 			}
 
-			if ($delete = phpgw::get_var('delete', 'int'))
+			if ($delete = Sanitizer::get_var('delete', 'int'))
 			{
 				if (!$receipt['error'])
 				{
@@ -227,7 +227,7 @@
 				}
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				if ($receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
 				{
@@ -250,14 +250,14 @@
 		public function edit()
 		{
 			$user_id			 = $this->account_id;
-			$substitute_user_id	 = phpgw::get_var('substitute_user_id', 'int', 'POST');
-			$start_time			 = phpgw::get_var('start_time', 'date', 'POST');
-			$save				 = phpgw::get_var('save', 'string', 'POST');
+			$substitute_user_id	 = Sanitizer::get_var('substitute_user_id', 'int', 'POST');
+			$start_time			 = Sanitizer::get_var('start_time', 'date', 'POST');
+			$save				 = Sanitizer::get_var('save', 'string', 'POST');
 
 			if ($save)
 			{
 				$this->bo->update_substitute($user_id, $substitute_user_id, $start_time);
-				if ($delete = phpgw::get_var('delete', 'int'))
+				if ($delete = Sanitizer::get_var('delete', 'int'))
 				{
 					$this->bo->delete($delete);
 				}
@@ -323,15 +323,15 @@
 				'datatable_def'		 => $datatable_def,
 				'tabs'				 => phpgwapi_jquery::tabview_generate($tabs, 0),
 				'value_active_tab'	 => 0,
-				'form_action'		 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uisubstitute.edit')),
+				'form_action'		 => phpgw::link('/index.php', array('menuaction' => 'property.uisubstitute.edit')),
 				'user_list'			 => array('options' => $this->_get_user_list()),
 			);
 
 			$GLOBALS['phpgw']->jqcal2->add_listener('start_time', 'datetime');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('substitute', 'datatable_inline'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('substitute', 'datatable_inline'));
 
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('edit' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit' => $data));
 		}
 
 		private function _get_user_list( $selected = 0 )

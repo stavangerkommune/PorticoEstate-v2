@@ -411,7 +411,7 @@
 			$prefs		 = $bocommon->create_preferences('common', $assignedto);
 			if (isset($prefs['email']) && $prefs['email'])
 			{
-				$body = '<a href ="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uitts.view',
+				$body = '<a href ="' . phpgw::link('/index.php', array('menuaction' => 'property.uitts.view',
 						'id'		 => $id), false, true) . '">' . lang('Ticket') . ' #' . $id . '</a>' . "\n";
 				try
 				{

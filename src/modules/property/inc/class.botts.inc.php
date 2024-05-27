@@ -152,30 +152,30 @@
 				}
 			}
 
-			$this->start			 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$this->query			 = phpgw::get_var('query');
-			$this->sort				 = phpgw::get_var('sort');
-			$this->order			 = phpgw::get_var('order');
-			$this->status_id		 = phpgw::get_var('status_id', 'string');
-			$this->user_id			 = phpgw::get_var('user_id', 'int');
-			$this->group_id			 = phpgw::get_var('group_id', 'int');
-			$this->reported_by		 = phpgw::get_var('reported_by', 'int');
-			$this->cat_id			 = phpgw::get_var('cat_id', 'int');
-			$this->part_of_town_id	 = phpgw::get_var('part_of_town_id', 'int');
+			$this->start			 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$this->query			 = Sanitizer::get_var('query');
+			$this->sort				 = Sanitizer::get_var('sort');
+			$this->order			 = Sanitizer::get_var('order');
+			$this->status_id		 = Sanitizer::get_var('status_id', 'string');
+			$this->user_id			 = Sanitizer::get_var('user_id', 'int');
+			$this->group_id			 = Sanitizer::get_var('group_id', 'int');
+			$this->reported_by		 = Sanitizer::get_var('reported_by', 'int');
+			$this->cat_id			 = Sanitizer::get_var('cat_id', 'int');
+			$this->part_of_town_id	 = Sanitizer::get_var('part_of_town_id', 'int');
 			$default_district		 = (isset($GLOBALS['phpgw_info']['user']['preferences']['property']['default_district']) ? $GLOBALS['phpgw_info']['user']['preferences']['property']['default_district'] : '');
-			$district_id			 = phpgw::get_var('district_id', 'int');
+			$district_id			 = Sanitizer::get_var('district_id', 'int');
 			$this->district_id		 = isset($_REQUEST['district_id']) ? $district_id : $default_district;
-			$this->allrows			 = phpgw::get_var('allrows', 'bool');
-			$this->start_date		 = phpgw::get_var('filter_start_date', 'string');
-			$this->end_date			 = phpgw::get_var('filter_end_date', 'string');
-			$this->location_code	 = phpgw::get_var('location_code');
-			$this->vendor_id		 = phpgw::get_var('vendor_id', 'int');
-			$this->ecodimb			 = phpgw::get_var('ecodimb', 'int');
-			$this->b_account		 = phpgw::get_var('b_account', 'string');
-			$this->building_part	 = phpgw::get_var('building_part', 'string');
-			$this->branch_id		 = phpgw::get_var('branch_id', 'int');
-			$this->order_dim1		 = phpgw::get_var('order_dim1', 'int');
-			$this->p_num			 = phpgw::get_var('p_num');
+			$this->allrows			 = Sanitizer::get_var('allrows', 'bool');
+			$this->start_date		 = Sanitizer::get_var('filter_start_date', 'string');
+			$this->end_date			 = Sanitizer::get_var('filter_end_date', 'string');
+			$this->location_code	 = Sanitizer::get_var('location_code');
+			$this->vendor_id		 = Sanitizer::get_var('vendor_id', 'int');
+			$this->ecodimb			 = Sanitizer::get_var('ecodimb', 'int');
+			$this->b_account		 = Sanitizer::get_var('b_account', 'string');
+			$this->building_part	 = Sanitizer::get_var('building_part', 'string');
+			$this->branch_id		 = Sanitizer::get_var('branch_id', 'int');
+			$this->order_dim1		 = Sanitizer::get_var('order_dim1', 'int');
+			$this->p_num			 = Sanitizer::get_var('p_num');
 		}
 
 		function column_list( $selected = array() )
@@ -474,10 +474,10 @@
 			switch ($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('filter_select'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('filter_select'));
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('filter_filter'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('filter_filter'));
 					break;
 			}
 
@@ -610,7 +610,7 @@
 			{
 				if ($_REQUEST[$custom_filter]) //just testing..
 				{
-					$custom_filtermethod[$custom_filter] = phpgw::get_var($custom_filter, 'int');
+					$custom_filtermethod[$custom_filter] = Sanitizer::get_var($custom_filter, 'int');
 				}
 			}
 
@@ -1411,7 +1411,7 @@
 				$GLOBALS['phpgw_info']['server']['enforce_ssl'] = true;
 			}
 
-			$body = 'Vennligst følg opp ved å trykke på linken <a href ="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uitts.view',
+			$body = 'Vennligst følg opp ved å trykke på linken <a href ="' . phpgw::link('/index.php', array('menuaction' => 'property.uitts.view',
 					'id'		 => $id), false, true) . '">' . lang('Ticket') . ' #' . $id . '</a>' . " (ikke svar på e-post)\n";
 
 			$body	 .= "<table>";
@@ -1972,8 +1972,8 @@ HTML;
 			$acl			 = & $GLOBALS['phpgw']->acl;
 			$acl_add		 = $acl->check('.ticket', PHPGW_ACL_ADD, 'property');
 			$acl_edit		 = $acl->check('.ticket', PHPGW_ACL_EDIT, 'property');
-			$id				 = phpgw::get_var('id', 'int');
-			$check			 = phpgw::get_var('check', 'bool');
+			$id				 = Sanitizer::get_var('id', 'int');
+			$check			 = Sanitizer::get_var('check', 'bool');
 			$fileuploader	 = CreateObject('property.fileuploader');
 
 			if (!$acl_add && !$acl_edit)

@@ -41,7 +41,7 @@
 
 		function __construct()
 		{
-			$GLOBALS['phpgw']->css->add_external_file('rental/templates/base/css/base.css');
+			phpgwapi_css::getInstance()->add_external_file('rental/templates/base/css/base.css');
 		}
 
 		function date()

@@ -118,7 +118,7 @@
 			$receipt = $GLOBALS['phpgw']->session->appsession('session_data', 'custom_receipt');
 			$GLOBALS['phpgw']->session->appsession('session_data', 'custom_receipt', '');
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -194,7 +194,7 @@
 					'my_name'	 => 'view',
 					'statustext' => lang('view the entity'),
 					'text'		 => lang('view'),
-					'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'	 => phpgw::link('/index.php', array
 						(
 						'menuaction' => "{$this->currentapp}.uicustom.view"
 					)),
@@ -209,7 +209,7 @@
 					'my_name'	 => 'edit',
 					'statustext' => lang('edit the actor'),
 					'text'		 => lang('edit'),
-					'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'	 => phpgw::link('/index.php', array
 						(
 						'menuaction' => "{$this->currentapp}.uicustom.edit"
 					)),
@@ -225,7 +225,7 @@
 					'statustext'	 => lang('delete the actor'),
 					'text'			 => lang('delete'),
 					'confirm_msg'	 => lang('do you really want to delete this entry'),
-					'action'		 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'		 => phpgw::link('/index.php', array
 						(
 						'menuaction' => "{$this->currentapp}.uicustom.delete"
 					)),
@@ -240,19 +240,19 @@
 
 		public function query()
 		{
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
-			$export	 = phpgw::get_var('export', 'bool');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
+			$export	 = Sanitizer::get_var('export', 'bool');
 
 			$params = array(
-				'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'		 => $search['value'],
 				'order'		 => $columns[$order[0]['column']]['data'],
 				'sort'		 => $order[0]['dir'],
-				'allrows'	 => phpgw::get_var('length', 'int') == -1 || $export,
+				'allrows'	 => Sanitizer::get_var('length', 'int') == -1 || $export,
 				'filter'	 => $this->filter,
 				'cat_id'	 => $this->cat_id
 			);
@@ -277,8 +277,8 @@
 				return $this->edit();
 			}
 
-			$custom_id			 = phpgw::get_var('custom_id', 'int');
-			$values				 = phpgw::get_var('values');
+			$custom_id			 = Sanitizer::get_var('custom_id', 'int');
+			$values				 = Sanitizer::get_var('values');
 			$values['sql_text']	 = $_POST['values']['sql_text'];
 
 
@@ -341,10 +341,10 @@
 				phpgw::no_access();
 			}
 
-			$custom_id			 = phpgw::get_var('custom_id', 'int');
-			$cols_id			 = phpgw::get_var('cols_id', 'int');
-			$resort				 = phpgw::get_var('resort');
-			$values				 = phpgw::get_var('values');
+			$custom_id			 = Sanitizer::get_var('custom_id', 'int');
+			$cols_id			 = Sanitizer::get_var('cols_id', 'int');
+			$resort				 = Sanitizer::get_var('resort');
+			$values				 = Sanitizer::get_var('values');
 			$values['sql_text']	 = $_POST['values']['sql_text'];
 			if ($cols_id)
 			{
@@ -355,7 +355,7 @@
 			$tabs['general'] = array('label' => lang('general'), 'link' => '#general');
 			$active_tab		 = 'general';
 //			$tabs['items']	= array('label' => lang('items'), 'link' => "#items");
-			//$GLOBALS['phpgw']->xslttpl->add_file(array('custom'));
+			//phpgwapi_xslttemplates::getInstance()->add_file(array('custom'));
 
 			if ($values['cancel'])
 			{
@@ -404,9 +404,9 @@
 						'descr'		 => $entry['descr'],
 						'order'		 => $entry['sorting'],
 						'sorting'	 => $entry['sorting'],
-						'link_up'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => "{$this->currentapp}.uicustom.edit",
+						'link_up'	 => phpgw::link('/index.php', array('menuaction' => "{$this->currentapp}.uicustom.edit",
 							'resort'	 => 'up', 'cols_id'	 => $entry['id'], 'custom_id'	 => $custom_id)),
-						'link_down'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => "{$this->currentapp}.uicustom.edit",
+						'link_down'	 => phpgw::link('/index.php', array('menuaction' => "{$this->currentapp}.uicustom.edit",
 							'resort'	 => 'down', 'cols_id'	 => $entry['id'], 'custom_id'	 => $custom_id)),
 						'delete'	 => $entry['id'],
 					);
@@ -430,7 +430,7 @@
 				(
 				'datatable_def'					 => $datatable_def,
 				'msgbox_data'					 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'edit_url'						 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'edit_url'						 => phpgw::link('/index.php', $link_data),
 				'lang_custom_id'				 => lang('ID'),
 				'value_custom_id'				 => $custom_id,
 				'lang_sql_text'					 => lang('sql'),
@@ -477,26 +477,26 @@
 			{
 				phpgw::no_access();
 			}
-			$custom_id	 = phpgw::get_var('custom_id', 'int');
-			$confirm	 = phpgw::get_var('confirm', 'bool', 'POST');
+			$custom_id	 = Sanitizer::get_var('custom_id', 'int');
+			$confirm	 = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 				(
 				'menuaction' => "{$this->currentapp}.uicustom.index"
 			);
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$this->bo->delete($custom_id);
 				return "custom_id " . $custom_id . " " . lang("has been deleted");
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'), $this->xsl_rootdir);
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'), $this->xsl_rootdir);
 
 			$data = array
 				(
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => "{$this->currentapp}.uicustom.delete",
+				'done_action'			 => phpgw::link('/index.php', $link_data),
+				'delete_action'			 => phpgw::link('/index.php', array('menuaction' => "{$this->currentapp}.uicustom.delete",
 					'custom_id'	 => $custom_id)),
 				'lang_confirm_msg'		 => lang('do you really want to delete this entry'),
 				'lang_yes'				 => lang('yes'),
@@ -509,7 +509,7 @@
 			$function_msg	 = lang('delete custom');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = $this->lang_app_name . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 
 		function view()
@@ -519,7 +519,7 @@
 				phpgw::no_access();
 			}
 
-			$custom_id = phpgw::get_var('custom_id', 'int', 'GET');
+			$custom_id = Sanitizer::get_var('custom_id', 'int', 'GET');
 
 //			$datatable = array();
 
@@ -533,7 +533,7 @@
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = $appname . ': ' . $function_msg;
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query_view($custom_id);
 			}
@@ -551,7 +551,7 @@
 						'menuaction'		 => "{$this->currentapp}.uicustom.view",
 						'custom_id'			 => $custom_id,
 						'filter'			 => $this->filter,
-						'update'			 => phpgw::get_var('update', 'bool'),
+						'update'			 => Sanitizer::get_var('update', 'bool'),
 						'phpgw_return_as'	 => 'json'
 					)),
 					'download'		 => self::link(array(
@@ -600,22 +600,22 @@
 			{
 				phpgw::no_access();
 			}
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
-			$export	 = phpgw::get_var('export', 'bool');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
+			$export	 = Sanitizer::get_var('export', 'bool');
 
 			$params = array(
-				'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'		 => $search['value'],
 				'order'		 => $columns[$order[0]['column']]['data'],
 				'sort'		 => $order[0]['dir'],
-				'allrows'	 => phpgw::get_var('length', 'int') == -1 || $export,
+				'allrows'	 => Sanitizer::get_var('length', 'int') == -1 || $export,
 				'filter'	 => $this->filter,
 				'custom_id'	 => $custom_id,
-				'update'	 => phpgw::get_var('update', 'bool')
+				'update'	 => Sanitizer::get_var('update', 'bool')
 			);
 
 			$values = $this->bo->read_custom($params);
@@ -639,7 +639,7 @@
 				phpgw::no_access();
 			}
 
-			$custom_id	 = phpgw::get_var('custom_id', 'int');
+			$custom_id	 = Sanitizer::get_var('custom_id', 'int');
 			$params		 = array(
 				'custom_id'	 => $custom_id,
 				'allrows'	 => true,

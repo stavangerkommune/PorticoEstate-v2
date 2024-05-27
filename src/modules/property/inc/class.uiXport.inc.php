@@ -88,36 +88,36 @@
 			$receipt											 = $GLOBALS['phpgw']->session->appsession('session_data', 'import_receipt');
 			$GLOBALS['phpgw']->session->appsession('session_data', 'import_receipt', '');
 
-			$art				 = phpgw::get_var('art', 'int');
-			$type				 = phpgw::get_var('type');
-			$dim_b				 = phpgw::get_var('dim_b', 'int');
-			$invoice_num		 = phpgw::get_var('invoice_num');
-			$kid_nr				 = phpgw::get_var('kid_nr');
-			$vendor_id			 = phpgw::get_var('vendor_id', 'int');
-			$vendor_name		 = phpgw::get_var('vendor_name');
-			$janitor			 = phpgw::get_var('janitor');
-			$supervisor			 = phpgw::get_var('supervisor');
-			$budget_responsible	 = phpgw::get_var('budget_responsible');
-			$invoice_date		 = phpgw::get_var('invoice_date') ? urldecode(phpgw::get_var('invoice_date')) : '';
-			$num_days			 = phpgw::get_var('num_days', 'int');
-			$payment_date		 = phpgw::get_var('payment_date') ? urldecode(phpgw::get_var('payment_date')) : '';
-			$cancel				 = phpgw::get_var('cancel', 'bool');
-			$convert			 = phpgw::get_var('convert', 'bool');
-			$conv_type			 = phpgw::get_var('conv_type');
-			$sday				 = phpgw::get_var('sday', 'int');
-			$smonth				 = phpgw::get_var('smonth', 'int');
-			$syear				 = phpgw::get_var('syear', 'int');
-			$eday				 = phpgw::get_var('eday', 'int');
-			$emonth				 = phpgw::get_var('emonth', 'int');
-			$eyear				 = phpgw::get_var('eyear', 'int');
-			$download			 = phpgw::get_var('download', 'bool');
-			$auto_tax			 = phpgw::get_var('auto_tax', 'bool');
+			$art				 = Sanitizer::get_var('art', 'int');
+			$type				 = Sanitizer::get_var('type');
+			$dim_b				 = Sanitizer::get_var('dim_b', 'int');
+			$invoice_num		 = Sanitizer::get_var('invoice_num');
+			$kid_nr				 = Sanitizer::get_var('kid_nr');
+			$vendor_id			 = Sanitizer::get_var('vendor_id', 'int');
+			$vendor_name		 = Sanitizer::get_var('vendor_name');
+			$janitor			 = Sanitizer::get_var('janitor');
+			$supervisor			 = Sanitizer::get_var('supervisor');
+			$budget_responsible	 = Sanitizer::get_var('budget_responsible');
+			$invoice_date		 = Sanitizer::get_var('invoice_date') ? urldecode(Sanitizer::get_var('invoice_date')) : '';
+			$num_days			 = Sanitizer::get_var('num_days', 'int');
+			$payment_date		 = Sanitizer::get_var('payment_date') ? urldecode(Sanitizer::get_var('payment_date')) : '';
+			$cancel				 = Sanitizer::get_var('cancel', 'bool');
+			$convert			 = Sanitizer::get_var('convert', 'bool');
+			$conv_type			 = Sanitizer::get_var('conv_type');
+			$sday				 = Sanitizer::get_var('sday', 'int');
+			$smonth				 = Sanitizer::get_var('smonth', 'int');
+			$syear				 = Sanitizer::get_var('syear', 'int');
+			$eday				 = Sanitizer::get_var('eday', 'int');
+			$emonth				 = Sanitizer::get_var('emonth', 'int');
+			$eyear				 = Sanitizer::get_var('eyear', 'int');
+			$download			 = Sanitizer::get_var('download', 'bool');
+			$auto_tax			 = Sanitizer::get_var('auto_tax', 'bool');
 
 			$tsvfile = $_FILES['tsvfile']['tmp_name'];
 
 			if (!$tsvfile)
 			{
-				$tsvfile = phpgw::get_var('tsvfile');
+				$tsvfile = Sanitizer::get_var('tsvfile');
 			}
 
 			if ($cancel && $tsvfile)
@@ -273,12 +273,12 @@
 				(
 				'menu'								 => $this->bocommon->get_menu(),
 				'msgbox_data'						 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'						 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'cancel_action'						 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiinvoice.index',
+				'form_action'						 => phpgw::link('/index.php', $link_data),
+				'cancel_action'						 => phpgw::link('/index.php', array('menuaction' => 'property.uiinvoice.index',
 					'sub'		 => $sub)),
 				'lang_cancel'						 => lang('Cancel'),
 				'lang_cancel_statustext'			 => lang('cancel the import'),
-				'action_url'						 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property' . '.uiXport.import')),
+				'action_url'						 => phpgw::link('/index.php', array('menuaction' => 'property' . '.uiXport.import')),
 				'tsvfilename'						 => '',
 				'lang_debug'						 => lang('Debug output in browser'),
 				'lang_debug_statustext'				 => lang('Check this to have the output to screen before import (recommended)'),
@@ -294,7 +294,7 @@
 				'lang_kidnr'						 => lang('KID nr'),
 				'lang_kid_nr_statustext'			 => lang('Enter Kid nr'),
 				'lang_vendor'						 => lang('Vendor'),
-				'addressbook_link'					 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uilookup.vendor')),
+				'addressbook_link'					 => phpgw::link('/index.php', array('menuaction' => 'property.uilookup.vendor')),
 				'lang_invoice_date_statustext'		 => lang('Enter the invoice date'),
 				'lang_num_days_statustext'			 => lang('Enter the payment date or the payment delay'),
 				'lang_payment_date_statustext'		 => lang('Enter the payment date or the payment delay'),
@@ -353,13 +353,13 @@
 				'lang_budget_responsible_statustext' => lang('You have to select a budget responsible for this invoice in order to make the import')
 			);
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('invoice'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('invoice'));
 
 			$appname		 = lang('Invoice');
 			$function_msg	 = lang('Import from CSV');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('import' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('import' => $data));
 			//	$GLOBALS['phpgw']->xslttpl->pp();
 		}
 
@@ -425,10 +425,10 @@
 				(
 				'lang_add'				 => lang('Import'),
 				'lang_add_statustext'	 => lang('Import this invoice'),
-				'add_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data_add),
+				'add_action'			 => phpgw::link('/index.php', $link_data_add),
 				'lang_cancel'			 => lang('cancel'),
 				'lang_cancel_statustext' => lang('Do not import this invoice'),
-				'cancel_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data_cancel)
+				'cancel_action'			 => phpgw::link('/index.php', $link_data_cancel)
 			);
 
 			$vendor = $this->contacts->read_single(array('id' => $invoice_common['vendor_id']), array(
@@ -471,13 +471,13 @@
 
 			unset($content);
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('invoice', 'table_header'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('invoice', 'table_header'));
 			$appname		 = lang('Invoice');
 			$function_msg	 = lang('Debug');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('debug' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('debug' => $data));
 			//	$GLOBALS['phpgw']->xslttpl->pp();
 		}
 
@@ -490,11 +490,11 @@
 			}
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::export';
-			$GLOBALS['phpgw']->xslttpl->add_file(array('invoice',
+			phpgwapi_xslttemplates::getInstance()->add_file(array('invoice',
 				'search_field'));
 
-			$values	 = phpgw::get_var('values');
-			$date	 = phpgw::get_var('date');
+			$values	 = Sanitizer::get_var('values');
+			$date	 = Sanitizer::get_var('date');
 			$receipt = array();
 
 			if ($values['submit'])
@@ -515,7 +515,7 @@
 						$GLOBALS['phpgw_info']['flags']['xslt_app']		 = false;
 						$GLOBALS['phpgw_info']['flags']['noframework']	 = true;
 						echo '<pre>' . $receipt['message'][0]['msg'] . '</pre>';
-						echo '&nbsp<a href="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiXport.export')) . '">' . lang('Back') . '</a>';
+						echo '&nbsp<a href="' . phpgw::link('/index.php', array('menuaction' => 'property.uiXport.export')) . '">' . lang('Back') . '</a>';
 					}
 				}
 			}
@@ -542,14 +542,14 @@
 				'select_conv'			 => 'values[conv_type]',
 				'lang_conv_statustext'	 => lang('Select conversion'),
 				'lang_rollback_file'	 => lang('Roll back'),
-				'link_rollback_file'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiXport.rollback')),
+				'link_rollback_file'	 => phpgw::link('/index.php', array('menuaction' => 'property.uiXport.rollback')),
 				'lang_export_to_file'	 => lang('Export to file'),
 				'value_debug'			 => $values['debug'],
 				'lang_debug_statustext'	 => lang('Uncheck to debug the result'),
 				'lang_submit'			 => lang('Submit'),
 				'lang_cancel'			 => lang('Cancel'),
-				'form_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'cancel_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiinvoice.index')),
+				'form_action'			 => phpgw::link('/index.php', $link_data),
+				'cancel_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uiinvoice.index')),
 				'lang_save'				 => lang('save')
 			);
 
@@ -559,7 +559,7 @@
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('export' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('export' => $data));
 		}
 
 		function rollback()
@@ -572,11 +572,11 @@
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = 'property::economy::invoice::rollback';
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('invoice',
+			phpgwapi_xslttemplates::getInstance()->add_file(array('invoice',
 				'search_field'));
 
-			$values	 = phpgw::get_var('values');
-			$date	 = phpgw::get_var('date');
+			$values	 = Sanitizer::get_var('values');
+			$date	 = Sanitizer::get_var('date');
 			//_debug_array($values);
 
 			if ($values['submit'])
@@ -627,7 +627,7 @@
 				'lang_date_statustext'	 => lang('Select date for the file to roll back'),
 				'lang_submit'			 => lang('Submit'),
 				'lang_cancel'			 => lang('Cancel'),
-				'form_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'form_action'			 => phpgw::link('/index.php', $link_data),
 				'lang_save'				 => lang('save')
 			);
 
@@ -638,6 +638,6 @@
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('rollback' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('rollback' => $data));
 		}
 	}	

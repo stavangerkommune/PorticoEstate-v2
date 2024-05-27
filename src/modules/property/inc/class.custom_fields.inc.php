@@ -11,7 +11,7 @@
 	 * @subpackage phpgwapi
 	 * @version $Id$
 	 */
-	/*
+/*
 	  This program is free software: you can redistribute it and/or modify
 	  it under the terms of the GNU General Public License as published by
 	  the Free Software Foundation, either version 2 of the License, or
@@ -26,6 +26,13 @@
 	  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
+	use \App\Database\Db2;
+	use App\modules\phpgwapi\controllers\Locations;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
+
 	/*
 	 * Import the parent class
 	 */
@@ -39,7 +46,7 @@
 	 */
 	class property_custom_fields extends phpgwapi_custom_fields
 	{
-		var $_db2, $contacts;
+		var $_db2, $contacts, $userSettings, $phpgwapi_common, $accounts;
 		/**
 		 * Constructor
 		 *
@@ -50,8 +57,16 @@
 		public function __construct( $appname = null )
 		{
 			parent::__construct($appname);
-			$this->_db2		 = clone($this->_db);
+			$db_config = $this->_db->get_config();
+			//create a new pdo  $this->db2 of the database based on the configuration
+			$this->_db2 = new Db2("pgsql:host={$db_config['db_host']};port={$db_config['db_port']};dbname={$db_config['db_name']}", $db_config['db_user'], $db_config['db_pass']);
+			$this->_db2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$this->_db2->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+			$this->_db2->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 			$this->contacts	 = CreateObject('phpgwapi.contacts', false);
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->phpgwapi_common = new \phpgwapi_common();
+			$this->accounts = new Accounts();
 		}
 
 		/**
@@ -66,21 +81,23 @@
 		 */
 		public function prepare( $values, $appname, $location, $view_only = false )
 		{
-			$GLOBALS['phpgw']->js->validate_file('alertify', 'alertify.min', 'phpgwapi');
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
+			phpgwapi_js::getInstance()->validate_file('alertify', 'alertify.min', 'phpgwapi');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
 
 			$cache_custom_lookup = array();
 
 			$vendor = CreateObject('property.sogeneric');
 			$vendor->get_location_info('vendor', false);
 
-			$location_id = $GLOBALS['phpgw']->locations->get_id($appname, $location);
+			$locations = new Locations();
+
+			$location_id = $locations->get_id($appname, $location);
 
 //			_debug_array($location_id);
 //			_debug_array($values);die();
 
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
 
 			$input_type_array = array
 				(
@@ -95,20 +112,20 @@
 			{
 				$attributes['location_id'] = $location_id;
 				$attributes['datatype_text'] = $this->translate_datatype($attributes['datatype']);
-				$attributes['help_url']		 = $attributes['helpmsg'] ? $GLOBALS['phpgw']->link('/index.php', array(
+				$attributes['help_url']		 = $attributes['helpmsg'] ? phpgw::link('/index.php', array(
 						'menuaction' => 'manual.uimanual.attrib_help', 'appname'	 => $appname, 'location'	 => $location,
 						'id'		 => $attributes['id'])) : '';
 
 				if (!$view_only && $attributes['history'])
 				{
-					$GLOBALS['phpgw']->jqcal->add_listener("values_attribute_{$attributes['id']}_date");
+					(new phpgwapi_jqcal())->add_listener("values_attribute_{$attributes['id']}_date");
 				}
 
 				if ($attributes['datatype'] == 'D' || $attributes['datatype'] == 'DT' || $attributes['datatype'] == 'date' || $attributes['datatype'] == 'timestamp')
 				{
 					if (!$view_only)
 					{
-						$GLOBALS['phpgw']->jqcal->add_listener("values_attribute_{$attributes['id']}");
+						(new phpgwapi_jqcal())->add_listener("values_attribute_{$attributes['id']}");
 						$attributes['lang_datetitle'] = lang('Select date');
 					}
 
@@ -150,14 +167,14 @@ JS;
 						{
 							$timestamp					 = strtotime($attributes['value']);
 							$attributes['value']		 = array();
-							$attributes['value']['date'] = $GLOBALS['phpgw']->common->show_date($timestamp, $dateformat);
+							$attributes['value']['date'] = $this->phpgwapi_common->show_date($timestamp, $dateformat);
 							$attributes['value']['hour'] = date('H', $timestamp + phpgwapi_datetime::user_timezone());
 							$attributes['value']['min']	 = date('i', $timestamp + phpgwapi_datetime::user_timezone());
 						}
 						else
 						{
 							$timestamp_date		 = mktime(0, 0, 0, date('m', strtotime($attributes['value'])), date('d', strtotime($attributes['value'])), date('y', strtotime($attributes['value'])));
-							$attributes['value'] = $GLOBALS['phpgw']->common->show_date($timestamp_date, $dateformat);
+							$attributes['value'] = $this->phpgwapi_common->show_date($timestamp_date, $dateformat);
 						}
 					}
 				}
@@ -185,7 +202,7 @@ JS;
 					$insert_record_values[] = $attributes['name'];
 					if (!$view_only)
 					{
-						$lookup_link = $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uilookup.addressbook',
+						$lookup_link = phpgw::link('/index.php', array('menuaction'	 => 'property.uilookup.addressbook',
 							'column'		 => $attributes['name'],
 							'clear_state'	 => 1));
 
@@ -233,7 +250,7 @@ JS;
 					$insert_record_values[] = $attributes['name'];
 					if (!$view_only)
 					{
-						$lookup_link = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uilookup.organisation',
+						$lookup_link = phpgw::link('/index.php', array('menuaction' => 'property.uilookup.organisation',
 							'column'	 => $attributes['name']));
 
 						$lookup_functions[$m]['name']	 = 'lookup_' . $attributes['name'] . '()';
@@ -244,7 +261,7 @@ JS;
 				else if ($attributes['datatype'] == 'QR_code')
 				{
 
-					$GLOBALS['phpgw']->js->validate_file('html5-qrcode', str_replace('.js', '', 'html5-qrcode.min.js'), 'phpgwapi');
+					phpgwapi_js::getInstance()->validate_file('html5-qrcode', str_replace('.js', '', 'html5-qrcode.min.js'), 'phpgwapi');
 
 					$_QR_code = <<<JS
 
@@ -292,7 +309,7 @@ JS;
 
 JS;
 
-					$GLOBALS['phpgw']->js->add_code('', $_QR_code, true);
+					phpgwapi_js::getInstance()->add_code('', $_QR_code, true);
 
 				}
 				else if ($attributes['datatype'] == 'VENDOR')
@@ -315,7 +332,7 @@ JS;
 					$insert_record_values[] = $attributes['name'];
 					if (!$view_only)
 					{
-						$lookup_link = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uilookup.vendor',
+						$lookup_link = phpgw::link('/index.php', array('menuaction' => 'property.uilookup.vendor',
 							'column'	 => $attributes['name']));
 
 						$lookup_functions[$m]['name']	 = 'lookup_' . $attributes['name'] . '()';
@@ -360,7 +377,7 @@ JS;
 					$insert_record_values[] = $attributes['name'];
 					if (!$view_only)
 					{
-						$lookup_link = $GLOBALS['phpgw']->link('/index.php', array(
+						$lookup_link = phpgw::link('/index.php', array(
 							'menuaction'				 => 'property.uilookup.custom',
 							'column'					 => $attributes['name'],
 							'get_list_function'			 => $attributes['get_list_function'],
@@ -406,21 +423,22 @@ JS;
 
 JS;
 
-						$GLOBALS['phpgw']->js->add_code('', $_autocomplete);
+						phpgwapi_js::getInstance()->add_code('', $_autocomplete);
 					}
 				}
 				else if ($attributes['datatype'] == 'user')
 				{
-					$attributes['value'] = empty($attributes['value']) ? $GLOBALS['phpgw_info']['user']['account_id'] : $attributes['value'];
+					$attributes['value'] = empty($attributes['value']) ? $this->userSettings['account_id'] : $attributes['value'];
 					if ($attributes['value'])
 					{
-						$attributes['user_name'] = $GLOBALS['phpgw']->accounts->id2name($attributes['value']);
+						$attributes['user_name'] = $this->accounts->id2name($attributes['value']);
+
 					}
 
 					$insert_record_values[] = $attributes['name'];
 					if (!$view_only)
 					{
-						$lookup_link = $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uilookup.phpgw_user',
+						$lookup_link = phpgw::link('/index.php', array('menuaction'	 => 'property.uilookup.phpgw_user',
 							'column'		 => $attributes['name'], 'clear_state'	 => 1));
 
 						$lookup_functions[$m]['name']	 = 'lookup_' . $attributes['name'] . '()';
@@ -432,8 +450,8 @@ JS;
 				{
 					$input_type = $input_type_array[$attributes['datatype']];
 
-					$attributes['add_img'] = $GLOBALS['phpgw']->common->image('phpgwapi', 'add2');
-					$attributes['delete_img'] = $GLOBALS['phpgw']->common->image('phpgwapi', 'recycle-bin-line');
+					$attributes['add_img'] = $this->phpgwapi_common->image('phpgwapi', 'add2');
+					$attributes['delete_img'] = $this->phpgwapi_common->image('phpgwapi', 'recycle-bin-line');
 					$attributes['lang_new_value'] = lang('New value for multiple choice');
 
 					if ($attributes['datatype'] == 'CH')
@@ -498,7 +516,7 @@ JS;
 						$id	 = "property{$location}::{$attributes['item_id']}::{$attributes['value']}";
 						$job = execMethod('phpgwapi.asyncservice.read', $id);
 
-						$attributes['next']			 = $GLOBALS['phpgw']->common->show_date($job[$id]['next'], $dateformat);
+						$attributes['next']			 = $this->phpgwapi_common->show_date($job[$id]['next'], $dateformat);
 						$attributes['lang_next_run'] = lang('next run');
 						unset($event);
 						unset($id);
@@ -559,7 +577,7 @@ JS;
 //_debug_array($values);die();
 			if (isset($lookup_functions) && $lookup_functions)
 			{
-				$GLOBALS['phpgw']->session->appsession('insert_record_values' . $location, $appname, $insert_record_values);
+				Cache::session_set($appname,'insert_record_values' . $location, $insert_record_values);
 			}
 
 			return $values;
@@ -609,7 +627,7 @@ JS;
 						case 'email':
 						case 'link':
 						case 'QR_code':
-							$data['value_set'][$entry['name']]	 = isset($entry['value']) && $entry['value'] ? $this->_db2->db_addslashes(phpgw::clean_value($entry['value'], 'string')) : '';
+							$data['value_set'][$entry['name']]	 = isset($entry['value']) && $entry['value'] ? $this->_db2->db_addslashes(Sanitizer::clean_value($entry['value'], 'string')) : '';
 							$entry['value']						 = $this->_db2->db_addslashes($entry['value']); // in case of history entries
 							break;
 						case 'LB':
@@ -623,16 +641,16 @@ JS;
 						case 'I':
 						case 'custom3':
 						case 'user':
-							$data['value_set'][$entry['name']]	 = isset($entry['value']) && $entry['value'] ? phpgw::clean_value($entry['value'], 'int') : '';
+							$data['value_set'][$entry['name']]	 = isset($entry['value']) && $entry['value'] ? Sanitizer::clean_value($entry['value'], 'int') : '';
 							break;
 						case 'bolean':
-							$data['value_set'][$entry['name']]	 = isset($entry['value']) && $entry['value'] ? phpgw::clean_value($entry['value'], 'bool') : '';
+							$data['value_set'][$entry['name']]	 = isset($entry['value']) && $entry['value'] ? Sanitizer::clean_value($entry['value'], 'bool') : '';
 							break;
 						case 'N':
-							$data['value_set'][$entry['name']]	 = isset($entry['value']) && $entry['value'] ? phpgw::clean_value($entry['value'], 'float') : '';
+							$data['value_set'][$entry['name']]	 = isset($entry['value']) && $entry['value'] ? Sanitizer::clean_value($entry['value'], 'float') : '';
 							break;
 						case 'CH':
-							$_value								 = ',' . implode(',', phpgw::clean_value($entry['value'])) . ',';
+							$_value								 = ',' . implode(',', Sanitizer::clean_value($entry['value'])) . ',';
 							$data['value_set'][$entry['name']]	 = isset($entry['value']) && $entry['value'] ? $_value : '';
 							break;
 						case 'D':
@@ -662,7 +680,7 @@ JS;
 							break;
 
 						default:
-							$data['value_set'][$entry['name']] = isset($entry['value']) && $entry['value'] ? $this->_db2->db_addslashes(phpgw::clean_value($entry['value'], 'string')) : '';
+							$data['value_set'][$entry['name']] = isset($entry['value']) && $entry['value'] ? $this->_db2->db_addslashes(Sanitizer::clean_value($entry['value'], 'string')) : '';
 					}
 
 
@@ -788,14 +806,14 @@ JS;
 					}
 					break;
 				case 'D':
-					$ret = $GLOBALS['phpgw']->common->show_date(strtotime($data['value']), $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
+					$ret = $this->phpgwapi_common->show_date(strtotime($data['value']), $this->userSettings['preferences']['common']['dateformat']);
 					break;
 				case 'DT':
-					$ret = $GLOBALS['phpgw']->common->show_date(strtotime($data['value']));
+					$ret = $this->phpgwapi_common->show_date(strtotime($data['value']));
 					break;
 				case 'timestamp':
-					//			$ret =  date($GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'],$data['value']);
-					$ret = $GLOBALS['phpgw']->common->show_date($data['value']);
+					//			$ret =  date($this->userSettings['preferences']['common']['dateformat'],$data['value']);
+					$ret = $this->phpgwapi_common->show_date($data['value']);
 					break;
 				case 'link':
 					$ret = phpgw::safe_redirect($data['value']);
@@ -803,7 +821,7 @@ JS;
 				case 'user':
 					if (!isset($cache_vendor[$data['value']]) || $ret != $cache_vendor[$data['value']])
 					{
-						$ret							 = $GLOBALS['phpgw']->accounts->get($data['value'])->__toString();
+						$ret							 = $this->accounts->get($data['value'])->__toString();
 						$cache_vendor[$data['value']]	 = $ret;
 					}
 					break;

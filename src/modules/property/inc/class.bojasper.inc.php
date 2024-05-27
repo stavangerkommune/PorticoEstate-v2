@@ -54,14 +54,14 @@
 				$this->use_session = true;
 			}
 
-			$start	 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query	 = phpgw::get_var('query');
-			$sort	 = phpgw::get_var('sort');
-			$order	 = phpgw::get_var('order');
-			$filter	 = phpgw::get_var('filter', 'int');
-			$cat_id	 = phpgw::get_var('cat_id', 'int');
-			$allrows = phpgw::get_var('allrows', 'bool');
-			$app	 = phpgw::get_var('app');
+			$start	 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query	 = Sanitizer::get_var('query');
+			$sort	 = Sanitizer::get_var('sort');
+			$order	 = Sanitizer::get_var('order');
+			$filter	 = Sanitizer::get_var('filter', 'int');
+			$cat_id	 = Sanitizer::get_var('cat_id', 'int');
+			$allrows = Sanitizer::get_var('allrows', 'bool');
+			$app	 = Sanitizer::get_var('app');
 
 			$this->start	 = $start ? $start : 0;
 			$this->query	 = isset($_REQUEST['query']) ? $query : $this->query;

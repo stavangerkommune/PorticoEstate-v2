@@ -95,7 +95,7 @@
 			{
 				phpgw::no_access();
 			}
-			$serie_id	 = phpgw::get_var('serie_id', 'int');
+			$serie_id	 = Sanitizer::get_var('serie_id', 'int');
 			$history	 = execMethod('controller.socontrol.get_assigned_history', array('serie_id' => $serie_id));
 			$lang_user	 = lang('user');
 			$lang_date	 = lang('date');
@@ -140,18 +140,18 @@ HTML;
 
 		public function get_controls_at_component( $location_id = 0, $id = 0, $skip_json = false )
 		{
-			$location_id = $location_id ? $location_id : phpgw::get_var('location_id', 'int');
+			$location_id = $location_id ? $location_id : Sanitizer::get_var('location_id', 'int');
 
 			if (!$location_id)
 			{
-				$entity_id	 = phpgw::get_var('entity_id', 'int');
-				$cat_id		 = phpgw::get_var('cat_id', 'int');
-				$type		 = phpgw::get_var('type', 'string', 'REQUEST', 'entity');
+				$entity_id	 = Sanitizer::get_var('entity_id', 'int');
+				$cat_id		 = Sanitizer::get_var('cat_id', 'int');
+				$type		 = Sanitizer::get_var('type', 'string', 'REQUEST', 'entity');
 
 				$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$type], ".{$type}.{$entity_id}.{$cat_id}");
 			}
 
-			$id = $id ? $id : phpgw::get_var('id', 'int');
+			$id = $id ? $id : Sanitizer::get_var('id', 'int');
 			if (!$id)
 			{
 				return array();
@@ -186,7 +186,7 @@ HTML;
 				);
 
 				$entry['title_text']		 = $entry['title'];
-				$entry['title']				 = '<a href="' . $GLOBALS['phpgw']->link('/index.php', $control_link_data) . '" target="_blank">' . $entry['title'] . '</a>';
+				$entry['title']				 = '<a href="' . phpgw::link('/index.php', $control_link_data) . '" target="_blank">' . $entry['title'] . '</a>';
 				$entry['assigned_to_name']	 = "<a title=\"{$lang_history}\" onclick='javascript:showlightbox_assigned_history({$entry['serie_id']});'>{$entry['assigned_to_name']}</a>";
 
 				$entry['start_date']	 = $GLOBALS['phpgw']->common->show_date($entry['start_date'], $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
@@ -194,7 +194,7 @@ HTML;
 				$entry['total_time']	 = $entry['service_time'] + $entry['controle_time'];
 			}
 
-			$phpgw_return_as = phpgw::get_var('phpgw_return_as');
+			$phpgw_return_as = Sanitizer::get_var('phpgw_return_as');
 
 			if (($phpgw_return_as == 'json' && $skip_json) || $phpgw_return_as != 'json')
 			{
@@ -205,7 +205,7 @@ HTML;
 				(
 				'results'		 => $controls,
 				'total_records'	 => count($controls),
-				'draw'			 => phpgw::get_var('draw', 'int')
+				'draw'			 => Sanitizer::get_var('draw', 'int')
 			);
 
 			return $this->jquery_results($result_data);
@@ -222,15 +222,15 @@ HTML;
 		{
 			if (!$location_id)
 			{
-				$location_id = phpgw::get_var('location_id', 'int');
+				$location_id = Sanitizer::get_var('location_id', 'int');
 			}
 			if (!$id)
 			{
-				$id = phpgw::get_var('id', 'int');
+				$id = Sanitizer::get_var('id', 'int');
 			}
 			if (!$year)
 			{
-				$year = phpgw::get_var('year', 'int');
+				$year = Sanitizer::get_var('year', 'int');
 			}
 
 //			$year = $year ? $year : -1; //all
@@ -279,7 +279,7 @@ HTML;
 						$_method = 'view_open_cases';
 				}
 
-				$_link = $GLOBALS['phpgw']->link('/index.php', array
+				$_link = phpgw::link('/index.php', array
 					(
 					'menuaction'	 => "controller.uicase.{$_method}",
 					'check_list_id'	 => $case['check_list_id']
@@ -323,13 +323,13 @@ HTML;
 				unset($_link);
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$result_data = array
 					(
 					'results'		 => $_cases,
 					'total_records'	 => count($_cases),
-					'draw'			 => phpgw::get_var('draw', 'int')
+					'draw'			 => Sanitizer::get_var('draw', 'int')
 				);
 
 				return $this->jquery_results($result_data);
@@ -343,7 +343,7 @@ HTML;
 		 */
 		public function get_cases_for_checklist()
 		{
-			$check_list_id		 = phpgw::get_var('check_list_id', 'int');
+			$check_list_id		 = Sanitizer::get_var('check_list_id', 'int');
 			$so_check_item		 = CreateObject('controller.socheck_item');
 			$controller_cases	 = $so_check_item->get_check_items_with_cases($check_list_id, $_type				 = null, 'all', null, null);
 
@@ -381,7 +381,7 @@ HTML;
 							$_method = 'view_open_cases';
 					}
 
-					$_link		 = $GLOBALS['phpgw']->link('/index.php', array
+					$_link		 = phpgw::link('/index.php', array
 						(
 						'menuaction'	 => "controller.uicase.{$_method}",
 						'check_list_id'	 => $check_list_id
@@ -432,13 +432,13 @@ HTML;
 				}
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$result_data = array
 					(
 					'results'		 => $_cases,
 					'total_records'	 => count($_cases),
-					'draw'			 => phpgw::get_var('draw', 'int')
+					'draw'			 => Sanitizer::get_var('draw', 'int')
 				);
 
 				return $this->jquery_results($result_data);
@@ -457,15 +457,15 @@ HTML;
 		{
 			if (!$location_id)
 			{
-				$location_id = phpgw::get_var('location_id', 'int');
+				$location_id = Sanitizer::get_var('location_id', 'int');
 			}
 			if (!$id)
 			{
-				$id = phpgw::get_var('id', 'int');
+				$id = Sanitizer::get_var('id', 'int');
 			}
 			if (!$year)
 			{
-				$year = phpgw::get_var('year', 'int', 'REQUEST', date('Y'));
+				$year = Sanitizer::get_var('year', 'int', 'REQUEST', date('Y'));
 			}
 			$socheck_list = CreateObject('controller.socheck_list');
 
@@ -504,7 +504,7 @@ HTML;
 
 				foreach ($check_lists as $check_list)
 				{
-					$_link			 = $GLOBALS['phpgw']->link('/index.php', array(
+					$_link			 = phpgw::link('/index.php', array(
 						'menuaction'	 => "controller.uicheck_list.edit_check_list",
 						'check_list_id'	 => $check_list->get_id()
 						)
@@ -525,13 +525,13 @@ HTML;
 				}
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$result_data = array
 					(
 					'results'		 => $_check_list,
 					'total_records'	 => count($_check_list),
-					'draw'			 => phpgw::get_var('draw', 'int')
+					'draw'			 => Sanitizer::get_var('draw', 'int')
 				);
 
 				return $this->jquery_results($result_data);
@@ -541,16 +541,16 @@ HTML;
 
 		public function add_control()
 		{
-			$location_id	 = phpgw::get_var('location_id', 'int');
-			$id				 = phpgw::get_var('id', 'int');
-			$control_id		 = phpgw::get_var('control_id', 'int');
-			$assigned_to	 = phpgw::get_var('control_responsible', 'int');
-			$start_date		 = phpgw::get_var('control_start_date', 'string');
-			$repeat_type	 = phpgw::get_var('repeat_type', 'int');
-			$repeat_interval = phpgw::get_var('repeat_interval', 'int');
+			$location_id	 = Sanitizer::get_var('location_id', 'int');
+			$id				 = Sanitizer::get_var('id', 'int');
+			$control_id		 = Sanitizer::get_var('control_id', 'int');
+			$assigned_to	 = Sanitizer::get_var('control_responsible', 'int');
+			$start_date		 = Sanitizer::get_var('control_start_date', 'string');
+			$repeat_type	 = Sanitizer::get_var('repeat_type', 'int');
+			$repeat_interval = Sanitizer::get_var('repeat_interval', 'int');
 			$repeat_interval = $repeat_interval ? $repeat_interval : 1;
-			$controle_time	 = phpgw::get_var('controle_time', 'float');
-			$service_time	 = phpgw::get_var('service_time', 'float');
+			$controle_time	 = Sanitizer::get_var('controle_time', 'float');
+			$service_time	 = Sanitizer::get_var('service_time', 'float');
 
 //			$location_info = $GLOBALS['phpgw']->locations->get_name($location_id);
 //
@@ -644,7 +644,7 @@ HTML;
 			$type			 = 'component';
 			$comment		 = '';
 			$assigned_to	 = $data['assigned_to'];
-			$billable_hours	 = phpgw::get_var('billable_hours', 'float');
+			$billable_hours	 = Sanitizer::get_var('billable_hours', 'float');
 
 			$deadline_date_ts	 = $data['start_date'];
 			$planned_date_ts	 = $deadline_date_ts;
@@ -679,7 +679,7 @@ HTML;
 
 		function update_control_serie()
 		{
-			if ($start_date = phpgw::get_var('control_start_date', 'string'))
+			if ($start_date = Sanitizer::get_var('control_start_date', 'string'))
 			{
 				phpgw::import_class('phpgwapi.datetime');
 				$start_date = phpgwapi_datetime::date_to_timestamp($start_date);
@@ -688,14 +688,14 @@ HTML;
 			$so_control = CreateObject('controller.socontrol');
 
 			$values	 = array(
-				'ids'				 => phpgw::get_var('ids', 'int'),
-				'action'			 => phpgw::get_var('action', 'string'),
-				'assigned_to'		 => phpgw::get_var('control_responsible', 'int'),
+				'ids'				 => Sanitizer::get_var('ids', 'int'),
+				'action'			 => Sanitizer::get_var('action', 'string'),
+				'assigned_to'		 => Sanitizer::get_var('control_responsible', 'int'),
 				'start_date'		 => $start_date,
-				'repeat_type'		 => phpgw::get_var('repeat_type', 'int'),
-				'repeat_interval'	 => phpgw::get_var('repeat_interval', 'int'),
-				'controle_time'		 => phpgw::get_var('controle_time', 'float'),
-				'service_time'		 => phpgw::get_var('service_time', 'float')
+				'repeat_type'		 => Sanitizer::get_var('repeat_type', 'int'),
+				'repeat_interval'	 => Sanitizer::get_var('repeat_interval', 'int'),
+				'controle_time'		 => Sanitizer::get_var('controle_time', 'float'),
+				'service_time'		 => Sanitizer::get_var('service_time', 'float')
 			);
 			$ret	 = $so_control->update_control_serie($values);
 

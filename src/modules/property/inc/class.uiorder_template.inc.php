@@ -96,7 +96,7 @@
 				phpgw::no_access();
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query(true);
 			}
@@ -181,14 +181,14 @@
 			 * Save
 			 */
 
-			if (!$error && (phpgw::get_var('save', 'bool')))
+			if (!$error && (Sanitizer::get_var('save', 'bool')))
 			{
 				$this->save();
 
 				self::redirect(array('menuaction'	 => "{$this->currentapp}.uiorder_template.edit"));
 			}
 
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 			if (!$error && $id)
 			{
 				$values	= $this->bo->read_single($id);
@@ -407,7 +407,7 @@
 			/**
 			 * Do not allow save / send here
 			 */
-			if (phpgw::get_var('save', 'bool'))
+			if (Sanitizer::get_var('save', 'bool'))
 			{
 				phpgw::no_access();
 			}
@@ -416,7 +416,7 @@
 
 		public function save( $init_preview = null )
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
 			/*
 			 * Overrides with incoming data from POST
@@ -466,7 +466,7 @@
 			{
 				if (($field_info['action'] & PHPGW_ACL_ADD) || ($field_info['action'] & PHPGW_ACL_EDIT))
 				{
-					$value = phpgw::get_var($field, $field_info['type']);
+					$value = Sanitizer::get_var($field, $field_info['type']);
 
 					if ($field_info['required'] && (($value !== '0' && empty($value)) || empty($value)))
 					{
@@ -479,7 +479,7 @@
 
 			$values['id'] = $id;
 
-			$values['ticket_status'] = phpgw::get_var('ticket_status');
+			$values['ticket_status'] = Sanitizer::get_var('ticket_status');
 
 			return $values;
 		}

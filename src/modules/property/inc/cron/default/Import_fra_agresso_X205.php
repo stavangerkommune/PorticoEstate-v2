@@ -271,7 +271,7 @@
 					$prefs = $this->bocommon->create_preferences('common', $GLOBALS['phpgw']->accounts->name2id($lid));
 					if (isset($prefs['email']) && $prefs['email'])
 					{
-						$body = '<a href ="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiinvoice2.index',
+						$body = '<a href ="' . phpgw::link('/index.php', array('menuaction' => 'property.uiinvoice2.index',
 								 'user_lid'	 => $lid), false, true) . '">Link til fakturabehandling</a>';
 						try
 						{
@@ -652,7 +652,7 @@
 					{
 						$from	 = "Ikke svar<IkkeSvar@nlsh.no>";
 						$body	 = "Ikke gyldig leverandør, id: {$_data['SUPPLIER.CODE']}</br>";
-						$body	 .= '<a href ="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uigeneric.edit',
+						$body	 .= '<a href ="' . phpgw::link('/index.php', array('menuaction' => 'property.uigeneric.edit',
 								'appname'	 => 'property', 'type'		 => 'vendor'), false, true) . '">Link til å legge inn ny leverandør</a>';
 
 						try
@@ -754,7 +754,7 @@
 					if (isset($GLOBALS['phpgw_info']['server']['smtp_server']) && $GLOBALS['phpgw_info']['server']['smtp_server'])
 					{
 						$subject = 'Ny faktura venter på behandling';
-						$body	 = '<a href ="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiinvoice2.index',
+						$body	 = '<a href ="' . phpgw::link('/index.php', array('menuaction' => 'property.uiinvoice2.index',
 								'voucher_id' => $bilagsnr, 'query'		 => $bilagsnr, 'user_lid'	 => 'all'), false, true) . '">Link til fakturabehandling</a>';
 
 						try

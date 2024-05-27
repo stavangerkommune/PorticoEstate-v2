@@ -28,7 +28,7 @@
 				{
 					if (strlen(trim($value)) > 0)
 					{
-						$config->value($dim, phpgw::clean_value($value));
+						$config->value($dim, Sanitizer::clean_value($value));
 					}
 					else
 					{

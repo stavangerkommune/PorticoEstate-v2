@@ -338,11 +338,11 @@
 
 			if ($external)
 			{
-				return $GLOBALS['phpgw']->link('/index.php', $link, false, true);
+				return phpgw::link('/index.php', $link, false, true);
 			}
 			else
 			{
-				return $GLOBALS['phpgw']->link('/index.php', $link);
+				return phpgw::link('/index.php', $link);
 			}
 		}
 

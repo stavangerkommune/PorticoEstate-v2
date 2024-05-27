@@ -458,7 +458,7 @@
 
 		function get_filters_dependent()
 		{
-			$basis = phpgw::get_var('draw', 'bool');
+			$basis = Sanitizer::get_var('draw', 'bool');
 
 			$revision = $this->bo->get_revision_filter_list($this->revision, $basis);
 			array_unshift($revision, array('id' => '', 'name' => lang('no revision')));
@@ -480,7 +480,7 @@
 					'perm'			 => 1, 'acl_location'	 => $acl_location));
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -562,7 +562,7 @@
 			$data['datatable']['actions'][] = array(
 				'my_name'	 => 'edit',
 				'text'		 => lang('edit'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uibudget.edit')),
+				'action'	 => phpgw::link('/index.php', array('menuaction' => 'property.uibudget.edit')),
 				'parameters' => json_encode($parameters)
 			);
 
@@ -570,7 +570,7 @@
 				'my_name'		 => 'delete',
 				'text'			 => lang('delete'),
 				'confirm_msg'	 => lang('do you really want to delete this entry'),
-				'action'		 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uibudget.delete')),
+				'action'		 => phpgw::link('/index.php', array('menuaction' => 'property.uibudget.delete')),
 				'parameters'	 => json_encode($parameters)
 			);
 
@@ -579,7 +579,7 @@
 			  $data['datatable']['actions'][] = array(
 			  'my_name'		=> 'add',
 			  'text' 			=> lang('add'),
-			  'action'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'property.uibudget.edit'))
+			  'action'	=> phpgw::link('/index.php',array('menuaction'=> 'property.uibudget.edit'))
 			  );
 			  } */
 			unset($parameters);
@@ -608,11 +608,11 @@
 
 		public function query()
 		{
-			$search		 = phpgw::get_var('search');
-			$order		 = phpgw::get_var('order');
-			$draw		 = phpgw::get_var('draw', 'int');
-			$columns	 = phpgw::get_var('columns');
-			$export		 = phpgw::get_var('export', 'bool');
+			$search		 = Sanitizer::get_var('search');
+			$order		 = Sanitizer::get_var('order');
+			$draw		 = Sanitizer::get_var('draw', 'int');
+			$columns	 = Sanitizer::get_var('columns');
+			$export		 = Sanitizer::get_var('export', 'bool');
 			$order_field = '';
 
 			switch ($columns[$order[0]['column']]['data'])
@@ -628,12 +628,12 @@
 			}
 
 			$params = array(
-				'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'		 => $search['value'],
 				'order'		 => $order_field,
 				'sort'		 => $order[0]['dir'],
-				'allrows'	 => phpgw::get_var('length', 'int') == -1 || $export
+				'allrows'	 => Sanitizer::get_var('length', 'int') == -1 || $export
 			);
 
 			$values = $this->bo->read($params);
@@ -662,7 +662,7 @@
 					'perm'			 => 1, 'acl_location'	 => $acl_location));
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query_basis();
 			}
@@ -742,7 +742,7 @@
 			$data['datatable']['actions'][] = array(
 				'my_name'	 => 'edit',
 				'text'		 => lang('edit'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uibudget.edit_basis')),
+				'action'	 => phpgw::link('/index.php', array('menuaction' => 'property.uibudget.edit_basis')),
 				'parameters' => json_encode($parameters)
 			);
 
@@ -750,7 +750,7 @@
 				'my_name'		 => 'delete',
 				'text'			 => lang('delete'),
 				'confirm_msg'	 => lang('do you really want to delete this entry'),
-				'action'		 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uibudget.delete_basis')),
+				'action'		 => phpgw::link('/index.php', array('menuaction' => 'property.uibudget.delete_basis')),
 				'parameters'	 => json_encode($parameters)
 			);
 
@@ -759,7 +759,7 @@
 			  $datatable['rowactions']['action'][] = array(
 			  'my_name'		=> 'add',
 			  'text' 			=> lang('add'),
-			  'action'		=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'property.uibudget.edit_basis'))
+			  'action'		=> phpgw::link('/index.php',array('menuaction'=> 'property.uibudget.edit_basis'))
 			  );
 			  } */
 
@@ -776,11 +776,11 @@
 
 		public function query_basis()
 		{
-			$search		 = phpgw::get_var('search');
-			$order		 = phpgw::get_var('order');
-			$draw		 = phpgw::get_var('draw', 'int');
-			$columns	 = phpgw::get_var('columns');
-			$export		 = phpgw::get_var('export', 'bool');
+			$search		 = Sanitizer::get_var('search');
+			$order		 = Sanitizer::get_var('order');
+			$draw		 = Sanitizer::get_var('draw', 'int');
+			$columns	 = Sanitizer::get_var('columns');
+			$export		 = Sanitizer::get_var('export', 'bool');
 			$order_field = '';
 
 			switch ($columns[$order[0]['column']]['data'])
@@ -796,12 +796,12 @@
 			}
 
 			$params = array(
-				'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'		 => $search['value'],
 				'order'		 => $order_field,
 				'sort'		 => $order[0]['dir'],
-				'allrows'	 => phpgw::get_var('length', 'int') == -1 || $export
+				'allrows'	 => Sanitizer::get_var('length', 'int') == -1 || $export
 			);
 
 			$values = $this->bo->read_basis($params);
@@ -829,7 +829,7 @@
 					'perm'			 => 1, 'acl_location'	 => $acl_location));
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query_obligations();
 			}
@@ -926,19 +926,19 @@
 
 		public function query_obligations()
 		{
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
-			$export	 = phpgw::get_var('export', 'bool');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
+			$export	 = Sanitizer::get_var('export', 'bool');
 
 			$params = array(
-				'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'		 => $search['value'],
 				'order'		 => $columns[$order[0]['column']]['data'],
 				'sort'		 => $order[0]['dir'],
-				'allrows'	 => phpgw::get_var('length', 'int') == -1 || $export
+				'allrows'	 => Sanitizer::get_var('length', 'int') == -1 || $export
 			);
 
 			$location_list = $this->bo->read_obligations($params);
@@ -970,7 +970,7 @@
 						'budget_cost'		 => number_format((float)$entry['budget_cost'], 0, ',', ' '),
 						'obligation_ex'		 => $entry['obligation'],
 						'obligation'		 => number_format((float)$entry['obligation'], 0, ',', ' '),
-						'link_obligation'	 => urldecode($GLOBALS['phpgw']->link('/index.php', array(
+						'link_obligation'	 => urldecode(phpgw::link('/index.php', array(
 								'menuaction'		 => 'property.uiworkorder.index', 'filter'			 => 'all', // 'paid' => 1,
 								'district_id'		 => $entry['district_id'], 'b_group'			 => $entry['grouping'],
 								'b_account'			 => $entry['b_account'],
@@ -979,7 +979,7 @@
 						'actual_cost_ex'	 => $entry['actual_cost'],
 						'actual_cost_period' => number_format((float)$entry['actual_cost_period'], 0, ',', ' '),
 						'actual_cost'		 => number_format((float)$entry['actual_cost'], 0, ',', ' '),
-						'link_actual_cost'	 => urldecode($GLOBALS['phpgw']->link('/index.php', array(
+						'link_actual_cost'	 => urldecode(phpgw::link('/index.php', array(
 								'menuaction'		 => 'property.uiinvoice.consume', 'district_id'		 => $entry['district_id'],
 								'b_account_class'	 => $entry['grouping'], 'b_account'			 => $entry['b_account'],
 								'start_date'		 => $start_date, 'end_date'			 => $end_date, 'ecodimb'			 => $entry['ecodimb'],
@@ -1023,7 +1023,7 @@
 					'perm'			 => 2, 'acl_location'	 => $acl_location));
 			}
 
-			$budget_id = phpgw::get_var('budget_id', 'int');
+			$budget_id = Sanitizer::get_var('budget_id', 'int');
 
 			if ($values['budget_id'])
 			{
@@ -1080,8 +1080,8 @@
 				'select_district_name'		 => 'values[district_id]',
 				'district_list'				 => $this->bocommon->select_district_list('select', $values['district_id']),
 				'msgbox_data'				 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'edit_url'					 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'done_action'				 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uibudget.index')),
+				'edit_url'					 => phpgw::link('/index.php', $link_data),
+				'done_action'				 => phpgw::link('/index.php', array('menuaction' => 'property.uibudget.index')),
 				'lang_budget_id'			 => lang('ID'),
 				'value_budget_id'			 => $budget_id,
 				'lang_budget_cost'			 => lang('budget cost'),
@@ -1112,12 +1112,12 @@
 				return $this->edit();
 			}
 
-			$budget_id	 = phpgw::get_var('budget_id', 'int');
-			$values		 = phpgw::get_var('values');
+			$budget_id	 = Sanitizer::get_var('budget_id', 'int');
+			$values		 = Sanitizer::get_var('values');
 
-			$values['b_account_id']		 = phpgw::get_var('b_account_id', 'int', 'POST');
-			$values['b_account_name']	 = phpgw::get_var('b_account_name', 'string', 'POST');
-			$values['ecodimb']			 = phpgw::get_var('ecodimb');
+			$values['b_account_id']		 = Sanitizer::get_var('b_account_id', 'int', 'POST');
+			$values['b_account_name']	 = Sanitizer::get_var('b_account_name', 'string', 'POST');
+			$values['ecodimb']			 = Sanitizer::get_var('ecodimb');
 
 			if (!$values['b_account_id'] > 0)
 			{
@@ -1183,7 +1183,7 @@
 					'perm'			 => 2, 'acl_location'	 => $acl_location));
 			}
 
-			$budget_id = phpgw::get_var('budget_id', 'int');
+			$budget_id = Sanitizer::get_var('budget_id', 'int');
 
 			if ($this->receipt['error'])
 			{
@@ -1261,8 +1261,8 @@
 				'value_b_group'						 => $values['b_group'],
 				'value_revision'					 => $values['revision'],
 				'msgbox_data'						 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'edit_url'							 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'done_action'						 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uibudget.basis')),
+				'edit_url'							 => phpgw::link('/index.php', $link_data),
+				'done_action'						 => phpgw::link('/index.php', array('menuaction' => 'property.uibudget.basis')),
 				'lang_budget_id'					 => lang('ID'),
 				'value_budget_id'					 => $budget_id,
 				'value_distribute_id'				 => $budget_id ? $budget_id : 'new',
@@ -1295,9 +1295,9 @@
 				return $this->edit_basis();
 			}
 
-			$budget_id			 = phpgw::get_var('budget_id', 'int');
-			$values				 = phpgw::get_var('values');
-			$values['ecodimb']	 = phpgw::get_var('ecodimb');
+			$budget_id			 = Sanitizer::get_var('budget_id', 'int');
+			$values				 = Sanitizer::get_var('values');
+			$values['ecodimb']	 = Sanitizer::get_var('ecodimb');
 
 			if (!$values['b_group'] && !$budget_id)
 			{
@@ -1357,33 +1357,33 @@
 
 		function delete()
 		{
-			$budget_id = phpgw::get_var('budget_id', 'int');
+			$budget_id = Sanitizer::get_var('budget_id', 'int');
 			//cramirez add JsonCod for Delete
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$this->bo->delete($budget_id);
 				return "budget_id " . $budget_id . " " . lang("has been deleted");
 			}
 
-			$confirm = phpgw::get_var('confirm', 'bool', 'POST');
+			$confirm = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 				(
 				'menuaction' => 'property.uibudget.index'
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete($budget_id);
 				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 				(
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uibudget.delete',
+				'done_action'			 => phpgw::link('/index.php', $link_data),
+				'delete_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uibudget.delete',
 					'budget_id'	 => $budget_id)),
 				'lang_confirm_msg'		 => lang('do you really want to delete this entry'),
 				'lang_yes'				 => lang('yes'),
@@ -1396,14 +1396,14 @@
 			$function_msg	 = lang('delete budget');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 
 		function delete_basis()
 		{
-			$budget_id = phpgw::get_var('budget_id', 'int');
+			$budget_id = Sanitizer::get_var('budget_id', 'int');
 			//JsonCod for Delete
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$this->bo->delete_basis($budget_id);
 				return "budget_id " . $budget_id . " " . lang("has been deleted");
@@ -1411,25 +1411,25 @@
 
 
 
-			$confirm = phpgw::get_var('confirm', 'bool', 'POST');
+			$confirm = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 				(
 				'menuaction' => 'property.uibudget.basis'
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete_basis($budget_id);
 				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 				(
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uibudget.delete_basis',
+				'done_action'			 => phpgw::link('/index.php', $link_data),
+				'delete_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uibudget.delete_basis',
 					'budget_id'	 => $budget_id)),
 				'lang_confirm_msg'		 => lang('do you really want to delete this entry'),
 				'lang_yes'				 => lang('yes'),
@@ -1442,14 +1442,14 @@
 			$function_msg	 = lang('delete budget');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 
 		function view()
 		{
-			$budget_id = phpgw::get_var('budget_id', 'int', 'GET');
+			$budget_id = Sanitizer::get_var('budget_id', 'int', 'GET');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('budget', 'nextmatchs'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('budget', 'nextmatchs'));
 
 			$list	 = $this->bo->read_budget($budget_id);
 			$uicols	 = $this->bo->uicols;
@@ -1520,7 +1520,7 @@
 			$data = array
 				(
 				'lang_download'					 => 'download',
-				'link_download'					 => $GLOBALS['phpgw']->link('/index.php', $link_download),
+				'link_download'					 => phpgw::link('/index.php', $link_download),
 				'lang_download_help'			 => lang('Download table to your browser'),
 				'allow_allrows'					 => true,
 				'allrows'						 => $this->allrows,
@@ -1528,25 +1528,25 @@
 				'record_limit'					 => $record_limit,
 				'num_records'					 => count($list),
 				'all_records'					 => $this->bo->total_records,
-				'link_url'						 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'link_url'						 => phpgw::link('/index.php', $link_data),
 				'img_path'						 => $GLOBALS['phpgw']->common->get_image_path('phpgwapi', 'default'),
-				'select_action'					 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'select_action'					 => phpgw::link('/index.php', $link_data),
 				'lang_searchfield_statustext'	 => lang('Enter the search string. To show all entries, empty this field and press the SUBMIT button again'),
 				'lang_searchbutton_statustext'	 => lang('Submit the search string'),
 				'query'							 => $this->query,
 				'lang_search'					 => lang('search'),
 				'table_header'					 => $table_header,
 				'values'						 => $content,
-				'done_action'					 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uibudget.index')),
+				'done_action'					 => phpgw::link('/index.php', array('menuaction' => 'property.uibudget.index')),
 				'lang_done'						 => lang('done'),
 			);
 
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('view' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('view' => $data));
 		}
 
 		function download()
 		{
-			switch (phpgw::get_var('download'))
+			switch (Sanitizer::get_var('download'))
 			{
 				case 'basis':
 					//$list= $this->bo->read_basis();

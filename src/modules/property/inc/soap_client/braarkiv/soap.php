@@ -74,10 +74,10 @@
 
 	require_once PHPGW_API_INC . '/functions.inc.php';
 
-	$location_id = phpgw::get_var('location_id', 'int');
-	$section	 = phpgw::get_var('section', 'string');
-	$bygningsnr	 = (int)phpgw::get_var('bygningsnr', 'int');
-	$fileid		 = phpgw::get_var('fileid', 'string');
+	$location_id = Sanitizer::get_var('location_id', 'int');
+	$section	 = Sanitizer::get_var('section', 'string');
+	$bygningsnr	 = (int)Sanitizer::get_var('bygningsnr', 'int');
+	$fileid		 = Sanitizer::get_var('fileid', 'string');
 
 	if (!$fileid && !$bygningsnr)
 	{
@@ -227,10 +227,10 @@ HTML;
 	$html	 .= 'Last ned';
 	$html . '</th>';
 
-	$location_id = phpgw::get_var('location_id', 'int');
-	$section	 = phpgw::get_var('section', 'string');
+	$location_id = Sanitizer::get_var('location_id', 'int');
+	$section	 = Sanitizer::get_var('section', 'string');
 
-	$base_url = $GLOBALS['phpgw']->link('/property/inc/soap_client/braarkiv/soap.php', array(
+	$base_url = phpgw::link('/property/inc/soap_client/braarkiv/soap.php', array(
 		'domain'		 => $_GET['domain'],
 		'location_id'	 => $location_id,
 		'section'		 => $section

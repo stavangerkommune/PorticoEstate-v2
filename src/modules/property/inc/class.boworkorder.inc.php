@@ -81,25 +81,25 @@
 				}
 			}
 
-			$this->start			 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$this->query			 = phpgw::get_var('query');
-			$this->sort				 = phpgw::get_var('sort');
-			$this->order			 = phpgw::get_var('order');
-			$this->filter			 = phpgw::get_var('filter', 'int');
-			$this->filter_year		 = phpgw::get_var('filter_year', 'string', 'REQUEST', $default_filter_year);
-			$this->cat_id			 = phpgw::get_var('cat_id', 'int');
-			$this->status_id		 = phpgw::get_var('status_id');
-			$this->wo_hour_cat_id	 = phpgw::get_var('wo_hour_cat_id', 'int');
-			$this->start_date		 = phpgw::get_var('filter_start_date');
-			$this->end_date			 = phpgw::get_var('filter_end_date');
-			$this->b_group			 = phpgw::get_var('b_group');
-			$this->ecodimb			 = phpgw::get_var('ecodimb');
-			$this->paid				 = phpgw::get_var('paid', 'bool');
-			$this->b_account		 = phpgw::get_var('b_account');
-			$this->district_id		 = phpgw::get_var('district_id', 'int');
-			$this->criteria_id		 = phpgw::get_var('criteria_id', 'int');
-			$this->allrows			 = phpgw::get_var('allrows', 'bool');
-			$this->obligation		 = phpgw::get_var('obligation', 'bool');
+			$this->start			 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$this->query			 = Sanitizer::get_var('query');
+			$this->sort				 = Sanitizer::get_var('sort');
+			$this->order			 = Sanitizer::get_var('order');
+			$this->filter			 = Sanitizer::get_var('filter', 'int');
+			$this->filter_year		 = Sanitizer::get_var('filter_year', 'string', 'REQUEST', $default_filter_year);
+			$this->cat_id			 = Sanitizer::get_var('cat_id', 'int');
+			$this->status_id		 = Sanitizer::get_var('status_id');
+			$this->wo_hour_cat_id	 = Sanitizer::get_var('wo_hour_cat_id', 'int');
+			$this->start_date		 = Sanitizer::get_var('filter_start_date');
+			$this->end_date			 = Sanitizer::get_var('filter_end_date');
+			$this->b_group			 = Sanitizer::get_var('b_group');
+			$this->ecodimb			 = Sanitizer::get_var('ecodimb');
+			$this->paid				 = Sanitizer::get_var('paid', 'bool');
+			$this->b_account		 = Sanitizer::get_var('b_account');
+			$this->district_id		 = Sanitizer::get_var('district_id', 'int');
+			$this->criteria_id		 = Sanitizer::get_var('criteria_id', 'int');
+			$this->allrows			 = Sanitizer::get_var('allrows', 'bool');
+			$this->obligation		 = Sanitizer::get_var('obligation', 'bool');
 
 			$this->config			 = CreateObject('phpgwapi.config', 'property')->read();
 		}
@@ -110,8 +110,8 @@
 		 */
 		public function get_category()
 		{
-			$b_account_id = phpgw::get_var('b_account_id', 'string');
-			$cat_id		 = phpgw::get_var('cat_id', 'int');
+			$b_account_id = Sanitizer::get_var('b_account_id', 'string');
+			$cat_id		 = Sanitizer::get_var('cat_id', 'int');
 			$category	 = $this->cats->return_single($cat_id);
 
 			if ($b_account_id)
@@ -307,10 +307,10 @@
 			switch ($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('status_select'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('status_select'));
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('status_filter'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('status_filter'));
 					break;
 			}
 
@@ -1098,7 +1098,7 @@
 				$to		 = implode(';', $toarray);
 				$cc		 = false;
 				$bcc	 = false;
-				$body	 = '<a href ="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiworkorder.edit',
+				$body	 = '<a href ="' . phpgw::link('/index.php', array('menuaction' => 'property.uiworkorder.edit',
 						'id'		 => $order_id), false, true) . '">' . lang('workorder %1 has been edited', $order_id) . '</a>' . "\n";
 				$body	 .= <<<HTML
 				</br>

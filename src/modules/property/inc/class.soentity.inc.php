@@ -392,7 +392,7 @@
 			}
 
 			$_querymethod_status = '';
-			if (!phpgw::get_var('status', 'int'))
+			if (!Sanitizer::get_var('status', 'int'))
 			{
 				if (!empty($cache_attribute_status[$location_id]))
 				{
@@ -948,7 +948,7 @@
 			}
 
 			$_querymethod_status = '';
-			if (!phpgw::get_var('status', 'int'))
+			if (!Sanitizer::get_var('status', 'int'))
 			{
 				if (!empty($cache_attribute_status[$location_id]))
 				{
@@ -2993,7 +2993,7 @@
 						{
 							$entity['related'][] = array
 								(
-								'entity_link'	 => $GLOBALS['phpgw']->link('/index.php', array
+								'entity_link'	 => phpgw::link('/index.php', array
 									(
 									'menuaction'	 => "property.uientity.index",
 									'entity_id'		 => $entry['entity_id'],
@@ -3021,7 +3021,7 @@
 						{
 							$entity['related'][] = array
 								(
-								'entity_link'	 => $GLOBALS['phpgw']->link('/index.php', array
+								'entity_link'	 => phpgw::link('/index.php', array
 									(
 									'menuaction'	 => "property.uientity.index",
 									'entity_id'		 => $entry['entity_id'],
@@ -3049,7 +3049,7 @@
 				$subject				 = $this->db->f('subject', true);
 				$entity['related'][] = array
 					(
-					'entity_link'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uitts.view',
+					'entity_link'	 => phpgw::link('/index.php', array('menuaction' => 'property.uitts.view',
 						'id'		 => $this->db->f('id'),
 //						'p_num'		 => $p_id,
 //						'query'		 => "entity.{$entity_id}.{$cat_id}.{$p_id}"
@@ -3066,7 +3066,7 @@
 				$subject				 = $this->db->f('subject', true);
 				$entity['related'][] = array
 					(
-					'entity_link'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uirequest.view',
+					'entity_link'	 => phpgw::link('/index.php', array('menuaction' => 'property.uirequest.view',
 						'id'		 => $this->db->f('id'),
 						//	'p_entity_id'	=> $entity_id,
 						//	'p_cat_id' 		=> $cat_id,
@@ -3085,7 +3085,7 @@
 				$subject				 = $this->db->f('subject', true);
 				$entity['related'][] = array
 					(
-					'entity_link'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uiproject.view',
+					'entity_link'	 => phpgw::link('/index.php', array('menuaction'	 => 'property.uiproject.view',
 						'id'		 => $this->db->f('id'),
 //						'query'			 => "entity.{$entity_id}.{$cat_id}.{$p_id}",
 //						'criteria_id'	 => 6
@@ -3102,7 +3102,7 @@
 				$subject				 = $this->db->f('subject', true);
 				$entity['related'][] = array
 					(
-					'entity_link'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uis_agreement.view',
+					'entity_link'	 => phpgw::link('/index.php', array('menuaction' => 'property.uis_agreement.view',
 						'id'		 => $this->db->f('id'),
 //						'query'		 => "entity.{$entity_id}.{$cat_id}.{$p_id}",
 //						'p_num'		 => $p_id

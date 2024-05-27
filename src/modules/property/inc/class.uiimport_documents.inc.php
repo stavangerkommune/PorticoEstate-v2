@@ -117,7 +117,7 @@
 				$this->path_upload_dir	 = $GLOBALS['phpgw_info']['server']['files_dir'] . $fakebase;
 			}
 
-			$order_id = phpgw::get_var('order_id', 'int');
+			$order_id = Sanitizer::get_var('order_id', 'int');
 
 			$this->order_path_dir	 = rtrim($this->path_upload_dir, '/') . "/{$order_id}/";
 
@@ -127,10 +127,10 @@
 		{
 			if(!$order_id)
 			{
-				$order_id = phpgw::get_var('order_id', 'int');
+				$order_id = Sanitizer::get_var('order_id', 'int');
 			}
 
-			$secret = phpgw::get_var('secret');
+			$secret = Sanitizer::get_var('secret');
 
 			$order_type = $this->bocommon->socommon->get_order_type($order_id);
 
@@ -220,10 +220,10 @@
 		{
 			if(!$order_id)
 			{
-				$order_id = phpgw::get_var('order_id', 'int');
+				$order_id = Sanitizer::get_var('order_id', 'int');
 			}
 
-			$secret = phpgw::get_var('secret');
+			$secret = Sanitizer::get_var('secret');
 
 			$order_type = $this->bocommon->socommon->get_order_type($order_id);
 
@@ -400,16 +400,16 @@
 				phpgw::no_access();
 			}
 
-			$action= phpgw::get_var('action', 'string');
-			$files= phpgw::get_var('files', 'raw');
-			$document_category= phpgw::get_var('document_category', 'string');
-			$branch= phpgw::get_var('branch', 'string');
-			$building_part= phpgw::get_var('building_part', 'string');
-			$order_id = phpgw::get_var('order_id', 'int');
-			$cadastral_unit= phpgw::get_var('cadastral_unit', 'string');
-			$location_code= phpgw::get_var('location_code', 'string');
-			$building_number= phpgw::get_var('building_number', 'string');
-			$remark_detail= phpgw::get_var('remark_detail', 'string');
+			$action= Sanitizer::get_var('action', 'string');
+			$files= Sanitizer::get_var('files', 'raw');
+			$document_category= Sanitizer::get_var('document_category', 'string');
+			$branch= Sanitizer::get_var('branch', 'string');
+			$building_part= Sanitizer::get_var('building_part', 'string');
+			$order_id = Sanitizer::get_var('order_id', 'int');
+			$cadastral_unit= Sanitizer::get_var('cadastral_unit', 'string');
+			$location_code= Sanitizer::get_var('location_code', 'string');
+			$building_number= Sanitizer::get_var('building_number', 'string');
+			$remark_detail= Sanitizer::get_var('remark_detail', 'string');
 
 
 			if(!$order_id)
@@ -423,7 +423,7 @@
 
 			if($custom_frontend && !$this->acl_manage)
 			{
-				$secret = phpgw::get_var('secret');
+				$secret = Sanitizer::get_var('secret');
 				if($secret != $order_type['secret'])
 				{
 					return array(
@@ -599,11 +599,11 @@
 				phpgw::no_access();
 			}
 
-			$order_id = phpgw::get_var('order_id', 'int');
-			$cadastral_unit_common= phpgw::get_var('cadastral_unit_common', 'string');
-			$location_code_common= phpgw::get_var('location_code_common', 'string');
-			$building_number_common= phpgw::get_var('building_number_common', 'string');
-			$remark_common= phpgw::get_var('remark_common', 'string');
+			$order_id = Sanitizer::get_var('order_id', 'int');
+			$cadastral_unit_common= Sanitizer::get_var('cadastral_unit_common', 'string');
+			$location_code_common= Sanitizer::get_var('location_code_common', 'string');
+			$building_number_common= Sanitizer::get_var('building_number_common', 'string');
+			$remark_common= Sanitizer::get_var('remark_common', 'string');
 
 			if(!$order_id)
 			{
@@ -616,7 +616,7 @@
 
 			if($custom_frontend && !$this->acl_manage)
 			{
-				$secret = phpgw::get_var('secret');
+				$secret = Sanitizer::get_var('secret');
 				if($secret != $order_type['secret'])
 				{
 					return array(
@@ -685,7 +685,7 @@
 				return;
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -746,8 +746,8 @@
 		public function step_1_import()
 		{
 
-			$order_id = phpgw::get_var('id');
-			$secret = phpgw::get_var('secret');
+			$order_id = Sanitizer::get_var('id');
+			$secret = Sanitizer::get_var('secret');
 			$tabs			 = array();
 			$tabs['step_1']	 = array('label' => lang('step %1 - order reference', 1), 'link' => '#step_1');
 			$tabs['step_2']	 = array('label' => lang('step %1 - upload documents', 2), 'link' => '#step_2', 'disable' => 1);
@@ -969,7 +969,7 @@
 				'datatable_def'			 => $datatable_def,
 				'tabs'					 => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
 				'image_loader'			 => $GLOBALS['phpgw']->common->image('property', 'ajax-loader', '.gif', false),
-				'multi_upload_action'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiimport_documents.handle_import_files')),
+				'multi_upload_action'	 => phpgw::link('/index.php', array('menuaction' => 'property.uiimport_documents.handle_import_files')),
 				'building_part_list'	 => array('options' => $building_part_list),
 				'branch_list'			 => array('options' => $branch_list),
 				'document_category_list' => array('options' => $document_categories),
@@ -993,18 +993,18 @@
 				return false;
 			}
 
-			$order_id = phpgw::get_var('order_id', 'int');
+			$order_id = Sanitizer::get_var('order_id', 'int');
 
 			if(!$order_id)
 			{
 				return;
 			}
 
-			$search	 = phpgw::get_var('search');
+			$search	 = Sanitizer::get_var('search');
 			$query	 = isset($search['value']) ? $search['value'] : '';
-			$order	 = phpgw::get_var('order');
-			$sort	 = phpgw::get_var('sort');
-			$columns = phpgw::get_var('columns');
+			$order	 = Sanitizer::get_var('order');
+			$sort	 = Sanitizer::get_var('sort');
+			$columns = Sanitizer::get_var('columns');
 
 			$_order_column	 = is_array($order) ? $columns[$order[0]['column']]['data'] : $order;
 			$_dir			 = is_array($order) ? $order[0]['dir'] : $sort;
@@ -1012,7 +1012,7 @@
 			/**
 			 * '2' - means validate actual import
 			 */
-			$sub_step = phpgw::get_var('sub_step', 'int');
+			$sub_step = Sanitizer::get_var('sub_step', 'int');
 
 
 			$link_file_data = array
@@ -1020,7 +1020,7 @@
 				'menuaction' => 'property.uiimport_documents.view_file',
 				'order_id'	=> $order_id
 			);
-			$link_view_file	 = $GLOBALS['phpgw']->link('/index.php', $link_file_data);
+			$link_view_file	 = phpgw::link('/index.php', $link_file_data);
 			$lang_view = lang('click to view file');
 
 			$list_files = $this->_get_dir_contents($this->order_path_dir);
@@ -1098,9 +1098,9 @@
 
 //------ Start pagination
 
-			$start			 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$results		 = phpgw::get_var('length', 'int', 'REQUEST', 0);
-			$allrows		 = phpgw::get_var('length', 'int') == -1;
+			$start			 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$results		 = Sanitizer::get_var('length', 'int', 'REQUEST', 0);
+			$allrows		 = Sanitizer::get_var('length', 'int') == -1;
 
 			$total_records	 = count($values);
 
@@ -1122,7 +1122,7 @@
 
 			return array(
 				'data'				 => $out,
-				'draw'				 => phpgw::get_var('draw', 'int'),
+				'draw'				 => Sanitizer::get_var('draw', 'int'),
 				'recordsTotal'		 => $total_records,
 				'recordsFiltered'	 => $total_records
 			);
@@ -1136,8 +1136,8 @@
 			{
 				return;
 			}
-			$order_id = phpgw::get_var('order_id', 'int');
-			$file_name		 = phpgw::get_var('file_name', 'raw');
+			$order_id = Sanitizer::get_var('order_id', 'int');
+			$file_name		 = Sanitizer::get_var('file_name', 'raw');
 			// prevent path traversal
 			if (preg_match('/\.\./', $file_name))
 			{
@@ -1176,20 +1176,20 @@
 				return false;
 			}
 
-			$search	 = phpgw::get_var('search');
+			$search	 = Sanitizer::get_var('search');
 			$query	 = isset($search['value']) ? $search['value'] : '';
-			$order	 = phpgw::get_var('order');
-			$sort	 = phpgw::get_var('sort');
-			$columns = phpgw::get_var('columns');
+			$order	 = Sanitizer::get_var('order');
+			$sort	 = Sanitizer::get_var('sort');
+			$columns = Sanitizer::get_var('columns');
 
 			$_order_column	 = is_array($order) ? $columns[$order[0]['column']]['data'] : $order;
 			$_dir			 = is_array($order) ? $order[0]['dir'] : $sort;
 
-			$order_id = phpgw::get_var('order_id', 'int');
+			$order_id = Sanitizer::get_var('order_id', 'int');
 
-			$filter_document_category	 = phpgw::get_var('filter_document_category');
-			$filter_branch				 = phpgw::get_var('filter_branch');
-			$filter_building_part		 = phpgw::get_var('filter_building_part');
+			$filter_document_category	 = Sanitizer::get_var('filter_document_category');
+			$filter_branch				 = Sanitizer::get_var('filter_branch');
+			$filter_building_part		 = Sanitizer::get_var('filter_building_part');
 
 			$list_files = $this->_get_dir_contents($this->order_path_dir);
 			$_duplicates = array();
@@ -1204,7 +1204,7 @@
 				'menuaction' => 'property.uiimport_documents.view_file',
 				'order_id'	 => $order_id
 			);
-			$link_view_file	 = $GLOBALS['phpgw']->link('/index.php', $link_file_data);
+			$link_view_file	 = phpgw::link('/index.php', $link_file_data);
 			$lang_view		 = lang('click to view file');
 
 			$file_tags	 = $this->_get_metadata($order_id);
@@ -1267,9 +1267,9 @@
 
 //------ Start pagination
 
-			$start			 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$results		 = phpgw::get_var('length', 'int', 'REQUEST', 0);
-			$allrows		 = phpgw::get_var('length', 'int') == -1;
+			$start			 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$results		 = Sanitizer::get_var('length', 'int', 'REQUEST', 0);
+			$allrows		 = Sanitizer::get_var('length', 'int') == -1;
 
 			$total_records	 = count($values);
 
@@ -1291,7 +1291,7 @@
 
 			return array(
 				'data'				 => $out,
-				'draw'				 => phpgw::get_var('draw', 'int'),
+				'draw'				 => Sanitizer::get_var('draw', 'int'),
 				'recordsTotal'		 => $total_records,
 				'recordsFiltered'	 => $total_records
 			);
@@ -1377,12 +1377,12 @@
 
 			phpgw::import_class('property.multiuploader');
 
-			$order_id = phpgw::get_var('order_id', 'int', 'GET');
-			$zipped  = phpgw::get_var('zipped', 'bool');
+			$order_id = Sanitizer::get_var('order_id', 'int', 'GET');
+			$zipped  = Sanitizer::get_var('zipped', 'bool');
 
 			$options = array();
 			$options['upload_dir']	 = $this->order_path_dir;
-			$options['script_url']	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiimport_documents.handle_import_files'));
+			$options['script_url']	 = phpgw::link('/index.php', array('menuaction' => 'property.uiimport_documents.handle_import_files'));
 
 			if(!$order_id)
 			{
@@ -1552,18 +1552,18 @@
 				$result_data = array(
 					'results' => array(),
 					'total_records'	 => 0,
-					'draw'			 => phpgw::get_var('draw', 'int'));
+					'draw'			 => Sanitizer::get_var('draw', 'int'));
 				return $this->jquery_results($result_data);
 			}
 
 
-			$search		 = phpgw::get_var('search');
+			$search		 = Sanitizer::get_var('search');
 			$values = $this->get_pending_list($search['value']);
 
-			$_order		 = phpgw::get_var('order');
+			$_order		 = Sanitizer::get_var('order');
 			if($_order)
 			{
-				$columns	 = phpgw::get_var('columns');
+				$columns	 = Sanitizer::get_var('columns');
 				$order		 = $columns[$_order[0]['column']]['data'];
 				$sort		 = $_order[0]['dir'];
 				foreach ($values as $entry)
@@ -1584,9 +1584,9 @@
 
 //------ Start pagination
 
-			$start			 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$results		 = phpgw::get_var('length', 'int', 'REQUEST', 0);
-			$allrows		 = phpgw::get_var('length', 'int') == -1;
+			$start			 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$results		 = Sanitizer::get_var('length', 'int', 'REQUEST', 0);
+			$allrows		 = Sanitizer::get_var('length', 'int') == -1;
 
 			$total_records	 = count($values);
 
@@ -1609,7 +1609,7 @@
 			$result_data = array('results' => (array)$out);
 
 			$result_data['total_records']	 = $total_records;
-			$result_data['draw']			 = phpgw::get_var('draw', 'int');
+			$result_data['draw']			 = Sanitizer::get_var('draw', 'int');
 
 			$link_data = array
 				(
@@ -1628,8 +1628,8 @@
 				phpgw::no_access();
 			}
 
-			$order_id = phpgw::get_var('order_id', 'int', 'GET');
-			$query = phpgw::get_var('query');
+			$order_id = Sanitizer::get_var('order_id', 'int', 'GET');
+			$query = Sanitizer::get_var('query');
 
 			if(!$order_id)
 			{
@@ -1726,7 +1726,7 @@
 			{
 				phpgw::no_access();
 			}
-			$order_id = phpgw::get_var('order_id', 'int', 'GET');
+			$order_id = Sanitizer::get_var('order_id', 'int', 'GET');
 			if(!$order_id)
 			{
 				return;
@@ -1789,9 +1789,9 @@
 		function unzip_files ()
 		{
 
-			$order_id = phpgw::get_var('order_id', 'int');
+			$order_id = Sanitizer::get_var('order_id', 'int');
 
-			$secret = phpgw::get_var('secret');
+			$secret = Sanitizer::get_var('secret');
 
 			$order_type = $this->bocommon->socommon->get_order_type($order_id);
 
@@ -1816,7 +1816,7 @@
 				return false;
 			}
 
-			$compressed_file_name = phpgw::get_var('compressed_file_name', 'raw');
+			$compressed_file_name = Sanitizer::get_var('compressed_file_name', 'raw');
 
 			$path_file = $this->order_path_dir . $compressed_file_name;
 
@@ -1935,8 +1935,8 @@
 				return;
 			}
 
-			$field_name = phpgw::get_var('field_name');
-			$id = urldecode(phpgw::get_var('id','raw'));
+			$field_name = Sanitizer::get_var('field_name');
+			$id = urldecode(Sanitizer::get_var('id','raw'));
 
 			$id_arr = explode('::', $id);
 
@@ -1957,15 +1957,15 @@
 				case 'cadastral_unit':
 				case 'location_code':
 				case 'building_number':
-					$value = phpgw::get_var('value');
+					$value = Sanitizer::get_var('value');
 					$file_tags[$file_name][$field_name] = $value;
 					break;
 				case 'document_category':
 				case 'branch':
 				case 'building_part':
-					$value = phpgw::get_var('value');
+					$value = Sanitizer::get_var('value');
 
-					if(!phpgw::get_var('checked', 'bool'))
+					if(!Sanitizer::get_var('checked', 'bool'))
 					{
 						if(!empty($file_tags[$file_name][$field_name]))
 						{

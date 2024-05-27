@@ -44,7 +44,7 @@
 			$this->historylog	 = & $this->so->historylog;
 			$this->bocommon		 = createObject('property.bocommon');
 			$this->config		 = CreateObject('phpgwapi.config', $this->currentapp)->read();
-			$this->preview_html	 = phpgw::get_var('preview_html', 'bool');
+			$this->preview_html	 = Sanitizer::get_var('preview_html', 'bool');
 			$this->dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
 			$this->fields		 = $this->so->get_fields();
 		}
@@ -326,7 +326,7 @@ HTML;
 HTML;
 			if (!$preview)
 			{
-				$body .= '<a href ="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => "{$this->currentapp}.uiexternal_communication.view",
+				$body .= '<a href ="' . phpgw::link('/index.php', array('menuaction' => "{$this->currentapp}.uiexternal_communication.view",
 						'id'		 => $id), false, true) . '">' . lang('Ticket') . " # {$ticket_id}::{$id} </a>" . "\n";
 			}
 

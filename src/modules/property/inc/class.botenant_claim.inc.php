@@ -53,16 +53,16 @@
 				$this->use_session = true;
 			}
 
-			$start		 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query		 = phpgw::get_var('query');
-			$sort		 = phpgw::get_var('sort');
-			$order		 = phpgw::get_var('order');
-			$user_id	 = phpgw::get_var('user_id', 'int');
-			$status		 = phpgw::get_var('status');
-			$cat_id		 = phpgw::get_var('cat_id', 'int');
-			$allrows	 = phpgw::get_var('allrows', 'bool');
-			$project_id	 = phpgw::get_var('project_id', 'int');
-			$district_id = phpgw::get_var('district_id', 'int');
+			$start		 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query		 = Sanitizer::get_var('query');
+			$sort		 = Sanitizer::get_var('sort');
+			$order		 = Sanitizer::get_var('order');
+			$user_id	 = Sanitizer::get_var('user_id', 'int');
+			$status		 = Sanitizer::get_var('status');
+			$cat_id		 = Sanitizer::get_var('cat_id', 'int');
+			$allrows	 = Sanitizer::get_var('allrows', 'bool');
+			$project_id	 = Sanitizer::get_var('project_id', 'int');
+			$district_id = Sanitizer::get_var('district_id', 'int');
 
 			$this->district_id = isset($_REQUEST['district_id']) ? $district_id : $this->district_id;
 
@@ -145,7 +145,7 @@
 				return array();
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('status_' . $format));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('status_' . $format));
 
 			$status[0]['id']	 = 'ready';
 			$status[0]['name']	 = lang('ready for processing claim');
@@ -172,7 +172,7 @@
 
 		function read( $data = array() )
 		{
-			#$project_id	= isset($data['project_id']) && $data['project_id'] ? $data['project_id'] : phpgw::get_var('project_id');
+			#$project_id	= isset($data['project_id']) && $data['project_id'] ? $data['project_id'] : Sanitizer::get_var('project_id');
 			#$claims = $this->so->read(array('start' => $this->start,'query' => $this->query,'sort' => $this->sort,'order' => $this->order,
 			#	'user_id' => $this->user_id,'status' => $this->status,'cat_id' => $this->cat_id,
 			#	'allrows'=>$this->allrows,'project_id' => $project_id, 'district_id' => $this->district_id,));

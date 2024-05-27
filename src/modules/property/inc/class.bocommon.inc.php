@@ -26,6 +26,17 @@
 	 * @subpackage core
 	 * @version $Id$
 	 */
+
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\AsyncService;
+use App\modules\phpgwapi\controllers\Accounts\Accounts;
+use App\modules\phpgwapi\security\Acl;
+use App\modules\phpgwapi\services\Config;
+
+
+
+use App\modules\phpgwapi\services\Cache;
+
 	/**
 	 * Description
 	 * @package property
@@ -44,6 +55,11 @@
 		var $cat_id;
 		var $district_id;
 		var $xsl_rootdir;
+		var $userSettings;
+		var $serverSettings;
+		var $flags;
+		var $accounts;
+		var $phpgwapi_common;
 		protected $join;
 		protected $left_join;
 		protected $like;
@@ -55,21 +71,25 @@
 
 		function __construct()
 		{
-			//_debug_array($bt = debug_backtrace());
-			$this->socommon	 = CreateObject('property.socommon');
-			$this->account	= isset($GLOBALS['phpgw_info']['user']['account_id']) ? (int)$GLOBALS['phpgw_info']['user']['account_id'] : -1;
+		//_debug_array($bt = debug_backtrace());
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->serverSettings = Settings::getInstance()->get('server');
+			$this->flags =	Settings::getInstance()->get('flags');
 
-			if (!isset($GLOBALS['phpgw']->asyncservice))
-			{
-				$GLOBALS['phpgw']->asyncservice = CreateObject('phpgwapi.asyncservice');
-			}
-			$this->async = &$GLOBALS['phpgw']->asyncservice;
+			$this->socommon	 = CreateObject('property.socommon');
+			$this->account	= isset($this->userSettings['account_id']) ? (int)$this->userSettings['account_id'] : -1;
+			$this->accounts = new Accounts();
+			$this->phpgwapi_common = new \phpgwapi_common();
+
+
+
+			$this->async =		AsyncService::getInstance();
 
 			$this->join		 = $this->socommon->join;
 			$this->left_join = $this->socommon->left_join;
 			$this->like		 = $this->socommon->like;
 
-			$template_set = isset($GLOBALS['phpgw_info']['server']['template_set']) ? $GLOBALS['phpgw_info']['server']['template_set'] : 'base';
+			$template_set = isset($this->serverSettings['template_set']) ? $this->serverSettings['template_set'] : 'base';
 			$this->xsl_rootdir = PHPGW_SERVER_ROOT . "/property/templates/{$template_set}";
 		}
 
@@ -92,7 +112,7 @@
 				return true;
 			}
 
-			$equalto = $GLOBALS['phpgw']->accounts->membership($owner_id);
+			$equalto = $this->accounts->membership($owner_id);
 			foreach ($grants['groups'] as $group => $_right)
 			{
 				if (isset($equalto[$group]) && ($_right & $required))
@@ -146,11 +166,13 @@
 
 		function confirm_session()
 		{
-			if ($GLOBALS['phpgw']->session->verify())
+			$sessions = \App\modules\phpgwapi\security\Sessions::getInstance();
+
+			if ($sessions->verify())
 			{
 				header('Content-Type: application/json');
 				echo json_encode(array('sessionExpired' => false));
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 		}
 
@@ -208,10 +230,10 @@
 			switch ($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('user_id_select'), $this->xsl_rootdir);
+					phpgwapi_xslttemplates::getInstance()->add_file(array('user_id_select'), $this->xsl_rootdir);
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('user_id_filter'), $this->xsl_rootdir);
+					phpgwapi_xslttemplates::getInstance()->add_file(array('user_id_filter'), $this->xsl_rootdir);
 					break;
 			}
 
@@ -234,11 +256,9 @@
 				}
 			}
 
-			$accounts = & $GLOBALS['phpgw']->accounts;
 
-			$users = $accounts->get_list('accounts', $start, $sort, $order, $query, $offset);
+			$users = $this->accounts->get_list('accounts', $start, $sort, $order, $query, $offset);
 
-			unset($accounts);
 			if (is_array($users))
 			{
 				foreach ($users as $user)
@@ -287,17 +307,14 @@
 			switch ($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('group_select'), $this->xsl_rootdir);
+					phpgwapi_xslttemplates::getInstance()->add_file(array('group_select'), $this->xsl_rootdir);
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('group_filter'), $this->xsl_rootdir);
+					phpgwapi_xslttemplates::getInstance()->add_file(array('group_filter'), $this->xsl_rootdir);
 					break;
 			}
 
-			$accounts = & $GLOBALS['phpgw']->accounts;
-
-			$users = $accounts->get_list('groups', $start, $sort, $order, $query, $offset);
-			unset($accounts);
+			$users = $this->accounts->get_list('groups', $start, $sort, $order, $query, $offset);
 			if (isset($users) AND is_array($users))
 			{
 				foreach ($users as $user)
@@ -366,12 +383,14 @@
 
 			reset($rights);
 
+			$acl = Acl::getInstance();
+
 			if (!$users = $this->socommon->fm_cache($acl_userlist_name))
 			{
 				$users_gross = array();
 				foreach ($rights as $right)
 				{
-					$users_gross = array_merge($users_gross, $GLOBALS['phpgw']->acl->get_user_list_right($right, $acl_location));
+					$users_gross = array_merge($users_gross, $acl->get_user_list_right($right, $acl_location));
 				}
 
 				$accounts	 = array();
@@ -450,9 +469,9 @@
 
 			if ($selected && !$selected_found)
 			{
-				$user_id = $GLOBALS['phpgw']->accounts->name2id($selected);
+				$user_id = $this->accounts->name2id($selected);
 
-				$_user = $GLOBALS['phpgw']->accounts->get($user_id);
+				$_user = $this->accounts->get($user_id);
 
 				$user_list[] = array
 					(
@@ -484,10 +503,10 @@
 			switch ($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('user_id_select'), $this->xsl_rootdir);
+					phpgwapi_xslttemplates::getInstance()->add_file(array('user_id_select'), $this->xsl_rootdir);
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('user_id_filter'), $this->xsl_rootdir);
+					phpgwapi_xslttemplates::getInstance()->add_file(array('user_id_filter'), $this->xsl_rootdir);
 					break;
 			}
 
@@ -508,9 +527,11 @@
 				}
 			}
 
+			$acl = Acl::getInstance();
+
 			if (!$users = $this->socommon->fm_cache('acl_userlist_' . $right . '_' . $acl_location))
 			{
-				$users = $GLOBALS['phpgw']->acl->get_user_list_right($right, $acl_location);
+				$users = $acl->get_user_list_right($right, $acl_location);
 				$this->socommon->fm_cache('acl_userlist_' . $right . '_' . $acl_location, $users);
 			}
 
@@ -547,7 +568,7 @@
 				$user_list[] = array
 					(
 					'id'		 => $selected,
-					'name'		 => $GLOBALS['phpgw']->accounts->get($selected)->__toString(),
+					'name'		 => $this->accounts->get($selected)->__toString(),
 					'selected'	 => 1
 				);
 			}
@@ -561,11 +582,11 @@
 
 			if (isset($data['type']) && $data['type'] == 'view')
 			{
-				$GLOBALS['phpgw']->xslttpl->add_file(array('vendor_view'), $this->xsl_rootdir);
+				phpgwapi_xslttemplates::getInstance()->add_file(array('vendor_view'), $this->xsl_rootdir);
 			}
 			else
 			{
-				$GLOBALS['phpgw']->xslttpl->add_file(array('vendor_form'), $this->xsl_rootdir);
+				phpgwapi_xslttemplates::getInstance()->add_file(array('vendor_form'), $this->xsl_rootdir);
 			}
 
 			$vendor['value_vendor_id']	 = $data['vendor_id'];
@@ -594,7 +615,7 @@
 				unset($contacts);
 			}
 
-			$vendor['vendor_link']				 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uilookup.vendor'));
+			$vendor['vendor_link']				 = phpgw::link('/index.php', array('menuaction' => 'property.uilookup.vendor'));
 			$vendor['lang_vendor']				 = lang('Vendor');
 			$vendor['lang_select_vendor_help']	 = lang('click this link to select vendor');
 			$vendor['lang_vendor_name']			 = lang('Vendor Name');
@@ -613,10 +634,10 @@
 				switch ($data['type'])
 				{
 					case 'view':
-						$GLOBALS['phpgw']->xslttpl->add_file(array('contact_view'), $this->xsl_rootdir);
+						phpgwapi_xslttemplates::getInstance()->add_file(array('contact_view'), $this->xsl_rootdir);
 						break;
 					case 'form':
-						$GLOBALS['phpgw']->xslttpl->add_file(array('contact_form'), $this->xsl_rootdir);
+						phpgwapi_xslttemplates::getInstance()->add_file(array('contact_form'), $this->xsl_rootdir);
 						break;
 					default:
 						break;
@@ -647,7 +668,7 @@
 			}
 
 			$contact['field']					 = $field;
-			$contact['contact_link']			 = $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uilookup.addressbook',
+			$contact['contact_link']			 = phpgw::link('/index.php', array('menuaction'	 => 'property.uilookup.addressbook',
 				'column'		 => $field,
 				'clear_state'	 => 1));
 			$contact['lang_contact']			 = lang('contact');
@@ -660,17 +681,17 @@
 		{
 			if ($data['type'] == 'view')
 			{
-				$GLOBALS['phpgw']->xslttpl->add_file(array('tenant_view'), $this->xsl_rootdir);
+				phpgwapi_xslttemplates::getInstance()->add_file(array('tenant_view'), $this->xsl_rootdir);
 			}
 			else
 			{
-				$GLOBALS['phpgw']->xslttpl->add_file(array('tenant_form'), $this->xsl_rootdir);
+				phpgwapi_xslttemplates::getInstance()->add_file(array('tenant_form'), $this->xsl_rootdir);
 			}
 
 			$tenant['value_tenant_id']	 = $data['tenant_id'];
 			$tenant['value_first_name']	 = $data['first_name'];
 			$tenant['value_last_name']	 = $data['last_name'];
-			$tenant['tenant_link']		 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uilookup.tenant'));
+			$tenant['tenant_link']		 = phpgw::link('/index.php', array('menuaction' => 'property.uilookup.tenant'));
 			if ($data['role'] == 'customer')
 			{
 				$tenant['lang_select_tenant_help']	 = lang('click this link to select customer');
@@ -724,16 +745,16 @@
 		{
 			if (isset($data['type']) && $data['type'] == 'view')
 			{
-				$GLOBALS['phpgw']->xslttpl->add_file(array('b_account_view'), $this->xsl_rootdir);
+				phpgwapi_xslttemplates::getInstance()->add_file(array('b_account_view'), $this->xsl_rootdir);
 			}
 			else
 			{
-				$GLOBALS['phpgw']->xslttpl->add_file(array('b_account_form'), $this->xsl_rootdir);
+				phpgwapi_xslttemplates::getInstance()->add_file(array('b_account_form'), $this->xsl_rootdir);
 			}
 
 			$b_account['value_b_account_id']		 = $data['b_account_id'];
 			$b_account['value_b_account_name']		 = $data['b_account_name'];
-			$b_account['b_account_link']			 = $GLOBALS['phpgw']->link('/index.php', array
+			$b_account['b_account_link']			 = phpgw::link('/index.php', array
 				(
 				'menuaction' => 'property.uilookup.b_account',
 				'role'		 => isset($data['role']) && $data['role'] ? $data['role'] : '',
@@ -772,16 +793,16 @@
 					return $external_project;
 				}
 
-				$GLOBALS['phpgw']->xslttpl->add_file(array('external_project_view'), $this->xsl_rootdir);
+				phpgwapi_xslttemplates::getInstance()->add_file(array('external_project_view'), $this->xsl_rootdir);
 			}
 			else
 			{
-				$GLOBALS['phpgw']->xslttpl->add_file(array('external_project_form'), $this->xsl_rootdir);
+				phpgwapi_xslttemplates::getInstance()->add_file(array('external_project_form'), $this->xsl_rootdir);
 			}
 
 			$external_project['value_external_project_id']			 = $data['external_project_id'];
 			$external_project['value_external_project_name']		 = $data['external_project_name'];
-			$external_project['external_project_url']				 = $GLOBALS['phpgw']->link('/index.php', array(
+			$external_project['external_project_url']				 = phpgw::link('/index.php', array(
 				'menuaction' => 'property.uilookup.external_project'));
 			$external_project['lang_select_external_project_help']	 = lang('click to select external project');
 			$external_project['lang_external_project']				 = lang('external project');
@@ -808,16 +829,16 @@
 					return $ecodimb;
 				}
 
-				$GLOBALS['phpgw']->xslttpl->add_file(array('ecodimb_view'), $this->xsl_rootdir);
+				phpgwapi_xslttemplates::getInstance()->add_file(array('ecodimb_view'), $this->xsl_rootdir);
 			}
 			else
 			{
-				$GLOBALS['phpgw']->xslttpl->add_file(array('ecodimb_form'), $this->xsl_rootdir);
+				phpgwapi_xslttemplates::getInstance()->add_file(array('ecodimb_form'), $this->xsl_rootdir);
 			}
 
 			$ecodimb['value_ecodimb']			 = $data['ecodimb'];
 			$ecodimb['value_ecodimb_descr']		 = $data['ecodimb_descr'];
-			$ecodimb['ecodimb_url']				 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uilookup.ecodimb'));
+			$ecodimb['ecodimb_url']				 = phpgw::link('/index.php', array('menuaction' => 'property.uilookup.ecodimb'));
 			$ecodimb['lang_select_ecodimb_help'] = lang('click to select dimb');
 			$ecodimb['lang_ecodimb']			 = lang('dimb');
 			if ($data['ecodimb'] && (!isset($data['ecodimb_descr']) || !$data['ecodimb_descr']))
@@ -840,7 +861,7 @@
 			$event['event_name'] = $data['event_name']; // Human readable description
 			if (isset($data['type']) && $data['type'] == 'view')
 			{
-				$GLOBALS['phpgw']->xslttpl->add_file(array('event_view'), $this->xsl_rootdir);
+				phpgwapi_xslttemplates::getInstance()->add_file(array('event_view'), $this->xsl_rootdir);
 				if (!isset($data['event']) || !$data['event'])
 				{
 					//		return $event;
@@ -848,7 +869,7 @@
 			}
 			else
 			{
-				$GLOBALS['phpgw']->xslttpl->add_file(array('event_form'), $this->xsl_rootdir);
+				phpgwapi_xslttemplates::getInstance()->add_file(array('event_form'), $this->xsl_rootdir);
 			}
 
 			// If the record is not saved - issue a warning
@@ -876,7 +897,7 @@
 				$job_id	 = "property{$data['location']}::{$data['item_id']}::{$data['name']}";
 				$job	 = execMethod('phpgwapi.asyncservice.read', $job_id);
 
-				$event['next']			 = $GLOBALS['phpgw']->common->show_date($job[$job_id]['next'], $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
+				$event['next']			 = $this->phpgwapi_common->show_date($job[$job_id]['next'], $this->userSettings['preferences']['common']['dateformat']);
 				$event['lang_next_run']	 = lang('next run');
 
 				$criteria = array
@@ -922,7 +943,7 @@
 				unset($job);
 			}
 
-			$event['event_link'] = $GLOBALS['phpgw']->link('/index.php', array
+			$event['event_link'] = phpgw::link('/index.php', array
 				(
 				'menuaction' => 'property.uievent.edit',
 				'location'	 => $data['location'],
@@ -949,11 +970,11 @@
 
 			if ($data['type'] == 'view')
 			{
-				$GLOBALS['phpgw']->xslttpl->add_file(array('alarm_view'), $this->xsl_rootdir);
+				phpgwapi_xslttemplates::getInstance()->add_file(array('alarm_view'), $this->xsl_rootdir);
 			}
 			else
 			{
-				$GLOBALS['phpgw']->xslttpl->add_file(array('alarm_form'), $this->xsl_rootdir);
+				phpgwapi_xslttemplates::getInstance()->add_file(array('alarm_form'), $this->xsl_rootdir);
 			}
 
 			$alarm['header'][] = array
@@ -1198,11 +1219,13 @@
 			$cols_extra			 = array();
 			$cols_return_lookup	 = array();
 
-			$GLOBALS['phpgw']->config->read();
+			
+			$config = new Config('property');
+			$config->read();
 
 			if ($location_level)
 			{
-				$list_location_level = isset($GLOBALS['phpgw']->config->config_data['list_location_level']) && $GLOBALS['phpgw']->config->config_data['list_location_level'] ? $GLOBALS['phpgw']->config->config_data['list_location_level'] : array();
+				$list_location_level = isset($config->config_data['list_location_level']) && $config->config_data['list_location_level'] ? $config->config_data['list_location_level'] : array();
 			}
 			else
 			{
@@ -1337,7 +1360,7 @@
 				}
 			}
 
-			phpgwapi_cache::system_set('property', 'location_relation_data', $location_relation_data);
+			Cache::system_set('property', 'location_relation_data', $location_relation_data);
 
 			if (!$no_address)
 			{
@@ -1447,10 +1470,10 @@
 			switch ($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('select_part_of_town'), $this->xsl_rootdir);
+					phpgwapi_xslttemplates::getInstance()->add_file(array('select_part_of_town'), $this->xsl_rootdir);
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('filter_part_of_town'), $this->xsl_rootdir);
+					phpgwapi_xslttemplates::getInstance()->add_file(array('filter_part_of_town'), $this->xsl_rootdir);
 					break;
 			}
 
@@ -1478,10 +1501,10 @@
 			switch ($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('select_district'), $this->xsl_rootdir);
+					phpgwapi_xslttemplates::getInstance()->add_file(array('select_district'), $this->xsl_rootdir);
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('filter_district'), $this->xsl_rootdir);
+					phpgwapi_xslttemplates::getInstance()->add_file(array('filter_district'), $this->xsl_rootdir);
 					break;
 			}
 
@@ -1495,10 +1518,10 @@
 			switch ($data['format'])
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('cat_select'), $this->xsl_rootdir);
+					phpgwapi_xslttemplates::getInstance()->add_file(array('cat_select'), $this->xsl_rootdir);
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('cat_filter'), $this->xsl_rootdir);
+					phpgwapi_xslttemplates::getInstance()->add_file(array('cat_filter'), $this->xsl_rootdir);
 					break;
 			}
 
@@ -1575,11 +1598,12 @@
 		function download( $list, $name, $descr, $input_type = array(), $identificator = array(), $filename = '' )
 		{
 			set_time_limit(500);
-			$GLOBALS['phpgw_info']['flags']['noheader']	 = true;
-			$GLOBALS['phpgw_info']['flags']['nofooter']	 = true;
-			$GLOBALS['phpgw_info']['flags']['xslt_app']	 = false;
+			$this->flags['noheader']	 = true;
+			$this->flags['nofooter']	 = true;
+			$this->flags['xslt_app']	 = false;
+			Settings::getInstance()->set('flags', $this->flags);
 
-			$export_format	 = isset($GLOBALS['phpgw_info']['user']['preferences']['common']['export_format']) && $GLOBALS['phpgw_info']['user']['preferences']['common']['export_format'] ? $GLOBALS['phpgw_info']['user']['preferences']['common']['export_format'] : 'csv';
+			$export_format	 = isset($this->userSettings['preferences']['common']['export_format']) && $this->userSettings['preferences']['common']['export_format'] ? $this->userSettings['preferences']['common']['export_format'] : 'csv';
 			$php_version	 = (float)PHP_VERSION;
 
 			$html2text			 = createObject('phpgwapi.html2text');
@@ -1626,7 +1650,6 @@
 		 */
 		function phpspreadsheet_out( $list, $name, $descr, $input_type = array(), $identificator = array(), $filename = '', $export_format = 'excel' )
 		{
-			phpgw::import_class('phpgwapi.phpspreadsheet');
 
 			if ($filename)
 			{
@@ -1635,9 +1658,9 @@
 			}
 			else
 			{
-				$filename = str_replace(' ', '_', $GLOBALS['phpgw_info']['user']['account_lid']);
+				$filename = str_replace(' ', '_', $this->userSettings['account_lid']);
 			}
-			$date_time = str_replace(array(' ', '/'), '_', $GLOBALS['phpgw']->common->show_date(time()));
+			$date_time = str_replace(array(' ', '/'), '_', $this->phpgwapi_common->show_date(time()));
 
 			switch ($export_format)
 			{
@@ -1658,9 +1681,9 @@
 
 			$spreadsheet = new PhpOffice\PhpSpreadsheet\Spreadsheet();
 
-			$spreadsheet->getProperties()->setCreator($GLOBALS['phpgw_info']['user']['fullname'])
-				->setLastModifiedBy($GLOBALS['phpgw_info']['user']['fullname'])
-				->setTitle("Download from {$GLOBALS['phpgw_info']['server']['system_name']}")
+			$spreadsheet->getProperties()->setCreator($this->userSettings['fullname'])
+				->setLastModifiedBy($this->userSettings['fullname'])
+				->setTitle("Download from {$this->serverSettings['system_name']}")
 				->setSubject("Office 2007 XLSX Document")
 				->setDescription("document for Office 2007 XLSX, generated using PHP classes.")
 				->setKeywords("office 2007 openxml php")
@@ -1675,7 +1698,7 @@
 				$i			 = 1;
 				foreach ($identificator as $key => $value)
 				{
-					$spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($i, 1, $value);
+					$spreadsheet->getActiveSheet()->setCellValue([$i, 1], $value);
 					$i++;
 				}
 			}
@@ -1695,7 +1718,7 @@
 					{
 						$text_format[$m] = true;
 					}
-					$spreadsheet->getActiveSheet()->setCellValueByColumnAndRow($m, $_first_row, $descr[$k]);
+					$spreadsheet->getActiveSheet()->setCellValue([$m, $_first_row], $descr[$k]);
 					$m++;
 				}
 			}
@@ -1768,9 +1791,9 @@
 			}
 			else
 			{
-				$filename = str_replace(' ', '_', $GLOBALS['phpgw_info']['user']['account_lid']);
+				$filename = str_replace(' ', '_', $this->userSettings['account_lid']);
 			}
-			$date_time	 = str_replace(array(' ', '/'), '_', $GLOBALS['phpgw']->common->show_date(time()));
+			$date_time	 = str_replace(array(' ', '/'), '_', $this->phpgwapi_common->show_date(time()));
 			$filename	 .= "_{$date_time}.xlsx";
 
 			$writer = CreateObject('phpgwapi.xlsxwriter');
@@ -1778,8 +1801,8 @@
 			$browser = CreateObject('phpgwapi.browser');
 			$browser->content_header($writer::sanitize_filename($filename), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
-			$writer->setauthor($GLOBALS['phpgw_info']['user']['fullname']);
-			$writer->setTitle("Download from {$GLOBALS['phpgw_info']['server']['system_name']}");
+			$writer->setauthor($this->userSettings['fullname']);
+			$writer->setTitle("Download from {$this->serverSettings['system_name']}");
 
 			$count_uicols_name = count($name);
 
@@ -1915,9 +1938,9 @@
 			}
 			else
 			{
-				$filename = str_replace(' ', '_', $GLOBALS['phpgw_info']['user']['account_lid']);
+				$filename = str_replace(' ', '_', $this->userSettings['account_lid']);
 			}
-			$date_time	 = str_replace(array(' ', '/'), '_', $GLOBALS['phpgw']->common->show_date(time()));
+			$date_time	 = str_replace(array(' ', '/'), '_', $this->phpgwapi_common->show_date(time()));
 			$filename	 .= "_{$date_time}.csv";
 
 			$browser = CreateObject('phpgwapi.browser');
@@ -2093,7 +2116,7 @@
 		 */
 		function utf2ascii( $text = '' )
 		{
-			if (!isset($GLOBALS['phpgw_info']['server']['charset']) || $GLOBALS['phpgw_info']['server']['charset'] == 'utf-8')
+			if (!isset($this->serverSettings['charset']) || $this->serverSettings['charset'] == 'utf-8')
 			{
 				if ($text == mb_convert_encoding($text, 'ISO-8859-1', 'UTF-8'))
 				{
@@ -2118,7 +2141,7 @@
 		 */
 		function ascii2utf( $text = '' )
 		{
-			if (!isset($GLOBALS['phpgw_info']['server']['charset']) || $GLOBALS['phpgw_info']['server']['charset'] == 'utf-8')
+			if (!isset($this->serverSettings['charset']) || $this->serverSettings['charset'] == 'utf-8')
 			{
 				return mb_convert_encoding($text, 'UTF-8', 'ISO-8859-1');
 			}
@@ -2145,7 +2168,7 @@
 					{
 						if (isset($_POST[$insert_record['location'][$i]]) && $_POST[$insert_record['location'][$i]])
 						{
-							$values['location'][$insert_record['location'][$i]] = phpgw::get_var($insert_record['location'][$i], 'string', 'POST');
+							$values['location'][$insert_record['location'][$i]] = Sanitizer::get_var($insert_record['location'][$i], 'string', 'POST');
 						}
 					}
 				}
@@ -2156,7 +2179,7 @@
 					{
 						if (isset($_POST[$key]) && $_POST[$key])
 						{
-							$values['extra'][$column] = phpgw::get_var($key, 'string', 'POST');
+							$values['extra'][$column] = Sanitizer::get_var($key, 'string', 'POST');
 						}
 					}
 
@@ -2178,14 +2201,14 @@
 						$values['p'][$p_entity_id]['p_entity_id']	 = $p_entity_id;
 						$values['p'][$p_entity_id]['p_cat_id']		 = $p_cat_id;
 						$values['p'][$p_entity_id]['p_num']			 = $p_num;
-						$values['p'][$p_entity_id]['p_cat_name']	 = phpgw::get_var("entity_cat_name_{$p_entity_id}");
+						$values['p'][$p_entity_id]['p_cat_name']	 = Sanitizer::get_var("entity_cat_name_{$p_entity_id}");
 					}
 				}
 				if (isset($insert_record['additional_info']) && is_array($insert_record['additional_info']))
 				{
 					foreach ($insert_record['additional_info'] as $additional_info)
 					{
-						if ($additional_info_value = phpgw::get_var($additional_info['input_name'], 'string', 'POST'))
+						if ($additional_info_value = Sanitizer::get_var($additional_info['input_name'], 'string', 'POST'))
 						{
 							$values['additional_info'][$additional_info['input_text']] = $additional_info_value;
 						}
@@ -2194,11 +2217,11 @@
 			}
 
 			$values['extra']		 = isset($values['extra']) && $values['extra'] ? $values['extra'] : array();
-			$values['street_name']	 = phpgw::get_var('street_name');
-			$values['street_number'] = phpgw::get_var('street_number');
+			$values['street_name']	 = Sanitizer::get_var('street_name');
+			$values['street_number'] = Sanitizer::get_var('street_number');
 			if (isset($values['location']) && is_array($values['location']))
 			{
-				$values['location_name'] = phpgw::get_var('loc' . (count($values['location'])) . '_name', 'string', 'POST'); // if not address - get the parent name as address
+				$values['location_name'] = Sanitizer::get_var('loc' . (count($values['location'])) . '_name', 'string', 'POST'); // if not address - get the parent name as address
 				$values['location_code'] = implode('-', $values['location']);
 			}
 			if ($values['location_code'])
@@ -2255,20 +2278,24 @@
 
 		function get_menu( $app = 'property' )
 		{
-			$GLOBALS['phpgw_info']['flags']['nonavbar'] = false;
-			if (!isset($GLOBALS['phpgw_info']['user']['preferences']['property']['horisontal_menus']) || $GLOBALS['phpgw_info']['user']['preferences']['property']['horisontal_menus'] == 'no')
+			$this->flags['nonavbar'] = false;
+			Settings::getInstance()->set('flags', $this->flags);
+
+			if (!isset($this->userSettings['preferences']['property']['horisontal_menus']) || $this->userSettings['preferences']['property']['horisontal_menus'] == 'no')
 			{
 				return;
 			}
-			$GLOBALS['phpgw']->xslttpl->add_file(array('menu'), $this->xsl_rootdir);
+			phpgwapi_xslttemplates::getInstance()->add_file(array('menu'), $this->xsl_rootdir);
 
-			if (!$menu = $GLOBALS['phpgw']->session->appsession($GLOBALS['phpgw_info']['flags']['menu_selection'], "menu_{$app}"))
+			$menu = Cache::session_get("menu_{$app}", $this->flags['menu_selection']);
+			
+			if (!$menu)
 			{
 				$menu_gross			 = execMethod("{$app}.menu.get_menu", 'horisontal');
-				$selection			 = explode('::', $GLOBALS['phpgw_info']['flags']['menu_selection']);
+				$selection			 = explode('::', $this->flags['menu_selection']);
 				$level				 = 0;
 				$menu['navigation']	 = $this->get_sub_menu($menu_gross['navigation'], $selection, $level);
-				$GLOBALS['phpgw']->session->appsession(isset($GLOBALS['phpgw_info']['flags']['menu_selection']) && $GLOBALS['phpgw_info']['flags']['menu_selection'] ? $GLOBALS['phpgw_info']['flags']['menu_selection'] : 'property_missing_selection', "menu_{$app}", $menu);
+				Cache::session_set("menu_{$app}", isset($this->flags['menu_selection']) && $this->flags['menu_selection'] ? $this->flags['menu_selection'] : 'property_missing_selection', $menu,);
 				unset($menu_gross);
 			}
 			return $menu;
@@ -2303,8 +2330,8 @@
 
 		function no_access()
 		{
-			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
-			$GLOBALS['phpgw']->xslttpl->add_file(array('no_access', 'menu'), $this->xsl_rootdir);
+			$this->flags['xslt_app'] = true;
+			phpgwapi_xslttemplates::getInstance()->add_file(array('no_access', 'menu'), $this->xsl_rootdir);
 
 			$receipt['error'][] = array('msg' => lang('NO ACCESS'));
 
@@ -2312,14 +2339,15 @@
 
 			$data = array
 				(
-				'msgbox_data'	 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'	 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'menu'			 => $this->get_menu(),
 			);
 
 			$appname = lang('No access');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('no_access' => $data));
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname;
+			Settings::getInstance()->set('flags', $this->flags);
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('no_access' => $data));
 		}
 
 		/**
@@ -2526,11 +2554,11 @@
 		{
 			if (!$vendor_id)
 			{
-				$vendor_id	 = phpgw::get_var('vendor_id', 'int', 'GET', 0);
-				$field_name	 = phpgw::get_var('field_name', 'string', 'GET');
+				$vendor_id	 = Sanitizer::get_var('vendor_id', 'int', 'GET', 0);
+				$field_name	 = Sanitizer::get_var('field_name', 'string', 'GET');
 			}
 
-			$preselect = phpgw::get_var('preselect', 'bool');
+			$preselect = Sanitizer::get_var('preselect', 'bool');
 
 			$vendor_email = execMethod('property.sowo_hour.get_email', $vendor_id);
 
@@ -2557,7 +2585,7 @@
 				);
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$total_records = count($content_email);
 
@@ -2565,7 +2593,7 @@
 					(
 					'data'				 => $content_email,
 					'total_records'		 => $total_records,
-					'draw'				 => phpgw::get_var('draw', 'int'),
+					'draw'				 => Sanitizer::get_var('draw', 'int'),
 					'recordsTotal'		 => $total_records,
 					'recordsFiltered'	 => $total_records
 				);
@@ -2577,7 +2605,7 @@
 		{
 			if (!$vendor_id)
 			{
-				$vendor_id = phpgw::get_var('vendor_id', 'int');
+				$vendor_id = Sanitizer::get_var('vendor_id', 'int');
 			}
 
 			$contract_list = createObject('property.soagreement')->get_vendor_contract($vendor_id, $selected);
@@ -2601,7 +2629,7 @@
 		 */
 		public function get_eco_service()
 		{
-			$query = phpgw::get_var('query');
+			$query = Sanitizer::get_var('query');
 
 			$sogeneric = CreateObject('property.sogeneric', 'eco_service');
 
@@ -2625,7 +2653,7 @@
 
 		public function get_unspsc_code()
 		{
-			$query = phpgw::get_var('query');
+			$query = Sanitizer::get_var('query');
 
 			$sogeneric	 = CreateObject('property.sogeneric', 'unspsc_code');
 			$values		 = $sogeneric->read(array('query' => $query, 'allrows' => true));
@@ -2654,8 +2682,8 @@
 
 		public function get_b_account()
 		{
-			$query	 = phpgw::get_var('query');
-			$role	 = phpgw::get_var('role');
+			$query	 = Sanitizer::get_var('query');
+			$role	 = Sanitizer::get_var('role');
 
 			$type = 'budget_account';
 
@@ -2685,7 +2713,7 @@
 
 		public function get_external_project()
 		{
-			$query = phpgw::get_var('query');
+			$query = Sanitizer::get_var('query');
 
 			$sogeneric	 = CreateObject('property.sogeneric', 'external_project');
 			$filter		 = array('active' => 1);
@@ -2716,7 +2744,7 @@
 
 		public function get_ecodimb()
 		{
-			$query = phpgw::get_var('query');
+			$query = Sanitizer::get_var('query');
 
 			$sogeneric	 = CreateObject('property.sogeneric', 'dimb');
 			$filter		 = array('active' => 1);
@@ -2738,7 +2766,7 @@
 
 			$config_frontend = createobject('phpgwapi.config', 'mobilefrontend')->read();
 
-			$documentation_url = !empty($config_frontend['external_site_address'])  ? rtrim($config_frontend['external_site_address'], '/') : rtrim($GLOBALS['phpgw_info']['server']['webserver_url'], '/');
+			$documentation_url = !empty($config_frontend['external_site_address'])  ? rtrim($config_frontend['external_site_address'], '/') : rtrim($this->serverSettings['webserver_url'], '/');
 
 			$documentation_url .= '/mobilefrontend/';
 
@@ -2746,7 +2774,7 @@
 				'menuaction' => 'property.uiimport_documents.step_1_import',
 				'id'		 => $id,
 				'secret'	 => $secret,
-				'domain'	 => $GLOBALS['phpgw_info']['user']['domain']
+				'domain'	 => $this->userSettings['domain']
 				));
 
 			return $documentation_url;
@@ -2760,7 +2788,7 @@
 				return;
 			}
 
-			$accounts = $GLOBALS['phpgw']->accounts->get_list('accounts');
+			$accounts = $this->accounts->get_list('accounts');
 
 			$values = array();
 			foreach ($accounts as $account)

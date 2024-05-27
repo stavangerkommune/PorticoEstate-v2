@@ -3450,7 +3450,7 @@
 					return_after_action.scrollIntoView();
 				});
 JS;
-				$GLOBALS['phpgw']->js->add_code('', $js);
+				phpgwapi_js::getInstance()->add_code('', $js);
 			}
 
 			$orgid = $this->organization_bo->so->get_orgid($application['customer_organization_number']);

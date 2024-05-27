@@ -623,7 +623,7 @@
 					JqueryPortico.autocompleteHelper(sUrl, 'organization_name', 'organization_id', 'org_container');
 				});
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $jscode);
+			phpgwapi_js::getInstance()->add_code('', $jscode);
 
 			$config = (new \App\modules\phpgwapi\services\Config('booking'))->read();
 

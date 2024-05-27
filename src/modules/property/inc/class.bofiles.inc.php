@@ -332,9 +332,9 @@
 
 			if (!$file)
 			{
-				$file_name	 = html_entity_decode(urldecode(phpgw::get_var('file_name')));
+				$file_name	 = html_entity_decode(urldecode(Sanitizer::get_var('file_name')));
 				$file_name	 = $this->strip_entities_from_name($file_name);
-				$id			 = phpgw::get_var('id');
+				$id			 = Sanitizer::get_var('id');
 				$file		 = "{$this->fakebase}/{$type}/{$id}/{$file_name}";
 			}
 

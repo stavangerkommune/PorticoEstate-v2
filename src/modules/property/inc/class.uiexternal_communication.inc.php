@@ -114,7 +114,7 @@
 			}
 
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query(true);
 			}
@@ -217,9 +217,9 @@
 			/**
 			 * Save first, then preview - first pass
 			 */
-			$init_preview = phpgw::get_var('init_preview', 'bool');
+			$init_preview = Sanitizer::get_var('init_preview', 'bool');
 
-			if (phpgw::get_var('save', 'bool') || phpgw::get_var('send', 'bool') || $init_preview)
+			if (Sanitizer::get_var('save', 'bool') || Sanitizer::get_var('send', 'bool') || $init_preview)
 			{
 				$receipt = $this->save_ticket();
 				if ($init_preview)
@@ -231,11 +231,11 @@
 						'init_preview2'	 => $init_preview)
 					);
 				}
-				else if (phpgw::get_var('send', 'bool') && !empty($receipt['id']))
+				else if (Sanitizer::get_var('send', 'bool') && !empty($receipt['id']))
 				{
 					$this->_send($receipt['id']);
 				}
-				else if (phpgw::get_var('save', 'bool') && !empty($receipt['id']))
+				else if (Sanitizer::get_var('save', 'bool') && !empty($receipt['id']))
 				{
 					self::redirect(array('menuaction'	 => "{$this->currentapp}.uiexternal_communication.edit",
 						'id'			 => $receipt['id'])
@@ -356,12 +356,12 @@
 
 			if (!$vendor_id)
 			{
-				$vendor_id = phpgw::get_var('vendor_id', 'int');
+				$vendor_id = Sanitizer::get_var('vendor_id', 'int');
 			}
 
 			if (!$location_code)
 			{
-				$location_code = phpgw::get_var('location_code', 'string');
+				$location_code = Sanitizer::get_var('location_code', 'string');
 			}
 
 			$botts = createObject("{$this->currentapp}.botts");
@@ -407,7 +407,7 @@
 				$entry['start_date'] = $GLOBALS['phpgw']->common->show_date($entry['start_date'], $dateformat);
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 
 				$total_records = count($values);
@@ -415,7 +415,7 @@
 				return array
 					(
 					'data'				 => $values,
-					'draw'				 => phpgw::get_var('draw', 'int'),
+					'draw'				 => Sanitizer::get_var('draw', 'int'),
 					'recordsTotal'		 => $total_records,
 					'recordsFiltered'	 => $total_records
 				);
@@ -444,7 +444,7 @@
 			/**
 			 * Do not allow save / send here
 			 */
-			if (phpgw::get_var('save', 'bool') || phpgw::get_var('send', 'bool') || phpgw::get_var('init_preview', 'bool'))
+			if (Sanitizer::get_var('save', 'bool') || Sanitizer::get_var('send', 'bool') || Sanitizer::get_var('init_preview', 'bool'))
 			{
 				phpgw::no_access();
 			}
@@ -470,14 +470,14 @@
 				}
 			}
 
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
 			/**
 			 * Save first, then preview - first pass
 			 */
-			$init_preview = phpgw::get_var('init_preview', 'bool');
+			$init_preview = Sanitizer::get_var('init_preview', 'bool');
 
-			if (!$error && (phpgw::get_var('save', 'bool') || phpgw::get_var('send', 'bool') || $init_preview))
+			if (!$error && (Sanitizer::get_var('save', 'bool') || Sanitizer::get_var('send', 'bool') || $init_preview))
 			{
 				$this->save($init_preview);
 			}
@@ -490,7 +490,7 @@
 			/**
 			 * Save first, then preview - second pass
 			 */
-			if (phpgw::get_var('init_preview2', 'bool'))
+			if (Sanitizer::get_var('init_preview2', 'bool'))
 			{
 				$do_preview = $id;
 			}
@@ -499,7 +499,7 @@
 				$do_preview = null;
 			}
 
-			$ticket_id = phpgw::get_var('ticket_id', 'int');
+			$ticket_id = Sanitizer::get_var('ticket_id', 'int');
 
 			if (!$error && $id)
 			{
@@ -754,7 +754,7 @@ JS;
 				)
 			);
 
-			$link_view_file = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => "{$this->currentapp}.uitts.view_file"));
+			$link_view_file = phpgw::link('/index.php', array('menuaction' => "{$this->currentapp}.uitts.view_file"));
 
 			$file_attachments = isset($values['file_attachments']) && is_array($values['file_attachments']) ? $values['file_attachments'] : array();
 
@@ -909,7 +909,7 @@ JS;
 				'value_active_tab'			 => 0,
 				'base_java_url'				 => "{menuaction:'{$this->currentapp}.uitts.update_data',id:{$ticket_id}}",
 				'value_initial_message'		 => $initial_message,
-				'multi_upload_action'		 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => "{$this->currentapp}.uitts.handle_multi_upload_file", 'id' => $ticket_id))
+				'multi_upload_action'		 => phpgw::link('/index.php', array('menuaction' => "{$this->currentapp}.uitts.handle_multi_upload_file", 'id' => $ticket_id))
 			);
 			$GLOBALS['phpgw_info']['flags']['app_header']	 .= '::' . lang($mode);
 
@@ -926,14 +926,14 @@ JS;
 
 		public function save_ticket()
 		{
-			$order_id		 = phpgw::get_var('order_id');
-			$vendor_id		 = phpgw::get_var('vendor_id', 'int');
-			$location_code	 = phpgw::get_var('location_code');
-			$contract_id	 = phpgw::get_var('contract_id');
-			$subject		 = phpgw::get_var('subject');
-			$message		 = phpgw::get_var('message', 'html');
-			$mail_recipients = phpgw::get_var('mail_recipients');
-			$type_id		 = phpgw::get_var('type_id', 'int');
+			$order_id		 = Sanitizer::get_var('order_id');
+			$vendor_id		 = Sanitizer::get_var('vendor_id', 'int');
+			$location_code	 = Sanitizer::get_var('location_code');
+			$contract_id	 = Sanitizer::get_var('contract_id');
+			$subject		 = Sanitizer::get_var('subject');
+			$message		 = Sanitizer::get_var('message', 'html');
+			$mail_recipients = Sanitizer::get_var('mail_recipients');
+			$type_id		 = Sanitizer::get_var('type_id', 'int');
 
 			$ticket = array
 				(
@@ -1002,7 +1002,7 @@ JS;
 
 		public function save( $init_preview = null )
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
 			/*
 			 * Overrides with incoming data from POST
@@ -1062,7 +1062,7 @@ JS;
 				$this->receipt['message'][] = array('msg' => lang('message has been saved'));
 
 				self::message_set($this->receipt);
-				if (phpgw::get_var('send', 'bool'))
+				if (Sanitizer::get_var('send', 'bool'))
 				{
 					$this->_send($id);
 				}
@@ -1238,7 +1238,7 @@ JS;
 			{
 				if (($field_info['action'] & PHPGW_ACL_ADD) || ($field_info['action'] & PHPGW_ACL_EDIT))
 				{
-					$value = phpgw::get_var($field, $field_info['type']);
+					$value = Sanitizer::get_var($field, $field_info['type']);
 
 					if ($field_info['required'] && (($value !== '0' && empty($value)) || empty($value)))
 					{
@@ -1251,14 +1251,14 @@ JS;
 
 			$values['id'] = $id;
 
-			$values['ticket_status'] = phpgw::get_var('ticket_status');
+			$values['ticket_status'] = Sanitizer::get_var('ticket_status');
 
 			return $values;
 		}
 
 		public function get_sms_recipients()
 		{
-			$location_code = phpgw::get_var('location_code', 'string');
+			$location_code = Sanitizer::get_var('location_code', 'string');
 
 			$sms_recipients = $this->bo->get_sms_recipients($location_code);
 
@@ -1274,11 +1274,11 @@ JS;
 
 			self::set_active_menu("property::helpdesk::send_sms");
 
-			if (phpgw::get_var('send', 'bool'))
+			if (Sanitizer::get_var('send', 'bool'))
 			{
-				$sms_content			 = phpgw::get_var('sms_content', 'string');
-				$sms_recipients			 = (array)phpgw::get_var('sms_recipients', 'string');
-				$extra_sms_recipients	 = phpgw::get_var('extra_sms_recipients', 'string');
+				$sms_content			 = Sanitizer::get_var('sms_content', 'string');
+				$sms_recipients			 = (array)Sanitizer::get_var('sms_recipients', 'string');
+				$extra_sms_recipients	 = Sanitizer::get_var('extra_sms_recipients', 'string');
 
 				$extra_sms_recipients_array = explode(',', $extra_sms_recipients);
 

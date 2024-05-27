@@ -54,8 +54,8 @@
 			$location_code	 = trim($data[0]);
 			$message_cat_id	 = (int)$data[1];
 			$priority		 = (int)$data[2];
-			$message_title	 = phpgw::clean_value($data[3]);
-			$message_details = phpgw::clean_value($data[4]);
+			$message_title	 = Sanitizer::clean_value($data[3]);
+			$message_details = Sanitizer::clean_value($data[4]);
 			$group_id		 = (int)$data[5];
 
 			$dummy_data1 = array

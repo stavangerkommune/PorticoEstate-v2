@@ -91,12 +91,12 @@
 			case 20:
 				return lang('Cannot find the mapping ! (please advice your adminstrator)');
 			case 21:
-				return lang('you had inactive mapping to %1 account', phpgw::get_var('phpgw_account', 'string', 'GET', ''));
+				return lang('you had inactive mapping to %1 account', Sanitizer::get_var('phpgw_account', 'string', 'GET', ''));
 			case 22:
 				$GLOBALS['phpgw']->session->phpgw_setcookie('sessionid');
 				$GLOBALS['phpgw']->session->phpgw_setcookie('kp3');
 				$GLOBALS['phpgw']->session->phpgw_setcookie('domain');
-				return lang('you seemed to have an active session elsewhere for the domain "%1", now set to expired - please try again', phpgw::get_var('domain', 'string', 'COOKIE'));
+				return lang('you seemed to have an active session elsewhere for the domain "%1", now set to expired - please try again', Sanitizer::get_var('domain', 'string', 'COOKIE'));
 			case 99:
 				return lang('Blocked, too many attempts');
 			case 10:
@@ -191,20 +191,20 @@
 	$GLOBALS['phpgw']->session->phpgw_setcookie('kp3');
 	$GLOBALS['phpgw']->session->phpgw_setcookie('domain');
 
-	$login	 = phpgw::get_var('login', 'string', 'POST');
-	$passwd	 = phpgw::get_var('passwd', 'string', 'POST');
+	$login	 = Sanitizer::get_var('login', 'string', 'POST');
+	$passwd	 = Sanitizer::get_var('passwd', 'string', 'POST');
 
 	if ($GLOBALS['phpgw_info']['server']['auth_type'] == 'http' && isset($_SERVER['PHP_AUTH_USER']))
 	{
 		$submit	 = true;
-		$login	 = phpgw::get_var('PHP_AUTH_USER', 'string', 'SERVER');
-		$passwd	 = phpgw::get_var('PHP_AUTH_PW', 'string', 'SERVER');
+		$login	 = Sanitizer::get_var('PHP_AUTH_USER', 'string', 'SERVER');
+		$passwd	 = Sanitizer::get_var('PHP_AUTH_PW', 'string', 'SERVER');
 	}
 
 	if ($GLOBALS['phpgw_info']['server']['auth_type'] == 'ntlm' && isset($_SERVER['REMOTE_USER']))
 	{
 		$submit	 = true;
-		$login	 = phpgw::get_var('REMOTE_USER', 'string', 'SERVER');
+		$login	 = Sanitizer::get_var('REMOTE_USER', 'string', 'SERVER');
 
 		$passwd = '';
 	}
@@ -220,7 +220,7 @@
 		 *  /CN=john.doe/OU=Department/O=Company/C=xx/Email=john@comapy.tld/L=City/
 		 * the username is deliberately lowercase, to ease LDAP integration
 		 */
-		$sslattribs	 = phpgw::get_var('SSL_CLIENT_S_DN', 'string', 'SERVER');
+		$sslattribs	 = Sanitizer::get_var('SSL_CLIENT_S_DN', 'string', 'SERVER');
 		$sslattribs	 = explode('/', $sslattribs);
 		// skip the part in front of the first '/' (nothing)
 		while ($sslattrib	 = next($sslattribs))
@@ -241,7 +241,7 @@
 			{
 				$login	 = $sslattributes['Email'];
 				// not checked against the database, but delivered to authentication module
-				$passwd	 = phpgw::get_var('SSL_CLIENT_S_DN', 'string', 'SERVER');
+				$passwd	 = Sanitizer::get_var('SSL_CLIENT_S_DN', 'string', 'SERVER');
 			}
 		}
 		unset($key);
@@ -287,14 +287,14 @@
 //_debug_array($passwd);die();
 			if (isset($GLOBALS['phpgw_info']['server']['usecookies']) && $GLOBALS['phpgw_info']['server']['usecookies'])
 			{
-				$GLOBALS['phpgw']->session->phpgw_setcookie('last_usertype', phpgw::get_var('loginusertype'), time() + 1209600); /* For 2 weeks */
+				$GLOBALS['phpgw']->session->phpgw_setcookie('last_usertype', Sanitizer::get_var('loginusertype'), time() + 1209600); /* For 2 weeks */
 			}
 		}
 // end mapping
 
 		if (strstr($login, '@') === false && isset($_POST['logindomain']))
 		{
-			$login .= '@' . phpgw::get_var('logindomain', 'string', 'POST');
+			$login .= '@' . Sanitizer::get_var('logindomain', 'string', 'POST');
 		}
 
 		$GLOBALS['sessionid'] = $GLOBALS['phpgw']->session->create($login, '', true);
@@ -308,7 +308,7 @@
 			exit;
 		}
 
-		$forward = phpgw::get_var('phpgw_forward', 'int');
+		$forward = Sanitizer::get_var('phpgw_forward', 'int');
 		if ($forward)
 		{
 			$extra_vars['phpgw_forward'] = $forward;
@@ -316,7 +316,7 @@
 			{
 				if (preg_match('/phpgw_/', $name))
 				{
-					$extra_vars[$name] = phpgw::clean_value($value);
+					$extra_vars[$name] = Sanitizer::clean_value($value);
 				}
 			}
 		}
@@ -345,7 +345,7 @@
 		$tmpl->set_var(
 			array(
 				'domain_selects' => '',
-				'logindomain'	 => phpgw::get_var('SERVER_NAME', 'string', 'SERVER')
+				'logindomain'	 => Sanitizer::get_var('SERVER_NAME', 'string', 'SERVER')
 			)
 		);
 		$tmpl->parse('domain_from_hosts', 'domain_from_host');
@@ -411,7 +411,7 @@
 	if (isset($_COOKIE['last_loginid']))
 	{
 		$accounts	 = CreateObject('phpgwapi.accounts');
-		$prefs		 = CreateObject('phpgwapi.preferences', $accounts->name2id(phpgw::get_var('last_loginid', 'string', 'COOKIE')));
+		$prefs		 = CreateObject('phpgwapi.preferences', $accounts->name2id(Sanitizer::get_var('last_loginid', 'string', 'COOKIE')));
 
 		if (!$prefs->account_id)
 		{
@@ -458,7 +458,7 @@
 		}
 	}
 
-	$last_loginid = phpgw::get_var('last_loginid', 'string', 'COOKIE');
+	$last_loginid = Sanitizer::get_var('last_loginid', 'string', 'COOKIE');
 	if ($GLOBALS['phpgw_info']['server']['show_domain_selectbox'] && $last_loginid !== '')
 	{
 		reset($GLOBALS['phpgw_domain']);
@@ -466,7 +466,7 @@
 
 		if ($_COOKIE['last_domain'] != $default_domain && !empty($_COOKIE['last_domain']))
 		{
-			$last_loginid .= '@' . phpgw::get_var('last_domain', 'string', 'COOKIE');
+			$last_loginid .= '@' . Sanitizer::get_var('last_domain', 'string', 'COOKIE');
 		}
 	}
 
@@ -476,7 +476,7 @@
 	{
 		if (preg_match('/phpgw_/', $name))
 		{
-			$extra_vars[$name] = urlencode(phpgw::clean_value($value));
+			$extra_vars[$name] = urlencode(Sanitizer::clean_value($value));
 		}
 	}
 

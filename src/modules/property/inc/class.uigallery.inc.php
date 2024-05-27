@@ -134,8 +134,8 @@
 				phpgw::no_access();
 			}
 
-			$file	 = urldecode(phpgw::get_var('file'));
-			$thumb	 = phpgw::get_var('thumb', 'bool');
+			$file	 = urldecode(Sanitizer::get_var('file'));
+			$thumb	 = Sanitizer::get_var('thumb', 'bool');
 
 			$directory = explode('/', $file);
 
@@ -151,8 +151,8 @@
 				$GLOBALS['phpgw']->common->phpgw_exit();
 			}
 
-			$img_id = phpgw::get_var('img_id', 'int');
-			$file_id = phpgw::get_var('file_id', 'int');
+			$img_id = Sanitizer::get_var('img_id', 'int');
+			$file_id = Sanitizer::get_var('file_id', 'int');
 
 			$bofiles = CreateObject('property.bofiles');
 
@@ -260,7 +260,7 @@
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = "property::documentation::gallery";
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -390,14 +390,14 @@
 
 		public function query()
 		{
-			$start_date	 = phpgw::get_var('start_date');
-			$end_date	 = phpgw::get_var('end_date');
+			$start_date	 = Sanitizer::get_var('start_date');
+			$end_date	 = Sanitizer::get_var('end_date');
 
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
-			$export	 = phpgw::get_var('export', 'bool');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
+			$export	 = Sanitizer::get_var('export', 'bool');
 
 			if ($start_date && empty($end_date))
 			{
@@ -406,12 +406,12 @@
 			}
 
 			$params = array(
-				'start'			 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'		 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'			 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'		 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'			 => $search['value'],
 				'order'			 => $columns[$order[0]['column']]['data'],
 				'sort'			 => $order[0]['dir'],
-				'allrows'		 => phpgw::get_var('length', 'int') == -1 || $export,
+				'allrows'		 => Sanitizer::get_var('length', 'int') == -1 || $export,
 				'location_id'	 => $this->location_id,
 				'user_id'		 => $this->user_id,
 				'mime_type'		 => $this->mime_type,

@@ -59,14 +59,14 @@
 				$this->use_session = true;
 			}
 
-			$start		 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query		 = phpgw::get_var('query');
-			$sort		 = phpgw::get_var('sort');
-			$order		 = phpgw::get_var('order');
-			$filter		 = phpgw::get_var('filter', 'int');
-			$cat_id		 = phpgw::get_var('cat_id', 'int');
-			$chapter_id	 = phpgw::get_var('chapter_id', 'int');
-			$allrows	 = phpgw::get_var('allrows', 'bool');
+			$start		 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query		 = Sanitizer::get_var('query');
+			$sort		 = Sanitizer::get_var('sort');
+			$order		 = Sanitizer::get_var('order');
+			$filter		 = Sanitizer::get_var('filter', 'int');
+			$cat_id		 = Sanitizer::get_var('cat_id', 'int');
+			$chapter_id	 = Sanitizer::get_var('chapter_id', 'int');
+			$allrows	 = Sanitizer::get_var('allrows', 'bool');
 
 			if ($start)
 			{
@@ -134,10 +134,10 @@
 			switch ($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('chapter_select'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('chapter_select'));
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('chapter_filter'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('chapter_filter'));
 					break;
 			}
 
@@ -148,7 +148,7 @@
 
 		function get_tolerance_list( $selected = '' )
 		{
-			$GLOBALS['phpgw']->xslttpl->add_file(array('tolerance_select'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('tolerance_select'));
 
 			$tolerances[0]['id'] = 1;
 			$tolerances[1]['id'] = 2;
@@ -183,14 +183,14 @@
 
 		function get_grouping_list( $workorder_id, $selected = '' )
 		{
-			$GLOBALS['phpgw']->xslttpl->add_file(array('grouping_select'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('grouping_select'));
 			$groupings = $this->so->get_grouping_list($workorder_id);
 			return $this->bocommon->select_list($selected, $groupings);
 		}
 
 		function get_building_part_list( $selected = '' )
 		{
-			$GLOBALS['phpgw']->xslttpl->add_file(array('building_part_select'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('building_part_select'));
 
 			$building_parts = $this->so->get_building_part_list();
 

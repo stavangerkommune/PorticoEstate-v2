@@ -27,6 +27,11 @@
 	 * @version $Id$
 	 */
 
+use App\Database\Db;
+use App\modules\phpgwapi\controllers\Locations;
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\SchemaProc\SchemaProc;
+
 	/**
 	 * Description
 	 * @package property
@@ -34,14 +39,17 @@
 	class property_soadmin_location
 	{
 
-		var $db,$oProc, $join, $left_join, $like,$category_name,$account, $total_records;
+		var $db,$oProc, $join, $left_join, $like,$category_name,$account, $total_records, $locations;
 
 		function __construct()
 		{
-			$this->account	 = isset($GLOBALS['phpgw_info']['user']['account_id']) ? (int)$GLOBALS['phpgw_info']['user']['account_id'] : -1;
-			$this->db		 = & $GLOBALS['phpgw']->db;
+			$userSettings = Settings::getInstance()->get('user');
+			$this->account	 = isset($userSettings['account_id']) ? (int)$userSettings['account_id'] : -1;
+			$this->db	 = Db::getInstance();
 			$this->join		 = & $this->db->join;
 			$this->like		 = & $this->db->like;
+			$this->locations = new Locations();
+
 		}
 
 		function reset_fm_cache()
@@ -459,7 +467,7 @@
 				$this->db->query("INSERT INTO fm_location_type (id,name, descr,pk,ix,uc) "
 					. "VALUES ($values_insert)", __LINE__, __FILE__);
 
-				$location_id = $GLOBALS['phpgw']->locations->add(".location.{$standard['id']}", $standard['name'], 'property', true, "fm_location{$standard['id']}");
+				$location_id = $this->locations->add(".location.{$standard['id']}", $standard['name'], 'property', true, "fm_location{$standard['id']}");
 
 				for ($i = 0; $i < count($default_attrib['id']); $i++)
 				{
@@ -595,7 +603,7 @@
 
 			$attrib_table	 = 'phpgw_cust_attribute';
 			$choice_table	 = 'phpgw_cust_choice';
-			$location_id	 = $GLOBALS['phpgw']->locations->get_id('property', ".location.{$id}");
+			$location_id	 = $this->locations->get_id('property', ".location.{$id}");
 
 			$this->db->query("DELETE FROM {$attrib_table} WHERE location_id = {$location_id}", __LINE__, __FILE__);
 			$this->db->query("DELETE FROM {$choice_table} WHERE location_id = {$location_id}", __LINE__, __FILE__);
@@ -614,8 +622,9 @@
 
 		function init_process()
 		{
-			$this->oProc						 = CreateObject('phpgwapi.schema_proc', $GLOBALS['phpgw_info']['server']['db_type']);
-			$this->oProc->m_odb					 = & $this->db;
+			$serverSettings = Settings::getInstance()->get('server');
+			$this->oProc			= new SchemaProc($serverSettings['db_type']);
+			$this->oProc->m_odb	= $this->db;
 			$this->oProc->m_odb->Halt_On_Error	 = 'yes';
 		}
 
@@ -630,7 +639,7 @@
 			$column_info['default']		 = $this->db->f('default_value');
 			$column_info['nullable']	 = $this->db->f('nullable');
 			$location_type				 = $this->db->f('location_type');
-			$location_id				 = $GLOBALS['phpgw']->locations->get_id('property', ".location.{$location_type}");
+			$location_id				 = $this->locations->get_id('property', ".location.{$location_type}");
 
 			$custom				 = createObject('property.custom_fields');
 			$table_def			 = $custom->get_table_def('fm_location' . $location_type);

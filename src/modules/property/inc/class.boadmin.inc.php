@@ -57,18 +57,18 @@
 				$this->use_session = true;
 			}
 
-			$start			 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query			 = phpgw::get_var('query');
-			$sort			 = phpgw::get_var('sort');
-			$order			 = phpgw::get_var('order');
-			$filter			 = phpgw::get_var('filter', 'int');
-			$cat_id			 = phpgw::get_var('cat_id', 'string');
-			$permission		 = phpgw::get_var('permission');
+			$start			 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query			 = Sanitizer::get_var('query');
+			$sort			 = Sanitizer::get_var('sort');
+			$order			 = Sanitizer::get_var('order');
+			$filter			 = Sanitizer::get_var('filter', 'int');
+			$cat_id			 = Sanitizer::get_var('cat_id', 'string');
+			$permission		 = Sanitizer::get_var('permission');
 			//		$location		 = get_var('location',array('POST','GET')); // don't work for some reason...
-			$module			 = phpgw::get_var('module');
-			$granting_group	 = phpgw::get_var('granting_group', 'int');
-			$allrows		 = phpgw::get_var('allrows', 'bool');
-			$acl_app		 = phpgw::get_var('acl_app', 'string', 'REQUEST', 'property');
+			$module			 = Sanitizer::get_var('module');
+			$granting_group	 = Sanitizer::get_var('granting_group', 'int');
+			$allrows		 = Sanitizer::get_var('allrows', 'bool');
+			$acl_app		 = Sanitizer::get_var('acl_app', 'string', 'REQUEST', 'property');
 			$this->acl_app	 = $acl_app;
 
 			if ($start)
@@ -139,10 +139,10 @@
 			switch ($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('cat_select'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('cat_select'));
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('cat_filter'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('cat_filter'));
 					break;
 			}
 
@@ -211,7 +211,7 @@
 
 		function set_permission( $values, $r_processed, $set_grant = false, $initials = '' )
 		{
-			$this->acl->enable_inheritance = phpgw::get_var('enable_inheritance', 'bool', 'POST');
+			$this->acl->enable_inheritance = Sanitizer::get_var('enable_inheritance', 'bool', 'POST');
 
 			if ($initials)
 			{

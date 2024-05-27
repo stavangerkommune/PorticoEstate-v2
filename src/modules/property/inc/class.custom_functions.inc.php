@@ -65,12 +65,12 @@
 			}
 			else
 			{
-				$data = unserialize(urldecode(phpgw::get_var('data')));
+				$data = unserialize(urldecode(Sanitizer::get_var('data')));
 
-				$data = phpgw::clean_value($data);
+				$data = Sanitizer::clean_value($data);
 				if (!isset($data['function']))
 				{
-					$function = phpgw::get_var('function');
+					$function = Sanitizer::get_var('function');
 				}
 				else
 				{

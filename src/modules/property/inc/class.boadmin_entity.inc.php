@@ -96,16 +96,16 @@
 			$this->bocommon	 = CreateObject('property.bocommon');
 			$this->custom	 = createObject('property.custom_fields');
 
-			$start		 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query		 = phpgw::get_var('query');
-			$sort		 = phpgw::get_var('sort');
-			$order		 = phpgw::get_var('order');
-			$type		 = phpgw::get_var('type');
-			$cat_id		 = phpgw::get_var('cat_id', 'int');
-			$allrows	 = phpgw::get_var('allrows', 'bool');
-			$entity_id	 = phpgw::get_var('entity_id', 'int');
+			$start		 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query		 = Sanitizer::get_var('query');
+			$sort		 = Sanitizer::get_var('sort');
+			$order		 = Sanitizer::get_var('order');
+			$type		 = Sanitizer::get_var('type');
+			$cat_id		 = Sanitizer::get_var('cat_id', 'int');
+			$allrows	 = Sanitizer::get_var('allrows', 'bool');
+			$entity_id	 = Sanitizer::get_var('entity_id', 'int');
 
-			$location_id = phpgw::get_var('location_id', 'int');
+			$location_id = Sanitizer::get_var('location_id', 'int');
 			if ($location_id)
 			{
 				$loc_arr	 = $GLOBALS['phpgw']->locations->get_name($location_id);
@@ -237,7 +237,7 @@
 
 		public function get_category_list()
 		{
-			$entity_id = phpgw::get_var('entity_id', 'int');
+			$entity_id = Sanitizer::get_var('entity_id', 'int');
 			return $this->so->read_category(array('allrows' => true, 'entity_id' => $entity_id));
 		}
 
@@ -246,8 +246,8 @@
 		 */
 		public function get_attrib_list()
 		{
-			$entity_id	 = phpgw::get_var('entity_id');
-			$cat_id		 = phpgw::get_var('cat_id');
+			$entity_id	 = Sanitizer::get_var('entity_id');
+			$cat_id		 = Sanitizer::get_var('cat_id');
 
 			return $this->custom->find('property', ".entity.{$entity_id}.{$cat_id}", 0, '', '', '', true, true);
 		}

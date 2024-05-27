@@ -53,7 +53,7 @@
 		 */
 		public function __construct( $session = false )
 		{
-			$this->appname = phpgw::get_var('appname', 'string', 'REQUEST', 'property');
+			$this->appname = Sanitizer::get_var('appname', 'string', 'REQUEST', 'property');
 
 			$this->so				 = CreateObject('property.soresponsible');
 			$this->so->appname		 = $this->appname;
@@ -67,31 +67,31 @@
 
 			if (array_key_exists('query', $_POST) || array_key_exists('query', $_GET))
 			{
-				$this->query = phpgw::get_var('query');
+				$this->query = Sanitizer::get_var('query');
 			}
 			if (array_key_exists('start', $_POST) || array_key_exists('start', $_GET))
 			{
-				$this->start = phpgw::get_var('start', 'int', 'REQUEST', 0);
+				$this->start = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
 			}
 			if (array_key_exists('location', $_POST) || array_key_exists('location', $_GET))
 			{
-				$this->location = phpgw::get_var('location');
+				$this->location = Sanitizer::get_var('location');
 			}
 			if (array_key_exists('sort', $_POST) || array_key_exists('sort', $_GET))
 			{
-				$this->sort = phpgw::get_var('sort');
+				$this->sort = Sanitizer::get_var('sort');
 			}
 			if (array_key_exists('order', $_POST) || array_key_exists('order', $_GET))
 			{
-				$this->order = phpgw::get_var('order');
+				$this->order = Sanitizer::get_var('order');
 			}
 			if (array_key_exists('allrows', $_POST) || array_key_exists('allrows', $_GET))
 			{
-				$this->allrows = phpgw::get_var('allrows');
+				$this->allrows = Sanitizer::get_var('allrows');
 			}
 			if (array_key_exists('cat_id', $_POST) || array_key_exists('cat_id', $_GET))
 			{
-				$this->cat_id = phpgw::get_var('cat_id');
+				$this->cat_id = Sanitizer::get_var('cat_id');
 			}
 
 			switch ($this->location)
@@ -134,9 +134,9 @@
 		 */
 		private function read_sessiondata()
 		{
-			$referer = parse_url(phpgw::get_var('HTTP_REFERER', 'url', 'SERVER'));
+			$referer = parse_url(Sanitizer::get_var('HTTP_REFERER', 'url', 'SERVER'));
 			parse_str($referer['query'], $referer_out);
-			$self	 = parse_url(phpgw::get_var('QUERY_STRING', 'url', 'SERVER'));
+			$self	 = parse_url(Sanitizer::get_var('QUERY_STRING', 'url', 'SERVER'));
 			parse_str($self['path'], $self_out);
 
 			if (isset($referer_out['menuaction']) && isset($self_out['menuaction']) && $referer_out['menuaction'] == $self_out['menuaction'])

@@ -115,12 +115,12 @@
 				phpgw::no_access();
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('admin', 'nextmatchs',
+			phpgwapi_xslttemplates::getInstance()->add_file(array('admin', 'nextmatchs',
 				'search_field'));
 
-			$values			 = phpgw::get_var('values');
-			$r_processed	 = phpgw::get_var('processed');
-			$set_permission	 = phpgw::get_var('set_permission', 'bool');
+			$values			 = Sanitizer::get_var('values');
+			$r_processed	 = Sanitizer::get_var('processed');
+			$set_permission	 = Sanitizer::get_var('set_permission', 'bool');
 
 			if ($set_permission)
 			{
@@ -256,9 +256,9 @@
 			$data = array
 				(
 				'msgbox_data'						 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'						 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'form_action'						 => phpgw::link('/index.php', $link_data),
 				'value_acl_app'						 => $this->acl_app,
-				'done_action'						 => $GLOBALS['phpgw']->link('/preferences/index.php'),
+				'done_action'						 => phpgw::link('/preferences/index.php'),
 				'lang_save'							 => lang('save'),
 				'lang_done'							 => lang('done'),
 				'processed'							 => (isset($processed) ? $processed : ''),
@@ -268,7 +268,7 @@
 				'record_limit'						 => $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'],
 				'num_records'						 => $num_records,
 				'all_records'						 => (isset($this->bo->total_records) ? $this->bo->total_records : ''),
-				'link_url'							 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiadmin.aclprefs',
+				'link_url'							 => phpgw::link('/index.php', array('menuaction' => 'property.uiadmin.aclprefs',
 					'acl_app'	 => $this->acl_app)),
 				'img_path'							 => $GLOBALS['phpgw']->common->get_image_path('phpgwapi', 'default'),
 				'lang_groups'						 => lang('groups'),
@@ -277,7 +277,7 @@
 				'lang_cat_statustext'				 => lang('Select the category the permissions belongs to. To do not use a category select NO CATEGORY'),
 				'select_name'						 => 'cat_id',
 				'cat_list'							 => $this->bo->select_category_list('filter', $this->cat_id),
-				'select_action'						 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'select_action'						 => phpgw::link('/index.php', $link_data),
 				'cat_id'							 => $this->cat_id,
 				'permission'						 => false,
 				'grant'								 => 1,
@@ -308,7 +308,7 @@
 			phpgwapi_jquery::load_widget('select2');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang($this->acl_app) . ' - ' . $appname . ': ' . $function_msg . ': ' . $owner_name;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('list_permission' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('list_permission' => $data));
 			$this->save_sessiondata();
 		}
 
@@ -322,14 +322,14 @@
 				return;
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('admin', 'nextmatchs',
+			phpgwapi_xslttemplates::getInstance()->add_file(array('admin', 'nextmatchs',
 				'search_field'));
 
-			$values		 = phpgw::get_var('values');
-			$r_processed = phpgw::get_var('processed');
-			$initials	 = phpgw::get_var('initials');
+			$values		 = Sanitizer::get_var('values');
+			$r_processed = Sanitizer::get_var('processed');
+			$initials	 = Sanitizer::get_var('initials');
 
-			$set_permission = phpgw::get_var('set_permission', 'bool');
+			$set_permission = Sanitizer::get_var('set_permission', 'bool');
 
 			if ($set_permission)
 			{
@@ -532,21 +532,21 @@
 				'start_record'						 => $this->start,
 				'record_limit'						 => $record_limit,
 				'msgbox_data'						 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'						 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'done_action'						 => $GLOBALS['phpgw']->link('/admin/index.php'),
+				'form_action'						 => phpgw::link('/index.php', $link_data),
+				'done_action'						 => phpgw::link('/admin/index.php'),
 				'lang_save'							 => lang('save'),
 				'lang_done'							 => lang('done'),
 				'processed'							 => $processed ? implode("_", $processed): '',
 				'location'							 => $this->location,
 				'num_records'						 => $num_records,
 				'all_records'						 => isset($this->bo->total_records) && $this->bo->total_records ? $this->bo->total_records : 0,
-				'link_url'							 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'link_url'							 => phpgw::link('/index.php', $link_data),
 				'img_path'							 => $GLOBALS['phpgw']->common->get_image_path('phpgwapi', 'default'),
 				'lang_no_cat'						 => lang('no category'),
 				'lang_cat_statustext'				 => lang('Select the category the permissions belongs to. To do not use a category select NO CATEGORY'),
 				'select_name'						 => 'cat_id',
 				'cat_list'							 => $this->bo->select_category_list('filter', $this->cat_id),
-				'select_action'						 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'select_action'						 => phpgw::link('/index.php', $link_data),
 				'cat_id'							 => $this->cat_id,
 				'permission'						 => 1,
 				'lang_searchfield_statustext'		 => lang('Enter the search string. To show all entries, empty this field and press the SUBMIT button again'),
@@ -574,7 +574,7 @@
 			phpgwapi_jquery::load_widget('select2');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang($this->acl_app) . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('list_permission' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('list_permission' => $data));
 			$this->save_sessiondata();
 		}
 
@@ -588,9 +588,9 @@
 				return;
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('admin'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('admin'));
 
-			$values = phpgw::get_var('values');
+			$values = Sanitizer::get_var('values');
 
 			if ($values['select'])
 			{
@@ -613,8 +613,8 @@
 			$data = array
 				(
 				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiadmin.edit_id')),
-				'done_action'			 => $GLOBALS['phpgw']->link('/admin/index.php'),
+				'form_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uiadmin.edit_id')),
+				'done_action'			 => phpgw::link('/admin/index.php'),
 				'lang_submit'			 => lang('submit'),
 				'lang_save'				 => lang('Edit'),
 				'lang_add_statustext'	 => lang('Edit ID'),
@@ -627,7 +627,7 @@
 			$function_msg	 = lang('edit ID');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('edit_id' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit_id' => $data));
 			$this->save_sessiondata();
 		}
 
@@ -641,11 +641,11 @@
 				return;
 			}
 
-			$user_id = phpgw::get_var('user_id', 'int');
+			$user_id = Sanitizer::get_var('user_id', 'int');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('admin'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('admin'));
 
-			$values = phpgw::get_var('values');
+			$values = Sanitizer::get_var('values');
 
 			if ($values['save'])
 			{
@@ -736,8 +736,8 @@
 			$data = array
 				(
 				'msgbox_data'								 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'								 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiadmin.contact_info')),
-				'done_action'								 => $GLOBALS['phpgw']->link('/admin/index.php'),
+				'form_action'								 => phpgw::link('/index.php', array('menuaction' => 'property.uiadmin.contact_info')),
+				'done_action'								 => phpgw::link('/admin/index.php'),
 				'lang_submit'								 => lang('submit'),
 				'lang_save'									 => lang('Edit'),
 				'lang_add_statustext'						 => lang('Edit ID'),
@@ -765,7 +765,7 @@
 				'select_user_name'							 => 'approval_from',
 				'lang_default_vendor_category_statustext'	 => lang('Select default vendor category'),
 				'lang_no_cat'								 => lang('No category'),
-				'select_action'								 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiadmin.contact_info')),
+				'select_action'								 => phpgw::link('/index.php', array('menuaction' => 'property.uiadmin.contact_info')),
 				'lang_user_statustext'						 => lang('Select the user to edit email'),
 				'select_user_name'							 => 'user_id',
 				'lang_no_user'								 => lang('No user'),
@@ -785,7 +785,7 @@
 			$function_msg	 = lang('edit info');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('contact_info' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('contact_info' => $data));
 			$this->save_sessiondata();
 		}
 	}

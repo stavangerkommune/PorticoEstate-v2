@@ -91,9 +91,9 @@
 				$GLOBALS['phpgw']->css = createObject('phpgwapi.css');
 			}
 			// Prepare CSS Style
-			$GLOBALS['phpgw']->css->validate_file('datatable');
-			$GLOBALS['phpgw']->css->validate_file('property');
-			$GLOBALS['phpgw']->css->add_external_file('property/templates/base/css/property.css');
+			phpgwapi_css::getInstance()->validate_file('datatable');
+			phpgwapi_css::getInstance()->validate_file('property');
+			phpgwapi_css::getInstance()->add_external_file('property/templates/base/css/property.css');
 		}
 
 		public function query()
@@ -103,12 +103,12 @@
 
 		function addressbook()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				$search		 = phpgw::get_var('search');
-				$order		 = phpgw::get_var('order');
-				$draw		 = phpgw::get_var('draw', 'int');
-				$columns	 = phpgw::get_var('columns');
+				$search		 = Sanitizer::get_var('search');
+				$order		 = Sanitizer::get_var('order');
+				$draw		 = Sanitizer::get_var('draw', 'int');
+				$columns	 = Sanitizer::get_var('columns');
 				$order_field = '';
 
 				switch ($columns[$order[0]['column']]['data'])
@@ -124,13 +124,13 @@
 				}
 
 				$params = array(
-					'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-					'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+					'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+					'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 					'query'		 => $search['value'],
 					'order'		 => $order_field,
 					'sort'		 => !empty($order[0]['dir']) ? strtoupper($order[0]['dir']) : null,
 					'dir'		 => $order[0]['dir'],
-					'allrows'	 => phpgw::get_var('length', 'int') == -1,
+					'allrows'	 => Sanitizer::get_var('length', 'int') == -1,
 					'filter'	 => '',
 					'offset'	 => 0
 				);
@@ -147,7 +147,7 @@
 			$this->cats					 = CreateObject('phpgwapi.categories', -1, 'addressbook');
 			$this->cats->supress_info	 = true;
 
-			$column = phpgw::get_var('column');
+			$column = Sanitizer::get_var('column');
 
 			$default_category = $GLOBALS['phpgw_info']['user']['preferences']['addressbook']['default_category'];
 
@@ -244,21 +244,21 @@ JS;
 
 		function organisation()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				$search	 = phpgw::get_var('search');
-				$order	 = phpgw::get_var('order');
-				$draw	 = phpgw::get_var('draw', 'int');
-				$columns = phpgw::get_var('columns');
+				$search	 = Sanitizer::get_var('search');
+				$order	 = Sanitizer::get_var('order');
+				$draw	 = Sanitizer::get_var('draw', 'int');
+				$columns = Sanitizer::get_var('columns');
 
 				$params = array(
-					'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-					'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+					'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+					'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 					'query'		 => $search['value'],
 					'order'		 => $columns[$order[0]['column']]['data'],
 					'sort'		 => $order[0]['dir'],
 					'dir'		 => $order[0]['dir'],
-					'allrows'	 => phpgw::get_var('length', 'int') == -1,
+					'allrows'	 => Sanitizer::get_var('length', 'int') == -1,
 					'filter'	 => ''
 				);
 
@@ -284,7 +284,7 @@ JS;
 			$this->cats					 = CreateObject('phpgwapi.categories', -1, 'addressbook');
 			$this->cats->supress_info	 = true;
 
-			$column = phpgw::get_var('column');
+			$column = Sanitizer::get_var('column');
 
 			$default_category = $GLOBALS['phpgw_info']['user']['preferences']['addressbook']['default_category'];
 
@@ -398,21 +398,21 @@ JS;
 				$this->cat_id		 = $default_category;
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				$search	 = phpgw::get_var('search');
-				$order	 = phpgw::get_var('order');
-				$draw	 = phpgw::get_var('draw', 'int');
-				$columns = phpgw::get_var('columns');
+				$search	 = Sanitizer::get_var('search');
+				$order	 = Sanitizer::get_var('order');
+				$draw	 = Sanitizer::get_var('draw', 'int');
+				$columns = Sanitizer::get_var('columns');
 
 				$params = array(
-					'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-					'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+					'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+					'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 					'query'		 => $search['value'],
 					'order'		 => $columns[$order[0]['column']]['data'],
 					'sort'		 => $order[0]['dir'],
 					'dir'		 => $order[0]['dir'],
-					'allrows'	 => phpgw::get_var('length', 'int') == -1,
+					'allrows'	 => Sanitizer::get_var('length', 'int') == -1,
 					'filter'	 => array()
 				);
 
@@ -430,7 +430,7 @@ JS;
 
 			$this->cats = CreateObject('phpgwapi.categories', -1, 'property', '.vendor');
 
-			$column = phpgw::get_var('column');
+			$column = Sanitizer::get_var('column');
 
 			if ($column)
 			{
@@ -540,21 +540,21 @@ JS;
 
 		function contact()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				$search	 = phpgw::get_var('search');
-				$order	 = phpgw::get_var('order');
-				$draw	 = phpgw::get_var('draw', 'int');
-				$columns = phpgw::get_var('columns');
+				$search	 = Sanitizer::get_var('search');
+				$order	 = Sanitizer::get_var('order');
+				$draw	 = Sanitizer::get_var('draw', 'int');
+				$columns = Sanitizer::get_var('columns');
 
 				$params = array(
-					'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-					'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+					'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+					'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 					'query'		 => $search['value'],
 					'order'		 => $columns[$order[0]['column']]['data'],
 					'sort'		 => $order[0]['dir'],
 					'dir'		 => $order[0]['dir'],
-					'allrows'	 => phpgw::get_var('length', 'int') == -1,
+					'allrows'	 => Sanitizer::get_var('length', 'int') == -1,
 					'filter'	 => array(),
 					'cat_id'	 => $this->cat_id
 				);
@@ -574,7 +574,7 @@ JS;
 			$this->cats					 = CreateObject('phpgwapi.categories', -1, 'addressbook');
 			$this->cats->supress_info	 = true;
 
-			$column = phpgw::get_var('column');
+			$column = Sanitizer::get_var('column');
 
 			if ($column)
 			{
@@ -672,9 +672,9 @@ JS;
 
 		function b_account()
 		{
-			$role = phpgw::get_var('role');
+			$role = Sanitizer::get_var('role');
 
-			$cat_id = phpgw::get_var('cat_id', 'int', 'POST');
+			$cat_id = Sanitizer::get_var('cat_id', 'int', 'POST');
 
 			if (isset($_POST['cat_id']))
 			{
@@ -682,24 +682,24 @@ JS;
 			}
 			else
 			{
-				$parent = phpgw::get_var('parent');
+				$parent = Sanitizer::get_var('parent');
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				$search	 = phpgw::get_var('search');
-				$order	 = phpgw::get_var('order');
-				$draw	 = phpgw::get_var('draw', 'int');
-				$columns = phpgw::get_var('columns');
+				$search	 = Sanitizer::get_var('search');
+				$order	 = Sanitizer::get_var('order');
+				$draw	 = Sanitizer::get_var('draw', 'int');
+				$columns = Sanitizer::get_var('columns');
 
 				$params = array(
-					'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-					'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+					'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+					'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 					'query'		 => $search['value'],
 					'order'		 => $columns[$order[0]['column']]['data'],
 					'sort'		 => $order[0]['dir'],
 					'dir'		 => $order[0]['dir'],
-					'allrows'	 => phpgw::get_var('length', 'int') == -1,
+					'allrows'	 => Sanitizer::get_var('length', 'int') == -1,
 					'filter'	 => '',
 					'role'		 => $role,
 					'parent'	 => $parent
@@ -798,21 +798,21 @@ JS;
 
 		function street()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				$search	 = phpgw::get_var('search');
-				$order	 = phpgw::get_var('order');
-				$draw	 = phpgw::get_var('draw', 'int');
-				$columns = phpgw::get_var('columns');
+				$search	 = Sanitizer::get_var('search');
+				$order	 = Sanitizer::get_var('order');
+				$draw	 = Sanitizer::get_var('draw', 'int');
+				$columns = Sanitizer::get_var('columns');
 
 				$params = array(
-					'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-					'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+					'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+					'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 					'query'		 => $search['value'],
 					'order'		 => $columns[$order[0]['column']]['data'],
 					'sort'		 => $order[0]['dir'],
 					'dir'		 => $order[0]['dir'],
-					'allrows'	 => phpgw::get_var('length', 'int') == -1,
+					'allrows'	 => Sanitizer::get_var('length', 'int') == -1,
 					'filter'	 => ''
 				);
 
@@ -886,21 +886,21 @@ JS;
 
 		function tenant()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				$search	 = phpgw::get_var('search');
-				$order	 = phpgw::get_var('order');
-				$draw	 = phpgw::get_var('draw', 'int');
-				$columns = phpgw::get_var('columns');
+				$search	 = Sanitizer::get_var('search');
+				$order	 = Sanitizer::get_var('order');
+				$draw	 = Sanitizer::get_var('draw', 'int');
+				$columns = Sanitizer::get_var('columns');
 
 				$params = array(
-					'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-					'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+					'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+					'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 					'query'		 => $search['value'],
 					'order'		 => $columns[$order[0]['column']]['data'],
 					'sort'		 => $order[0]['dir'],
 					'dir'		 => $order[0]['dir'],
-					'allrows'	 => phpgw::get_var('length', 'int') == -1,
+					'allrows'	 => Sanitizer::get_var('length', 'int') == -1,
 					'filter'	 => ''
 				);
 
@@ -979,21 +979,21 @@ JS;
 
 		function ns3420()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				$search	 = phpgw::get_var('search');
-				$order	 = phpgw::get_var('order');
-				$draw	 = phpgw::get_var('draw', 'int');
-				$columns = phpgw::get_var('columns');
+				$search	 = Sanitizer::get_var('search');
+				$order	 = Sanitizer::get_var('order');
+				$draw	 = Sanitizer::get_var('draw', 'int');
+				$columns = Sanitizer::get_var('columns');
 
 				$params = array(
-					'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-					'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+					'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+					'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 					'query'		 => $search['value'],
 					'order'		 => $columns[$order[0]['column']]['data'],
 					'sort'		 => $order[0]['dir'],
 					'dir'		 => $order[0]['dir'],
-					'allrows'	 => phpgw::get_var('length', 'int') == -1,
+					'allrows'	 => Sanitizer::get_var('length', 'int') == -1,
 					'filter'	 => ''
 				);
 
@@ -1136,9 +1136,9 @@ JS;
 			}
 
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				if (phpgw::get_var('head'))
+				if (Sanitizer::get_var('head'))
 				{
 					$entity_def			 = array();
 					$head				 = '<thead>';
@@ -1190,18 +1190,18 @@ JS;
 				}
 				else
 				{
-					$search	 = phpgw::get_var('search');
-					$order	 = phpgw::get_var('order');
-					$draw	 = phpgw::get_var('draw', 'int');
-					$columns = phpgw::get_var('columns');
+					$search	 = Sanitizer::get_var('search');
+					$order	 = Sanitizer::get_var('order');
+					$draw	 = Sanitizer::get_var('draw', 'int');
+					$columns = Sanitizer::get_var('columns');
 
 					$params = array(
-						'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-						'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+						'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+						'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 						'query'		 => $search['value'],
 						'order'		 => $columns[$order[0]['column']]['data'],
 						'sort'		 => $order[0]['dir'],
-						'allrows'	 => phpgw::get_var('length', 'int') == -1,
+						'allrows'	 => Sanitizer::get_var('length', 'int') == -1,
 						'lookup'	 => true
 					);
 
@@ -1309,17 +1309,17 @@ JS;
 
 		function phpgw_user()
 		{
-			$column			 = phpgw::get_var('column');
-			$acl_app		 = phpgw::get_var('acl_app');
-			$acl_location	 = phpgw::get_var('acl_location');
-			$acl_required	 = phpgw::get_var('acl_required', 'int');
+			$column			 = Sanitizer::get_var('column');
+			$acl_app		 = Sanitizer::get_var('acl_app');
+			$acl_location	 = Sanitizer::get_var('acl_location');
+			$acl_required	 = Sanitizer::get_var('acl_required', 'int');
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				$search	 = phpgw::get_var('search');
-				$order	 = phpgw::get_var('order');
-				$draw	 = phpgw::get_var('draw', 'int');
-				$columns = phpgw::get_var('columns');
+				$search	 = Sanitizer::get_var('search');
+				$order	 = Sanitizer::get_var('order');
+				$draw	 = Sanitizer::get_var('draw', 'int');
+				$columns = Sanitizer::get_var('columns');
 
 				switch ($columns[$order[0]['column']]['data'])
 				{
@@ -1336,14 +1336,14 @@ JS;
 						$ordering	 = "";
 				}
 				$params = array(
-					'start'			 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-					'results'		 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+					'start'			 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+					'results'		 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 					'query'			 => $search['value'],
 					'order'			 => $ordering,
 					'sort'			 => $order[0]['dir'],
 					'dir'			 => $order[0]['dir'],
-					'cat_id'		 => phpgw::get_var('cat_id', 'int', 'REQUEST', 0),
-					'allrows'		 => phpgw::get_var('length', 'int') == -1,
+					'cat_id'		 => Sanitizer::get_var('cat_id', 'int', 'REQUEST', 0),
+					'allrows'		 => Sanitizer::get_var('length', 'int') == -1,
 					'acl_app'		 => $acl_app,
 					'acl_location'	 => $acl_location,
 					'acl_required'	 => $acl_required
@@ -1438,21 +1438,21 @@ JS;
 
 		function external_project()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				$search	 = phpgw::get_var('search');
-				$order	 = phpgw::get_var('order');
-				$draw	 = phpgw::get_var('draw', 'int');
-				$columns = phpgw::get_var('columns');
+				$search	 = Sanitizer::get_var('search');
+				$order	 = Sanitizer::get_var('order');
+				$draw	 = Sanitizer::get_var('draw', 'int');
+				$columns = Sanitizer::get_var('columns');
 
 				$params = array(
-					'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-					'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+					'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+					'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 					'query'		 => $search['value'],
 					'order'		 => $columns[$order[0]['column']]['data'],
 					'sort'		 => $order[0]['dir'],
 					'dir'		 => $order[0]['dir'],
-					'allrows'	 => phpgw::get_var('length', 'int') == -1,
+					'allrows'	 => Sanitizer::get_var('length', 'int') == -1,
 					'filter'	 => ''
 				);
 
@@ -1528,21 +1528,21 @@ JS;
 
 		function ecodimb()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				$search	 = phpgw::get_var('search');
-				$order	 = phpgw::get_var('order');
-				$draw	 = phpgw::get_var('draw', 'int');
-				$columns = phpgw::get_var('columns');
+				$search	 = Sanitizer::get_var('search');
+				$order	 = Sanitizer::get_var('order');
+				$draw	 = Sanitizer::get_var('draw', 'int');
+				$columns = Sanitizer::get_var('columns');
 
 				$params = array(
-					'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-					'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+					'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+					'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 					'query'		 => $search['value'],
 					'order'		 => $columns[$order[0]['column']]['data'],
 					'sort'		 => $order[0]['dir'],
 					'dir'		 => $order[0]['dir'],
-					'allrows'	 => phpgw::get_var('length', 'int') == -1,
+					'allrows'	 => Sanitizer::get_var('length', 'int') == -1,
 					'filter'	 => ''
 				);
 
@@ -1620,21 +1620,21 @@ JS;
 
 		function order_template()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				$search	 = phpgw::get_var('search');
-				$order	 = phpgw::get_var('order');
-				$draw	 = phpgw::get_var('draw', 'int');
-				$columns = phpgw::get_var('columns');
+				$search	 = Sanitizer::get_var('search');
+				$order	 = Sanitizer::get_var('order');
+				$draw	 = Sanitizer::get_var('draw', 'int');
+				$columns = Sanitizer::get_var('columns');
 
 				$params = array(
-					'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-					'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+					'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+					'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 					'query'		 => $search['value'],
 					'order'		 => $columns[$order[0]['column']]['data'],
 					'sort'		 => $order[0]['dir'],
 					'dir'		 => $order[0]['dir'],
-					'allrows'	 => phpgw::get_var('length', 'int') == -1,
+					'allrows'	 => Sanitizer::get_var('length', 'int') == -1,
 					'filter'	 => ''
 				);
 
@@ -1711,21 +1711,21 @@ JS;
 
 		function response_template()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				$search	 = phpgw::get_var('search');
-				$order	 = phpgw::get_var('order');
-				$draw	 = phpgw::get_var('draw', 'int');
-				$columns = phpgw::get_var('columns');
+				$search	 = Sanitizer::get_var('search');
+				$order	 = Sanitizer::get_var('order');
+				$draw	 = Sanitizer::get_var('draw', 'int');
+				$columns = Sanitizer::get_var('columns');
 
 				$params = array(
-					'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-					'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+					'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+					'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 					'query'		 => $search['value'],
 					'order'		 => $columns[$order[0]['column']]['data'],
 					'sort'		 => $order[0]['dir'],
 					'dir'		 => $order[0]['dir'],
-					'allrows'	 => phpgw::get_var('length', 'int') == -1,
+					'allrows'	 => Sanitizer::get_var('length', 'int') == -1,
 					'filter'	 => ''
 				);
 
@@ -1804,29 +1804,29 @@ JS;
 
 		function custom()
 		{
-			$type	 = phpgw::get_var('type');
-			$column	 = phpgw::get_var('column');
+			$type	 = Sanitizer::get_var('type');
+			$column	 = Sanitizer::get_var('column');
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				$search	 = phpgw::get_var('search');
-				$order	 = phpgw::get_var('order');
-				$draw	 = phpgw::get_var('draw', 'int');
-				$columns = phpgw::get_var('columns');
+				$search	 = Sanitizer::get_var('search');
+				$order	 = Sanitizer::get_var('order');
+				$draw	 = Sanitizer::get_var('draw', 'int');
+				$columns = Sanitizer::get_var('columns');
 
 				$params = array(
-					'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-					'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+					'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+					'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 					'query'		 => $search['value'],
 					'order'		 => $columns[$order[0]['column']]['data'],
 					'sort'		 => $order[0]['dir'],
 					'dir'		 => $order[0]['dir'],
-					'cat_id'	 => phpgw::get_var('cat_id', 'int', 'REQUEST', 0),
-					'allrows'	 => phpgw::get_var('length', 'int') == -1
+					'cat_id'	 => Sanitizer::get_var('cat_id', 'int', 'REQUEST', 0),
+					'allrows'	 => Sanitizer::get_var('length', 'int') == -1
 				);
 
 				$bogeneric	 = CreateObject('property.bogeneric');
-				$bogeneric->get_location_info(phpgw::get_var('type', 'string'));
+				$bogeneric->get_location_info(Sanitizer::get_var('type', 'string'));
 				$values		 = $bogeneric->read($params);
 
 				$result_data = array('results' => $values);
@@ -1874,7 +1874,7 @@ JS;
 			);
 
 			$bogeneric	 = CreateObject('property.bogeneric');
-			$bogeneric->get_location_info(phpgw::get_var('type', 'string'));
+			$bogeneric->get_location_info(Sanitizer::get_var('type', 'string'));
 			$values		 = $bogeneric->read();
 
 			$uicols = $bogeneric->uicols;

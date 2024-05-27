@@ -52,7 +52,7 @@
 //			$GLOBALS['phpgw']->common->phpgw_header(true);
 			$this->account	 = (int)$GLOBALS['phpgw_info']['user']['account_id'];
 			$this->db		 = & $GLOBALS['phpgw']->db;
-			$this->table	 = phpgw::get_var('table');
+			$this->table	 = Sanitizer::get_var('table');
 
 			$this->valid_tables = array(
 				'fm_zip_code'				 => array('name'		 => 'fm_zip_code (' . lang('zip code') . ')',
@@ -127,18 +127,18 @@
 
 			$check_method		 = 0;
 			$get_identificator	 = false;
-			if ($this->conv_type	 = phpgw::get_var('conv_type'))
+			if ($this->conv_type	 = Sanitizer::get_var('conv_type'))
 			{
 				$check_method ++;
 				$get_identificator = true;
 			}
-			if ($this->location_id = phpgw::get_var('location_id', 'int'))
+			if ($this->location_id = Sanitizer::get_var('location_id', 'int'))
 			{
 				$check_method ++;
 				$get_identificator = true;
 			}
 
-			if ($table = phpgw::get_var('table'))
+			if ($table = Sanitizer::get_var('table'))
 			{
 				$check_method ++;
 				$get_identificator = true;
@@ -153,8 +153,8 @@
 
 			phpgwapi_cache::session_set('property', 'import_settings', $_POST);
 
-			$download_template	 = phpgw::get_var('download_template');
-			$this->debug		 = phpgw::get_var('debug', 'bool');
+			$download_template	 = Sanitizer::get_var('download_template');
+			$this->debug		 = Sanitizer::get_var('debug', 'bool');
 
 			if ($download_template)
 			{
@@ -166,9 +166,9 @@
 			}
 
 			// If the parameter 'importsubmit' exist (submit button in import form), set path
-			if (phpgw::get_var("importsubmit"))
+			if (Sanitizer::get_var("importsubmit"))
 			{
-				if ($GLOBALS['phpgw']->session->is_repost() && !phpgw::get_var('debug', 'bool'))
+				if ($GLOBALS['phpgw']->session->is_repost() && !Sanitizer::get_var('debug', 'bool'))
 				{
 					phpgwapi_cache::session_set('property', 'import_message', 'Hmm... looks like a repost!');
 					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiimport.index'));
@@ -214,7 +214,7 @@
 				}
 				else
 				{
-					$path	 = phpgw::get_var('path', 'string');
+					$path	 = Sanitizer::get_var('path', 'string');
 					$files	 = $this->get_files($path);
 				}
 
@@ -293,8 +293,8 @@
 					}
 					echo "</ul>";
 				}
-				echo '<a href="' . $GLOBALS['phpgw']->link('/home.php') . '">Home</a>';
-				echo '</br><a href="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiimport.index')) . '">Import</a>';
+				echo '<a href="' . phpgw::link('/home.php') . '">Home</a>';
+				echo '</br><a href="' . phpgw::link('/index.php', array('menuaction' => 'property.uiimport.index')) . '">Import</a>';
 			}
 			else
 			{
@@ -347,8 +347,8 @@ HTML;
 					}
 				}
 
-				$home	 = $GLOBALS['phpgw']->link('/home.php');
-				$action	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiimport.index'));
+				$home	 = phpgw::link('/home.php');
+				$action	 = phpgw::link('/index.php', array('menuaction' => 'property.uiimport.index'));
 
 				$debug_checked	 = isset($import_settings['debug']) && $import_settings['debug'] ? 'checked =  "checked"' : '';
 				$html			 = <<<HTML
@@ -581,7 +581,7 @@ HTML;
 
 			$fields = $fields ? $fields : array_keys($_fields);
 
-			if (phpgw::get_var('debug', 'bool'))
+			if (Sanitizer::get_var('debug', 'bool'))
 			{
 				_debug_array($fields);
 			}
@@ -648,7 +648,7 @@ HTML;
 
 				$metadata = $this->db->metadata($this->table);
 
-				if (phpgw::get_var('debug', 'bool'))
+				if (Sanitizer::get_var('debug', 'bool'))
 				{
 					_debug_array($metadata);
 				}
@@ -957,19 +957,19 @@ HTML;
 
 			$check_method		 = 0;
 			$get_identificator	 = false;
-			/* if ($this->conv_type = phpgw::get_var('conv_type'))
+			/* if ($this->conv_type = Sanitizer::get_var('conv_type'))
 			  {
 			  $check_method ++;
 			  $get_identificator = true;
 			  }
 
-			  if ($this->location_id = phpgw::get_var('location_id', 'int'))
+			  if ($this->location_id = Sanitizer::get_var('location_id', 'int'))
 			  {
 			  $check_method ++;
 			  $get_identificator = true;
 			  }
 
-			  if ($table = phpgw::get_var('table'))
+			  if ($table = Sanitizer::get_var('table'))
 			  {
 			  $check_method ++;
 			  $get_identificator = true;
@@ -984,7 +984,7 @@ HTML;
 
 			phpgwapi_cache::session_set('property', 'import_settings', $_POST);
 
-			/* $download_template = phpgw::get_var('download_template');
+			/* $download_template = Sanitizer::get_var('download_template');
 
 			  if ($download_template)
 			  {
@@ -992,9 +992,9 @@ HTML;
 			  } */
 
 			// If the parameter 'importsubmit' exist (submit button in import form), set path
-			if (phpgw::get_var("importsubmit"))
+			if (Sanitizer::get_var("importsubmit"))
 			{
-				if ($GLOBALS['phpgw']->session->is_repost() && !phpgw::get_var('debug', 'bool'))
+				if ($GLOBALS['phpgw']->session->is_repost() && !Sanitizer::get_var('debug', 'bool'))
 				{
 					phpgwapi_cache::session_set('property', 'import_message', 'Hmm... looks like a repost!');
 					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiimport.components'));
@@ -1024,7 +1024,7 @@ HTML;
 				  } */
 
 
-				$this->debug = phpgw::get_var('debug', 'bool');
+				$this->debug = Sanitizer::get_var('debug', 'bool');
 				//$this->import_conversion = new import_conversion($this->location_id, $this->debug);
 				// Get the path for user input or use a default path
 
@@ -1039,7 +1039,7 @@ HTML;
 				}
 				else
 				{
-					$path	 = phpgw::get_var('path', 'string');
+					$path	 = Sanitizer::get_var('path', 'string');
 					$files	 = $this->get_files($path);
 				}
 
@@ -1203,8 +1203,8 @@ HTML;
 					}
 					echo "</ul>";
 				}
-				echo '<a href="' . $GLOBALS['phpgw']->link('/home.php') . '">Home</a>';
-				echo '</br><a href="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiimport.components')) . '">Import</a>';
+				echo '<a href="' . phpgw::link('/home.php') . '">Home</a>';
+				echo '</br><a href="' . phpgw::link('/index.php', array('menuaction' => 'property.uiimport.components')) . '">Import</a>';
 			}
 			else
 			{
@@ -1214,8 +1214,8 @@ HTML;
 				phpgwapi_cache::session_clear('property', 'import_message');
 
 
-				$home	 = $GLOBALS['phpgw']->link('/home.php');
-				$action	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiimport.components'));
+				$home	 = phpgw::link('/home.php');
+				$action	 = phpgw::link('/index.php', array('menuaction' => 'property.uiimport.components'));
 
 				//$debug_checked = isset($import_settings['debug']) && $import_settings['debug'] ? 'checked =  "checked"' : '';
 				$html = <<<HTML

@@ -264,7 +264,7 @@
 				};
 JS;
 
-			$GLOBALS['phpgw']->js->add_code('', $FormatterCheck, true);
+			phpgwapi_js::getInstance()->add_code('', $FormatterCheck, true);
 
 			$data['filters'] = $this->export_filters;
 

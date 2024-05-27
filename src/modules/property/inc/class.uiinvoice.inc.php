@@ -99,9 +99,9 @@
 
 		private function _get_Filters()
 		{
-			$paid			 = phpgw::get_var('paid', 'bool');
-			$b_account_class = phpgw::get_var('b_account_class', 'int');
-			$ecodimb		 = phpgw::get_var('ecodimb');
+			$paid			 = Sanitizer::get_var('paid', 'bool');
+			$b_account_class = Sanitizer::get_var('b_account_class', 'int');
+			$ecodimb		 = Sanitizer::get_var('ecodimb');
 
 			$values_combo_box	 = array();
 			$combos				 = array();
@@ -159,11 +159,11 @@
 
 		private function _get_Filters_consume()
 		{
-			$district_id	 = phpgw::get_var('district_id', 'int');
-			$b_account_class = phpgw::get_var('b_account_class', 'int');
-			$b_account		 = phpgw::get_var('b_account', 'int');
+			$district_id	 = Sanitizer::get_var('district_id', 'int');
+			$b_account_class = Sanitizer::get_var('b_account_class', 'int');
+			$b_account		 = Sanitizer::get_var('b_account', 'int');
 			//		$b_account_class = $b_account_class ? $b_account_class : substr($b_account, 0, 2);
-			$ecodimb		 = phpgw::get_var('ecodimb');
+			$ecodimb		 = Sanitizer::get_var('ecodimb');
 
 			$values_combo_box[0] = $this->bo->select_category('', $this->cat_id);
 			array_unshift($values_combo_box[0], array('id' => '', 'name' => lang('no category')));
@@ -231,7 +231,7 @@
 
 			$list = $this->query();
 
-			$paid	 = phpgw::get_var('paid', 'bool');
+			$paid	 = Sanitizer::get_var('paid', 'bool');
 
 			$descr	 = array();
 			$name	 = array();
@@ -345,18 +345,18 @@
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 			//-- captura datos de URL
-			$paid			 = phpgw::get_var('paid', 'bool');
-			$start_date		 = phpgw::get_var('start_date');
-			$end_date		 = phpgw::get_var('end_date');
-			$submit_search	 = phpgw::get_var('submit_search', 'bool');
-			$vendor_id		 = phpgw::get_var('vendor_id', 'int');
-			$workorder_id	 = phpgw::get_var('workorder_id', 'int');
-			$project_id		 = phpgw::get_var('project_id', 'int');
-			$loc1			 = phpgw::get_var('loc1');
-			$voucher_id		 = $this->query && ctype_digit($this->query) ? $this->query : phpgw::get_var('voucher_id');
-			$invoice_id		 = phpgw::get_var('invoice_id');
-			$b_account_class = phpgw::get_var('b_account_class', 'int');
-			$ecodimb		 = phpgw::get_var('ecodimb');
+			$paid			 = Sanitizer::get_var('paid', 'bool');
+			$start_date		 = Sanitizer::get_var('start_date');
+			$end_date		 = Sanitizer::get_var('end_date');
+			$submit_search	 = Sanitizer::get_var('submit_search', 'bool');
+			$vendor_id		 = Sanitizer::get_var('vendor_id', 'int');
+			$workorder_id	 = Sanitizer::get_var('workorder_id', 'int');
+			$project_id		 = Sanitizer::get_var('project_id', 'int');
+			$loc1			 = Sanitizer::get_var('loc1');
+			$voucher_id		 = $this->query && ctype_digit($this->query) ? $this->query : Sanitizer::get_var('voucher_id');
+			$invoice_id		 = Sanitizer::get_var('invoice_id');
+			$b_account_class = Sanitizer::get_var('b_account_class', 'int');
+			$ecodimb		 = Sanitizer::get_var('ecodimb');
 			$this->save_sessiondata();
 
 			//-- ubica focus del menu derecho
@@ -382,9 +382,9 @@
 				$end_date = $GLOBALS['phpgw']->common->show_date(mktime(0, 0, 0, date("m"), date("d"), date("Y")), $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
 			}
 			//-- edicion de registro
-			$values = phpgw::get_var('values');
+			$values = Sanitizer::get_var('values');
 
-			if (phpgw::get_var('phpgw_return_as') == 'json' && is_array($values) && isset($values))
+			if (Sanitizer::get_var('phpgw_return_as') == 'json' && is_array($values) && isset($values))
 			{
 				$values["save"] = "Save";
 //			 	_debug_array($values);
@@ -392,30 +392,30 @@
 			}
 
 			// Edit Period
-			$period					 = phpgw::get_var('period');
-			$voucher_id_for_period	 = phpgw::get_var('voucher_id_for_period');
-			if (phpgw::get_var('phpgw_return_as') == 'json' && isset($period) && $period != '')
+			$period					 = Sanitizer::get_var('period');
+			$voucher_id_for_period	 = Sanitizer::get_var('voucher_id_for_period');
+			if (Sanitizer::get_var('phpgw_return_as') == 'json' && isset($period) && $period != '')
 			{
 				return $this->bo->update_period($voucher_id_for_period, $period);
 			}
 
 			// Edit Periodization
-			$periodization					 = phpgw::get_var('periodization');
-			$voucher_id_for_periodization	 = phpgw::get_var('voucher_id_for_periodization');
-			if (phpgw::get_var('phpgw_return_as') == 'json' && isset($periodization) && $periodization != '')
+			$periodization					 = Sanitizer::get_var('periodization');
+			$voucher_id_for_periodization	 = Sanitizer::get_var('voucher_id_for_periodization');
+			if (Sanitizer::get_var('phpgw_return_as') == 'json' && isset($periodization) && $periodization != '')
 			{
 				return $this->bo->update_periodization($voucher_id_for_periodization, $periodization);
 			}
 
 			// Edit Periodization
-			$periodization_start				 = phpgw::get_var('periodization_start');
-			$voucher_id_for_periodization_start	 = phpgw::get_var('voucher_id_for_periodization_start');
-			if (phpgw::get_var('phpgw_return_as') == 'json' && isset($periodization_start) && $periodization_start != '')
+			$periodization_start				 = Sanitizer::get_var('periodization_start');
+			$voucher_id_for_periodization_start	 = Sanitizer::get_var('voucher_id_for_periodization_start');
+			if (Sanitizer::get_var('phpgw_return_as') == 'json' && isset($periodization_start) && $periodization_start != '')
 			{
 				return $this->bo->update_periodization_start($voucher_id_for_periodization_start, $periodization_start);
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -562,7 +562,7 @@
 						'my_name'		 => 'delete',
 						'text'			 => lang('delete'),
 						'confirm_msg'	 => lang('do you really want to delete this entry'),
-						'action'		 => $GLOBALS['phpgw']->link('/index.php', array
+						'action'		 => phpgw::link('/index.php', array
 							(
 							'menuaction' => 'property.uiinvoice.delete',
 						)),
@@ -574,7 +574,7 @@
 					(
 					'my_name'	 => 'f',
 					'text'		 => lang('F'),
-					'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'	 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uiinvoice.receipt'
 					)),
@@ -585,7 +585,7 @@
 					(
 					'my_name'	 => 'list_sub',
 					'text'		 => lang('details'),
-					'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'	 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uiinvoice.list_sub',
 						'user_lid'	 => 'all'
@@ -648,7 +648,7 @@ JS;
 					return "<select id='cboPeriodization"+tmp_count+"' onchange='onPeriodizationItemClick(this,"+voucher_id_num+")'>" + $(combo).html() + "</select>";
 				}
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $jscode, true);
+			phpgwapi_js::getInstance()->add_code('', $jscode, true);
 
 
 			$inputFilters = array(
@@ -734,7 +734,7 @@ JS;
 				};
 JS;
 
-			$GLOBALS['phpgw']->js->add_code('', $code, true);
+			phpgwapi_js::getInstance()->add_code('', $code, true);
 
 			//Title of Page
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
@@ -980,30 +980,30 @@ JS;
 
 		public function query()
 		{
-			$paid			 = phpgw::get_var('paid', 'bool');
-			$start_date		 = phpgw::get_var('start_date');
-			$end_date		 = phpgw::get_var('end_date');
-			$vendor_id		 = phpgw::get_var('vendor_id', 'int');
-			$workorder_id	 = phpgw::get_var('workorder_id', 'int');
-			$project_id		 = phpgw::get_var('project_id', 'int');
-			$loc1			 = phpgw::get_var('loc1');
-			$voucher_id		 = $this->query && ctype_digit($this->query) ? $this->query : phpgw::get_var('voucher_id');
-			$invoice_id		 = phpgw::get_var('invoice_id');
-			$ecodimb		 = phpgw::get_var('ecodimb');
-			$search			 = phpgw::get_var('search');
-			$order			 = phpgw::get_var('order');
-			$draw			 = phpgw::get_var('draw', 'int');
-			$columns		 = phpgw::get_var('columns');
-			$export			 = phpgw::get_var('export', 'bool');
+			$paid			 = Sanitizer::get_var('paid', 'bool');
+			$start_date		 = Sanitizer::get_var('start_date');
+			$end_date		 = Sanitizer::get_var('end_date');
+			$vendor_id		 = Sanitizer::get_var('vendor_id', 'int');
+			$workorder_id	 = Sanitizer::get_var('workorder_id', 'int');
+			$project_id		 = Sanitizer::get_var('project_id', 'int');
+			$loc1			 = Sanitizer::get_var('loc1');
+			$voucher_id		 = $this->query && ctype_digit($this->query) ? $this->query : Sanitizer::get_var('voucher_id');
+			$invoice_id		 = Sanitizer::get_var('invoice_id');
+			$ecodimb		 = Sanitizer::get_var('ecodimb');
+			$search			 = Sanitizer::get_var('search');
+			$order			 = Sanitizer::get_var('order');
+			$draw			 = Sanitizer::get_var('draw', 'int');
+			$columns		 = Sanitizer::get_var('columns');
+			$export			 = Sanitizer::get_var('export', 'bool');
 
 			$params = array
 				(
-				'start'			 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'		 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'			 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'		 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'			 => $search['value'],
 				'order'			 => $columns[$order[0]['column']]['data'],
 				'sort'			 => $order[0]['dir'],
-				'allrows'		 => phpgw::get_var('length', 'int') == -1 || $export,
+				'allrows'		 => Sanitizer::get_var('length', 'int') == -1 || $export,
 				'start_date'	 => $start_date,
 				'end_date'		 => $end_date,
 				'paid'			 => $paid,
@@ -1025,7 +1025,7 @@ JS;
 
 			$uicols = $this->get_uicols($paid);
 
-			$link_sub = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiinvoice.list_sub',
+			$link_sub = phpgw::link('/index.php', array('menuaction' => 'property.uiinvoice.list_sub',
 				'user_lid'	 => $this->user_lid));
 
 			if ($paid)
@@ -1312,11 +1312,11 @@ JS;
 
 		function list_sub()
 		{
-			$paid		 = phpgw::get_var('paid', 'bool');
-			$values		 = phpgw::get_var('values');
-			$voucher_id	 = phpgw::get_var('voucher_id');
+			$paid		 = Sanitizer::get_var('paid', 'bool');
+			$values		 = Sanitizer::get_var('values');
+			$voucher_id	 = Sanitizer::get_var('voucher_id');
 
-			if (phpgw::get_var('phpgw_return_as') == 'json' && is_array($values) && isset($values))
+			if (Sanitizer::get_var('phpgw_return_as') == 'json' && is_array($values) && isset($values))
 			{
 				if ($this->bo->get_approve_role())
 				{
@@ -1328,7 +1328,7 @@ JS;
 				}
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query_list_sub();
 			}
@@ -1522,12 +1522,12 @@ JS;
 
 		public function query_list_sub()
 		{
-			$paid		 = phpgw::get_var('paid', 'bool');
-			$voucher_id	 = phpgw::get_var('voucher_id');
-			$search		 = phpgw::get_var('search');
-			$order		 = phpgw::get_var('order');
-			$draw		 = phpgw::get_var('draw', 'int');
-			$columns	 = phpgw::get_var('columns');
+			$paid		 = Sanitizer::get_var('paid', 'bool');
+			$voucher_id	 = Sanitizer::get_var('voucher_id');
+			$search		 = Sanitizer::get_var('search');
+			$order		 = Sanitizer::get_var('order');
+			$draw		 = Sanitizer::get_var('draw', 'int');
+			$columns	 = Sanitizer::get_var('columns');
 			$order_field = '';
 
 			if(!empty($columns))
@@ -1561,8 +1561,8 @@ JS;
 
 			$params = array
 				(
-				'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'		 => $query,
 				'order'		 => $order_field,
 				'sort'		 => $sort,
@@ -1578,7 +1578,7 @@ JS;
 				$content			 = $this->bo->read_invoice_sub($params);
 			}
 
-			if (phpgw::get_var('export', 'bool'))
+			if (Sanitizer::get_var('export', 'bool'))
 			{
 				return $content;
 			}
@@ -1587,8 +1587,8 @@ JS;
 
 			$dimb_list		 = $this->bo->select_dimb_list();
 			$tax_code_list	 = $this->bo->tax_code_list();
-			$_link_order	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiinvoice.view_order'));
-			$_link_claim	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uitenant_claim.check'));
+			$_link_order	 = phpgw::link('/index.php', array('menuaction' => 'property.uiinvoice.view_order'));
+			$_link_claim	 = phpgw::link('/index.php', array('menuaction' => 'property.uitenant_claim.check'));
 
 			foreach ($content as &$entry)
 			{
@@ -1662,7 +1662,7 @@ JS;
 					'col_name'	 => '_external_ref', 'visible'	 => false)
 			);
 
-			$link_sub = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiinvoice.list_sub',
+			$link_sub = phpgw::link('/index.php', array('menuaction' => 'property.uiinvoice.list_sub',
 				'user_lid'	 => $this->user_lid));
 
 			if ($paid)
@@ -1913,17 +1913,17 @@ JS;
 
 		public function query_consume()
 		{
-			$start_date		 = phpgw::get_var('start_date') ? urldecode(phpgw::get_var('start_date')) : '';
-			$end_date		 = phpgw::get_var('end_date') ? urldecode(phpgw::get_var('end_date')) : '';
-			$vendor_id		 = phpgw::get_var('vendor_id', 'int');
-			$workorder_id	 = phpgw::get_var('workorder_id', 'int');
-			$loc1			 = phpgw::get_var('loc1');
-			$district_id	 = phpgw::get_var('district_id', 'int');
-			$b_account_class = phpgw::get_var('b_account_class', 'int');
-			$b_account		 = phpgw::get_var('b_account', 'int');
+			$start_date		 = Sanitizer::get_var('start_date') ? urldecode(Sanitizer::get_var('start_date')) : '';
+			$end_date		 = Sanitizer::get_var('end_date') ? urldecode(Sanitizer::get_var('end_date')) : '';
+			$vendor_id		 = Sanitizer::get_var('vendor_id', 'int');
+			$workorder_id	 = Sanitizer::get_var('workorder_id', 'int');
+			$loc1			 = Sanitizer::get_var('loc1');
+			$district_id	 = Sanitizer::get_var('district_id', 'int');
+			$b_account_class = Sanitizer::get_var('b_account_class', 'int');
+			$b_account		 = Sanitizer::get_var('b_account', 'int');
 //			$b_account_class = $b_account_class ? $b_account_class : substr($b_account, 0, 2);
-			$ecodimb		 = phpgw::get_var('ecodimb');
-			$draw			 = phpgw::get_var('draw', 'int');
+			$ecodimb		 = Sanitizer::get_var('ecodimb');
+			$draw			 = Sanitizer::get_var('draw', 'int');
 
 			$dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
 			$actual_date = $GLOBALS['phpgw']->common->show_date(mktime(0, 0, 0, date("m"), date("d"), date("Y")), $dateformat);
@@ -1945,7 +1945,7 @@ JS;
 			{
 				$sum					 = $sum + $entry['consume'];
 				$sum_refund				 = $sum_refund + $entry['refund'];
-				$entry['link_voucher']	 = urldecode($GLOBALS['phpgw']->link('/index.php', array
+				$entry['link_voucher']	 = urldecode(phpgw::link('/index.php', array
 						(
 						'menuaction'		 => 'property.uiinvoice.index',
 						'paid'				 => true,
@@ -1977,10 +1977,10 @@ JS;
 		{
 			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
 
-			$paid		 = phpgw::get_var('paid', 'bool');
-			$id			 = phpgw::get_var('id', 'int', 'GET', 0);
-			$user_lid	 = phpgw::get_var('user_lid', 'string', 'GET');
-			$voucher_id	 = phpgw::get_var('voucher_id', 'int', 'GET');
+			$paid		 = Sanitizer::get_var('paid', 'bool');
+			$id			 = Sanitizer::get_var('id', 'int', 'GET', 0);
+			$user_lid	 = Sanitizer::get_var('user_lid', 'string', 'GET');
+			$voucher_id	 = Sanitizer::get_var('voucher_id', 'int', 'GET');
 			$redirect	 = false;
 
 			$role_check = array
@@ -1992,11 +1992,11 @@ JS;
 
 			$approve = $this->bo->get_approve_role();
 
-			$values = phpgw::get_var('values');
+			$values = Sanitizer::get_var('values');
 
 			if (isset($values['save']))
 			{
-				$values['external_project_id'] = phpgw::get_var('external_project_id', 'string', 'POST');
+				$values['external_project_id'] = Sanitizer::get_var('external_project_id', 'string', 'POST');
 				if ($GLOBALS['phpgw']->session->is_repost())
 				{
 					$this->receipt['error'][] = array('msg' => lang('repost'));
@@ -2135,11 +2135,11 @@ JS;
 
 			$data = array
 				(
-				'redirect'				 => $redirect ? $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiinvoice.list_sub',
+				'redirect'				 => $redirect ? phpgw::link('/index.php', array('menuaction' => 'property.uiinvoice.list_sub',
 					'user_lid'	 => $user_lid, 'voucher_id' => $voucher_id, 'paid'		 => $paid)) : null,
 				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
 				'from_name'				 => $GLOBALS['phpgw_info']['user']['fullname'],
-				'form_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiinvoice.edit',
+				'form_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uiinvoice.edit',
 					'id'		 => $id, 'user_lid'	 => $user_lid, 'voucher_id' => $voucher_id)),
 				'approve_list'			 => $approve_list,
 				'approved_list'			 => $approved_list,
@@ -2163,12 +2163,12 @@ JS;
 
 		function remark()
 		{
-			$GLOBALS['phpgw']->xslttpl->add_file(array('invoice'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('invoice'));
 			$GLOBALS['phpgw_info']['flags']['nofooter']		 = true;
 			$GLOBALS['phpgw_info']['flags']['noframework']	 = true;
 
-			$id		 = phpgw::get_var('id', 'int');
-			$paid	 = phpgw::get_var('paid', 'bool');
+			$id		 = Sanitizer::get_var('id', 'int');
+			$paid	 = Sanitizer::get_var('paid', 'bool');
 
 			$text = $this->bo->read_remark($id, $paid);
 
@@ -2188,23 +2188,23 @@ JS;
 			$function_msg	 = lang('remark');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('remark' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('remark' => $data));
 		}
 
 		function consume()
 		{
 			//-- captura datos de URL
-			$start_date		 = phpgw::get_var('start_date');
-			$end_date		 = phpgw::get_var('end_date');
-			$vendor_id		 = phpgw::get_var('vendor_id', 'int');
-			$workorder_id	 = phpgw::get_var('workorder_id', 'int');
-			$loc1			 = phpgw::get_var('loc1');
-			$district_id	 = phpgw::get_var('district_id', 'int');
-			$b_account_class = phpgw::get_var('b_account_class', 'int');
-			$b_account		 = phpgw::get_var('b_account', 'int');
+			$start_date		 = Sanitizer::get_var('start_date');
+			$end_date		 = Sanitizer::get_var('end_date');
+			$vendor_id		 = Sanitizer::get_var('vendor_id', 'int');
+			$workorder_id	 = Sanitizer::get_var('workorder_id', 'int');
+			$loc1			 = Sanitizer::get_var('loc1');
+			$district_id	 = Sanitizer::get_var('district_id', 'int');
+			$b_account_class = Sanitizer::get_var('b_account_class', 'int');
+			$b_account		 = Sanitizer::get_var('b_account', 'int');
 
 			//	$b_account_class = $b_account_class ? $b_account_class : substr($b_account, 0, 2);
-			$ecodimb = phpgw::get_var('ecodimb');
+			$ecodimb = Sanitizer::get_var('ecodimb');
 
 			//-- ubica focus del menu derecho
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = 'property::economy::consume';
@@ -2222,7 +2222,7 @@ JS;
 				$end_date	 = $start_date;
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query_consume();
 			}
@@ -2427,7 +2427,7 @@ JS;
 				};
 JS;
 
-			$GLOBALS['phpgw']->js->add_code('', $code, true);
+			phpgwapi_js::getInstance()->add_code('', $code, true);
 
 			//Title of Page
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
@@ -2439,10 +2439,10 @@ JS;
 
 		function delete()
 		{
-			$voucher_id = phpgw::get_var('voucher_id', 'int');
+			$voucher_id = Sanitizer::get_var('voucher_id', 'int');
 
 			//cramirez add JsonCod for Delete
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$this->bo->delete($voucher_id);
 				return "voucher_id " . $voucher_id . " " . lang("has been deleted");
@@ -2456,25 +2456,25 @@ JS;
 			}
 
 
-			$confirm = phpgw::get_var('confirm', 'bool', 'POST');
+			$confirm = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 				(
 				'menuaction' => 'property.uiinvoice.index'
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete($voucher_id);
 				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 				(
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiinvoice.delete',
+				'done_action'			 => phpgw::link('/index.php', $link_data),
+				'delete_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uiinvoice.delete',
 					'voucher_id' => $voucher_id)),
 				'lang_confirm_msg'		 => lang('do you really want to delete this entry'),
 				'lang_yes'				 => lang('yes'),
@@ -2487,7 +2487,7 @@ JS;
 			$function_msg	 = lang('delete voucher');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 			//	$GLOBALS['phpgw']->xslttpl->pp();
 		}
 
@@ -2509,7 +2509,7 @@ JS;
 
 			if (isset($receipt['voucher_id']) && $receipt['voucher_id'])
 			{
-				$link_receipt = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiinvoice.receipt',
+				$link_receipt = phpgw::link('/index.php', array('menuaction' => 'property.uiinvoice.receipt',
 					'voucher_id' => $receipt['voucher_id']));
 			}
 
@@ -2517,39 +2517,39 @@ JS;
 
 			$bolocation = CreateObject('property.bolocation');
 
-			$referer = parse_url(phpgw::get_var('HTTP_REFERER', 'url', 'SERVER'));
+			$referer = parse_url(Sanitizer::get_var('HTTP_REFERER', 'url', 'SERVER'));
 			parse_str($referer['query'], $output); // produce $menuaction
-			if (phpgw::get_var('cancel', 'bool') || $output['menuaction'] != 'property.uiinvoice.add')
+			if (Sanitizer::get_var('cancel', 'bool') || $output['menuaction'] != 'property.uiinvoice.add')
 			{
 				$GLOBALS['phpgw']->session->appsession('session_data', 'add_values', '');
 			}
 
-			if (!$GLOBALS['phpgw']->session->appsession('session_data', 'add_values') && phpgw::get_var('add_invoice', 'bool'))
+			if (!$GLOBALS['phpgw']->session->appsession('session_data', 'add_values') && Sanitizer::get_var('add_invoice', 'bool'))
 			{
-				$values['art']					 = phpgw::get_var('art', 'int');
-				$values['type']					 = phpgw::get_var('type');
-				$values['dim_b']				 = phpgw::get_var('dim_b', 'int');
-				$values['invoice_num']			 = phpgw::get_var('invoice_num');
-				$values['kid_nr']				 = phpgw::get_var('kid_nr');
-				$values['vendor_id']			 = phpgw::get_var('vendor_id', 'int');
-				$values['vendor_name']			 = phpgw::get_var('vendor_name');
-				$values['janitor']				 = phpgw::get_var('janitor');
-				$values['supervisor']			 = phpgw::get_var('supervisor');
-				$values['budget_responsible']	 = phpgw::get_var('budget_responsible');
-				$values['invoice_date']			 = phpgw::get_var('invoice_date') ? urldecode(phpgw::get_var('invoice_date')) : '';
-				$values['num_days']				 = phpgw::get_var('num_days', 'int');
-				$values['payment_date']			 = phpgw::get_var('payment_date') ? urldecode(phpgw::get_var('payment_date')) : '';
-				$values['sday']					 = phpgw::get_var('sday', 'int');
-				$values['smonth']				 = phpgw::get_var('smonth', 'int');
-				$values['syear']				 = phpgw::get_var('syear', 'int');
-				$values['eday']					 = phpgw::get_var('eday', 'int');
-				$values['emonth']				 = phpgw::get_var('emonth', 'int');
-				$values['eyear']				 = phpgw::get_var('eyear', 'int');
-				$values['auto_tax']				 = phpgw::get_var('auto_tax', 'bool');
-				$values['merknad']				 = phpgw::get_var('merknad');
-				$values['b_account_id']			 = phpgw::get_var('b_account_id', 'int');
-				$values['b_account_name']		 = phpgw::get_var('b_account_name');
-				$values['amount']				 = phpgw::get_var('amount'); // float - has to accept string until client side validation is in place.
+				$values['art']					 = Sanitizer::get_var('art', 'int');
+				$values['type']					 = Sanitizer::get_var('type');
+				$values['dim_b']				 = Sanitizer::get_var('dim_b', 'int');
+				$values['invoice_num']			 = Sanitizer::get_var('invoice_num');
+				$values['kid_nr']				 = Sanitizer::get_var('kid_nr');
+				$values['vendor_id']			 = Sanitizer::get_var('vendor_id', 'int');
+				$values['vendor_name']			 = Sanitizer::get_var('vendor_name');
+				$values['janitor']				 = Sanitizer::get_var('janitor');
+				$values['supervisor']			 = Sanitizer::get_var('supervisor');
+				$values['budget_responsible']	 = Sanitizer::get_var('budget_responsible');
+				$values['invoice_date']			 = Sanitizer::get_var('invoice_date') ? urldecode(Sanitizer::get_var('invoice_date')) : '';
+				$values['num_days']				 = Sanitizer::get_var('num_days', 'int');
+				$values['payment_date']			 = Sanitizer::get_var('payment_date') ? urldecode(Sanitizer::get_var('payment_date')) : '';
+				$values['sday']					 = Sanitizer::get_var('sday', 'int');
+				$values['smonth']				 = Sanitizer::get_var('smonth', 'int');
+				$values['syear']				 = Sanitizer::get_var('syear', 'int');
+				$values['eday']					 = Sanitizer::get_var('eday', 'int');
+				$values['emonth']				 = Sanitizer::get_var('emonth', 'int');
+				$values['eyear']				 = Sanitizer::get_var('eyear', 'int');
+				$values['auto_tax']				 = Sanitizer::get_var('auto_tax', 'bool');
+				$values['merknad']				 = Sanitizer::get_var('merknad');
+				$values['b_account_id']			 = Sanitizer::get_var('b_account_id', 'int');
+				$values['b_account_name']		 = Sanitizer::get_var('b_account_name');
+				$values['amount']				 = Sanitizer::get_var('amount'); // float - has to accept string until client side validation is in place.
 
 				if (isset($GLOBALS['phpgw_info']['user']['preferences']['common']['currency']))
 				{
@@ -2559,7 +2559,7 @@ JS;
 				$values['amount']	 = str_replace(' ', '', $values['amount']);
 				$values['amount']	 = str_replace(',', '.', $values['amount']);
 
-				$values['order_id'] = phpgw::get_var('order_id');
+				$values['order_id'] = Sanitizer::get_var('order_id');
 
 				$insert_record	 = $GLOBALS['phpgw']->session->appsession('insert_record', 'property');
 				$values			 = $this->bocommon->collect_locationdata($values, $insert_record);
@@ -2572,9 +2572,9 @@ JS;
 				$GLOBALS['phpgw']->session->appsession('session_data', 'add_values', '');
 			}
 
-			$location_code	 = phpgw::get_var('location_code');
-			$debug			 = phpgw::get_var('debug', 'bool');
-			$add_invoice	 = phpgw::get_var('add_invoice', 'bool');
+			$location_code	 = Sanitizer::get_var('location_code');
+			$debug			 = Sanitizer::get_var('debug', 'bool');
+			$add_invoice	 = Sanitizer::get_var('add_invoice', 'bool');
 
 
 			if ($location_code)
@@ -2746,11 +2746,11 @@ JS;
 				(
 				'menu'								 => $this->bocommon->get_menu(),
 				'msgbox_data'						 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'						 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'cancel_action'						 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiinvoice.index')),
+				'form_action'						 => phpgw::link('/index.php', $link_data),
+				'cancel_action'						 => phpgw::link('/index.php', array('menuaction' => 'property.uiinvoice.index')),
 				'lang_cancel'						 => lang('Cancel'),
 				'lang_cancel_statustext'			 => lang('cancel'),
-				'action_url'						 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property' . '.uiinvoice.add')),
+				'action_url'						 => phpgw::link('/index.php', array('menuaction' => 'property' . '.uiinvoice.add')),
 				'tsvfilename'						 => '',
 				'lang_add'							 => lang('add'),
 				'lang_add_statustext'				 => lang('click this button to add a invoice'),
@@ -2763,7 +2763,7 @@ JS;
 				'lang_kidnr'						 => lang('KID nr'),
 				'lang_kid_nr_statustext'			 => lang('Enter Kid nr'),
 				'lang_vendor'						 => lang('Vendor'),
-				'addressbook_link'					 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uilookup.vendor')),
+				'addressbook_link'					 => phpgw::link('/index.php', array('menuaction' => 'property.uilookup.vendor')),
 				'lang_invoice_date_statustext'		 => lang('Enter the invoice date'),
 				'lang_num_days_statustext'			 => lang('Enter the payment date or the payment delay'),
 				'lang_payment_date_statustext'		 => lang('Enter the payment date or the payment delay'),
@@ -2831,13 +2831,13 @@ JS;
 
 			//_debug_array($data);
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('invoice'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('invoice'));
 
 			$appname		 = lang('Invoice');
 			$function_msg	 = lang('Add invoice');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('add' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('add' => $data));
 		}
 
 		function receipt()
@@ -2853,7 +2853,7 @@ JS;
 			$GLOBALS['phpgw_info']['flags']['nofooter']	 = true;
 			$GLOBALS['phpgw_info']['flags']['xslt_app']	 = false;
 
-			$voucher_id = phpgw::get_var('voucher_id', 'int');
+			$voucher_id = Sanitizer::get_var('voucher_id', 'int');
 
 			if ($voucher_id)
 			{
@@ -3048,7 +3048,7 @@ JS;
 			$GLOBALS['phpgw_info']['flags']['nofooter']		 = true;
 			$GLOBALS['phpgw_info']['flags']['noframework']	 = true;
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('invoice', 'table_header'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('invoice', 'table_header'));
 
 			$link_data_add = array
 				(
@@ -3098,10 +3098,10 @@ JS;
 				(
 				'lang_add'				 => lang('Add'),
 				'lang_add_statustext'	 => lang('Add this invoice'),
-				'add_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data_add),
+				'add_action'			 => phpgw::link('/index.php', $link_data_add),
 				'lang_cancel'			 => lang('cancel'),
 				'lang_cancel_statustext' => lang('Do not add this invoice'),
-				'cancel_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data_cancel)
+				'cancel_action'			 => phpgw::link('/index.php', $link_data_cancel)
 			);
 
 
@@ -3180,17 +3180,17 @@ JS;
 			$function_msg	 = lang('Add invoice: Debug');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('debug' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('debug' => $data));
 			//	$GLOBALS['phpgw']->xslttpl->pp();
 		}
 
 		function view_order()
 		{
-			$order_id	 = phpgw::get_var('order_id'); // could be bigint
+			$order_id	 = Sanitizer::get_var('order_id'); // could be bigint
 			$soXport	 = CreateObject('property.soXport');
 
-			$nonavbar	 = phpgw::get_var('nonavbar', 'bool');
-			$lean		 = phpgw::get_var('lean', 'bool');
+			$nonavbar	 = Sanitizer::get_var('nonavbar', 'bool');
+			$lean		 = Sanitizer::get_var('lean', 'bool');
 
 			$order_type = $soXport->check_order($order_id);
 			switch ($order_type)
@@ -3220,11 +3220,11 @@ JS;
 				return;
 			}
 
-			$type = phpgw::get_var('type', 'string', 'GET', 'deposition');
+			$type = Sanitizer::get_var('type', 'string', 'GET', 'deposition');
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = "property::economy::{$type}";
 
-			$values = phpgw::get_var('values');
+			$values = Sanitizer::get_var('values');
 
 			$receipt = array();
 			if ($values)
@@ -3268,7 +3268,7 @@ JS;
 			$data = array
 				(
 				'msgbox_data'		 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'		 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiinvoice.reporting')),
+				'form_action'		 => phpgw::link('/index.php', array('menuaction' => 'property.uiinvoice.reporting')),
 				'accounting_periods' => array('options' => $this->bo->get_historical_accounting_periods()),
 				'tabs'				 => phpgwapi_jquery::tabview_generate($tabs, $active_tab)
 			);
@@ -3289,8 +3289,8 @@ JS;
 		{
 			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
 
-			$user_lid	 = phpgw::get_var('user_lid', 'string', 'GET', 'all');
-			$voucher_id	 = phpgw::get_var('voucher_id', 'int', 'GET');
+			$user_lid	 = Sanitizer::get_var('user_lid', 'string', 'GET', 'all');
+			$voucher_id	 = Sanitizer::get_var('voucher_id', 'int', 'GET');
 			$redirect	 = false;
 
 			$role_check = array
@@ -3302,7 +3302,7 @@ JS;
 
 			$approve = $this->bo->get_approve_role();
 
-			$values = phpgw::get_var('values');
+			$values = Sanitizer::get_var('values');
 
 			$receipt = array();
 			if (isset($values['save']))
@@ -3323,7 +3323,7 @@ JS;
 					$this->receipt			 = $this->bo->forward($values);
 					if (!$this->receipt['error'])
 					{
-						execMethod('property.soworkorder.close_orders', phpgw::get_var('orders'));
+						execMethod('property.soworkorder.close_orders', Sanitizer::get_var('orders'));
 						$redirect = true;
 					}
 				}
@@ -3431,11 +3431,11 @@ JS;
 
 			$data = array
 				(
-				'redirect'				 => $redirect ? $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiinvoice.index',
+				'redirect'				 => $redirect ? phpgw::link('/index.php', array('menuaction' => 'property.uiinvoice.index',
 					'user_lid'	 => $user_lid)) : null,
 				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
 				'from_name'				 => $GLOBALS['phpgw_info']['user']['fullname'],
-				'form_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiinvoice.forward',
+				'form_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uiinvoice.forward',
 					'user_lid'	 => $user_lid, 'voucher_id' => $voucher_id)),
 				'approve_list'			 => $approve_list,
 				'approved_list'			 => $approved_list,

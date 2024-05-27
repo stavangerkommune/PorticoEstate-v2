@@ -132,9 +132,9 @@
 			{
 				phpgw::no_access();
 			}
-			$GLOBALS['phpgw']->xslttpl->add_file(array('migrate', 'nextmatchs'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('migrate', 'nextmatchs'));
 
-			$values = phpgw::get_var('values', 'string', 'POST');
+			$values = Sanitizer::get_var('values', 'string', 'POST');
 
 			$_alert_msg = 'This one will really fuck up your database if you accidentally choose wrong';
 
@@ -233,7 +233,7 @@
 				'record_limit'					 => $record_limit,
 				'num_records'					 => ($domain_info ? count($domain_info) : 0),
 				'all_records'					 => ($domain_info ? count($domain_info) : 0),
-				'link_url'						 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'link_url'						 => phpgw::link('/index.php', $link_data),
 				'img_path'						 => $GLOBALS['phpgw']->common->get_image_path('phpgwapi', 'default'),
 				'lang_searchfield_statustext'	 => lang('Enter the search string. To show all entries, empty this field and press the SUBMIT button again'),
 				'lang_searchbutton_statustext'	 => lang('Submit the search string'),
@@ -241,7 +241,7 @@
 				'lang_search'					 => lang('search'),
 				'table_header'					 => $table_header,
 				'table_migrate'					 => $table_migrate,
-				'migrate_action'				 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uimigrate.index')),
+				'migrate_action'				 => phpgw::link('/index.php', array('menuaction' => 'property.uimigrate.index')),
 				'values'						 => (isset($content) ? $content : '')
 			);
 
@@ -249,13 +249,13 @@
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('migrate') . ":: {$function_msg}";
 
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('list' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('list' => $data));
 			$this->save_sessiondata();
 		}
 
 		public function no_access()
 		{
-			$GLOBALS['phpgw']->xslttpl->add_file(array('no_access'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('no_access'));
 
 			$receipt['error'][] = array('msg' => lang('NO ACCESS'));
 
@@ -269,6 +269,6 @@
 			$function_msg = lang('No access');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('migrate') . ":: {$function_msg}";
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('no_access' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('no_access' => $data));
 		}
 	}

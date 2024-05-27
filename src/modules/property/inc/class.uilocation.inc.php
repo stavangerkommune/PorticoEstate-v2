@@ -131,13 +131,13 @@
 		 */
 		public function query()
 		{
-			$lookup_tenant = phpgw::get_var('lookup_tenant', 'bool');
+			$lookup_tenant = Sanitizer::get_var('lookup_tenant', 'bool');
 
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
-			$export	 = phpgw::get_var('export', 'bool');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
+			$export	 = Sanitizer::get_var('export', 'bool');
 
 			$column_search = array();
 			if($columns && is_array($columns))
@@ -152,13 +152,13 @@
 			}
 
 			$params = array(
-				'start'			 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'		 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'			 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'		 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'			 => $search['value'],
 				'order'			 => $columns[$order[0]['column']]['data'],
 				'sort'			 => $order[0]['dir'],
 				'dir'			 => $order[0]['dir'],
-				'allrows'		 => phpgw::get_var('length', 'int') == -1 || $export,
+				'allrows'		 => Sanitizer::get_var('length', 'int') == -1 || $export,
 				'lookup_tenant'	 => $lookup_tenant,
 				'dry_run'		 => false,
 				'column_search' => $column_search
@@ -180,23 +180,23 @@
 
 		public function query_role()
 		{
-			$lookup_tenant	 = phpgw::get_var('lookup_tenant', 'bool');
-			$user_id		 = phpgw::get_var('user_id', 'int', 'request', $this->account);
-			$role_id		 = phpgw::get_var('role_id', 'int');
+			$lookup_tenant	 = Sanitizer::get_var('lookup_tenant', 'bool');
+			$user_id		 = Sanitizer::get_var('user_id', 'int', 'request', $this->account);
+			$role_id		 = Sanitizer::get_var('role_id', 'int');
 
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 			$params = array(
-				'start'			 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'		 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'			 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'		 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'			 => $search['value'],
 				'order'			 => $columns[$order[0]['column']]['data'],
 				'sort'			 => $order[0]['dir'],
 				'dir'			 => $order[0]['dir'],
-				'allrows'		 => phpgw::get_var('length', 'int') == -1,
+				'allrows'		 => Sanitizer::get_var('length', 'int') == -1,
 				'lookup_tenant'	 => $lookup_tenant,
 				'user_id'		 => $user_id,
 				'role_id'		 => $role_id
@@ -216,7 +216,7 @@
 		{
 			$values = $this->bo->read_summary();
 
-			if (phpgw::get_var('export', 'bool'))
+			if (Sanitizer::get_var('export', 'bool'))
 			{
 				return $values;
 			}
@@ -224,30 +224,30 @@
 			$result_data = array('results' => $values);
 
 			$result_data['total_records']	 = count($values);
-			$result_data['draw']			 = phpgw::get_var('draw', 'int');
+			$result_data['draw']			 = Sanitizer::get_var('draw', 'int');
 
 			return $this->jquery_results($result_data);
 		}
 
 		public function responsiblility_role_save()
 		{
-			$values		 = phpgw::get_var('values');
+			$values		 = Sanitizer::get_var('values');
 			//$values_assign = $_POST['values_assign'];
-			$assign_orig = phpgw::get_var('assign_orig');
-			$assign		 = phpgw::get_var('assign');
+			$assign_orig = Sanitizer::get_var('assign_orig');
+			$assign		 = Sanitizer::get_var('assign');
 
-			$role_id = phpgw::get_var('role_id', 'int');
+			$role_id = Sanitizer::get_var('role_id', 'int');
 			//$receipt = array();
 //			$_role = CreateObject('property.sogeneric');
 //			$_role->get_location_info('responsibility_role','');
 			//$this->save_sessiondata();
 
-			$user_id			 = phpgw::get_var('user_id', 'int', 'request', $this->account);
+			$user_id			 = Sanitizer::get_var('user_id', 'int', 'request', $this->account);
 			$result['message']	 = array();
 
 			if (($assign || $assign_orig) && $this->acl_edit)
 			{
-				//$values_assign = phpgw::clean_value(json_decode(stripslashes($values_assign),true)); //json_decode has issues with magic_quotes_gpc
+				//$values_assign = Sanitizer::clean_value(json_decode(stripslashes($values_assign),true)); //json_decode has issues with magic_quotes_gpc
 				$user_id	 = abs($user_id);
 				$account	 = $GLOBALS['phpgw']->accounts->get($user_id);
 				$contact_id	 = $account->person_id;
@@ -298,7 +298,7 @@
 				return;
 			}
 
-			$download_type = phpgw::get_var('download_type');
+			$download_type = Sanitizer::get_var('download_type');
 
 			switch ($download_type)
 			{
@@ -307,10 +307,10 @@
 					$uicols	 = $this->bo->uicols;
 					break;
 				case 'responsiblility_role':
-					$user_id = phpgw::get_var('user_id', 'int');
-					$role_id = phpgw::get_var('role_id', 'int');
-					$type_id = phpgw::get_var('type_id', 'int', 'GET');
-					$search	 = phpgw::get_var('search');
+					$user_id = Sanitizer::get_var('user_id', 'int');
+					$role_id = Sanitizer::get_var('role_id', 'int');
+					$type_id = Sanitizer::get_var('type_id', 'int', 'GET');
+					$search	 = Sanitizer::get_var('search');
 
 					$list = $this->bo->get_responsible(array('user_id'	 => $user_id, 'role_id'	 => $role_id,
 						'type_id'	 => $type_id, 'query'		 => $search['value'], 'allrows'	 => true));
@@ -349,12 +349,12 @@
 		{
 			$GLOBALS['phpgw_info']['flags']['xslt_app']	 = true;
 			$receipt									 = array();
-			$GLOBALS['phpgw']->xslttpl->add_file(array('columns'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('columns'));
 
 			$GLOBALS['phpgw_info']['flags']['noframework']	 = true;
 			$GLOBALS['phpgw_info']['flags']['nofooter']		 = true;
 
-			$values = phpgw::get_var('values');
+			$values = Sanitizer::get_var('values');
 
 			$GLOBALS['phpgw']->preferences->set_account_id($this->account, true);
 
@@ -382,14 +382,14 @@
 				'msgbox_data'	 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
 				'column_list'	 => $this->bo->column_list($selected, $this->type_id, $allrows		 = true),
 				'function_msg'	 => $function_msg,
-				'form_action'	 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'form_action'	 => phpgw::link('/index.php', $link_data),
 				'lang_columns'	 => lang('columns'),
 				'lang_none'		 => lang('None'),
 				'lang_save'		 => lang('save'),
 			);
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('columns' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('columns' => $data));
 		}
 
 		private function _get_categories()
@@ -611,7 +611,7 @@
 		{
 			if (!$account_type)
 			{
-				$account_type = phpgw::get_var('account_type');
+				$account_type = Sanitizer::get_var('account_type');
 			}
 			switch ($account_type)
 			{
@@ -710,9 +710,9 @@
 
 		private function _populate()
 		{
-			$change_type		 = phpgw::get_var('change_type', 'int', 'POST');
-			$location_code		 = phpgw::get_var('location_code');
-			$values_attribute	 = phpgw::get_var('values_attribute');
+			$change_type		 = Sanitizer::get_var('change_type', 'int', 'POST');
+			$location_code		 = Sanitizer::get_var('location_code');
+			$values_attribute	 = Sanitizer::get_var('values_attribute');
 			$location			 = explode('-', $location_code);
 			$error_id			 = false;
 			$type_id			 = $this->type_id;
@@ -728,7 +728,7 @@
 			{
 				for ($i = 0; $i < count($insert_record['location']); $i++)
 				{
-					$values[$insert_record['location'][$i]] = phpgw::get_var($insert_record['location'][$i], 'string', 'POST');
+					$values[$insert_record['location'][$i]] = Sanitizer::get_var($insert_record['location'][$i], 'string', 'POST');
 				}
 			}
 
@@ -742,7 +742,7 @@
 					{
 						if ($attr['name'] == $attribute)
 						{
-							$attr['value'] = phpgw::get_var($attribute, 'string', 'POST');
+							$attr['value'] = Sanitizer::get_var($attribute, 'string', 'POST');
 						}
 					}
 				}
@@ -752,7 +752,7 @@
 			{
 				for ($i = 0; $i < count($insert_record['extra']); $i++)
 				{
-					$values[$insert_record['extra'][$i]] = phpgw::get_var($insert_record['extra'][$i], 'string', 'POST');
+					$values[$insert_record['extra'][$i]] = Sanitizer::get_var($insert_record['extra'][$i], 'string', 'POST');
 				}
 			}
 
@@ -833,7 +833,7 @@
 
 		function get_part_of_town()
 		{
-			$district_id = phpgw::get_var('district_id', 'int');
+			$district_id = Sanitizer::get_var('district_id', 'int');
 			$values		 = $this->bocommon->select_part_of_town('filter', $this->part_of_town_id, $district_id);
 			array_unshift($values, array('id' => '', 'name' => lang('no part of town')));
 
@@ -842,14 +842,14 @@
 
 		function index()
 		{
-			$type_id		 = phpgw::get_var('type_id', 'int', 'GET', 1);
+			$type_id		 = Sanitizer::get_var('type_id', 'int', 'GET', 1);
 			// $lookup use for pop-up
-			$lookup			 = phpgw::get_var('lookup');
+			$lookup			 = Sanitizer::get_var('lookup');
 			// $lookup_name use in pop-up option "project"
-			$lookup_name	 = phpgw::get_var('lookup_name');
+			$lookup_name	 = Sanitizer::get_var('lookup_name');
 			// use in option menu TENANT
-			$lookup_tenant	 = phpgw::get_var('lookup_tenant', 'bool');
-			$block_query	 = phpgw::get_var('block_query', 'bool');
+			$lookup_tenant	 = Sanitizer::get_var('lookup_tenant', 'bool');
+			$block_query	 = Sanitizer::get_var('block_query', 'bool');
 
 			if ($lookup)
 			{
@@ -880,7 +880,7 @@
 				$this->district_id		 = $default_district;
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -1064,7 +1064,7 @@ JS;
 	});
 JS;
 
-				$GLOBALS['phpgw']->js->add_code('', $function_exchange_values);
+				phpgwapi_js::getInstance()->add_code('', $function_exchange_values);
 			}
 			else
 			{
@@ -1249,7 +1249,7 @@ JS;
 						(
 						'my_name'	 => 'view',
 						'text'		 => lang('contracts'),
-						'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+						'action'	 => phpgw::link('/index.php', array
 							(
 							'menuaction'		 => 'rental.uicontract.index',
 							'search_type'		 => 'location_code',
@@ -1263,7 +1263,7 @@ JS;
 						(
 						'my_name'	 => 'view',
 						'text'		 => lang('composites'),
-						'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+						'action'	 => phpgw::link('/index.php', array
 							(
 							'menuaction'	 => 'rental.uicomposite.index',
 							'search_type'	 => 'location_code',
@@ -1279,7 +1279,7 @@ JS;
 						(
 						'my_name'	 => 'view',
 						'text'		 => lang('view'),
-						'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+						'action'	 => phpgw::link('/index.php', array
 							(
 							'menuaction'	 => 'property.uilocation.view',
 							'lookup_tenant'	 => $lookup_tenant
@@ -1291,7 +1291,7 @@ JS;
 						(
 						'my_name'	 => 'view',
 						'text'		 => lang('open view in new window'),
-						'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+						'action'	 => phpgw::link('/index.php', array
 							(
 							'menuaction'	 => 'property.uilocation.view',
 							'lookup_tenant'	 => $lookup_tenant
@@ -1307,7 +1307,7 @@ JS;
 						(
 						'my_name'	 => 'edit',
 						'text'		 => lang('add'),
-						'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+						'action'	 => phpgw::link('/index.php', array
 							(
 							'menuaction'	 => 'property.uilocation.edit',
 							'lookup_tenant'	 => $lookup_tenant
@@ -1322,7 +1322,7 @@ JS;
 						(
 						'my_name'	 => 'edit',
 						'text'		 => lang('edit'),
-						'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+						'action'	 => phpgw::link('/index.php', array
 							(
 							'menuaction'	 => 'property.uilocation.edit',
 							'lookup_tenant'	 => $lookup_tenant
@@ -1334,7 +1334,7 @@ JS;
 						(
 						'my_name'	 => 'edit',
 						'text'		 => lang('open edit in new window'),
-						'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+						'action'	 => phpgw::link('/index.php', array
 							(
 							'menuaction'	 => 'property.uilocation.edit',
 							'lookup_tenant'	 => $lookup_tenant
@@ -1362,7 +1362,7 @@ JS;
 						'my_name'		 => 'delete',
 						'text'			 => lang('delete'),
 						'confirm_msg'	 => lang('do you really want to delete this entry'),
-						'action'		 => $GLOBALS['phpgw']->link('/index.php', array
+						'action'		 => phpgw::link('/index.php', array
 							(
 							'menuaction'	 => 'property.uilocation.delete',
 							'lookup_tenant'	 => $lookup_tenant
@@ -1374,7 +1374,7 @@ JS;
 				unset($parameters);
 			}
 
-			$query = phpgw::get_var('query');
+			$query = Sanitizer::get_var('query');
 			if (!empty($query))
 			{
 				$code = <<<JS
@@ -1385,7 +1385,7 @@ JS;
 					}
 JS;
 
-				$GLOBALS['phpgw']->js->add_code('', $code, true);
+				phpgwapi_js::getInstance()->add_code('', $code, true);
 			}
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
@@ -1429,16 +1429,16 @@ JS;
 
 		function responsiblility_role()
 		{
-			$user_id = phpgw::get_var('user_id', 'int', 'request', $this->account);
-			$role_id = phpgw::get_var('role_id', 'int');
-			$type_id = phpgw::get_var('type_id', 'int');
+			$user_id = Sanitizer::get_var('user_id', 'int', 'request', $this->account);
+			$role_id = Sanitizer::get_var('role_id', 'int');
+			$type_id = Sanitizer::get_var('type_id', 'int');
 
 			if (!$type_id)
 			{
 				$type_id = 1;
 			}
 
-			if ($_menu_selection = phpgw::get_var('menu_selection'))
+			if ($_menu_selection = Sanitizer::get_var('menu_selection'))
 			{
 				$GLOBALS['phpgw_info']['flags']['menu_selection'] = $_menu_selection;
 			}
@@ -1467,9 +1467,9 @@ JS;
 				$searc_levels[] = "loc{$i}";
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				if (phpgw::get_var('head'))
+				if (Sanitizer::get_var('head'))
 				{
 					$this->bo->get_responsible(array('user_id'	 => $user_id, 'role_id'	 => $role_id,
 						'type_id'	 => $type_id, 'dry_run'	 => true));
@@ -1735,8 +1735,8 @@ JS;
 
 		public function get_history_data()
 		{
-			$draw			 = phpgw::get_var('draw', 'int');
-			$location_code	 = phpgw::get_var('location_code');
+			$draw			 = Sanitizer::get_var('draw', 'int');
+			$location_code	 = Sanitizer::get_var('location_code');
 
 			$values		 = $this->bo->get_history($location_code);
 			$dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
@@ -1755,23 +1755,23 @@ JS;
 
 		public function get_documents()
 		{
-			$search			 = phpgw::get_var('search');
-			$order			 = phpgw::get_var('order');
-			$draw			 = phpgw::get_var('draw', 'int');
-			$columns		 = phpgw::get_var('columns');
-			$doc_type		 = phpgw::get_var('doc_type', 'int');
-			$location_code	 = phpgw::get_var('location_code');
-			$export			 = phpgw::get_var('export', 'bool');
+			$search			 = Sanitizer::get_var('search');
+			$order			 = Sanitizer::get_var('order');
+			$draw			 = Sanitizer::get_var('draw', 'int');
+			$columns		 = Sanitizer::get_var('columns');
+			$doc_type		 = Sanitizer::get_var('doc_type', 'int');
+			$location_code	 = Sanitizer::get_var('location_code');
+			$export			 = Sanitizer::get_var('export', 'bool');
 			$values			 = array();
 
 			$params = array(
-				'start'			 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'		 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'			 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'		 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'			 => $search['value'],
 				'order'			 => $columns[$order[0]['column']]['data'],
 				'sort'			 => $order[0]['dir'],
 				'dir'			 => $order[0]['dir'],
-				'allrows'		 => phpgw::get_var('length', 'int') == -1 || $export,
+				'allrows'		 => Sanitizer::get_var('length', 'int') == -1 || $export,
 				'doc_type'		 => $doc_type,
 				'location_code'	 => $location_code
 			);
@@ -1857,12 +1857,12 @@ JS;
 		{
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 
-			//$get_history 		= phpgw::get_var('get_history', 'bool', 'POST');
-			$lookup_tenant		 = phpgw::get_var('lookup_tenant', 'bool');
-			$location_code		 = isset($values['location_code']) && $values['location_code'] ? $values['location_code'] : phpgw::get_var('location_code');
-			$sibling			 = phpgw::get_var('sibling');
-			$parent				 = phpgw::get_var('parent');
-			$values_attribute	 = phpgw::get_var('values_attribute');
+			//$get_history 		= Sanitizer::get_var('get_history', 'bool', 'POST');
+			$lookup_tenant		 = Sanitizer::get_var('lookup_tenant', 'bool');
+			$location_code		 = isset($values['location_code']) && $values['location_code'] ? $values['location_code'] : Sanitizer::get_var('location_code');
+			$sibling			 = Sanitizer::get_var('sibling');
+			$parent				 = Sanitizer::get_var('parent');
+			$values_attribute	 = Sanitizer::get_var('values_attribute');
 			$location			 = explode('-', $location_code);
 			$error_id			 = false;
 
@@ -2091,7 +2091,7 @@ JS;
 						{
 							$entities_link[] = array
 								(
-								'entity_link'			 => $GLOBALS['phpgw']->link('/index.php', array
+								'entity_link'			 => phpgw::link('/index.php', array
 									(
 									'menuaction'	 => "property.uilocation.{$mode}",
 									'location_code'	 => implode('-', array_slice($location, 0, $location_type['id']))
@@ -2107,7 +2107,7 @@ JS;
 							$marker			 = str_repeat('-', ($location_type['id'] - $type_id));
 							$entities_link[] = array
 								(
-								'entity_link'			 => $GLOBALS['phpgw']->link('/index.php', array
+								'entity_link'			 => phpgw::link('/index.php', array
 									(
 									'menuaction'	 => 'property.uilocation.index',
 									'type_id'		 => $location_type['id'],
@@ -2125,7 +2125,7 @@ JS;
 			}
 
 			$tabs		 = array();
-			$active_tab	 = phpgw::get_var('active_tab');
+			$active_tab	 = Sanitizer::get_var('active_tab');
 
 			$tabs['general'] = array('label' => $location_types[($type_id - 1)]['name'], 'link' => '#general');
 			$active_tab		 = $active_tab ? $active_tab : 'general';
@@ -2146,7 +2146,7 @@ JS;
 							'edit'		 => true
 						);
 
-						$attribute['link_history'] = $GLOBALS['phpgw']->link('/index.php', $link_history_data);
+						$attribute['link_history'] = phpgw::link('/index.php', $link_history_data);
 					}
 				}
 
@@ -2283,7 +2283,7 @@ JS;
 						'my_name'		 => 'delete',
 						'text'			 => lang('delete'),
 						'confirm_msg'	 => lang('do you really want to delete this entry'),
-						'action'		 => $GLOBALS['phpgw']->link('/index.php', array
+						'action'		 => phpgw::link('/index.php', array
 							(
 							'menuaction'	 => 'property.uidocument.delete',
 						)),
@@ -2793,8 +2793,8 @@ JS;
 				'size_first_name'				 => (isset($values['first_name']) ? strlen($values['first_name']) : ''),
 				'lookup_type'					 => $lookup_type,
 				'location_data'					 => $location_data,
-				'form_action'					 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'done_action'					 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uilocation.index',
+				'form_action'					 => phpgw::link('/index.php', $link_data),
+				'done_action'					 => phpgw::link('/index.php', array('menuaction'	 => 'property.uilocation.index',
 					'type_id'		 => $type_id, 'lookup_tenant'	 => $lookup_tenant)),
 				'lang_save'						 => lang('save'),
 				'lang_done'						 => lang('done'),
@@ -2818,7 +2818,7 @@ JS;
 				'lang_collapse_all'				 => lang('collapse all'),
 				'validator'						 => phpgwapi_jquery::formvalidator_generate(array('location',
 					'date', 'security', 'file')),
-				'edit_link' => $GLOBALS['phpgw']->link('/index.php', array
+				'edit_link' => phpgw::link('/index.php', array
 					(
 					'menuaction'	 => 'property.uilocation.edit',
 					'location_code'	 => $location_code,
@@ -2868,8 +2868,8 @@ JS;
 				return $this->edit();
 			}
 
-			$location_code		 = phpgw::get_var('location_code');
-			$values_attribute	 = phpgw::get_var('values_attribute');
+			$location_code		 = Sanitizer::get_var('location_code');
+			$values_attribute	 = Sanitizer::get_var('values_attribute');
 
 			$result = $this->_populate();
 
@@ -2937,7 +2937,7 @@ JS;
 				{
 					for ($i = 0; $i < count($insert_record['extra']); $i++)
 					{
-						$values[$insert_record['extra'][$i]] = phpgw::get_var($insert_record['extra'][$i], 'string', 'POST');
+						$values[$insert_record['extra'][$i]] = Sanitizer::get_var($insert_record['extra'][$i], 'string', 'POST');
 					}
 				}
 				$values['error_id'] = $result['values']['error_id'];
@@ -2948,11 +2948,11 @@ JS;
 		function delete()
 		{
 
-			$location_code	 = phpgw::get_var('location_code', 'string', 'GET');
+			$location_code	 = Sanitizer::get_var('location_code', 'string', 'GET');
 			$type_id		 = $this->type_id;
 
 			//cramirez add JsonCod for Delete
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$this->bo->delete($location_code);
 				return "location_code " . $location_code . " " . lang("has been deleted");
@@ -2966,7 +2966,7 @@ JS;
 				return;
 			}
 
-			$confirm = phpgw::get_var('confirm', 'bool', 'POST');
+			$confirm = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 				(
@@ -2974,18 +2974,18 @@ JS;
 				'type_id'	 => $type_id
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'GET'))
+			if (Sanitizer::get_var('confirm', 'bool', 'GET'))
 			{
 				$this->bo->delete($location_code);
 				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 				(
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uilocation.delete',
+				'done_action'			 => phpgw::link('/index.php', $link_data),
+				'delete_action'			 => phpgw::link('/index.php', array('menuaction'	 => 'property.uilocation.delete',
 					'location_code'	 => $location_code, 'type_id'		 => $type_id)),
 				'lang_confirm_msg'		 => lang('do you really want to delete this entry'),
 				'lang_yes'				 => lang('yes'),
@@ -2998,7 +2998,7 @@ JS;
 			$function_msg	 = lang('delete location');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 
 		function get_location_data()
@@ -3007,7 +3007,7 @@ JS;
 			{
 				phpgw::no_access();
 			}
-			$location_code = phpgw::get_var('location_code');
+			$location_code = Sanitizer::get_var('location_code');
 
 			if ($location_code)
 			{
@@ -3048,14 +3048,14 @@ JS;
 				return;
 			}
 
-			$confirm = phpgw::get_var('confirm', 'bool', 'POST');
+			$confirm = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 				(
 				'menuaction' => 'property.uilocation.index'
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$receipt			 = $this->bo->update_cat();
 				$lang_confirm_msg	 = lang('Do you really want to update the categories again');
@@ -3067,15 +3067,15 @@ JS;
 				$lang_yes			 = lang('yes');
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('location'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('location'));
 
 			$msgbox_data = $this->bocommon->msgbox_data($receipt);
 
 			$data = array
 				(
 				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'done_action'			 => $GLOBALS['phpgw']->link('/admin/index.php'),
-				'update_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uilocation.update_cat')),
+				'done_action'			 => phpgw::link('/admin/index.php'),
+				'update_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uilocation.update_cat')),
 				'message'				 => $receipt['message'],
 				'lang_confirm_msg'		 => $lang_confirm_msg,
 				'lang_yes'				 => $lang_yes,
@@ -3087,7 +3087,7 @@ JS;
 			$appname										 = lang('location');
 			$function_msg									 = lang('Update the not active category for locations');
 			$GLOBALS['phpgw_info']['flags']['app_header']	 = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('update_cat' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('update_cat' => $data));
 			//	$GLOBALS['phpgw']->xslttpl->pp();
 		}
 
@@ -3106,9 +3106,9 @@ JS;
 				return;
 			}
 
-			$confirm = phpgw::get_var('confirm', 'bool', 'POST');
+			$confirm = Sanitizer::get_var('confirm', 'bool', 'POST');
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$receipt			 = $this->bo->update_location();
 				$lang_confirm_msg	 = lang('Do you really want to update the locations again');
@@ -3120,15 +3120,15 @@ JS;
 				$lang_yes			 = lang('yes');
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('location'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('location'));
 
 			$msgbox_data = $this->bocommon->msgbox_data($receipt);
 
 			$data = array
 				(
 				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'done_action'			 => $GLOBALS['phpgw']->link('/admin/index.php'),
-				'update_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uilocation.update_location')),
+				'done_action'			 => phpgw::link('/admin/index.php'),
+				'update_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uilocation.update_location')),
 				'message'				 => $receipt['message'],
 				'lang_confirm_msg'		 => $lang_confirm_msg,
 				'lang_yes'				 => $lang_yes,
@@ -3140,13 +3140,13 @@ JS;
 			$appname										 = lang('location');
 			$function_msg									 = lang('Update the locations');
 			$GLOBALS['phpgw_info']['flags']['app_header']	 = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('update_cat' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('update_cat' => $data));
 		}
 
 		function stop()
 		{
-			$perm		 = phpgw::get_var('perm', 'int');
-			$location	 = phpgw::get_var('acl_location');
+			$perm		 = Sanitizer::get_var('perm', 'int');
+			$location	 = Sanitizer::get_var('acl_location');
 
 			$right = array
 				(
@@ -3157,7 +3157,7 @@ JS;
 				PHPGW_ACL_PRIVATE	 => 'manage'
 			);
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('location'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('location'));
 
 			$receipt['error'][] = array('msg' => lang('You need the right "%1" for this application at "%2" to access this function', lang($right[$perm]), $location));
 
@@ -3170,7 +3170,7 @@ JS;
 
 			$appname										 = lang('Access error');
 			$GLOBALS['phpgw_info']['flags']['app_header']	 = lang('property') . ' : ' . $appname;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('stop' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('stop' => $data));
 			//	$GLOBALS['phpgw']->xslttpl->pp();
 		}
 
@@ -3183,7 +3183,7 @@ JS;
 				phpgw::no_access();
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query_summary();
 			}
@@ -3256,7 +3256,7 @@ JS;
 
 		function get_delivery_address()
 		{
-			$loc1 = phpgw::get_var('loc1');
+			$loc1 = Sanitizer::get_var('loc1');
 
 			$delivery_address = $this->bo->get_delivery_address($loc1);
 
@@ -3267,7 +3267,7 @@ JS;
 
 		function get_location_exception()
 		{
-			$location_code = phpgw::get_var('location_code', 'string');
+			$location_code = Sanitizer::get_var('location_code', 'string');
 
 			$location_exception = $this->bo->get_location_exception($location_code);
 
@@ -3309,10 +3309,10 @@ JS;
 
 		public function edit_field()
 		{
-			$type_id	 = phpgw::get_var('type_id', 'int', 'GET');
-			$id			 = phpgw::get_var('id', 'int', 'POST');
+			$type_id	 = Sanitizer::get_var('type_id', 'int', 'GET');
+			$id			 = Sanitizer::get_var('id', 'int', 'POST');
 
-			$field_name	 = phpgw::get_var('field_name', 'string', 'GET');
+			$field_name	 = Sanitizer::get_var('field_name', 'string', 'GET');
 
 			if (!$this->acl_edit)
 			{
@@ -3332,7 +3332,7 @@ JS;
 					'type_id'	 => $type_id,
 					'id'		 => $id,
 					'field_name' => $field_name,
-					'value'		 => phpgw::get_var('value')
+					'value'		 => Sanitizer::get_var('value')
 				);
 
 				try

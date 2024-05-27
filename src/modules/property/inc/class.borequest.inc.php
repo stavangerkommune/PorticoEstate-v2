@@ -74,26 +74,26 @@
 				$this->use_session = true;
 			}
 
-			$start			 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query			 = phpgw::get_var('query');
-			$sort			 = phpgw::get_var('sort');
-			$order			 = phpgw::get_var('order');
-			$filter			 = phpgw::get_var('filter', 'int');
-			$property_cat_id = phpgw::get_var('property_cat_id', 'int');
-			$district_id	 = phpgw::get_var('district_id', 'int');
-			$cat_id			 = phpgw::get_var('cat_id', 'int');
-			$status_id		 = phpgw::get_var('status_id');
-			$degree_id		 = phpgw::get_var('degree_id', 'int');
-			$allrows		 = phpgw::get_var('allrows', 'bool');
-			$this->p_num	 = phpgw::get_var('p_num');
+			$start			 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query			 = Sanitizer::get_var('query');
+			$sort			 = Sanitizer::get_var('sort');
+			$order			 = Sanitizer::get_var('order');
+			$filter			 = Sanitizer::get_var('filter', 'int');
+			$property_cat_id = Sanitizer::get_var('property_cat_id', 'int');
+			$district_id	 = Sanitizer::get_var('district_id', 'int');
+			$cat_id			 = Sanitizer::get_var('cat_id', 'int');
+			$status_id		 = Sanitizer::get_var('status_id');
+			$degree_id		 = Sanitizer::get_var('degree_id', 'int');
+			$allrows		 = Sanitizer::get_var('allrows', 'bool');
+			$this->p_num	 = Sanitizer::get_var('p_num');
 
-			$start_date			 = phpgw::get_var('start_date');
-			$end_date			 = phpgw::get_var('end_date');
-			$building_part		 = phpgw::get_var('building_part');
-			$responsible_unit	 = phpgw::get_var('responsible_unit', 'int');
-			$recommended_year	 = phpgw::get_var('recommended_year', 'int');
+			$start_date			 = Sanitizer::get_var('start_date');
+			$end_date			 = Sanitizer::get_var('end_date');
+			$building_part		 = Sanitizer::get_var('building_part');
+			$responsible_unit	 = Sanitizer::get_var('responsible_unit', 'int');
+			$recommended_year	 = Sanitizer::get_var('recommended_year', 'int');
 
-			$this->condition_survey_id = phpgw::get_var('condition_survey_id', 'int', 'REQUEST', 0);
+			$this->condition_survey_id = Sanitizer::get_var('condition_survey_id', 'int', 'REQUEST', 0);
 
 			if (isset($_POST['start']) || isset($_GET['start']))
 			{
@@ -440,10 +440,10 @@
 			switch ($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('status_select'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('status_select'));
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('status_filter'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('status_filter'));
 					break;
 			}
 
@@ -506,14 +506,14 @@
 				{
 					if ($attrib['datatype'] == 'LB' || $attrib['datatype'] == 'R')
 					{
-						if ($_attrib_filter_value = phpgw::get_var($attrib['column_name'], 'int'))
+						if ($_attrib_filter_value = Sanitizer::get_var($attrib['column_name'], 'int'))
 						{
 							$attrib_filter[] = "fm_request.{$attrib['column_name']} = '{$_attrib_filter_value}'";
 						}
 					}
 					else if ($attrib['datatype'] == 'CH')
 					{
-						if ($_attrib_filter_value = phpgw::get_var($attrib['column_name'], 'int'))
+						if ($_attrib_filter_value = Sanitizer::get_var($attrib['column_name'], 'int'))
 						{
 							$attrib_filter[] = "fm_request.{$attrib['column_name']} {$GLOBALS['phpgw']->db->like} '%,{$_attrib_filter_value},%'";
 						}

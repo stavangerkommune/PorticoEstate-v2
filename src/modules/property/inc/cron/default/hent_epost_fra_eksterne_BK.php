@@ -499,7 +499,7 @@
 			$soexternal = createObject('property.soexternal_communication');
 
 			$message_arr = explode('========', $body);
-			$message	 = phpgw::clean_value($message_arr[0]);
+			$message	 = Sanitizer::clean_value($message_arr[0]);
 			if ($soexternal->add_msg($msg_id, $message, $sender))
 			{
 				$sql		 = "SELECT assignedto"
@@ -563,7 +563,7 @@
 				}
 			}
 
-			$message_details = phpgw::clean_value(implode(PHP_EOL, $message_details_arr));
+			$message_details = Sanitizer::clean_value(implode(PHP_EOL, $message_details_arr));
 
 			switch ($tatus_text)
 			{
@@ -760,7 +760,7 @@
 				if (preg_match("/Lokasjonskode:/", $line))
 				{
 					$location_arr	 = explode(':', $line);
-					$location_code	 = phpgw::clean_value(trim($location_arr[1]));
+					$location_code	 = Sanitizer::clean_value(trim($location_arr[1]));
 				}
 				if (preg_match("/Kategori:/i", $line))
 				{
@@ -774,7 +774,7 @@
 				else if (preg_match("/Avviket gjelder:/", $line))
 				{
 					$message_title_arr	 = explode(':', $line);
-					$message_title		 = phpgw::clean_value(trim($message_title_arr[1]));
+					$message_title		 = Sanitizer::clean_value(trim($message_title_arr[1]));
 				}
 				else
 				{
@@ -782,7 +782,7 @@
 				}
 			}
 
-			$message_details = phpgw::clean_value(implode(PHP_EOL, $message_details_arr));
+			$message_details = Sanitizer::clean_value(implode(PHP_EOL, $message_details_arr));
 
 			if ($ticket_id)
 			{
@@ -796,7 +796,7 @@
 				{
 					$GLOBALS['phpgw']->log->debug(array(
 						'text' => "mangler lokasjonskode for : %1",// fra: %2 ",
-						'p1' => phpgw::clean_value($subject),
+						'p1' => Sanitizer::clean_value($subject),
 //						'p2' => $value ? $value : ' ',
 						'line' => __LINE__,
 						'file' => __FILE__

@@ -147,25 +147,25 @@
 
 		public function query()
 		{
-			$search				 = phpgw::get_var('search');
-			$order				 = phpgw::get_var('order');
-			$draw				 = phpgw::get_var('draw', 'int');
-			$columns			 = phpgw::get_var('columns');
-			$export				 = phpgw::get_var('export', 'bool');
+			$search				 = Sanitizer::get_var('search');
+			$order				 = Sanitizer::get_var('order');
+			$draw				 = Sanitizer::get_var('draw', 'int');
+			$columns			 = Sanitizer::get_var('columns');
+			$export				 = Sanitizer::get_var('export', 'bool');
 			$order[0]['column']	 = 2;
 			$order[0]['dir']	 = "desc";
 
 			$params = array
 				(
-				'start'				 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'			 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'				 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'			 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'				 => $search['value'],
 				'order'				 => $columns[$order[0]['column']]['data'],
 				'sort'				 => $order[0]['dir'],
 				'filter'			 => $this->filter,
 				'cat_id'			 => $this->cat_id,
 				'part_of_town_id'	 => $this->part_of_town_id,
-				'allrows'			 => phpgw::get_var('length', 'int') == -1 || $export
+				'allrows'			 => Sanitizer::get_var('length', 'int') == -1 || $export
 			);
 
 			$investment_list = $this->bo->read($params);
@@ -188,7 +188,7 @@
 					$link_history	 = $check			 = "";
 					if ($this->admin_invoice)
 					{
-						$link_history = "<a href=\"" . $GLOBALS['phpgw']->link('/index.php', array(
+						$link_history = "<a href=\"" . phpgw::link('/index.php', array(
 								'menuaction'	 => 'property.uiinvestment.history', 'entity_id'		 => $investment['entity_id'],
 								'investment_id'	 => $investment['investment_id'], 'entity_type'	 => $this->cat_id)) . "\">" . lang('History') . "</a>";
 						if ($investment['value'] != 0)
@@ -246,8 +246,8 @@
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
-			$preserve	 = phpgw::get_var('preserve', 'bool');
-			$values		 = phpgw::get_var('values');
+			$preserve	 = Sanitizer::get_var('preserve', 'bool');
+			$values		 = Sanitizer::get_var('values');
 			$msgbox_data = "";
 
 			if ($preserve)
@@ -264,12 +264,12 @@
 				$this->allrows			 = $this->bo->allrows;
 			}
 
-			if ($values && phpgw::get_var('phpgw_return_as') == 'json')
+			if ($values && Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->update_investment($values);
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -441,10 +441,10 @@
 
 		function get_history()
 		{
-			$draw			 = phpgw::get_var('draw', 'int');
-			$entity_id		 = phpgw::get_var('entity_id', 'int');
-			$investment_id	 = phpgw::get_var('investment_id', 'int');
-			$values			 = phpgw::get_var('values');
+			$draw			 = Sanitizer::get_var('draw', 'int');
+			$entity_id		 = Sanitizer::get_var('entity_id', 'int');
+			$investment_id	 = Sanitizer::get_var('investment_id', 'int');
+			$values			 = Sanitizer::get_var('values');
 			if ($values)
 			{
 				return $this->update_investment($values);
@@ -502,9 +502,9 @@
 
 		function history()
 		{
-			$entity_type	 = phpgw::get_var('entity_type');
-			$entity_id		 = phpgw::get_var('entity_id', 'int');
-			$investment_id	 = phpgw::get_var('investment_id', 'int');
+			$entity_type	 = Sanitizer::get_var('entity_type');
+			$entity_id		 = Sanitizer::get_var('entity_id', 'int');
+			$investment_id	 = Sanitizer::get_var('investment_id', 'int');
 
 			$uicols = $this->get_history_cols();
 
@@ -631,12 +631,12 @@
 				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
-			$values			 = phpgw::get_var('values');
+			$values			 = Sanitizer::get_var('values');
 			$tabs			 = array();
 			$tabs['general'] = array('label' => lang('general'), 'link' => '#general');
 			$active_tab		 = 'general';
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('investment'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('investment'));
 
 			if (isset($values['save']) && $values['save'])
 			{
@@ -694,7 +694,7 @@
 						$values['p'][$values['extra']['p_entity_id']]['p_num']		 = $values['extra']['p_num'];
 						$values['p'][$values['extra']['p_entity_id']]['p_entity_id'] = $values['extra']['p_entity_id'];
 						$values['p'][$values['extra']['p_entity_id']]['p_cat_id']	 = $values['extra']['p_cat_id'];
-						$values['p'][$values['extra']['p_entity_id']]['p_cat_name']	 = phpgw::get_var('entity_cat_name_' . $values['extra']['p_entity_id'], 'string', 'POST');
+						$values['p'][$values['extra']['p_entity_id']]['p_cat_name']	 = Sanitizer::get_var('entity_cat_name_' . $values['extra']['p_entity_id'], 'string', 'POST');
 					}
 				}
 			}
@@ -729,8 +729,8 @@
 				'lang_date'							 => lang('Date'),
 				'lang_location'						 => lang('Location'),
 				'lang_select_location_statustext'	 => lang('select either a location or an entity'),
-				'form_action'						 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'done_action'						 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiinvestment.index',
+				'form_action'						 => phpgw::link('/index.php', $link_data),
+				'done_action'						 => phpgw::link('/index.php', array('menuaction' => 'property.uiinvestment.index',
 					'preserve'	 => 1)),
 				'lang_write_off_period'				 => lang('Write off period'),
 				'lang_new'							 => lang('New'),
@@ -767,17 +767,17 @@
 			$function_msg	 = lang('add investment');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('add' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('add' => $data));
 		}
 
 		function delete()
 		{
-			$entity_id		 = phpgw::get_var('entity_id', 'int');
-			$investment_id	 = phpgw::get_var('investment_id', 'int');
-			$index_count	 = phpgw::get_var('index_count', 'int');
-			$entity_type	 = phpgw::get_var('entity_type');
+			$entity_id		 = Sanitizer::get_var('entity_id', 'int');
+			$investment_id	 = Sanitizer::get_var('investment_id', 'int');
+			$index_count	 = Sanitizer::get_var('index_count', 'int');
+			$entity_type	 = Sanitizer::get_var('entity_type');
 
-			$confirm = phpgw::get_var('confirm', 'bool', 'POST');
+			$confirm = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 				(
@@ -788,19 +788,19 @@
 				'entity_type'	 => $entity_type
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 
 				$this->bo->delete($entity_id, $investment_id, $index_count);
 				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 				(
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uiinvestment.delete',
+				'done_action'			 => phpgw::link('/index.php', $link_data),
+				'delete_action'			 => phpgw::link('/index.php', array('menuaction'	 => 'property.uiinvestment.delete',
 					'entity_id'		 => $entity_id, 'investment_id'	 => $investment_id, 'index_count'	 => $index_count,
 					'entity_type'	 => $entity_type)),
 				'lang_confirm_msg'		 => lang('do you really want to delete this entry'),
@@ -814,6 +814,6 @@
 			$function_msg	 = lang('delete investment history element');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 	}

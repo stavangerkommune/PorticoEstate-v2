@@ -1585,7 +1585,7 @@
 				$html2text	 = createObject('phpgwapi.html2text', $body);
 				$text		 = $html2text->getText();
 				$message_arr = explode('========', $text);
-				$message	 = phpgw::clean_value($message_arr[0]);
+				$message	 = Sanitizer::clean_value($message_arr[0]);
 			}
 
 			if (!$message)
@@ -1593,7 +1593,7 @@
 				return false;
 			}
 
-			$sender = phpgw::clean_value($sender);
+			$sender = Sanitizer::clean_value($sender);
 
 			$soexternal = createObject('helpdesk.soexternal_communication');
 
@@ -1746,7 +1746,7 @@
 					$message_details .= "\n\nAvsender: {$sender}";
 				}
 
-				$message_details = phpgw::clean_value($message_details);
+				$message_details = Sanitizer::clean_value($message_details);
 			}
 
 			if (!$message_cat_id)
@@ -1760,8 +1760,8 @@
 			$id_arr				 = explode(':', $subject_arr[1]);
 			$external_ticket_id	 = trim($id_arr[1]);
 
-			$subject = phpgw::clean_value($subject);
-			$sender	 = phpgw::clean_value($sender);
+			$subject = Sanitizer::clean_value($subject);
+			$sender	 = Sanitizer::clean_value($sender);
 
 			if (!$message_details)
 			{

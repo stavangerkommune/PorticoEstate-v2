@@ -112,12 +112,12 @@
 
 		public function import_component_files()
 		{
-			$location_code	 = phpgw::get_var('location_code');
-			//$id = phpgw::get_var('location_item_id');
-			//$attrib_name_componentID = phpgw::get_var('attribute_name_component_id');
-			$preview		 = phpgw::get_var('preview');
-			$with_components = phpgw::get_var('with_components_check');
-			$doc_cat_id		 = phpgw::get_var('doc_cat_id');
+			$location_code	 = Sanitizer::get_var('location_code');
+			//$id = Sanitizer::get_var('location_item_id');
+			//$attrib_name_componentID = Sanitizer::get_var('attribute_name_component_id');
+			$preview		 = Sanitizer::get_var('preview');
+			$with_components = Sanitizer::get_var('with_components_check');
+			$doc_cat_id		 = Sanitizer::get_var('doc_cat_id');
 
 			/* if ($_FILES['file']['tmp_name'])
 			  {
@@ -213,7 +213,7 @@ HTML;
 			phpgw::import_class('property.multiuploader');
 
 			$options['upload_dir']	 = $path_upload_dir;
-			$options['script_url']	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiimport_components.handle_import_files'));
+			$options['script_url']	 = phpgw::link('/index.php', array('menuaction' => 'property.uiimport_components.handle_import_files'));
 			$upload_handler			 = new property_multiuploader($options);
 		}
 
@@ -343,7 +343,7 @@ HTML;
 
 		private function _build_columns()
 		{
-			$cod_profile = phpgw::get_var('cod_profile');
+			$cod_profile = Sanitizer::get_var('cod_profile');
 
 			$cached_file = $this->_get_components_cached_file();
 			if (!$cached_file)
@@ -420,8 +420,8 @@ HTML;
 
 		private function _prepare_profile()
 		{
-			$columns		 = (array)phpgw::get_var('columns');
-			$attrib_names	 = (array)phpgw::get_var('attrib_names');
+			$columns		 = (array)Sanitizer::get_var('columns');
+			$attrib_names	 = (array)Sanitizer::get_var('attrib_names');
 
 			$template_id			 = phpgwapi_cache::session_get('property', 'template_id');
 			$attrib_name_componentID = phpgwapi_cache::session_get('property', 'attrib_name_componentID');
@@ -470,10 +470,10 @@ HTML;
 
 		private function _prepare_values_to_preview()
 		{
-			$columns			 = (array)phpgw::get_var('columns');
-			$attrib_data_types	 = phpgw::get_var('attrib_data_types');
-			$attrib_names		 = (array)phpgw::get_var('attrib_names');
-			$attrib_precision	 = phpgw::get_var('attrib_precision');
+			$columns			 = (array)Sanitizer::get_var('columns');
+			$attrib_data_types	 = Sanitizer::get_var('attrib_data_types');
+			$attrib_names		 = (array)Sanitizer::get_var('attrib_names');
+			$attrib_precision	 = Sanitizer::get_var('attrib_precision');
 
 			$cached_file = $this->_get_components_cached_file();
 			if (!$cached_file)
@@ -635,10 +635,10 @@ HTML;
 
 		private function _save_values_import()
 		{
-			$name_profile		 = phpgw::get_var('name_profile', 'REQUEST');
-			$cod_profile		 = phpgw::get_var('cod_profile', 'REQUEST');
-			$profile_option_save = phpgw::get_var('profile_option_save', 'int', 'REQUEST');
-			$save_profile		 = phpgw::get_var('save_profile', 'int', 'REQUEST');
+			$name_profile		 = Sanitizer::get_var('name_profile', 'REQUEST');
+			$cod_profile		 = Sanitizer::get_var('cod_profile', 'REQUEST');
+			$profile_option_save = Sanitizer::get_var('profile_option_save', 'int', 'REQUEST');
+			$save_profile		 = Sanitizer::get_var('save_profile', 'int', 'REQUEST');
 
 			$template_id			 = phpgwapi_cache::session_get('property', 'template_id');
 			$attrib_name_componentID = phpgwapi_cache::session_get('property', 'attrib_name_componentID');
@@ -718,8 +718,8 @@ HTML;
 
 		public function import_components()
 		{
-			$step	 = phpgw::get_var('step', 'int', 'REQUEST');
-			$save	 = phpgw::get_var('save', 'int', 'REQUEST');
+			$step	 = Sanitizer::get_var('step', 'int', 'REQUEST');
+			$save	 = Sanitizer::get_var('save', 'int', 'REQUEST');
 
 			phpgw::import_class('phpgwapi.phpspreadsheet');
 
@@ -730,7 +730,7 @@ HTML;
 
 			if ($step == 2)
 			{
-				$sheet_id = phpgw::get_var('sheet_id', 'int', 'REQUEST');
+				$sheet_id = Sanitizer::get_var('sheet_id', 'int', 'REQUEST');
 				if (!$sheet_id)
 				{
 					$this->receipt['error'][] = array('msg' => lang('Select Sheet'));
@@ -743,8 +743,8 @@ HTML;
 
 			if ($step == 3)
 			{
-				$start_line	 = phpgw::get_var('start_line', 'int', 'REQUEST');
-				$template_id = phpgw::get_var('template_id');
+				$start_line	 = Sanitizer::get_var('start_line', 'int', 'REQUEST');
+				$template_id = Sanitizer::get_var('template_id');
 				if (!$start_line)
 				{
 					$this->receipt['error'][] = array('msg' => lang('Select start line'));
@@ -763,7 +763,7 @@ HTML;
 
 			if ($step == 4)
 			{
-				$attrib_name_componentID = phpgw::get_var('attribute_name_component_id');
+				$attrib_name_componentID = Sanitizer::get_var('attribute_name_component_id');
 				if (!$attrib_name_componentID)
 				{
 					$this->receipt['error'][] = array('msg' => lang('Choose attribute name for Component ID'));
@@ -776,8 +776,8 @@ HTML;
 
 			if ($step == 5 && $save)
 			{
-				$location_code		 = phpgw::get_var('location_code');
-				$location_item_id	 = phpgw::get_var('location_item_id');
+				$location_code		 = Sanitizer::get_var('location_code');
+				$location_item_id	 = Sanitizer::get_var('location_item_id');
 				if (!$location_code)
 				{
 					$this->receipt['error'][] = array('msg' => lang('Choose Location'));
@@ -867,7 +867,7 @@ HTML;
 				}
 			}
 
-			$multi_upload_action = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiimport_components.handle_import_files'));
+			$multi_upload_action = phpgw::link('/index.php', array('menuaction' => 'property.uiimport_components.handle_import_files'));
 
 			$access_error_upload_dir = '';
 			$import_component_files	 = new import_component_files();
@@ -906,8 +906,8 @@ HTML;
 
 		public function get_attributes_from_template()
 		{
-			$selected_attribute	 = phpgw::get_var('selected_attribute');
-			$category_template	 = phpgw::get_var('category_template');
+			$selected_attribute	 = Sanitizer::get_var('selected_attribute');
+			$category_template	 = Sanitizer::get_var('category_template');
 
 			$template_info		 = explode('_', $category_template);
 			$template_entity_id	 = $template_info[0];
@@ -930,29 +930,29 @@ HTML;
 
 		public function get_locations_for_type()
 		{
-			$type_id = phpgw::get_var('type_id', 'int');
+			$type_id = Sanitizer::get_var('type_id', 'int');
 
 			if (!$type_id)
 			{
 				$type_id = 1;
 			}
 
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 			$params = array(
-				'start'				 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'			 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'				 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'			 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'				 => $search['value'],
 				'order'				 => $columns[$order[0]['column']]['data'],
 				'sort'				 => $order[0]['dir'],
-				'cat_id'			 => phpgw::get_var('cat_id', 'int', 'REQUEST', 0),
+				'cat_id'			 => Sanitizer::get_var('cat_id', 'int', 'REQUEST', 0),
 				'type_id'			 => $type_id,
-				'district_id'		 => phpgw::get_var('district_id', 'int', 'REQUEST', 0),
-				'part_of_town_id'	 => phpgw::get_var('part_of_town_id', 'int', 'REQUEST', 0),
-				'allrows'			 => phpgw::get_var('length', 'int') == -1
+				'district_id'		 => Sanitizer::get_var('district_id', 'int', 'REQUEST', 0),
+				'part_of_town_id'	 => Sanitizer::get_var('part_of_town_id', 'int', 'REQUEST', 0),
+				'allrows'			 => Sanitizer::get_var('length', 'int') == -1
 			);
 
 			$solocation	 = CreateObject('property.solocation');
@@ -987,7 +987,7 @@ HTML;
 
 		public function get_categories_for_type()
 		{
-			$type_id = phpgw::get_var('type_id', 'int');
+			$type_id = Sanitizer::get_var('type_id', 'int');
 
 			if (!$type_id)
 			{
@@ -1008,7 +1008,7 @@ HTML;
 
 		public function get_profile()
 		{
-			$cod_profile = phpgw::get_var('cod_profile', 'REQUEST');
+			$cod_profile = Sanitizer::get_var('cod_profile', 'REQUEST');
 
 			$profiles	 = $this->config_repository['profiles'];
 			$content	 = $profiles[$cod_profile]['content'];
@@ -1027,7 +1027,7 @@ HTML;
 
 		public function get_part_of_town()
 		{
-			$district_id = phpgw::get_var('district_id', 'int');
+			$district_id = Sanitizer::get_var('district_id', 'int');
 			$values		 = $this->bocommon->select_part_of_town('filter', '', $district_id);
 			array_unshift($values, array('id' => '', 'name' => lang('no part of town')));
 

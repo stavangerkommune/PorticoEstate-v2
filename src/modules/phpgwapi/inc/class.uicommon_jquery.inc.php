@@ -282,7 +282,7 @@
 
 		public function add_js_event( $event, $js )
 		{
-			$GLOBALS['phpgw']->js->add_event($event, $js);
+			phpgwapi_js::getInstance()->add_event($event, $js);
 		}
 
 		public function add_js_load_event( $js )

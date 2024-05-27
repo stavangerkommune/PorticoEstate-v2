@@ -88,7 +88,7 @@
 
 			if (!$importfile)
 			{
-				$importfile = phpgw::get_var('importfile');
+				$importfile = Sanitizer::get_var('importfile');
 			}
 
 			if ($importfile)
@@ -100,7 +100,7 @@
 					rename($old, $importfile);
 				}
 
-				if (phpgw::get_var('cancel') && is_file($importfile))
+				if (Sanitizer::get_var('cancel') && is_file($importfile))
 				{
 					unlink($importfile);
 				}
@@ -159,7 +159,7 @@
 
 		function pre_import( $importfile = '', $valueset = '', $import_action = '', $header_info = '' )
 		{
-			$GLOBALS['phpgw']->xslttpl->add_file(array('import'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('import'));
 
 			$list			 = $this->list_content($valueset, $this->uicols2);
 			$content		 = $list['content'];
@@ -177,6 +177,6 @@
 			);
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = $header_info . ': ' . lang('import');
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('import' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('import' => $data));
 		}
 	}

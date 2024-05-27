@@ -545,7 +545,7 @@ console.log(ids);
 		});
 	}
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $code);
+			phpgwapi_js::getInstance()->add_code('', $code);
 
 			$datatable_def[] = array
 				(

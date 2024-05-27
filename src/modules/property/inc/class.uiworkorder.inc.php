@@ -154,7 +154,7 @@
 					'perm'			 => 1,
 					'acl_location'	 => $this->acl_location));
 			}
-			ExecMethod('property.bofiles.get_file', phpgw::get_var('file_id', 'int'));
+			ExecMethod('property.bofiles.get_file', Sanitizer::get_var('file_id', 'int'));
 		}
 
 		function view_image()
@@ -168,8 +168,8 @@
 				$GLOBALS['phpgw']->common->phpgw_exit();
 			}
 
-			$thumb	 = phpgw::get_var('thumb', 'bool');
-			$img_id	 = phpgw::get_var('img_id', 'int');
+			$thumb	 = Sanitizer::get_var('thumb', 'bool');
+			$img_id	 = Sanitizer::get_var('img_id', 'int');
 
 			$bofiles = CreateObject('property.bofiles');
 
@@ -180,7 +180,7 @@
 			}
 			else
 			{
-				$file = urldecode(phpgw::get_var('file'));
+				$file = urldecode(Sanitizer::get_var('file'));
 			}
 
 			$source		 = "{$bofiles->rootdir}{$file}";
@@ -219,8 +219,8 @@
 
 		function get_files()
 		{
-			$id = phpgw::get_var('id', 'int');
-			$filter_tags = phpgw::get_var('tags');
+			$id = Sanitizer::get_var('id', 'int');
+			$filter_tags = Sanitizer::get_var('tags');
 
 			if (!$this->acl_read)
 			{
@@ -233,7 +233,7 @@
 			);
 
 
-			$link_view_file = $GLOBALS['phpgw']->link('/index.php', $link_file_data);
+			$link_view_file = phpgw::link('/index.php', $link_file_data);
 
 			$values = $this->bo->get_files($id);
 
@@ -297,7 +297,7 @@
 
 			array_multisort($sort_array, SORT_ASC, $content_files);
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 
 				$total_records = count($content_files);
@@ -305,7 +305,7 @@
 				return array
 					(
 					'data'				 => $content_files,
-					'draw'				 => phpgw::get_var('draw', 'int'),
+					'draw'				 => Sanitizer::get_var('draw', 'int'),
 					'recordsTotal'		 => $total_records,
 					'recordsFiltered'	 => $total_records
 				);
@@ -320,11 +320,11 @@
 				phpgw::no_access();
 			}
 
-			$location_id = phpgw::get_var('location_id', 'int');
-			$location_item_id = phpgw::get_var('location_item_id', 'int');
-			$ids = phpgw::get_var('ids', 'int');
-			$action= phpgw::get_var('action', 'string');
-			$tags= phpgw::get_var('tags', 'string');
+			$location_id = Sanitizer::get_var('location_id', 'int');
+			$location_item_id = Sanitizer::get_var('location_item_id', 'int');
+			$ids = Sanitizer::get_var('ids', 'int');
+			$action= Sanitizer::get_var('action', 'string');
+			$tags= Sanitizer::get_var('tags', 'string');
 
 			$bofiles = CreateObject('property.bofiles');
 
@@ -350,7 +350,7 @@
 
 		function get_files_attachments()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
 			if (!$this->acl_read)
 			{
@@ -369,7 +369,7 @@
 			$file_attachments	 = isset($values['file_attachments']) && is_array($values['file_attachments']) ? $values['file_attachments'] : array();
 
 			$content_attachments = array();
-			$link_view_file = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiworkorder.view_file'));
+			$link_view_file = phpgw::link('/index.php', array('menuaction' => 'property.uiworkorder.view_file'));
 			$lang_view_file		 = lang('click to view file');
 			$lang_select_file	 = lang('Check to attach file');
 			$lang_workorder		 = lang('workorder');
@@ -404,7 +404,7 @@
 			}
 			unset($_entry);
 
-			$link_view_file			 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiproject.view_file'));
+			$link_view_file			 = phpgw::link('/index.php', array('menuaction' => 'property.uiproject.view_file'));
 			$boproject		 = CreateObject('property.boproject');
 			$files			 = $boproject->get_files($values['project_id']);
 			$lang_project	 = lang('project');
@@ -438,7 +438,7 @@
 
 			array_multisort($sort_array, SORT_ASC, $content_attachments);
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 
 				$total_records = count($content_attachments);
@@ -446,7 +446,7 @@
 				return array
 					(
 					'data'				 => $content_attachments,
-					'draw'				 => phpgw::get_var('draw', 'int'),
+					'draw'				 => Sanitizer::get_var('draw', 'int'),
 					'recordsTotal'		 => $total_records,
 					'recordsFiltered'	 => $total_records
 				);
@@ -456,7 +456,7 @@
 
 		public function handle_multi_upload_file()
 		{
-			$id = phpgw::get_var('id', 'int', 'GET');
+			$id = Sanitizer::get_var('id', 'int', 'GET');
 
 			phpgw::import_class('property.multiuploader');
 
@@ -494,12 +494,12 @@
 		public function build_multi_upload_file()
 		{
 			phpgwapi_jquery::init_multi_upload_file();
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
 			$GLOBALS['phpgw_info']['flags']['noframework']	 = true;
 			$GLOBALS['phpgw_info']['flags']['nofooter']		 = true;
 
-			$multi_upload_action = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiworkorder.handle_multi_upload_file',
+			$multi_upload_action = phpgw::link('/index.php', array('menuaction' => 'property.uiworkorder.handle_multi_upload_file',
 				'id'		 => $id));
 
 			$data = array
@@ -507,20 +507,20 @@
 				'multi_upload_action' => $multi_upload_action
 			);
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('files', 'multi_upload_file'));
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('multi_upload' => $data));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('files', 'multi_upload_file'));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('multi_upload' => $data));
 		}
 
 		function columns()
 		{
 			$receipt = array();
-			$GLOBALS['phpgw']->xslttpl->add_file(array(
+			phpgwapi_xslttemplates::getInstance()->add_file(array(
 				'columns'));
 
 			$GLOBALS['phpgw_info']['flags']['noframework']	 = true;
 			$GLOBALS['phpgw_info']['flags']['nofooter']		 = true;
 
-			$values = phpgw::get_var('values');
+			$values = Sanitizer::get_var('values');
 
 			$GLOBALS['phpgw']->preferences->set_account_id($this->account, true);
 
@@ -547,14 +547,14 @@
 				'msgbox_data'	 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
 				'column_list'	 => $this->bo->column_list($selected, $this->type_id, $allrows		 = true),
 				'function_msg'	 => $function_msg,
-				'form_action'	 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'form_action'	 => phpgw::link('/index.php', $link_data),
 				'lang_columns'	 => lang('columns'),
 				'lang_none'		 => lang('None'),
 				'lang_save'		 => lang('save'),
 			);
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array(
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array(
 				'columns' => $data));
 		}
 
@@ -709,20 +709,20 @@
 				$end_date	 = $GLOBALS['phpgw']->common->show_date(mktime(0, 0, 0, date("m"), date("d"), date("Y")), $dateformat);
 			}
 
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
-			$export	 = phpgw::get_var('export', 'bool');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
+			$export	 = Sanitizer::get_var('export', 'bool');
 
 			$params = array
 				(
-				'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'		 => $search['value'],
 				'order'		 => $columns[$order[0]['column']]['data'],
 				'sort'		 => $order[0]['dir'],
-				'allrows'	 => phpgw::get_var('length', 'int') == -1 || $export,
+				'allrows'	 => Sanitizer::get_var('length', 'int') == -1 || $export,
 				'start_date'	 => $start_date ? urldecode($start_date) : '',
 				'end_date'		 => $end_date ? urldecode($end_date) : '',
 			);
@@ -750,15 +750,15 @@
 					'acl_location'	 => $this->acl_location));
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
 
-			$lookup			 = phpgw::get_var('lookup', 'bool');
-			$make_relation	 = phpgw::get_var('make_relation', 'bool');
-			$relation_id	 = phpgw::get_var('relation_id', 'int');
-			$relation_type	 = phpgw::get_var('relation_type');
+			$lookup			 = Sanitizer::get_var('lookup', 'bool');
+			$make_relation	 = Sanitizer::get_var('make_relation', 'bool');
+			$relation_id	 = Sanitizer::get_var('relation_id', 'int');
+			$relation_type	 = Sanitizer::get_var('relation_type');
 			if ($make_relation)
 			{
 				$lookup = true;
@@ -785,7 +785,7 @@
 			$start_date	 = $this->start_date ? urldecode($this->start_date) : null;
 			$end_date	 = $this->end_date ? urldecode($this->end_date) : null;
 
-			$query = phpgw::get_var('query');
+			$query = Sanitizer::get_var('query');
 
 			phpgwapi_jquery::load_widget('numberformat');
 			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
@@ -949,7 +949,7 @@
 						(
 						'my_name'	 => 'view',
 						'text'		 => lang('view'),
-						'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+						'action'	 => phpgw::link('/index.php', array
 							(
 							'menuaction' => 'property.uiworkorder.view'
 						)),
@@ -959,7 +959,7 @@
 						(
 						'my_name'	 => 'view',
 						'text'		 => lang('open view in new window'),
-						'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+						'action'	 => phpgw::link('/index.php', array
 							(
 							'menuaction' => 'property.uiworkorder.view'
 						)),
@@ -976,7 +976,7 @@
 							(
 							'my_name'	 => 'edit',
 							'text'		 => lang('open JasperReport %1 in new window', $report['title']),
-							'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+							'action'	 => phpgw::link('/index.php', array
 								(
 								'menuaction' => 'property.uijasper.view',
 								'jasper_id'	 => $report['id']
@@ -993,7 +993,7 @@
 						(
 						'my_name'	 => 'edit',
 						'text'		 => lang('edit'),
-						'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+						'action'	 => phpgw::link('/index.php', array
 							(
 							'menuaction' => 'property.uiworkorder.edit'
 						)),
@@ -1003,7 +1003,7 @@
 						(
 						'my_name'	 => 'edit',
 						'text'		 => lang('open edit in new window'),
-						'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+						'action'	 => phpgw::link('/index.php', array
 							(
 							'menuaction' => 'property.uiworkorder.edit'
 						)),
@@ -1015,7 +1015,7 @@
 						(
 						'my_name'	 => 'calculate',
 						'text'		 => lang('calculate'),
-						'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+						'action'	 => phpgw::link('/index.php', array
 							(
 							'menuaction' => 'property.uiwo_hour.index'
 						)),
@@ -1029,7 +1029,7 @@
 						'my_name'		 => 'delete',
 						'text'			 => lang('delete'),
 						'confirm_msg'	 => lang('do you really want to delete this entry'),
-						'action'		 => $GLOBALS['phpgw']->link('/index.php', array
+						'action'		 => phpgw::link('/index.php', array
 							(
 							'menuaction' => 'property.uiworkorder.delete'
 						)),
@@ -1041,11 +1041,11 @@
 /*
 			if ($lookup && !$make_relation)
 			{
-				$from = phpgw::get_var('from');
+				$from = Sanitizer::get_var('from');
 
 				$oArg = "{menuaction: 'property.ui{$from}.edit',"
-					. "origin:'" . phpgw::get_var('origin') . "',"
-					. "origin_id:'" . phpgw::get_var('origin_id') . "',"
+					. "origin:'" . Sanitizer::get_var('origin') . "',"
+					. "origin_id:'" . Sanitizer::get_var('origin_id') . "',"
 					. "order_id: aData['workorder_id']}";
 
 				$data['left_click_action'] = "window.open(phpGWLink('index.php', {$oArg}),'_self');";
@@ -1065,7 +1065,7 @@
 				$data['datatable']['actions'][] = array(
 					'my_name'	 => 'update_ticket',
 					'text'		 => $lang_update_relation,
-					'action'	 => $GLOBALS['phpgw']->link('/index.php', array(
+					'action'	 => phpgw::link('/index.php', array(
 						'menuaction'	 => $update_menuaction,
 						'id'			 => $relation_id,
 						'relation_type'	 => 'workorder',
@@ -1083,25 +1083,25 @@
 
 		private function _populate()
 		{
-			$id						 = phpgw::get_var('id');
+			$id						 = Sanitizer::get_var('id');
 			$boproject				 = CreateObject('property.boproject');
 			$config					 = CreateObject('phpgwapi.config', 'property');
 			$config->read();
-			$project_id				 = phpgw::get_var('project_id', 'int');
-			$values					 = phpgw::get_var('values');
-			$values['vendor_id']	 = phpgw::get_var('vendor_id', 'int');
-			$values['vendor_name']	 = phpgw::get_var('vendor_name', 'string');
-			$values['event_id']		 = phpgw::get_var('event_id', 'int');
-			$origin					 = phpgw::get_var('origin');
-			$origin_id				 = phpgw::get_var('origin_id', 'int');
+			$project_id				 = Sanitizer::get_var('project_id', 'int');
+			$values					 = Sanitizer::get_var('values');
+			$values['vendor_id']	 = Sanitizer::get_var('vendor_id', 'int');
+			$values['vendor_name']	 = Sanitizer::get_var('vendor_name', 'string');
+			$values['event_id']		 = Sanitizer::get_var('event_id', 'int');
+			$origin					 = Sanitizer::get_var('origin');
+			$origin_id				 = Sanitizer::get_var('origin_id', 'int');
 
 			if (!$id)
 			{
-				$p_entity_id								 = phpgw::get_var('p_entity_id', 'int');
-				$p_cat_id									 = phpgw::get_var('p_cat_id', 'int');
+				$p_entity_id								 = Sanitizer::get_var('p_entity_id', 'int');
+				$p_cat_id									 = Sanitizer::get_var('p_cat_id', 'int');
 				$values['p'][$p_entity_id]['p_entity_id']	 = $p_entity_id;
 				$values['p'][$p_entity_id]['p_cat_id']		 = $p_cat_id;
-				$values['p'][$p_entity_id]['p_num']			 = phpgw::get_var('p_num');
+				$values['p'][$p_entity_id]['p_num']			 = Sanitizer::get_var('p_num');
 			}
 
 
@@ -1352,7 +1352,7 @@
 				return $this->edit();
 			}
 
-			$id			 = phpgw::get_var('id', 'int');
+			$id			 = Sanitizer::get_var('id', 'int');
 			$config		 = CreateObject('phpgwapi.config', 'property');
 			$location_id = $GLOBALS['phpgw']->locations->get_id('property', $this->acl_location);
 			$config->read();
@@ -1434,7 +1434,7 @@
 						case 'project':
 							$approval_menuaction = 'property.uiproject.edit';
 							$subject			 = lang('Approval') . ": {$values['project_id']}";
-							$message			 = '<a href ="' . $GLOBALS['phpgw']->link('/index.php', array(
+							$message			 = '<a href ="' . phpgw::link('/index.php', array(
 									'menuaction' => $approval_menuaction,
 									'id'		 => $values['project_id']), false, true) . '">' . lang('project %1 needs approval', $values['project_id']) . '</a>';
 
@@ -1572,7 +1572,7 @@
 						default:
 							$approval_menuaction = 'property.uiworkorder.edit';
 							$subject			 = lang('Approval') . ": {$id}";
-							$message			 = '<a href ="' . $GLOBALS['phpgw']->link('/index.php', array(
+							$message			 = '<a href ="' . phpgw::link('/index.php', array(
 									'menuaction' => $approval_menuaction,
 									'id'		 => $id), false, true) . '">' . lang('Workorder %1 needs approval', $id) . '</a>';
 							$_orders			 = array($id);
@@ -1761,7 +1761,7 @@
 					$to			 = implode(';', $toarray);
 					$from_name	 = $GLOBALS['phpgw_info']['user']['fullname'];
 					$from_email	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['email'];
-					$body		 = '<a href ="' . $GLOBALS['phpgw']->link('/index.php', array(
+					$body		 = '<a href ="' . phpgw::link('/index.php', array(
 							'menuaction' => 'property.uiworkorder.edit',
 							'id'		 => $id), false, true) . '">' . lang('workorder %1 has been edited', $id) . '</a>' . "\n";
 					foreach ($receipt['notice_owner'] as $notice)
@@ -1799,7 +1799,7 @@
 
 				}
 
-				if (phpgw::get_var('send_workorder', 'bool') && !$this->receipt['error'])
+				if (Sanitizer::get_var('send_workorder', 'bool') && !$this->receipt['error'])
 				{
 					$GLOBALS['phpgw']->redirect_link('/index.php', array(
 						'menuaction'	 => 'property.uiwo_hour.view',
@@ -1809,7 +1809,7 @@
 					);
 				}
 
-				if (phpgw::get_var('calculate_workorder', 'bool') && !$this->receipt['error'])
+				if (Sanitizer::get_var('calculate_workorder', 'bool') && !$this->receipt['error'])
 				{
 					$GLOBALS['phpgw']->redirect_link('/index.php', array(
 						'menuaction'	 => 'property.uiwo_hour.index',
@@ -1818,7 +1818,7 @@
 					);
 				}
 
-				if (phpgw::get_var('phpgw_return_as') == 'json')
+				if (Sanitizer::get_var('phpgw_return_as') == 'json')
 				{
 					if (!$this->receipt['error'])
 					{
@@ -1842,7 +1842,7 @@
 				if ($id)
 				{
 					self::message_set($this->receipt);
-					$active_tab = phpgw::get_var('active_tab');
+					$active_tab = Sanitizer::get_var('active_tab');
 					self::redirect(array(
 						'menuaction' => 'property.uiworkorder.edit',
 						'id'		 => $id,
@@ -1857,16 +1857,16 @@
 		function edit( $values = array(), $mode = 'edit' )
 		{
 
-			if ($GLOBALS['phpgw_info']['flags']['nonavbar'] = phpgw::get_var('nonavbar', 'bool'))
+			if ($GLOBALS['phpgw_info']['flags']['nonavbar'] = Sanitizer::get_var('nonavbar', 'bool'))
 			{
 				$GLOBALS['phpgw_info']['flags']['noheader_xsl']	 = true;
 				$GLOBALS['phpgw_info']['flags']['nofooter']		 = true;
 			}
 
-			$_lean = phpgw::get_var('lean', 'bool');
+			$_lean = Sanitizer::get_var('lean', 'bool');
 
 			// in case of bigint
-			$id = !empty($values['id']) ? $values['id'] : phpgw::get_var('id');
+			$id = !empty($values['id']) ? $values['id'] : Sanitizer::get_var('id');
 
 			if(!$id)
 			{
@@ -1909,9 +1909,9 @@
 			$config		 = CreateObject('phpgwapi.config', 'property');
 			$location_id = $GLOBALS['phpgw']->locations->get_id('property', $this->acl_location);
 			$config->read();
-			$project_id	 = phpgw::get_var('project_id', 'int');
-			$origin		 = phpgw::get_var('origin');
-			$origin_id	 = phpgw::get_var('origin_id', 'int');
+			$project_id	 = Sanitizer::get_var('project_id', 'int');
+			$origin		 = Sanitizer::get_var('origin');
+			$origin_id	 = Sanitizer::get_var('origin_id', 'int');
 
 			if ($origin == '.ticket' && $origin_id && !$values['descr'])
 			{
@@ -2497,7 +2497,7 @@
 		});
 	}
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $code);
+			phpgwapi_js::getInstance()->add_code('', $code);
 
 //-- file tagging
 
@@ -2563,13 +2563,13 @@ JS;
 					if ($entry['voucher_id'] > 0)
 					{
 						$link_data_invoice2['voucher_id']	 = $entry['voucher_id'];
-						$url								 = $GLOBALS['phpgw']->link('/index.php', $link_data_invoice2);
+						$url								 = phpgw::link('/index.php', $link_data_invoice2);
 					}
 					else
 					{
 						$link_data_invoice1['voucher_id']	 = abs($entry['voucher_id']);
 						$link_data_invoice1['paid']			 = 'true';
-						$url								 = $GLOBALS['phpgw']->link('/index.php', $link_data_invoice1);
+						$url								 = phpgw::link('/index.php', $link_data_invoice1);
 					}
 				}
 				else
@@ -2581,13 +2581,13 @@ JS;
 //					{
 //						$link_data_invoice1['voucher_id'] = $entry['voucher_id'];
 //						$link_data_invoice1['query'] = $entry['voucher_id'];
-//						$url = $GLOBALS['phpgw']->link('/index.php', $link_data_invoice1);
+//						$url = phpgw::link('/index.php', $link_data_invoice1);
 //					}
 //					else
 //					{
 //						$link_data_invoice1['voucher_id'] = abs($entry['voucher_id']);
 //						$link_data_invoice1['paid'] = 'true';
-//						$url = $GLOBALS['phpgw']->link('/index.php', $link_data_invoice1);
+//						$url = phpgw::link('/index.php', $link_data_invoice1);
 //					}
 				}
 
@@ -3057,13 +3057,13 @@ JS;
 					'project_id' => $project['project_id']));
 				if ($claim)
 				{
-					$link_claim = $GLOBALS['phpgw']->link('/index.php', array(
+					$link_claim = phpgw::link('/index.php', array(
 						'menuaction' => 'property.uitenant_claim.edit',
 						'claim_id'	 => $claim[0]['claim_id']));
 				}
 				else
 				{
-					$link_claim = $GLOBALS['phpgw']->link('/index.php', array(
+					$link_claim = phpgw::link('/index.php', array(
 						'menuaction' => 'property.uitenant_claim.check',
 						'project_id' => $project['project_id']));
 				}
@@ -3151,7 +3151,7 @@ JS;
 
 			$msgbox_data = $this->bocommon->msgbox_data($this->receipt);
 
-			$active_tab = phpgw::get_var('active_tab', 'string', 'REQUEST', 'general');
+			$active_tab = Sanitizer::get_var('active_tab', 'string', 'REQUEST', 'general');
 
 			$collect_building_part	 = false;
 			$building_part_list		 = array();
@@ -3261,7 +3261,7 @@ JS;
 			$image_list		 = array();
 
 			$content_attachments = array();
-			$link_view_file		 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiworkorder.view_file'));
+			$link_view_file		 = phpgw::link('/index.php', array('menuaction' => 'property.uiworkorder.view_file'));
 			$lang_view_file		 = lang('click to view file');
 			$lang_select_file	 = lang('Check to attach file');
 			$lang_workorder		 = lang('workorder');
@@ -3306,7 +3306,7 @@ JS;
 			}
 			unset($_entry);
 
-			$link_view_file			 = $GLOBALS['phpgw']->link('/index.php', array(	'menuaction' => 'property.uiproject.view_file'));
+			$link_view_file			 = phpgw::link('/index.php', array(	'menuaction' => 'property.uiproject.view_file'));
 
 			$files			 = $boproject->get_files($project['project_id']);
 			$lang_project	 = lang('project');
@@ -3402,7 +3402,7 @@ JS;
 				'lang_calculate_statustext'				 => lang('Calculate workorder by adding items from vendors prizebook or adding general hours'),
 				'lang_send'								 => $this->bo->order_sent_adress ? lang('ReSend Workorder') : lang('Send Workorder'),
 				'lang_send_statustext'					 => lang('send this workorder to vendor'),
-				'project_link'							 => $GLOBALS['phpgw']->link('/index.php', array(
+				'project_link'							 => phpgw::link('/index.php', array(
 					'menuaction' => 'property.uiproject.edit')),
 				'b_group_data'							 => $b_group_data,
 				'b_account_data'						 => $b_account_data,
@@ -3447,8 +3447,8 @@ JS;
 				'vendor_data'							 => $vendor_data,
 				'location_data'							 => $location_data,
 				'location_template_type'				 => $location_template_type,
-				'form_action'							 => $mode == 'edit' ? $GLOBALS['phpgw']->link('/index.php', $link_data) : $GLOBALS['phpgw']->link('/home.php'), //avoid accidents
-				'done_action'							 => $GLOBALS['phpgw']->link('/index.php', array(
+				'form_action'							 => $mode == 'edit' ? phpgw::link('/index.php', $link_data) : phpgw::link('/home.php'), //avoid accidents
+				'done_action'							 => phpgw::link('/index.php', array(
 					'menuaction' => 'property.uiworkorder.index')),
 				'lang_year'								 => lang('Year'),
 				'lang_save'								 => lang('save'),
@@ -3513,7 +3513,7 @@ JS;
 				'lang_ask_approval'						 => lang('Ask for approval'),
 				'lang_ask_approval_statustext'			 => lang('Check this to send a mail to your supervisor for approval'),
 				'currency'								 => $GLOBALS['phpgw_info']['user']['preferences']['common']['currency'],
-				'link_view_file'						 => $GLOBALS['phpgw']->link('/index.php', $link_file_data),
+				'link_view_file'						 => phpgw::link('/index.php', $link_file_data),
 				'link_to_files'							 => (isset($config->config_data['files_url']) ? $config->config_data['files_url'] : ''),
 				'files'									 => isset($values['files']) ? $values['files'] : '',
 				'lang_files'							 => lang('files'),
@@ -3526,7 +3526,7 @@ JS;
 				'value_billable_hours'					 => $values['billable_hours'],
 				'base_java_url'							 => "{menuaction:'property.bocommon.get_vendor_email',phpgw_return_as:'json'}",
 				'location_item_id'						 => $id,
-				'edit_action'							 => $GLOBALS['phpgw']->link('/index.php', array(
+				'edit_action'							 => phpgw::link('/index.php', array(
 					'menuaction' => 'property.uiworkorder.edit',
 					'id'		 => $id)),
 				'lang_edit_statustext'					 => lang('Edit this entry '),
@@ -3554,7 +3554,7 @@ JS;
 				'value_order_received_amount'			 => (int)$values['order_received_amount'],
 				'value_delivery_address'				 => $delivery_address,
 				'multiple_uploader'						 => true,
-				'multi_upload_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiworkorder.handle_multi_upload_file','id' => $id)),
+				'multi_upload_action' => phpgw::link('/index.php', array('menuaction' => 'property.uiworkorder.handle_multi_upload_file','id' => $id)),
 				'image_list'							 => $image_list,
 				'tag_list'							 => array('options' => $bofiles->get_all_tags())
 			);
@@ -3595,16 +3595,16 @@ JS;
 				'menuaction' => 'property.uiworkorder.index'
 			);
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array(
+			phpgwapi_xslttemplates::getInstance()->add_file(array(
 				'workorder',
 				'search_field'));
 
 			$data = array
 				(
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'add_action'			 => $GLOBALS['phpgw']->link('/index.php', array(
+				'done_action'			 => phpgw::link('/index.php', $link_data),
+				'add_action'			 => phpgw::link('/index.php', array(
 					'menuaction' => 'property.uiproject.edit')),
-				'search_action'			 => $GLOBALS['phpgw']->link('/index.php', array(
+				'search_action'			 => phpgw::link('/index.php', array(
 					'menuaction' => 'property.uiproject.index',
 					'lookup'	 => true,
 					'from'		 => 'workorder')),
@@ -3620,16 +3620,16 @@ JS;
 			$function_msg	 = lang('Add workorder');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array(
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array(
 				'add' => $data));
 			//	$GLOBALS['phpgw']->xslttpl->pp();
 		}
 
 		function delete()
 		{
-			$id = phpgw::get_var('id');
+			$id = Sanitizer::get_var('id');
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$this->bo->delete($id);
 				return "id " . $id . " " . lang("has been deleted");
@@ -3642,27 +3642,27 @@ JS;
 					'perm'			 => 8,
 					'acl_location'	 => $this->acl_location));
 			}
-			//$id = phpgw::get_var('id', 'int');
-			$confirm = phpgw::get_var('confirm', 'bool', 'POST');
+			//$id = Sanitizer::get_var('id', 'int');
+			$confirm = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 				(
 				'menuaction' => 'property.uiworkorder.index'
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete($id);
 				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array(
+			phpgwapi_xslttemplates::getInstance()->add_file(array(
 				'app_delete'));
 
 			$data = array
 				(
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action'			 => $GLOBALS['phpgw']->link('/index.php', array(
+				'done_action'			 => phpgw::link('/index.php', $link_data),
+				'delete_action'			 => phpgw::link('/index.php', array(
 					'menuaction' => 'property.uiworkorder.delete',
 					'id'		 => $id)),
 				'lang_confirm_msg'		 => lang('do you really want to delete this entry'),
@@ -3676,7 +3676,7 @@ JS;
 			$function_msg	 = lang('delete workorder');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array(
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array(
 				'delete' => $data));
 			//	$GLOBALS['phpgw']->xslttpl->pp();
 		}
@@ -3699,23 +3699,23 @@ JS;
 				phpgw::no_access();
 			}
 
-			$order_id = phpgw::get_var('order_id');
+			$order_id = Sanitizer::get_var('order_id');
 
 			$receipt = array();
 
 			$bolocation	 = CreateObject('property.bolocation');
 			$boinvoice	 = CreateObject('property.boinvoice');
 
-			$referer = parse_url(phpgw::get_var('HTTP_REFERER', 'url', 'SERVER'));
+			$referer = parse_url(Sanitizer::get_var('HTTP_REFERER', 'url', 'SERVER'));
 			parse_str($referer['query'], $output); // produce $menuaction
-			if (phpgw::get_var('cancel', 'bool'))
+			if (Sanitizer::get_var('cancel', 'bool'))
 			{
 				$redirect = true;
 			}
 
-			if ($add_invoice = phpgw::get_var('add', 'bool'))
+			if ($add_invoice = Sanitizer::get_var('add', 'bool'))
 			{
-				$values = phpgw::get_var('values');
+				$values = Sanitizer::get_var('values');
 
 				if (isset($GLOBALS['phpgw_info']['user']['preferences']['common']['currency']))
 				{
@@ -3723,10 +3723,10 @@ JS;
 				}
 				$values['amount'] = str_replace(array(' ', ','), array('', '.'), $values['amount']);
 
-				$values['b_account_id']			 = phpgw::get_var('b_account_id');
-				$values['external_project_id']	 = phpgw::get_var('external_project_id');
-				$values['dimb']					 = phpgw::get_var('ecodimb');
-				$values['vendor_id']			 = phpgw::get_var('vendor_id');
+				$values['b_account_id']			 = Sanitizer::get_var('b_account_id');
+				$values['external_project_id']	 = Sanitizer::get_var('external_project_id');
+				$values['dimb']					 = Sanitizer::get_var('ecodimb');
+				$values['vendor_id']			 = Sanitizer::get_var('vendor_id');
 			}
 
 
@@ -3985,10 +3985,10 @@ JS;
 			$data		 = array
 			(
 				'msgbox_data'				 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'				 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'cancel_action'				 => $GLOBALS['phpgw']->link('/index.php', array(
+				'form_action'				 => phpgw::link('/index.php', $link_data),
+				'cancel_action'				 => phpgw::link('/index.php', array(
 					'menuaction' => 'property.uiinvoice.index')),
-				'action_url'				 => $GLOBALS['phpgw']->link('/index.php', array(
+				'action_url'				 => phpgw::link('/index.php', array(
 					'menuaction' => 'property' . '.uiinvoice.add')),
 				'value_invoice_date'		 => isset($values['invoice_date']) ? $values['invoice_date'] : '',
 				'value_payment_date'		 => isset($values['payment_date']) ? $values['payment_date'] : '',
@@ -4028,7 +4028,7 @@ JS;
 				'b_account_data'			 => $b_account_data,
 				'b_account_list'			 => array('options' => $b_account_list),
 				'b_account_as_listbox'		 => $GLOBALS['phpgw_info']['user']['preferences']['property']['b_account_as_listbox'],
-				'redirect'					 => !empty($redirect) ? $GLOBALS['phpgw']->link('/index.php', array(
+				'redirect'					 => !empty($redirect) ? phpgw::link('/index.php', array(
 					'menuaction' => 'property.uiworkorder.edit',
 					'id'		 => $order_id,
 					'active_tab' => 'budget')) : null,
@@ -4036,9 +4036,9 @@ JS;
 
 			self::add_javascript('property', 'base', 'workorder.add_invoice.js');
 			phpgwapi_jquery::formvalidator_generate(array('date', 'security', 'file'));
-			$GLOBALS['phpgw']->xslttpl->add_file(array(	'workorder'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array(	'workorder'));
 			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('add_invoice' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('add_invoice' => $data));
 		}
 
 		protected function check_storage_dir( $files_path )
@@ -4072,26 +4072,26 @@ JS;
 					'acl_location'	 => $this->acl_location));
 			}
 
-			$confirm = phpgw::get_var('confirm', 'bool', 'POST');
+			$confirm = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 				(
 				'menuaction' => 'property.uiworkorder.index'
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->recalculate();
 				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array(
+			phpgwapi_xslttemplates::getInstance()->add_file(array(
 				'app_delete'));
 
 			$data = array
 				(
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action'			 => $GLOBALS['phpgw']->link('/index.php', array(
+				'done_action'			 => phpgw::link('/index.php', $link_data),
+				'delete_action'			 => phpgw::link('/index.php', array(
 					'menuaction' => 'property.uiworkorder.recalculate')),
 				'lang_confirm_msg'		 => lang('do you really want to recalculate all actual cost for all workorders'),
 				'lang_yes'				 => lang('yes'),
@@ -4104,7 +4104,7 @@ JS;
 			$function_msg	 = lang('delete workorder');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array(
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array(
 				'delete' => $data));
 		}
 
@@ -4199,8 +4199,8 @@ JS;
 				return;
 			}
 
-			$id				 = phpgw::get_var('id', 'int');
-			$received_amount = phpgw::get_var('received_amount', 'float');
+			$id				 = Sanitizer::get_var('id', 'int');
+			$received_amount = Sanitizer::get_var('received_amount', 'float');
 			return $this->bo->receive_order($id, $received_amount);
 		}
 
@@ -4213,12 +4213,12 @@ JS;
 
 			if (!$vendor_id)
 			{
-				$vendor_id = phpgw::get_var('vendor_id', 'int');
+				$vendor_id = Sanitizer::get_var('vendor_id', 'int');
 			}
 
 			if (!$location_code)
 			{
-				$location_code = phpgw::get_var('location_code', 'string');
+				$location_code = Sanitizer::get_var('location_code', 'string');
 			}
 
 			$values = $this->bo->get_other_orders($vendor_id, $location_code);
@@ -4232,7 +4232,7 @@ JS;
 				$entry['select']	 = "<input type='radio' name='order_id' value='{$entry['id']}' class='mychecks'/>";
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 
 				$total_records = count($values);
@@ -4240,7 +4240,7 @@ JS;
 				return array
 					(
 					'data'				 => $values,
-					'draw'				 => phpgw::get_var('draw', 'int'),
+					'draw'				 => Sanitizer::get_var('draw', 'int'),
 					'recordsTotal'		 => $total_records,
 					'recordsFiltered'	 => $total_records
 				);

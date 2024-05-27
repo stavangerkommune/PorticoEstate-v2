@@ -41,10 +41,10 @@
 				$this->path_upload_dir	 = $GLOBALS['phpgw_info']['server']['files_dir'] . $this->fakebase . '/';
 			}
 
-			$this->location_code			 = phpgw::get_var('location_code');
-			$this->location_item_id			 = phpgw::get_var('location_item_id');
-			$this->attrib_name_componentID	 = phpgw::get_var('attribute_name_component_id');
-			$this->doc_cat_id				 = phpgw::get_var('doc_cat_id');
+			$this->location_code			 = Sanitizer::get_var('location_code');
+			$this->location_item_id			 = Sanitizer::get_var('location_item_id');
+			$this->attrib_name_componentID	 = Sanitizer::get_var('attribute_name_component_id');
+			$this->doc_cat_id				 = Sanitizer::get_var('doc_cat_id');
 
 			$this->last_files_added	 = array();
 			$this->list_component_id = array();
@@ -436,8 +436,8 @@
 
 		private function _get_uploaded_files()
 		{
-			$compressed_file		 = phpgw::get_var('compressed_file_check');
-			$compressed_file_name	 = phpgw::get_var('compressed_file_name');
+			$compressed_file		 = Sanitizer::get_var('compressed_file_check');
+			$compressed_file_name	 = Sanitizer::get_var('compressed_file_name');
 
 			$list_files = array();
 
@@ -680,7 +680,7 @@
 
 		public function preview()
 		{
-			$with_components = phpgw::get_var('with_components_check');
+			$with_components = Sanitizer::get_var('with_components_check');
 
 			$uploaded_files = $this->_get_uploaded_files();
 

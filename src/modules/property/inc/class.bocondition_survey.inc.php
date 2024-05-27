@@ -60,14 +60,14 @@
 			$this->cats					 = CreateObject('phpgwapi.categories', -1, 'property', $this->acl_location);
 			$this->cats->supress_info	 = true;
 
-			$start	 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query	 = phpgw::get_var('query');
-			$sort	 = phpgw::get_var('sort');
-			$order	 = phpgw::get_var('order');
-			$filter	 = phpgw::get_var('filter', 'int');
-			$cat_id	 = phpgw::get_var('cat_id', 'int');
-			$allrows = phpgw::get_var('allrows', 'bool');
-			$appname = phpgw::get_var('appname', 'string');
+			$start	 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query	 = Sanitizer::get_var('query');
+			$sort	 = Sanitizer::get_var('sort');
+			$order	 = Sanitizer::get_var('order');
+			$filter	 = Sanitizer::get_var('filter', 'int');
+			$cat_id	 = Sanitizer::get_var('cat_id', 'int');
+			$allrows = Sanitizer::get_var('allrows', 'bool');
+			$appname = Sanitizer::get_var('appname', 'string');
 
 			if ($appname)
 			{
@@ -75,8 +75,8 @@
 				$this->so->appname	 = $appname;
 			}
 
-			$type			 = phpgw::get_var('type');
-			$type_id		 = phpgw::get_var('type_id', 'int', 'REQUEST', 0);
+			$type			 = Sanitizer::get_var('type');
+			$type_id		 = Sanitizer::get_var('type_id', 'int', 'REQUEST', 0);
 			$this->type		 = $type;
 			$this->type_id	 = $type_id;
 
@@ -141,8 +141,8 @@
 			$acl			 = & $GLOBALS['phpgw']->acl;
 			$acl_add		 = $acl->check($this->acl_location, PHPGW_ACL_ADD, 'property');
 			$acl_edit		 = $acl->check($this->acl_location, PHPGW_ACL_EDIT, 'property');
-			$id				 = phpgw::get_var('id', 'int');
-			$check			 = phpgw::get_var('check', 'bool');
+			$id				 = Sanitizer::get_var('id', 'int');
+			$check			 = Sanitizer::get_var('check', 'bool');
 			$fileuploader	 = CreateObject('property.fileuploader');
 
 			if (!$acl_add && !$acl_edit)

@@ -154,22 +154,22 @@
 
 		public function query()
 		{
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
-			$export	 = phpgw::get_var('export', 'bool');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
+			$export	 = Sanitizer::get_var('export', 'bool');
 
 			$params = array
 				(
-				'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'		 => $search['value'],
 				'order'		 => $columns[$order[0]['column']]['data'],
 				'sort'		 => $order[0]['dir'],
 				'filter'	 => $this->filter,
 				'cat_id'	 => $this->cat_id,
-				'allrows'	 => phpgw::get_var('length', 'int') == -1 || $export,
+				'allrows'	 => Sanitizer::get_var('length', 'int') == -1 || $export,
 			);
 
 			$pricebook_list = $this->bo->read($params);
@@ -230,14 +230,14 @@
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
-			$values = phpgw::get_var('values');
+			$values = Sanitizer::get_var('values');
 
-			if ($values['submit_update'] && phpgw::get_var('phpgw_return_as') == 'json')
+			if ($values['submit_update'] && Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->bo->update_pricebook($values);
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -413,7 +413,7 @@
 					'my_name'	 => 'edit',
 					'statustext' => lang('edit the pricebook'),
 					'text'		 => lang('edit'),
-					'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'	 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uipricebook.edit_activity',
 					)),
@@ -426,7 +426,7 @@
 					'my_name'	 => 'prizing',
 					'statustext' => lang('view or edit prizing history of this element'),
 					'text'		 => lang('prizing'),
-					'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'	 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uipricebook.prizing',
 					)),
@@ -461,12 +461,12 @@
 
 		public function query_group()
 		{
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
-			$cat_id	 = phpgw::get_var('cat_id');
-			$export	 = phpgw::get_var('export', 'bool');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
+			$cat_id	 = Sanitizer::get_var('cat_id');
+			$export	 = Sanitizer::get_var('export', 'bool');
 
 			switch ($columns[$order[0]['column']]['data'])
 			{
@@ -479,14 +479,14 @@
 
 			$params = array
 				(
-				'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'		 => $search['value'],
 				'order'		 => $order_field,
 				'sort'		 => $order[0]['dir'],
 				'filter'	 => $this->filter,
 				'cat_id'	 => $cat_id,
-				'allrows'	 => phpgw::get_var('length', 'int') == -1 || $export,
+				'allrows'	 => Sanitizer::get_var('length', 'int') == -1 || $export,
 			);
 
 			$values = $this->bo->read_agreement_group($params);
@@ -515,7 +515,7 @@
 
 			$GLOBALS['phpgw']->session->appsession('referer', 'property', '');
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query_group();
 			}
@@ -597,7 +597,7 @@
 				(
 				'my_name'	 => 'edit',
 				'text'		 => lang('edit'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'property.uipricebook.edit_agreement_group'
 				)),
@@ -608,7 +608,7 @@
 				(
 				'my_name'	 => 'edit',
 				'text'		 => lang('open edit in new window'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'property.uipricebook.edit_agreement_group',
 				)),
@@ -621,7 +621,7 @@
 				'my_name'		 => 'delete',
 				'text'			 => lang('delete'),
 				'confirm_msg'	 => lang('do you really want to delete this entry'),
-				'action'		 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'		 => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'property.uipricebook.delete',
 					'method'	 => 'agreement_group'
@@ -645,13 +645,13 @@
 					'perm'			 => 16, 'acl_location'	 => $this->acl_location));
 			}
 
-			$agreement_group_id	 = phpgw::get_var('agreement_group_id', 'int');
-			$values				 = phpgw::get_var('values');
+			$agreement_group_id	 = Sanitizer::get_var('agreement_group_id', 'int');
+			$values				 = Sanitizer::get_var('values');
 			$tabs				 = array();
 			$tabs['general']	 = array('label' => lang('general'), 'link' => '#general');
 			$active_tab			 = 'general';
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('pricebook'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('pricebook'));
 
 			if ($values['save'])
 			{
@@ -752,8 +752,8 @@
 			$data = array
 				(
 				'msgbox_data'				 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'				 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'done_action'				 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uipricebook.agreement_group')),
+				'form_action'				 => phpgw::link('/index.php', $link_data),
+				'done_action'				 => phpgw::link('/index.php', array('menuaction' => 'property.uipricebook.agreement_group')),
 				'lang_agreement_group_id'	 => lang('Agreement group ID'),
 				'lang_num'					 => lang('Agreement group code'),
 				'lang_status'				 => lang('Status'),
@@ -781,7 +781,7 @@
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = 'property::agreement::pricebook::group';
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('edit_agreement_group' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit_agreement_group' => $data));
 		}
 
 		function prizing()
@@ -792,20 +792,20 @@
 					'perm'			 => 16, 'acl_location'	 => $this->acl_location));
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('pricebook',
+			phpgwapi_xslttemplates::getInstance()->add_file(array('pricebook',
 				'nextmatchs',
 				'search_field'));
 
-			$cat_id			 = phpgw::get_var('cat_id', 'int', 'GET');
-			$activity_id	 = phpgw::get_var('activity_id', 'int');
-			$vendor_id		 = phpgw::get_var('vendor_id', 'int', 'GET');
-			$agreement_id	 = phpgw::get_var('agreement_id', 'int', 'GET');
-			$values			 = phpgw::get_var('values');
+			$cat_id			 = Sanitizer::get_var('cat_id', 'int', 'GET');
+			$activity_id	 = Sanitizer::get_var('activity_id', 'int');
+			$vendor_id		 = Sanitizer::get_var('vendor_id', 'int', 'GET');
+			$agreement_id	 = Sanitizer::get_var('agreement_id', 'int', 'GET');
+			$values			 = Sanitizer::get_var('values');
 
 			$referer = $GLOBALS['phpgw']->session->appsession('referer', 'property');
 			if (!$referer)
 			{
-				$referer = phpgw::get_var('HTTP_REFERER', 'string', 'SERVER', phpgw::clean_value($GLOBALS['HTTP_REFERER']));
+				$referer = Sanitizer::get_var('HTTP_REFERER', 'string', 'SERVER', Sanitizer::clean_value($GLOBALS['HTTP_REFERER']));
 				$referer .= '&cat_id=' . $cat_id;
 				$GLOBALS['phpgw']->session->appsession('referer', 'property', $referer);
 			}
@@ -858,7 +858,7 @@
 
 					if ($pricebook['current_index'])
 					{
-						$link_delete		 = $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uipricebook.delete',
+						$link_delete		 = phpgw::link('/index.php', array('menuaction'	 => 'property.uipricebook.delete',
 							'method'		 => 'prize', 'activity_id'	 => $activity_id, 'agreement_id'	 => $agreement_id,
 							'index_count'	 => $pricebook['index_count']));
 						$value_m_cost		 = $pricebook['m_cost'];
@@ -968,7 +968,7 @@
 				'record_limit'			 => $record_limit,
 				'num_records'			 => $num_records,
 				'all_records'			 => $this->bo->total_records,
-				'link_url'				 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'link_url'				 => phpgw::link('/index.php', $link_data),
 				'img_path'				 => $GLOBALS['phpgw']->common->get_image_path('phpgwapi', 'default'),
 				'lang_vendor'			 => lang('Vendor'),
 				'lang_activity'			 => lang('Activity'),
@@ -983,7 +983,7 @@
 				'values_prizing'		 => $content,
 				'table_update'			 => $table_update,
 				'table_first_entry'		 => $table_first_entry,
-				'update_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uipricebook.prizing',
+				'update_action'			 => phpgw::link('/index.php', array('menuaction'	 => 'property.uipricebook.prizing',
 					'activity_id'	 => $activity_id, 'vendor_id'		 => $vendor_id))
 			);
 
@@ -991,7 +991,7 @@
 			$function_msg	 = lang('edit pricing');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('prizing' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('prizing' => $data));
 			//	$GLOBALS['phpgw']->xslttpl->pp();
 			$this->save_sessiondata();
 		}
@@ -1048,22 +1048,22 @@
 
 		public function query_Activity()
 		{
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
-			$export	 = phpgw::get_var('export', 'bool');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
+			$export	 = Sanitizer::get_var('export', 'bool');
 
 			$params = array
 				(
-				'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'		 => $search['value'],
 				'order'		 => $columns[$order[0]['column']]['data'],
 				'sort'		 => $order[0]['dir'],
 				'filter'	 => $this->filter,
 				'cat_id'	 => $this->cat_id,
-				'allrows'	 => phpgw::get_var('length', 'int') == -1 || $export
+				'allrows'	 => Sanitizer::get_var('length', 'int') == -1 || $export
 			);
 
 			$values = $this->bo->read_activities_pr_agreement_group($params);
@@ -1091,7 +1091,7 @@
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = 'property::agreement::pricebook::activities';
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query_Activity();
 			}
@@ -1179,7 +1179,7 @@
 				(
 				'my_name'	 => 'vendor',
 				'text'		 => lang('vendor'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction'		 => 'property.uipricebook.activity_vendor',
 					'agreement_group'	 => $this->cat_id
@@ -1191,7 +1191,7 @@
 				(
 				'my_name'	 => 'vendor',
 				'text'		 => lang('open vendor in new window'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction'		 => 'property.uipricebook.activity_vendor',
 					'agreement_group'	 => $this->cat_id,
@@ -1204,7 +1204,7 @@
 				(
 				'my_name'	 => 'edit',
 				'text'		 => lang('edit'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction'		 => 'property.uipricebook.edit_activity',
 					'agreement_group'	 => $this->cat_id
@@ -1216,7 +1216,7 @@
 				(
 				'my_name'	 => 'edit',
 				'text'		 => lang('open edit in new window'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction'		 => 'property.uipricebook.edit_activity',
 					'agreement_group'	 => $this->cat_id,
@@ -1230,7 +1230,7 @@
 				'my_name'		 => 'delete',
 				'text'			 => lang('delete'),
 				'confirm_msg'	 => lang('do you really want to delete this entry'),
-				'action'		 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'		 => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'property.uipricebook.delete',
 					'method'	 => 'activity'
@@ -1259,29 +1259,29 @@
 JS;
 
 
-			$GLOBALS['phpgw']->js->add_code('', $js, true);
+			phpgwapi_js::getInstance()->add_code('', $js, true);
 
 			self::render_template_xsl('datatable_jquery', $data);
 		}
 
 		public function query_vendor( $activity_id )
 		{
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
-			$export	 = phpgw::get_var('export', 'bool');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
+			$export	 = Sanitizer::get_var('export', 'bool');
 
 			$params = array
 				(
-				'start'			 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'		 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'			 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'		 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'			 => $search['value'],
 				'order'			 => $columns[$order[0]['column']]['data'],
 				'sort'			 => $order[0]['dir'],
 				'filter'		 => $this->filter,
 				'cat_id'		 => $this->cat_id,
-				'allrows'		 => phpgw::get_var('length', 'int') == -1 || $export,
+				'allrows'		 => Sanitizer::get_var('length', 'int') == -1 || $export,
 				'activity_id'	 => $activity_id
 			);
 
@@ -1322,11 +1322,11 @@ JS;
 
 			$GLOBALS['phpgw']->session->appsession('referer', 'property', '');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('pricebook', 'nextmatchs', 'search_field'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('pricebook', 'nextmatchs', 'search_field'));
 
-			$activity_id		 = phpgw::get_var('activity_id', 'int');
-			$values				 = phpgw::get_var('values');
-			$values['vendor_id'] = phpgw::get_var('vendor_id', 'int', 'POST');
+			$activity_id		 = Sanitizer::get_var('activity_id', 'int');
+			$values				 = Sanitizer::get_var('values');
+			$values['vendor_id'] = Sanitizer::get_var('vendor_id', 'int', 'POST');
 
 			if ($values['add'])
 			{
@@ -1340,7 +1340,7 @@ JS;
 				}
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query_vendor($activity_id);
 			}
@@ -1465,7 +1465,7 @@ JS;
 				'my_name'	 => 'prizing',
 				'statustext' => lang('view edit the prize for this activity'),
 				'text'		 => lang('prizing'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'property.uiagreement.edit_item',
 					'from'		 => 'uipricebook.activity_vendor'
@@ -1479,7 +1479,7 @@ JS;
 				'my_name'	 => 'delete',
 				'statustext' => lang('delete this vendor from this activity'),
 				'text'		 => lang('delete'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'property.uipricebook.delete',
 					'method'	 => 'activity_vendor'
@@ -1501,10 +1501,10 @@ JS;
 					'perm'			 => 16, 'acl_location'	 => $this->acl_location));
 			}
 
-			$activity_id		 = phpgw::get_var('activity_id', 'int');
-			$agreement_group	 = phpgw::get_var('agreement_group', 'int', 'GET');
-			$values				 = phpgw::get_var('values');
-			$values['ns3420_id'] = phpgw::get_var('ns3420_id');
+			$activity_id		 = Sanitizer::get_var('activity_id', 'int');
+			$agreement_group	 = Sanitizer::get_var('agreement_group', 'int', 'GET');
+			$values				 = Sanitizer::get_var('values');
+			$values['ns3420_id'] = Sanitizer::get_var('ns3420_id');
 
 			$tabs			 = array();
 			$tabs['general'] = array('label' => lang('general'), 'link' => '#general');
@@ -1515,7 +1515,7 @@ JS;
 				$values['cat_id'] = $agreement_group;
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('pricebook'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('pricebook'));
 
 			if ($values['save'])
 			{
@@ -1602,8 +1602,8 @@ JS;
 			$data = array
 				(
 				'msgbox_data'				 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'				 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'done_action'				 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uipricebook.activity',
+				'form_action'				 => phpgw::link('/index.php', $link_data),
+				'done_action'				 => phpgw::link('/index.php', array('menuaction' => 'property.uipricebook.activity',
 					'cat_id'	 => $values['cat_id'])),
 				'lang_activity_id'			 => lang('Activity ID'),
 				'lang_num'					 => lang('Activity code'),
@@ -1643,7 +1643,7 @@ JS;
 				'select_branch'				 => 'values[branch_id]',
 				'lang_no_branch'			 => lang('Select branch'),
 				'lang_branch_statustext'	 => lang('Select the branch for this activity.'),
-				'ns3420_link'				 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uilookup.ns3420')),
+				'ns3420_link'				 => phpgw::link('/index.php', array('menuaction' => 'property.uilookup.ns3420')),
 				'lang_ns3420'				 => lang('NS3420'),
 				'value_ns3420_id'			 => $values['ns3420_id'],
 				'lang_ns3420_statustext'	 => lang('Select a standard-code from the norwegian standard'),
@@ -1655,7 +1655,7 @@ JS;
 			$appname = lang('pricebook');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('edit_activity' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit_activity' => $data));
 			//	$GLOBALS['phpgw']->xslttpl->pp();
 		}
 
@@ -1667,12 +1667,12 @@ JS;
 					'perm'			 => 16, 'acl_location'	 => $this->acl_location));
 			}
 
-			$method				 = phpgw::get_var('method');
-			$activity_id		 = phpgw::get_var('activity_id', 'int');
-			$agreement_id		 = phpgw::get_var('agreement_id', 'int', 'GET');
-			$index_count		 = phpgw::get_var('index_count', 'int', 'GET');
-			$agreement_group_id	 = phpgw::get_var('agreement_group_id', 'int');
-			$confirm			 = phpgw::get_var('confirm', 'bool', 'POST');
+			$method				 = Sanitizer::get_var('method');
+			$activity_id		 = Sanitizer::get_var('activity_id', 'int');
+			$agreement_id		 = Sanitizer::get_var('agreement_id', 'int', 'GET');
+			$index_count		 = Sanitizer::get_var('index_count', 'int', 'GET');
+			$agreement_group_id	 = Sanitizer::get_var('agreement_group_id', 'int');
+			$confirm			 = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			if ($method == 'activity_vendor')
 			{
@@ -1683,10 +1683,10 @@ JS;
 				);
 
 				$function_msg	 = lang('delete vendor activity');
-				$delete_action	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uipricebook.delete',
+				$delete_action	 = phpgw::link('/index.php', array('menuaction'	 => 'property.uipricebook.delete',
 					'method'		 => $method, 'activity_id'	 => $activity_id, 'agreement_id'	 => $agreement_id));
 
-				if (phpgw::get_var('confirm', 'bool', 'POST'))
+				if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 				{
 					$this->bo->delete_activity_vendor($activity_id, $agreement_id);
 					$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
@@ -1695,7 +1695,7 @@ JS;
 			elseif ($method == 'activity')
 			{
 				//delete with JSON
-				if (phpgw::get_var('phpgw_return_as') == 'json')
+				if (Sanitizer::get_var('phpgw_return_as') == 'json')
 				{
 					$function_msg = lang('delete activity');
 					$this->bo->delete_activity($activity_id);
@@ -1708,10 +1708,10 @@ JS;
 				);
 
 				//$function_msg	=lang('delete activity');
-				$delete_action = $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uipricebook.delete',
+				$delete_action = phpgw::link('/index.php', array('menuaction'	 => 'property.uipricebook.delete',
 					'method'		 => $method, 'activity_id'	 => $activity_id));
 
-				if (phpgw::get_var('confirm', 'bool', 'POST'))
+				if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 				{
 					$this->bo->delete_activity($activity_id);
 					$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
@@ -1727,11 +1727,11 @@ JS;
 				);
 
 				$function_msg	 = lang('delete prize-index');
-				$delete_action	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uipricebook.delete',
+				$delete_action	 = phpgw::link('/index.php', array('menuaction'	 => 'property.uipricebook.delete',
 					'method'		 => $method, 'activity_id'	 => $activity_id, 'agreement_id'	 => $agreement_id,
 					'index_count'	 => $index_count));
 
-				if (phpgw::get_var('confirm', 'bool', 'POST'))
+				if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 				{
 					$this->bo->delete_prize_index($activity_id, $agreement_id, $index_count);
 					$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
@@ -1741,7 +1741,7 @@ JS;
 			{
 
 				//JsonCod for Delete
-				if (phpgw::get_var('phpgw_return_as') == 'json')
+				if (Sanitizer::get_var('phpgw_return_as') == 'json')
 				{
 					$function_msg = lang('Delete agreement group and all the activities associated with it!');
 					$this->bo->delete_agreement_group($agreement_group_id);
@@ -1755,21 +1755,21 @@ JS;
 				);
 
 
-				$delete_action = $GLOBALS['phpgw']->link('/index.php', array('menuaction'		 => 'property.uipricebook.delete',
+				$delete_action = phpgw::link('/index.php', array('menuaction'		 => 'property.uipricebook.delete',
 					'method'			 => $method, 'agreement_group_id' => $agreement_group_id, 'start'				 => $this->start));
 
-				if (phpgw::get_var('confirm', 'bool', 'POST'))
+				if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 				{
 					$this->bo->delete_agreement_group($agreement_group_id);
 					$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
 				}
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 				(
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'done_action'			 => phpgw::link('/index.php', $link_data),
 				'delete_action'			 => $delete_action,
 				'lang_confirm_msg'		 => lang('do you really want to delete this entry'),
 				'lang_yes'				 => lang('yes'),
@@ -1781,6 +1781,6 @@ JS;
 			$appname = lang('pricebook');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 	}

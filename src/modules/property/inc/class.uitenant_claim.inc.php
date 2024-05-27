@@ -110,7 +110,7 @@
 
 		public function handle_multi_upload_file()
 		{
-			$id = phpgw::get_var('id', 'int', 'GET');
+			$id = Sanitizer::get_var('id', 'int', 'GET');
 
 			phpgw::import_class('property.multiuploader');
 
@@ -166,7 +166,7 @@
 				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => PHPGW_ACL_READ, 'acl_location'	 => $this->acl_location));
 			}
-			ExecMethod('property.bofiles.get_file', phpgw::get_var('file_id', 'int'));
+			ExecMethod('property.bofiles.get_file', Sanitizer::get_var('file_id', 'int'));
 		}
 
 		private function _get_filter_tenant()
@@ -220,9 +220,9 @@
 				phpgw::no_access();
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				return $this->query(array('project_id' => phpgw::get_var('project_id')));
+				return $this->query(array('project_id' => Sanitizer::get_var('project_id')));
 			}
 			phpgwapi_jquery::load_widget('numberformat');
 			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
@@ -374,7 +374,7 @@
 					'my_name'	 => 'view',
 					'statustext' => lang('view the claim'),
 					'text'		 => lang('view'),
-					'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'	 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uitenant_claim.view'
 						)
@@ -390,7 +390,7 @@
 					'my_name'	 => 'edit',
 					'statustext' => lang('edit the claim'),
 					'text'		 => lang('edit'),
-					'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'	 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uitenant_claim.edit'
 						)
@@ -408,7 +408,7 @@
 					'statustext'	 => lang('Close the claim'),
 					'text'			 => $lang_close,
 					'confirm_msg'	 => lang('do you really want to change the status to %1', $lang_close),
-					'action'		 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'		 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uitenant_claim.close',
 						'delete'	 => 'dummy'// FIXME to trigger the json in property.js.
@@ -426,7 +426,7 @@
 					(
 					'my_name'	 => 'edit',
 					'text'		 => lang('open JasperReport %1 in new window', $report['title']),
-					'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'	 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uijasper.view',
 						'jasper_id'	 => $report['id']
@@ -444,7 +444,7 @@
 					'statustext'	 => lang('delete the claim'),
 					'text'			 => lang('delete'),
 					'confirm_msg'	 => lang('do you really want to delete this entry'),
-					'action'		 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'		 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uitenant_claim.delete'
 						)
@@ -460,27 +460,27 @@
 
 		public function query( $data = array() )
 		{
-			$search		 = phpgw::get_var('search');
-			$order		 = phpgw::get_var('order');
-			$draw		 = phpgw::get_var('draw', 'int');
-			$district_id = phpgw::get_var('district_id', 'int');
-			$columns	 = phpgw::get_var('columns');
-			$project_id	 = isset($data['project_id']) && $data['project_id'] ? $data['project_id'] : phpgw::get_var('project_id');
-			$export		 = phpgw::get_var('export', 'bool');
+			$search		 = Sanitizer::get_var('search');
+			$order		 = Sanitizer::get_var('order');
+			$draw		 = Sanitizer::get_var('draw', 'int');
+			$district_id = Sanitizer::get_var('district_id', 'int');
+			$columns	 = Sanitizer::get_var('columns');
+			$project_id	 = isset($data['project_id']) && $data['project_id'] ? $data['project_id'] : Sanitizer::get_var('project_id');
+			$export		 = Sanitizer::get_var('export', 'bool');
 
 			$this->sort = isset($order[0]['dir']) ? $order[0]['dir'] : 'DESC';
 			$this->order = isset($order[0]['column']) ? $columns[$order[0]['column']]['data']: '';
 
 			$params = array(
 				'start'			 => $this->start,
-				'results'		 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'results'		 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'			 => $search ? $search['value'] : '',
 				'sort'			 => $this->sort,
 				'order'			 => $this->order,
 				'user_id'		 => $this->user_id,
 				'status'		 => $this->status,
 				'cat_id'		 => $this->cat_id,
-				'allrows'		 => phpgw::get_var('length', 'int') == -1 || $export,
+				'allrows'		 => Sanitizer::get_var('length', 'int') == -1 || $export,
 				'project_id'	 => $project_id,
 				'district_id'	 => $district_id
 			);
@@ -545,8 +545,8 @@
 
 		public function query2()
 		{
-			$length				 = phpgw::get_var('length', 'int', 'REQUEST', 10);
-			$this->start	 = phpgw::get_var('startIndex');
+			$length				 = Sanitizer::get_var('length', 'int', 'REQUEST', 10);
+			$this->start	 = Sanitizer::get_var('startIndex');
 
 			$values = $this->query();
 
@@ -566,8 +566,8 @@
 
 		function check()
 		{
-			$project_id = phpgw::get_var('project_id', 'int');
-			$ticket_id = phpgw::get_var('ticket_id', 'int');
+			$project_id = Sanitizer::get_var('project_id', 'int');
+			$ticket_id = Sanitizer::get_var('ticket_id', 'int');
 
 			$claim			 = $this->bo->check_claim_project($project_id);
 			$total_records	 = $this->bo->total_records;
@@ -602,7 +602,7 @@
 			{
 				phpgw::no_access();
 			}
-			$claim_id = phpgw::get_var('claim_id', 'int');
+			$claim_id = Sanitizer::get_var('claim_id', 'int');
 
 			if ($this->bo->close($claim_id))
 			{
@@ -613,7 +613,7 @@
 		function edit( $data = array(), $mode = 'edit')
 		{
 
-			$claim_id = !empty($data['claim_id']) ? $data['claim_id'] : phpgw::get_var('claim_id', 'int');
+			$claim_id = !empty($data['claim_id']) ? $data['claim_id'] : Sanitizer::get_var('claim_id', 'int');
 
 			if ($mode == 'view')
 			{
@@ -636,15 +636,15 @@
 				}
 			}
 
-			$values						 = phpgw::get_var('values');
+			$values						 = Sanitizer::get_var('values');
 			//_debug_array($values);die;
-			$values['ticket_id']		 = phpgw::get_var('ticket_id', 'int');
-			$values['project_id']		 = phpgw::get_var('project_id', 'int');
-			$values['b_account_id']		 = phpgw::get_var('b_account_id', 'int', 'POST');
-			$values['b_account_name']	 = phpgw::get_var('b_account_name', 'string', 'POST');
-			$values['tenant_id']		 = phpgw::get_var('tenant_id', 'int', 'POST');
-			$values['last_name']		 = phpgw::get_var('last_name', 'string', 'POST');
-			$values['first_name']		 = phpgw::get_var('first_name', 'string', 'POST');
+			$values['ticket_id']		 = Sanitizer::get_var('ticket_id', 'int');
+			$values['project_id']		 = Sanitizer::get_var('project_id', 'int');
+			$values['b_account_id']		 = Sanitizer::get_var('b_account_id', 'int', 'POST');
+			$values['b_account_name']	 = Sanitizer::get_var('b_account_name', 'string', 'POST');
+			$values['tenant_id']		 = Sanitizer::get_var('tenant_id', 'int', 'POST');
+			$values['last_name']		 = Sanitizer::get_var('last_name', 'string', 'POST');
+			$values['first_name']		 = Sanitizer::get_var('first_name', 'string', 'POST');
 
 			$tabs			 = array();
 			$tabs['general'] = array('label' => lang('general'), 'link' => '#general');
@@ -661,7 +661,7 @@
 
 			$this->boproject = CreateObject('property.boproject');
 
-//			$GLOBALS['phpgw']->xslttpl->add_file(array('tenant_claim','files'));
+//			phpgwapi_xslttemplates::getInstance()->add_file(array('tenant_claim','files'));
 
 			if ($values['save'] || $values['apply'])
 			{
@@ -1003,7 +1003,7 @@
 				'id'		 => $claim_id
 			);
 
-			$link_view_file = $GLOBALS['phpgw']->link('/index.php', $link_file_data);
+			$link_view_file = phpgw::link('/index.php', $link_file_data);
 
 			$_files = $this->bo->get_files($claim_id);
 
@@ -1071,7 +1071,7 @@
 				'datatable_def'						 => $datatable_def,
 				'table_header_workorder'			 => $table_header_workorder,
 				'lang_no_workorders'				 => lang('No workorder budget'),
-				'workorder_link'					 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiworkorder.view')),
+				'workorder_link'					 => phpgw::link('/index.php', array('menuaction' => 'property.uiworkorder.view')),
 				'lang_start_date'					 => lang('Project start date'),
 				'value_start_date'					 => $project_values['start_date'],
 				'value_entry_date'					 => $values['entry_date'] ? $GLOBALS['phpgw']->common->show_date($values['entry_date'], $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']) : '',
@@ -1126,7 +1126,7 @@
 				'lang_amount'						 => lang('amount'),
 				'lang_amount_statustext'			 => lang('The total amount to claim'),
 				'value_amount'						 => $values['amount'],
-				'tenant_link'						 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uilookup.tenant')),
+				'tenant_link'						 => phpgw::link('/index.php', array('menuaction' => 'property.uilookup.tenant')),
 				'lang_tenant'						 => lang('tenant'),
 				'value_tenant_id'					 => $values['tenant_id'],
 				'value_last_name'					 => $values['last_name'],
@@ -1135,7 +1135,7 @@
 				'size_last_name'					 => strlen($values['last_name']),
 				'size_first_name'					 => strlen($values['first_name']),
 				'msgbox_data'						 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'edit_url'							 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'edit_url'							 => phpgw::link('/index.php', $link_data),
 				'lang_claim_id'						 => lang('ID'),
 				'value_claim_id'					 => $claim_id,
 				'lang_remark'						 => lang('remark'),
@@ -1158,7 +1158,7 @@
 				'validator'							 => phpgwapi_jquery::formvalidator_generate(array('location',
 					'date',
 					'security', 'file')),
-				'multi_upload_action'				 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uitenant_claim.handle_multi_upload_file', 'id' => $claim_id)),
+				'multi_upload_action'				 => phpgw::link('/index.php', array('menuaction' => 'property.uitenant_claim.handle_multi_upload_file', 'id' => $claim_id)),
 				'multiple_uploader'					 => $claim_id ? true : '',
 				'mode'								 => $mode,
 
@@ -1187,7 +1187,7 @@
 
 		function update_data()
 		{
-			$action = phpgw::get_var('action', 'string', 'GET');
+			$action = Sanitizer::get_var('action', 'string', 'GET');
 			switch ($action)
 			{
 				case 'get_files':
@@ -1199,7 +1199,7 @@
 
 		function get_files()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
 			if (!$this->acl_read)
 			{
@@ -1212,7 +1212,7 @@
 			);
 
 
-			$link_view_file	 = $GLOBALS['phpgw']->link('/index.php', $link_file_data);
+			$link_view_file	 = phpgw::link('/index.php', $link_file_data);
 			$_files = $this->bo->get_files($id);
 
 
@@ -1226,7 +1226,7 @@
 				);
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 
 				$total_records = count($content_files);
@@ -1234,7 +1234,7 @@
 				return array
 					(
 					'data'				 => $content_files,
-					'draw'				 => phpgw::get_var('draw', 'int'),
+					'draw'				 => Sanitizer::get_var('draw', 'int'),
 					'recordsTotal'		 => $total_records,
 					'recordsFiltered'	 => $total_records
 				);
@@ -1251,11 +1251,11 @@
 					'perm'			 => 8, 'acl_location'	 => $this->acl_location));
 			}
 
-			$claim_id	 = phpgw::get_var('claim_id', 'int');
-			$delete		 = phpgw::get_var('delete', 'bool', 'POST');
-			$confirm	 = phpgw::get_var('confirm', 'bool', 'POST');
+			$claim_id	 = Sanitizer::get_var('claim_id', 'int');
+			$delete		 = Sanitizer::get_var('delete', 'bool', 'POST');
+			$confirm	 = Sanitizer::get_var('confirm', 'bool', 'POST');
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$this->bo->delete($claim_id);
 				return "claim_id " . $claim_id . " " . lang("has been deleted");
@@ -1266,12 +1266,12 @@
 				'menuaction' => 'property.uitenant_claim.index'
 			);
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 				(
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uitenant_claim.delete',
+				'done_action'			 => phpgw::link('/index.php', $link_data),
+				'delete_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uitenant_claim.delete',
 					'claim_id'	 => $claim_id)),
 				'lang_confirm_msg'		 => lang('do you really want to delete this entry'),
 				'lang_yes'				 => lang('yes'),
@@ -1284,7 +1284,7 @@
 			$function_msg	 = lang('delete claim');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 			//	$GLOBALS['phpgw']->xslttpl->pp();
 		}
 

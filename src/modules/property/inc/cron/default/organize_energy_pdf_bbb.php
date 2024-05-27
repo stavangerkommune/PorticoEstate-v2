@@ -98,15 +98,15 @@
 
 			$lang_yes = lang('yes');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('confirm_custom'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('confirm_custom'));
 
 			$msgbox_data = $this->bocommon->msgbox_data($this->receipt);
 
 			$data = array
 				(
 				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'done_action'			 => $GLOBALS['phpgw']->link('/admin/index.php'),
-				'run_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'done_action'			 => phpgw::link('/admin/index.php'),
+				'run_action'			 => phpgw::link('/index.php', $link_data),
 				'message'				 => $this->receipt['message'],
 				'lang_confirm_msg'		 => $lang_confirm_msg,
 				'lang_yes'				 => $lang_yes,
@@ -120,7 +120,7 @@
 			$appname										 = 'Organisere pdf';
 			$function_msg									 = 'Organisere pdf i register og på disk';
 			$GLOBALS['phpgw_info']['flags']['app_header']	 = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('confirm' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('confirm' => $data));
 			$GLOBALS['phpgw']->xslttpl->pp();
 		}
 

@@ -22,3 +22,41 @@ $this->acl
 PHPGW_ACL_
 ACL_
 
+use App\modules\phpgwapi\services\Cache;
+phpgwapi_cache
+Cache
+
+$GLOBALS['phpgw']->link
+phpgw::link
+
+phpgw::get_var
+Sanitizer::get_var
+
+phpgw::clean_value
+Sanitizer::clean_value
+
+use App\modules\phpgwapi\controllers\Locations;
+$locations = new Locations();
+
+
+$GLOBALS['phpgw']->css->
+phpgwapi_css::getInstance()->
+
+$GLOBALS['phpgw']->js->
+phpgwapi_js::getInstance()->
+
+
+$GLOBALS['phpgw']->xslttpl->add_file
+phpgwapi_xslttemplates::getInstance()->add_file
+
+$GLOBALS['phpgw']->xslttpl->set_var
+phpgwapi_xslttemplates::getInstance()->set_var
+
+
+use App\modules\phpgwapi\services\Config;
+$this->config = new Config();
+
+
+
+	use App\modules\phpgwapi\services\SchemaProc\SchemaProc;
+	$this->oProc = new SchemaProc();

@@ -74,7 +74,7 @@
 			$this->acl_manage	 = $this->acl->check($this->acl_location, 16, 'property');
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = "property::documentation";
-			//			$GLOBALS['phpgw']->css->add_external_file('logistic/templates/base/css/base.css');
+			//			phpgwapi_css::getInstance()->add_external_file('logistic/templates/base/css/base.css');
 		}
 
 		public function download()
@@ -153,7 +153,7 @@
 				return;
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -216,7 +216,7 @@
 				(
 				'my_name'	 => 'view_survey',
 				'text'		 => lang('view'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'property.uidocument2.view'
 				)),
@@ -227,7 +227,7 @@
 				(
 				'my_name'	 => 'edit_survey',
 				'text'		 => lang('edit'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'property.uidocument2.edit'
 				)),
@@ -238,7 +238,7 @@
 				(
 				'my_name'	 => 'import_survey',
 				'text'		 => lang('import'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'property.uidocument2.import'
 				)),
@@ -253,7 +253,7 @@
 					'my_name'		 => 'delete_imported_records',
 					'text'			 => lang('delete imported records'),
 					'confirm_msg'	 => lang('do you really want to delete this entry') . '?',
-					'action'		 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'		 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uidocument2.delete_imported_records'
 					)),
@@ -268,7 +268,7 @@
 					'my_name'		 => 'delete_survey',
 					'text'			 => lang('delete'),
 					'confirm_msg'	 => lang('do you really want to delete this entry') . '?',
-					'action'		 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'		 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uidocument2.delete'
 					)),
@@ -281,22 +281,22 @@
 
 		public function query()
 		{
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
 
 			$columns = $this->_get_columns();
-			$export	 = phpgw::get_var('export', 'bool');
+			$export	 = Sanitizer::get_var('export', 'bool');
 
 
 			$params = array
 				(
-				'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'		 => $search['value'],
 				'order'		 => $order,
-				'cat_id'	 => phpgw::get_var('cat_id', 'int', 'REQUEST', 0),
-				'allrows'	 => phpgw::get_var('length', 'int') == -1 || $export,
+				'cat_id'	 => Sanitizer::get_var('cat_id', 'int', 'REQUEST', 0),
+				'allrows'	 => Sanitizer::get_var('length', 'int') == -1 || $export,
 			);
 
 			$values = $this->bo->read2(array('columns' => $columns, 'params' => $params));
@@ -341,7 +341,7 @@
 		 */
 		public function edit( $values = array(), $mode = 'edit' )
 		{
-			$id = isset($values['id']) && $values['id'] ? $values['id'] : phpgw::get_var('id', 'int');
+			$id = isset($values['id']) && $values['id'] ? $values['id'] : Sanitizer::get_var('id', 'int');
 
 			if (!$this->acl_add && !$this->acl_edit)
 			{
@@ -521,13 +521,13 @@
 				self::add_javascript('property', 'base', 'condition_survey_edit.js', false, array('combine' => true ));
 				self::add_javascript('phpgwapi', 'yui3', 'yui/yui-min.js');
 				self::add_javascript('phpgwapi', 'yui3-gallery', 'gallery-formvalidator/gallery-formvalidator-min.js');
-				$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/yui3-gallery/gallery-formvalidator/validatorCss.css');
+				phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/yui3-gallery/gallery-formvalidator/validatorCss.css');
 			}
 
 			self::add_javascript('property', 'base', 'condition_survey.js', false, array('combine' => true ));
 
 			self::add_javascript('phpgwapi', 'tinybox2', 'packed.js', false, array('combine' => true ));
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/tinybox2/style.css');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/tinybox2/style.css');
 
 //			$GLOBALS['phpgw_info']['server']['no_jscombine'] = true;
 
@@ -548,7 +548,7 @@
 				return $this->edit();
 			}
 
-			$id = (int)phpgw::get_var('id');
+			$id = (int)Sanitizer::get_var('id');
 
 			if ($id)
 			{
@@ -608,7 +608,7 @@
 		 */
 		public function get_files()
 		{
-			$id = phpgw::get_var('id', 'int', 'REQUEST');
+			$id = Sanitizer::get_var('id', 'int', 'REQUEST');
 
 			if (!$this->acl_read)
 			{
@@ -637,7 +637,7 @@
 
 //------ Start pagination
 
-			$start			 = phpgw::get_var('startIndex', 'int', 'REQUEST', 0);
+			$start			 = Sanitizer::get_var('startIndex', 'int', 'REQUEST', 0);
 			$total_records	 = count($files);
 
 			$num_rows = isset($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs']) && $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] ? (int)$GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] : 15;
@@ -686,8 +686,8 @@
 
 		function get_summation()
 		{
-			$id		 = phpgw::get_var('id', 'int', 'REQUEST');
-			$year	 = phpgw::get_var('year', 'int', 'REQUEST');
+			$id		 = Sanitizer::get_var('id', 'int', 'REQUEST');
+			$year	 = Sanitizer::get_var('year', 'int', 'REQUEST');
 
 			if (!$this->acl_read)
 			{
@@ -699,7 +699,7 @@
 			$total_records = count($values);
 
 			$num_rows	 = isset($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs']) && $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] ? (int)$GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] : 15;
-			$start		 = phpgw::get_var('startIndex', 'int', 'REQUEST', 0);
+			$start		 = Sanitizer::get_var('startIndex', 'int', 'REQUEST', 0);
 
 			$allrows	 = true;
 			$num_rows	 = $total_records;
@@ -732,7 +732,7 @@
 
 		function get_request()
 		{
-			$id = phpgw::get_var('id', 'int', 'REQUEST');
+			$id = Sanitizer::get_var('id', 'int', 'REQUEST');
 
 			if (!$this->acl_read)
 			{
@@ -740,9 +740,9 @@
 			}
 
 			$borequest	 = CreateObject('property.borequest');
-			$start		 = phpgw::get_var('startIndex', 'int', 'REQUEST', 0);
-			$sortKey	 = phpgw::get_var('sort', 'string', 'REQUEST', 'request_id');
-			$sortDir	 = phpgw::get_var('dir', 'string', 'REQUEST', 'ASC');
+			$start		 = Sanitizer::get_var('startIndex', 'int', 'REQUEST', 0);
+			$sortKey	 = Sanitizer::get_var('sort', 'string', 'REQUEST', 'request_id');
+			$sortDir	 = Sanitizer::get_var('dir', 'string', 'REQUEST', 'ASC');
 
 			$criteria = array
 				(
@@ -851,7 +851,7 @@
 
 		public function import()
 		{
-			$id = phpgw::get_var('id', 'int', 'REQUEST');
+			$id = Sanitizer::get_var('id', 'int', 'REQUEST');
 			$this->_handle_import($id);
 		}
 
@@ -870,10 +870,10 @@
 				throw new Exception('uidocument2::_handle_import() - missing id');
 			}
 
-			$step		 = phpgw::get_var('step', 'int', 'REQUEST');
-			$sheet_id	 = phpgw::get_var('sheet_id', 'int', 'REQUEST');
+			$step		 = Sanitizer::get_var('step', 'int', 'REQUEST');
+			$sheet_id	 = Sanitizer::get_var('sheet_id', 'int', 'REQUEST');
 
-			$sheet_id = $sheet_id ? $sheet_id : phpgw::get_var('selected_sheet_id', 'int', 'REQUEST');
+			$sheet_id = $sheet_id ? $sheet_id : Sanitizer::get_var('selected_sheet_id', 'int', 'REQUEST');
 
 			if (!$step)
 			{
@@ -885,7 +885,7 @@
 				}
 			}
 
-			if ($start_line = phpgw::get_var('start_line', 'int', 'REQUEST'))
+			if ($start_line = Sanitizer::get_var('start_line', 'int', 'REQUEST'))
 			{
 				phpgwapi_cache::system_set('property', 'import_sheet_start_line', $start_line);
 			}
@@ -896,7 +896,7 @@
 			}
 
 
-			if ($columns = phpgw::get_var('columns'))
+			if ($columns = Sanitizer::get_var('columns'))
 			{
 				phpgwapi_cache::system_set('property', 'import_sheet_columns', $columns);
 			}
@@ -1245,7 +1245,7 @@
 				return;
 			}
 
-			$query = phpgw::get_var('query');
+			$query = Sanitizer::get_var('query');
 
 			$accounts = $GLOBALS['phpgw']->accounts->get_list('accounts', $start, $sort, $order, $query, $offset);
 
@@ -1278,7 +1278,7 @@
 				return;
 			}
 
-			$query = phpgw::get_var('query');
+			$query = Sanitizer::get_var('query');
 
 			$sogeneric	 = CreateObject('property.sogeneric', 'vendor');
 			$values		 = $sogeneric->read(array('query' => $query));
@@ -1299,7 +1299,7 @@
 		 */
 		public function edit_survey_title()
 		{
-			$id = phpgw::get_var('id', 'int', 'GET');
+			$id = Sanitizer::get_var('id', 'int', 'GET');
 
 			if (!$this->acl_edit)
 			{
@@ -1309,7 +1309,7 @@
 			if ($id)
 			{
 				$values			 = $this->bo->read_single(array('id' => $id, 'view' => true));
-				$values['title'] = phpgw::get_var('value');
+				$values['title'] = Sanitizer::get_var('value');
 
 				try
 				{
@@ -1339,7 +1339,7 @@
 			{
 				return 'No access';
 			}
-			$id = phpgw::get_var('id', 'int', 'GET');
+			$id = Sanitizer::get_var('id', 'int', 'GET');
 
 			try
 			{
@@ -1380,7 +1380,7 @@
 			{
 				return 'No access';
 			}
-			$id = phpgw::get_var('id', 'int', 'GET');
+			$id = Sanitizer::get_var('id', 'int', 'GET');
 
 			try
 			{
@@ -1509,7 +1509,7 @@
 		{
 			$insert_record = phpgwapi_cache::session_get('property', 'insert_record');
 
-			$values = phpgw::get_var('values');
+			$values = Sanitizer::get_var('values');
 
 			$_fields = array
 				(
@@ -1580,7 +1580,7 @@
 			{
 				if ($data[$_field['name']] = $_POST['values'][$_field['name']])
 				{
-					$data[$_field['name']] = phpgw::clean_value($data[$_field['name']], $_field['type']);
+					$data[$_field['name']] = Sanitizer::clean_value($data[$_field['name']], $_field['type']);
 				}
 				if ($_field['required'] && !$data[$_field['name']])
 				{
@@ -1600,7 +1600,7 @@
 			/*
 			 * Extra data from custom fields
 			 */
-			$values['attributes'] = phpgw::get_var('values_attribute');
+			$values['attributes'] = Sanitizer::get_var('values_attribute');
 
 			if (is_array($values['attributes']))
 			{

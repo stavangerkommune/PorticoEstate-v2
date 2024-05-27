@@ -113,7 +113,7 @@
 				return;
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -198,7 +198,7 @@
 				(
 				'my_name'	 => 'view_document',
 				'text'		 => lang('view'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'property.uigeneric_document.view'
 				)),
@@ -209,7 +209,7 @@
 				(
 				'my_name'	 => 'edit_document',
 				'text'		 => lang('edit'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'property.uigeneric_document.edit'
 				)),
@@ -224,7 +224,7 @@
 					'my_name'		 => 'delete_document',
 					'text'			 => lang('delete'),
 					'confirm_msg'	 => lang('do you really want to delete this entry') . '?',
-					'action'		 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'		 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uigeneric_document.delete'
 					)),
@@ -241,24 +241,24 @@
 		 */
 		public function query()
 		{
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 			$params = array(
-				'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'		 => $search['value'],
 				'order'		 => $columns[$order[0]['column']]['data'],
 				'sort'		 => $order[0]['dir'],
-				'cat_id'	 => phpgw::get_var('cat_id', 'int', 'REQUEST', 0),
+				'cat_id'	 => Sanitizer::get_var('cat_id', 'int', 'REQUEST', 0),
 				'location'	 => 'generic_document',
-				'allrows'	 => phpgw::get_var('length', 'int') == -1
+				'allrows'	 => Sanitizer::get_var('length', 'int') == -1
 			);
 
 			$values = $this->bo->read($params);
-			if (phpgw::get_var('export', 'bool'))
+			if (Sanitizer::get_var('export', 'bool'))
 			{
 				return $values;
 			}
@@ -281,31 +281,31 @@
 
 		public function get_locations_for_type()
 		{
-			$type_id		 = phpgw::get_var('type_id', 'int');
-			$file_id		 = phpgw::get_var('id', 'int');
-			$only_related	 = phpgw::get_var('only_related', 'boolean');
+			$type_id		 = Sanitizer::get_var('type_id', 'int');
+			$file_id		 = Sanitizer::get_var('id', 'int');
+			$only_related	 = Sanitizer::get_var('only_related', 'boolean');
 
 			if (!$type_id)
 			{
 				$type_id = 1;
 			}
 
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 			$params = array(
-				'start'				 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'			 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'				 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'			 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'				 => $search['value'],
 				'order'				 => $columns[$order[0]['column']]['data'],
 				'sort'				 => $order[0]['dir'],
-				'cat_id'			 => phpgw::get_var('cat_id', 'int', 'REQUEST', 0),
+				'cat_id'			 => Sanitizer::get_var('cat_id', 'int', 'REQUEST', 0),
 				'type_id'			 => $type_id,
-				'district_id'		 => phpgw::get_var('district_id', 'int', 'REQUEST', 0),
-				'part_of_town_id'	 => phpgw::get_var('part_of_town_id', 'int', 'REQUEST', 0),
-				'allrows'			 => ($only_related) ? 1 : (phpgw::get_var('length', 'int') == -1)
+				'district_id'		 => Sanitizer::get_var('district_id', 'int', 'REQUEST', 0),
+				'part_of_town_id'	 => Sanitizer::get_var('part_of_town_id', 'int', 'REQUEST', 0),
+				'allrows'			 => ($only_related) ? 1 : (Sanitizer::get_var('length', 'int') == -1)
 			);
 
 			$solocation	 = CreateObject('property.solocation');
@@ -378,7 +378,7 @@
 		 */
 		public function edit( $values = array(), $mode = 'edit' )
 		{
-			$id = isset($values['id']) && $values['id'] ? $values['id'] : phpgw::get_var('id', 'int');
+			$id = isset($values['id']) && $values['id'] ? $values['id'] : Sanitizer::get_var('id', 'int');
 
 			if (!$this->acl_add && !$this->acl_edit)
 			{
@@ -555,14 +555,14 @@
 			self::add_javascript('property', 'base', 'generic_document.edit.js', false, array('combine' => true ));
 
 			self::add_javascript('phpgwapi', 'tinybox2', 'packed.js', false, array('combine' => true ));
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/tinybox2/style.css');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/tinybox2/style.css');
 
 			self::render_template_xsl(array('generic_document', 'datatable_inline'), $data);
 		}
 
 		public function get_categories_for_type()
 		{
-			$type_id = phpgw::get_var('type_id', 'int');
+			$type_id = Sanitizer::get_var('type_id', 'int');
 
 			if (!$type_id)
 			{
@@ -583,7 +583,7 @@
 
 		public function get_part_of_town()
 		{
-			$district_id = phpgw::get_var('district_id', 'int');
+			$district_id = Sanitizer::get_var('district_id', 'int');
 			$values		 = $this->bocommon->select_part_of_town('filter', '', $district_id);
 			array_unshift($values, array('id' => '', 'name' => lang('no part of town')));
 
@@ -592,7 +592,7 @@
 
 		public function get_location_filter()
 		{
-			$entity_group_id = phpgw::get_var('entity_group_id', 'int');
+			$entity_group_id = Sanitizer::get_var('entity_group_id', 'int');
 
 			$location_filter = phpgwapi_cache::session_get('property', "location_filter_{$entity_group_id}");
 
@@ -642,7 +642,7 @@
 				return $this->edit();
 			}
 
-			$id = (int)phpgw::get_var('id');
+			$id = (int)Sanitizer::get_var('id');
 
 			if ($id)
 			{
@@ -706,13 +706,13 @@
 				return;
 			}
 
-			$file_id		 = phpgw::get_var('id', 'int');
-			$location_id	 = phpgw::get_var('location_id', 'int');
-			$search			 = phpgw::get_var('search');
-			$draw			 = phpgw::get_var('draw', 'int');
-			$only_related	 = phpgw::get_var('only_related', 'boolean');
-			$all_types		 = phpgw::get_var('all_types', 'boolean');
-			$entity_group_id = phpgw::get_var('entity_group_id');
+			$file_id		 = Sanitizer::get_var('id', 'int');
+			$location_id	 = Sanitizer::get_var('location_id', 'int');
+			$search			 = Sanitizer::get_var('search');
+			$draw			 = Sanitizer::get_var('draw', 'int');
+			$only_related	 = Sanitizer::get_var('only_related', 'boolean');
+			$all_types		 = Sanitizer::get_var('all_types', 'boolean');
+			$entity_group_id = Sanitizer::get_var('entity_group_id');
 
 			$name_field	 = 'tfm_nr';
 			$entity_list = $this->soadmin_entity->read(array('allrows' => true));
@@ -725,9 +725,9 @@
 			if ($all_types)
 			{
 				$result = $this->bo->get_file_relations_componentes(array(
-					'start'				 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-					'results'			 => phpgw::get_var('length', 'int', 'REQUEST', 0),
-					'allrows'			 => phpgw::get_var('length', 'int') == -1,
+					'start'				 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+					'results'			 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
+					'allrows'			 => Sanitizer::get_var('length', 'int') == -1,
 					'file_id'			 => $file_id,
 					'entity_group_id'	 => $entity_group_id
 				));
@@ -753,10 +753,10 @@
 
 			$soentity	 = CreateObject('property.soentity');
 			$_components = $soentity->read(array(
-				'start'					 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'				 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'					 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'				 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'					 => $search['value'],
-				'allrows'				 => ($only_related) ? 1 : (phpgw::get_var('length', 'int') == -1),
+				'allrows'				 => ($only_related) ? 1 : (Sanitizer::get_var('length', 'int') == -1),
 				'filter_entity_group'	 => 0,
 				'location_id'			 => $location_id,
 				'filter_item'			 => array()
@@ -808,12 +808,12 @@
 		{
 			$receipt = array();
 
-			$all_types	 = phpgw::get_var('all_types', 'int');
-			$type_id	 = phpgw::get_var('type_id', 'int');
-			$location_id = phpgw::get_var('location_id', 'int');
-			$file_id	 = phpgw::get_var('file_id', 'int');
-			$items		 = phpgw::get_var('items', 'array', 'REQUEST', array());
-			$related	 = phpgw::get_var('related', 'array', 'REQUEST', array());
+			$all_types	 = Sanitizer::get_var('all_types', 'int');
+			$type_id	 = Sanitizer::get_var('type_id', 'int');
+			$location_id = Sanitizer::get_var('location_id', 'int');
+			$file_id	 = Sanitizer::get_var('file_id', 'int');
+			$items		 = Sanitizer::get_var('items', 'array', 'REQUEST', array());
+			$related	 = Sanitizer::get_var('related', 'array', 'REQUEST', array());
 
 			$add	 = array_diff($items, $related);
 			$delete	 = array_diff($related, $items);
@@ -873,7 +873,7 @@
 			{
 				return lang('no access');
 			}
-			ExecMethod('property.bofiles.get_file', phpgw::get_var('file_id', 'int'));
+			ExecMethod('property.bofiles.get_file', Sanitizer::get_var('file_id', 'int'));
 		}
 
 		/**
@@ -955,7 +955,7 @@
 				return;
 			}
 
-			$query = phpgw::get_var('query');
+			$query = Sanitizer::get_var('query');
 
 			$accounts = $GLOBALS['phpgw']->accounts->get_list('accounts', $start, $sort, $order, $query, $offset);
 
@@ -988,7 +988,7 @@
 				return;
 			}
 
-			$query = phpgw::get_var('query');
+			$query = Sanitizer::get_var('query');
 
 			$sogeneric	 = CreateObject('property.sogeneric', 'vendor');
 			$values		 = $sogeneric->read(array('query' => $query));
@@ -1009,7 +1009,7 @@
 		 */
 		public function edit_title()
 		{
-			$id = phpgw::get_var('id', 'int', 'POST');
+			$id = Sanitizer::get_var('id', 'int', 'POST');
 
 			if (!$this->acl_edit)
 			{
@@ -1019,7 +1019,7 @@
 			if ($id)
 			{
 				$values			 = $this->bo->read_single(array('id' => $id, 'view' => true));
-				$values['title'] = phpgw::get_var('value');
+				$values['title'] = Sanitizer::get_var('value');
 
 				try
 				{
@@ -1054,7 +1054,7 @@
 				return 'No access';
 			}
 
-			$id = phpgw::get_var('id', 'int', 'GET');
+			$id = Sanitizer::get_var('id', 'int', 'GET');
 
 			try
 			{
@@ -1076,7 +1076,7 @@
 		private function _populate( $data = array() )
 		{
 
-			$values = phpgw::get_var('values');
+			$values = Sanitizer::get_var('values');
 
 			$_fields = array
 				(
@@ -1147,7 +1147,7 @@
 			{
 				if ($data[$_field['name']] = $_POST['values'][$_field['name']])
 				{
-					$data[$_field['name']] = phpgw::clean_value($data[$_field['name']], $_field['type']);
+					$data[$_field['name']] = Sanitizer::clean_value($data[$_field['name']], $_field['type']);
 				}
 				if ($_field['required'] && !$data[$_field['name']])
 				{
@@ -1159,7 +1159,7 @@
 			/*
 			 * Extra data from custom fields
 			 */
-			$values['attributes'] = phpgw::get_var('values_attribute');
+			$values['attributes'] = Sanitizer::get_var('values_attribute');
 
 			if (is_array($values['attributes']))
 			{

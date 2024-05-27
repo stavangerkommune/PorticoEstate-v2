@@ -130,10 +130,10 @@
 
 		function index()
 		{
-			$workorder_id	 = phpgw::get_var('workorder_id'); // in case of bigint
-			$lookup			 = phpgw::get_var('lookup', 'bool');
+			$workorder_id	 = Sanitizer::get_var('workorder_id'); // in case of bigint
+			$lookup			 = Sanitizer::get_var('lookup', 'bool');
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -264,7 +264,7 @@
 					'my_name'	 => 'view',
 					'statustext' => lang('view the claim'),
 					'text'		 => lang('view'),
-					'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'	 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uitemplate.hour'
 						)
@@ -277,7 +277,7 @@
 					'my_name'	 => 'edit',
 					'statustext' => lang('edit the claim'),
 					'text'		 => lang('edit'),
-					'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'	 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uitemplate.edit_template'
 						)
@@ -290,7 +290,7 @@
 					'my_name'	 => 'delete',
 					'statustext' => lang('delete the claim'),
 					'text'		 => lang('delete'),
-					'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'	 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uitemplate.delete'
 						)
@@ -308,7 +308,7 @@
 					'my_name'	 => 'Select',
 					'statustext' => lang('select'),
 					'text'		 => lang('select'),
-					'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'	 => phpgw::link('/index.php', array
 						(
 						'menuaction'	 => 'property.uiwo_hour.template',
 						'workorder_id'	 => $workorder_id
@@ -329,25 +329,25 @@
 
 		public function query()
 		{
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$export	 = phpgw::get_var('export', 'bool');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$export	 = Sanitizer::get_var('export', 'bool');
 
 			$params = array(
 				'filter'	 => $this->filter,
-				'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'		 => $search['value'],
 				//'order' => $columns[$order[0]['column']]['data'],
 				//'sort' => $order[0]['dir'],
 				//'dir' => $order[0]['dir'],
 				'order'		 => '',
-				'sort'		 => phpgw::get_var('sort'),
-				//'dir' => phpgw::get_var('dir'),
+				'sort'		 => Sanitizer::get_var('sort'),
+				//'dir' => Sanitizer::get_var('dir'),
 				'chapter_id' => $this->chapter_id,
-				//'cat_id' => phpgw::get_var('cat_id', 'int', 'REQUEST', 0),
-				'allrows'	 => phpgw::get_var('length', 'int') == -1 || $export,
+				//'cat_id' => Sanitizer::get_var('cat_id', 'int', 'REQUEST', 0),
+				'allrows'	 => Sanitizer::get_var('length', 'int') == -1 || $export,
 			);
 
 			$result_objects	 = array();
@@ -369,19 +369,19 @@
 
 		public function query_hour( $template_id )
 		{
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
-			$export	 = phpgw::get_var('export', 'bool');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
+			$export	 = Sanitizer::get_var('export', 'bool');
 
 			$params = array(
 				'start'			 => $this->start,
-				'results'		 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'results'		 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'			 => $search['value'],
 				'sort'			 => $order[0]['dir'],
 				'order'			 => $columns[$order[0]['column']]['data'],
-				'allrows'		 => phpgw::get_var('length', 'int') == -1 || $export,
+				'allrows'		 => Sanitizer::get_var('length', 'int') == -1 || $export,
 				'chapter_id'	 => $this->chapter_id,
 				'template_id'	 => $template_id
 			);
@@ -452,10 +452,10 @@
 
 		function hour()
 		{
-			$delete	 = phpgw::get_var('delete', 'bool');
-			$hour_id = phpgw::get_var('hour_id', 'int');
+			$delete	 = Sanitizer::get_var('delete', 'bool');
+			$hour_id = Sanitizer::get_var('hour_id', 'int');
 
-			$template_id = phpgw::get_var('template_id', 'int');
+			$template_id = Sanitizer::get_var('template_id', 'int');
 
 			if ($delete && $hour_id)
 			{
@@ -468,7 +468,7 @@
 			}
 
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query_hour($template_id);
 			}
@@ -541,7 +541,7 @@
 				(
 				'my_name'	 => 'edit',
 				'text'		 => lang('edit'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uitemplate.edit_hour')),
+				'action'	 => phpgw::link('/index.php', array('menuaction' => 'property.uitemplate.edit_hour')),
 				'parameters' => json_encode($parameters[0])
 			);
 
@@ -550,7 +550,7 @@
 				'my_name'		 => 'delete',
 				'text'			 => lang('delete'),
 				'confirm_msg'	 => lang('do you really want to delete this entry'),
-				'action'		 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uitemplate.hour')),
+				'action'		 => phpgw::link('/index.php', array('menuaction' => 'property.uitemplate.hour')),
 				'parameters'	 => json_encode($parameters[1])
 			);
 
@@ -561,9 +561,9 @@
 
 		function edit_template( $values = array() )
 		{
-			$template_id = isset($values['template_id']) && $values['template_id'] ? $values['template_id'] : (int)phpgw::get_var('template_id', 'int');
+			$template_id = isset($values['template_id']) && $values['template_id'] ? $values['template_id'] : (int)Sanitizer::get_var('template_id', 'int');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('template'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('template'));
 
 			$tabs			 = array();
 			$tabs['general'] = array('label' => lang('general'), 'link' => '#general');
@@ -588,8 +588,8 @@
 
 			$data = array
 				(
-				'form_action'				 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'done_action'				 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uitemplate.index',
+				'form_action'				 => phpgw::link('/index.php', $link_data),
+				'done_action'				 => phpgw::link('/index.php', array('menuaction'	 => 'property.uitemplate.index',
 					'template_id'	 => $template_id)),
 				'lang_template_id'			 => lang('Template ID'),
 				'value_template_id'			 => $template_id,
@@ -612,7 +612,7 @@
 				'lang_chapter_statustext'	 => lang('Select the chapter (for tender) for this activity.'),
 				'lang_add'					 => lang('add a hour'),
 				'lang_add_statustext'		 => lang('add a hour to this template'),
-				'add_action'				 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uitemplate.edit_hour',
+				'add_action'				 => phpgw::link('/index.php', array('menuaction'	 => 'property.uitemplate.edit_hour',
 					'template_id'	 => $template_id)),
 				'tabs'						 => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
 				'validator'					 => phpgwapi_jquery::formvalidator_generate(array('location',
@@ -623,7 +623,7 @@
 			$function_msg	 = lang('view ticket detail');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('edit_template' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit_template' => $data));
 			//	$GLOBALS['phpgw']->xslttpl->pp();
 		}
 
@@ -633,8 +633,8 @@
 			{
 				return $this->edit_template();
 			}
-			$template_id = (int)phpgw::get_var('template_id');
-			$values		 = phpgw::get_var('values');
+			$template_id = (int)Sanitizer::get_var('template_id');
+			$values		 = Sanitizer::get_var('values');
 			$receipt	 = array();
 
 			$values['template_id'] = $template_id;
@@ -668,12 +668,12 @@
 
 		function edit_hour()
 		{
-			$template_id			 = phpgw::get_var('template_id', 'int');
-			$activity_id			 = phpgw::get_var('activity_id', 'int');
-			$hour_id				 = phpgw::get_var('hour_id', 'int');
-			$values					 = phpgw::get_var('values');
-			$values['ns3420_id']	 = phpgw::get_var('ns3420_id');
-			$values['ns3420_descr']	 = phpgw::get_var('ns3420_descr');
+			$template_id			 = Sanitizer::get_var('template_id', 'int');
+			$activity_id			 = Sanitizer::get_var('activity_id', 'int');
+			$hour_id				 = Sanitizer::get_var('hour_id', 'int');
+			$values					 = Sanitizer::get_var('values');
+			$values['ns3420_id']	 = Sanitizer::get_var('ns3420_id');
+			$values['ns3420_descr']	 = Sanitizer::get_var('ns3420_descr');
 			$error_id				 = false;
 			$receipt				 = array();
 
@@ -683,7 +683,7 @@
 
 			$bopricebook = CreateObject('property.bopricebook');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('template'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('template'));
 
 			if (isset($values['save']) && $values['save'])
 			{
@@ -746,8 +746,8 @@
 			$data = array
 				(
 				'msgbox_data'					 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'					 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'done_action'					 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uitemplate.hour',
+				'form_action'					 => phpgw::link('/index.php', $link_data),
+				'done_action'					 => phpgw::link('/index.php', array('menuaction'	 => 'property.uitemplate.hour',
 					'template_id'	 => $template_id)),
 				'lang_template'					 => lang('template'),
 				'value_template_id'				 => $template['template_id'],
@@ -809,7 +809,7 @@
 				'building_part_list'			 => array('options' => $this->bocommon->select_category_list(array(
 						'type'		 => 'building_part', 'selected'	 => $values['building_part_id'], 'order'		 => 'id',
 						'id_in_name' => 'num', 'filter'	 => $_filter_buildingpart))),
-				'ns3420_link'					 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uilookup.ns3420')),
+				'ns3420_link'					 => phpgw::link('/index.php', array('menuaction' => 'property.uilookup.ns3420')),
 				'lang_ns3420'					 => lang('NS3420'),
 				'value_ns3420_id'				 => $values['ns3420_id'],
 				'lang_ns3420_statustext'		 => lang('Select a standard-code from the norwegian standard'),
@@ -822,31 +822,31 @@
 			$appname = lang('Workorder template');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('edit_hour' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit_hour' => $data));
 			//	$GLOBALS['phpgw']->xslttpl->pp();
 		}
 
 		function delete()
 		{
-			$id = (int)phpgw::get_var('id');
+			$id = (int)Sanitizer::get_var('id');
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$this->bo->delete($id);
 				return "id " . $id . " " . lang("has been deleted");
 			}
 
-			$confirm	 = phpgw::get_var('confirm', 'bool', 'POST');
+			$confirm	 = Sanitizer::get_var('confirm', 'bool', 'POST');
 			$link_data	 = array
 				(
 				'menuaction' => 'property.uitemplate.index'
 			);
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 				(
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uitemplate.delete',
+				'done_action'			 => phpgw::link('/index.php', $link_data),
+				'delete_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uitemplate.delete',
 					'id'		 => $id)),
 				'lang_confirm_msg'		 => lang('do you really want to delete this entry'),
 				'lang_yes'				 => lang('yes'),
@@ -859,6 +859,6 @@
 			$function_msg	 = lang('delete template');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 	}

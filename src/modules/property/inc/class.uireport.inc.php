@@ -75,7 +75,7 @@
 
 		public function download()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
 			$list = $this->bo->read_to_export($id);
 
@@ -105,9 +105,9 @@
 		 */
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				if (phpgw::get_var('dataset'))
+				if (Sanitizer::get_var('dataset'))
 				{
 					return $this->query_dataset();
 				}
@@ -152,7 +152,7 @@
 				(
 				'my_name'	 => 'edit',
 				'text'		 => lang('edit'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'property.uireport.edit'
 				)),
@@ -164,7 +164,7 @@
 				'my_name'		 => 'delete',
 				'text'			 => lang('delete'),
 				'confirm_msg'	 => lang('do you really want to delete this entry'),
-				'action'		 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'		 => phpgw::link('/index.php', array
 					(
 					'menuaction'		 => 'property.uireport.delete', 'phpgw_return_as'	 => 'json'
 				)),
@@ -236,7 +236,7 @@
 				(
 				'my_name'	 => 'edit',
 				'text'		 => lang('edit'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'property.uireport.edit_dataset'
 				)),
@@ -248,7 +248,7 @@
 				'my_name'		 => 'delete',
 				'text'			 => lang('delete'),
 				'confirm_msg'	 => lang('do you really want to delete this entry'),
-				'action'		 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'		 => phpgw::link('/index.php', array
 					(
 					'menuaction'		 => 'property.uireport.delete_dataset', 'phpgw_return_as'	 => 'json'
 				)),
@@ -311,7 +311,7 @@
 		 */
 		public function edit( $values = array(), $mode = 'edit' )
 		{
-			$id = isset($values['id']) && $values['id'] ? $values['id'] : phpgw::get_var('id', 'int');
+			$id = isset($values['id']) && $values['id'] ? $values['id'] : Sanitizer::get_var('id', 'int');
 
 			if ($id)
 			{
@@ -368,8 +368,8 @@
 				(
 				'datatable_def'		 => array(),
 				'editable'			 => $mode == 'edit',
-				'form_action'		 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'cancel_action'		 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uireport.index')),
+				'form_action'		 => phpgw::link('/index.php', $link_data),
+				'cancel_action'		 => phpgw::link('/index.php', array('menuaction' => 'property.uireport.index')),
 				'datasets'			 => array('options' => $list),
 				'report_definition'	 => $values['report_definition'],
 				'operators'			 => json_encode($this->operators),
@@ -396,7 +396,7 @@
 
 		private function _validate_criteria()
 		{
-			$values = phpgw::get_var('values');
+			$values = Sanitizer::get_var('values');
 
 			if ($values)
 			{
@@ -407,10 +407,10 @@
 			}
 			else
 			{
-				$restricted_values	 = phpgw::get_var('cbo_restricted_value');
-				$operators			 = phpgw::get_var('cbo_operator');
-				$values_1			 = phpgw::get_var('txt_value1');
-				$conector			 = phpgw::get_var('cbo_conector');
+				$restricted_values	 = Sanitizer::get_var('cbo_restricted_value');
+				$operators			 = Sanitizer::get_var('cbo_operator');
+				$values_1			 = Sanitizer::get_var('txt_value1');
+				$conector			 = Sanitizer::get_var('cbo_conector');
 			}
 
 			$criteria = array();
@@ -446,15 +446,15 @@
 
 		private function _populate( $data = array() )
 		{
-			$report_id	 = phpgw::get_var('report_id');
-			$report_name = phpgw::get_var('report_name');
-			$dataset_id	 = phpgw::get_var('dataset_id');
+			$report_id	 = Sanitizer::get_var('report_id');
+			$report_name = Sanitizer::get_var('report_name');
+			$dataset_id	 = Sanitizer::get_var('dataset_id');
 
-			$_columns		 = phpgw::get_var('columns');
-			$group_by		 = phpgw::get_var('group');
-			$order_by		 = phpgw::get_var('order');
-			$aggregate		 = phpgw::get_var('aggregate');
-			$cbo_aggregate	 = phpgw::get_var('cbo_aggregate');
+			$_columns		 = Sanitizer::get_var('columns');
+			$group_by		 = Sanitizer::get_var('group');
+			$order_by		 = Sanitizer::get_var('order');
+			$aggregate		 = Sanitizer::get_var('aggregate');
+			$cbo_aggregate	 = Sanitizer::get_var('cbo_aggregate');
 
 			$criteria = $this->_validate_criteria();
 
@@ -539,9 +539,9 @@
 
 		function delete()
 		{
-			$id = phpgw::get_var('id');
+			$id = Sanitizer::get_var('id');
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$receipt = $this->bo->delete($id);
 
@@ -565,7 +565,7 @@
 
 		public function edit_dataset( $values = array(), $mode = 'edit' )
 		{
-			$id = isset($values['id']) && $values['id'] ? $values['id'] : phpgw::get_var('id', 'int');
+			$id = isset($values['id']) && $values['id'] ? $values['id'] : Sanitizer::get_var('id', 'int');
 
 			if ($id)
 			{
@@ -602,8 +602,8 @@
 				(
 				'datatable_def'	 => array(),
 				'editable'		 => $mode == 'edit',
-				'form_action'	 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'cancel_action'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uireport.index')),
+				'form_action'	 => phpgw::link('/index.php', $link_data),
+				'cancel_action'	 => phpgw::link('/index.php', array('menuaction' => 'property.uireport.index')),
 				'views'			 => array('options' => $list),
 				'dataset_name'	 => $values['dataset_name'],
 				'dataset_id'	 => isset($values['id']) ? $values['id'] : '',
@@ -620,8 +620,8 @@
 
 		private function _populate_dataset( $data = array() )
 		{
-			$dataset_id	 = phpgw::get_var('dataset_id');
-			$values		 = phpgw::get_var('values');
+			$dataset_id	 = Sanitizer::get_var('dataset_id');
+			$values		 = Sanitizer::get_var('values');
 
 			$values['id'] = $dataset_id;
 
@@ -679,9 +679,9 @@
 
 		function delete_dataset()
 		{
-			$id = phpgw::get_var('id');
+			$id = Sanitizer::get_var('id');
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$receipt = $this->bo->delete_dataset($id);
 
@@ -704,24 +704,24 @@
 		 */
 		public function query()
 		{
-			$query	 = phpgw::get_var('query');
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
-			$export	 = phpgw::get_var('export', 'bool');
+			$query	 = Sanitizer::get_var('query');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
+			$export	 = Sanitizer::get_var('export', 'bool');
 
-			$dataset_id = phpgw::get_var('dataset_id', 'int');
+			$dataset_id = Sanitizer::get_var('dataset_id', 'int');
 
 			$params = array(
-				'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'		 => $query ? $query : $search['value'],
 				'order'		 => $columns[$order[0]['column']]['data'],
 				'sort'		 => $order[0]['dir'],
 				'dir'		 => $order[0]['dir'],
 				'dataset_id' => $dataset_id,
-				'allrows'	 => phpgw::get_var('length', 'int') == -1 || $export,
+				'allrows'	 => Sanitizer::get_var('length', 'int') == -1 || $export,
 			);
 
 			$values = $this->bo->read($params);
@@ -746,21 +746,21 @@
 
 		public function query_dataset()
 		{
-			$query	 = phpgw::get_var('query');
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
-			$export	 = phpgw::get_var('export', 'bool');
+			$query	 = Sanitizer::get_var('query');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
+			$export	 = Sanitizer::get_var('export', 'bool');
 
 			$params = array(
-				'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'		 => $query ? $query : $search['value'],
 				'order'		 => $columns[$order[0]['column']]['data'],
 				'sort'		 => $order[0]['dir'],
 				'dir'		 => $order[0]['dir'],
-				'allrows'	 => phpgw::get_var('length', 'int') == -1 || $export,
+				'allrows'	 => Sanitizer::get_var('length', 'int') == -1 || $export,
 			);
 
 			$values = $this->bo->read_dataset($params);
@@ -785,7 +785,7 @@
 
 		public function get_column_preview()
 		{
-			$dataset_id = phpgw::get_var('dataset_id');
+			$dataset_id = Sanitizer::get_var('dataset_id');
 
 			$columns = $this->bo->get_view_columns($dataset_id);
 
@@ -811,8 +811,8 @@
 
 		public function preview()
 		{
-			$values		 = phpgw::get_var('values');
-			$dataset_id	 = phpgw::get_var('dataset_id');
+			$values		 = Sanitizer::get_var('values');
+			$dataset_id	 = Sanitizer::get_var('dataset_id');
 
 			$data['columns']		 = $values['columns'];
 			$data['group']			 = $values['group'];

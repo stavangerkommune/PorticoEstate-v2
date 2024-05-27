@@ -56,7 +56,7 @@
 				$GLOBALS['phpgw']->common->phpgw_exit();
 			}
 
-			$app = phpgw::get_var('app', 'string', 'GET');
+			$app = Sanitizer::get_var('app', 'string', 'GET');
 
 			//get session's values
 			$data = phpgwapi_cache::session_get($app, 'id_debug');

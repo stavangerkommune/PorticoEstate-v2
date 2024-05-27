@@ -9,7 +9,7 @@
 	 * @subpackage core
 	 * @version $Id$
 	 */
-	/*
+/*
 	  This program is free software: you can redistribute it and/or modify
 	  it under the terms of the GNU Lesser General Public License as published by
 	  the Free Software Foundation, either version 2 of the License, or
@@ -25,6 +25,9 @@
 	 */
 
 
+	use App\Database\Db;
+	use App\modules\phpgwapi\controllers\Locations;
+	use App\modules\phpgwapi\services\Settings;
 
 
 	phpgw::import_class('phpgwapi.datetime');
@@ -73,8 +76,10 @@
 
 		public function __construct()
 		{
-			$this->account		 = (int)$GLOBALS['phpgw_info']['user']['account_id'];
-			$this->_db			 = & $GLOBALS['phpgw']->db;
+			
+			$userSettings =		Settings::getInstance()->get('user');
+			$this->account		 = (int)$userSettings['account_id'];
+			$this->_db			 = Db::getInstance();
 			$this->_join		 = & $this->_db->join;
 			$this->_like		 = & $this->_db->like;
 			$this->_left_join	 = & $this->_db->left_join;
@@ -238,22 +243,24 @@
 				throw new Exception('property_socommon_core::_get_interlink_data() - missing input');
 			}
 
+			$locations = new Locations();
+
 			$interlink_data = array();
 
 			if (isset($data['origin']) && $data['origin'] && isset($data['origin_id']) && $data['origin_id'])
 			{
 				$interlink_data = array
 					(
-					'location1_id'		 => $GLOBALS['phpgw']->locations->get_id('property', $data['origin']),
+					'location1_id'		 => $locations->get_id('property', $data['origin']),
 					'location1_item_id'	 => $data['origin_id'],
-					'location2_id'		 => $GLOBALS['phpgw']->locations->get_id('property', $location2),
+					'location2_id'		 => $locations->get_id('property', $location2),
 					'location2_item_id'	 => $id,
 					'account_id'		 => $this->account
 				);
 			}
 			else if (isset($data['extra']) && is_array($data['extra']) && isset($data['extra']['p_num']) && $data['extra']['p_num'])
 			{
-				$data['origin_id'] = $GLOBALS['phpgw']->locations->get_id('property', ".entity.{$data['extra']['p_entity_id']}.{$data['extra']['p_cat_id']}");
+				$data['origin_id'] = $locations->get_id('property', ".entity.{$data['extra']['p_entity_id']}.{$data['extra']['p_cat_id']}");
 
 				$this->_db->query('SELECT prefix FROM fm_entity_category WHERE entity_id = ' . (int)$data['extra']['p_entity_id'] . ' AND id = ' . (int)$data['extra']['p_cat_id']);
 				$this->_db->next_record();
@@ -264,7 +271,7 @@
 					(
 					'location1_id'		 => $data['origin_id'],
 					'location1_item_id'	 => $data['origin_item_id'],
-					'location2_id'		 => $GLOBALS['phpgw']->locations->get_id('property', '.ticket'),
+					'location2_id'		 => $locations->get_id('property', '.ticket'),
 					'location2_item_id'	 => $id,
 					'account_id'		 => $this->account
 				);

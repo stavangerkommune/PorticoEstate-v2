@@ -110,18 +110,18 @@
 				$this->use_session = true;
 			}
 
-			$start		 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query		 = phpgw::get_var('query');
-			$sort		 = phpgw::get_var('sort');
-			$order		 = phpgw::get_var('order');
-			$filter		 = phpgw::get_var('filter', 'int');
-			$cat_id		 = phpgw::get_var('cat_id', 'int');
-			$location_id = phpgw::get_var('location_id', 'int');
-			$allrows	 = phpgw::get_var('allrows', 'bool');
-			$type		 = phpgw::get_var('type');
-			$type_id	 = phpgw::get_var('type_id', 'int');
-			$user_id	 = phpgw::get_var('user_id', 'int');
-			$status_id	 = phpgw::get_var('status_id');
+			$start		 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query		 = Sanitizer::get_var('query');
+			$sort		 = Sanitizer::get_var('sort');
+			$order		 = Sanitizer::get_var('order');
+			$filter		 = Sanitizer::get_var('filter', 'int');
+			$cat_id		 = Sanitizer::get_var('cat_id', 'int');
+			$location_id = Sanitizer::get_var('location_id', 'int');
+			$allrows	 = Sanitizer::get_var('allrows', 'bool');
+			$type		 = Sanitizer::get_var('type');
+			$type_id	 = Sanitizer::get_var('type_id', 'int');
+			$user_id	 = Sanitizer::get_var('user_id', 'int');
+			$status_id	 = Sanitizer::get_var('status_id');
 
 			$this->start		 = $start ? $start : 0;
 			$this->query		 = isset($_REQUEST['query']) ? $query : $this->query;
@@ -237,7 +237,7 @@
 					}
 				}
 
-				$location	 = phpgw::get_var('location');
+				$location	 = Sanitizer::get_var('location');
 				$job_id		 = "property{$location}::{$values['location_item_id']}::{$values['attrib_id']}";
 				$job		 = execMethod('phpgwapi.asyncservice.read', $job_id);
 
@@ -402,7 +402,7 @@
 				$timer_data = array_merge($timer_data, $action_data);
 			}
 
-			$location = phpgw::get_var('location');
+			$location = Sanitizer::get_var('location');
 
 			$id					 = "property{$location}::{$data['item_id']}::{$receipt['id']}";
 			$timer_data['id']	 = $id;
@@ -475,7 +475,7 @@
 		public function delete( $id )
 		{
 			$values		 = $this->read_single($id);
-			$location	 = phpgw::get_var('location');
+			$location	 = Sanitizer::get_var('location');
 			$job_id		 = "property{$location}::{$values['location_item_id']}::{$values['attrib_id']}";
 			$job		 = execMethod('phpgwapi.asyncservice.cancel_timer', $job_id);
 
@@ -527,7 +527,7 @@
 		{
 			$responsible = CreateObject('property.soresponsible');
 
-			$location	 = phpgw::get_var('location');
+			$location	 = Sanitizer::get_var('location');
 			$values		 = $responsible->read_type(array('start'		 => 0, 'query'		 => '', 'sort'		 => '',
 				'order'		 => '', 'location'	 => $location, 'allrows'	 => true,
 				'filter'	 => ''));
@@ -1129,7 +1129,7 @@
 
 		public function init_schedule_week( $id, $buildingmodule, $resourcemodule, $search = null )
 		{
-			$date = new DateTime(phpgw::get_var('date'));
+			$date = new DateTime(Sanitizer::get_var('date'));
 			// Make sure $from is a monday
 			if ($date->format('w') != 1)
 			{
@@ -1143,24 +1143,24 @@
 			$resource	 = $this->read_single($id);
 			if ($search)
 			{
-				$resource['buildings_link'] = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => $search,
+				$resource['buildings_link'] = phpgw::link('/index.php', array('menuaction' => $search,
 					"type"		 => "building"));
 			}
 			else
 			{
-				$resource['buildings_link'] = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => $buildingmodule . '.index'));
+				$resource['buildings_link'] = phpgw::link('/index.php', array('menuaction' => $buildingmodule . '.index'));
 			}
 
-			$resource['building_link']	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => $buildingmodule . '.show',
+			$resource['building_link']	 = phpgw::link('/index.php', array('menuaction' => $buildingmodule . '.show',
 				'id'		 => $resource['building_id']));
-			$resource['resource_link']	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => $resourcemodule . '.show',
+			$resource['resource_link']	 = phpgw::link('/index.php', array('menuaction' => $resourcemodule . '.show',
 				'id'		 => $resource['id']));
 			$resource['date']			 = $date->format('Y-m-d');
 			$resource['week']			 = intval($date->format('W'));
 			$resource['year']			 = intval($date->format('Y'));
-			$resource['prev_link']		 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => $resourcemodule . '.schedule_week',
+			$resource['prev_link']		 = phpgw::link('/index.php', array('menuaction' => $resourcemodule . '.schedule_week',
 				'id'		 => $resource['id'], 'date'		 => $prev_date->format('Y-m-d')));
-			$resource['next_link']		 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => $resourcemodule . '.schedule_week',
+			$resource['next_link']		 = phpgw::link('/index.php', array('menuaction' => $resourcemodule . '.schedule_week',
 				'id'		 => $resource['id'], 'date'		 => $next_date->format('Y-m-d')));
 			for ($i = 0; $i < 7; $i++)
 			{
@@ -1178,13 +1178,13 @@
 		 */
 		public function event_schedule_week_data()
 		{
-			//		    $date = new DateTime(phpgw::get_var('date')); Use this one when moving to php 5.3
+			//		    $date = new DateTime(Sanitizer::get_var('date')); Use this one when moving to php 5.3
 
 			$datetime		 = CreateObject('phpgwapi.datetime');
-			$date			 = $datetime->convertDate(phpgw::get_var('date'), 'Y-m-d', $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
+			$date			 = $datetime->convertDate(Sanitizer::get_var('date'), 'Y-m-d', $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
 			$datetime_start	 = $datetime->date_to_timestamp($date);
 
-			$id = phpgw::get_var('resource_id', 'int');
+			$id = Sanitizer::get_var('resource_id', 'int');
 
 			$event		 = $this->so->read_single($id);
 			$criteria	 = array
@@ -1231,7 +1231,7 @@
 						'lang_exception' => $lang_exception,
 						'type'			 => 'event',
 						'name'			 => $set[$i]['descr'],
-						'link'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'		 => 'booking.uievent.show',
+						'link'			 => phpgw::link('/index.php', array('menuaction'		 => 'booking.uievent.show',
 							'location_id'		 => $set[$i]['location_id'], 'location_item_id'	 => $set[$i]['location_item_id']))
 					);
 				}
@@ -1255,7 +1255,7 @@
 		 */
 		public function event_schedule_data()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
 			$event = $this->so->read_single($id);
 
@@ -1292,7 +1292,7 @@
 							'lang_exception' => $lang_exception,
 							'type'			 => 'event',
 							'name'			 => $date,
-							'link'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'		 => 'booking.uievent.show',
+							'link'			 => phpgw::link('/index.php', array('menuaction'		 => 'booking.uievent.show',
 								'location_id'		 => $entry['location_id'], 'location_item_id'	 => $entry['location_item_id']))
 						)
 					);

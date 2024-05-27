@@ -212,7 +212,7 @@
 				return;
 			}
 
-			$lookup = phpgw::get_var('lookup', 'bool');
+			$lookup = Sanitizer::get_var('lookup', 'bool');
 
 			if ($lookup)
 			{
@@ -220,7 +220,7 @@
 				$GLOBALS['phpgw_info']['flags']['headonly']		 = true;
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -377,7 +377,7 @@
 						(
 						'my_name'	 => 'edit',
 						'text'		 => lang('edit'),
-						'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+						'action'	 => phpgw::link('/index.php', array
 							(
 							'menuaction' => 'property.uiresponsible.edit',
 							'appname'	 => $this->appname
@@ -394,7 +394,7 @@
 						'my_name'		 => 'delete',
 						'text'			 => lang('delete'),
 						'confirm_msg'	 => lang('do you really want to delete this entry'),
-						'action'		 => $GLOBALS['phpgw']->link('/index.php', array
+						'action'		 => phpgw::link('/index.php', array
 							(
 							'menuaction' => 'property.uiresponsible.delete_type',
 							'appname'	 => $this->appname
@@ -409,7 +409,7 @@
 						(
 						'my_name'	 => 'add',
 						'text'		 => lang('add'),
-						'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+						'action'	 => phpgw::link('/index.php', array
 							(
 							'menuaction' => 'property.uiresponsible.edit',
 							'appname'	 => $this->appname,
@@ -444,19 +444,19 @@
 		public function query()
 		{
 
-			$search	 = phpgw::get_var('search');
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
-			$export	 = phpgw::get_var('export', 'bool');
+			$search	 = Sanitizer::get_var('search');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
+			$export	 = Sanitizer::get_var('export', 'bool');
 
 			$params = array(
-				'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'		 => $search['value'],
 				'order'		 => $columns[$order[0]['column']]['data'],
 				'sort'		 => $order[0]['dir'],
-				'allrows'	 => phpgw::get_var('length', 'int') == -1 || $export,
+				'allrows'	 => Sanitizer::get_var('length', 'int') == -1 || $export,
 				'appname'	 => $this->appname,
 				'location'	 => $this->location
 			);
@@ -485,9 +485,9 @@
 				return $this->edit();
 			}
 
-			$id			 = phpgw::get_var('id', 'int');
-			$location	 = phpgw::get_var('location', 'string');
-			$values		 = phpgw::get_var('values');
+			$id			 = Sanitizer::get_var('id', 'int');
+			$location	 = Sanitizer::get_var('location', 'string');
+			$values		 = Sanitizer::get_var('values');
 
 			if ((isset($values['save']) && $values['save']) || (isset($values['apply']) && $values['apply']))
 			{
@@ -564,9 +564,9 @@
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
 
-			$id			 = phpgw::get_var('id', 'int');
-			$location	 = phpgw::get_var('location', 'string');
-			$values		 = phpgw::get_var('values');
+			$id			 = Sanitizer::get_var('id', 'int');
+			$location	 = Sanitizer::get_var('location', 'string');
+			$values		 = Sanitizer::get_var('values');
 
 			$tabs			 = array();
 			$tabs['general'] = array('label' => lang('general'), 'link' => '#general');
@@ -670,7 +670,7 @@
 				(
 				'datatable_def'	 => $datatable_def,
 				'msgbox_data'	 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'	 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'form_action'	 => phpgw::link('/index.php', $link_data),
 				'value_appname'	 => $this->appname,
 				'value_location' => $location,
 				'value_id'		 => $id,
@@ -695,8 +695,8 @@
 			$appname = 'Responsible';
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . "::{$appname}::$function_msg::" . lang($this->appname);
-			$GLOBALS['phpgw']->xslttpl->add_file(array('responsible', 'datatable_inline'));
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('edit' => $data));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('responsible', 'datatable_inline'));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit' => $data));
 		}
 
 		function edit_role()
@@ -706,9 +706,9 @@
 				phpgw::no_access();
 			}
 
-			$id			 = phpgw::get_var('id', 'int');
-			$location	 = phpgw::get_var('location', 'string');
-			$values		 = phpgw::get_var('values');
+			$id			 = Sanitizer::get_var('id', 'int');
+			$location	 = Sanitizer::get_var('location', 'string');
+			$values		 = Sanitizer::get_var('values');
 
 			if ((isset($values['save']) && $values['save']) || (isset($values['apply']) && $values['apply']))
 			{
@@ -796,7 +796,7 @@
 			$data = array
 				(
 				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'form_action'			 => phpgw::link('/index.php', $link_data),
 				'value_appname'			 => $this->appname,
 				'value_location'		 => $location,
 				'value_id'				 => $id,
@@ -812,8 +812,8 @@
 			$appname = 'Responsible';
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . "::{$appname}::$function_msg::" . lang($this->appname);
-			$GLOBALS['phpgw']->xslttpl->add_file(array('responsible'));
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('edit_role' => $data));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('responsible'));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit_role' => $data));
 		}
 
 		/**
@@ -829,9 +829,9 @@
 				return;
 			}
 
-			$type_id = phpgw::get_var('type_id', 'int');
+			$type_id = Sanitizer::get_var('type_id', 'int');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('responsible', 'nextmatchs', 'search_field'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('responsible', 'nextmatchs', 'search_field'));
 
 			$responsible_info = $this->bo->read_contact($type_id);
 
@@ -843,7 +843,7 @@
 				$text_edit			 = '';
 				if ($this->acl_edit)
 				{
-					$link_edit		 = $GLOBALS['phpgw']->link('/index.php', array
+					$link_edit		 = phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uiresponsible.edit_contact',
 						'id'		 => $entry['id'],
@@ -860,7 +860,7 @@
 				$lang_delete_demo_text	 = '';
 				/* 	if ($this->acl_delete)
 				  {
-				  $link_delete			= $GLOBALS['phpgw']->link('/index.php', array
+				  $link_delete			= phpgw::link('/index.php', array
 				  (
 				  'menuaction'=> 'property.uiresponsible.delete_contact',
 				  'id'=> $entry['id']
@@ -977,10 +977,10 @@
 				(
 				'lang_add'				 => lang('add'),
 				'lang_add_statustext'	 => lang('add contact'),
-				'add_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_add_action),
+				'add_action'			 => phpgw::link('/index.php', $link_add_action),
 				'lang_cancel'			 => lang('cancel'),
 				'lang_cancel_statustext' => lang('back to list type'),
-				'cancel_action'			 => $GLOBALS['phpgw']->link('/index.php', array
+				'cancel_action'			 => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'property.uiresponsible.index',
 					'appname'	 => $this->appname
@@ -1003,8 +1003,8 @@
 				'record_limit'					 => $record_limit,
 				'num_records'					 => $responsible_info ? count($responsible_info) : 0,
 				'all_records'					 => $this->bo->total_records,
-				'select_action'					 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'link_url'						 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'select_action'					 => phpgw::link('/index.php', $link_data),
+				'link_url'						 => phpgw::link('/index.php', $link_data),
 				'img_path'						 => $GLOBALS['phpgw']->common->get_image_path('phpgwapi', 'default'),
 				'lang_searchfield_statustext'	 => lang('Enter the search string. To show all entries, empty this field and press the SUBMIT button again'),
 				'lang_searchbutton_statustext'	 => lang('Submit the search string'),
@@ -1026,7 +1026,7 @@
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('responsible matrix') . ":: {$function_msg}";
 
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('list_contact' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('list_contact' => $data));
 			$this->_save_sessiondata();
 		}
 
@@ -1043,17 +1043,17 @@
 				return;
 			}
 
-			$id					 = phpgw::get_var('id', 'int');
-			$type_id			 = phpgw::get_var('type_id', 'int');
-			$values				 = phpgw::get_var('values', 'string', 'POST');
-			$contact_id			 = phpgw::get_var('contact', 'int');
-			$contact_name		 = phpgw::get_var('contact_name', 'string');
-			$responsibility_id	 = phpgw::get_var('responsibility_id', 'int');
-			$responsibility_name = phpgw::get_var('responsibility_name', 'string');
+			$id					 = Sanitizer::get_var('id', 'int');
+			$type_id			 = Sanitizer::get_var('type_id', 'int');
+			$values				 = Sanitizer::get_var('values', 'string', 'POST');
+			$contact_id			 = Sanitizer::get_var('contact', 'int');
+			$contact_name		 = Sanitizer::get_var('contact_name', 'string');
+			$responsibility_id	 = Sanitizer::get_var('responsibility_id', 'int');
+			$responsibility_name = Sanitizer::get_var('responsibility_name', 'string');
 			$bolocation			 = CreateObject('property.bolocation');
 			$bocommon			 = CreateObject('property.bocommon');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('responsible'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('responsible'));
 
 			if (isset($values) && is_array($values))
 			{
@@ -1162,7 +1162,7 @@
 							$values['p'][$values['extra']['p_entity_id']]['p_num']		 = $values['extra']['p_num'];
 							$values['p'][$values['extra']['p_entity_id']]['p_entity_id'] = $values['extra']['p_entity_id'];
 							$values['p'][$values['extra']['p_entity_id']]['p_cat_id']	 = $values['extra']['p_cat_id'];
-							$values['p'][$values['extra']['p_entity_id']]['p_cat_name']	 = phpgw::get_var('entity_cat_name_' . $values['extra']['p_entity_id'], 'string', 'POST');
+							$values['p'][$values['extra']['p_entity_id']]['p_cat_name']	 = Sanitizer::get_var('entity_cat_name_' . $values['extra']['p_entity_id'], 'string', 'POST');
 						}
 					}
 				}
@@ -1261,7 +1261,7 @@
 				'value_contact_id'					 => isset($values['contact_id']) ? $values['contact_id'] : '',
 				'value_contact_name'				 => isset($values['contact_name']) ? $values['contact_name'] : '',
 				'msgbox_data'						 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'						 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'form_action'						 => phpgw::link('/index.php', $link_data),
 				'lang_id'							 => lang('ID'),
 				'lang_save'							 => lang('save'),
 				'lang_cancel'						 => lang('cancel'),
@@ -1282,7 +1282,7 @@
 			);
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('responsible matrix') . "::{$function_msg}";
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('edit_contact' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit_contact' => $data));
 		}
 
 		/**
@@ -1292,7 +1292,7 @@
 		 */
 		public function no_access()
 		{
-			$GLOBALS['phpgw']->xslttpl->add_file(array('no_access'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('no_access'));
 
 			$receipt['error'][] = array('msg' => lang('NO ACCESS'));
 
@@ -1306,7 +1306,7 @@
 			$function_msg = lang('No access');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('responsible matrix') . ":: {$function_msg}";
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('no_access' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('no_access' => $data));
 		}
 
 		/**
@@ -1321,9 +1321,9 @@
 				return 'No access';
 			}
 
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$this->bo->delete_type($id);
 				return lang('id %1 has been deleted', $id);

@@ -220,16 +220,16 @@ HTML;
 					switch ($entry['type'])
 					{
 						case 'workorder':
-								$order_link = '<a href ="' . $GLOBALS['phpgw']->link('/index.php', array(
+								$order_link = '<a href ="' . phpgw::link('/index.php', array(
 									'menuaction' => 'property.uiworkorder.edit',
 									'id'		 => $order_id), false, true) . "\">{$order_id}</a>";
-								$project_link = '<a href ="' . $GLOBALS['phpgw']->link('/index.php', array(
+								$project_link = '<a href ="' . phpgw::link('/index.php', array(
 									'menuaction' => 'property.uiproject.edit',
 									'id'		 => $project_id), false, true) . "\">{$project_id}</a>";
 
 							break;
 						case 'ticket':
-								$order_link = '<a href ="' . $GLOBALS['phpgw']->link('/index.php', array(
+								$order_link = '<a href ="' . phpgw::link('/index.php', array(
 									'menuaction' => 'property.uitts.view',
 									'id'		 => $entry['ticket_id']), false, true) . "\">{$order_id}</a>";
 							break;

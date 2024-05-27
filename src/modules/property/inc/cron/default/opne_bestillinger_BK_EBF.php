@@ -113,7 +113,7 @@ HTML;
 
 				$update_orders[] = $entry['order_id'];
 
-				$entry['order_link'] = '<a href ="' . $GLOBALS['phpgw']->link('/index.php', array(
+				$entry['order_link'] = '<a href ="' . phpgw::link('/index.php', array(
 						'menuaction' => 'property.uiworkorder.edit',
 						'id'		 => $entry['order_id']), false, true) . "\">{$entry['order_id']}</a>";
 

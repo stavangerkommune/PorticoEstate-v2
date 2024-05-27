@@ -95,7 +95,7 @@
 
 		function index()
 		{
-			$output = phpgw::get_var('output');
+			$output = Sanitizer::get_var('output');
 
 			if (!$output)
 			{
@@ -108,7 +108,7 @@
 				return;
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('ifc', 'nextmatchs', 'search_field'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('ifc', 'nextmatchs', 'search_field'));
 
 			$ifc_info = $this->bo->read();
 
@@ -139,21 +139,21 @@
 					{
 						$content[$j]['row'][$i]['statustext']	 = lang('view the record');
 						$content[$j]['row'][$i]['text']			 = lang('view');
-						$content[$j]['row'][$i++]['link']		 = $GLOBALS['phpgw']->link('/index.php', array(
+						$content[$j]['row'][$i++]['link']		 = phpgw::link('/index.php', array(
 							'menuaction' => 'property.uiifc.view', 'ifc_id'	 => $entry['id']));
 					}
 					if ($this->acl_edit)
 					{
 						$content[$j]['row'][$i]['statustext']	 = lang('edit the record');
 						$content[$j]['row'][$i]['text']			 = lang('edit');
-						$content[$j]['row'][$i++]['link']		 = $GLOBALS['phpgw']->link('/index.php', array(
+						$content[$j]['row'][$i++]['link']		 = phpgw::link('/index.php', array(
 							'menuaction' => 'property.uiifc.edit', 'ifc_id'	 => $entry['id']));
 					}
 					if ($this->acl_delete)
 					{
 						$content[$j]['row'][$i]['statustext']	 = lang('delete the record');
 						$content[$j]['row'][$i]['text']			 = lang('delete');
-						$content[$j]['row'][$i++]['link']		 = $GLOBALS['phpgw']->link('/index.php', array(
+						$content[$j]['row'][$i++]['link']		 = phpgw::link('/index.php', array(
 							'menuaction' => 'property.uiifc.delete', 'ifc_id'	 => $entry['id']));
 					}
 
@@ -217,7 +217,7 @@
 					(
 					'lang_add'				 => lang('add'),
 					'lang_add_statustext'	 => lang('add a ifc'),
-					'add_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiifc.edit',
+					'add_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uiifc.edit',
 						'output'	 => $output)),
 				);
 			}
@@ -257,7 +257,7 @@
 				'record_limit'					 => $record_limit,
 				'num_records'					 => ($ifc_info ? count($ifc_info) : 0),
 				'all_records'					 => $this->bo->total_records,
-				'link_url'						 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'link_url'						 => phpgw::link('/index.php', $link_data),
 				'img_path'						 => $GLOBALS['phpgw']->common->get_image_path('phpgwapi', 'default'),
 				'lang_searchfield_statustext'	 => lang('Enter the search string. To show all entries, empty this field and press the SUBMIT button again'),
 				'lang_searchbutton_statustext'	 => lang('Submit the search string'),
@@ -277,7 +277,7 @@
 			{
 				$GLOBALS['phpgw']->xslttpl->set_output('wml');
 			}
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array("list2_{$output}" => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array("list2_{$output}" => $data));
 			$this->save_sessiondata();
 		}
 
@@ -293,8 +293,8 @@
 
 			$bolocation = CreateObject('property.bolocation');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('ifc'));
-			$values = phpgw::get_var('values');
+			phpgwapi_xslttemplates::getInstance()->add_file(array('ifc'));
+			$values = Sanitizer::get_var('values');
 
 			if (isset($values) && is_array($values))
 			{
@@ -307,7 +307,7 @@
 
 					if (!$ifcfile)
 					{
-						$ifcfile = phpgw::get_var('tsvfile');
+						$ifcfile = Sanitizer::get_var('tsvfile');
 					}
 
 					if (!isset($receipt['error']) || !$receipt['error'])
@@ -355,7 +355,7 @@
 			$data											 = array
 				(
 				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'import_url'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'import_url'			 => phpgw::link('/index.php', $link_data),
 				'location_data'			 => $location_data,
 				'lang_file'				 => lang('file'),
 				'lang_file_statustext'	 => lang('choose file to import'),
@@ -372,7 +372,7 @@
 			);
 			$GLOBALS['phpgw_info']['flags']['app_header']	 = lang('ifc') . ': ' . lang('import');
 //_debug_array($data);
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('import' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('import' => $data));
 		}
 
 		function edit()
@@ -384,16 +384,16 @@
 				return;
 			}
 
-			$output = phpgw::get_var('output');
+			$output = Sanitizer::get_var('output');
 
 			if (!$output)
 			{
 				$output = 'html';
 			}
 
-			$ifc_id				 = phpgw::get_var('ifc_id', 'int');
-			$values				 = phpgw::get_var('values');
-			$values_attribute	 = phpgw::get_var('values_attribute');
+			$ifc_id				 = Sanitizer::get_var('ifc_id', 'int');
+			$values				 = Sanitizer::get_var('values');
+			$values_attribute	 = Sanitizer::get_var('values_attribute');
 
 			$insert_record_values = $GLOBALS['phpgw']->session->appsession('insert_record_values' . $acl_location, 'ifc');
 
@@ -405,7 +405,7 @@
 				}
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('ifc', 'attributes_form'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('ifc', 'attributes_form'));
 
 			if (isset($values) && is_array($values))
 			{
@@ -422,7 +422,7 @@
 					{
 						if (isset($_POST[$key]) && $_POST[$key])
 						{
-							$values['extra'][$column] = phpgw::get_var($key, 'string', 'POST');
+							$values['extra'][$column] = Sanitizer::get_var($key, 'string', 'POST');
 						}
 					}
 				}
@@ -527,7 +527,7 @@
 				'lang_town'					 => lang('town'),
 				'lang_remark'				 => lang('remark'),
 				'msgbox_data'				 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'				 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'form_action'				 => phpgw::link('/index.php', $link_data),
 				'lang_id'					 => lang('training ID'),
 				'lang_save'					 => lang('save'),
 				'lang_cancel'				 => lang('cancel'),
@@ -556,7 +556,7 @@
 			{
 				$GLOBALS['phpgw']->xslttpl->set_output('wml');
 			}
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('edit' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit' => $data));
 		}
 
 		function view()
@@ -567,17 +567,17 @@
 				return;
 			}
 
-			$output = phpgw::get_var('output');
+			$output = Sanitizer::get_var('output');
 
 			if (!$output)
 			{
 				$output = 'html';
 			}
 
-			$ifc_id	 = phpgw::get_var('ifc_id', 'int');
-			$values	 = phpgw::get_var('values');
+			$ifc_id	 = Sanitizer::get_var('ifc_id', 'int');
+			$values	 = Sanitizer::get_var('values');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('ifc', 'attributes_view'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('ifc', 'attributes_view'));
 
 			if ($ifc_id)
 			{
@@ -604,7 +604,7 @@
 				'lang_zip'			 => lang('zip'),
 				'lang_town'			 => lang('town'),
 				'lang_remark'		 => lang('remark'),
-				'form_action'		 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiifc.index',
+				'form_action'		 => phpgw::link('/index.php', array('menuaction' => 'property.uiifc.index',
 					'output'	 => $output)),
 				'lang_cancel'		 => lang('cancel'),
 				'value_id'			 => $ifc_id,
@@ -625,7 +625,7 @@
 				$GLOBALS['phpgw']->xslttpl->set_output('wml');
 			}
 
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('view' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('view' => $data));
 		}
 
 		function delete()
@@ -636,33 +636,33 @@
 				return;
 			}
 
-			$output = phpgw::get_var('output');
+			$output = Sanitizer::get_var('output');
 
 			if (!$output)
 			{
 				$output = 'html';
 			}
 
-			$ifc_id	 = phpgw::get_var('ifc_id', 'int');
-			$confirm = phpgw::get_var('confirm', 'bool', 'POST');
+			$ifc_id	 = Sanitizer::get_var('ifc_id', 'int');
+			$confirm = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 				(
 				'menuaction' => 'property.uiifc.index'
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete($ifc_id);
 				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 				(
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiifc.delete',
+				'done_action'			 => phpgw::link('/index.php', $link_data),
+				'delete_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uiifc.delete',
 					'ifc_id'	 => $ifc_id)),
 				'lang_confirm_msg'		 => lang('do you really want to delete this entry'),
 				'lang_yes'				 => lang('yes'),
@@ -681,12 +681,12 @@
 				$GLOBALS['phpgw']->xslttpl->set_output('wml');
 			}
 
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 
 		function no_access()
 		{
-			$GLOBALS['phpgw']->xslttpl->add_file(array('no_access'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('no_access'));
 
 			$receipt['error'][] = array('msg' => lang('NO ACCESS'));
 
@@ -700,6 +700,6 @@
 			$appname = lang('No access');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('no_access' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('no_access' => $data));
 		}
 	}

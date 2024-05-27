@@ -74,14 +74,14 @@
 
 	require_once PHPGW_API_INC . '/functions.inc.php';
 
-	$location_id = phpgw::get_var('location_id', 'int');
-	$section	 = phpgw::get_var('section', 'string');
-	$fileid		 = phpgw::get_var('fileid', 'string');
+	$location_id = Sanitizer::get_var('location_id', 'int');
+	$section	 = Sanitizer::get_var('section', 'string');
+	$fileid		 = Sanitizer::get_var('fileid', 'string');
 
 	$c = CreateObject('admin.soconfig', $location_id);
 
 	$login			 = $c->config_data[$section]['anonymous_user'];
-	$logindomain = phpgw::get_var('domain', 'string', 'GET');
+	$logindomain = Sanitizer::get_var('domain', 'string', 'GET');
 	if (strstr($login, '#') === false && $logindomain)
 	{
 		$login .= "#{$logindomain}";
@@ -97,7 +97,7 @@
 
 	if (!$where_parameter)
 	{
-		$where_parameter = phpgw::get_var('where_parameter', 'string');
+		$where_parameter = Sanitizer::get_var('where_parameter', 'string');
 	}
 
 	$_where = '';
@@ -105,11 +105,11 @@
 	{
 		if ($where_parameter)
 		{
-			$_where = "{$where_parameter} = " . phpgw::get_var($where_parameter);
+			$_where = "{$where_parameter} = " . Sanitizer::get_var($where_parameter);
 		}
 		else
 		{
-			$bygningsnr	 = (int)phpgw::get_var('bygningsnr', 'int');
+			$bygningsnr	 = (int)Sanitizer::get_var('bygningsnr', 'int');
 			$_where		 = "Byggnr = {$bygningsnr}";
 		}
 
@@ -304,10 +304,10 @@ HTML;
 	$content .= 'Last ned';
 	$content . '</th>';
 
-	$location_id = phpgw::get_var('location_id', 'int');
-	$section	 = phpgw::get_var('section', 'string');
+	$location_id = Sanitizer::get_var('location_id', 'int');
+	$section	 = Sanitizer::get_var('section', 'string');
 
-	$base_url = $GLOBALS['phpgw']->link('/property/inc/soap_client/bra5/soap.php', array(
+	$base_url = phpgw::link('/property/inc/soap_client/bra5/soap.php', array(
 		'domain'		 => $_GET['domain'],
 		'location_id'	 => $location_id,
 		'section'		 => $section

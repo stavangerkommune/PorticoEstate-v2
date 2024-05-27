@@ -111,7 +111,7 @@
 					'status' => 'error'
 				);
 			}
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				if ($receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
 				{
@@ -129,7 +129,7 @@
 
 		function get_split_template()
 		{
-			$voucher_id	 = phpgw::get_var('voucher_id', 'int');
+			$voucher_id	 = Sanitizer::get_var('voucher_id', 'int');
 			$filename	 = '0000_split';
 			$data		 = array();
 
@@ -168,7 +168,7 @@
 		function split_voucher()
 		{
 			$GLOBALS['phpgw_info']['flags']['noframework']	 = true;
-			$voucher_id										 = phpgw::get_var('voucher_id', 'int');
+			$voucher_id										 = Sanitizer::get_var('voucher_id', 'int');
 			if ($_FILES)
 			{
 				$this->_split_voucher($voucher_id);
@@ -181,10 +181,10 @@
 
 			$data = array
 				(
-				'redirect'		 => $redirect ? $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiinvoice.list_sub',
+				'redirect'		 => $redirect ? phpgw::link('/index.php', array('menuaction' => 'property.uiinvoice.list_sub',
 					'user_lid'	 => $user_lid, 'voucher_id' => $voucher_id, 'paid'		 => $paid)) : null,
 				'msgbox_data'	 => $GLOBALS['phpgw']->common->msgbox($GLOBALS['phpgw']->common->msgbox_data($receipt)),
-				'form_action'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiinvoice2.split_voucher',
+				'form_action'	 => phpgw::link('/index.php', array('menuaction' => 'property.uiinvoice2.split_voucher',
 					'voucher_id' => $voucher_id)),
 				'voucher_id'	 => $voucher_id
 			);
@@ -192,8 +192,8 @@
 			phpgwapi_jquery::load_widget('core');
 			self::add_javascript('property', 'base', 'ajax_invoice.js');
 
-			$GLOBALS['phpgw']->xslttpl->add_file('invoice');
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('split_voucher' => $data));
+			phpgwapi_xslttemplates::getInstance()->add_file('invoice');
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('split_voucher' => $data));
 		}
 
 		private function _split_voucher( $voucher_id )
@@ -267,7 +267,7 @@
 			  );
 
 
-			  if(phpgw::get_var('phpgw_return_as') == 'json')
+			  if(Sanitizer::get_var('phpgw_return_as') == 'json')
 			  {
 			  if( $receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
 			  {
@@ -286,10 +286,10 @@
 		function update_voucher()
 		{
 			$receipt	 = array();
-			$voucher_id	 = phpgw::get_var('voucher_id', 'int');
-			$line_id	 = phpgw::get_var('line_id', 'int');
+			$voucher_id	 = Sanitizer::get_var('voucher_id', 'int');
+			$line_id	 = Sanitizer::get_var('line_id', 'int');
 
-			if ($values = phpgw::get_var('values'))
+			if ($values = Sanitizer::get_var('values'))
 			{
 				if ($values['order_id'] != $values['order_id_orig'])
 				{
@@ -348,7 +348,7 @@
 				}
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				if ($receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
 				{
@@ -367,10 +367,10 @@
 		function index()
 		{
 			$receipt	 = array();
-			$voucher_id	 = phpgw::get_var('voucher_id', 'int');
-			$line_id	 = phpgw::get_var('line_id', 'int');
+			$voucher_id	 = Sanitizer::get_var('voucher_id', 'int');
+			$line_id	 = Sanitizer::get_var('line_id', 'int');
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -412,7 +412,7 @@
 			}
 
 			$msgbox_data = array();
-			if (phpgw::get_var('phpgw_return_as') != 'json' && $receipt	 = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
+			if (Sanitizer::get_var('phpgw_return_as') != 'json' && $receipt	 = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
 			{
 				phpgwapi_cache::session_clear('phpgwapi', 'phpgw_messages');
 				$msgbox_data = $GLOBALS['phpgw']->common->msgbox_data($receipt);
@@ -579,18 +579,18 @@
 			$data = array
 				(
 				'datatable_def'			 => $datatable_def,
-				'email_base_url'		 => json_encode($GLOBALS['phpgw']->link('/index.php', array(
+				'email_base_url'		 => json_encode(phpgw::link('/index.php', array(
 						'menuaction' => 'property.uiinvoice2.index'), true, true)),
 				'msgbox_data'			 => $msgbox_data,
 				'invoice_layout_config'	 => json_encode(execMethod('phpgwapi.template_portico.retrieve_local', 'invoice_layout_config')),
-				'preferences_url'		 => $GLOBALS['phpgw']->link('/preferences/index.php'),
+				'preferences_url'		 => phpgw::link('/preferences/index.php'),
 				'preferences_text'		 => lang('preferences'),
-				'home_url'				 => $GLOBALS['phpgw']->link('/home.php'),
+				'home_url'				 => phpgw::link('/home.php'),
 				'home_text'				 => lang('home'),
 				'home_icon'				 => 'icon icon-home',
-				'about_url'				 => $GLOBALS['phpgw']->link('/about.php', array('app' => $GLOBALS['phpgw_info']['flags']['currentapp'])),
+				'about_url'				 => phpgw::link('/about.php', array('app' => $GLOBALS['phpgw_info']['flags']['currentapp'])),
 				'about_text'			 => lang('about'),
-				'logout_url'			 => $GLOBALS['phpgw']->link('/logout.php'),
+				'logout_url'			 => phpgw::link('/logout.php'),
 				'logout_text'			 => lang('logout'),
 				'user_fullname'			 => $user->__toString(),
 				'site_title'			 => "{$GLOBALS['phpgw_info']['server']['site_title']}",
@@ -620,20 +620,20 @@
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('invoice');
 
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/tinybox2/style.css');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/tinybox2/style.css');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('invoice2', 'datatable_inline'));
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('data' => $data));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('invoice2', 'datatable_inline'));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('data' => $data));
 		}
 
 		public function query()
 		{
-			$line_id = phpgw::get_var('line_id', 'int');
-			$draw	 = phpgw::get_var('draw', 'int' . 'REQUEST', 0);
+			$line_id = Sanitizer::get_var('line_id', 'int');
+			$draw	 = Sanitizer::get_var('draw', 'int' . 'REQUEST', 0);
 
-			if (!$voucher_id = phpgw::get_var('voucher_id_filter'))
+			if (!$voucher_id = Sanitizer::get_var('voucher_id_filter'))
 			{
-				$voucher_id = phpgw::get_var('voucher_id');
+				$voucher_id = Sanitizer::get_var('voucher_id');
 			}
 			$this->bo->allrows	 = true;
 			$values				 = $this->bo->read_invoice_sub(array('voucher_id' => $voucher_id));
@@ -667,11 +667,11 @@
 
 		public function get_vouchers()
 		{
-			$janitor_lid			 = phpgw::get_var('janitor_lid', 'string');
-			$supervisor_lid			 = phpgw::get_var('supervisor_lid', 'string');
-			$budget_responsible_lid	 = phpgw::get_var('budget_responsible_lid', 'string');
-			$criteria				 = phpgw::get_var('criteria', 'string');
-			$query					 = phpgw::get_var('query', 'string');
+			$janitor_lid			 = Sanitizer::get_var('janitor_lid', 'string');
+			$supervisor_lid			 = Sanitizer::get_var('supervisor_lid', 'string');
+			$budget_responsible_lid	 = Sanitizer::get_var('budget_responsible_lid', 'string');
+			$criteria				 = Sanitizer::get_var('criteria', 'string');
+			$query					 = Sanitizer::get_var('query', 'string');
 
 			$vouchers = $this->bo->get_vouchers(array('janitor_lid'			 => $janitor_lid, 'supervisor_lid'		 => $supervisor_lid,
 				'budget_responsible_lid' => $budget_responsible_lid, 'criteria'				 => $criteria,
@@ -691,7 +691,7 @@
 
 		public function get_first_line()
 		{
-			$voucher_id	 = phpgw::get_var('voucher_id', 'int');
+			$voucher_id	 = Sanitizer::get_var('voucher_id', 'int');
 			$voucher	 = $this->bo->read_invoice_sub(array('voucher_id' => $voucher_id));
 			$ret		 = array('line_id' => 0);
 			if ($voucher)
@@ -703,7 +703,7 @@
 
 		public function get_single_line( $line_id = 0 )
 		{
-			$line_id		 = $line_id ? $line_id : phpgw::get_var('line_id', 'int');
+			$line_id		 = $line_id ? $line_id : Sanitizer::get_var('line_id', 'int');
 			$voucher_info	 = array();
 
 			$voucher	 = $this->bo->read_single_line($line_id);
@@ -907,7 +907,7 @@
 
 				if ($voucher[0]['remark'])
 				{
-					$voucher[0]['remark_link'] = " <a href=\"javascript:openwindow('" . $GLOBALS['phpgw']->link('/index.php', array
+					$voucher[0]['remark_link'] = " <a href=\"javascript:openwindow('" . phpgw::link('/index.php', array
 							(
 							'menuaction' => 'property.uiinvoice.remark',
 							'id'		 => $voucher[0]['id'],
@@ -915,7 +915,7 @@
 				}
 				if ($voucher[0]['order_id'])
 				{
-					$voucher[0]['order_link'] = $GLOBALS['phpgw']->link('/index.php', array
+					$voucher[0]['order_link'] = phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uiinvoice.view_order',
 						'order_id'	 => $voucher[0]['order_id']

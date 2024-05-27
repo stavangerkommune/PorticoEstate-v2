@@ -166,7 +166,7 @@
 				'name'			 => "{$count}",
 				'values'		 => json_encode($content),
 				'total_records'	 => count($content),
-				'edit_action'	 => json_encode($GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'addressbook.uiaddressbook_persons.view'))),
+				'edit_action'	 => json_encode(phpgw::link('/index.php', array('menuaction' => 'addressbook.uiaddressbook_persons.view'))),
 				'is_paginator'	 => 1,
 				'footer'		 => 0
 			);
@@ -244,7 +244,7 @@
 				);
 			}
 
-			$GLOBALS['phpgw']->js->validate_file('base', 'notify', 'property');
+			phpgwapi_js::getInstance()->validate_file('base', 'notify', 'property');
 
 			$lang_view	 = lang('view');
 			$code		 = <<<JS
@@ -283,14 +283,14 @@
 
 	}
 JS;
-			$GLOBALS['phpgw']->js->add_code($namespace = '', $code);
+			phpgwapi_js::getInstance()->add_code($namespace = '', $code);
 
 			return array('datavalues' => $datavalues, 'column_defs' => $column_defs, 'tabletools' => $tabletools);
 		}
 
 		public function update_data()
 		{
-			$action = phpgw::get_var('action', 'string', 'GET');
+			$action = Sanitizer::get_var('action', 'string', 'GET');
 			switch ($action)
 			{
 				case 'refresh_notify_contact':
@@ -302,23 +302,23 @@ JS;
 
 		public function refresh_notify_contact()
 		{
-			$location_id		 = (int)phpgw::get_var('location_id', 'int');
-			$location_item_id	 = (int)phpgw::get_var('location_item_id', 'int');
-			$contact_id			 = (int)phpgw::get_var('contact_id', 'int');
-			$type				 = phpgw::get_var('type');
-			$notify				 = phpgw::get_var('notify', 'bool');
-			$ids				 = phpgw::get_var('ids', 'int');
+			$location_id		 = (int)Sanitizer::get_var('location_id', 'int');
+			$location_item_id	 = (int)Sanitizer::get_var('location_item_id', 'int');
+			$contact_id			 = (int)Sanitizer::get_var('contact_id', 'int');
+			$type				 = Sanitizer::get_var('type');
+			$notify				 = Sanitizer::get_var('notify', 'bool');
+			$ids				 = Sanitizer::get_var('ids', 'int');
 
 
 			$content = $this->refresh_notify_contact_2($location_id, $location_item_id, $contact_id, $type, $notify, $ids );
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$total_records = count($content);
 				$result_data = array(
 					'data'				 => $content,
 					'total_records'		 => $total_records,
-					'draw'				 => phpgw::get_var('draw', 'int'),
+					'draw'				 => Sanitizer::get_var('draw', 'int'),
 					'recordsTotal'		 => $total_records,
 					'recordsFiltered'	 => $total_records
 				);

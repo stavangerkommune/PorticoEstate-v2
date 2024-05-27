@@ -27,6 +27,14 @@
 	 * @version $Id$
 	 */
 
+use App\Database\Db;
+use App\Database\Db2;
+use App\modules\phpgwapi\controllers\Locations;
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\security\Acl;
+use App\modules\phpgwapi\services\SchemaProc\SchemaProc;
+
+
 	/**
 	 * Description
 	 * @package property
@@ -46,12 +54,14 @@
 		public $category_tree	 = array();
 
 		var $db,$db2, $join, $left_join, $like,$category_name,$account, $total_records;
-		var $oProc, $level,$parent_gap, $category_parent, $category_id, $check_parent;
+		var $oProc, $level,$parent_gap, $category_parent, $category_id, $check_parent, $locations;
 
 
 		function __construct( $entity_id = '', $cat_id = '', $bocommon = '' )
 		{
-			$this->account	= isset($GLOBALS['phpgw_info']['user']['account_id']) ? (int)$GLOBALS['phpgw_info']['user']['account_id'] : -1;
+			$userSettings = Settings::getInstance()->get('user');
+
+			$this->account	= isset($userSettings['account_id']) ? (int)$userSettings['account_id'] : -1;
 
 			if (!$bocommon || !is_object($bocommon))
 			{
@@ -62,8 +72,8 @@
 				$this->bocommon = $bocommon;
 			}
 
-			$this->db	 = & $GLOBALS['phpgw']->db;
-			$this->db2	 = clone($this->db);
+			$this->db	 = Db::getInstance();
+			$this->db2	 = new Db2();
 			$this->join	 = & $this->db->join;
 			$this->like	 = & $this->db->like;
 
@@ -71,6 +81,8 @@
 			{
 				$this->category_name = $this->read_category_name($entity_id, $cat_id);
 			}
+
+			$this->locations = new Locations();
 		}
 
 		function get_type_app()
@@ -197,10 +209,11 @@
 
 			$bypass = $get_inherited ? false : true;
 
+			$acl = Acl::getInstance();
 			foreach ($ids as $id)
 			{
-				$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$type], ".{$type}.{$entity_id}.{$id}");
-				if (!$required || ($required && $GLOBALS['phpgw']->acl->check(".{$type}.{$entity_id}.{$id}", $required, $this->type_app[$type])))
+				$location_id = $this->locations->get_id($this->type_app[$type], ".{$type}.{$entity_id}.{$id}");
+				if (!$required || ($required && $acl->check(".{$type}.{$entity_id}.{$id}", $required, $this->type_app[$type])))
 				{
 					$values[] = $this->get_single_category($location_id, $bypass); //don't look for bulk / controller flags
 				}
@@ -312,7 +325,7 @@
 
 			foreach ($children as &$child)
 			{
-				$child['url']	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => $menuaction,
+				$child['url']	 = phpgw::link('/index.php', array('menuaction' => $menuaction,
 					'entity_id'	 => $entity_id, 'cat_id'	 => $child['id'], 'type'		 => $this->type));
 				$child['text']	 = $child['name'];
 				$_children		 = $this->get_children($entity_id, $child['id'], $level + 1, $menuaction, $prefix);
@@ -333,6 +346,7 @@
 			$this->db2->query($sql, __LINE__, __FILE__);
 			$this->total_records = $this->db2->num_rows();
 
+			$acl = Acl::getInstance();
 
 			$categories = array();
 			while ($this->db2->next_record())
@@ -340,7 +354,7 @@
 				$id			 = $this->db2->f('id');
 				$location	 = ".entity.{$entity_id}.{$id}";
 
-				if (!$required || ($required && $GLOBALS['phpgw']->acl->check($location, PHPGW_ACL_READ, $this->type_app[$this->type])))
+				if (!$required || ($required && $acl->check($location, PHPGW_ACL_READ, $this->type_app[$this->type])))
 				{
 					$location_id = (int)$this->db2->f('location_id');
 					$categories[$id] = array
@@ -359,7 +373,7 @@
 
 			foreach ($categories as &$category)
 			{
-				$category['url']	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => $menuaction,
+				$category['url']	 = phpgw::link('/index.php', array('menuaction' => $menuaction,
 					'entity_id'	 => $entity_id, 'cat_id'	 => $category['id'], 'type'		 => $this->type));
 				$category['text']	 = $category['name'];
 				$children			 = $this->get_children($entity_id, $category['id'], 0, $menuaction, $prefix);
@@ -456,7 +470,7 @@
 
 		function read_single_category( $entity_id, $cat_id )
 		{
-			$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
+			$location_id = $this->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
 			return $this->get_single_category($location_id);
 		}
 
@@ -478,7 +492,7 @@
 
 			$map[$location_id] = array();
 
-			$loc_arr = $GLOBALS['phpgw']->locations->get_name($location_id);
+			$loc_arr = $this->locations->get_name($location_id);
 
 			$type_arr = explode('.', $loc_arr['location']);
 
@@ -570,7 +584,7 @@
 			$entity['descr'] = $this->db->db_addslashes($entity['descr']);
 
 			$entity['id']	 = $this->bocommon->next_id("fm_{$this->type}");
-			$location_id	 = $GLOBALS['phpgw']->locations->add(".{$this->type}." . $entity['id'], $entity['name'], $this->type_app[$this->type], true);
+			$location_id	 = $this->locations->add(".{$this->type}." . $entity['id'], $entity['name'], $this->type_app[$this->type], true);
 
 			$values = array(
 				$location_id,
@@ -639,7 +653,7 @@
 
 			$custom_tbl = !$values['is_eav'] ? "fm_{$this->type}_{$values['entity_id']}_{$values['id']}" : null;
 
-			$location_id = $GLOBALS['phpgw']->locations->add(".{$this->type}.{$values['entity_id']}.{$values['id']}", $values['name'], $this->type_app[$this->type], true, $custom_tbl, $c_function	 = true);
+			$location_id = $this->locations->add(".{$this->type}.{$values['entity_id']}.{$values['id']}", $values['name'], $this->type_app[$this->type], true, $custom_tbl, $c_function	 = true);
 
 			if ($values['parent_id'])
 			{
@@ -797,7 +811,7 @@
 
 				$this->db->query("UPDATE $table set $value_set WHERE id=" . $entity['id'], __LINE__, __FILE__);
 
-				$GLOBALS['phpgw']->locations->update_description(".{$this->type}.{$entity['id']}", $entity['name'], $this->type_app[$this->type]);
+				$this->locations->update_description(".{$this->type}.{$entity['id']}", $entity['name'], $this->type_app[$this->type]);
 
 				$this->db->query("DELETE FROM fm_{$this->type}_lookup WHERE type='lookup' AND entity_id=" . $entity['id'], __LINE__, __FILE__);
 				if (isset($entity['include_entity_for']) AND is_array($entity['include_entity_for']))
@@ -908,7 +922,7 @@
 
 				$this->db->query("UPDATE $table set $value_set WHERE entity_id=" . (int)$entity['entity_id'] . " AND id=" . (int)$entity['id'], __LINE__, __FILE__);
 
-				$GLOBALS['phpgw']->locations->update_description(".{$this->type}.{$entity['entity_id']}.{$entity['id']}", $entity['name'], $this->type_app[$this->type]);
+				$this->locations->update_description(".{$this->type}.{$entity['entity_id']}.{$entity['id']}", $entity['name'], $this->type_app[$this->type]);
 
 				$receipt['message'][] = array('msg' => lang('entity has been edited'));
 			}
@@ -1008,8 +1022,8 @@
 			$id				 = (int)$id;
 			$category_list	 = $this->read_category(array('allrows' => true, 'entity_id' => $id));
 			$locations		 = array();
-			$locations[]	 = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$id}");
-			$subs			 = $GLOBALS['phpgw']->locations->get_subs($this->type_app[$this->type], ".{$this->type}.{$id}");
+			$locations[]	 = $this->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$id}");
+			$subs			 = $this->locations->get_subs($this->type_app[$this->type], ".{$this->type}.{$id}");
 			if (is_array($subs) && count($subs))
 			{
 				$locations = array_merge($locations, array_keys($subs));
@@ -1069,7 +1083,7 @@
 				}
 			}
 
-			$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$id}");
+			$location_id = $this->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$id}");
 
 			$category = $this->read_single_category($entity_id, $id);
 			if ($category['is_eav'])
@@ -1097,22 +1111,19 @@
 
 		function get_table_def( $entity_id, $cat_id )
 		{
-			$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
+			$location_id = $this->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
 			$table		 = "fm_{$this->type}_{$entity_id}_{$cat_id}";
 			$metadata	 = $this->db->metadata($table);
-
-			if (isset($this->db->adodb))
+			
+			$i = 0;
+			foreach ($metadata as $key => $val)
 			{
-				$i = 0;
-				foreach ($metadata as $key => $val)
-				{
-					$metadata_temp[$i]['name'] = $key;
-					$i++;
-				}
-				$metadata = $metadata_temp;
-				unset($metadata_temp);
+				$metadata_temp[$i]['name'] = $key;
+				$i++;
 			}
-
+			$metadata = $metadata_temp;
+			unset($metadata_temp);
+			
 			$fd = $this->get_default_column_def();
 
 			for ($i = 0; $i < count($metadata); $i++)
@@ -1159,8 +1170,9 @@
 
 		function init_process()
 		{
-			$this->oProc						 = CreateObject('phpgwapi.schema_proc', $GLOBALS['phpgw_info']['server']['db_type']);
-			$this->oProc->m_odb					 = & $this->db;
+			$serverSettings = Settings::getInstance()->get('server');
+			$this->oProc			= new SchemaProc($serverSettings['db_type']);
+			$this->oProc->m_odb	= $this->db;
 			$this->oProc->m_odb->Halt_On_Error	 = 'yes';
 		}
 
@@ -1188,7 +1200,7 @@
 					if (!$category['is_eav'])
 					{
 
-						$location_id	 = $GLOBALS['phpgw']->locations->get_id('property', ".{$this->type}.{$category['entity_id']}.{$category['id']}");
+						$location_id	 = $this->locations->get_id('property', ".{$this->type}.{$category['entity_id']}.{$category['id']}");
 						$values_insert	 = array(
 							'location_id'	 => $location_id,
 							'name'			 => ".{$this->type}.{$category['entity_id']}.{$category['id']}::{$category['name']}",
@@ -1224,7 +1236,7 @@
 							$p_location_id = '';
 							if ($data['p_cat_id'])
 							{
-								$p_location_id = $GLOBALS['phpgw']->locations->get_id('property', ".{$this->type}.{$data['p_entity_id']}.{$data['p_cat_id']}");
+								$p_location_id = $this->locations->get_id('property', ".{$this->type}.{$data['p_entity_id']}.{$data['p_cat_id']}");
 							}
 
 							$p_id = '';
@@ -1354,7 +1366,7 @@
 
 			$name = $this->db->db_addslashes($data['name']);
 
-			$loc_arr	 = $GLOBALS['phpgw']->locations->get_name((int)$data['type_location_id']);
+			$loc_arr	 = $this->locations->get_name((int)$data['type_location_id']);
 			$type_arr	 = explode('.', $loc_arr['location']);
 			if (count($type_arr) != 4)
 			{
@@ -1381,7 +1393,7 @@
 			//last insert id
 			$receipt['id'] = $this->db->get_last_insert_id('fm_bim_item_checklist', 'id'); 
 
-			$location_id	 = $GLOBALS['phpgw']->locations->add(".{$this->type}.{$entity_id}.{$cat_id}.checklist.{$receipt['id']}", $data['name'], $this->type_app[$this->type], true, $custom_tbl = null, $c_function = false, $c_attrib = true);
+			$location_id	 = $this->locations->add(".{$this->type}.{$entity_id}.{$cat_id}.checklist.{$receipt['id']}", $data['name'], $this->type_app[$this->type], true, $custom_tbl = null, $c_function = false, $c_attrib = true);
 			$receipt['location_id'] = $location_id;
 
 			$this->db->query("UPDATE fm_bim_item_checklist SET location_id = {$location_id} WHERE id = " . (int)$receipt['id'], __LINE__, __FILE__);
@@ -1502,7 +1514,7 @@
 
 				$this->db->query("UPDATE $table SET {$value_set} WHERE id=" . (int)$data['id'], __LINE__, __FILE__);
 
-				$GLOBALS['phpgw']->locations->update_description2($data['location_id'],$data['name']);
+				$this->locations->update_description2($data['location_id'],$data['name']);
 
 				$this->db->transaction_commit();
 

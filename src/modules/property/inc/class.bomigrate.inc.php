@@ -46,7 +46,7 @@
 				$this->use_session = true;
 			}
 
-			$start = phpgw::get_var('start', 'int', 'REQUEST', 0);
+			$start = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
 		}
 
 		public function save_sessiondata( $data )

@@ -92,22 +92,22 @@
 				}
 			}
 
-			$start			 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query			 = phpgw::get_var('query');
-			$sort			 = phpgw::get_var('sort');
-			$order			 = phpgw::get_var('order');
-			$filter			 = phpgw::get_var('filter', 'int');
-			$filter_year	 = phpgw::get_var('filter_year', 'string', 'REQUEST', $default_filter_year);
-			$cat_id			 = phpgw::get_var('cat_id', 'int');
-			$b_account_id	 = phpgw::get_var('b_account_id', 'string');
-			$status_id		 = phpgw::get_var('status_id');
-			$user_id		 = phpgw::get_var('user_id', 'int');
-			$wo_hour_cat_id	 = phpgw::get_var('wo_hour_cat_id', 'int');
-			$district_id	 = phpgw::get_var('district_id', 'int');
-			$criteria_id	 = phpgw::get_var('criteria_id', 'int');
-			$project_type_id = phpgw::get_var('project_type_id', 'int');
+			$start			 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query			 = Sanitizer::get_var('query');
+			$sort			 = Sanitizer::get_var('sort');
+			$order			 = Sanitizer::get_var('order');
+			$filter			 = Sanitizer::get_var('filter', 'int');
+			$filter_year	 = Sanitizer::get_var('filter_year', 'string', 'REQUEST', $default_filter_year);
+			$cat_id			 = Sanitizer::get_var('cat_id', 'int');
+			$b_account_id	 = Sanitizer::get_var('b_account_id', 'string');
+			$status_id		 = Sanitizer::get_var('status_id');
+			$user_id		 = Sanitizer::get_var('user_id', 'int');
+			$wo_hour_cat_id	 = Sanitizer::get_var('wo_hour_cat_id', 'int');
+			$district_id	 = Sanitizer::get_var('district_id', 'int');
+			$criteria_id	 = Sanitizer::get_var('criteria_id', 'int');
+			$project_type_id = Sanitizer::get_var('project_type_id', 'int');
 
-			$this->allrows = phpgw::get_var('allrows', 'bool');
+			$this->allrows = Sanitizer::get_var('allrows', 'bool');
 
 			$this->start		 = $start ? $start : 0;
 			$this->filter_year	 = $filter_year;
@@ -292,10 +292,10 @@
 			switch ($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('status_select'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('status_select'));
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('status_filter'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('status_filter'));
 					break;
 			}
 
@@ -485,15 +485,15 @@
 
 		function overdue_end_date()
 		{
-			$search		 = phpgw::get_var('search');
-			$order		 = phpgw::get_var('order');
-			$sort		 = phpgw::get_var('sort');
-			$draw		 = phpgw::get_var('draw', 'int');
-			$columns	 = phpgw::get_var('columns');
-			$start_date	 = phpgw::get_var('start_date');
-			$end_date	 = phpgw::get_var('end_date');
-			$skip_origin = phpgw::get_var('skip_origin', 'bool');
-			$export		 = phpgw::get_var('export', 'bool');
+			$search		 = Sanitizer::get_var('search');
+			$order		 = Sanitizer::get_var('order');
+			$sort		 = Sanitizer::get_var('sort');
+			$draw		 = Sanitizer::get_var('draw', 'int');
+			$columns	 = Sanitizer::get_var('columns');
+			$start_date	 = Sanitizer::get_var('start_date');
+			$end_date	 = Sanitizer::get_var('end_date');
+			$skip_origin = Sanitizer::get_var('skip_origin', 'bool');
+			$export		 = Sanitizer::get_var('export', 'bool');
 
 			if ($start_date && empty($end_date))
 			{
@@ -501,18 +501,18 @@
 				$end_date	 = $GLOBALS['phpgw']->common->show_date(mktime(0, 0, 0, date("m"), date("d"), date("Y")), $dateformat);
 			}
 
-			$start	 = phpgw::get_var('startIndex', 'int', 'REQUEST', 0);
+			$start	 = Sanitizer::get_var('startIndex', 'int', 'REQUEST', 0);
 			$params	 = array(
 				'start'			 => $start,
-				'results'		 => phpgw::get_var('results', 'int', 'REQUEST', 0),
+				'results'		 => Sanitizer::get_var('results', 'int', 'REQUEST', 0),
 				'query'			 => $search,
 				'order'			 => $order,
 				'sort'			 => $sort,
-				'allrows'		 => phpgw::get_var('length', 'int') == -1 || $export,
+				'allrows'		 => Sanitizer::get_var('length', 'int') == -1 || $export,
 				'start_date'	 => $start_date ? urldecode($start_date) : '',
 				'end_date'		 => $end_date ? urldecode($end_date) : '',
 				'skip_origin'	 => $skip_origin,
-				'overdue'		 => phpgw::get_var('overdue', 'int', 'REQUEST', 0),
+				'overdue'		 => Sanitizer::get_var('overdue', 'int', 'REQUEST', 0),
 			);
 
 			$values = $this->so->read(array(
@@ -541,7 +541,7 @@
 			{
 				$entry['id']	 = $entry['project_id'];
 				$entry['delay']	 = ceil(phpgwapi_datetime::get_working_days($entry['end_date'], time()));
-				$entry['link']	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiproject.edit',
+				$entry['link']	 = phpgw::link('/index.php', array('menuaction' => 'property.uiproject.edit',
 					'id'		 => $entry['project_id'], 'tab'		 => 'budget'));
 			}
 
@@ -659,7 +659,7 @@
 					{
 						$entry['ticket'] = array
 							(
-							'url'		 => $GLOBALS['phpgw']->link('/index.php', array
+							'url'		 => phpgw::link('/index.php', array
 								(
 								'menuaction' => 'property.uitts.view',
 								'id'		 => $origin[0]['data'][0]['id']

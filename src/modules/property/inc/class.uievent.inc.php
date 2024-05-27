@@ -70,7 +70,7 @@
 			$this->location_info								 = $this->bo->location_info;
 			$GLOBALS['phpgw_info']['flags']['menu_selection']	 = $this->location_info['menu_selection'];
 			$this->acl											 = & $GLOBALS['phpgw']->acl;
-			$this->acl_location									 = phpgw::get_var('location');
+			$this->acl_location									 = Sanitizer::get_var('location');
 			$this->acl_read										 = $this->acl->check($this->acl_location, PHPGW_ACL_READ, 'property');
 			$this->acl_add										 = $this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'property');
 			$this->acl_edit										 = $this->acl->check($this->acl_location, PHPGW_ACL_EDIT, 'property');
@@ -187,7 +187,7 @@
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = "property::scheduled_events";
 
-			$values		 = phpgw::get_var('values');
+			$values		 = Sanitizer::get_var('values');
 
 			$receipt = array();
 			if ($values && $this->acl_edit)
@@ -197,7 +197,7 @@
 
 			$this->save_sessiondata();
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -350,7 +350,7 @@
 					(
 					'my_name'	 => 'edit',
 					'text'		 => lang('edit serie'),
-					'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+					'action'	 => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uievent.edit',
 						'type'		 => $type,
@@ -378,24 +378,24 @@
 
 		public function query()
 		{
-			$date1		 = phpgw::get_var('start_date');
-			$date2		 = phpgw::get_var('end_date');
+			$date1		 = Sanitizer::get_var('start_date');
+			$date2		 = Sanitizer::get_var('end_date');
 			$start_date	 = $date1;
 			$end_date	 = $date2;
-			$search		 = phpgw::get_var('search');
-			$order		 = phpgw::get_var('order');
-			$draw		 = phpgw::get_var('draw', 'int');
-			$columns	 = phpgw::get_var('columns');
-			$export		 = phpgw::get_var('export', 'bool');
+			$search		 = Sanitizer::get_var('search');
+			$order		 = Sanitizer::get_var('order');
+			$draw		 = Sanitizer::get_var('draw', 'int');
+			$columns	 = Sanitizer::get_var('columns');
+			$export		 = Sanitizer::get_var('export', 'bool');
 
 			$params = array
 				(
-				'start'			 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'		 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'			 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'		 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query'			 => $search['value'],
 				'order'			 => $columns[$order[0]['column']]['data'],
 				'sort'			 => $order[0]['dir'],
-				'allrows'		 => phpgw::get_var('length', 'int') == -1 || $export,
+				'allrows'		 => Sanitizer::get_var('length', 'int') == -1 || $export,
 				'start_date'	 => $start_date ? urldecode($start_date) : '',
 				'end_date'	 	 => $end_date ? urldecode($end_date) : '',
 				'location_id'	 => $this->location_id,
@@ -417,7 +417,7 @@
 
 		function edit()
 		{
-			$lookup = phpgw::get_var('lookup');
+			$lookup = Sanitizer::get_var('lookup');
 
 			if ($lookup)
 			{
@@ -430,12 +430,12 @@
 				return;
 			}
 
-			$location					 = phpgw::get_var('location');
-			$attrib_id					 = phpgw::get_var('attrib_id');
-			$item_id					 = phpgw::get_var('item_id');//might be bigint
-			$id							 = phpgw::get_var('id', 'int');
-			$values						 = phpgw::get_var('values');
-			$values['responsible_id']	 = phpgw::get_var('contact', 'int', 'POST');
+			$location					 = Sanitizer::get_var('location');
+			$attrib_id					 = Sanitizer::get_var('attrib_id');
+			$item_id					 = Sanitizer::get_var('item_id');//might be bigint
+			$id							 = Sanitizer::get_var('id', 'int');
+			$values						 = Sanitizer::get_var('values');
+			$values['responsible_id']	 = Sanitizer::get_var('contact', 'int', 'POST');
 
 			$receipt = array();
 
@@ -496,7 +496,7 @@
 						{
 							$js .= "parent.TINY.box.hide();";
 						}
-						$GLOBALS['phpgw']->js->add_event('load', $js);
+						phpgwapi_js::getInstance()->add_event('load', $js);
 						$id = $receipt['id'];
 					}
 					else
@@ -512,7 +512,7 @@
 					$js		 .= "parent.document.getElementsByName('" . $field_name . "_descr')[0].value = '';\n";
 					if ($this->delete($id))
 					{
-						$GLOBALS['phpgw']->js->add_event('load', $js);
+						phpgwapi_js::getInstance()->add_event('load', $js);
 						unset($values);
 						unset($id);
 					}
@@ -577,7 +577,7 @@
 				(
 				'datatable_def'						 => '',
 				'contact_data'						 => $contact_data,
-				'link_schedule'						 => $GLOBALS['phpgw']->link('/index.php', $link_schedule_data),
+				'link_schedule'						 => phpgw::link('/index.php', $link_schedule_data),
 				'lang_start_date_statustext'		 => lang('Select the date for the event'),
 				'lang_start_date'					 => lang('date'),
 				'value_start_date'					 => $values['start_date'],
@@ -596,8 +596,8 @@
 				'lang_action'						 => lang('action'),
 				'action'							 => $this->bo->get_action(isset($values['action']) ? $values['action'] : ''),
 				'msgbox_data'						 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'						 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'done_action'						 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uievent.index',
+				'form_action'						 => phpgw::link('/index.php', $link_data),
+				'done_action'						 => phpgw::link('/index.php', array('menuaction' => 'property.uievent.index',
 					'type'		 => $type, 'type_id'	 => $type_id)),
 				'lang_id'							 => lang('ID'),
 				'lang_descr'						 => lang('Description'),
@@ -627,7 +627,7 @@
 
 			if ($id)
 			{
-				$link_shedule2 = $GLOBALS['phpgw']->link('/index.php', array('menuaction'		 => 'property.uievent.schedule2',
+				$link_shedule2 = phpgw::link('/index.php', array('menuaction'		 => 'property.uievent.schedule2',
 					'id'				 => $id, 'phpgw_return_as'	 => 'json'));
 
 				$buttons = array
@@ -694,7 +694,7 @@
 			});
 	}
 JS;
-				$GLOBALS['phpgw']->js->add_code($namespace = '', $code);
+				phpgwapi_js::getInstance()->add_code($namespace = '', $code);
 
 				$plan_def = array
 					(
@@ -751,9 +751,9 @@ JS;
 		{
 			if (!$id)
 			{
-				$id = phpgw::get_var('id', 'int');
+				$id = Sanitizer::get_var('id', 'int');
 			}
-			$values = phpgw::get_var('values');
+			$values = Sanitizer::get_var('values');
 
 			if (is_array($values))
 			{
@@ -793,7 +793,7 @@ JS;
 					'location_id'		 => $entry['location_id'],
 					'location_item_id'	 => $entry['location_item_id'],
 					'remark'			 => $entry['descr'],
-					'url'				 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'		 => 'booking.uievent.show',
+					'url'				 => phpgw::link('/index.php', array('menuaction'		 => 'booking.uievent.show',
 						'location_id'		 => $entry['location_id'], 'location_item_id'	 => $entry['location_item_id']))
 				);
 				$i++;
@@ -824,16 +824,16 @@ JS;
 
 			//----------JSON CODE ----------------------------------------------
 			//---GET ALARM
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				if (count($values))
 				{
-					$draw			 = phpgw::get_var('draw', 'int');
-					$allrows		 = phpgw::get_var('length', 'int') == -1;
-					$start			 = phpgw::get_var('start', 'int', 'REQUEST', 0);
+					$draw			 = Sanitizer::get_var('draw', 'int');
+					$allrows		 = Sanitizer::get_var('length', 'int') == -1;
+					$start			 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
 					$total_records	 = count($values);
 
-					$num_rows = phpgw::get_var('length', 'int', 'REQUEST', 0);
+					$num_rows = Sanitizer::get_var('length', 'int', 'REQUEST', 0);
 
 					if ($allrows)
 					{

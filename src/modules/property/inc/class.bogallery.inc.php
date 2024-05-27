@@ -60,20 +60,20 @@
 				$this->use_session = true;
 			}
 
-			$start		 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query		 = phpgw::get_var('query');
-			$sort		 = phpgw::get_var('sort');
-			$order		 = phpgw::get_var('order');
-			$filter		 = phpgw::get_var('filter', 'int');
-			$cat_id		 = phpgw::get_var('cat_id', 'string');
-			$location_id = phpgw::get_var('location_id', 'int');
-			$allrows	 = phpgw::get_var('allrows', 'bool');
-			$type		 = phpgw::get_var('type');
-			$type_id	 = phpgw::get_var('type_id', 'int');
-			$user_id	 = phpgw::get_var('user_id', 'int');
-			$mime_type	 = phpgw::get_var('mime_type');
-			$start_date	 = phpgw::get_var('start_date', 'string');
-			$end_date	 = phpgw::get_var('end_date', 'string');
+			$start		 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query		 = Sanitizer::get_var('query');
+			$sort		 = Sanitizer::get_var('sort');
+			$order		 = Sanitizer::get_var('order');
+			$filter		 = Sanitizer::get_var('filter', 'int');
+			$cat_id		 = Sanitizer::get_var('cat_id', 'string');
+			$location_id = Sanitizer::get_var('location_id', 'int');
+			$allrows	 = Sanitizer::get_var('allrows', 'bool');
+			$type		 = Sanitizer::get_var('type');
+			$type_id	 = Sanitizer::get_var('type_id', 'int');
+			$user_id	 = Sanitizer::get_var('user_id', 'int');
+			$mime_type	 = Sanitizer::get_var('mime_type');
+			$start_date	 = Sanitizer::get_var('start_date', 'string');
+			$end_date	 = Sanitizer::get_var('end_date', 'string');
 
 
 			$this->start		 = $start ? $start : 0;
@@ -142,7 +142,7 @@
 				{
 					$entry['img_id']		 = $entry['id'];
 					$entry['file_name']		 = $entry['name'];
-					$entry['img_url']		 = $GLOBALS['phpgw']->link('/index.php', array(
+					$entry['img_url']		 = phpgw::link('/index.php', array(
 						'menuaction' => 'property.uigallery.view_file',
 						'img_id'	 => $entry['img_id'],
 						'file'		 => "{$entry['directory']}/{$entry['file_name']}"
@@ -162,7 +162,7 @@
 				$entry['url']				 = $this->interlink->get_relation_link($location, $entry['location_item_id']);
 
 				$entry['location_name']	 = $this->interlink->get_location_name($entry['location']);
-				$entry['document_url']	 = $GLOBALS['phpgw']->link('/index.php', array
+				$entry['document_url']	 = phpgw::link('/index.php', array
 					(
 					'menuaction' => 'property.uigallery.view_file',
 					'file_id'	 => $entry['id']

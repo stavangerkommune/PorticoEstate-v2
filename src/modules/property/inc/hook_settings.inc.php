@@ -138,7 +138,7 @@
 
 	$account_list = $acc->get_list('accounts', -1, 'ASC', 'account_lastname');
 
-	$account_id = phpgw::get_var('account_id', 'int', 'POST', $GLOBALS['phpgw_info']['user']['account_id']);
+	$account_id = Sanitizer::get_var('account_id', 'int', 'POST', $GLOBALS['phpgw_info']['user']['account_id']);
 	$prefs = CreateObject('property.socommon')->create_preferences('property', $account_id);
 	$_accounts = array();
 

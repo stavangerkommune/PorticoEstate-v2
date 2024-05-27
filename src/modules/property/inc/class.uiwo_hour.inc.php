@@ -123,10 +123,10 @@
 		function deviation()
 		{
 
-			$workorder_id	 = phpgw::get_var('workorder_id'); // in case of bigint
-			$hour_id		 = phpgw::get_var('hour_id', 'int');
+			$workorder_id	 = Sanitizer::get_var('workorder_id'); // in case of bigint
+			$hour_id		 = Sanitizer::get_var('hour_id', 'int');
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query_deviation();
 			}
@@ -218,9 +218,9 @@
 				'datatable_def'			 => $datatable_def,
 				'lang_add'				 => lang('add'),
 				'lang_add_statustext'	 => lang('add a deviation'),
-				'add_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'add_action'			 => phpgw::link('/index.php', $link_data),
 				'lang_done'				 => lang('done'),
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uiwo_hour.index',
+				'done_action'			 => phpgw::link('/index.php', array('menuaction'	 => 'property.uiwo_hour.index',
 					'workorder_id'	 => $workorder_id))
 			);
 
@@ -235,9 +235,9 @@
 
 		public function query_deviation()
 		{
-			$workorder_id	 = phpgw::get_var('workorder_id'); // in case of bigint
-			$hour_id		 = phpgw::get_var('hour_id', 'int');
-			$draw			 = phpgw::get_var('draw', 'int');
+			$workorder_id	 = Sanitizer::get_var('workorder_id'); // in case of bigint
+			$hour_id		 = Sanitizer::get_var('hour_id', 'int');
+			$draw			 = Sanitizer::get_var('draw', 'int');
 
 			$list = $this->bo->read_deviation(array('workorder_id' => $workorder_id, 'hour_id' => $hour_id));
 
@@ -259,11 +259,11 @@
 						'amount'				 => $entry['amount'],
 						'descr'					 => $entry['descr'],
 						'entry_date'			 => $entry_date,
-						'link_edit'				 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uiwo_hour.edit_deviation',
+						'link_edit'				 => phpgw::link('/index.php', array('menuaction'	 => 'property.uiwo_hour.edit_deviation',
 							'workorder_id'	 => $workorder_id, 'hour_id'		 => $hour_id, 'id'			 => $entry['id'])),
 						'lang_edit_statustext'	 => lang('edit the deviation'),
 						'text_edit'				 => lang('edit'),
-						'link_delete'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uiwo_hour.delete',
+						'link_delete'			 => phpgw::link('/index.php', array('menuaction'	 => 'property.uiwo_hour.delete',
 							'workorder_id'	 => $workorder_id, 'hour_id'		 => $hour_id, 'deviation_id'	 => $entry['id'])),
 						'lang_delete_statustext' => lang('delete the deviation'),
 						'text_delete'			 => lang('delete')
@@ -280,10 +280,10 @@
 
 		function edit_deviation()
 		{
-			$workorder_id	 = phpgw::get_var('workorder_id'); // in case of bigint
-			$hour_id		 = phpgw::get_var('hour_id', 'int');
-			$id				 = phpgw::get_var('id', 'int');
-			$values			 = phpgw::get_var('values');
+			$workorder_id	 = Sanitizer::get_var('workorder_id'); // in case of bigint
+			$hour_id		 = Sanitizer::get_var('hour_id', 'int');
+			$id				 = Sanitizer::get_var('id', 'int');
+			$values			 = Sanitizer::get_var('values');
 			$dateformat		 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
 
 			if ($values['save'])
@@ -354,8 +354,8 @@
 				'lang_workorder'			 => lang('Workorder ID'),
 				'lang_hour_id'				 => lang('Post'),
 				'msgbox_data'				 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'				 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'done_action'				 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uiwo_hour.deviation',
+				'form_action'				 => phpgw::link('/index.php', $link_data),
+				'done_action'				 => phpgw::link('/index.php', array('menuaction'	 => 'property.uiwo_hour.deviation',
 					'workorder_id'	 => $workorder_id, 'hour_id'		 => $hour_id)),
 				'lang_id'					 => lang('deviation ID'),
 				'lang_descr'				 => lang('Descr'),
@@ -453,9 +453,9 @@
 						'result'				 => ($hour['deviation'] + $hour['cost']),
 						'wo_hour_category'		 => $hour['wo_hour_category'],
 						'cat_per_cent'			 => $hour['cat_per_cent'],
-						'link_deviation'		 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uiwo_hour.deviation',
+						'link_deviation'		 => phpgw::link('/index.php', array('menuaction'	 => 'property.uiwo_hour.deviation',
 							'workorder_id'	 => $workorder_id, 'hour_id'		 => $hour['hour_id'])),
-						'link_edit'				 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uiwo_hour.edit',
+						'link_edit'				 => phpgw::link('/index.php', array('menuaction'	 => 'property.uiwo_hour.edit',
 							'workorder_id'	 => $workorder_id, 'hour_id'		 => $hour['hour_id'])),
 						'lang_edit_statustext'	 => lang('edit/customise this hour'),
 						'lang_delete_statustext' => lang('delete this hour'),
@@ -516,7 +516,7 @@
 
 			$workorder_data = array
 				(
-				'link_workorder'		 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiworkorder.edit',
+				'link_workorder'		 => phpgw::link('/index.php', array('menuaction' => 'property.uiworkorder.edit',
 					'id'		 => $workorder_id)),
 				'lang_vendor_name'		 => lang('Vendor'),
 				'vendor_name'			 => $workorder['vendor_name'],
@@ -525,7 +525,7 @@
 				'lang_workorder_id'		 => lang('Workorder ID'),
 				'workorder_id'			 => $workorder['workorder_id'],
 				'lang_project_id'		 => lang('Project ID'),
-				'link_project'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiproject.edit',
+				'link_project'			 => phpgw::link('/index.php', array('menuaction' => 'property.uiproject.edit',
 					'id'		 => $workorder['project_id'])),
 				'project_id'			 => $workorder['project_id'],
 				'lang_workorder_title'	 => lang('Workorder title'),
@@ -549,8 +549,8 @@
 
 		function save_template()
 		{
-			$values			 = phpgw::get_var('values');
-			$workorder_id	 = phpgw::get_var('workorder_id'); // in case of bigint
+			$values			 = Sanitizer::get_var('values');
+			$workorder_id	 = Sanitizer::get_var('workorder_id'); // in case of bigint
 
 			if ($values['name'])
 			{
@@ -632,8 +632,8 @@
 				(
 				'datatable_def'			 => $datatable_def,
 				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'add_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uiwo_hour.save_template',
+				'done_action'			 => phpgw::link('/index.php', $link_data),
+				'add_action'			 => phpgw::link('/index.php', array('menuaction'	 => 'property.uiwo_hour.save_template',
 					'workorder_id'	 => $workorder_id)),
 				'lang_done_statustext'	 => lang('Back to the workorder list'),
 				'lang_add_statustext'	 => lang('Adds this workorders calculation as a template for later use'),
@@ -672,9 +672,9 @@
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
-			$delete			 = phpgw::get_var('delete', 'bool');
-			$hour_id		 = phpgw::get_var('hour_id', 'int');
-			$workorder_id	 = phpgw::get_var('workorder_id'); // in case of bigint
+			$delete			 = Sanitizer::get_var('delete', 'bool');
+			$hour_id		 = Sanitizer::get_var('hour_id', 'int');
+			$workorder_id	 = Sanitizer::get_var('workorder_id'); // in case of bigint
 
 			if ($delete && $hour_id)
 			{
@@ -682,7 +682,7 @@
 				return "hour_id " . $hour_id . " " . lang("has been deleted");
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -950,7 +950,7 @@
 				(
 				'my_name'	 => 'deviation',
 				'text'		 => lang('Deviation'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction'	 => 'property.uiwo_hour.deviation',
 					'workorder_id'	 => $workorder_id
@@ -962,7 +962,7 @@
 				(
 				'my_name'	 => 'deviation',
 				'text'		 => lang('open deviation in new window'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction'	 => 'property.uiwo_hour.deviation',
 					'workorder_id'	 => $workorder_id
@@ -975,7 +975,7 @@
 				(
 				'my_name'	 => 'edit',
 				'text'		 => lang('Edit'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction'	 => 'property.uiwo_hour.edit',
 					'workorder_id'	 => $workorder_id,
@@ -988,7 +988,7 @@
 				(
 				'my_name'	 => 'edit',
 				'text'		 => lang('open edit in new window'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction'	 => 'property.uiwo_hour.edit',
 					'workorder_id'	 => $workorder_id,
@@ -1003,7 +1003,7 @@
 				'my_name'		 => 'delete',
 				'text'			 => lang('Delete'),
 				'confirm_msg'	 => lang('do you really want to delete this entry'),
-				'action'		 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'		 => phpgw::link('/index.php', array
 					(
 					'menuaction'	 => 'property.uiwo_hour.index',
 					'workorder_id'	 => $workorder_id,
@@ -1032,8 +1032,8 @@
 		 */
 		public function query()
 		{
-			$workorder_id	 = phpgw::get_var('workorder_id');
-			$draw			 = phpgw::get_var('draw', 'int');
+			$workorder_id	 = Sanitizer::get_var('workorder_id');
+			$draw			 = Sanitizer::get_var('draw', 'int');
 
 			$uicols = array(
 				'name'		 => array('hour_id', 'post', 'code', 'hours_descr', 'unit_name', 'billperae',
@@ -1091,31 +1091,31 @@
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
-			$workorder_id = phpgw::get_var('workorder_id'); // in case of bigint
-			if (phpgw::get_var('done', 'bool'))
+			$workorder_id = Sanitizer::get_var('workorder_id'); // in case of bigint
+			if (Sanitizer::get_var('done', 'bool'))
 			{
 				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uiwo_hour.index',
 					'workorder_id'	 => $workorder_id));
 			}
 
-			$show_cost		 = phpgw::get_var('show_cost', 'bool');
-			$show_details	 = true;//phpgw::get_var('show_details', 'bool');
-			$to_email		 = phpgw::get_var('to_email', 'string');
-			$update_email	 = phpgw::get_var('update_email', 'bool');
-			$send_order		 = phpgw::get_var('send_order', 'bool');
-			$no_email		 = phpgw::get_var('no_email', 'bool');
-			$values			 = phpgw::get_var('values');
-			$print			 = phpgw::get_var('print', 'bool');
-			$sent_ok		 = phpgw::get_var('print', 'bool');
-			$send_as_pdf	 = phpgw::get_var('send_as_pdf', 'bool');
-			$email_receipt	 = phpgw::get_var('email_receipt', 'bool');
+			$show_cost		 = Sanitizer::get_var('show_cost', 'bool');
+			$show_details	 = true;//Sanitizer::get_var('show_details', 'bool');
+			$to_email		 = Sanitizer::get_var('to_email', 'string');
+			$update_email	 = Sanitizer::get_var('update_email', 'bool');
+			$send_order		 = Sanitizer::get_var('send_order', 'bool');
+			$no_email		 = Sanitizer::get_var('no_email', 'bool');
+			$values			 = Sanitizer::get_var('values');
+			$print			 = Sanitizer::get_var('print', 'bool');
+			$sent_ok		 = Sanitizer::get_var('print', 'bool');
+			$send_as_pdf	 = Sanitizer::get_var('send_as_pdf', 'bool');
+			$email_receipt	 = Sanitizer::get_var('email_receipt', 'bool');
 
 			if ($_SERVER['REQUEST_METHOD'] == 'POST' && $GLOBALS['phpgw']->session->is_repost())
 			{
 				$GLOBALS['phpgw']->redirect_link('/index.php', array(
 					'menuaction'	 => 'property.uiwo_hour.view',
 					'workorder_id'	 => $workorder_id,
-					'from'			 => phpgw::get_var('from')));
+					'from'			 => Sanitizer::get_var('from')));
 			}
 
 			/*
@@ -1214,7 +1214,7 @@
 					(
 					'lang_done'				 => lang('Done'),
 					'lang_done_statustext'	 => lang('Back to calculation'),
-					'done_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uiwo_hour.index',
+					'done_action'			 => phpgw::link('/index.php', array('menuaction'	 => 'property.uiwo_hour.index',
 						'workorder_id'	 => $workorder_id))
 				);
 			}
@@ -1390,7 +1390,7 @@
 					{
 						phpgwapi_cache::message_set(lang('order is not approved'), 'error');
 						$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uiwo_hour.view',
-							'workorder_id'	 => $workorder_id, 'from'			 => phpgw::get_var('from')));
+							'workorder_id'	 => $workorder_id, 'from'			 => Sanitizer::get_var('from')));
 					}
 					unset($_ok);
 				}
@@ -1400,7 +1400,7 @@
 					{
 						phpgwapi_cache::message_set(lang('order is not approved'), 'error');
 						$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uiwo_hour.view',
-							'workorder_id'	 => $workorder_id, 'from'			 => phpgw::get_var('from')));
+							'workorder_id'	 => $workorder_id, 'from'			 => Sanitizer::get_var('from')));
 					}
 				}
 
@@ -1741,9 +1741,9 @@ HTML;
 						$receipt['message'][] = array('msg' => $attachment_log);
 					}
 
-					if (phpgw::get_var('notify_client_by_sms', 'bool') && $sms_client_order_notice && (isset($project['contact_phone']) && $project['contact_phone'] || phpgw::get_var('to_sms_phone')))
+					if (Sanitizer::get_var('notify_client_by_sms', 'bool') && $sms_client_order_notice && (isset($project['contact_phone']) && $project['contact_phone'] || Sanitizer::get_var('to_sms_phone')))
 					{
-						$to_sms_phone				 = phpgw::get_var('to_sms_phone');
+						$to_sms_phone				 = Sanitizer::get_var('to_sms_phone');
 						$to_sms_phone				 = $to_sms_phone ? $to_sms_phone : $project['contact_phone'];
 						$project['contact_phone']	 = $to_sms_phone;
 
@@ -1774,7 +1774,7 @@ HTML;
 						try
 						{
 							$subject = "Bestilling {$workorder_id} er sendt";
-							$message = '<a href ="' . $GLOBALS['phpgw']->link('/index.php', array(
+							$message = '<a href ="' . phpgw::link('/index.php', array(
 								'menuaction' => 'property.uiworkorder.edit',
 								'id'		 => $workorder_id), false, true) . '">'
 								. lang('Workorder %1 is sent by email to %2', $workorder_id, $_to) . '</a>';
@@ -1905,7 +1905,7 @@ HTML;
 			);
 
 			$content_files	 = array();
-			$link_view_file	 = $GLOBALS['phpgw']->link('/index.php', $link_file_data);
+			$link_view_file	 = phpgw::link('/index.php', $link_file_data);
 
 			$files				 = $workorder['files'] ? $workorder['files'] : array();
 			$lang_view_file		 = lang('click to view file');
@@ -1932,7 +1932,7 @@ HTML;
 				'menuaction' => 'property.uiproject.view_file',
 				'id'		 => $project['project_id']
 			);
-			$link_view_file			 = $GLOBALS['phpgw']->link('/index.php', $project_link_file_data);
+			$link_view_file			 = phpgw::link('/index.php', $project_link_file_data);
 
 
 			$files = $this->boproject->get_files($project['project_id']);
@@ -1986,7 +1986,7 @@ HTML;
 				'requst_email_receipt'				 => isset($GLOBALS['phpgw']->preferences->data['request_order_email_rcpt']) && $GLOBALS['phpgw']->preferences->data['property']['request_order_email_rcpt'] == 1 ? 1 : 0,
 				'send_as_pdf'						 => !empty($GLOBALS['phpgw_info']['user']['preferences']['property']['send_workorder_as_pdf']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['send_workorder_as_pdf'] == 1 ? true: false,
 				'lang_select_email'					 => lang('Select email'),
-				'send_order_action'					 => $GLOBALS['phpgw']->link('/index.php', array(
+				'send_order_action'					 => phpgw::link('/index.php', array(
 					'menuaction'	 => 'property.uiwo_hour.view',
 //					'send'			 => true,
 					'workorder_id'	 => $workorder_id,
@@ -2000,7 +2000,7 @@ HTML;
 				'no_email'							 => $no_email,
 				'table_send'						 => $table_send,
 				'table_done'						 => $table_done,
-				'link_view_file'					 => $GLOBALS['phpgw']->link('/index.php', $link_file_data),
+				'link_view_file'					 => phpgw::link('/index.php', $link_file_data),
 				'files'								 => $content_files,
 				'lang_files'						 => lang('files'),
 				'lang_filename'						 => lang('Filename'),
@@ -2016,7 +2016,7 @@ HTML;
 					. " show_cost:'$show_cost',"
 					. " show_details:'$show_details',"
 					. " print:true}) ,'1000','1200')",
-				'pdf_action'						 => $GLOBALS['phpgw']->link('/index.php', array
+				'pdf_action'						 => phpgw::link('/index.php', array
 					(
 					'menuaction'	 => 'property.uiwo_hour.pdf_order',
 					'workorder_id'	 => $workorder_id,
@@ -2107,18 +2107,18 @@ HTML;
 			{
 				$redirect_on_error = true;
 
-				$workorder_id								 = phpgw::get_var('workorder_id'); // in case of bigint
-				$show_cost									 = phpgw::get_var('show_cost', 'bool');
+				$workorder_id								 = Sanitizer::get_var('workorder_id'); // in case of bigint
+				$show_cost									 = Sanitizer::get_var('show_cost', 'bool');
 				$GLOBALS['phpgw_info']['flags']['noheader']	 = true;
 				$GLOBALS['phpgw_info']['flags']['nofooter']	 = true;
 				$GLOBALS['phpgw_info']['flags']['xslt_app']	 = false;
 			}
 			if (!$show_cost)
 			{
-				$show_cost = phpgw::get_var('show_cost', 'bool');
+				$show_cost = Sanitizer::get_var('show_cost', 'bool');
 			}
 
-			$preview = phpgw::get_var('preview', 'bool');
+			$preview = Sanitizer::get_var('preview', 'bool');
 
 			$common_data = $this->common_data($workorder_id);
 			$project	 = $this->boproject->read_single($common_data['workorder']['project_id'], array(), true);
@@ -2151,7 +2151,7 @@ HTML;
 					if($redirect_on_error)
 					{
 						$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiwo_hour.view',
-							'workorder_id' => $workorder_id, 'from' => phpgw::get_var('from')));
+							'workorder_id' => $workorder_id, 'from' => Sanitizer::get_var('from')));
 					}
 					else
 					{
@@ -2175,7 +2175,7 @@ HTML;
 				{
 					throw new Exception(lang('order %1 is not approved', $workorder_id) );
 //					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiwo_hour.view',
-//						'workorder_id' => $workorder_id, 'from' => phpgw::get_var('from')));
+//						'workorder_id' => $workorder_id, 'from' => Sanitizer::get_var('from')));
 				}
 			}
 
@@ -2454,9 +2454,9 @@ HTML;
 				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
-			$show_cost		 = phpgw::get_var('show_cost', 'bool');
-			$mark_draft		 = phpgw::get_var('mark_draft', 'bool');
-			$workorder_id	 = phpgw::get_var('workorder_id'); // in case of bigint
+			$show_cost		 = Sanitizer::get_var('show_cost', 'bool');
+			$mark_draft		 = Sanitizer::get_var('mark_draft', 'bool');
+			$workorder_id	 = Sanitizer::get_var('workorder_id'); // in case of bigint
 
 			$common_data = $this->common_data($workorder_id);
 			$project	 = $this->boproject->read_single($common_data['workorder']['project_id']);
@@ -2540,16 +2540,16 @@ HTML;
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
-			$delete	 = phpgw::get_var('delete', 'bool');
-			$hour_id = phpgw::get_var('hour_id', 'int');
+			$delete	 = Sanitizer::get_var('delete', 'bool');
+			$hour_id = Sanitizer::get_var('hour_id', 'int');
 
-			$workorder_id	 = phpgw::get_var('workorder_id'); // in case of bigint
-			$values			 = phpgw::get_var('values');
+			$workorder_id	 = Sanitizer::get_var('workorder_id'); // in case of bigint
+			$values			 = Sanitizer::get_var('values');
 
 			if ($delete && $hour_id)
 			{
 				$receipt = $this->bo->delete($hour_id, $workorder_id);
-				if (phpgw::get_var('phpgw_return_as') == 'json')
+				if (Sanitizer::get_var('phpgw_return_as') == 'json')
 				{
 					return "hour " . $hour_id . " " . lang("has been deleted");
 				}
@@ -2561,7 +2561,7 @@ HTML;
 				return $receipt;
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query_prizebook();
 			}
@@ -2696,7 +2696,7 @@ HTML;
 				(
 				'my_name'	 => 'deviation',
 				'text'		 => lang('Deviation'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction'	 => 'property.uiwo_hour.deviation',
 					'workorder_id'	 => $workorder_id
@@ -2708,7 +2708,7 @@ HTML;
 				(
 				'my_name'	 => 'deviation',
 				'text'		 => lang('open deviation in new window'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction'	 => 'property.uiwo_hour.deviation',
 					'workorder_id'	 => $workorder_id
@@ -2721,7 +2721,7 @@ HTML;
 				(
 				'my_name'	 => 'edit',
 				'text'		 => lang('Edit'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction'	 => 'property.uiwo_hour.edit',
 					'workorder_id'	 => $workorder_id,
@@ -2734,7 +2734,7 @@ HTML;
 				(
 				'my_name'	 => 'edit',
 				'text'		 => lang('open edit in new window'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction'	 => 'property.uiwo_hour.edit',
 					'workorder_id'	 => $workorder_id,
@@ -2749,7 +2749,7 @@ HTML;
 				'my_name'		 => 'delete',
 				'text'			 => lang('Delete'),
 				'confirm_msg'	 => lang('do you really want to delete this entry'),
-				'action'		 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'		 => phpgw::link('/index.php', array
 					(
 					'menuaction'	 => 'property.uiwo_hour.prizebook',
 					'workorder_id'	 => $workorder_id,
@@ -2776,11 +2776,11 @@ HTML;
 
 		public function query_prizebook()
 		{
-			$workorder_id	 = phpgw::get_var('workorder_id'); // in case of bigint
-			$order			 = phpgw::get_var('order');
-			$draw			 = phpgw::get_var('draw', 'int');
-			$search			 = phpgw::get_var('search');
-			$columns		 = phpgw::get_var('columns');
+			$workorder_id	 = Sanitizer::get_var('workorder_id'); // in case of bigint
+			$order			 = Sanitizer::get_var('order');
+			$draw			 = Sanitizer::get_var('draw', 'int');
+			$search			 = Sanitizer::get_var('search');
+			$columns		 = Sanitizer::get_var('columns');
 
 			$common_data = $this->common_data($workorder_id);
 			$workorder	 = $common_data['workorder'];
@@ -2805,11 +2805,11 @@ HTML;
 				$params			 = array
 					(
 					'query'		 => $search['value'],
-					'start'		 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-					'results'	 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+					'start'		 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+					'results'	 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 					'order'		 => $columns[$order[0]['column']]['data'],
 					'sort'		 => $order[0]['dir'],
-					'allrows'	 => phpgw::get_var('length', 'int') == -1,
+					'allrows'	 => Sanitizer::get_var('length', 'int') == -1,
 					'cat_id'	 => $workorder['vendor_id']
 				);
 				$pricebook_list	 = $this->bopricebook->read($params);
@@ -2881,19 +2881,19 @@ HTML;
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
-			$delete	 = phpgw::get_var('delete', 'bool');
-			$hour_id = phpgw::get_var('hour_id', 'int');
+			$delete	 = Sanitizer::get_var('delete', 'bool');
+			$hour_id = Sanitizer::get_var('hour_id', 'int');
 
-			$workorder_id	 = phpgw::get_var('workorder_id'); // in case of bigint
-			$template_id	 = phpgw::get_var('template_id', 'int');
+			$workorder_id	 = Sanitizer::get_var('workorder_id'); // in case of bigint
+			$template_id	 = Sanitizer::get_var('template_id', 'int');
 
-			$values = $_POST['values'] ? phpgw::get_var('values') : array();
+			$values = $_POST['values'] ? Sanitizer::get_var('values') : array();
 
 			if ($delete && $hour_id)
 			{
 				$receipt = $this->bo->delete($hour_id, $workorder_id);
 
-				if (phpgw::get_var('phpgw_return_as') == 'json')
+				if (Sanitizer::get_var('phpgw_return_as') == 'json')
 				{
 					return "hour " . $hour_id . " " . lang("has been deleted");
 				}
@@ -2905,7 +2905,7 @@ HTML;
 				return $receipt;
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query_template();
 			}
@@ -3039,7 +3039,7 @@ HTML;
 				(
 				'my_name'	 => 'deviation',
 				'text'		 => lang('Deviation'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction'	 => 'property.uiwo_hour.deviation',
 					'workorder_id'	 => $workorder_id,
@@ -3052,7 +3052,7 @@ HTML;
 				(
 				'my_name'	 => 'deviation',
 				'text'		 => lang('open deviation in new window'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction'	 => 'property.uiwo_hour.deviation',
 					'workorder_id'	 => $workorder_id,
@@ -3066,7 +3066,7 @@ HTML;
 				(
 				'my_name'	 => 'edit',
 				'text'		 => lang('Edit'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction'	 => 'property.uiwo_hour.edit',
 					'workorder_id'	 => $workorder_id,
@@ -3080,7 +3080,7 @@ HTML;
 				(
 				'my_name'	 => 'edit',
 				'text'		 => lang('open edit in new window'),
-				'action'	 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'	 => phpgw::link('/index.php', array
 					(
 					'menuaction'	 => 'property.uiwo_hour.edit',
 					'workorder_id'	 => $workorder_id,
@@ -3096,7 +3096,7 @@ HTML;
 				'my_name'		 => 'delete',
 				'text'			 => lang('Delete'),
 				'confirm_msg'	 => lang('do you really want to delete this entry'),
-				'action'		 => $GLOBALS['phpgw']->link('/index.php', array
+				'action'		 => phpgw::link('/index.php', array
 					(
 					'menuaction'	 => 'property.uiwo_hour.template',
 					'workorder_id'	 => $workorder_id,
@@ -3128,12 +3128,12 @@ HTML;
 
 		public function query_template()
 		{
-			$template_id = phpgw::get_var('template_id', 'int');
+			$template_id = Sanitizer::get_var('template_id', 'int');
 
-			$order	 = phpgw::get_var('order');
-			$draw	 = phpgw::get_var('draw', 'int');
-			$search	 = phpgw::get_var('search');
-			$columns = phpgw::get_var('columns');
+			$order	 = Sanitizer::get_var('order');
+			$draw	 = Sanitizer::get_var('draw', 'int');
+			$search	 = Sanitizer::get_var('search');
+			$columns = Sanitizer::get_var('columns');
 
 			$botemplate = CreateObject('property.botemplate');
 
@@ -3162,11 +3162,11 @@ HTML;
 			$params = array
 				(
 				'query'			 => $search['value'],
-				'start'			 => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results'		 => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start'			 => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results'		 => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'order'			 => $columns[$order[0]['column']]['data'],
 				'sort'			 => $order[0]['dir'],
-				'allrows'		 => phpgw::get_var('length', 'int') == -1,
+				'allrows'		 => Sanitizer::get_var('length', 'int') == -1,
 				'template_id'	 => $template_id,
 				'chapter_id'	 => $this->chapter_id
 			);
@@ -3272,14 +3272,14 @@ HTML;
 				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
-			$from					 = phpgw::get_var('from');
-			$template_id			 = phpgw::get_var('template_id', 'int');
-			$workorder_id			 = phpgw::get_var('workorder_id'); // in case of bigint
-			$activity_id			 = phpgw::get_var('activity_id', 'int');
-			$hour_id				 = phpgw::get_var('hour_id', 'int');
-			$values					 = phpgw::get_var('values');
-			$values['ns3420_id']	 = phpgw::get_var('ns3420_id');
-			$values['ns3420_descr']	 = phpgw::get_var('ns3420_descr');
+			$from					 = Sanitizer::get_var('from');
+			$template_id			 = Sanitizer::get_var('template_id', 'int');
+			$workorder_id			 = Sanitizer::get_var('workorder_id'); // in case of bigint
+			$activity_id			 = Sanitizer::get_var('activity_id', 'int');
+			$hour_id				 = Sanitizer::get_var('hour_id', 'int');
+			$values					 = Sanitizer::get_var('values');
+			$values['ns3420_id']	 = Sanitizer::get_var('ns3420_id');
+			$values['ns3420_descr']	 = Sanitizer::get_var('ns3420_descr');
 
 			$receipt = array();
 
@@ -3344,8 +3344,8 @@ HTML;
 			$data = array
 				(
 				'msgbox_data'					 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'					 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'done_action'					 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uiwo_hour.' . $from,
+				'form_action'					 => phpgw::link('/index.php', $link_data),
+				'done_action'					 => phpgw::link('/index.php', array('menuaction'	 => 'property.uiwo_hour.' . $from,
 					'workorder_id'	 => $workorder_id, 'template_id'	 => $template_id)),
 				'lang_workorder'				 => lang('Workorder'),
 				'value_workorder_id'			 => $workorder['workorder_id'],
@@ -3410,7 +3410,7 @@ HTML;
 				'building_part_list'			 => array('options' => $this->bocommon->select_category_list(array(
 						'type'		 => 'building_part', 'selected'	 => $values['building_part_id'], 'order'		 => 'id',
 						'id_in_name' => 'num', 'filter'	 => $_filter_buildingpart))),
-				'ns3420_link'					 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uilookup.ns3420')),
+				'ns3420_link'					 => phpgw::link('/index.php', array('menuaction' => 'property.uilookup.ns3420')),
 				'lang_ns3420'					 => lang('NS3420'),
 				'value_ns3420_id'				 => $values['ns3420_id'],
 				'lang_ns3420_statustext'		 => lang('Select a standard-code from the norwegian standard'),
@@ -3439,15 +3439,15 @@ HTML;
 				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
-			$id				 = phpgw::get_var('id', 'int');
-			$workorder_id	 = phpgw::get_var('workorder_id'); // in case of bigint
-			$hour_id		 = phpgw::get_var('hour_id', 'int');
-			$deviation_id	 = phpgw::get_var('deviation_id', 'int');
-			$confirm		 = phpgw::get_var('confirm', 'bool', 'POST');
+			$id				 = Sanitizer::get_var('id', 'int');
+			$workorder_id	 = Sanitizer::get_var('workorder_id'); // in case of bigint
+			$hour_id		 = Sanitizer::get_var('hour_id', 'int');
+			$deviation_id	 = Sanitizer::get_var('deviation_id', 'int');
+			$confirm		 = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 
 			//delete for JSON proerty2
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$this->bo->delete_deviation($workorder_id, $hour_id, $deviation_id);
 				return "";
@@ -3485,7 +3485,7 @@ HTML;
 				$function_msg		 = lang('delete hour');
 			}
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				if ($deviation_id)
 				{
@@ -3498,12 +3498,12 @@ HTML;
 				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 				(
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action'			 => $GLOBALS['phpgw']->link('/index.php', $delete_link_data),
+				'done_action'			 => phpgw::link('/index.php', $link_data),
+				'delete_action'			 => phpgw::link('/index.php', $delete_link_data),
 				'lang_confirm_msg'		 => lang('do you really want to delete this entry'),
 				'lang_yes'				 => lang('yes'),
 				'lang_yes_statustext'	 => lang('Delete the entry'),
@@ -3514,13 +3514,13 @@ HTML;
 			$appname = lang('workorder');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 
 		function import_calculation()
 		{
 			$GLOBALS['phpgw_info']['flags']['noframework']	 = true;
-			$workorder_id									 = phpgw::get_var('workorder_id');
+			$workorder_id									 = Sanitizer::get_var('workorder_id');
 			if ($_FILES)
 			{
 				$this->_import_calculation($workorder_id);
@@ -3565,13 +3565,13 @@ HTML;
 
 			$data = array
 				(
-				'redirect'		 => $redirect ? $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiinvoice.list_sub',
+				'redirect'		 => $redirect ? phpgw::link('/index.php', array('menuaction' => 'property.uiinvoice.list_sub',
 					'user_lid'	 => $user_lid, 'voucher_id' => $voucher_id, 'paid'		 => $paid)) : null,
 				'msgbox_data'	 => $GLOBALS['phpgw']->common->msgbox($GLOBALS['phpgw']->common->msgbox_data($receipt)),
-				'form_action'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiwo_hour.import_calculation')),
+				'form_action'	 => phpgw::link('/index.php', array('menuaction' => 'property.uiwo_hour.import_calculation')),
 				'workorder_id'	 => $workorder_id,
 				'lang_done'		 => lang('done'),
-				'done_action'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'property.uiwo_hour.index',
+				'done_action'	 => phpgw::link('/index.php', array('menuaction'	 => 'property.uiwo_hour.index',
 					'workorder_id'	 => $workorder_id)),
 				'tabs'			 => phpgwapi_jquery::tabview_generate($tabs, $active_tab)
 			);
@@ -3879,7 +3879,7 @@ HTML;
 				try
 				{
 					$subject = "Bestilling {$workorder_id} er sendt";
-					$message = '<a href ="' . $GLOBALS['phpgw']->link('/index.php', array(
+					$message = '<a href ="' . phpgw::link('/index.php', array(
 						'menuaction' => 'property.uiworkorder.edit',
 						'id'		 => $workorder_id), false, true) . '">'
 						. lang('Workorder %1 is sent by email to %2', $workorder_id, $_to) . '</a>';

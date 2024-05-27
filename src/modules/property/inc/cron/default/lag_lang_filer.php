@@ -53,8 +53,8 @@
 			}
 			else
 			{
-				$confirm = phpgw::get_var('confirm', 'bool', 'POST');
-				$execute = phpgw::get_var('execute', 'bool', 'GET');
+				$confirm = Sanitizer::get_var('confirm', 'bool', 'POST');
+				$execute = Sanitizer::get_var('execute', 'bool', 'GET');
 			}
 			if ($confirm)
 			{
@@ -80,13 +80,13 @@
 				$lang_confirm_msg = lang('do you want to perform this action');
 			}
 			$lang_yes	 = lang('yes');
-			$GLOBALS['phpgw']->xslttpl->add_file(array('confirm_custom'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('confirm_custom'));
 			$msgbox_data = $this->bocommon->msgbox_data($this->receipt);
 			$data		 = array
 				(
 				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'done_action'			 => $GLOBALS['phpgw']->link('/admin/index.php'),
-				'run_action'			 => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'done_action'			 => phpgw::link('/admin/index.php'),
+				'run_action'			 => phpgw::link('/index.php', $link_data),
 				'message'				 => $this->receipt['message'],
 				'lang_confirm_msg'		 => $lang_confirm_msg,
 				'lang_yes'				 => $lang_yes,
@@ -100,7 +100,7 @@
 			$appname										 = lang('location');
 			$function_msg									 = 'lag_lang_filer';
 			$GLOBALS['phpgw_info']['flags']['app_header']	 = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('confirm' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('confirm' => $data));
 			$GLOBALS['phpgw']->xslttpl->pp();
 		}
 

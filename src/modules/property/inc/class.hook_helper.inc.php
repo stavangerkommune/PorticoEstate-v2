@@ -188,7 +188,7 @@
 					$portalbox->data[]		 = array
 						(
 						'text'	 => "Forsinkelse: {$entry['tender_delay']} dager :: bestilling nr:{$entry['workorder_id']} :: {$entry['location_code']} :: {$entry['address']}",
-						'link'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiworkorder.edit',
+						'link'	 => phpgw::link('/index.php', array('menuaction' => 'property.uiworkorder.edit',
 							'id'		 => $entry['workorder_id'], 'tab'		 => 'budget'))
 					);
 				}
@@ -273,7 +273,7 @@
 //					$portalbox->data[] = array
 //						(
 //						'text' => "Forsinkelse: {$entry['delay']} dager :: prosjekt nr:{$entry['project_id']} :: {$entry['location_code']} :: {$entry['address']}",
-//						'link' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiproject.edit',
+//						'link' => phpgw::link('/index.php', array('menuaction' => 'property.uiproject.edit',
 //							'id' => $entry['project_id'], 'tab' => 'budget'))
 //					);
 //				}
@@ -396,7 +396,7 @@ JS;
 					$portalbox->data[] = array
 						(
 						'text'	 => "{$entry['claim_id']} :: {$entry['location_code']} :: {$location_info['loc1_name']} :: {$location_info['category_name']} :: {$entry['name']}",
-						'link'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uitenant_claim.edit',
+						'link'	 => phpgw::link('/index.php', array('menuaction' => 'property.uitenant_claim.edit',
 							'claim_id'	 => $entry['claim_id']))
 					);
 				}
@@ -652,7 +652,7 @@ JS;
 					$portalbox->data[] = array
 						(
 						'text'	 => "{$project['address']} :: {$project['name']}",
-						'link'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiproject.edit',
+						'link'	 => phpgw::link('/index.php', array('menuaction' => 'property.uiproject.edit',
 							'id'		 => $project['project_id']))
 					);
 				}
@@ -732,7 +732,7 @@ JS;
 					$portalbox->data[] = array
 						(
 						'text'	 => "{$workorder['address']} :: {$workorder['title']}",
-						'link'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiworkorder.edit',
+						'link'	 => phpgw::link('/index.php', array('menuaction' => 'property.uiworkorder.edit',
 							'id'		 => $workorder['workorder_id']))
 					);
 				}
@@ -790,7 +790,7 @@ JS;
 					$portalbox->data[] = array
 						(
 						'text'	 => "{$workorder['address']} :: {$workorder['title']}",
-						'link'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiworkorder.edit',
+						'link'	 => phpgw::link('/index.php', array('menuaction' => 'property.uiworkorder.edit',
 							'id'		 => $workorder['workorder_id']))
 					);
 				}

@@ -70,17 +70,17 @@
 				$this->use_session = true;
 			}
 
-			$start		 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query		 = phpgw::get_var('query');
-			$sort		 = phpgw::get_var('sort');
-			$order		 = phpgw::get_var('order');
-			$filter		 = phpgw::get_var('filter', 'int');
-			$cat_id		 = phpgw::get_var('cat_id', 'int');
-			$vendor_id	 = phpgw::get_var('vendor_id', 'int');
-			$allrows	 = phpgw::get_var('allrows', 'bool');
-			$role		 = phpgw::get_var('role');
-			$member_id	 = phpgw::get_var('member_id', 'int');
-			$status_id	 = phpgw::get_var('status_id');
+			$start		 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query		 = Sanitizer::get_var('query');
+			$sort		 = Sanitizer::get_var('sort');
+			$order		 = Sanitizer::get_var('order');
+			$filter		 = Sanitizer::get_var('filter', 'int');
+			$cat_id		 = Sanitizer::get_var('cat_id', 'int');
+			$vendor_id	 = Sanitizer::get_var('vendor_id', 'int');
+			$allrows	 = Sanitizer::get_var('allrows', 'bool');
+			$role		 = Sanitizer::get_var('role');
+			$member_id	 = Sanitizer::get_var('member_id', 'int');
+			$status_id	 = Sanitizer::get_var('status_id');
 
 			$this->role		 = $role;
 			$this->so->role	 = $role;
@@ -135,10 +135,10 @@
 			switch ($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('select_vendor'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('select_vendor'));
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('filter_vendor'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('filter_vendor'));
 					break;
 			}
 
@@ -411,10 +411,10 @@
 			switch ($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('status_select'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('status_select'));
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('status_filter'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('status_filter'));
 					break;
 			}
 

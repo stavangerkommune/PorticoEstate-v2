@@ -32,8 +32,8 @@ JS;
 
 	if($tracker_id)
 	{
-		$GLOBALS['phpgw']->js->add_code('', $tracker_code1);
-		$GLOBALS['phpgw']->js->add_code('', $tracker_code2);
+		phpgwapi_js::getInstance()->add_code('', $tracker_code1);
+		phpgwapi_js::getInstance()->add_code('', $tracker_code2);
 	}
 
 	$GLOBALS['phpgw']->template->set_root(PHPGW_TEMPLATE_DIR);

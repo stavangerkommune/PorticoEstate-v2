@@ -73,23 +73,23 @@
 				$this->use_session = true;
 			}
 
-			$start		 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query		 = phpgw::get_var('query');
-			$sort		 = phpgw::get_var('sort');
-			$order		 = phpgw::get_var('order');
-			$filter		 = phpgw::get_var('filter', 'int');
-			$cat_id		 = phpgw::get_var('cat_id', 'int');
-			$dimb_id	 = phpgw::get_var('dimb_id', 'int');
-			$org_unit_id = phpgw::get_var('org_unit_id', 'int');
-			$allrows	 = phpgw::get_var('allrows', 'bool');
-			$district_id = phpgw::get_var('district_id', 'int');
-			$year		 = phpgw::get_var('year', 'int');
-			$month		 = phpgw::get_var('month', 'int');
-			$grouping	 = phpgw::get_var('grouping', 'int');
-			$revision	 = phpgw::get_var('revision', 'int');
-			$allrows	 = phpgw::get_var('allrows', 'bool');
-			$details	 = phpgw::get_var('details', 'bool');
-			$direction	 = phpgw::get_var('direction');
+			$start		 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query		 = Sanitizer::get_var('query');
+			$sort		 = Sanitizer::get_var('sort');
+			$order		 = Sanitizer::get_var('order');
+			$filter		 = Sanitizer::get_var('filter', 'int');
+			$cat_id		 = Sanitizer::get_var('cat_id', 'int');
+			$dimb_id	 = Sanitizer::get_var('dimb_id', 'int');
+			$org_unit_id = Sanitizer::get_var('org_unit_id', 'int');
+			$allrows	 = Sanitizer::get_var('allrows', 'bool');
+			$district_id = Sanitizer::get_var('district_id', 'int');
+			$year		 = Sanitizer::get_var('year', 'int');
+			$month		 = Sanitizer::get_var('month', 'int');
+			$grouping	 = Sanitizer::get_var('grouping', 'int');
+			$revision	 = Sanitizer::get_var('revision', 'int');
+			$allrows	 = Sanitizer::get_var('allrows', 'bool');
+			$details	 = Sanitizer::get_var('details', 'bool');
+			$direction	 = Sanitizer::get_var('direction');
 
 			$this->start	 = $start;
 			$this->query	 = $query ? $query : $this->query;

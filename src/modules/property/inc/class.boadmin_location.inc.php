@@ -64,11 +64,11 @@
 				$this->use_session = true;
 			}
 
-			$start	 = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query	 = phpgw::get_var('query');
-			$sort	 = phpgw::get_var('sort');
-			$order	 = phpgw::get_var('order');
-			$allrows = phpgw::get_var('allrows', 'bool');
+			$start	 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query	 = Sanitizer::get_var('query');
+			$sort	 = Sanitizer::get_var('sort');
+			$order	 = Sanitizer::get_var('order');
+			$allrows = Sanitizer::get_var('allrows', 'bool');
 
 			$this->start	 = $start ? $start : 0;
 			$this->query	 = isset($query) ? $query : $this->query;
@@ -207,7 +207,7 @@
 
 		function read_attrib_group( $data = array() )
 		{
-			if ($data['allrows'] || phpgw::get_var('allrows') == 1)
+			if ($data['allrows'] || Sanitizer::get_var('allrows') == 1)
 			{
 				$data['allrows'] = true;
 			}
@@ -283,7 +283,7 @@
 
 		function read_attrib( $data = array() )
 		{
-			if ($data['allrows'] || phpgw::get_var('allrows') == 1)
+			if ($data['allrows'] || Sanitizer::get_var('allrows') == 1)
 			{
 				$data['allrows'] = true;
 			}
@@ -306,7 +306,7 @@
 
 		function read_attrib_old( $type_id, $allrows = '' )
 		{
-			if ($allrows || phpgw::get_var('allrows') == 1)
+			if ($allrows || Sanitizer::get_var('allrows') == 1)
 			{
 				$this->allrows = true;
 			}
