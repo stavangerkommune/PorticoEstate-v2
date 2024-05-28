@@ -101,11 +101,11 @@
 			$this->cats									 = & $this->bo->cats;
 			$this->acl									 = & $GLOBALS['phpgw']->acl;
 			$this->acl_location							 = $this->bo->acl_location;
-			$this->acl_read								 = $this->acl->check($this->acl_location, PHPGW_ACL_READ, 'property');
-			$this->acl_add								 = $this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'property');
-			$this->acl_edit								 = $this->acl->check($this->acl_location, PHPGW_ACL_EDIT, 'property');
-			$this->acl_delete							 = $this->acl->check($this->acl_location, PHPGW_ACL_DELETE, 'property');
-			$this->acl_manage							 = $this->acl->check($this->acl_location, PHPGW_ACL_PRIVATE, 'property'); // manage
+			$this->acl_read								 = $this->acl->check($this->acl_location, ACL_READ, 'property');
+			$this->acl_add								 = $this->acl->check($this->acl_location, ACL_ADD, 'property');
+			$this->acl_edit								 = $this->acl->check($this->acl_location, ACL_EDIT, 'property');
+			$this->acl_delete							 = $this->acl->check($this->acl_location, ACL_DELETE, 'property');
+			$this->acl_manage							 = $this->acl->check($this->acl_location, ACL_PRIVATE, 'property'); // manage
 
 			$this->start			 = $this->bo->start;
 			$this->query			 = $this->bo->query;
@@ -284,7 +284,7 @@ HTML;
 
 		function show_attachment()
 		{
-			if (!$this->acl->check('.ticket.order', PHPGW_ACL_ADD, 'property') && !$this->acl->check('.project', PHPGW_ACL_ADD, 'property'))
+			if (!$this->acl->check('.ticket.order', ACL_ADD, 'property') && !$this->acl->check('.project', ACL_ADD, 'property'))
 			{
 				phpgw::no_access();
 			}
@@ -312,7 +312,7 @@ HTML;
 
 		function download2()
 		{
-			if (!$this->acl->check('.ticket.external', PHPGW_ACL_READ, 'property'))
+			if (!$this->acl->check('.ticket.external', ACL_READ, 'property'))
 			{
 				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => '.ticket.external'));
@@ -378,13 +378,13 @@ HTML;
 			$name[]	 = 'entry_date';
 			$name[]	 = 'status';
 
-			if ($this->acl->check('.ticket.order', PHPGW_ACL_READ, 'property'))
+			if ($this->acl->check('.ticket.order', ACL_READ, 'property'))
 			{
 				$name[]	 = 'order_id';
 				$name[]	 = 'vendor';
 			}
 
-			if ($this->acl->check('.ticket.order', PHPGW_ACL_ADD, 'property'))
+			if ($this->acl->check('.ticket.order', ACL_ADD, 'property'))
 			{
 				$name[]	 = 'estimate';
 				$name[]	 = 'actual_cost';
@@ -750,7 +750,7 @@ HTML;
 
 		private function _get_filters()
 		{
-			$order_read = $this->acl->check('.ticket.order', PHPGW_ACL_READ, 'property');
+			$order_read = $this->acl->check('.ticket.order', ACL_READ, 'property');
 
 			$values_combo_box	 = array();
 			$combos				 = array();
@@ -2099,9 +2099,9 @@ HTML;
 
 			$historylog = CreateObject('property.historylog', 'tts');
 
-			$order_read	 = $this->acl->check('.ticket.order', PHPGW_ACL_READ, 'property');
-			$order_add	 = $this->acl->check('.ticket.order', PHPGW_ACL_ADD, 'property');
-			$order_edit	 = $this->acl->check('.ticket.order', PHPGW_ACL_EDIT, 'property');
+			$order_read	 = $this->acl->check('.ticket.order', ACL_READ, 'property');
+			$order_add	 = $this->acl->check('.ticket.order', ACL_ADD, 'property');
+			$order_edit	 = $this->acl->check('.ticket.order', ACL_EDIT, 'property');
 
 			$access_order = false;
 			if ($order_add || $order_edit)
@@ -2319,7 +2319,7 @@ HTML;
 			$add_to_project_link = '';
 			$request_link		 = '';
 
-			if ($GLOBALS['phpgw']->acl->check('.project.request', PHPGW_ACL_ADD, 'property'))
+			if ($GLOBALS['phpgw']->acl->check('.project.request', ACL_ADD, 'property'))
 			{
 				$request_link_data = array
 					(
@@ -2337,7 +2337,7 @@ HTML;
 				$request_link = phpgw::link('/index.php', $request_link_data);
 			}
 
-			if ($GLOBALS['phpgw']->acl->check('.project', PHPGW_ACL_ADD, 'property'))
+			if ($GLOBALS['phpgw']->acl->check('.project', ACL_ADD, 'property'))
 			{
 				$order_link_data = array
 					(
@@ -2429,7 +2429,7 @@ HTML;
 				$i = 0;
 				foreach ($start_entity as $entry)
 				{
-					if ($GLOBALS['phpgw']->acl->check(".entity.{$entry['id']}", PHPGW_ACL_ADD, 'property'))
+					if ($GLOBALS['phpgw']->acl->check(".entity.{$entry['id']}", ACL_ADD, 'property'))
 					{
 						$link_entity[$i]['link'] = phpgw::link('/index.php', array
 							(
@@ -4010,7 +4010,7 @@ JS;
 
 		public function receive_order()
 		{
-			if (!$GLOBALS['phpgw']->acl->check('.project', PHPGW_ACL_ADD, 'property'))
+			if (!$GLOBALS['phpgw']->acl->check('.project', ACL_ADD, 'property'))
 			{
 				return;
 			}
@@ -5153,7 +5153,7 @@ JS;
 
 			phpgwapi_xslttemplates::getInstance()->add_file(array('user_id_select'), $xsl_rootdir);
 
-			$users			 = $GLOBALS['phpgw']->acl->get_user_list_right(PHPGW_ACL_EDIT, $this->acl_location, 'property', $this->group_candidates);
+			$users			 = $GLOBALS['phpgw']->acl->get_user_list_right(ACL_EDIT, $this->acl_location, 'property', $this->group_candidates);
 			$user_list		 = array();
 			$selected_found	 = false;
 			foreach ($users as $user)

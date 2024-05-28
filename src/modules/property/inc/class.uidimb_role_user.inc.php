@@ -172,7 +172,7 @@
 			);
 
 
-			$user_list	 = $this->bocommon->get_user_list_right2('select', PHPGW_ACL_READ, $this->filter, '.invoice', array(), $this->account_id);
+			$user_list	 = $this->bocommon->get_user_list_right2('select', ACL_READ, $this->filter, '.invoice', array(), $this->account_id);
 			$role_list	 = execMethod('property.bogeneric.get_list', array('type'		 => 'dimb_role',
 				'selected'	 => $role));
 			$dimb_list	 = execMethod('property.bogeneric.get_list', array('type'		 => 'dimb',
@@ -263,7 +263,7 @@
 
 			if ($values = Sanitizer::get_var('values'))
 			{
-				if (!$GLOBALS['phpgw']->acl->check('.admin', PHPGW_ACL_EDIT, 'property'))
+				if (!$GLOBALS['phpgw']->acl->check('.admin', ACL_EDIT, 'property'))
 				{
 					$receipt['error'][] = true;
 					phpgwapi_cache::message_set(lang('you are not approved for this task'), 'error');

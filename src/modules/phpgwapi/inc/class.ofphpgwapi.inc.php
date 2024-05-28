@@ -85,7 +85,7 @@ class phpgwapi_ofphpgwapi extends phpgwapi_object_factory
 		switch ($classname)
 		{
 			case 'auth':
-				return self::_create_auth_object();
+				return	new \App\modules\phpgwapi\security\Auth\Auth();
 
 			case 'accounts':
 				$account_id   = ($p1 !== '_UNDEF_') ? $p1 : null;
@@ -115,6 +115,10 @@ class phpgwapi_ofphpgwapi extends phpgwapi_object_factory
 				return new \App\modules\phpgwapi\services\Config($app);
 			case 'send':
 				return new \App\modules\phpgwapi\services\Send();
+			case 'template':
+				$root = ($p1 !== '_UNDEF_') ? $p1 : null;
+				$unknowns = ($p2 !== '_UNDEF_') ? $p2 : null;
+				return App\helpers\Template::getInstance($root, $unknowns);
 			default:
 				return parent::createObject(
 					$class,
@@ -137,46 +141,5 @@ class phpgwapi_ofphpgwapi extends phpgwapi_object_factory
 				);
 		}
 	}
-
-
-	/**
-	 * Create a new authentication object
-	 *
-	 * @return object new authentication object
-	 */
-	protected static function _create_auth_object()
-	{
-		include_once PHPGW_API_INC . '/auth/class.auth_.inc.php';
-
-		$auth_type = $GLOBALS['phpgw_info']['server']['auth_type'];
-		switch ($auth_type)
-		{
-			case 'sqlssl':
-				include_once PHPGW_API_INC . '/auth/class.auth_sql.inc.php';
-				// fall through
-
-			case 'ads':
-			case 'exchange':
-			case 'http':
-			case 'ldap':
-			case 'mail':
-				// case 'nis': - doesn't currently work AFAIK - skwashd may08
-			case 'customsso':
-			case 'ntlm':
-			case 'remoteuser':
-			case 'sql':
-			case 'azure':
-				$class = "auth_{$auth_type}";
-				include_once PHPGW_API_INC . "/auth/class.{$class}.inc.php";
-
-				$class = "phpgwapi_{$class}";
-				return new $class();
-
-			default:
-				include_once PHPGW_API_INC . '/auth/class.auth_sql.inc.php';
-				return new phpgwapi_auth_sql();
-		}
-	}
-
 
 }

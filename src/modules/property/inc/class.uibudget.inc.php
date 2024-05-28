@@ -472,7 +472,7 @@
 		function index()
 		{
 			$acl_location	 = '.budget';
-			$acl_read		 = $this->acl->check($acl_location, PHPGW_ACL_READ, 'property');
+			$acl_read		 = $this->acl->check($acl_location, ACL_READ, 'property');
 
 			if (!$acl_read)
 			{
@@ -485,9 +485,9 @@
 				return $this->query();
 			}
 
-			$acl_add	 = $this->acl->check($acl_location, PHPGW_ACL_ADD, 'property');
-			$acl_edit	 = $this->acl->check($acl_location, PHPGW_ACL_EDIT, 'property');
-			$acl_delete	 = $this->acl->check($acl_location, PHPGW_ACL_DELETE, 'property');
+			$acl_add	 = $this->acl->check($acl_location, ACL_ADD, 'property');
+			$acl_edit	 = $this->acl->check($acl_location, ACL_EDIT, 'property');
+			$acl_delete	 = $this->acl->check($acl_location, ACL_DELETE, 'property');
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::budget';
 
@@ -654,7 +654,7 @@
 		function basis()
 		{
 			$acl_location	 = '.budget';
-			$acl_read		 = $this->acl->check($acl_location, PHPGW_ACL_READ, 'property');
+			$acl_read		 = $this->acl->check($acl_location, ACL_READ, 'property');
 
 			if (!$acl_read)
 			{
@@ -667,9 +667,9 @@
 				return $this->query_basis();
 			}
 
-			$acl_add	 = $this->acl->check($acl_location, PHPGW_ACL_ADD, 'property');
-			$acl_edit	 = $this->acl->check($acl_location, PHPGW_ACL_EDIT, 'property');
-			$acl_delete	 = $this->acl->check($acl_location, PHPGW_ACL_DELETE, 'property');
+			$acl_add	 = $this->acl->check($acl_location, ACL_ADD, 'property');
+			$acl_edit	 = $this->acl->check($acl_location, ACL_EDIT, 'property');
+			$acl_delete	 = $this->acl->check($acl_location, ACL_DELETE, 'property');
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::basis';
 
@@ -821,7 +821,7 @@
 		function obligations()
 		{
 			$acl_location	 = '.budget.obligations';
-			$acl_read		 = $this->acl->check($acl_location, PHPGW_ACL_READ, 'property');
+			$acl_read		 = $this->acl->check($acl_location, ACL_READ, 'property');
 
 			if (!$acl_read)
 			{
@@ -1014,8 +1014,8 @@
 		function edit( $values = array() )
 		{
 			$acl_location	 = '.budget';
-			$acl_add		 = $this->acl->check($acl_location, PHPGW_ACL_ADD, 'property');
-			$acl_edit		 = $this->acl->check($acl_location, PHPGW_ACL_EDIT, 'property');
+			$acl_add		 = $this->acl->check($acl_location, ACL_ADD, 'property');
+			$acl_edit		 = $this->acl->check($acl_location, ACL_EDIT, 'property');
 
 			if (!$acl_add && !$acl_edit)
 			{
@@ -1174,8 +1174,8 @@
 		function edit_basis( $values = array() )
 		{
 			$acl_location	 = '.budget';
-			$acl_add		 = $this->acl->check($acl_location, PHPGW_ACL_ADD, 'property');
-			$acl_edit		 = $this->acl->check($acl_location, PHPGW_ACL_EDIT, 'property');
+			$acl_add		 = $this->acl->check($acl_location, ACL_ADD, 'property');
+			$acl_edit		 = $this->acl->check($acl_location, ACL_EDIT, 'property');
 
 			if (!$acl_add && !$acl_edit)
 			{

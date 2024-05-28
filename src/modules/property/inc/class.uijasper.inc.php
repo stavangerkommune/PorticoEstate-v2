@@ -68,10 +68,10 @@
 
 			$this->acl			 = & $GLOBALS['phpgw']->acl;
 			$this->acl_location	 = '.jasper';
-			$this->acl_read		 = $this->acl->check('.jasper', PHPGW_ACL_READ, 'property');
-			$this->acl_add		 = $this->acl->check('.jasper', PHPGW_ACL_ADD, 'property');
-			$this->acl_edit		 = $this->acl->check('.jasper', PHPGW_ACL_EDIT, 'property');
-			$this->acl_delete	 = $this->acl->check('.jasper', PHPGW_ACL_DELETE, 'property');
+			$this->acl_read		 = $this->acl->check('.jasper', ACL_READ, 'property');
+			$this->acl_add		 = $this->acl->check('.jasper', ACL_ADD, 'property');
+			$this->acl_edit		 = $this->acl->check('.jasper', ACL_EDIT, 'property');
+			$this->acl_delete	 = $this->acl->check('.jasper', ACL_DELETE, 'property');
 			$this->grants		 = & $this->bo->grants;
 
 			$this->start	 = $this->bo->start;
@@ -547,7 +547,7 @@
 			{
 				$values			 = $this->bo->read_single($id);
 				$function_msg	 = lang('edit report');
-				if (!$this->bocommon->check_perms2($values['user_id'], $this->grants, PHPGW_ACL_READ))
+				if (!$this->bocommon->check_perms2($values['user_id'], $this->grants, ACL_READ))
 				{
 					phpgw::no_access();
 				}
@@ -687,7 +687,7 @@
 				$values['input'] = $values_attribute;
 				$first_run		 = false;
 			}
-			if (!$this->bocommon->check_perms2($values['user_id'], $this->grants, PHPGW_ACL_READ))
+			if (!$this->bocommon->check_perms2($values['user_id'], $this->grants, ACL_READ))
 			{
 				echo lang('not allowed');
 				$GLOBALS['phpgw']->common->phpgw_exit();
@@ -853,7 +853,7 @@
 
 			$id		 = Sanitizer::get_var('id'); // string
 			$values	 = $this->bo->read_single($id);
-			if (!$this->bocommon->check_perms2($values['user_id'], $this->grants, PHPGW_ACL_DELETE))
+			if (!$this->bocommon->check_perms2($values['user_id'], $this->grants, ACL_DELETE))
 			{
 				return lang('not allowed');
 			}

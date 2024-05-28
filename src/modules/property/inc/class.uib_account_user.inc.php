@@ -137,7 +137,7 @@
 				)
 			);
 
-			if (!$GLOBALS['phpgw']->acl->check('.admin', PHPGW_ACL_EDIT, 'property'))
+			if (!$GLOBALS['phpgw']->acl->check('.admin', ACL_EDIT, 'property'))
 			{
 				$user_list = array(
 					array('id' => $this->account_id, 'name' => $GLOBALS['phpgw_info']['user']['fullname'])
@@ -145,7 +145,7 @@
 			}
 			else
 			{
-				$user_list = $this->bocommon->get_user_list_right2('select', PHPGW_ACL_READ, $this->filter, '.invoice', array(), $this->account_id);
+				$user_list = $this->bocommon->get_user_list_right2('select', ACL_READ, $this->filter, '.invoice', array(), $this->account_id);
 				array_unshift($user_list, array('id' => '', 'name' => lang('select')));
 			}
 
@@ -231,7 +231,7 @@
 
 			if ($values = Sanitizer::get_var('values'))
 			{
-//				if (!$GLOBALS['phpgw']->acl->check('.admin', PHPGW_ACL_EDIT, 'property'))
+//				if (!$GLOBALS['phpgw']->acl->check('.admin', ACL_EDIT, 'property'))
 //				{
 //					$receipt['error'][] = true;
 //					phpgwapi_cache::message_set(lang('you are not approved for this task'), 'error');

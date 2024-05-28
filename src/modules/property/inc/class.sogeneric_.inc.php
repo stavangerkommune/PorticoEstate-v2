@@ -27,6 +27,12 @@
 	 * @version $Id$
 	 */
 
+use App\Database\Db;
+use App\Database\Db2;
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\controllers\Locations;
+
+
 	/**
 	 * Description
 	 * @package property
@@ -40,14 +46,17 @@
 		var $tree			 = array();
 		protected $table;
 		var $appname			 = 'property';
-		var $account, $_db, $_db2, $_join, $_left_join, $_like, $total_records;
+		var $account, $_db, $_db2, $_join, $_left_join, $_like, $total_records, $userSettings, $locations;
 
 		function __construct( $type = '', $type_id = 0 )
 		{
-			$this->account	 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->locations = new Locations();
+
+			$this->account	 = $this->userSettings['account_id'];
 			$this->custom	 = createObject('property.custom_fields');
-			$this->_db		 = & $GLOBALS['phpgw']->db;
-			$this->_db2		 = clone($this->_db);
+			$this->_db		 = Db::getInstance();
+			$this->_db2		 = new Db2();
 			$this->_like	 = & $this->_db->like;
 			$this->_join	 = & $this->_db->join;
 
@@ -151,15 +160,15 @@
 
 
 			$custom_fields = false;
-			$location_id		 = $GLOBALS['phpgw']->locations->get_id($this->location_info['acl_app'], $this->location_info['acl_location']);
-			if ($GLOBALS['phpgw']->locations->get_attrib_table($this->location_info['acl_app'], $this->location_info['acl_location']))
+			$location_id		 = $this->locations->get_id($this->location_info['acl_app'], $this->location_info['acl_location']);
+			if ($this->locations->get_attrib_table($this->location_info['acl_app'], $this->location_info['acl_location']))
 			{
 				$custom_fields		 = true;
 				$choice_table		 = 'phpgw_cust_choice';
 				$attribute_table	 = 'phpgw_cust_attribute';
 				$attribute_filter	 = " location_id = {$location_id}";
 
-				$user_columns = isset($GLOBALS['phpgw_info']['user']['preferences'][$this->location_info['acl_app']]["generic_columns_{$this->type}_{$this->type_id}"]) ? $GLOBALS['phpgw_info']['user']['preferences'][$this->location_info['acl_app']]["generic_columns_{$this->type}_{$this->type_id}"] : '';
+				$user_columns = isset($this->userSettings['preferences'][$this->location_info['acl_app']]["generic_columns_{$this->type}_{$this->type_id}"]) ? $this->userSettings['preferences'][$this->location_info['acl_app']]["generic_columns_{$this->type}_{$this->type_id}"] : '';
 
 				$user_column_filter = '';
 				if (isset($user_columns) AND is_array($user_columns) AND $user_columns[0])

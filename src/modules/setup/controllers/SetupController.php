@@ -348,7 +348,7 @@ class SetupController
 
 		//$this->setup->app_status();
 		$serverSettings['app_images'] = 'templates/base/images';
-		$serverSettings['api_images'] = '../phpgwapi/templates/base/images';
+		$serverSettings['api_images'] = '/src/modules/phpgwapi/templates/base/images';
 		$incomplete = "{$serverSettings['api_images']}/stock_no.png";
 		$completed  = "{$serverSettings['api_images']}/stock_yes.png";
 

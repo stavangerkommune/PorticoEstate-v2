@@ -154,10 +154,10 @@
 				$acl_check_location = ".{$this->type}.$this->entity_id"; //parent
 			}
 
-			$this->acl_read		 = $this->acl->check($acl_check_location, PHPGW_ACL_READ, $this->type_app[$this->type]);
-			$this->acl_add		 = $this->acl->check($acl_check_location, PHPGW_ACL_ADD, $this->type_app[$this->type]);
-			$this->acl_edit		 = $this->acl->check($acl_check_location, PHPGW_ACL_EDIT, $this->type_app[$this->type]);
-			$this->acl_delete	 = $this->acl->check($acl_check_location, PHPGW_ACL_DELETE, $this->type_app[$this->type]);
+			$this->acl_read		 = $this->acl->check($acl_check_location, ACL_READ, $this->type_app[$this->type]);
+			$this->acl_add		 = $this->acl->check($acl_check_location, ACL_ADD, $this->type_app[$this->type]);
+			$this->acl_edit		 = $this->acl->check($acl_check_location, ACL_EDIT, $this->type_app[$this->type]);
+			$this->acl_delete	 = $this->acl->check($acl_check_location, ACL_DELETE, $this->type_app[$this->type]);
 
 			$this->controller_helper = CreateObject('property.controller_helper', array(
 				'acl_location'	 => $acl_check_location,
@@ -1369,7 +1369,7 @@
 				$categories = $this->soadmin_entity->read_category(array('entity_id' => $this->entity_id));
 				foreach ($categories as $category)
 				{
-					if ($this->acl->check(".{$this->type}.$this->entity_id.{$category['id']}", PHPGW_ACL_READ, $this->type_app[$this->type]))
+					if ($this->acl->check(".{$this->type}.$this->entity_id.{$category['id']}", ACL_READ, $this->type_app[$this->type]))
 					{
 						$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uientity.index',
 							'entity_id'	 => $this->entity_id, 'cat_id'	 => $category['id'], 'type'		 => $this->type));
@@ -1828,7 +1828,7 @@
 			}
 			else
 			{
-				$cat_list = $this->bo->select_category_list('select', '', PHPGW_ACL_ADD);
+				$cat_list = $this->bo->select_category_list('select', '', ACL_ADD);
 			}
 
 
@@ -3055,7 +3055,7 @@ JS;
 			}
 
 			$tabletools = array();
-			if ($edit && $this->acl->check($acl_location, PHPGW_ACL_DELETE, $this->type_app[$this->type]))
+			if ($edit && $this->acl->check($acl_location, ACL_DELETE, $this->type_app[$this->type]))
 			{
 				$parameters = array
 					(
@@ -3389,7 +3389,7 @@ JS;
 
 			$system_location = $GLOBALS['phpgw']->locations->get_name($location_id);
 
-			$this->acl_add = $this->acl->check($system_location['location'], PHPGW_ACL_ADD, $system_location['appname']);
+			$this->acl_add = $this->acl->check($system_location['location'], ACL_ADD, $system_location['appname']);
 
 			if (!$this->acl_add)
 			{
@@ -3515,7 +3515,7 @@ JS;
 			$id				 = Sanitizer::get_var('id', 'int');
 			$system_location = $GLOBALS['phpgw']->locations->get_name($location_id);
 
-			$this->acl_add = $this->acl->check($system_location['location'], PHPGW_ACL_ADD, $system_location['appname']);
+			$this->acl_add = $this->acl->check($system_location['location'], ACL_ADD, $system_location['appname']);
 
 			if (!$this->acl_add)
 			{
@@ -3624,7 +3624,7 @@ JS;
 
 			$system_location = $GLOBALS['phpgw']->locations->get_name($location_id);
 
-			$this->acl_add = $this->acl->check($system_location['location'], PHPGW_ACL_ADD, $system_location['appname']);
+			$this->acl_add = $this->acl->check($system_location['location'], ACL_ADD, $system_location['appname']);
 
 			if (!$this->acl_add)
 			{

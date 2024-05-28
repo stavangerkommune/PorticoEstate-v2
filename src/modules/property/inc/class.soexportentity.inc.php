@@ -118,7 +118,7 @@
 			$this->cat_id	 = isset($data['cat_id']) && $data['cat_id'] ? $data['cat_id'] : $this->cat_id;
 			$acl_location	 = ".entity.{$this->entity_id}.{$this->cat_id}";
 
-			if (!$this->acl->check($acl_location, PHPGW_ACL_READ, 'property'))
+			if (!$this->acl->check($acl_location, ACL_READ, 'property'))
 			{
 				return array('error' => 'sorry: no access to this function');
 			}

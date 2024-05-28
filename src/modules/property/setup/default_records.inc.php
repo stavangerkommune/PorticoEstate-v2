@@ -361,9 +361,7 @@ $db->query("INSERT INTO fm_request_condition_type (id, name, priority_key) VALUE
 $db->query("DELETE FROM phpgw_categories WHERE cat_appname = 'property'");
 $serverSettings['account_repository'] = isset($serverSettings['account_repository']) ? $serverSettings['account_repository'] : '';
 $accounts = createObject('phpgwapi.accounts');
-//$GLOBALS['phpgw']->db = &$db->m_odb;
-//$GLOBALS['phpgw']->acl = CreateObject('phpgwapi.acl');
-//$GLOBALS['phpgw']->hooks = CreateObject('phpgwapi.hooks', $db->m_odb);
+
 $cats = CreateObject('phpgwapi.categories', -1, 'property', '.document');
 
 $cats->add(

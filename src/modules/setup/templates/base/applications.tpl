@@ -35,16 +35,16 @@ function check_all(strTargetAction)
 			<th>{app_version}</th>
 			<th class="checkcell">
 				{app_install}<br>
-				<a href="javascript:check_all('install')"><img src="../phpgwapi/templates/base/images/{check}" title="{install_all}" alt="{install_all}"></a>
+				<a href="javascript:check_all('install')"><img src="/src/modules/phpgwapi/templates/base/images/{check}" title="{install_all}" alt="{install_all}"></a>
 			</th>
 			<th class="checkcell">
 				{app_upgrade}<br>
-				<a href="javascript:check_all('upgrade')"><img src="../phpgwapi/templates/base/images/{check}" title="{install_all}" alt="{install_all}"></a>
+				<a href="javascript:check_all('upgrade')"><img src="/src/modules/phpgwapi/templates/base/images/{check}" title="{install_all}" alt="{install_all}"></a>
 			</th>
 			<th>{app_resolve}</th>
 			<th class="checkcell">
 				{app_remove}<br>
-				<a href="javascript:check_all('remove')"><img src="../phpgwapi/templates/base/images/{check}" title="{install_all}" alt="{install_all}"></a>
+				<a href="javascript:check_all('remove')"><img src="/src/modules/phpgwapi/templates/base/images/{check}" title="{install_all}" alt="{install_all}"></a>
 			</th>
 		</tr>
 	</thead>
@@ -53,7 +53,7 @@ function check_all(strTargetAction)
 
 <!-- BEGIN apps -->
 		<tr class="{bg_class}">
-			<td class="appicon"><a href="applications?detail={appname}"><img src="../phpgwapi/templates/base/images/{instimg}" alt="{instalt}" title="{instalt}" border="0"></a></td>
+			<td class="appicon"><a href="applications?detail={appname}"><img src="/src/modules/phpgwapi/templates/base/images/{instimg}" alt="{instalt}" title="{instalt}" border="0"></a></td>
 			<td><strong>{appname}</strong></td>
 			<td>{appinfo}</td>
 			<td>{currentver}</td>
@@ -105,14 +105,14 @@ function check_all(strTargetAction)
   <tr class="th">
     <td colspan="5">{debug} {lang_debug}</td>
     <td class="checkcell">
-     <a href="javascript:check_all('install')"><img src="../phpgwapi/templates/base/images/{check}" title="{install_all}" alt="{install_all}"></a>
+     <a href="javascript:check_all('install')"><img src="/src/modules/phpgwapi/templates/base/images/{check}" title="{install_all}" alt="{install_all}"></a>
     </td>
     <td class="checkcell">
-     <a href="javascript:check_all('upgrade')"><img src="../phpgwapi/templates/base/images/{check}" title="{upgrade_all}" alt="{upgrade_all}"></a>
+     <a href="javascript:check_all('upgrade')"><img src="/src/modules/phpgwapi/templates/base/images/{check}" title="{upgrade_all}" alt="{upgrade_all}"></a>
     </td>
     <td>&nbsp;</td>
     <td class="checkcell">
-      <a href="javascript:check_all('remove')"><img src="../phpgwapi/templates/base/images/{check}" title="{remove_all}" alt="{remove_all}"></a>
+      <a href="javascript:check_all('remove')"><img src="/src/modules/phpgwapi/templates/base/images/{check}" title="{remove_all}" alt="{remove_all}"></a>
     </td>
   </tr>
 </table>

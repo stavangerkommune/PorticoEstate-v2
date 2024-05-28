@@ -9,7 +9,7 @@
 	 * @package property
 	 * @version $Id$
 	 */
-	/*
+/*
 	  This program is free software: you can redistribute it and/or modify
 	  it under the terms of the GNU General Public License as published by
 	  the Free Software Foundation, either version 2 of the License, or
@@ -23,6 +23,11 @@
 	  You should have received a copy of the GNU General Public License
 	  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
+
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\security\Acl;
+	use App\modules\phpgwapi\controllers\Locations;
+	use App\modules\phpgwapi\services\Translation;
 
 	/**
 	 * Menus
@@ -39,18 +44,23 @@
 		 */
 		public function get_menu( $type = '' )
 		{
-			$incoming_app									 = $GLOBALS['phpgw_info']['flags']['currentapp'];
-			$GLOBALS['phpgw_info']['flags']['currentapp']	 = 'property';
-			$acl											 = & $GLOBALS['phpgw']->acl;
-			$menus											 = array();
+			$userSettings = Settings::getInstance()->get('user');
+			$flags = Settings::getInstance()->get('flags');
+			$phpgw_locations = new Locations();
+			$translation = Translation::getInstance();
+			
+			$incoming_app			 = $flags['currentapp'];
+			$flags['currentapp']	 = 'property';
+			$acl					 =	Acl::getInstance();
+			$menus					 = array();
 
 			$entity		 = CreateObject('property.soadmin_entity');
 			$entity_list = $entity->read(array('allrows' => true));
 
 			$start_page = 'location';
-			if (isset($GLOBALS['phpgw_info']['user']['preferences']['property']['default_start_page']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['default_start_page'])
+			if (isset($userSettings['preferences']['property']['default_start_page']) && $userSettings['preferences']['property']['default_start_page'])
 			{
-				$start_page = $GLOBALS['phpgw_info']['user']['preferences']['property']['default_start_page'];
+				$start_page = $userSettings['preferences']['property']['default_start_page'];
 			}
 
 			$config = CreateObject('phpgwapi.config', 'property')->read();
@@ -80,9 +90,9 @@
 			$soadmin_location	 = CreateObject('property.soadmin_location');
 			$locations			 = $soadmin_location->select_location_type();
 
-			$sysadmin		 = $GLOBALS['phpgw']->acl->check('run', phpgwapi_acl::READ, 'admin');
-			$local_admin	 = $GLOBALS['phpgw']->acl->check('admin', phpgwapi_acl::ADD, 'property');
-			$admin_booking	 = $GLOBALS['phpgw']->acl->check('.admin_booking', phpgwapi_acl::ADD, 'property');
+			$sysadmin		 = $acl->check('run', Acl::READ, 'admin');
+			$local_admin	 = $acl->check('admin', Acl::ADD, 'property');
+			$admin_booking	 = $acl->check('.admin_booking', Acl::ADD, 'property');
 
 			if ($sysadmin || $local_admin)
 			{
@@ -96,7 +106,7 @@
 								'entity_id'	 => $entry['id'])),
 							'text'			 => $entry['name'],
 							'image'			 => array('property', 'entity_' . $entry['id']),
-							'nav_location'	 => "admin#" . $GLOBALS['phpgw']->locations->get_id('property', ".entity.{$entry['id']}")
+							'nav_location'	 => "admin#" . $phpgw_locations->get_id('property', ".entity.{$entry['id']}")
 						);
 
 						$admin_children_entity["entity_{$entry['id']}"]['children'] = $entity->read_category_tree($entry['id'], 'property.uiadmin_entity.list_attribute', false, 'admin#');
@@ -260,9 +270,9 @@
 					'ticket_config'		 => array
 						(
 						'text'	 => lang('ticket config'),
-						'nav_location' => 'navbar#' . $GLOBALS['phpgw']->locations->get_id('property', '.ticket'),
+						'nav_location' => 'navbar#' . $phpgw_locations->get_id('property', '.ticket'),
 						'url'	 => phpgw::link('/index.php', array('menuaction'	 => 'admin.uiconfig2.index',
-							'location_id'	 => $GLOBALS['phpgw']->locations->get_id('property', '.ticket')))
+							'location_id'	 => $phpgw_locations->get_id('property', '.ticket')))
 					),
 					'ticket_attribs'	 => array
 						(
@@ -369,9 +379,9 @@
 					'accounting_config'		 => array
 						(
 						'text'	 => lang('Configuration'),
-						'nav_location' => 'navbar#' . $GLOBALS['phpgw']->locations->get_id('property', '.invoice'),
+						'nav_location' => 'navbar#' . $phpgw_locations->get_id('property', '.invoice'),
 						'url'	 => phpgw::link('/index.php', array('menuaction'	 => 'admin.uiconfig2.index',
-							'location_id'	 => $GLOBALS['phpgw']->locations->get_id('property', '.invoice')))
+							'location_id'	 => $phpgw_locations->get_id('property', '.invoice')))
 					),
 					'accounting_tax'		 => array
 						(
@@ -602,9 +612,9 @@
 						'children'	 => array(
 							'custom_config'		 => array(
 								'text'			 => lang('custom config'),
-								'nav_location'	 => 'navbar#' . $GLOBALS['phpgw']->locations->get_id('property', '.admin'),
+								'nav_location'	 => 'navbar#' . $phpgw_locations->get_id('property', '.admin'),
 								'url'			 => phpgw::link('/index.php', array('menuaction'	 => 'admin.uiconfig2.index',
-									'location_id'	 => $GLOBALS['phpgw']->locations->get_id('property', '.admin')))
+									'location_id'	 => $phpgw_locations->get_id('property', '.admin')))
 							),
 							'klassifikasjonssystemet'	 => array(
 								'text'	 => 'Klassifikasjonssystemet',
@@ -636,7 +646,7 @@
 						'text'		 => lang('Admin entity'),
 						'url'		 => phpgw::link('/index.php', array('menuaction' => 'property.uiadmin_entity.index')),
 						'children'	 => $admin_children_entity,
-						'nav_location' => "admin#" . $GLOBALS['phpgw']->locations->get_id('property', '.admin.entity')
+						'nav_location' => "admin#" . $phpgw_locations->get_id('property', '.admin.entity')
 					),
 					'location'					 => array
 						(
@@ -918,17 +928,17 @@
 				);
 			}
 
-			if (isset($GLOBALS['phpgw_info']['user']['apps']['preferences']))
+			if (isset($userSettings['apps']['preferences']))
 			{
 				$menus['preferences'] = array
 					(
 					array(
-						'text'	 => $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
+						'text'	 => $translation->translate('Preferences', array(), true),
 						'url'	 => phpgw::link('/preferences/preferences.php', array('appname'	 => 'property',
 							'type'		 => 'user'))
 					),
 					array(
-						'text'	 => $GLOBALS['phpgw']->translation->translate('Grant Access', array(), true),
+						'text'	 => $translation->translate('Grant Access', array(), true),
 						'url'	 => phpgw::link('/index.php', array('menuaction' => 'property.uiadmin.aclprefs',
 							'acl_app'	 => 'property'))
 					),
@@ -946,7 +956,7 @@
 
 				$menus['toolbar'][] = array
 					(
-					'text'	 => $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
+					'text'	 => $translation->translate('Preferences', array(), true),
 					'url'	 => phpgw::link('/preferences/preferences.php', array('appname' => 'property')),
 					'image'	 => array('property', 'preferences')
 				);
@@ -954,13 +964,13 @@
 
 			$menus['navigation'] = array();
 
-			if ($acl->check('.location', PHPGW_ACL_READ, 'property'))
+			if ($acl->check('.location', ACL_READ, 'property'))
 			{
 				$children = array();
 
 				foreach ($locations as $location)
 				{
-					if ($acl->check(".location.{$location['id']}", PHPGW_ACL_READ, 'property'))
+					if ($acl->check(".location.{$location['id']}", ACL_READ, 'property'))
 					{
 						$children["loc_{$location['id']}"] = array
 							(
@@ -1026,7 +1036,7 @@
 				);
 			}
 
-			if ($acl->check('.ifc', PHPGW_ACL_READ, 'property'))
+			if ($acl->check('.ifc', ACL_READ, 'property'))
 			{
 				$menus['navigation']['ifc'] = array
 					(
@@ -1045,7 +1055,7 @@
 				);
 			}
 
-			if ($acl->check('.ticket', PHPGW_ACL_READ, 'property'))
+			if ($acl->check('.ticket', ACL_READ, 'property'))
 			{
 				$menus['navigation']['helpdesk'] = array
 					(
@@ -1086,7 +1096,7 @@
 				);
 			}
 
-			if ($acl->check('run', PHPGW_ACL_READ, 'sms'))
+			if ($acl->check('run', ACL_READ, 'sms'))
 			{
 				$menus['navigation']['helpdesk']['children']['send_sms'] = array(
 						'url'	 => phpgw::link('/index.php', array('menuaction' => 'property.uiexternal_communication.send_sms')),
@@ -1096,7 +1106,7 @@
 			}
 
 
-			if ($acl->check('.report', PHPGW_ACL_READ, 'property'))
+			if ($acl->check('.report', ACL_READ, 'property'))
 			{
 				$menus['navigation']['report'] = array
 					(
@@ -1106,7 +1116,7 @@
 				);
 			}
 
-			if ($acl->check('.ticket.order', PHPGW_ACL_ADD, 'property'))
+			if ($acl->check('.ticket.order', ACL_ADD, 'property'))
 			{
 				$menus['navigation']['helpdesk']['children']['quick_order_template']	 = array
 				(
@@ -1123,7 +1133,7 @@
 				);
 			}
 
-			if (isset($GLOBALS['phpgw_info']['user']['apps']['sms']))
+			if (isset($userSettings['apps']['sms']))
 			{
 				$menus['navigation']['helpdesk']['children']['response_template'] = array
 					(
@@ -1134,7 +1144,7 @@
 				);
 			}
 
-			if ($acl->check('.project', PHPGW_ACL_READ, 'property'))
+			if ($acl->check('.project', ACL_READ, 'property'))
 			{
 				/*
 				  $cats	= CreateObject('phpgwapi.categories', -1,  'property', '.project');
@@ -1210,7 +1220,7 @@
 				);
 			}
 
-			if ($acl->check('.scheduled_events', PHPGW_ACL_READ, 'property'))
+			if ($acl->check('.scheduled_events', ACL_READ, 'property'))
 			{
 				$menus['navigation']['scheduled_events'] = array
 					(
@@ -1223,11 +1233,11 @@
 			$invoicehandler = isset($config['invoicehandler']) && $config['invoicehandler'] == 2 ? 'uiinvoice2' : 'uiinvoice';
 			$invoice = array();
 
-			if ($acl->check('.invoice', PHPGW_ACL_READ, 'property'))
+			if ($acl->check('.invoice', ACL_READ, 'property'))
 			{
 				$children			 = array();
 				$children_invoice	 = array();
-				if ($acl->check('.invoice', PHPGW_ACL_PRIVATE, 'property'))
+				if ($acl->check('.invoice', ACL_PRIVATE, 'property'))
 				{
 					$children['investment'] = array
 						(
@@ -1260,7 +1270,7 @@
 					);
 				}
 
-				if ($acl->check('.invoice', PHPGW_ACL_ADD, 'property'))
+				if ($acl->check('.invoice', ACL_ADD, 'property'))
 				{
 					$children_invoice['add'] = array
 						(
@@ -1330,7 +1340,7 @@
 			}
 
 			$budget = array();
-			if ($acl->check('.budget', PHPGW_ACL_READ, 'property'))
+			if ($acl->check('.budget', ACL_READ, 'property'))
 			{
 				$budget['budget'] = array
 					(
@@ -1352,7 +1362,7 @@
 					)
 				);
 
-				if ($acl->check('.budget.basis', PHPGW_ACL_READ, 'property'))
+				if ($acl->check('.budget.basis', ACL_READ, 'property'))
 				{
 					$budget['budget']['children']['basis'] = array
 						(
@@ -1373,7 +1383,7 @@
 				);
 			}
 
-			if ($acl->check('.agreement', PHPGW_ACL_READ, 'property'))
+			if ($acl->check('.agreement', ACL_READ, 'property'))
 			{
 				$admin_menu = array();
 				if ($acl->check('.agreement', 16, 'property'))
@@ -1428,7 +1438,7 @@
 			$custom_menus = CreateObject('property.sogeneric');
 			$custom_menus->get_location_info('custom_menu_items', false);
 
-			if ($acl->check('.document', PHPGW_ACL_READ, 'property'))
+			if ($acl->check('.document', ACL_READ, 'property'))
 			{
 //				$laws_url								 = phpgw::link('/redirect.php', array('go' => urlencode('http://www.regelhjelp.no/')));
 				$menus['navigation']['documentation']	 = array
@@ -1444,7 +1454,7 @@
 						),
 //						'legislation'	 => array
 //							(
-//							'text'	 => $GLOBALS['phpgw']->translation->translate('laws and regulations', array(), true),
+//							'text'	 => $translation->translate('laws and regulations', array(), true),
 //							'url'	 => $laws_url,
 //						),
 						'location'		 => array(
@@ -1454,7 +1464,7 @@
 					)
 				);
 
-				if ($acl->check('.document.import', PHPGW_ACL_PRIVATE, 'property'))//acl_manage
+				if ($acl->check('.document.import', ACL_PRIVATE, 'property'))//acl_manage
 				{
 						$menus['navigation']['documentation']['children']['import_documents']	 = array
 							(
@@ -1467,7 +1477,7 @@
 				{
 					foreach ($entity_list as $entry)
 					{
-						if ($entry['documentation'] && $acl->check(".entity.{$entry['id']}", PHPGW_ACL_READ, 'property'))
+						if ($entry['documentation'] && $acl->check(".entity.{$entry['id']}", ACL_READ, 'property'))
 						{
 							$menus['navigation']['documentation']['children']["entity_{$entry['id']}"] = array
 								(
@@ -1500,7 +1510,7 @@
 				unset($item);
 			}
 
-			if ($acl->check('.custom', PHPGW_ACL_READ, 'property'))
+			if ($acl->check('.custom', ACL_READ, 'property'))
 			{
 				$menus['navigation']['custom'] = array
 					(
@@ -1514,13 +1524,13 @@
 			{
 				foreach ($entity_list as $entry)
 				{
-					if ($acl->check(".entity.{$entry['id']}", PHPGW_ACL_READ, 'property'))
+					if ($acl->check(".entity.{$entry['id']}", ACL_READ, 'property'))
 					{
 
 						if ($type != 'horisontal')
 						{
 							//bypass_acl_at_entity
-							$_required		 = !empty($config['bypass_acl_at_entity']) && is_array($config['bypass_acl_at_entity']) && in_array($entry['id'], $config['bypass_acl_at_entity']) ? '' : PHPGW_ACL_READ;
+							$_required		 = !empty($config['bypass_acl_at_entity']) && is_array($config['bypass_acl_at_entity']) && in_array($entry['id'], $config['bypass_acl_at_entity']) ? '' : ACL_READ;
 							$entity_children = $entity->read_category_tree($entry['id'], 'property.uientity.index', $_required, 'navbar#');
 
 							if (!$entity_children)
@@ -1583,7 +1593,7 @@
 			unset($entity_list);
 			unset($entity);
 
-			if ($acl->check('.jasper', PHPGW_ACL_READ, 'property'))
+			if ($acl->check('.jasper', ACL_READ, 'property'))
 			{
 				$menus['navigation']['jasper'] = array
 					(
@@ -1593,7 +1603,8 @@
 				);
 			}
 
-			$GLOBALS['phpgw_info']['flags']['currentapp'] = $incoming_app;
+			$flags['currentapp'] = $incoming_app;
+			Settings::getInstance()->set('flags', $flags);
 			return $menus;
 		}
 	}	

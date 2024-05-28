@@ -181,7 +181,7 @@
 
 			foreach ($fields as $field => $field_info)
 			{
-				if (($field_info['action'] & PHPGW_ACL_ADD))
+				if (($field_info['action'] & ACL_ADD))
 				{
 					$value				 = $values[$field];
 					$value_set[$field]	 = $value;
@@ -282,7 +282,7 @@
 
 			foreach ($fields as $field => $field_info)
 			{
-				if (($field_info['action'] & PHPGW_ACL_EDIT))
+				if (($field_info['action'] & ACL_EDIT))
 				{
 					$value				 = $values[$field];
 					$value_set[$field]	 = $value;
@@ -567,7 +567,7 @@
 		function get_fields()
 		{
 			$fields = array(
-				'id'				 => array('action'	 => PHPGW_ACL_READ,
+				'id'				 => array('action'	 => ACL_READ,
 					'type'		 => 'int',
 					'label'		 => 'id',
 					'sortable'	 => true,
@@ -575,7 +575,7 @@
 					'public'	 => true,
 					'required'	 => false,
 				),
-				'type_id'			 => array('action'	 => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'type_id'			 => array('action'	 => ACL_ADD | ACL_EDIT,
 					'type'		 => 'int',
 					'label'		 => 'type_id',
 					'sortable'	 => true,
@@ -583,7 +583,7 @@
 					'public'	 => false,
 					'required'	 => true,
 				),
-				'ticket_id'			 => array('action'	 => PHPGW_ACL_ADD,
+				'ticket_id'			 => array('action'	 => ACL_ADD,
 					'type'		 => 'int',
 					'label'		 => 'ticket_id',
 					'sortable'	 => false,
@@ -591,7 +591,7 @@
 					'public'	 => true,
 					'required'	 => true,
 				),
-				'subject'			 => array('action'	 => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'subject'			 => array('action'	 => ACL_READ | ACL_ADD | ACL_EDIT,
 					'type'		 => 'string',
 					'label'		 => 'subject',
 					'sortable'	 => false,
@@ -599,7 +599,7 @@
 					'public'	 => true,
 					'required'	 => true,
 				),
-				'message'			 => array('action'	 => PHPGW_ACL_ADD,
+				'message'			 => array('action'	 => ACL_ADD,
 					'type'		 => 'html',
 					'label'		 => 'descr',
 					'sortable'	 => false,
@@ -607,7 +607,7 @@
 					'public'	 => true,
 					'required'	 => false,
 				),
-				'vendor_id'			 => array('action'	 => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'vendor_id'			 => array('action'	 => ACL_READ | ACL_ADD | ACL_EDIT,
 					'type'		 => 'int',
 					'label'		 => 'vendor',
 					'sortable'	 => false,
@@ -615,7 +615,7 @@
 					'public'	 => true,
 					'required'	 => false,
 				),
-				'mail_recipients'	 => array('action'	 => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'mail_recipients'	 => array('action'	 => ACL_READ | ACL_ADD | ACL_EDIT,
 					'type'		 => 'string',
 					'label'		 => 'mail recipients',
 					'sortable'	 => false,
@@ -623,7 +623,7 @@
 					'public'	 => false,
 					'required'	 => false,
 				),
-				'file_attachments'	 => array('action'	 => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'file_attachments'	 => array('action'	 => ACL_ADD | ACL_EDIT,
 					'type'		 => 'int',
 					'label'		 => 'file attachments',
 					'sortable'	 => false,
@@ -639,7 +639,7 @@
 					'public'	 => true,
 					'required'	 => false,
 				),
-				'created_on'	 => array('action'	 => PHPGW_ACL_READ,
+				'created_on'	 => array('action'	 => ACL_READ,
 					'type'		 => 'date',
 					'label'		 => 'date',
 					'sortable'	 => true,

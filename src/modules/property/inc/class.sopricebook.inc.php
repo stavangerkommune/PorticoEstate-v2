@@ -112,7 +112,7 @@
 				$agreement_group_list[] = array
 					(
 					'id'	 => $this->db->f('id'),
-					'name'	 => $GLOBALS['phpgw']->strip_html($this->db->f('descr',true)) . ' [ ' . $GLOBALS['phpgw']->strip_html($this->db->f('status', true)) . ' ] '
+					'name'	 => phpgw::strip_html($this->db->f('descr',true)) . ' [ ' . phpgw::strip_html($this->db->f('status', true)) . ' ] '
 				);
 			}
 			return $agreement_group_list;
@@ -140,7 +140,7 @@
 				$unit_list[] = array
 					(
 					'id'	 => $this->db->f('id'),
-					'name'	 => $GLOBALS['phpgw']->strip_html($this->db->f('descr', true))
+					'name'	 => phpgw::strip_html($this->db->f('descr', true))
 				);
 			}
 			return $unit_list;
@@ -154,7 +154,7 @@
 				$branch_list[] = array
 					(
 					'id'	 => $this->db->f('id'),
-					'name'	 => $GLOBALS['phpgw']->strip_html($this->db->f('descr', true))
+					'name'	 => phpgw::strip_html($this->db->f('descr', true))
 				);
 			}
 			return $branch_list;

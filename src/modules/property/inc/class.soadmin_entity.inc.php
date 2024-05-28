@@ -354,7 +354,7 @@ use App\modules\phpgwapi\services\SchemaProc\SchemaProc;
 				$id			 = $this->db2->f('id');
 				$location	 = ".entity.{$entity_id}.{$id}";
 
-				if (!$required || ($required && $acl->check($location, PHPGW_ACL_READ, $this->type_app[$this->type])))
+				if (!$required || ($required && $acl->check($location, ACL_READ, $this->type_app[$this->type])))
 				{
 					$location_id = (int)$this->db2->f('location_id');
 					$categories[$id] = array

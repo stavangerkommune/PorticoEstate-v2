@@ -259,7 +259,7 @@
 
 		public function index()
 		{
-			if (empty($this->permissions[PHPGW_ACL_READ]))
+			if (empty($this->permissions[ACL_READ]))
 			{
 				$message = '';
 				if ($this->currentapp == 'bookingfrontend')
@@ -370,7 +370,7 @@
 		public function edit( $values = array(), $mode = 'edit' )
 		{
 			$active_tab										 = !empty($values['active_tab']) ? $values['active_tab'] : \Sanitizer::get_var('active_tab', 'string', 'REQUEST', 'first_tab');
-			if (empty($this->permissions[PHPGW_ACL_ADD]))
+			if (empty($this->permissions[ACL_ADD]))
 			{
 				phpgw::no_access();
 			}
@@ -603,7 +603,7 @@ JS;
 
 		public function get( $id = 0 )
 		{
-			if (empty($this->permissions[PHPGW_ACL_ADD]))
+			if (empty($this->permissions[ACL_ADD]))
 			{
 				phpgw::no_access();
 			}
@@ -619,7 +619,7 @@ JS;
 
 		public function update_file_data()
 		{
-			if (empty($this->permissions[PHPGW_ACL_ADD]))
+			if (empty($this->permissions[ACL_ADD]))
 			{
 				return array();
 			}
@@ -654,7 +654,7 @@ JS;
 			$id		 = \Sanitizer::get_var('id', 'int');
 			$section = \Sanitizer::get_var('section', 'string', 'REQUEST', 'documents');
 
-			if (empty($this->permissions[PHPGW_ACL_READ]))
+			if (empty($this->permissions[ACL_READ]))
 			{
 				return array();
 			}
@@ -726,7 +726,7 @@ JS;
 
 		public function handle_multi_upload_file()
 		{
-			if (empty($this->permissions[PHPGW_ACL_ADD]))
+			if (empty($this->permissions[ACL_ADD]))
 			{
 				phpgw::no_access();
 			}

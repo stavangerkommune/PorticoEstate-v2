@@ -67,7 +67,7 @@
 			$this->document_resource = CreateObject('booking.bodocument_resource');
 			$this->building_so		 = new booking_sobuilding();
 			$this->application_bo	 = new booking_boapplication();
-			$this->acl_delete		 = $GLOBALS['phpgw']->acl->check('.application', PHPGW_ACL_DELETE, 'booking');
+			$this->acl_delete		 = $GLOBALS['phpgw']->acl->check('.application', ACL_DELETE, 'booking');
 
 			self::set_active_menu('booking::applications::applications');
 			$this->fields = array(
@@ -102,7 +102,7 @@
 
 		public function get_applications()
 		{
-			if(!$GLOBALS['phpgw']->acl->check('.application', PHPGW_ACL_READ, 'booking'))
+			if(!$GLOBALS['phpgw']->acl->check('.application', ACL_READ, 'booking'))
 			{
 				phpgw::no_access();
 			}

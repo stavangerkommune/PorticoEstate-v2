@@ -271,7 +271,7 @@
 
 				if (isset($config['acl_at_location']) && $config['acl_at_location'])
 				{
-					$access_location = execMethod('property.socommon.get_location_list', PHPGW_ACL_READ);
+					$access_location = execMethod('property.socommon.get_location_list', ACL_READ);
 					if ($access_location)
 					{
 						$filtermethod	 .= " $where fm_tts_tickets.loc1 in ('" . implode("','", $access_location) . "')";
@@ -547,8 +547,8 @@
 
 			if ($start_date)
 			{
-				$order_add	 = $GLOBALS['phpgw']->acl->check('.ticket.order', PHPGW_ACL_ADD, 'property');
-				$order_edit	 = $GLOBALS['phpgw']->acl->check('.ticket.order', PHPGW_ACL_EDIT, 'property');
+				$order_add	 = $GLOBALS['phpgw']->acl->check('.ticket.order', ACL_ADD, 'property');
+				$order_edit	 = $GLOBALS['phpgw']->acl->check('.ticket.order', ACL_EDIT, 'property');
 
 				$timezone		 = !empty($GLOBALS['phpgw_info']['user']['preferences']['common']['timezone']) ? $GLOBALS['phpgw_info']['user']['preferences']['common']['timezone'] : 'UTC';
 				$DateTimeZone	 = new DateTimeZone($timezone);
@@ -1887,8 +1887,8 @@
 
 			// check order-rights
 
-			$order_add	 = $GLOBALS['phpgw']->acl->check('.ticket.order', PHPGW_ACL_ADD, 'property');
-			$order_edit	 = $GLOBALS['phpgw']->acl->check('.ticket.order', PHPGW_ACL_EDIT, 'property');
+			$order_add	 = $GLOBALS['phpgw']->acl->check('.ticket.order', ACL_ADD, 'property');
+			$order_edit	 = $GLOBALS['phpgw']->acl->check('.ticket.order', ACL_EDIT, 'property');
 
 			if ($order_add || $order_edit)
 			{

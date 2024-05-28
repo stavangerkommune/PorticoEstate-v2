@@ -45,7 +45,7 @@
 			$GLOBALS['phpgw_info']['flags']['xslt_app']	 = false;
 			$this->acl									 = & $GLOBALS['phpgw']->acl;
 			$this->acl_location							 = '.admin';
-			$this->acl_read								 = $this->acl->check($this->acl_location, PHPGW_ACL_READ, 'property');
+			$this->acl_read								 = $this->acl->check($this->acl_location, ACL_READ, 'property');
 		}
 
 		public function index()

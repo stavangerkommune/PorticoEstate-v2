@@ -74,10 +74,10 @@
 			$this->acl			 = & $GLOBALS['phpgw']->acl;
 			$this->acl_location	 = '.tenant_claim';
 
-			$this->acl_read		 = $this->acl->check($this->acl_location, PHPGW_ACL_READ, 'property');
-			$this->acl_add		 = $this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'property');
-			$this->acl_edit		 = $this->acl->check($this->acl_location, PHPGW_ACL_EDIT, 'property');
-			$this->acl_delete	 = $this->acl->check($this->acl_location, PHPGW_ACL_DELETE, 'property');
+			$this->acl_read		 = $this->acl->check($this->acl_location, ACL_READ, 'property');
+			$this->acl_add		 = $this->acl->check($this->acl_location, ACL_ADD, 'property');
+			$this->acl_edit		 = $this->acl->check($this->acl_location, ACL_EDIT, 'property');
+			$this->acl_delete	 = $this->acl->check($this->acl_location, ACL_DELETE, 'property');
 			$this->acl_manage	 = $this->acl->check($this->acl_location, 16, 'property');
 
 			$this->start		 = $this->bo->start;
@@ -164,7 +164,7 @@
 			if (!$this->acl_read)
 			{
 				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
-					'perm'			 => PHPGW_ACL_READ, 'acl_location'	 => $this->acl_location));
+					'perm'			 => ACL_READ, 'acl_location'	 => $this->acl_location));
 			}
 			ExecMethod('property.bofiles.get_file', Sanitizer::get_var('file_id', 'int'));
 		}

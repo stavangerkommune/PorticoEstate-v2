@@ -584,7 +584,7 @@
 
 			if (isset($GLOBALS['phpgw']->config->config_data['acl_at_location']) && $GLOBALS['phpgw']->config->config_data['acl_at_location'])
 			{
-				$access_location = $this->bocommon->get_location_list(PHPGW_ACL_READ);
+				$access_location = $this->bocommon->get_location_list(ACL_READ);
 				$filtermethod	 = " WHERE fm_project.loc1 in ('" . implode("','", $access_location) . "')";
 				$where			 = 'AND';
 			}

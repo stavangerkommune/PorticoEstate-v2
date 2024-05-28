@@ -135,6 +135,71 @@ class Db
 		return $ret;
 	}
 
+	/**
+	 * Find the value of the last insertion on the current db connection
+	 * To use this function safely in Postgresql you MUST wrap it in a beginTransaction() commit() block
+	 *
+	 * @param string $table name of table the insert was performed on
+	 * @param string $field not needed - kept for backward compatibility
+	 * @return integer the id, -1 if fails
+	 */
+	public function get_last_insert_id($table, $field = '')
+	{
+		switch (self::$config['db_type'])
+		{
+			case 'postgres':
+				$sequence = $this->_get_sequence_field_for_table($table, $field);
+				$ret = $this->db->lastInsertId($sequence);
+				break;
+			case 'mssqlnative':
+			case 'mssql':
+				$orig_fetchmode = $this->fetchmode;
+				if ($this->fetchmode == 'ASSOC')
+				{
+					$this->fetchmode = 'BOTH';
+				}
+				$this->query("SELECT @@identity", __LINE__, __FILE__);
+				$this->next_record();
+				$ret = $this->f(0);
+				$this->fetchmode = $orig_fetchmode;
+				break;
+			default:
+				$ret = $this->db->lastInsertId();
+		}
+
+		if ($ret)
+		{
+			return $ret;
+		}
+		return -1;
+	}
+
+	/**
+	 * Find the name of sequense for postgres
+	 *
+	 * @param string $table name of table
+	 * @return string name of the sequense, false if fails
+	 */
+	protected function _get_sequence_field_for_table($table, $field = '')
+	{
+		//old naming of sequenses
+		$sql = "SELECT relname FROM pg_class WHERE NOT relname ~ 'pg_.*'"
+		. " AND relname = '{$table}_{$field}_seq' AND relkind='S' ORDER BY relname";
+		$this->query($sql, __LINE__, __FILE__);
+		if ($this->next_record())
+		{
+			return $this->f('relname');
+		}
+		$sql = "SELECT relname FROM pg_class WHERE NOT relname ~ 'pg_.*'"
+		. " AND relname = 'seq_{$table}' AND relkind='S' ORDER BY relname";
+		$this->query($sql, __LINE__, __FILE__);
+		if ($this->next_record())
+		{
+			return $this->f('relname');
+		}
+		return false;
+	}
+
 	public function db_addslashes($string)
 	{
 		if ($string === '' || $string === null)
@@ -398,30 +463,32 @@ class Db
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
 		$next_id = (int)$row['maximum'] + 1;
 
-		$update = false;
-		if ($next_id == 1)
+		if($table == 'phpgw_nextid')
 		{
-			$columns = implode(',', array_keys($params));
-			$values = ':' . implode(', :', array_keys($params));
-			$stmt = $this->db->prepare("INSERT INTO $table (id, $columns) VALUES (:next_id, $values)");
-			$stmt->execute(array_merge(['next_id' => $next_id], $params));
-			//		_debug_array(array_merge(['next_id' => $next_id], $params));
-		}
-		else
-		{
-			$update = true;
-		}
+			$update = false;
+			if ($next_id == 1)
+			{
+				$columns = implode(',', array_keys($params));
+				$placeholders = implode(',', array_fill(0, count($params), '?'));
+				$stmt = $this->db->prepare("INSERT INTO $table (id, $columns) VALUES (?, $placeholders)");
+				$stmt->execute(array_merge([$next_id], array_values($params)));
+			}
+			else
+			{
+				$update = true;
+			}
 
-		//if the next id is less than the minimum id, set it to the minimum id
-		if ($next_id < $min)
-		{
-			$next_id = $min;
-		}
-		if ($update)
-		{
-			// update the table {$table} SET id = {$next id} +1
-			$stmt = $this->db->prepare("UPDATE $table SET id = id +1 $where");
-			$stmt->execute($params);
+			//if the next id is less than the minimum id, set it to the minimum id
+			if ($next_id < $min)
+			{
+				$next_id = $min;
+			}
+			if ($update)
+			{
+				// update the table {$table} SET id = {$next id} +1
+				$stmt = $this->db->prepare("UPDATE $table SET id = id +1 $where");
+				$stmt->execute($params);
+			}
 		}
 		return $next_id;
 	}

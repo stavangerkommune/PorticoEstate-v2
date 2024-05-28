@@ -208,7 +208,7 @@
 			$_config->read();
 			if (isset($_config->config_data['acl_at_location']) && $_config->config_data['acl_at_location'] && $category['location_level'] > 0)
 			{
-				$access_location = $this->bocommon->get_location_list(PHPGW_ACL_READ);
+				$access_location = $this->bocommon->get_location_list(ACL_READ);
 				$filtermethod	 = " WHERE {$entity_table}.loc1 in ('" . implode("','", $access_location) . "')";
 				$where			 = 'AND';
 			}
@@ -615,7 +615,7 @@
 			$_config->read();
 			if (isset($_config->config_data['acl_at_location']) && $_config->config_data['acl_at_location'] && $category['location_level'] > 0)
 			{
-				$access_location = $this->bocommon->get_location_list(PHPGW_ACL_READ);
+				$access_location = $this->bocommon->get_location_list(ACL_READ);
 				$filtermethod	 .= " $where {$entity_table}.loc1 IN ('" . implode("','", $access_location) . "')";
 				$where			 = 'AND';
 			}
@@ -1747,7 +1747,7 @@
 			$_config->read();
 			if (isset($_config->config_data['acl_at_location']) && $_config->config_data['acl_at_location'] && $category['location_level'] > 0)
 			{
-				$access_location = $this->bocommon->get_location_list(PHPGW_ACL_READ);
+				$access_location = $this->bocommon->get_location_list(ACL_READ);
 				$filtermethod	 = " WHERE {$entity_table}.loc1 in ('" . implode("','", $access_location) . "')";
 				$where			 = 'AND';
 			}
@@ -2941,7 +2941,7 @@
 
 			foreach ($this->type_app as $type => $app)
 			{
-				if (!$GLOBALS['phpgw']->acl->check('run', PHPGW_ACL_READ, $app))
+				if (!$GLOBALS['phpgw']->acl->check('run', ACL_READ, $app))
 				{
 					continue;
 				}

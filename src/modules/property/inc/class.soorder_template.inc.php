@@ -180,7 +180,7 @@
 
 			foreach ($fields as $field => $field_info)
 			{
-				if (($field_info['action'] & PHPGW_ACL_ADD))
+				if (($field_info['action'] & ACL_ADD))
 				{
 					$value				 = $values[$field];
 					$value_set[$field]	 = $value;
@@ -249,7 +249,7 @@
 
 			foreach ($fields as $field => $field_info)
 			{
-				if (($field_info['action'] & PHPGW_ACL_EDIT))
+				if (($field_info['action'] & ACL_EDIT))
 				{
 					$value				 = $values[$field];
 					$value_set[$field]	 = $value;
@@ -371,7 +371,7 @@
 		function get_fields()
 		{
 			$fields = array(
-				'id'				 => array('action'	 => PHPGW_ACL_READ,
+				'id'				 => array('action'	 => ACL_READ,
 					'type'		 => 'int',
 					'label'		 => 'id',
 					'sortable'	 => true,
@@ -380,7 +380,7 @@
 					'required'	 => false,
 					'formatter' => 'JqueryPortico.formatLink'
 				),
-				'name'			 => array('action'	 => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'name'			 => array('action'	 => ACL_READ | ACL_ADD | ACL_EDIT,
 					'type'		 => 'string',
 					'label'		 => 'name',
 					'sortable'	 => false,
@@ -388,7 +388,7 @@
 					'public'	 => true,
 					'required'	 => true,
 				),
-				'vendor_id'			 => array('action'	 => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'vendor_id'			 => array('action'	 => ACL_READ | ACL_ADD | ACL_EDIT,
 					'type'		 => 'int',
 					'label'		 => 'vendor',
 					'sortable'	 => false,
@@ -396,7 +396,7 @@
 					'public'	 => true,
 					'required'	 => false,
 				),
-				'contract_id'			 => array('action'	 => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'contract_id'			 => array('action'	 => ACL_READ | ACL_ADD | ACL_EDIT,
 					'type'		 => 'string',
 					'label'		 => 'contract',
 					'sortable'	 => false,
@@ -404,7 +404,7 @@
 					'public'	 => true,
 					'required'	 => false,
 				),
-				'mail_recipients'	 => array('action'	 => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'mail_recipients'	 => array('action'	 => ACL_READ | ACL_ADD | ACL_EDIT,
 					'type'		 => 'string',
 					'label'		 => 'mail recipients',
 					'sortable'	 => false,
@@ -412,7 +412,7 @@
 					'public'	 => false,
 					'required'	 => false,
 				),
-				'tax_code'			 => array('action'	 => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'tax_code'			 => array('action'	 => ACL_READ | ACL_ADD | ACL_EDIT,
 					'type'		 => 'int',
 					'label'		 => 'tax code',
 					'sortable'	 => false,
@@ -420,7 +420,7 @@
 					'public'	 => true,
 					'required'	 => false,
 				),
-				'external_project_id'	=> array('action'	 => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'external_project_id'	=> array('action'	 => ACL_READ | ACL_ADD | ACL_EDIT,
 					'type'		 => 'string',
 					'label'		 => 'external project',
 					'sortable'	 => false,
@@ -428,7 +428,7 @@
 					'public'	 => true,
 					'required'	 => false,
 				),
-				'unspsc_code'	=> array('action'	 => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'unspsc_code'	=> array('action'	 => ACL_READ | ACL_ADD | ACL_EDIT,
 					'type'		 => 'string',
 					'label'		 => 'unspsc code',
 					'sortable'	 => false,
@@ -436,7 +436,7 @@
 					'public'	 => true,
 					'required'	 => false,
 				),
-				'service_id'			 => array('action'	 => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'service_id'			 => array('action'	 => ACL_ADD | ACL_EDIT,
 					'type'		 => 'int',
 					'label'		 => 'service_id',
 					'sortable'	 => true,
@@ -444,7 +444,7 @@
 					'public'	 => false,
 					'required'	 => true,
 				),
-				'b_account_id'			 => array('action'	 => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'b_account_id'			 => array('action'	 => ACL_READ | ACL_ADD | ACL_EDIT,
 					'type'		 => 'string',
 					'label'		 => 'budget account',
 					'sortable'	 => false,
@@ -452,7 +452,7 @@
 					'public'	 => true,
 					'required'	 => true,
 				),
-				'ecodimb'			 => array('action'	 => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'ecodimb'			 => array('action'	 => ACL_ADD | ACL_EDIT,
 					'type'		 => 'int',
 					'label'		 => 'ecodimb',
 					'sortable'	 => true,
@@ -460,7 +460,7 @@
 					'public'	 => false,
 					'required'	 => true,
 				),
-				'budget'			 => array('action'	 => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'budget'			 => array('action'	 => ACL_ADD | ACL_EDIT,
 					'type'		 => 'int',
 					'label'		 => 'budget',
 					'sortable'	 => true,
@@ -468,7 +468,7 @@
 					'public'	 => false,
 					'required'	 => false,
 				),
-				'order_descr'			 => array('action'	 => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'order_descr'			 => array('action'	 => ACL_ADD | ACL_EDIT,
 					'type'		 => 'html',
 					'label'		 => 'descr',
 					'sortable'	 => false,
@@ -476,7 +476,7 @@
 					'public'	 => true,
 					'required'	 => false,
 				),
-				'remark'			 => array('action'	 => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'remark'			 => array('action'	 => ACL_ADD | ACL_EDIT,
 					'type'		 => 'string',
 					'label'		 => 'descr',
 					'sortable'	 => false,
@@ -484,7 +484,7 @@
 					'public'	 => true,
 					'required'	 => false,
 				),
-				'building_part'	 => array('action'	 => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'building_part'	 => array('action'	 => ACL_READ | ACL_ADD | ACL_EDIT,
 					'type'		 => 'string',
 					'label'		 => 'building part',
 					'sortable'	 => false,
@@ -492,7 +492,7 @@
 					'public'	 => false,
 					'required'	 => false,
 				),
-				'order_dim1'	 => array('action'	 => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'order_dim1'	 => array('action'	 => ACL_ADD | ACL_EDIT,
 					'type'		 => 'int',
 					'label'		 => 'order_dim1',
 					'sortable'	 => false,
@@ -500,7 +500,7 @@
 					'public'	 => true,
 					'required'	 => false,
 				),
-				'order_cat_id'	 => array('action'	 => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'order_cat_id'	 => array('action'	 => ACL_ADD | ACL_EDIT,
 					'type'		 => 'int',
 					'label'		 => 'category',
 					'sortable'	 => false,

@@ -46,3 +46,14 @@ function lang($key, $m1 = '', $m2 = '', $m3 = '', $m4 = '', $m5 = '', $m6 = '', 
 	}
 	return $translation->translate($key, $vars);
 }
+
+/**
+ * Fix global phpgw_link from XSLT templates by adding session id and click_history
+ * @return string containing parts of url
+ */
+function get_phpgw_session_url()
+{
+	$base_url	= phpgw::link('/', array(), true);
+	$url_parts = parse_url($base_url);
+	return $url_parts['query'];
+}

@@ -73,10 +73,10 @@
 
 			$this->acl			 = & $GLOBALS['phpgw']->acl;
 			$this->acl_location	 = '.admin';
-			$this->acl_read		 = $this->acl->check($this->acl_location, PHPGW_ACL_READ, $this->acl_app);
-			$this->acl_add		 = $this->acl->check($this->acl_location, PHPGW_ACL_ADD, $this->acl_app);
-			$this->acl_edit		 = $this->acl->check($this->acl_location, PHPGW_ACL_EDIT, $this->acl_app);
-			$this->acl_delete	 = $this->acl->check($this->acl_location, PHPGW_ACL_DELETE, $this->acl_app);
+			$this->acl_read		 = $this->acl->check($this->acl_location, ACL_READ, $this->acl_app);
+			$this->acl_add		 = $this->acl->check($this->acl_location, ACL_ADD, $this->acl_app);
+			$this->acl_edit		 = $this->acl->check($this->acl_location, ACL_EDIT, $this->acl_app);
+			$this->acl_delete	 = $this->acl->check($this->acl_location, ACL_DELETE, $this->acl_app);
 			$this->acl_manage	 = $this->acl->check($this->acl_location, 16, $this->acl_app);
 
 			$this->start			 = $this->bo->start;

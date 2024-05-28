@@ -91,10 +91,10 @@
 
 			$this->acl			 = & $GLOBALS['phpgw']->acl;
 			$this->acl_location	 = '.custom';
-			$this->acl_read		 = $this->acl->check('.custom', PHPGW_ACL_READ, $this->currentapp);
-			$this->acl_add		 = $this->acl->check('.custom', PHPGW_ACL_ADD, $this->currentapp);
-			$this->acl_edit		 = $this->acl->check('.custom', PHPGW_ACL_EDIT, $this->currentapp);
-			$this->acl_delete	 = $this->acl->check('.custom', PHPGW_ACL_DELETE, $this->currentapp);
+			$this->acl_read		 = $this->acl->check('.custom', ACL_READ, $this->currentapp);
+			$this->acl_add		 = $this->acl->check('.custom', ACL_ADD, $this->currentapp);
+			$this->acl_edit		 = $this->acl->check('.custom', ACL_EDIT, $this->currentapp);
+			$this->acl_delete	 = $this->acl->check('.custom', ACL_DELETE, $this->currentapp);
 			$this->xsl_rootdir	 = PHPGW_SERVER_ROOT . "/property/templates/base";
 			$this->config		 = CreateObject('phpgwapi.config', $this->currentapp);
 			$this->config->read();

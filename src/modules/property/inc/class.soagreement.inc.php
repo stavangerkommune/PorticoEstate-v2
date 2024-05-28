@@ -1064,7 +1064,7 @@
 				$agreement_group_list[] = array
 					(
 					'id'	 => $this->db->f('id'),
-					'name'	 => $GLOBALS['phpgw']->strip_html($this->db->f('descr', true)) . ' [ ' . $GLOBALS['phpgw']->strip_html($this->db->f('status')) . ' ] '
+					'name'	 => phpgw::strip_html($this->db->f('descr', true)) . ' [ ' . phpgw::strip_html($this->db->f('status')) . ' ] '
 				);
 			}
 			return $agreement_group_list;

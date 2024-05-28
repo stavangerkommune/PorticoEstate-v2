@@ -89,7 +89,7 @@
 
 			$fields = array(
 				'id'				 => array(
-					'action'	 => PHPGW_ACL_READ,
+					'action'	 => ACL_READ,
 					'type'		 => 'int',
 					'label'		 => 'id',
 					'sortable'	 => true,
@@ -97,17 +97,17 @@
 					'public'	 => true
 				),
 				'owner_id'			 => array(
-					'action'	 => PHPGW_ACL_ADD,
+					'action'	 => ACL_ADD,
 					'type'		 => 'int',
 					'required'	 => false
 				),
 				'article_cat_id'	 => array(
-					'action' => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+					'action' => ACL_ADD | ACL_EDIT,
 					'type'	 => 'int',
 					'public'	 => true
 				),
 				'article_cat_name'	 => array(
-					'action' => PHPGW_ACL_READ,
+					'action' => ACL_READ,
 					'type'	 => 'string',
 					'query'	 => true,
 					'label'	 => 'category',
@@ -120,11 +120,11 @@
 					)
 				),
 				'article_id'		 => array(
-					'action' => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+					'action' => ACL_ADD | ACL_EDIT,
 					'type'	 => 'int'
 				),
 				'active'		 => array(
-					'action'		 => PHPGW_ACL_READ,
+					'action'		 => ACL_READ,
 					'type'			 => 'int',
 					'query'			 => true,
 					'label'			 => 'active',
@@ -136,7 +136,7 @@
 					),
 				),
 				'article_name'		 => array(
-					'action'		 => PHPGW_ACL_READ,
+					'action'		 => ACL_READ,
 					'type'			 => 'string',
 					'query'			 => true,
 					'label'			 => 'name',
@@ -148,27 +148,27 @@
 					),
 				),
 				'article_code'		 => array(
-					'action'	 => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+					'action'	 => ACL_READ | ACL_ADD | ACL_EDIT,
 					'type'		 => 'string',
 					'required'	 => true,
 					'label'		 => 'article code',
 					'public'	 => true
 				),
 				'unit'				 => array(
-					'action'	 => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+					'action'	 => ACL_READ | ACL_ADD | ACL_EDIT,
 					'type'		 => 'string',
 					'required'	 => true,
 					'label'		 => 'unit',
 					'public'	 => true
 				),
 				'group_id'			 => array(
-					'action'	 => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+					'action'	 => ACL_ADD | ACL_EDIT,
 					'type'		 => 'int',
 					'required'	 => true,
 					'public'	 => true
 				),
 				'article_group'		 => array(
-					'action' => PHPGW_ACL_READ,
+					'action' => ACL_READ,
 					'type'	 => 'string',
 					'query'	 => true,
 					'label'	 => 'article group',
@@ -181,13 +181,13 @@
 					)
 				),
 				'tax_code'			 => array(
-					'action'	 => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+					'action'	 => ACL_ADD | ACL_EDIT,
 					'type'		 => 'int',
 					'required'	 => true,
 					'public'	 => true
 				),
 				'tax_code_name'		 => array(
-					'action' => PHPGW_ACL_READ,
+					'action' => ACL_READ,
 					'type'	 => 'string',
 					'query'	 => true,
 					'label'	 => 'tax code',
@@ -200,7 +200,7 @@
 					)
 				),
 				'deactivate_in_frontend' => array(
-					'action'	 => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+					'action'	 => ACL_ADD | ACL_EDIT,
 					'type'		 => 'int',
 					'required'	 => false,
 					'public'	 => true

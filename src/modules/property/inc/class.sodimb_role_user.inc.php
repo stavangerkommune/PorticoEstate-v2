@@ -153,7 +153,7 @@
 
 			if ($dimb_id && !$user_id)
 			{
-				$users = $GLOBALS['phpgw']->acl->get_user_list_right(PHPGW_ACL_READ, '.invoice', 'property');
+				$users = $GLOBALS['phpgw']->acl->get_user_list_right(ACL_READ, '.invoice', 'property');
 			}
 			else
 			{

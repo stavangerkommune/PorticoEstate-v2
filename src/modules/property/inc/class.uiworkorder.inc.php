@@ -105,10 +105,10 @@
 			$this->cats			 = & $this->bo->cats;
 			$this->acl			 = & $GLOBALS['phpgw']->acl;
 			$this->acl_location	 = '.project.workorder';
-			$this->acl_read		 = $this->acl->check('.project', PHPGW_ACL_READ, 'property');
-			$this->acl_add		 = $this->acl->check('.project', PHPGW_ACL_ADD, 'property');
-			$this->acl_edit		 = $this->acl->check('.project', PHPGW_ACL_EDIT, 'property');
-			$this->acl_delete	 = $this->acl->check('.project', PHPGW_ACL_DELETE, 'property');
+			$this->acl_read		 = $this->acl->check('.project', ACL_READ, 'property');
+			$this->acl_add		 = $this->acl->check('.project', ACL_ADD, 'property');
+			$this->acl_edit		 = $this->acl->check('.project', ACL_EDIT, 'property');
+			$this->acl_delete	 = $this->acl->check('.project', ACL_DELETE, 'property');
 			$this->acl_manage	 = $this->acl->check('.project', 16, 'property');
 
 			$this->start			 = $this->bo->start;
@@ -2006,8 +2006,8 @@
 					$project = $boproject->read_single_mini($values['project_id']);
 				}
 
-				$acl_required = $mode == 'edit' ? PHPGW_ACL_EDIT : PHPGW_ACL_READ;
-				if (!$this->bocommon->check_perms2($project['coordinator'], $this->bo->so->grants, PHPGW_ACL_EDIT))
+				$acl_required = $mode == 'edit' ? ACL_EDIT : ACL_READ;
+				if (!$this->bocommon->check_perms2($project['coordinator'], $this->bo->so->grants, ACL_EDIT))
 				{
 					$this->receipt['error'][] = array(
 						'msg' => lang('You have no edit right for this project'));
@@ -3122,7 +3122,7 @@ JS;
 			}
 
 			$suppresscoordination	 = isset($config->config_data['project_suppresscoordination']) && $config->config_data['project_suppresscoordination'] ? 1 : '';
-			$user_list				 = $this->bocommon->get_user_list_right2('', PHPGW_ACL_ADD | PHPGW_ACL_EDIT, !empty($values['user_id']) ? $values['user_id'] : $this->account, $this->acl_location);
+			$user_list				 = $this->bocommon->get_user_list_right2('', ACL_ADD | ACL_EDIT, !empty($values['user_id']) ? $values['user_id'] : $this->account, $this->acl_location);
 
 			$value_coordinator = isset($project['coordinator']) ? $GLOBALS['phpgw']->accounts->get($project['coordinator'])->__toString() : $GLOBALS['phpgw']->accounts->get($this->account)->__toString();
 

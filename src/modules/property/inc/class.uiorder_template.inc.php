@@ -61,10 +61,10 @@
 			$this->account		 = $GLOBALS['phpgw_info']['user']['account_id'];
 			$this->acl			 = & $GLOBALS['phpgw']->acl;
 			$this->acl_location	 = '.admin';
-			$this->acl_read		 = $this->acl->check($this->acl_location, PHPGW_ACL_READ, $this->currentapp);
-			$this->acl_add		 = $this->acl->check($this->acl_location, PHPGW_ACL_ADD, $this->currentapp);
-			$this->acl_edit		 = $this->acl->check($this->acl_location, PHPGW_ACL_EDIT, $this->currentapp);
-			$this->acl_delete	 = $this->acl->check($this->acl_location, PHPGW_ACL_DELETE, $this->currentapp);
+			$this->acl_read		 = $this->acl->check($this->acl_location, ACL_READ, $this->currentapp);
+			$this->acl_add		 = $this->acl->check($this->acl_location, ACL_ADD, $this->currentapp);
+			$this->acl_edit		 = $this->acl->check($this->acl_location, ACL_EDIT, $this->currentapp);
+			$this->acl_delete	 = $this->acl->check($this->acl_location, ACL_DELETE, $this->currentapp);
 			$this->bo			 = createObject("{$this->currentapp}.boorder_template");
 			$this->bocommon		 = createObject('property.bocommon');
 			$this->config		 = CreateObject('phpgwapi.config', $this->currentapp)->read();
@@ -113,7 +113,7 @@
 
 			foreach ($_fields as $key => $_field)
 			{
-				if(!($_field['action'] & PHPGW_ACL_READ))
+				if(!($_field['action'] & ACL_READ))
 				{
 					continue;
 				}
@@ -464,7 +464,7 @@
 
 			foreach ($fields as $field => $field_info)
 			{
-				if (($field_info['action'] & PHPGW_ACL_ADD) || ($field_info['action'] & PHPGW_ACL_EDIT))
+				if (($field_info['action'] & ACL_ADD) || ($field_info['action'] & ACL_EDIT))
 				{
 					$value = Sanitizer::get_var($field, $field_info['type']);
 

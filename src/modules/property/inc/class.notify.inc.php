@@ -342,7 +342,7 @@ JS;
 		{
 			$location_info = $GLOBALS['phpgw']->locations->get_name($location_id);
 
-			if (!$GLOBALS['phpgw']->acl->check($location_info['location'], PHPGW_ACL_EDIT, $location_info['appname']))
+			if (!$GLOBALS['phpgw']->acl->check($location_info['location'], ACL_EDIT, $location_info['appname']))
 			{
 				return array();
 			}

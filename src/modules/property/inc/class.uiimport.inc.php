@@ -56,30 +56,30 @@
 
 			$this->valid_tables = array(
 				'fm_zip_code'				 => array('name'		 => 'fm_zip_code (' . lang('zip code') . ')',
-					'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT),
+					'permission' => ACL_READ | ACL_ADD | ACL_EDIT),
 				'fm_streetaddress'				 => array('name'		 => 'fm_streetaddress (' . lang('street name') . ')',
-					'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT),
+					'permission' => ACL_READ | ACL_ADD | ACL_EDIT),
 				'fm_unspsc_code'				 => array('name'		 => 'fm_unspsc_code (' . lang('unspsc code') . ')',
-					'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT),
+					'permission' => ACL_READ | ACL_ADD | ACL_EDIT),
 				'fm_external_project'			 => array('name'		 => 'fm_external_project (' . lang('external project') . ')',
-					'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT),
+					'permission' => ACL_READ | ACL_ADD | ACL_EDIT),
 				'fm_eco_service'				 => array('name'		 => 'fm_eco_service (' . lang('service') . ')',
-					'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT),
-				'fm_vendor'						 => array('name' => 'fm_vendor (' . lang('vendor') . ')', 'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT),
+					'permission' => ACL_READ | ACL_ADD | ACL_EDIT),
+				'fm_vendor'						 => array('name' => 'fm_vendor (' . lang('vendor') . ')', 'permission' => ACL_READ | ACL_ADD | ACL_EDIT),
 				'fm_condition_survey'			 => array('name'		 => 'fm_condition_survey (' . lang('condition survey') . ')',
-					'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT),
-				'fm_ecodimb'					 => array('name' => 'fm_ecodimb (' . lang('dimb') . ')', 'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT),
-				'fm_b_account'						 => array('name' => 'fm_b_account (' . lang('budget account') . ')', 'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT),
-				'fm_budget'						 => array('name' => 'fm_budget (' . lang('budget') . ')', 'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT),
+					'permission' => ACL_READ | ACL_ADD | ACL_EDIT),
+				'fm_ecodimb'					 => array('name' => 'fm_ecodimb (' . lang('dimb') . ')', 'permission' => ACL_READ | ACL_ADD | ACL_EDIT),
+				'fm_b_account'						 => array('name' => 'fm_b_account (' . lang('budget account') . ')', 'permission' => ACL_READ | ACL_ADD | ACL_EDIT),
+				'fm_budget'						 => array('name' => 'fm_budget (' . lang('budget') . ')', 'permission' => ACL_READ | ACL_ADD | ACL_EDIT),
 				'fm_org_unit'					 => array('name'		 => 'fm_org_unit (' . lang('department') . ')',
-					'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT),
+					'permission' => ACL_READ | ACL_ADD | ACL_EDIT),
 				'fm_eco_periodization_outline'	 => array('name'		 => 'fm_eco_periodization_outline (' . lang('periodization outline') . ')',
-					'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT),
+					'permission' => ACL_READ | ACL_ADD | ACL_EDIT),
 				'fm_eco_periodization'			 => array('name'		 => 'fm_eco_periodization (' . lang('periodization') . ')',
-					'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT),
-				'fm_ecodimd'					 => array('name' => 'fm_ecodimd', 'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT),
-				'phpgw_categories'				 => array('name'		 => 'phpgw_categories (' . lang('categories') . ')', 'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT),
-				'fm_building_part'	 => array('name'		 => 'fm_building_part (' . 'Bygningsdel' . ')', 'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT),
+					'permission' => ACL_READ | ACL_ADD | ACL_EDIT),
+				'fm_ecodimd'					 => array('name' => 'fm_ecodimd', 'permission' => ACL_READ | ACL_ADD | ACL_EDIT),
+				'phpgw_categories'				 => array('name'		 => 'phpgw_categories (' . lang('categories') . ')', 'permission' => ACL_READ | ACL_ADD | ACL_EDIT),
+				'fm_building_part'	 => array('name'		 => 'fm_building_part (' . 'Bygningsdel' . ')', 'permission' => ACL_READ | ACL_ADD | ACL_EDIT),
 			);
 
 			$location_types = execMethod('property.soadmin_location.select_location_type');
@@ -88,18 +88,18 @@
 			foreach ($location_types as $location_type)
 			{
 				$this->valid_tables["fm_location{$location_type['id']}"]			 = array('name'		 => "fm_location{$location_type['id']} ({$location_type['name']})",
-					'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT);
+					'permission' => ACL_READ | ACL_ADD | ACL_EDIT);
 				$this->valid_tables["fm_location{$location_type['id']}_category"]	 = array('name'		 => "fm_location{$location_type['id']}_category ({$location_type['name']} {$lang_category})",
-					'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT);
+					'permission' => ACL_READ | ACL_ADD | ACL_EDIT);
 			}
 
 			if (isset($GLOBALS['phpgw_info']['user']['apps']['booking']))
 			{
 				$booking_tables = array(
-					'bb_building'				 => array('name'		 => 'bb_building (' . 'Ressursgruppe' . ')', 'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT),
-					'bb_resource'				 => array('name'		 => 'bb_resource (' . 'Ressurser' . ')', 'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT),
-					'bb_building_resource'		 => array('name'		 => 'bb_building_resource (' . 'Ressurskobling' . ')', 'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT),
-					'bb_organization'		 => array('name'		 => 'bb_organization (' . 'Organisasjoner' . ')', 'permission' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT),
+					'bb_building'				 => array('name'		 => 'bb_building (' . 'Ressursgruppe' . ')', 'permission' => ACL_READ | ACL_ADD | ACL_EDIT),
+					'bb_resource'				 => array('name'		 => 'bb_resource (' . 'Ressurser' . ')', 'permission' => ACL_READ | ACL_ADD | ACL_EDIT),
+					'bb_building_resource'		 => array('name'		 => 'bb_building_resource (' . 'Ressurskobling' . ')', 'permission' => ACL_READ | ACL_ADD | ACL_EDIT),
+					'bb_organization'		 => array('name'		 => 'bb_organization (' . 'Organisasjoner' . ')', 'permission' => ACL_READ | ACL_ADD | ACL_EDIT),
 				);
 
 				$this->valid_tables = array_merge($this->valid_tables, $booking_tables);
@@ -440,7 +440,7 @@ HTML;
 			{
 				$_permission = $this->valid_tables[$this->table]['permission'];
 
-				if (!($_permission & PHPGW_ACL_READ))
+				if (!($_permission & ACL_READ))
 				{
 					throw new Exception("No READ-right for {$this->table}");
 				}
@@ -641,7 +641,7 @@ HTML;
 			{
 				$_permission = $this->valid_tables[$this->table]['permission'];
 
-				if (!($_permission & PHPGW_ACL_ADD))
+				if (!($_permission & ACL_ADD))
 				{
 					throw new Exception("No ADD-right for {$this->table}");
 				}

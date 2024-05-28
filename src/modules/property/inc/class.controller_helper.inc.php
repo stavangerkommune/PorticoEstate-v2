@@ -587,7 +587,7 @@ HTML;
 
 			if ($control_id && $assigned_to && $id)
 			{
-				if (!$GLOBALS['phpgw']->acl->check('.admin', PHPGW_ACL_EDIT, 'property'))
+				if (!$GLOBALS['phpgw']->acl->check('.admin', ACL_EDIT, 'property'))
 				{
 					$receipt['error'][]	 = true;
 					$result				 = array

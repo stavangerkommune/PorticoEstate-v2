@@ -36,6 +36,7 @@
 		
 		public function __construct()
 		{
+			require_once SRC_ROOT_PATH . '/helpers/LegacyObjectHandler.php';
 
 			//setup_info
 			Settings::getInstance()->set('setup_info', []); //$GLOBALS['setup_info']

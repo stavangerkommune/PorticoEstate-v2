@@ -62,10 +62,10 @@
 
 			$this->acl			 = & $GLOBALS['phpgw']->acl;
 			$this->acl_location	 = '.invoice';
-			$this->acl_read		 = $this->acl->check('.invoice', PHPGW_ACL_READ, 'property');
-			$this->acl_add		 = $this->acl->check('.invoice', PHPGW_ACL_ADD, 'property');
-			$this->acl_edit		 = $this->acl->check('.invoice', PHPGW_ACL_EDIT, 'property');
-			$this->acl_delete	 = $this->acl->check('.invoice', PHPGW_ACL_DELETE, 'property');
+			$this->acl_read		 = $this->acl->check('.invoice', ACL_READ, 'property');
+			$this->acl_add		 = $this->acl->check('.invoice', ACL_ADD, 'property');
+			$this->acl_edit		 = $this->acl->check('.invoice', ACL_EDIT, 'property');
+			$this->acl_delete	 = $this->acl->check('.invoice', ACL_DELETE, 'property');
 			$this->acl_manage	 = $this->acl->check('.invoice', 16, 'property');
 
 			$this->start	 = $this->bo->start;

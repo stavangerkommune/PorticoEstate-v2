@@ -110,10 +110,10 @@
 			$this->config->read();
 			$this->acl											 = & $GLOBALS['phpgw']->acl;
 			$this->acl_location									 = $this->bo->acl_location;
-			$this->acl_read										 = $this->acl->check($this->acl_location, PHPGW_ACL_READ, 'property');
-			$this->acl_add										 = $this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'property');
-			$this->acl_edit										 = $this->acl->check($this->acl_location, PHPGW_ACL_EDIT, 'property');
-			$this->acl_delete									 = $this->acl->check($this->acl_location, PHPGW_ACL_DELETE, 'property');
+			$this->acl_read										 = $this->acl->check($this->acl_location, ACL_READ, 'property');
+			$this->acl_add										 = $this->acl->check($this->acl_location, ACL_ADD, 'property');
+			$this->acl_edit										 = $this->acl->check($this->acl_location, ACL_EDIT, 'property');
+			$this->acl_delete									 = $this->acl->check($this->acl_location, ACL_DELETE, 'property');
 			$this->acl_manage									 = $this->acl->check($this->acl_location, 16, 'property');
 
 			$this->start				 = $this->bo->start;
@@ -1759,7 +1759,7 @@ JS;
 					'menuaction' => 'property.uiproject.edit')),
 				'edit_action'						 => phpgw::link('/index.php', array('menuaction' => 'property.uirequest.edit',
 					'id'		 => $id)),
-				'acl_add_project'					 => $mode == 'view' ? 0 : $this->acl->check('.project', PHPGW_ACL_ADD, 'property'),
+				'acl_add_project'					 => $mode == 'view' ? 0 : $this->acl->check('.project', ACL_ADD, 'property'),
 				'lang_generate_project'				 => lang('Generate project'),
 				'lang_generate_project_statustext'	 => lang('Generate a project from this request'),
 				'location_code'						 => $values['location_code'],

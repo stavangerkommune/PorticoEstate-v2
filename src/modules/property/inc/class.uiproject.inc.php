@@ -102,10 +102,10 @@
 
 			$this->acl			 = & $GLOBALS['phpgw']->acl;
 			$this->acl_location	 = '.project';
-			$this->acl_read		 = $this->acl->check('.project', PHPGW_ACL_READ, 'property');
-			$this->acl_add		 = $this->acl->check('.project', PHPGW_ACL_ADD, 'property');
-			$this->acl_edit		 = $this->acl->check('.project', PHPGW_ACL_EDIT, 'property');
-			$this->acl_delete	 = $this->acl->check('.project', PHPGW_ACL_DELETE, 'property');
+			$this->acl_read		 = $this->acl->check('.project', ACL_READ, 'property');
+			$this->acl_add		 = $this->acl->check('.project', ACL_ADD, 'property');
+			$this->acl_edit		 = $this->acl->check('.project', ACL_EDIT, 'property');
+			$this->acl_delete	 = $this->acl->check('.project', ACL_DELETE, 'property');
 			$this->acl_manage	 = $this->acl->check('.project', 16, 'property');
 
 			$this->start			 = $this->bo->start;
@@ -1754,7 +1754,7 @@ JS;
 						'project_id' => $id));
 				}
 
-				if (!$this->bocommon->check_perms2($values['coordinator'], $this->bo->so->grants, PHPGW_ACL_EDIT))
+				if (!$this->bocommon->check_perms2($values['coordinator'], $this->bo->so->grants, ACL_EDIT))
 				{
 					$this->receipt['error'][] = array('msg' => lang('You have no edit right for this project'));
 					$GLOBALS['phpgw']->session->appsession('receipt', 'property', $this->receipt);
@@ -3078,7 +3078,7 @@ JS;
 
 //			$project = $this->bo->read_single($project_id);
 
-			if (!$this->acl_delete)// || !$this->bocommon->check_perms2($project['coordinator'], $this->bo->so->grants, PHPGW_ACL_DELETE))
+			if (!$this->acl_delete)// || !$this->bocommon->check_perms2($project['coordinator'], $this->bo->so->grants, ACL_DELETE))
 			{
 				phpgw::no_access();
 			}
@@ -3095,7 +3095,7 @@ JS;
 			if (!$this->acl_edit)
 			{
 				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
-					'perm'			 => PHPGW_ACL_EDIT, 'acl_location'	 => $this->acl_location));
+					'perm'			 => ACL_EDIT, 'acl_location'	 => $this->acl_location));
 			}
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::project_bulk_update_status';
@@ -3294,7 +3294,7 @@ JS;
 				)
 			);
 
-			$user_list = $this->bocommon->get_user_list_right2('select', PHPGW_ACL_EDIT, $coordinator, $this->acl_location);
+			$user_list = $this->bocommon->get_user_list_right2('select', ACL_EDIT, $coordinator, $this->acl_location);
 
 			switch ($type)
 			{

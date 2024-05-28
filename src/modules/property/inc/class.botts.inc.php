@@ -239,7 +239,7 @@
 				'name'	 => lang('assigned to')
 			);
 
-			if ($GLOBALS['phpgw']->acl->check('.ticket.order', PHPGW_ACL_ADD, 'property'))
+			if ($GLOBALS['phpgw']->acl->check('.ticket.order', ACL_ADD, 'property'))
 			{
 				$columns['order_id']	 = array
 					(
@@ -1970,8 +1970,8 @@ HTML;
 			$GLOBALS['phpgw_info']['flags']['nofooter']		 = true;
 
 			$acl			 = & $GLOBALS['phpgw']->acl;
-			$acl_add		 = $acl->check('.ticket', PHPGW_ACL_ADD, 'property');
-			$acl_edit		 = $acl->check('.ticket', PHPGW_ACL_EDIT, 'property');
+			$acl_add		 = $acl->check('.ticket', ACL_ADD, 'property');
+			$acl_edit		 = $acl->check('.ticket', ACL_EDIT, 'property');
 			$id				 = Sanitizer::get_var('id', 'int');
 			$check			 = Sanitizer::get_var('check', 'bool');
 			$fileuploader	 = CreateObject('property.fileuploader');

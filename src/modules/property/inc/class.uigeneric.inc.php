@@ -84,10 +84,10 @@
 			$GLOBALS['phpgw_info']['flags']['menu_selection']	 = $this->location_info['menu_selection'];
 			$this->acl											 = & $GLOBALS['phpgw']->acl;
 			$this->acl_location									 = $this->location_info['acl_location'];
-			$this->acl_read										 = $this->acl->check($this->acl_location, PHPGW_ACL_READ, $this->location_info['acl_app']);
-			$this->acl_add										 = $this->acl->check($this->acl_location, PHPGW_ACL_ADD, $this->location_info['acl_app']);
-			$this->acl_edit										 = $this->acl->check($this->acl_location, PHPGW_ACL_EDIT, $this->location_info['acl_app']);
-			$this->acl_delete									 = $this->acl->check($this->acl_location, PHPGW_ACL_DELETE, $this->location_info['acl_app']);
+			$this->acl_read										 = $this->acl->check($this->acl_location, ACL_READ, $this->location_info['acl_app']);
+			$this->acl_add										 = $this->acl->check($this->acl_location, ACL_ADD, $this->location_info['acl_app']);
+			$this->acl_edit										 = $this->acl->check($this->acl_location, ACL_EDIT, $this->location_info['acl_app']);
+			$this->acl_delete									 = $this->acl->check($this->acl_location, ACL_DELETE, $this->location_info['acl_app']);
 			$this->acl_manage									 = $this->acl->check($this->acl_location, 16, $this->location_info['acl_app']);
 
 			$this->start	 = $this->bo->start;
@@ -955,7 +955,7 @@ JS;
 			}
 
 			$tabletools = array();
-			if ($edit && $this->acl->check($acl_location, PHPGW_ACL_DELETE, $this->call_appname))
+			if ($edit && $this->acl->check($acl_location, ACL_DELETE, $this->call_appname))
 			{
 
 				$parameters = array

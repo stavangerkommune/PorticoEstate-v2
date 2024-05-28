@@ -99,10 +99,10 @@
 			$this->type_app		 = $this->bo->type_app;
 			$this->acl			 = & $GLOBALS['phpgw']->acl;
 			$this->acl_location	 = $this->bo->acl_location;
-			$this->acl_read		 = $this->acl->check($this->acl_location, PHPGW_ACL_READ, $this->type_app[$this->type]);
-			$this->acl_add		 = $this->acl->check($this->acl_location, PHPGW_ACL_ADD, $this->type_app[$this->type]);
-			$this->acl_edit		 = $this->acl->check($this->acl_location, PHPGW_ACL_EDIT, $this->type_app[$this->type]);
-			$this->acl_delete	 = $this->acl->check($this->acl_location, PHPGW_ACL_DELETE, $this->type_app[$this->type]);
+			$this->acl_read		 = $this->acl->check($this->acl_location, ACL_READ, $this->type_app[$this->type]);
+			$this->acl_add		 = $this->acl->check($this->acl_location, ACL_ADD, $this->type_app[$this->type]);
+			$this->acl_edit		 = $this->acl->check($this->acl_location, ACL_EDIT, $this->type_app[$this->type]);
+			$this->acl_delete	 = $this->acl->check($this->acl_location, ACL_DELETE, $this->type_app[$this->type]);
 			$this->acl_manage	 = $this->acl->check($this->acl_location, 16, $this->type_app[$this->type]);
 
 			$location_id 		 = $this->bo->location_id;
@@ -874,7 +874,7 @@
 			if (!$this->acl_add)
 			{
 				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
-					'perm'			 => PHPGW_ACL_ADD, 'acl_location'	 => $this->acl_location));
+					'perm'			 => ACL_ADD, 'acl_location'	 => $this->acl_location));
 			}
 
 			$entity_id		 = Sanitizer::get_var('entity_id', 'int');
@@ -2014,8 +2014,8 @@
 
 		function add_choice_value()
 		{
-			$add_controller = $this->acl->check('.checklist', PHPGW_ACL_ADD, 'controller');
-			$add_location = $this->acl->check('.location', PHPGW_ACL_ADD, 'property');
+			$add_controller = $this->acl->check('.checklist', ACL_ADD, 'controller');
+			$add_location = $this->acl->check('.location', ACL_ADD, 'property');
 
 			if(!$add_controller && !$add_location)
 			{
@@ -2050,8 +2050,8 @@
 
 		function delete_choice_value()
 		{
-			$add_controller = $this->acl->check('.checklist', PHPGW_ACL_ADD, 'controller');
-			$add_location = $this->acl->check('.location', PHPGW_ACL_ADD, 'property');
+			$add_controller = $this->acl->check('.checklist', ACL_ADD, 'controller');
+			$add_location = $this->acl->check('.location', ACL_ADD, 'property');
 
 			if(!$add_controller && !$add_location)
 			{

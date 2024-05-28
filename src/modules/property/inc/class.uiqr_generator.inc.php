@@ -45,7 +45,7 @@
 
 			$this->acl			 = & $GLOBALS['phpgw']->acl;
 			$this->acl_location	 = '.project';
-			$this->acl_read		 = $this->acl->check($this->acl_location, PHPGW_ACL_READ, 'property');
+			$this->acl_read		 = $this->acl->check($this->acl_location, ACL_READ, 'property');
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection']	 = 'admin::property::qr_generator';
 

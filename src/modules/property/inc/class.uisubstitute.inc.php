@@ -183,7 +183,7 @@
 
 		public function edit2()
 		{
-			if (!$GLOBALS['phpgw']->acl->check('.admin', PHPGW_ACL_EDIT, 'property'))
+			if (!$GLOBALS['phpgw']->acl->check('.admin', ACL_EDIT, 'property'))
 			{
 				$receipt['error'][] = true;
 				phpgwapi_cache::message_set(lang('you are not approved for this task'), 'error');
@@ -336,8 +336,8 @@
 
 		private function _get_user_list( $selected = 0 )
 		{
-			$users_controller	 = (array)$GLOBALS['phpgw']->acl->get_user_list_right(PHPGW_ACL_EDIT, '.checklist', 'controller');
-			$users_property		 = (array)$GLOBALS['phpgw']->acl->get_user_list_right(PHPGW_ACL_EDIT, '.project', 'property');
+			$users_controller	 = (array)$GLOBALS['phpgw']->acl->get_user_list_right(ACL_EDIT, '.checklist', 'controller');
+			$users_property		 = (array)$GLOBALS['phpgw']->acl->get_user_list_right(ACL_EDIT, '.project', 'property');
 
 			$users_gross = array();
 

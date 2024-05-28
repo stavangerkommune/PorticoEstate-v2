@@ -96,10 +96,10 @@
 			$this->acl									 = & $GLOBALS['phpgw']->acl;
 
 			$this->acl_location	 = $this->bo->acl_location;
-			$this->acl_read		 = $this->acl->check($this->acl_location, PHPGW_ACL_READ, 'property');
-			$this->acl_add		 = $this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'property');
-			$this->acl_edit		 = $this->acl->check($this->acl_location, PHPGW_ACL_EDIT, 'property');
-			$this->acl_delete	 = $this->acl->check($this->acl_location, PHPGW_ACL_DELETE, 'property');
+			$this->acl_read		 = $this->acl->check($this->acl_location, ACL_READ, 'property');
+			$this->acl_add		 = $this->acl->check($this->acl_location, ACL_ADD, 'property');
+			$this->acl_edit		 = $this->acl->check($this->acl_location, ACL_EDIT, 'property');
+			$this->acl_delete	 = $this->acl->check($this->acl_location, ACL_DELETE, 'property');
 			$this->acl_manage	 = $this->acl->check($this->acl_location, 16, 'property');
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = 'property::location';
@@ -1243,7 +1243,7 @@ JS;
 					)
 				);
 
-				if ($this->acl->check('run', PHPGW_ACL_READ, 'rental'))
+				if ($this->acl->check('run', ACL_READ, 'rental'))
 				{
 					$data['datatable']['actions'][] = array
 						(
@@ -3042,7 +3042,7 @@ JS;
 		{
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = 'admin::property::inactive_cats';
 
-			if (!$this->acl->check('.admin.location', PHPGW_ACL_EDIT, 'property'))
+			if (!$this->acl->check('.admin.location', ACL_EDIT, 'property'))
 			{
 				$this->bocommon->no_access();
 				return;
@@ -3100,7 +3100,7 @@ JS;
 		{
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = 'admin::property::location::update_location';
 
-			if (!$this->acl->check('.admin.location', PHPGW_ACL_EDIT, 'property'))
+			if (!$this->acl->check('.admin.location', ACL_EDIT, 'property'))
 			{
 				$this->bocommon->no_access();
 				return;
@@ -3150,11 +3150,11 @@ JS;
 
 			$right = array
 				(
-				PHPGW_ACL_READ		 => 'read',
-				PHPGW_ACL_ADD		 => 'add',
-				PHPGW_ACL_EDIT		 => 'edit',
-				PHPGW_ACL_DELETE	 => 'delete',
-				PHPGW_ACL_PRIVATE	 => 'manage'
+				ACL_READ		 => 'read',
+				ACL_ADD		 => 'add',
+				ACL_EDIT		 => 'edit',
+				ACL_DELETE	 => 'delete',
+				ACL_PRIVATE	 => 'manage'
 			);
 
 			phpgwapi_xslttemplates::getInstance()->add_file(array('location'));

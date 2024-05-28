@@ -57,6 +57,28 @@ use App\modules\phpgwapi\services\Config;
 $this->config = new Config();
 
 
+use App\modules\phpgwapi\services\SchemaProc\SchemaProc;
+$this->oProc = new SchemaProc();
 
-	use App\modules\phpgwapi\services\SchemaProc\SchemaProc;
-	$this->oProc = new SchemaProc();
+
+$GLOBALS['phpgw']->common
+$this->phpgwapi_common = new \phpgwapi_common();
+
+
+$log = new \App\modules\phpgwapi\services\Log();
+
+use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
+use App\modules\phpgwapi\services\Hooks;
+
+$GLOBALS['phpgw']->strip_html
+phpgw::strip_html
+
+use App\modules\phpgwapi\services\Translation;
+$translation = Translation::getInstance();
+
+PHPGW_ACL_READ
+ACL_READ
+
+PHPGW_ACL_PRIVATE
+ACL_PRIVATE

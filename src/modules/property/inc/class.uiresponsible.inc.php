@@ -131,10 +131,10 @@
 
 			$this->acl					 = & $GLOBALS['phpgw']->acl;
 			$this->acl_location			 = $this->bo->get_acl_location();
-			$this->acl_read				 = $this->acl->check($this->acl_location, PHPGW_ACL_READ, 'property');
-			$this->acl_add				 = $this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'property');
-			$this->acl_edit				 = $this->acl->check($this->acl_location, PHPGW_ACL_EDIT, 'property');
-			$this->acl_delete			 = $this->acl->check($this->acl_location, PHPGW_ACL_DELETE, 'property');
+			$this->acl_read				 = $this->acl->check($this->acl_location, ACL_READ, 'property');
+			$this->acl_add				 = $this->acl->check($this->acl_location, ACL_ADD, 'property');
+			$this->acl_edit				 = $this->acl->check($this->acl_location, ACL_EDIT, 'property');
+			$this->acl_delete			 = $this->acl->check($this->acl_location, ACL_DELETE, 'property');
 			$this->bolocation			 = CreateObject('preferences.boadmin_acl');
 			$this->appname				 = $this->bo->appname;
 			$this->bolocation->acl_app	 = $this->appname;
@@ -585,7 +585,7 @@
 
 //				  $this->acl->set_account_id($this->account);
 //				  $grants	= $this->acl->get_grants('property','.responsible');
-//				  if(!$this->bocommon->check_perms2($values['created_by'], $grants, PHPGW_ACL_READ))
+//				  if(!$this->bocommon->check_perms2($values['created_by'], $grants, ACL_READ))
 //				  {
 //					  phpgw::no_access();
 //				  }
@@ -632,7 +632,7 @@
 				$category			 = $this->cats->return_single($module['cat_id']);
 				$module['category']	 = $category[0]['name'];
 
-				if ($this->acl->check('admin', PHPGW_ACL_EDIT, $module['appname']))
+				if ($this->acl->check('admin', ACL_EDIT, $module['appname']))
 				{
 					$_checked				 = $module['active'] ? 'checked = "checked"' : '';
 					$module['active']		 = "<input type='checkbox' name='values[set_active][]' {$_checked} value='{$module['location_id']}_{$module['cat_id']}' title='" . lang('Check to set active') . "'>";

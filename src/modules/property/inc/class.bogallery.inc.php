@@ -254,7 +254,7 @@
 				if (!empty($directory[2]) && !isset($directory[3]))
 				{
 					$location_info = $this->get_location($directory);
-					if ($GLOBALS['phpgw']->acl->check($location_info['location'], PHPGW_ACL_READ, 'property'))
+					if ($GLOBALS['phpgw']->acl->check($location_info['location'], ACL_READ, 'property'))
 					{
 						$locations[] = array
 							(

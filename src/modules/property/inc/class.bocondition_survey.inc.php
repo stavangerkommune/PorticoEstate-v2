@@ -139,8 +139,8 @@
 			$GLOBALS['phpgw_info']['flags']['nofooter']		 = true;
 
 			$acl			 = & $GLOBALS['phpgw']->acl;
-			$acl_add		 = $acl->check($this->acl_location, PHPGW_ACL_ADD, 'property');
-			$acl_edit		 = $acl->check($this->acl_location, PHPGW_ACL_EDIT, 'property');
+			$acl_add		 = $acl->check($this->acl_location, ACL_ADD, 'property');
+			$acl_edit		 = $acl->check($this->acl_location, ACL_EDIT, 'property');
 			$id				 = Sanitizer::get_var('id', 'int');
 			$check			 = Sanitizer::get_var('check', 'bool');
 			$fileuploader	 = CreateObject('property.fileuploader');

@@ -71,10 +71,10 @@
 			$GLOBALS['phpgw_info']['flags']['menu_selection']	 = $this->location_info['menu_selection'];
 			$this->acl											 = & $GLOBALS['phpgw']->acl;
 			$this->acl_location									 = Sanitizer::get_var('location');
-			$this->acl_read										 = $this->acl->check($this->acl_location, PHPGW_ACL_READ, 'property');
-			$this->acl_add										 = $this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'property');
-			$this->acl_edit										 = $this->acl->check($this->acl_location, PHPGW_ACL_EDIT, 'property');
-			$this->acl_delete									 = $this->acl->check($this->acl_location, PHPGW_ACL_DELETE, 'property');
+			$this->acl_read										 = $this->acl->check($this->acl_location, ACL_READ, 'property');
+			$this->acl_add										 = $this->acl->check($this->acl_location, ACL_ADD, 'property');
+			$this->acl_edit										 = $this->acl->check($this->acl_location, ACL_EDIT, 'property');
+			$this->acl_delete									 = $this->acl->check($this->acl_location, ACL_DELETE, 'property');
 			$this->acl_manage									 = $this->acl->check($this->acl_location, 16, 'property');
 
 			$this->start		 = $this->bo->start;
@@ -173,16 +173,16 @@
 		function index()
 		{
 			$this->acl_location = '.scheduled_events';
-			if (!$this->acl->check($this->acl_location, PHPGW_ACL_READ, 'property'))
+			if (!$this->acl->check($this->acl_location, ACL_READ, 'property'))
 			{
 				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
-			$this->acl_read		 = $this->acl->check($this->acl_location, PHPGW_ACL_READ, 'property');
-			$this->acl_add		 = $this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'property');
-			$this->acl_edit		 = $this->acl->check($this->acl_location, PHPGW_ACL_EDIT, 'property');
-			$this->acl_delete	 = $this->acl->check($this->acl_location, PHPGW_ACL_DELETE, 'property');
+			$this->acl_read		 = $this->acl->check($this->acl_location, ACL_READ, 'property');
+			$this->acl_add		 = $this->acl->check($this->acl_location, ACL_ADD, 'property');
+			$this->acl_edit		 = $this->acl->check($this->acl_location, ACL_EDIT, 'property');
+			$this->acl_delete	 = $this->acl->check($this->acl_location, ACL_DELETE, 'property');
 			$this->acl_manage	 = $this->acl->check($this->acl_location, 16, 'property');
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = "property::scheduled_events";

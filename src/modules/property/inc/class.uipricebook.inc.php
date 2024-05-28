@@ -81,10 +81,10 @@
 
 			$this->acl			 = & $GLOBALS['phpgw']->acl;
 			$this->acl_location	 = '.agreement';
-			$this->acl_read		 = $this->acl->check('.agreement', PHPGW_ACL_READ, 'property');
-			$this->acl_add		 = $this->acl->check('.agreement', PHPGW_ACL_ADD, 'property');
-			$this->acl_edit		 = $this->acl->check('.agreement', PHPGW_ACL_EDIT, 'property');
-			$this->acl_delete	 = $this->acl->check('.agreement', PHPGW_ACL_DELETE, 'property');
+			$this->acl_read		 = $this->acl->check('.agreement', ACL_READ, 'property');
+			$this->acl_add		 = $this->acl->check('.agreement', ACL_ADD, 'property');
+			$this->acl_edit		 = $this->acl->check('.agreement', ACL_EDIT, 'property');
+			$this->acl_delete	 = $this->acl->check('.agreement', ACL_DELETE, 'property');
 			$this->acl_manage	 = $this->acl->check('.agreement', 16, 'property');
 
 			$this->start	 = $this->bo->start;

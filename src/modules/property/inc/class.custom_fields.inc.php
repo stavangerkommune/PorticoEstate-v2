@@ -847,6 +847,7 @@ JS;
 					else if ($data['value'] && $data['get_list_function'])
 					{
 						$_compare_key = $this->_get_compare_key($data['get_list_function'], $data['get_list_function_input']);
+						$_list		 = null;
 						if (!isset($cache_custom_lookup[$_compare_key]) || $_list != $cache_custom_lookup[$_compare_key])
 						{
 							$_list								 = execMethod($data['get_list_function'], $data['get_list_function_input']);
