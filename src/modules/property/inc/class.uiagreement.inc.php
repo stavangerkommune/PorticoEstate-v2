@@ -171,7 +171,7 @@
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -254,7 +254,7 @@
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -577,7 +577,7 @@
 		{
 			if (!$this->acl_add)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -602,13 +602,13 @@
 					if ($values['save'])
 					{
 						$GLOBALS['phpgw']->session->appsession('session_data', 'agreement_receipt', $receipt);
-						$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiagreement.edit',
+						phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiagreement.edit',
 							'id'		 => $agreement_id, 'tab'		 => 'items'));
 					}
 				}
 				else
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiagreement.edit',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiagreement.edit',
 						'id'		 => $agreement_id, 'tab'		 => 'items'));
 				}
 			}
@@ -807,7 +807,7 @@
 						if ($values['save'])
 						{
 							$GLOBALS['phpgw']->session->appsession('session_data', 'agreement_receipt', $receipt);
-							$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiagreement.index',
+							phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiagreement.index',
 								'role'		 => $this->role));
 						}
 					}
@@ -823,7 +823,7 @@
 					}
 
 					self::message_set($receipt);
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiagreement.edit',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiagreement.edit',
 						'id'		 => $id));
 				}
 				else
@@ -1037,7 +1037,7 @@
 			$mode = ($mode == 'edit') ? 2 : 1;
 			if (!$this->acl_add)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => $mode, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -1581,7 +1581,7 @@
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -1656,7 +1656,7 @@
 		{
 			if (!$this->acl_add)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -1689,14 +1689,14 @@
 						if ($values['save'])
 						{
 							$GLOBALS['phpgw']->session->appsession('session_data', 'agreement_receipt', $receipt);
-							$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiagreement.edit',
+							phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiagreement.edit',
 								'id'		 => $agreement_id, 'tab'		 => 'items'));
 						}
 					}
 				}
 				else if (!$values['save'] && !$values['apply'] && !$values['update'])
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiagreement.edit',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiagreement.edit',
 						'id'		 => $agreement_id, 'tab'		 => 'items'));
 				}
 			}
@@ -1907,7 +1907,7 @@
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -2040,7 +2040,7 @@
 		{
 			if (!$this->acl_delete)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 8, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -2085,7 +2085,7 @@
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 

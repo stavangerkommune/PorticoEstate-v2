@@ -173,7 +173,7 @@
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -239,7 +239,7 @@
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -554,7 +554,7 @@
 		{
 			if (!$this->acl_add)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -580,7 +580,7 @@
 					{
 						$this->bo->import($values, $id);
 					}
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uis_agreement.edit',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uis_agreement.edit',
 						'id'		 => $id, 'tab'		 => $active_tab));
 				}
 				else
@@ -592,7 +592,7 @@
 			}
 			else
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uis_agreement.edit',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uis_agreement.edit',
 					'id'		 => $id, 'tab'		 => $active_tab));
 			}
 		}
@@ -731,7 +731,7 @@
 						{
 							self::message_set($receipt);
 							//					$GLOBALS['phpgw']->session->appsession('session_data', 's_agreement_receipt', $receipt);
-							$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uis_agreement.index',
+							phpgw::redirect_link('/index.php', array('menuaction' => 'property.uis_agreement.index',
 								'role'		 => $this->role));
 						}
 					}
@@ -747,7 +747,7 @@
 					}
 
 					self::message_set($receipt);
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uis_agreement.edit',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uis_agreement.edit',
 						'id'		 => $id));
 				}
 				else
@@ -970,7 +970,7 @@
 
 			if (!$this->acl_add && !$this->acl_edit)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uis_agreement.view',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uis_agreement.view',
 					'id'		 => $id));
 			}
 
@@ -1564,7 +1564,7 @@
 		{
 			if (!$this->acl_add && !$this->acl_edit)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -1623,7 +1623,7 @@
 						if ($values['save'])
 						{
 							$GLOBALS['phpgw']->session->appsession('session_data', 's_agreement_receipt', $receipt);
-							$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uis_agreement.edit',
+							phpgw::redirect_link('/index.php', array('menuaction' => 'property.uis_agreement.edit',
 								'id'		 => $s_agreement_id));
 						}
 					}
@@ -1661,7 +1661,7 @@
 				}
 				else if (!$values['save'] && !$values['apply'] && !$values['update'])
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uis_agreement.edit',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uis_agreement.edit',
 						'id'		 => $s_agreement_id));
 				}
 			}
@@ -2192,7 +2192,7 @@
 		{
 			if (!$this->acl_delete)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 8, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -2239,7 +2239,7 @@
 
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 

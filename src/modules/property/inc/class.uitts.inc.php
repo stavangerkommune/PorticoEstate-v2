@@ -248,7 +248,7 @@
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -314,7 +314,7 @@ HTML;
 		{
 			if (!$this->acl->check('.ticket.external', ACL_READ, 'property'))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => '.ticket.external'));
 			}
 
@@ -1376,12 +1376,12 @@ HTML;
 		{
 			if (!$this->acl_add)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
 			if ($this->tenant_id)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uitts.add2'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uitts.add2'));
 			}
 
 			$GLOBALS['phpgw_info']['flags']['breadcrumb_selection'] = $GLOBALS['phpgw_info']['flags']['menu_selection'] . "::add";
@@ -1392,7 +1392,7 @@ HTML;
 			$values['contact_id']	 = Sanitizer::get_var('contact', 'int', 'POST');
 			if ((isset($values['cancel']) && $values['cancel']))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uitts.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uitts.index'));
 			}
 
 			$values_attribute = Sanitizer::get_var('values_attribute');
@@ -1614,11 +1614,11 @@ HTML;
 
 					if ((isset($values['save']) && $values['save']))
 					{
-						$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uitts.index'));
+						phpgw::redirect_link('/index.php', array('menuaction' => 'property.uitts.index'));
 					}
 					else
 					{
-						$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uitts.view',
+						phpgw::redirect_link('/index.php', array('menuaction' => 'property.uitts.view',
 							'id'		 => $receipt['id'], 'tab'		 => 'general'));
 					}
 				}
@@ -2059,7 +2059,7 @@ HTML;
 
 			if ($this->tenant_id)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uitts.view2',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uitts.view2',
 					'id'		 => $id));
 			}
 
@@ -2113,7 +2113,7 @@ HTML;
 			{
 				if (!$this->acl_edit)
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+					phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 						'perm'			 => 4, 'acl_location'	 => $this->acl_location));
 				}
 
@@ -2278,11 +2278,11 @@ HTML;
 
 				if ((isset($values['save']) && $values['save']))
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uitts.index'));
+					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uitts.index'));
 				}
 				else
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uitts.view',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uitts.view',
 						'id'		 => $id, 'tab'		 => 'general'));
 				}
 
@@ -3918,7 +3918,7 @@ JS;
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 

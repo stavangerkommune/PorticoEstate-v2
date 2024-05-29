@@ -481,7 +481,8 @@
 			$custom		 = createObject('phpgwapi.custom_fields');
 			$attributes	 = $custom->find('property', '.project.request', 0, '', '', '', true, true);
 
-			$origin_id = $GLOBALS['phpgw']->locations->get_id('property', '.project.condition_survey');
+			$origin_id = (new \App\modules\phpgwapi\controllers\Locations())->get_id('property', '.project.condition_survey');
+
 			foreach ($import_data as $entry)
 			{
 				//if( $entry['condition_degree'] > 0 && $entry['building_part'] && $entry['import_type'] > 0)

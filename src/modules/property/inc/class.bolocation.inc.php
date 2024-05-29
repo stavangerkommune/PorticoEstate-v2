@@ -27,6 +27,13 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\controllers\Locations;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
+
+
 	/**
 	 * Description
 	 * @package property
@@ -45,7 +52,7 @@
 		var $use_session;
 		var $location_code;
 		var $total_records, $so,$soadmin_location,$bocommon, $part_of_town_id,$district_id,$status,
-		$allrows,$acl_location,$config,$location_types,$uicols;
+		$allrows,$acl_location,$config,$location_types,$uicols, $locations, $accounts,$userSettings;
 
 		/**
 		 * @var object $custom reference to custom fields object
@@ -67,6 +74,9 @@
 			$this->bocommon			 = CreateObject('property.bocommon');
 			$this->so				 = CreateObject('property.solocation', $this->bocommon);
 			$this->custom			 = & $this->so->custom;
+			$this->locations = new Locations();
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->accounts							 = new Accounts();
 
 			$this->lookup = Sanitizer::get_var('lookup', 'bool');
 
@@ -118,7 +128,7 @@
 		function read_sessiondata()
 		{
 
-			$data = phpgwapi_cache::session_get('location', 'session_data');
+			$data = Cache::session_get('location', 'session_data');
 
 			$query	 = isset($data['query']) ? $data['query'] : '';
 			$type_id = Sanitizer::get_var('type_id', 'int', 'REQUEST', 1);
@@ -158,7 +168,7 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', 'location', $data);
+				Cache::session_set('location', 'session_data', $data);
 			}
 		}
 
@@ -166,12 +176,12 @@
 		{
 			if (!$selected)
 			{
-				$selected = isset($GLOBALS['phpgw_info']['user']['preferences']['property']['location_columns_' . $this->type_id . !!$this->lookup]) ? $GLOBALS['phpgw_info']['user']['preferences']['property']["location_columns_" . $this->type_id . !!$this->lookup] : array();
+				$selected = isset($this->userSettings['preferences']['property']['location_columns_' . $this->type_id . !!$this->lookup]) ? $this->userSettings['preferences']['property']["location_columns_" . $this->type_id . !!$this->lookup] : array();
 			}
 			$filter = array('list' => ''); // translates to "list IS NULL"
 			//$columns = $this->custom->find('property', '.location.' . $type_id, 0, '', '', '', true, false, $filter);
 
-			$location_id = $GLOBALS['phpgw']->locations->get_id('property', ".location.{$this->type_id}");
+			$location_id = $this->locations->get_id('property', ".location.{$this->type_id}");
 
 			$columns = $this->so->get_column_list($location_id);
 			$columns = array_merge($columns, $this->get_column_list());
@@ -638,8 +648,8 @@
 				}
 			}
 
-			phpgwapi_cache::session_set('property', 'lookup_fields', $input_name);
-			phpgwapi_cache::session_set('property', 'lookup_fields_entity', $input_name_entity);
+			Cache::session_set('property', 'lookup_fields', $input_name);
+			Cache::session_set('property', 'lookup_fields_entity', $input_name_entity);
 
 			if ($input_name_entity && is_array($input_name_entity))
 			{
@@ -654,7 +664,7 @@
 				phpgwapi_js::getInstance()->add_code('', $function_blank_entity_values);
 			}
 
-			phpgwapi_cache::session_set('property', 'insert_record', $insert_record);
+			Cache::session_set('property', 'insert_record', $insert_record);
 
 			if (isset($lookup_functions) && is_array($lookup_functions))
 			{
@@ -738,7 +748,7 @@ JS;
 					$lookup_name[] = $location['location'][$i]['name'];
 				}
 
-				$GLOBALS['phpgw']->session->appsession('lookup_name', 'property', $lookup_name);
+				Cache::session_set('property', 'lookup_name', $lookup_name);
 
 				return $location;
 			}
@@ -779,7 +789,7 @@ JS;
 			$this->total_records = $this->so->total_records;
 			$this->uicols		 = $this->so->uicols;
 
-			$custom_cols = isset($GLOBALS['phpgw_info']['user']['preferences']['property']['location_columns_' . $this->type_id . !!$this->lookup]) ? $GLOBALS['phpgw_info']['user']['preferences']['property']["location_columns_" . $this->type_id . !!$this->lookup] : array();
+			$custom_cols = isset($this->userSettings['preferences']['property']['location_columns_' . $this->type_id . !!$this->lookup]) ? $this->userSettings['preferences']['property']["location_columns_" . $this->type_id . !!$this->lookup] : array();
 
 			$column_list		 = $this->get_column_list();
 			$get_vendor_names	 = false;
@@ -817,7 +827,7 @@ JS;
 
 			if ($data['user_id'] < 0 && $data['role_id'])
 			{
-				$account	 = $GLOBALS['phpgw']->accounts->get(abs($data['user_id']));
+				$account	 = $this->accounts->get(abs($data['user_id']));
 				$contact_id	 = $account->person_id;
 
 				$data['filter_role_on_contact'] = $contact_id;
@@ -838,9 +848,9 @@ JS;
 					}
 					else
 					{
-						if ($account_id = $GLOBALS['phpgw']->accounts->search_person($responsible_item['contact_id']))
+						if ($account_id = $this->accounts->search_person($responsible_item['contact_id']))
 						{
-							$location['responsible_contact'] = $GLOBALS['phpgw']->accounts->get($account_id)->__toString();
+							$location['responsible_contact'] = $this->accounts->get($account_id)->__toString();
 						}
 						else
 						{
@@ -995,7 +1005,7 @@ JS;
 				'allrows'	 => true
 			);
 
-			$custom_functions = $GLOBALS['phpgw']->custom_functions->find($criteria);
+			$custom_functions = createObject('phpgwapi.custom_functions')->find($criteria);
 
 			foreach ($custom_functions as $entry)
 			{
@@ -1005,7 +1015,7 @@ JS;
 					continue;
 				}
 
-				$file = PHPGW_SERVER_ROOT . "/property/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}/{$entry['file_name']}";
+				$file = PHPGW_SERVER_ROOT . "/property/inc/custom/{$this->userSettings['domain']}/{$entry['file_name']}";
 				if ($entry['active'] && is_file($file))
 				{
 					require_once $file;

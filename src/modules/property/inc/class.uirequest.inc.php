@@ -797,7 +797,7 @@
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -1182,7 +1182,7 @@ JS;
 		{
 			if (!$this->acl_manage)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 16, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -1316,7 +1316,7 @@ JS;
 				if ($values['save_new'])
 				{
 					$values = $this->bo->read_single($values['id']);
-					$GLOBALS['phpgw']->redirect_link('/index.php', array
+					phpgw::redirect_link('/index.php', array
 						(
 						'menuaction'	 => 'property.uirequest.add',
 						'location_code'	 => $values['location_code'],
@@ -1885,7 +1885,7 @@ JS;
 
 			if (!$this->acl_delete)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 8, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -1901,7 +1901,7 @@ JS;
 			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete($id);
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 
 			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));

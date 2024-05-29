@@ -83,7 +83,7 @@
 
 			if (!$this->acl_manage)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 16, 'acl_location'	 => $this->acl_location));
 			}
 		}
@@ -395,7 +395,7 @@
 			$message = $GLOBALS['phpgw']->common->msgbox($msgbox_data);
 
 			phpgwapi_cache::message_set($message[0]['msgbox_text'], 'message');
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiasync.edit',
+			phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiasync.edit',
 				'id'		 => $id));
 		}
 

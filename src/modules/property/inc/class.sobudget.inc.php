@@ -27,6 +27,9 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Settings;
+	use App\Database\Db;
+
 	/**
 	 * Description
 	 * @package property
@@ -39,15 +42,17 @@
 		var $sum_actual_cost_period	 = 0;
 		var $sum_actual_cost			 = 0;
 		var $sum_hits				 = 0;
-		var $db, $join, $left_join, $like,$account,$cats, $total_records;
+		var $db, $join, $left_join, $like,$account,$cats, $total_records, $userSettings, $serverSettings;
 
 		function __construct()
 		{
 			$this->cats					 = CreateObject('phpgwapi.categories', -1, 'property', '.project');
 			$this->cats->supress_info	 = true;
 
-			$this->account	 = $GLOBALS['phpgw_info']['user']['account_id'];
-			$this->db		 = & $GLOBALS['phpgw']->db;
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->serverSettings = Settings::getInstance()->get('user');
+			$this->account	 = $this->userSettings['account_id'];
+			$this->db		 = Db::getInstance();
 			$this->join		 = & $this->db->join;
 			$this->left_join = & $this->db->left_join;
 			$this->like		 = & $this->db->like;
@@ -153,7 +158,7 @@
 				. " FROM fm_budget {$this->join} fm_b_account ON fm_budget.b_account_id = fm_b_account.id"
 				. " $filtermethod $querymethod";
 
-			if ($GLOBALS['phpgw_info']['server']['db_type'] == 'postgres')
+			if ($this->serverSettings['db_type'] == 'postgres')
 			{
 				$sql_count				 = 'SELECT count(id) as cnt, sum(budget_cost) AS sum_budget_cost FROM (SELECT DISTINCT fm_budget.id, budget_cost ' . substr($sql, strripos($sql, 'FROM')) . ') AS t';
 				$this->db->query($sql_count, __LINE__, __FILE__);
@@ -195,7 +200,6 @@
 					'entry_date'	 => $this->db->f('entry_date'),
 					'ecodimb'		 => $this->db->f('ecodimb'),
 					'cat_id'		 => $this->db->f('cat_id'),
-					//			'user'				=> $GLOBALS['phpgw']->accounts->id2name($this->db->f('user_id'))
 				);
 			}
 			return $budget;
@@ -1189,7 +1193,7 @@
 				}
 				else
 				{
-					$num_rows = isset($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs']) ? intval($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs']) : 15;
+					$num_rows = isset($this->userSettings['preferences']['common']['maxmatchs']) ? intval($this->userSettings['preferences']['common']['maxmatchs']) : 15;
 				}
 				//_debug_array(array($start,$this->total_records,$this->total_records,$num_rows));
 				$page = ceil(( $start / $this->total_records ) * ($this->total_records / $num_rows));

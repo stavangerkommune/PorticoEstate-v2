@@ -328,7 +328,7 @@
 
 		$GLOBALS['phpgw']->hooks->process('login');
 
-		$GLOBALS['phpgw']->redirect_link('/home.php', $extra_vars);
+		phpgw::redirect_link('/home.php', $extra_vars);
 		exit;
 	}
 

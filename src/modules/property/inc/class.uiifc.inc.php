@@ -320,7 +320,7 @@
 						if (isset($values['save']) && $values['save'])
 						{
 							$GLOBALS['phpgw']->session->appsession('session_data', 'ifc_receipt', $receipt);
-							$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiifc.index'));
+							phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiifc.index'));
 						}
 					}
 				}
@@ -330,7 +330,7 @@
 					{
 						unlink($ifcfile);
 					}
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiifc.index'));
+					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiifc.index'));
 				}
 			}
 
@@ -474,14 +474,14 @@
 						if (isset($values['save']) && $values['save'])
 						{
 							$GLOBALS['phpgw']->session->appsession('session_data', 'hrm_training_receipt', $receipt);
-							$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiifc.index',
+							phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiifc.index',
 								'output'	 => $output));
 						}
 					}
 				}
 				else
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiifc.index',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiifc.index',
 						'output'	 => $output));
 				}
 			}
@@ -654,7 +654,7 @@
 			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete($ifc_id);
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 
 			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));

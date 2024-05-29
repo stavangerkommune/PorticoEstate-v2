@@ -270,7 +270,7 @@
 			}
 			else
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uib_account_user.index',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uib_account_user.index',
 					'user_id'		 => $user_id, 'b_account_id'	 => $b_account_id));
 			}
 		}

@@ -1382,7 +1382,7 @@
 				  case 4://temporary
 				  phpgwapi_cache::session_clear('property', 'condition_survey_import_file');
 				  unlink($cached_file);
-				  $GLOBALS['phpgw']->redirect_link('/index.php',array('menuaction' => 'property.uicondition_survey.import', 'id' =>$id, 'step' => 0));
+				  phpgw::redirect_link('/index.php',array('menuaction' => 'property.uicondition_survey.import', 'id' =>$id, 'step' => 0));
 				  break;
 				 */
 			}
@@ -1787,7 +1787,7 @@
 
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uicondition_survey.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uicondition_survey.index'));
 			}
 
 			$params = array(

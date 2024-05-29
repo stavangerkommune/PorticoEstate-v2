@@ -226,7 +226,7 @@
 
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -507,7 +507,7 @@
 		{
 			if (!$this->acl_manage)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 16, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -641,7 +641,7 @@
 		{
 			if (!$this->acl_manage)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 16, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -788,7 +788,7 @@
 		{
 			if (!$this->acl_manage)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 16, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -1085,7 +1085,7 @@
 		{
 			if (!$this->acl_manage)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 16, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -1316,7 +1316,7 @@ JS;
 		{
 			if (!$this->acl_manage)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 16, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -1497,7 +1497,7 @@ JS;
 		{
 			if (!$this->acl_manage)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 16, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -1663,7 +1663,7 @@ JS;
 		{
 			if (!$this->acl_manage)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 16, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -1689,7 +1689,7 @@ JS;
 				if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 				{
 					$this->bo->delete_activity_vendor($activity_id, $agreement_id);
-					$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+					phpgw::redirect_link('/index.php', $link_data);
 				}
 			}
 			elseif ($method == 'activity')
@@ -1714,7 +1714,7 @@ JS;
 				if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 				{
 					$this->bo->delete_activity($activity_id);
-					$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+					phpgw::redirect_link('/index.php', $link_data);
 				}
 			}
 			elseif ($method == 'prize')
@@ -1734,7 +1734,7 @@ JS;
 				if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 				{
 					$this->bo->delete_prize_index($activity_id, $agreement_id, $index_count);
-					$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+					phpgw::redirect_link('/index.php', $link_data);
 				}
 			}
 			elseif ($method == 'agreement_group')
@@ -1761,7 +1761,7 @@ JS;
 				if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 				{
 					$this->bo->delete_agreement_group($agreement_group_id);
-					$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+					phpgw::redirect_link('/index.php', $link_data);
 				}
 			}
 

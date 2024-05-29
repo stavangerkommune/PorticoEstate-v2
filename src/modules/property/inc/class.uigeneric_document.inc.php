@@ -382,7 +382,7 @@
 
 			if (!$this->acl_add && !$this->acl_edit)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uigeneric_document.view',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uigeneric_document.view',
 					'id'		 => $id));
 			}
 

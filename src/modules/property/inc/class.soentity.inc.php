@@ -27,6 +27,16 @@
 	 * @version $Id$
 	 */
 
+use App\modules\phpgwapi\services\Settings;
+use App\Database\Db;
+use App\Database\Db2;
+use App\modules\phpgwapi\security\Acl;
+use App\modules\phpgwapi\controllers\Locations;
+use App\modules\phpgwapi\services\Cache;
+
+
+
+
 	/**
 	 * Description
 	 * @package property
@@ -48,20 +58,24 @@
 			'entity' => 'property',
 			'catch'	 => 'catch'
 		);
-		private $account;
+		private $account, $userSettings, $locations, $custom_fields;
 
 		function __construct( $entity_id = '', $cat_id = '' )
 		{
-			$this->account	 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->account	 = $this->userSettings['account_id'];
 			$this->bocommon	 = CreateObject('property.bocommon');
 			$this->custom	 = createObject('property.custom_fields');
-			$this->db		 = & $GLOBALS['phpgw']->db;
-			$this->db2		 = clone($this->db);
-			$this->join		 = & $this->db->join;
-			$this->left_join = & $this->db->left_join;
-			$this->like		 = & $this->db->like;
+			$this->db		 = Db::getInstance();
+			$this->db2		 = new Db2();
+			$this->join		 = $this->db->join;
+			$this->left_join = $this->db->left_join;
+			$this->like		 = $this->db->like;
 			$this->entity_id = $entity_id;
 			$this->cat_id	 = $cat_id;
+			$this->locations = new Locations();
+			$this->custom_fields = CreateObject('phpgwapi.custom_fields');
+
 		}
 
 		public function get_type_app()
@@ -80,7 +94,7 @@
 		function set_geolocation($location_id, $component_id, $lat, $lng)
 		{
 			//check for eav
-			$location_info	 = $GLOBALS['phpgw']->locations->get_name($location_id);
+			$location_info	 = $this->locations->get_name($location_id);
 			$location_arr	 = explode('.', $location_info['location']);
 			if (count($location_arr) != 4)
 			{
@@ -119,7 +133,7 @@
 				return;
 			}
 
-			$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
+			$location_id = $this->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
 
 			$sql = "SELECT phpgw_cust_choice.id, phpgw_cust_choice.value FROM phpgw_cust_attribute"
 				. " $this->join phpgw_cust_choice ON"
@@ -171,7 +185,7 @@
 				return;
 			}
 
-			$acl	 = & $GLOBALS['phpgw']->acl;
+			$acl	 = Acl::getInstance();
 			$grants	 = $acl->get_grants2($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
 
 			$admin_entity		 = CreateObject('property.soadmin_entity');
@@ -388,7 +402,7 @@
 			if (!isset($cache_attribute_status[$location_id]))
 			{
 				$filters								 = array("column_name" => "status");
-				$cache_attribute_status[$location_id]	 = $GLOBALS['phpgw']->custom_fields->find2($location_id, 0, '', 'ASC', '', true, true, $filters);
+				$cache_attribute_status[$location_id]	 = $this->custom_fields->find2($location_id, 0, '', 'ASC', '', true, true, $filters);
 			}
 
 			$_querymethod_status = '';
@@ -552,7 +566,7 @@
 
 			if ($location_id)
 			{
-				$loc_arr	 = $GLOBALS['phpgw']->locations->get_name($location_id);
+				$loc_arr	 = $this->locations->get_name($location_id);
 				$type_arr	 = explode('.', $loc_arr['location']);
 				if (count($type_arr) != 4)
 				{
@@ -570,10 +584,10 @@
 
 			if (!$location_id)
 			{
-				$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
+				$location_id = $this->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
 			}
 
-			$acl	 = & $GLOBALS['phpgw']->acl;
+			$acl	 = Acl::getInstance();
 			$acl->set_account_id($this->account);
 			$grants	 = $acl->get_grants2($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
 
@@ -944,7 +958,7 @@
 			if (!isset($cache_attribute_status[$location_id]))
 			{
 				$filters								 = array("column_name" => "status");
-				$cache_attribute_status[$location_id]	 = $GLOBALS['phpgw']->custom_fields->find2($location_id, 0, '', 'ASC', '', true, true, $filters);
+				$cache_attribute_status[$location_id]	 = $this->custom_fields->find2($location_id, 0, '', 'ASC', '', true, true, $filters);
 			}
 
 			$_querymethod_status = '';
@@ -1043,7 +1057,7 @@
 
 			$_sql = str_replace('__XML-ORDER__', '', $sql);
 
-//			$cache_info = phpgwapi_cache::session_get($this->type_app[$this->type],"{$location_id}_listing_metadata");
+//			$cache_info = Cache::session_get($this->type_app[$this->type],"{$location_id}_listing_metadata");
 
 			if (!isset($cache_info['sql_hash']) || $cache_info['sql_hash'] != md5($_sql))
 			{
@@ -1064,7 +1078,7 @@
 					'total_records'	 => $this->db->f('cnt'),
 					'sql_hash'		 => md5($_sql)
 				);
-				phpgwapi_cache::session_set($this->type_app[$this->type], "{$location_id}_listing_metadata", $cache_info);
+				Cache::session_set($this->type_app[$this->type], "{$location_id}_listing_metadata", $cache_info);
 			}
 
 			$this->total_records = $cache_info['total_records'];
@@ -1154,7 +1168,7 @@
 			if (!isset($cache_attributes[$location_id]))
 			{
 				$filters						 = array("short_description" => "IS NOT NULL");
-				$cache_attributes[$location_id]	 = $GLOBALS['phpgw']->custom_fields->find2($location_id, 0, '', 'ASC', 'short_description', true, true, $filters);
+				$cache_attributes[$location_id]	 = $this->custom_fields->find2($location_id, 0, '', 'ASC', 'short_description', true, true, $filters);
 			}
 			$sql	 = str_replace($acl_group_join, '', $sql);
 			$sql_arr = explode('WHERE', $sql);
@@ -1523,7 +1537,7 @@
 			{
 				//-------------------
 
-				$user_columns = isset($GLOBALS['phpgw_info']['user']['preferences'][$this->type_app[$this->type]]['entity_columns_' . $entity_id . '_' . $cat_id]) ? $GLOBALS['phpgw_info']['user']['preferences'][$this->type_app[$this->type]]['entity_columns_' . $entity_id . '_' . $cat_id] : array();
+				$user_columns = isset($this->userSettings['preferences'][$this->type_app[$this->type]]['entity_columns_' . $entity_id . '_' . $cat_id]) ? $this->userSettings['preferences'][$this->type_app[$this->type]]['entity_columns_' . $entity_id . '_' . $cat_id] : array();
 
 				$_user_columns = array();
 				foreach ($user_columns as $user_column_id)
@@ -1665,7 +1679,7 @@
 
 			if ($location_id)
 			{
-				$loc_arr	 = $GLOBALS['phpgw']->locations->get_name($location_id);
+				$loc_arr	 = $this->locations->get_name($location_id);
 				$type_arr	 = explode('.', $loc_arr['location']);
 				if (count($type_arr) != 4)
 				{
@@ -1683,7 +1697,7 @@
 
 			if (!$location_id)
 			{
-				$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
+				$location_id = $this->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
 			}
 
 			$admin_entity		 = CreateObject('property.soadmin_entity');
@@ -1711,7 +1725,7 @@
 				return;
 			}
 
-			$acl	 = & $GLOBALS['phpgw']->acl;
+			$acl	 = Acl::getInstance();
 			$acl->set_account_id($this->account);
 			$grants	 = $acl->get_grants2($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
 
@@ -2040,7 +2054,7 @@
 
 
 
-			$cache_info = phpgwapi_cache::session_get($this->type_app[$this->type], "{$entity_table}_listing_metadata");
+			$cache_info = Cache::session_get($this->type_app[$this->type], "{$entity_table}_listing_metadata");
 
 			if (!isset($cache_info['sql_hash']) || $cache_info['sql_hash'] != md5($sql))
 			{
@@ -2062,7 +2076,7 @@
 					'total_records'	 => $this->db->f('cnt'),
 					'sql_hash'		 => md5($sql)
 				);
-				phpgwapi_cache::session_set($this->type_app[$this->type], "{$entity_table}_listing_metadata", $cache_info);
+				Cache::session_set($this->type_app[$this->type], "{$entity_table}_listing_metadata", $cache_info);
 			}
 
 			$this->total_records = $cache_info['total_records'];
@@ -2242,7 +2256,7 @@
 			else
 			{
 				$id			 = (int)$data['id'];
-				$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$data['entity_id']}.{$data['cat_id']}");
+				$location_id = $this->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$data['entity_id']}.{$data['cat_id']}");
 			}
 
 			if (!$sql)
@@ -2297,13 +2311,13 @@
 
 			if (!isset($system_location[$location_id]))
 			{
-				$system_location[$location_id] = $GLOBALS['phpgw']->locations->get_name($location_id);
+				$system_location[$location_id] = $this->locations->get_name($location_id);
 			}
 
 			if (!isset($cache_attributes[$location_id]))
 			{
 				$filters										 = array("short_description" => "IS NOT NULL");
-				$cache_attributes[$location_id]['attributes']	 = $GLOBALS['phpgw']->custom_fields->find2($location_id, 0, '', 'ASC', 'short_description', true, true, $filters);
+				$cache_attributes[$location_id]['attributes']	 = $this->custom_fields->find2($location_id, 0, '', 'ASC', 'short_description', true, true, $filters);
 			}
 
 			$params = array
@@ -2505,7 +2519,7 @@
 				//	$p_category		= $admin_entity->read_single_category($values_insert['p_entity_id'], $values_insert['p_cat_id']);
 				//	$p_id			= (int) ltrim($values_insert['p_num'], $p_category['prefix']);
 				$p_id			 = $values_insert['p_num'];
-				$p_location_id	 = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$values_insert['p_entity_id']}.{$values_insert['p_cat_id']}");
+				$p_location_id	 = $this->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$values_insert['p_entity_id']}.{$values_insert['p_cat_id']}");
 			}
 
 
@@ -2517,7 +2531,7 @@
 					$values_insert['p_location_id']	 = $p_location_id;
 				}
 
-				$location_id	 = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
+				$location_id	 = $this->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
 				$values['id']	 = $this->_save_eav($values_insert, $location_id);
 			}
 			else
@@ -2543,9 +2557,9 @@
 			{
 				$interlink_data = array
 					(
-					'location1_id'		 => $GLOBALS['phpgw']->locations->get_id('property', $values['origin']),
+					'location1_id'		 => $this->locations->get_id('property', $values['origin']),
 					'location1_item_id'	 => $values['origin_id'],
-					'location2_id'		 => $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}"),
+					'location2_id'		 => $this->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}"),
 					'location2_item_id'	 => $values['id'],
 					'account_id'		 => $this->account
 				);
@@ -2729,7 +2743,7 @@
 			$admin_entity		 = CreateObject('property.soadmin_entity');
 			$admin_entity->type	 = $this->type;
 			$category			 = $admin_entity->read_single_category($entity_id, $cat_id);
-			$location_id		 = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
+			$location_id		 = $this->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
 
 			if (isset($values_attribute) && is_array($values_attribute))
 			{
@@ -2787,7 +2801,7 @@
 
 						if ($entry['datatype'] == 'D')
 						{
-							$old_value = $old_value ? date(phpgwapi_db::date_format(), strtotime($old_value)) : '';
+							$old_value = $old_value ? date(Db::date_format(), strtotime($old_value)) : '';
 						}
 
 						if ($entry['value'] != $old_value)
@@ -2818,7 +2832,7 @@
 				//	$p_category		= $admin_entity->read_single_category($value_set['p_entity_id'], $value_set['p_cat_id']);
 				//	$p_id			= (int) ltrim($value_set['p_num'], $p_category['prefix']);
 				$p_id			 = $value_set['p_num'];
-				$p_location_id	 = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$value_set['p_entity_id']}.{$value_set['p_cat_id']}");
+				$p_location_id	 = $this->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$value_set['p_entity_id']}.{$value_set['p_cat_id']}");
 			}
 
 
@@ -2876,7 +2890,7 @@
 			$cat_id		 = (int)$cat_id;
 			$id			 = (int)$id;
 
-			$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
+			$location_id = $this->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
 
 			$admin_entity		 = CreateObject('property.soadmin_entity');
 			$admin_entity->type	 = $this->type;
@@ -2916,7 +2930,7 @@
 				return;
 			}
 
-			$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
+			$location_id = $this->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
 
 			$this->db->query("SELECT helpmsg FROM fphpgw_cust_attribute WHERE location_id = {$location_id} AND id =" . (int)$attrib_id);
 
@@ -2936,12 +2950,14 @@
 			$cat_id			 = (int)$data['cat_id'];
 			$entity_id		 = (int)$data['entity_id'];
 			$p_id			 = $data['id'];
-			$p_location_id	 = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
+			$p_location_id	 = $this->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}");
 			$entity			 = array();
+
+			$acl	 = Acl::getInstance();
 
 			foreach ($this->type_app as $type => $app)
 			{
-				if (!$GLOBALS['phpgw']->acl->check('run', ACL_READ, $app))
+				if (!$acl->check('run', ACL_READ, $app))
 				{
 					continue;
 				}
@@ -3009,7 +3025,7 @@
 							);
 						}
 
-//						$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$type], ".{$type}.{$entry['entity_id']}.{$entry['cat_id']}");
+//						$location_id = $this->locations->get_id($this->type_app[$type], ".{$type}.{$entry['entity_id']}.{$entry['cat_id']}");
 //						$sql = "SELECT count(*) as hits FROM fm_bim_item WHERE location_id = {$location_id} AND p_location_id = {$p_location_id} AND p_id = '{$p_id}'";
 					}
 					else
@@ -3170,7 +3186,7 @@
 			}
 
 
-			if (isset($GLOBALS['phpgw_info']['user']['apps']['logistic']))
+			if (isset($this->userSettings['apps']['logistic']))
 			{
 				$start_date	 = time();
 				$end_date	 = time();
@@ -3196,7 +3212,7 @@
 
 		public function add_inventory( $values )
 		{
-			$p_location_id = $GLOBALS['phpgw']->locations->get_id('property', '.location.' . count(explode('-', $values['location_code'])));
+			$p_location_id = $this->locations->get_id('property', '.location.' . count(explode('-', $values['location_code'])));
 
 			$p_id = execMethod('property.solocation.get_item_id', $values['location_code']);
 

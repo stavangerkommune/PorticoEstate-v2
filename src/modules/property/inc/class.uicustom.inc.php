@@ -306,7 +306,7 @@
 						if ($values['save'])
 						{
 							$GLOBALS['phpgw']->session->appsession('session_data', 'custom_receipt', $receipt);
-							$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => "{$this->currentapp}.uicustom.index"));
+							phpgw::redirect_link('/index.php', array('menuaction' => "{$this->currentapp}.uicustom.index"));
 						}
 					}
 					catch (Exception $e)
@@ -320,7 +320,7 @@
 					}
 
 					self::message_set($receipt);
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => "{$this->currentapp}.uicustom.edit",
+					phpgw::redirect_link('/index.php', array('menuaction' => "{$this->currentapp}.uicustom.edit",
 						'custom_id'	 => $custom_id));
 				}
 				else
@@ -359,7 +359,7 @@
 
 			if ($values['cancel'])
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => "{$this->currentapp}.uicustom.index"));
+				phpgw::redirect_link('/index.php', array('menuaction' => "{$this->currentapp}.uicustom.index"));
 			}
 
 			if ($custom_id)

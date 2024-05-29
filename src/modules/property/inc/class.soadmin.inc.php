@@ -26,7 +26,11 @@
 	 * @subpackage admin
 	 * @version $Id$
 	 */
-	phpgw::import_class('phpgwapi.datetime');
+
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+	use App\Database\Db;
+	 phpgw::import_class('phpgwapi.datetime');
 
 	/**
 	 * Description
@@ -34,12 +38,15 @@
 	 */
 	class property_soadmin
 	{
-		var $db, $join, $left_join, $like,$account, $total_records;
+		var $db, $join, $left_join, $like,$account, $total_records, $accounts;
 
 		function __construct()
 		{
-			$this->account	 = $GLOBALS['phpgw_info']['user']['account_id'];
-			$this->db		 = & $GLOBALS['phpgw']->db;
+			$userSettings = Settings::getInstance()->get('user');
+			$this->accounts = new Accounts();
+
+			$this->account	 = $userSettings['account_id'];
+			$this->db		 = Db::getInstance();
 			$this->join		 = & $this->db->join;
 			$this->like		 = & $this->db->like;
 		}
@@ -62,7 +69,7 @@
 					{
 						if (!$this->get_initials($account_id))
 						{
-							$account_lid = $GLOBALS['phpgw']->accounts->id2lid($account_id);
+							$account_lid = $this->account->id2lid($account_id);
 							$this->db->query("INSERT INTO fm_ecouser (id,lid,initials) VALUES ($account_id,'$account_lid','$value' )", __LINE__, __FILE__);
 						}
 					}

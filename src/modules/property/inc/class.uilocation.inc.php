@@ -26,7 +26,15 @@
 	 * @subpackage location
 	 * @version $Id$
 	 */
-	/**
+
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\security\Acl;
+use App\modules\phpgwapi\controllers\Accounts\Accounts;
+use App\modules\phpgwapi\services\Cache;
+
+
+
+	 /**
 	 * Description
 	 * @package property
 	 */
@@ -50,7 +58,7 @@
 		var $controller_helper;
 		var $bo,$currentapp, $part_of_town_id, $account, $bocommon, $status,$district_id,$allrows,
 		$acl, $acl_location, $acl_read, $acl_add, $acl_edit,$acl_delete, $acl_manage, $soadmin_location,
-		$type,$entity_id,$role;
+		$type,$entity_id,$role, $accounts;
 
 		var $public_functions = array
 			(
@@ -88,12 +96,16 @@
 		{
 			parent::__construct();
 
-			$GLOBALS['phpgw_info']['flags']['xslt_app']	 = true;
+			$this->flags['xslt_app']	 = true;
+			$this->flags['menu_selection'] = 'property::location';
+			Settings::getInstance()->set('flags', $this->flags);
+
 			$this->soadmin_location						 = CreateObject('property.soadmin_location');
-			$this->account								 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->account								 = $this->userSettings['account_id'];
 			$this->bo									 = CreateObject('property.bolocation', true);
 			$this->bocommon								 = & $this->bo->bocommon;
-			$this->acl									 = & $GLOBALS['phpgw']->acl;
+			$this->acl									 = Acl::getInstance();
+			$this->accounts							 = new Accounts();
 
 			$this->acl_location	 = $this->bo->acl_location;
 			$this->acl_read		 = $this->acl->check($this->acl_location, ACL_READ, 'property');
@@ -102,7 +114,6 @@
 			$this->acl_delete	 = $this->acl->check($this->acl_location, ACL_DELETE, 'property');
 			$this->acl_manage	 = $this->acl->check($this->acl_location, 16, 'property');
 
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] = 'property::location';
 
 			$this->query			 = $this->bo->query;
 			$this->filter			 = $this->bo->filter;
@@ -249,7 +260,7 @@
 			{
 				//$values_assign = Sanitizer::clean_value(json_decode(stripslashes($values_assign),true)); //json_decode has issues with magic_quotes_gpc
 				$user_id	 = abs($user_id);
-				$account	 = $GLOBALS['phpgw']->accounts->get($user_id);
+				$account	 = $this->accounts->get($user_id);
 				$contact_id	 = $account->person_id;
 				if (empty($role_id))
 				{
@@ -347,28 +358,29 @@
 
 		function columns()
 		{
-			$GLOBALS['phpgw_info']['flags']['xslt_app']	 = true;
+			$this->flags['xslt_app']	 = true;
 			$receipt									 = array();
 			phpgwapi_xslttemplates::getInstance()->add_file(array('columns'));
 
-			$GLOBALS['phpgw_info']['flags']['noframework']	 = true;
-			$GLOBALS['phpgw_info']['flags']['nofooter']		 = true;
+			$this->flags['noframework']	 = true;
+			$this->flags['nofooter']		 = true;
+			Settings::getInstance()->set('flags', $this->flags);
 
 			$values = Sanitizer::get_var('values');
 
-			$GLOBALS['phpgw']->preferences->set_account_id($this->account, true);
+			$preferences = createObject('phpgwapi.preferences',$this->account);
+			$preferences->set_account_id($this->account, true);
 
 			if (isset($values['save']) && $values['save'] && $this->type_id)
 			{
-				$GLOBALS['phpgw']->preferences->add('property', 'location_columns_' . $this->type_id . !!$this->lookup, $values['columns'], 'user');
-				$GLOBALS['phpgw']->preferences->save_repository();
+				$preferences->add('property', 'location_columns_' . $this->type_id . !!$this->lookup, $values['columns'], 'user');
+				$preferences->save_repository();
 				$receipt['message'][] = array('msg' => lang('columns is updated'));
 			}
 
 			$function_msg = lang('Select Column');
 
-			$link_data = array
-				(
+			$link_data = array(
 				'menuaction' => 'property.uilocation.columns',
 				'type_id'	 => $this->type_id,
 				'lookup'	 => $this->lookup
@@ -379,7 +391,7 @@
 
 			$data = array
 				(
-				'msgbox_data'	 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'	 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'column_list'	 => $this->bo->column_list($selected, $this->type_id, $allrows		 = true),
 				'function_msg'	 => $function_msg,
 				'form_action'	 => phpgw::link('/index.php', $link_data),
@@ -388,7 +400,8 @@
 				'lang_save'		 => lang('save'),
 			);
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = $function_msg;
+			$this->flags['app_header'] = $function_msg;
+		Settings::getInstance()->set('flags', $this->flags);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('columns' => $data));
 		}
 
@@ -450,7 +463,7 @@
 				'list'	 => $values_combo_box[2]
 			);
 
-			if (isset($GLOBALS['phpgw_info']['user']['preferences']['property']['property_filter']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['property_filter'] == 'owner')
+			if (isset($this->userSettings['preferences']['property']['property_filter']) && $this->userSettings['preferences']['property']['property_filter'] == 'owner')
 			{
 				$values_combo_box[3] = $this->bo->get_owner_list('filter', $this->filter);
 			}
@@ -616,15 +629,15 @@
 			switch ($account_type)
 			{
 				case 'accounts':
-					$_accounts	 = $GLOBALS['phpgw']->accounts->get_list('accounts', -1, 'ASC', 'account_lastname', '', -1);
+					$_accounts	 = $this->accounts->get_list('accounts', -1, 'ASC', 'account_lastname', '', -1);
 					break;
 				case 'groups':
-					$_accounts	 = $GLOBALS['phpgw']->accounts->get_list('groups', -1, 'ASC', 'account_firstname', '', -1);
+					$_accounts	 = $this->accounts->get_list('groups', -1, 'ASC', 'account_firstname', '', -1);
 					break;
 				default:
 					$_accounts	 = array_merge(
-						$GLOBALS['phpgw']->accounts->get_list('groups', -1, 'ASC', 'account_firstname', '', -1),
-											$GLOBALS['phpgw']->accounts->get_list('accounts', -1, 'ASC', 'account_lastname', '', -1)
+						$this->accounts->get_list('groups', -1, 'ASC', 'account_firstname', '', -1),
+											$this->accounts->get_list('accounts', -1, 'ASC', 'account_lastname', '', -1)
 					);
 					break;
 			}
@@ -639,7 +652,7 @@
 			}
 			if ($account_type == 'accounts')
 			{
-				array_unshift($values, array('id'	 => (-1 * $GLOBALS['phpgw_info']['user']['account_id']),
+				array_unshift($values, array('id'	 => (-1 * $this->userSettings['account_id']),
 					'name'	 => lang('mine roles')));
 			}
 			array_unshift($values, array('id' => '', 'name' => lang('Select')));
@@ -689,7 +702,7 @@
 				'list'	 => $values_combo_box[1]
 			);
 
-			if (isset($GLOBALS['phpgw_info']['user']['preferences']['property']['property_filter']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['property_filter'] == 'owner')
+			if (isset($this->userSettings['preferences']['property']['property_filter']) && $this->userSettings['preferences']['property']['property_filter'] == 'owner')
 			{
 				$values_combo_box[2] = $this->bo->get_owner_list('filter', $this->filter);
 			}
@@ -722,7 +735,7 @@
 				$type_id = count($location);
 			}
 
-			$insert_record = $GLOBALS['phpgw']->session->appsession('insert_record', 'property');
+			$insert_record = Cache::session_get('property', 'insert_record');
 
 			if (isset($insert_record['location']) && is_array($insert_record['location']))
 			{
@@ -732,7 +745,7 @@
 				}
 			}
 
-			$insert_record_attributes = $GLOBALS['phpgw']->session->appsession('insert_record_values' . '.location.' . $this->type_id, 'property');
+			$insert_record_attributes = Cache::session_get('property', 'insert_record_values' . '.location.' . $this->type_id);
 
 			if (is_array($insert_record_attributes))
 			{
@@ -853,18 +866,18 @@
 
 			if ($lookup)
 			{
-				$GLOBALS['phpgw_info']['flags']['noframework'] = true;
+				$this->flags['noframework'] = true;
 			}
 
 			if ($type_id && !$lookup_tenant)
 			{
-				$GLOBALS['phpgw_info']['flags']['menu_selection'] .= "::loc_$type_id";
+				$this->flags['menu_selection'] .= "::loc_$type_id";
 			}
 			else
 			{
-				$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::tenant';
+				$this->flags['menu_selection'] .= '::tenant';
 			}
-
+				Settings::getInstance()->set('flags', $this->flags);
 			if (!$this->acl_read)
 			{
 				$this->bocommon->no_access();
@@ -872,7 +885,7 @@
 			}
 
 
-			$default_district = (isset($GLOBALS['phpgw_info']['user']['preferences']['property']['default_district']) ? $GLOBALS['phpgw_info']['user']['preferences']['property']['default_district'] : '');
+			$default_district = (isset($this->userSettings['preferences']['property']['default_district']) ? $this->userSettings['preferences']['property']['default_district'] : '');
 
 			if ($default_district && !isset($_REQUEST['district_id']))
 			{
@@ -885,7 +898,7 @@
 				return $this->query();
 			}
 
-			$location_id	 = $GLOBALS['phpgw']->locations->get_id('property', $this->acl_location);
+			$location_id	 = $this->locations->get_id('property', $this->acl_location);
 			$custom_config	 = CreateObject('admin.soconfig', $location_id);
 			$_config		 = isset($custom_config->config_data) && $custom_config->config_data ? $custom_config->config_data : array();
 
@@ -912,9 +925,9 @@
 							),
 						);
 
-						if (isset($GLOBALS['phpgw_info']['server']['httpproxy_server']))
+						if (isset($this->serverSettings['httpproxy_server']))
 						{
-							$aContext['http']['proxy'] = "{$GLOBALS['phpgw_info']['server']['httpproxy_server']}:{$GLOBALS['phpgw_info']['server']['httpproxy_port']}";
+							$aContext['http']['proxy'] = "{$this->serverSettings['httpproxy_server']}:{$this->serverSettings['httpproxy_port']}";
 						}
 
 						$cxContext	 = stream_context_create($aContext);
@@ -992,11 +1005,11 @@
 
 			if ($lookup)
 			{
-				$lookup_list		 = $GLOBALS['phpgw']->session->appsession('lookup_name', 'property');
+				$lookup_list = Cache::session_get('property', 'lookup_name');
 				$function_msg		 = $lookup_list[$lookup_name];
 				// for POP-UPs
-				$input_name			 = phpgwapi_cache::session_get('property', 'lookup_fields');
-				$input_name_entity	 = phpgwapi_cache::session_get('property', 'lookup_fields_entity');
+				$input_name			 = Cache::session_get('property', 'lookup_fields');
+				$input_name_entity	 = Cache::session_get('property', 'lookup_fields_entity');
 				$input_name			 = $input_name ? $input_name : array();
 				$input_name_entity	 = $input_name_entity ? $input_name_entity : array();
 
@@ -1388,7 +1401,8 @@ JS;
 				phpgwapi_js::getInstance()->add_code('', $code, true);
 			}
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+		Settings::getInstance()->set('flags', $this->flags);
 
 			self::render_template_xsl('datatable_jquery', $data);
 		}
@@ -1440,20 +1454,20 @@ JS;
 
 			if ($_menu_selection = Sanitizer::get_var('menu_selection'))
 			{
-				$GLOBALS['phpgw_info']['flags']['menu_selection'] = $_menu_selection;
+				$this->flags['menu_selection'] = $_menu_selection;
 			}
 			else
 			{
-				$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::responsibility_role';
+				$this->flags['menu_selection'] .= '::responsibility_role';
 			}
-
+		Settings::getInstance()->set('flags', $this->flags);
 			if (!$this->acl_read)
 			{
 				$this->bocommon->no_access();
 				return;
 			}
 
-			$default_district = (isset($GLOBALS['phpgw_info']['user']['preferences']['property']['default_district']) ? $GLOBALS['phpgw_info']['user']['preferences']['property']['default_district'] : '');
+			$default_district = (isset($this->userSettings['preferences']['property']['default_district']) ? $this->userSettings['preferences']['property']['default_district'] : '');
 
 			if ($default_district && !isset($_REQUEST['district_id']))
 			{
@@ -1728,7 +1742,8 @@ JS;
 				);
 			}
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+		Settings::getInstance()->set('flags', $this->flags);
 //			self::render_template_xsl('datatable_jquery', $data);
 			self::render_template_xsl('lookup.entity', $data);
 		}
@@ -1739,10 +1754,10 @@ JS;
 			$location_code	 = Sanitizer::get_var('location_code');
 
 			$values		 = $this->bo->get_history($location_code);
-			$dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat	 = $this->userSettings['preferences']['common']['dateformat'];
 			foreach ($values as &$entry)
 			{
-				$entry['entry_date'] = $GLOBALS['phpgw']->common->show_date($entry['entry_date'], $dateformat);
+				$entry['entry_date'] = $this->phpgwapi_common->show_date($entry['entry_date'], $dateformat);
 			}
 
 			$result_data = array('results' => $values);
@@ -1776,7 +1791,7 @@ JS;
 				'location_code'	 => $location_code
 			);
 
-			$dateformat		 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat		 = $this->userSettings['preferences']['common']['dateformat'];
 			$document		 = CreateObject('property.sodocument');
 			$documents		 = $document->read_at_location($params);
 			$total_records	 = $document->total_records;
@@ -1794,7 +1809,7 @@ JS;
 						'type'			 => 'location',
 						'document_name'	 => "<a href='{$link}'>{$item['title']}</a>",
 						'title'			 => $item['title'],
-						'document_date'	 => $GLOBALS['phpgw']->common->show_date($item['document_date'], $dateformat)
+						'document_date'	 => $this->phpgwapi_common->show_date($item['document_date'], $dateformat)
 					);
 
 					continue;
@@ -1807,12 +1822,12 @@ JS;
 					'type'			 => 'location',
 					'document_name'	 => $document_name,
 					'title'			 => $item['title'],
-					'document_date'	 => $GLOBALS['phpgw']->common->show_date($item['document_date'], $dateformat)
+					'document_date'	 => $this->phpgwapi_common->show_date($item['document_date'], $dateformat)
 				);
 			}
 			unset($item);
 
-			$location_id				 = $GLOBALS['phpgw']->locations->get_id('property', '.location.' . count(explode('-', $location_code)));
+			$location_id				 = $this->locations->get_id('property', '.location.' . count(explode('-', $location_code)));
 			$generic_document			 = CreateObject('property.sogeneric_document');
 			$params['location_id']		 = $location_id;
 			$params['location_item_id']	 = $this->bo->get_item_id($location_code);
@@ -1855,7 +1870,8 @@ JS;
 
 		function edit( $values = array(), $mode = 'edit' )
 		{
-			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
+			$this->flags['xslt_app'] = true;
+		Settings::getInstance()->set('flags', $this->flags);
 
 			//$get_history 		= Sanitizer::get_var('get_history', 'bool', 'POST');
 			$lookup_tenant		 = Sanitizer::get_var('lookup_tenant', 'bool');
@@ -1887,13 +1903,13 @@ JS;
 
 			if ($type_id && !$lookup_tenant)
 			{
-				$GLOBALS['phpgw_info']['flags']['menu_selection'] .= "::loc_$type_id";
+				$this->flags['menu_selection'] .= "::loc_$type_id";
 			}
 			else
 			{
-				$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::tenant';
+				$this->flags['menu_selection'] .= '::tenant';
 			}
-
+		Settings::getInstance()->set('flags', $this->flags);
 			if ($mode == 'view')
 			{
 				if (!$this->acl_read)
@@ -1993,8 +2009,7 @@ JS;
 
 			$function_msg .= ' ' . $location_types[($type_id - 1)]['name'];
 
-			$insert_record = $GLOBALS['phpgw']->session->appsession('insert_record', 'property');
-
+			$insert_record = Cache::session_get('property', 'insert_record');
 
 			if (!is_array($insert_record))
 			{
@@ -2074,7 +2089,8 @@ JS;
 				}
 			}
 
-			$GLOBALS['phpgw']->session->appsession('insert_record', 'property', $insert_record);
+			Cache::session_set('property', 'insert_record', $insert_record);
+
 
 			$msgbox_data = $this->bocommon->msgbox_data($this->receipt);
 
@@ -2156,7 +2172,7 @@ JS;
 					$tabs['controller']	 = array('label'		 => lang('controller'), 'link'		 => '#controller',
 						'function'	 => "set_tab('controller')");
 					$active_tab			 = $active_tab ? $active_tab : 'general';
-					$GLOBALS['phpgw']->jqcal->add_listener('control_start_date');
+					CreateObject('phpgwapi.jqcal')->add_listener("control_start_date");
 				}
 
 				$location			 = ".location.{$type_id}";
@@ -2410,7 +2426,7 @@ JS;
 
 // ---- START INTEGRATION -------------------------
 
-				$location_id	 = $GLOBALS['phpgw']->locations->get_id('property', $this->acl_location);
+				$location_id	 = $this->locations->get_id('property', $this->acl_location);
 				$custom_config	 = CreateObject('admin.soconfig', $location_id);
 				$_config		 = isset($custom_config->config_data) && $custom_config->config_data ? $custom_config->config_data : array();
 
@@ -2420,7 +2436,7 @@ JS;
 					{
 						if (!isset($_config_section_data['url']))
 						{
-							phpgwapi_cache::message_set("'url' is a required setting for integrations, '{$_config_section}' is disabled", 'error');
+							Cache::message_set("'url' is a required setting for integrations, '{$_config_section}' is disabled", 'error');
 							break;
 						}
 
@@ -2438,9 +2454,9 @@ JS;
 							),
 						);
 
-						if (isset($GLOBALS['phpgw_info']['server']['httpproxy_server']))
+						if (isset($this->serverSettings['httpproxy_server']))
 						{
-							$aContext['http']['proxy'] = "{$GLOBALS['phpgw_info']['server']['httpproxy_server']}:{$GLOBALS['phpgw_info']['server']['httpproxy_port']}";
+							$aContext['http']['proxy'] = "{$this->serverSettings['httpproxy_server']}:{$this->serverSettings['httpproxy_port']}";
 						}
 
 						$cxContext	 = stream_context_create($aContext);
@@ -2561,9 +2577,9 @@ JS;
 								),
 							);
 
-							if (isset($GLOBALS['phpgw_info']['server']['httpproxy_server']))
+							if (isset($this->serverSettings['httpproxy_server']))
 							{
-								$aContext['http']['proxy'] = "{$GLOBALS['phpgw_info']['server']['httpproxy_server']}:{$GLOBALS['phpgw_info']['server']['httpproxy_port']}";
+								$aContext['http']['proxy'] = "{$this->serverSettings['httpproxy_server']}:{$this->serverSettings['httpproxy_port']}";
 							}
 
 							$cxContext	 = stream_context_create($aContext);
@@ -2751,7 +2767,7 @@ JS;
 				'check_history'					 => (isset($check_history) ? $check_history : ''),
 				'lang_history'					 => lang('History'),
 				'lang_history_statustext'		 => lang('Fetch the history for this item'),
-				'msgbox_data'					 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'					 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'lang_related_info'				 => lang('related info'),
 				'entities_link'					 => (isset($entities_link) ? $entities_link : ''),
 				'related_link'					 => $related_link,
@@ -2775,7 +2791,7 @@ JS;
 //				'attributes_values'				=> $values['attributes'],
 				'lookup_functions'				 => isset($values['lookup_functions']) ? $values['lookup_functions'] : '',
 				'lang_none'						 => lang('None'),
-				//'msgbox_data'					=> (isset($msgbox_data)?$GLOBALS['phpgw']->common->msgbox($msgbox_data):''),
+				//'msgbox_data'					=> (isset($msgbox_data)?$this->phpgwapi_common->msgbox($msgbox_data):''),
 				'street_link'					 => "menuaction:'" . 'property' . ".uilookup.street'",
 				'lang_street'					 => lang('Address'),
 				'lang_select_street_help'		 => lang('Select the street name'),
@@ -2808,8 +2824,8 @@ JS;
 					'selected'	 => $values['cat_id'], 'type'		 => 'location', 'type_id'	 => $type_id,
 					'order'		 => 'descr')),
 				'doc_type_filter'				 => array('options' => $doc_type_filter),
-				'textareacols'					 => isset($GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols'] ? $GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols'] : 40,
-				'textarearows'					 => isset($GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows'] ? $GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows'] : 6,
+				'textareacols'					 => isset($this->userSettings['preferences']['property']['textareacols']) && $this->userSettings['preferences']['property']['textareacols'] ? $this->userSettings['preferences']['property']['textareacols'] : 40,
+				'textarearows'					 => isset($this->userSettings['preferences']['property']['textarearows']) && $this->userSettings['preferences']['property']['textarearows'] ? $this->userSettings['preferences']['property']['textarearows'] : 6,
 				'tabs'							 => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
 				'active_tab'					 => $active_tab,
 				'documents'						 => $documents,
@@ -2833,7 +2849,8 @@ JS;
 
 			self::add_javascript('property', 'base', 'location.edit.js');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+		Settings::getInstance()->set('flags', $this->flags);
 			self::render_template_xsl(array(
 				'location',
 				'datatable_inline',
@@ -2904,10 +2921,11 @@ JS;
 				{
 					if ($e)
 					{
-						phpgwapi_cache::message_set($e->getMessage(), 'error');
+						Cache::message_set($e->getMessage(), 'error');
 					}
 				}
-				$GLOBALS['phpgw']->session->appsession('insert_record', 'property', '');
+				Cache::session_set('property', 'insert_record', '');
+
 				if ($location_code)
 				{
 					self::message_set($this->receipt);
@@ -2932,7 +2950,8 @@ JS;
 					$values					 = $this->bo->prepare_attribute($values, ".location.{$this->type_id}");
 				}
 				/* restore date from posting */
-				$insert_record = $GLOBALS['phpgw']->session->appsession('insert_record', 'property');
+				$insert_record = Cache::session_get('property', 'insert_record');
+
 				if (isset($insert_record['extra']) && is_array($insert_record['extra']))
 				{
 					for ($i = 0; $i < count($insert_record['extra']); $i++)
@@ -2958,7 +2977,8 @@ JS;
 				return "location_code " . $location_code . " " . lang("has been deleted");
 			}
 
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= "::loc_$type_id";
+			$this->flags['menu_selection'] .= "::loc_$type_id";
+		Settings::getInstance()->set('flags', $this->flags);
 
 			if (!$this->acl_delete)
 			{
@@ -2977,7 +2997,7 @@ JS;
 			if (Sanitizer::get_var('confirm', 'bool', 'GET'))
 			{
 				$this->bo->delete($location_code);
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 
 			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
@@ -2997,7 +3017,8 @@ JS;
 			$appname		 = lang('location');
 			$function_msg	 = lang('delete location');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+		Settings::getInstance()->set('flags', $this->flags);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 
@@ -3040,7 +3061,8 @@ JS;
 		 */
 		function update_cat()
 		{
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] = 'admin::property::inactive_cats';
+			$this->flags['menu_selection'] = 'admin::property::inactive_cats';
+		Settings::getInstance()->set('flags', $this->flags);
 
 			if (!$this->acl->check('.admin.location', ACL_EDIT, 'property'))
 			{
@@ -3073,7 +3095,7 @@ JS;
 
 			$data = array
 				(
-				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'			 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'done_action'			 => phpgw::link('/admin/index.php'),
 				'update_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uilocation.update_cat')),
 				'message'				 => $receipt['message'],
@@ -3086,9 +3108,9 @@ JS;
 
 			$appname										 = lang('location');
 			$function_msg									 = lang('Update the not active category for locations');
-			$GLOBALS['phpgw_info']['flags']['app_header']	 = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header']	 = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->set('flags', $this->flags);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('update_cat' => $data));
-			//	$GLOBALS['phpgw']->xslttpl->pp();
 		}
 
 		/**
@@ -3098,7 +3120,8 @@ JS;
 		 */
 		function update_location()
 		{
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] = 'admin::property::location::update_location';
+			$this->flags['menu_selection'] = 'admin::property::location::update_location';
+		Settings::getInstance()->set('flags', $this->flags);
 
 			if (!$this->acl->check('.admin.location', ACL_EDIT, 'property'))
 			{
@@ -3126,7 +3149,7 @@ JS;
 
 			$data = array
 				(
-				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'			 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'done_action'			 => phpgw::link('/admin/index.php'),
 				'update_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uilocation.update_location')),
 				'message'				 => $receipt['message'],
@@ -3139,7 +3162,8 @@ JS;
 
 			$appname										 = lang('location');
 			$function_msg									 = lang('Update the locations');
-			$GLOBALS['phpgw_info']['flags']['app_header']	 = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header']	 = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+		Settings::getInstance()->set('flags', $this->flags);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('update_cat' => $data));
 		}
 
@@ -3165,18 +3189,19 @@ JS;
 
 			$data = array
 				(
-				'msgbox_data' => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data' => $this->phpgwapi_common->msgbox($msgbox_data),
 			);
 
 			$appname										 = lang('Access error');
-			$GLOBALS['phpgw_info']['flags']['app_header']	 = lang('property') . ' : ' . $appname;
+			$this->flags['app_header']	 = lang('property') . ' : ' . $appname;
+		Settings::getInstance()->set('flags', $this->flags);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('stop' => $data));
-			//	$GLOBALS['phpgw']->xslttpl->pp();
 		}
 
 		function summary()
 		{
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::summary';
+			$this->flags['menu_selection'] .= '::summary';
+		Settings::getInstance()->set('flags', $this->flags);
 
 			if (!$this->acl_read)
 			{
@@ -3249,7 +3274,8 @@ JS;
 				array_push($data['datatable']['field'], $params);
 			}
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+		Settings::getInstance()->set('flags', $this->flags);
 			//print_r($data); die;
 			self::render_template_xsl('datatable_jquery', $data);
 		}

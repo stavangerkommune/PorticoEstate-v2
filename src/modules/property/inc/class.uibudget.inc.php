@@ -476,7 +476,7 @@
 
 			if (!$acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $acl_location));
 			}
 
@@ -658,7 +658,7 @@
 
 			if (!$acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $acl_location));
 			}
 
@@ -825,7 +825,7 @@
 
 			if (!$acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $acl_location));
 			}
 
@@ -1019,7 +1019,7 @@
 
 			if (!$acl_add && !$acl_edit)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $acl_location));
 			}
 
@@ -1162,7 +1162,7 @@
 					$this->edit($values);
 					return;
 				}
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uibudget.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uibudget.index'));
 			}
 		}
 
@@ -1179,7 +1179,7 @@
 
 			if (!$acl_add && !$acl_edit)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $acl_location));
 			}
 
@@ -1375,7 +1375,7 @@
 			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete($budget_id);
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 
 			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
@@ -1421,7 +1421,7 @@
 			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete_basis($budget_id);
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 
 			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));

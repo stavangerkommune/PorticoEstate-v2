@@ -922,7 +922,7 @@
 					$this->edit($values);
 					return;
 				}
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uientity.index',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uientity.index',
 					'entity_id'	 => $this->entity_id, 'cat_id'	 => $this->cat_id, 'type'		 => $this->type));
 			}
 		}
@@ -1350,7 +1350,7 @@
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -1371,7 +1371,7 @@
 				{
 					if ($this->acl->check(".{$this->type}.$this->entity_id.{$category['id']}", ACL_READ, $this->type_app[$this->type]))
 					{
-						$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uientity.index',
+						phpgw::redirect_link('/index.php', array('menuaction' => 'property.uientity.index',
 							'entity_id'	 => $this->entity_id, 'cat_id'	 => $category['id'], 'type'		 => $this->type));
 					}
 				}
@@ -1383,7 +1383,7 @@
 			if (!$this->acl_read && $this->cat_id)
 			{
 				phpgw::no_access('property', lang('No access') . ' :: ' . $this->acl_location);
-//				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uilocation.stop',
+//				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uilocation.stop',
 //					'perm' => 1, 'acl_location' => $this->acl_location));
 			}
 
@@ -1757,7 +1757,7 @@
 
 			if ($mode == 'edit' && (!$this->acl_add && !$this->acl_edit))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array
+				phpgw::redirect_link('/index.php', array
 					(
 					'menuaction' => 'property.uientity.view', 'id'		 => $id, 'entity_id'	 => $this->entity_id,
 					'cat_id'	 => $this->cat_id,
@@ -2852,7 +2852,7 @@ JS;
 
 			if (!$this->acl_delete)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 8, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -2870,7 +2870,7 @@ JS;
 			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete($id);
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 
 			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
@@ -3132,7 +3132,7 @@ JS;
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 

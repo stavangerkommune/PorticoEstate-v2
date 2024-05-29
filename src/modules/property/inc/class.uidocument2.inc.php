@@ -345,7 +345,7 @@
 
 			if (!$this->acl_add && !$this->acl_edit)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uidocument2.view',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uidocument2.view',
 					'id'		 => $id));
 			}
 
@@ -593,7 +593,7 @@
 				else
 				{
 					phpgwapi_cache::message_set('ok!', 'message');
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uidocument2.edit',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uidocument2.edit',
 						'id'		 => $id));
 				}
 			}
@@ -1002,7 +1002,7 @@
 				  case 4://temporary
 				  phpgwapi_cache::session_clear('property', 'condition_survey_import_file');
 				  unlink($cached_file);
-				  $GLOBALS['phpgw']->redirect_link('/index.php',array('menuaction' => 'property.uidocument2.import', 'id' =>$id, 'step' => 0));
+				  phpgw::redirect_link('/index.php',array('menuaction' => 'property.uidocument2.import', 'id' =>$id, 'step' => 0));
 				  break;
 				 */
 			}
@@ -1407,7 +1407,7 @@
 
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uidocument2.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uidocument2.index'));
 			}
 
 			$params = array

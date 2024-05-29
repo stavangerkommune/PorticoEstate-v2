@@ -242,7 +242,7 @@
 			}
 			else
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'		 => 'property.uisubstitute.index',
+				phpgw::redirect_link('/index.php', array('menuaction'		 => 'property.uisubstitute.index',
 					'user_id'			 => $user_id, 'substitute_user_id' => $substitute_user_id));
 			}
 		}

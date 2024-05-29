@@ -9,7 +9,7 @@
 	 * @package property
 	 * @version $Id$
 	 */
-	/*
+/*
 	  This program is free software: you can redistribute it and/or modify
 	  it under the terms of the GNU General Public License as published by
 	  the Free Software Foundation, either version 2 of the License, or
@@ -24,6 +24,14 @@
 	  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
+use App\modules\phpgwapi\services\Cache;
+use App\Database\Db;
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\Translation;
+use App\modules\phpgwapi\controllers\Applications;
+
+
+
 	phpgw::import_class('phpgwapi.datetime');
 
 	/**
@@ -35,11 +43,19 @@
 	{
 
 		private $skip_portalbox_controls,
-			$navbar_bg;
+			$navbar_bg, $db, $phpgwapi_common, $userSettings, $flags, $app_id;
 
 		public function __construct()
 		{
-			$this->navbar_bg = isset($GLOBALS['phpgw_info']['theme']['navbar_bg']) ? $GLOBALS['phpgw_info']['theme']['navbar_bg'] : '';
+			$theme = Settings::getInstance()->get('theme');
+			$this->navbar_bg = isset($theme['navbar_bg']) ? $theme['navbar_bg'] : '';
+			$this->db = Db::getInstance();
+			$this->phpgwapi_common = new \phpgwapi_common();
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->flags = Settings::getInstance()->get('flags');
+			$this->app_id = (new Applications())->name2id('property');
+
+
 		}
 		/**
 		 * Clear ACL-based userlists
@@ -50,7 +66,7 @@
 		{
 			$cleared = ExecMethod('property.bocommon.reset_fm_cache_userlist');
 			$message = lang('%1 userlists cleared from cache', $cleared);
-			phpgwapi_cache::message_set($message, 'message');
+			Cache::message_set($message, 'message');
 		}
 
 		/**
@@ -62,21 +78,21 @@
 		{
 			if (!isset($data['location_code']) || !$data['location_code'])
 			{
-				phpgwapi_cache::message_set("location_code not set", 'error');
+				Cache::message_set("location_code not set", 'error');
 				return false;
 			}
 
 			$value_set					 = array();
 			$value_set['location_code']	 = $data['location_code'];
 			$value_set['contact_id']	 = $data['contact_id'];
-			$value_set['user_id']		 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$value_set['user_id']		 = $this->userSettings['account_id'];
 			$value_set['entry_date']	 = time();
 			$value_set['modified_date']	 = time();
 
 			$cols	 = implode(',', array_keys($value_set));
-			$values	 = $GLOBALS['phpgw']->db->validate_insert(array_values($value_set));
+			$values	 = $this->db->validate_insert(array_values($value_set));
 			$sql	 = "INSERT INTO fm_location_contact ({$cols}) VALUES ({$values})";
-			$GLOBALS['phpgw']->db->query($sql, __LINE__, __FILE__);
+			$this->db->query($sql, __LINE__, __FILE__);
 
 			if ($data['email'])
 			{
@@ -88,7 +104,7 @@
 			}
 
 			$message = lang('user %1 added to %2', $data['account_lid'], $data['location_code']);
-			phpgwapi_cache::message_set($message, 'message');
+			Cache::message_set($message, 'message');
 		}
 
 		/**
@@ -141,13 +157,15 @@
 		 */
 		public function home_workorder_overdue_tender()
 		{
-			$accound_id															 = $GLOBALS['phpgw_info']['user']['account_id'];
-			$save_app															 = $GLOBALS['phpgw_info']['flags']['currentapp'];
-			$GLOBALS['phpgw_info']['flags']['currentapp']						 = 'property';
-			$maxmatches															 = $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
-			$GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] = 5;
+			$accound_id															 = $this->userSettings['account_id'];
+			$save_app															 = $this->flags['currentapp'];
+			$this->flags['currentapp']						 = 'property';
+			Settings::getInstance()->set('flags', $this->flags);
+			$maxmatches															 = $this->userSettings['preferences']['common']['maxmatchs'];
+			$this->userSettings['preferences']['common']['maxmatchs'] = 5;
+			Settings::getInstance()->set('user', $this->userSettings);
 
-			$prefs = $GLOBALS['phpgw_info']['user']['preferences'];
+			$prefs = $this->userSettings['preferences'];
 
 			if (isset($prefs['property']['mainscreen_show_project_overdue']) && $prefs['property']['mainscreen_show_project_overdue'] == 'yes')
 			{
@@ -167,10 +185,10 @@
 					'tertiary'					 => $this->navbar_bg,
 					'width'						 => '100%',
 					'outerborderwidth'			 => '0',
-					'header_background_image'	 => $GLOBALS['phpgw']->common->image('phpgwapi', 'bg_filler', '.png', False)
+					'header_background_image'	 => $this->phpgwapi_common->image('phpgwapi', 'bg_filler', '.png', False)
 				));
 
-				$app_id = $GLOBALS['phpgw']->applications->name2id('property');
+				$app_id = $this->app_id;
 				if (!isset($GLOBALS['portal_order']) || !in_array($app_id, $GLOBALS['portal_order']))
 				{
 					$GLOBALS['portal_order'][] = $app_id;
@@ -192,7 +210,7 @@
 							'id'		 => $entry['workorder_id'], 'tab'		 => 'budget'))
 					);
 				}
-				if($GLOBALS['phpgw_info']['user']['preferences']['common']['template_set'] == 'bootstrap')
+				if($this->userSettings['preferences']['common']['template_set'] == 'bootstrap')
 				{
 					$grid_element = 'row mt-4';
 				}
@@ -211,8 +229,11 @@
 				unset($default_status);
 			}
 
-			$GLOBALS['phpgw_info']['flags']['currentapp']						 = $save_app;
-			$GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] = $maxmatches;
+			$this->flags['currentapp']						 = $save_app;
+		Settings::getInstance()->set('flags', $this->flags);
+
+			$this->userSettings['preferences']['common']['maxmatchs'] = $maxmatches;
+			Settings::getInstance()->set('user', $this->userSettings);
 		}
 
 		/**
@@ -222,13 +243,16 @@
 		 */
 		public function home_project_overdue_end_date()
 		{
-			$accound_id															 = $GLOBALS['phpgw_info']['user']['account_id'];
-			$save_app															 = $GLOBALS['phpgw_info']['flags']['currentapp'];
-			$GLOBALS['phpgw_info']['flags']['currentapp']						 = 'property';
-			$maxmatches															 = $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
-			$GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] = 5;
+			$accound_id															 = $this->userSettings['account_id'];
+			$save_app															 = $this->flags['currentapp'];
+			$this->flags['currentapp']						 = 'property';
+		Settings::getInstance()->set('flags', $this->flags);
 
-			$prefs = $GLOBALS['phpgw_info']['user']['preferences'];
+			$maxmatches															 = $this->userSettings['preferences']['common']['maxmatchs'];
+			$this->userSettings['preferences']['common']['maxmatchs'] = 5;
+			Settings::getInstance()->set('user', $this->userSettings);
+
+			$prefs = $this->userSettings['preferences'];
 
 			if (isset($prefs['property']['mainscreen_show_project_overdue']) && $prefs['property']['mainscreen_show_project_overdue'] == 'yes')
 			{
@@ -252,10 +276,10 @@
 					'tertiary'					 => $this->navbar_bg,
 					'width'						 => '100%',
 					'outerborderwidth'			 => '0',
-					'header_background_image'	 => $GLOBALS['phpgw']->common->image('phpgwapi', 'bg_filler', '.png', False)
+					'header_background_image'	 => $this->phpgwapi_common->image('phpgwapi', 'bg_filler', '.png', False)
 				));
 
-				$app_id = $GLOBALS['phpgw']->applications->name2id('property');
+				$app_id = $this->app_id;
 				if (!isset($GLOBALS['portal_order']) || !in_array($app_id, $GLOBALS['portal_order']))
 				{
 					$GLOBALS['portal_order'][] = $app_id;
@@ -277,7 +301,7 @@
 //							'id' => $entry['project_id'], 'tab' => 'budget'))
 //					);
 //				}
-				if($GLOBALS['phpgw_info']['user']['preferences']['common']['template_set'] == 'bootstrap')
+				if($this->userSettings['preferences']['common']['template_set'] == 'bootstrap')
 				{
 					$grid_element = 'row mt-4';
 				}
@@ -333,8 +357,11 @@ JS;
 				unset($default_status);
 			}
 
-			$GLOBALS['phpgw_info']['flags']['currentapp']						 = $save_app;
-			$GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] = $maxmatches;
+			$this->flags['currentapp']						 = $save_app;
+		Settings::getInstance()->set('flags', $this->flags);
+
+			$this->userSettings['preferences']['common']['maxmatchs'] = $maxmatches;
+			Settings::getInstance()->set('user', $this->userSettings);
 		}
 
 		/**
@@ -344,13 +371,16 @@ JS;
 		 */
 		public function home_tenant_claims()
 		{
-			$accound_id															 = $GLOBALS['phpgw_info']['user']['account_id'];
-			$save_app															 = $GLOBALS['phpgw_info']['flags']['currentapp'];
-			$GLOBALS['phpgw_info']['flags']['currentapp']						 = 'property';
-			$maxmatches															 = $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
-			$GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] = 5;
+			$accound_id															 = $this->userSettings['account_id'];
+			$save_app															 = $this->flags['currentapp'];
+			$this->flags['currentapp']						 = 'property';
+		Settings::getInstance()->set('flags', $this->flags);
 
-			$prefs = $GLOBALS['phpgw_info']['user']['preferences'];
+			$maxmatches															 = $this->userSettings['preferences']['common']['maxmatchs'];
+			$this->userSettings['preferences']['common']['maxmatchs'] = 5;
+			Settings::getInstance()->set('user', $this->userSettings);
+
+			$prefs = $this->userSettings['preferences'];
 
 			if (isset($prefs['property']['mainscreen_show_open_tenant_claim']) && $prefs['property']['mainscreen_show_open_tenant_claim'] == 'yes')
 			{
@@ -371,10 +401,10 @@ JS;
 					'tertiary'					 => $this->navbar_bg,
 					'width'						 => '100%',
 					'outerborderwidth'			 => '0',
-					'header_background_image'	 => $GLOBALS['phpgw']->common->image('phpgwapi', 'bg_filler', '.png', False)
+					'header_background_image'	 => $this->phpgwapi_common->image('phpgwapi', 'bg_filler', '.png', False)
 				));
 
-				$app_id = $GLOBALS['phpgw']->applications->name2id('property');
+				$app_id = $this->app_id;
 				if (!isset($GLOBALS['portal_order']) || !in_array($app_id, $GLOBALS['portal_order']))
 				{
 					$GLOBALS['portal_order'][] = $app_id;
@@ -388,7 +418,7 @@ JS;
 				}
 				foreach ($claims as &$entry)
 				{
-					$entry['entry_date']	 = $GLOBALS['phpgw']->common->show_date($entry['entry_date'], $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
+					$entry['entry_date']	 = $this->phpgwapi_common->show_date($entry['entry_date'], $this->userSettings['preferences']['common']['dateformat']);
 					$location_info			 = execMethod('property.solocation.read_single', $entry['location_code']);
 					$entry['loc1_name']		 = $location_info['loc1_name'];
 					$entry['loc_category']	 = $location_info['category_name'];
@@ -400,7 +430,7 @@ JS;
 							'claim_id'	 => $entry['claim_id']))
 					);
 				}
-				if($GLOBALS['phpgw_info']['user']['preferences']['common']['template_set'] == 'bootstrap')
+				if($this->userSettings['preferences']['common']['template_set'] == 'bootstrap')
 				{
 					$grid_element = 'row mt-4';
 				}
@@ -450,8 +480,11 @@ JS;
 				echo "\n</div>";
 
 			}
-			$GLOBALS['phpgw_info']['flags']['currentapp']						 = $save_app;
-			$GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] = $maxmatches;
+			$this->flags['currentapp']						 = $save_app;
+		Settings::getInstance()->set('flags', $this->flags);
+
+			$this->userSettings['preferences']['common']['maxmatchs'] = $maxmatches;
+			Settings::getInstance()->set('user', $this->userSettings);
 		}
 
 		/**
@@ -461,13 +494,16 @@ JS;
 		 */
 		public function home_ticket()
 		{
-			$accound_id															 = $GLOBALS['phpgw_info']['user']['account_id'];
-			$save_app															 = $GLOBALS['phpgw_info']['flags']['currentapp'];
-			$GLOBALS['phpgw_info']['flags']['currentapp']						 = 'property';
-			$maxmatches															 = $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
-			$GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] = 5;
+			$accound_id															 = $this->userSettings['account_id'];
+			$save_app															 = $this->flags['currentapp'];
+			$this->flags['currentapp']						 = 'property';
+		Settings::getInstance()->set('flags', $this->flags);
 
-			$prefs = $GLOBALS['phpgw_info']['user']['preferences'];
+			$maxmatches															 = $this->userSettings['preferences']['common']['maxmatchs'];
+			$this->userSettings['preferences']['common']['maxmatchs'] = 5;
+			Settings::getInstance()->set('user', $this->userSettings);
+
+			$prefs = $this->userSettings['preferences'];
 
 
 			if (isset($prefs['property']['mainscreen_show_new_updated_tts']) && $prefs['property']['mainscreen_show_new_updated_tts'] == 'yes')
@@ -481,10 +517,10 @@ JS;
 					'tertiary'					 => $this->navbar_bg,
 					'width'						 => '100%',
 					'outerborderwidth'			 => '0',
-					'header_background_image'	 => $GLOBALS['phpgw']->common->image('phpgwapi', 'bg_filler', '.png', False)
+					'header_background_image'	 => $this->phpgwapi_common->image('phpgwapi', 'bg_filler', '.png', False)
 				));
 
-				$app_id = $GLOBALS['phpgw']->applications->name2id('property');
+				$app_id = $this->app_id;
 				if (!isset($GLOBALS['portal_order']) || !in_array($app_id, $GLOBALS['portal_order']))
 				{
 					$GLOBALS['portal_order'][] = $app_id;
@@ -499,7 +535,7 @@ JS;
 
 				$portalbox->data = array();
 
-				if($GLOBALS['phpgw_info']['user']['preferences']['common']['template_set'] == 'bootstrap')
+				if($this->userSettings['preferences']['common']['template_set'] == 'bootstrap')
 				{
 					$grid_element = 'row mt-4';
 				}
@@ -595,8 +631,11 @@ JS;
 				unset($_default_status);
 			}
 
-			$GLOBALS['phpgw_info']['flags']['currentapp']						 = $save_app;
-			$GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] = $maxmatches;
+			$this->flags['currentapp']						 = $save_app;
+		Settings::getInstance()->set('flags', $this->flags);
+
+			$this->userSettings['preferences']['common']['maxmatchs'] = $maxmatches;
+			Settings::getInstance()->set('user', $this->userSettings);
 		}
 
 		/**
@@ -606,13 +645,16 @@ JS;
 		 */
 		public function home_project()
 		{
-			$accound_id															 = $GLOBALS['phpgw_info']['user']['account_id'];
-			$save_app															 = $GLOBALS['phpgw_info']['flags']['currentapp'];
-			$GLOBALS['phpgw_info']['flags']['currentapp']						 = 'property';
-			$maxmatches															 = $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
-			$GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] = 5;
+			$accound_id															 = $this->userSettings['account_id'];
+			$save_app															 = $this->flags['currentapp'];
+			$this->flags['currentapp']						 = 'property';
+			Settings::getInstance()->set('flags', $this->flags);
 
-			$prefs = $GLOBALS['phpgw_info']['user']['preferences'];
+			$maxmatches															 = $this->userSettings['preferences']['common']['maxmatchs'];
+			$this->userSettings['preferences']['common']['maxmatchs'] = 5;
+			Settings::getInstance()->set('user', $this->userSettings);
+
+			$prefs = $this->userSettings['preferences'];
 
 			if (isset($prefs['property']['mainscreen_project_1']) && $prefs['property']['mainscreen_project_1'] == 'yes')
 			{
@@ -630,10 +672,10 @@ JS;
 					'tertiary'					 => $this->navbar_bg,
 					'width'						 => '100%',
 					'outerborderwidth'			 => '0',
-					'header_background_image'	 => $GLOBALS['phpgw']->common->image('phpgwapi', 'bg_filler', '.png', False)
+					'header_background_image'	 => $this->phpgwapi_common->image('phpgwapi', 'bg_filler', '.png', False)
 				));
 
-				$app_id = $GLOBALS['phpgw']->applications->name2id('property');
+				$app_id = $this->app_id;
 				if (!isset($GLOBALS['portal_order']) || !in_array($app_id, $GLOBALS['portal_order']))
 				{
 					$GLOBALS['portal_order'][] = $app_id;
@@ -657,7 +699,7 @@ JS;
 					);
 				}
 
-				if($GLOBALS['phpgw_info']['user']['preferences']['common']['template_set'] == 'bootstrap')
+				if($this->userSettings['preferences']['common']['template_set'] == 'bootstrap')
 				{
 					$grid_element = 'row mt-4';
 				}
@@ -674,8 +716,11 @@ JS;
 				unset($default_status);
 			}
 
-			$GLOBALS['phpgw_info']['flags']['currentapp']						 = $save_app;
-			$GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] = $maxmatches;
+			$this->flags['currentapp']						 = $save_app;
+		Settings::getInstance()->set('flags', $this->flags);
+
+			$this->userSettings['preferences']['common']['maxmatchs'] = $maxmatches;
+			Settings::getInstance()->set('user', $this->userSettings);
 		}
 
 		/**
@@ -686,13 +731,16 @@ JS;
 		public function home_workorder()
 		{
 			$config				 = CreateObject('phpgwapi.config', 'property')->read();
-			$accound_id															 = $GLOBALS['phpgw_info']['user']['account_id'];
-			$save_app															 = $GLOBALS['phpgw_info']['flags']['currentapp'];
-			$GLOBALS['phpgw_info']['flags']['currentapp']						 = 'property';
-			$maxmatches															 = $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
-			$GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] = 5;
+			$accound_id															 = $this->userSettings['account_id'];
+			$save_app															 = $this->flags['currentapp'];
+			$this->flags['currentapp']						 = 'property';
+		Settings::getInstance()->set('flags', $this->flags);
 
-			$prefs = $GLOBALS['phpgw_info']['user']['preferences'];
+			$maxmatches															 = $this->userSettings['preferences']['common']['maxmatchs'];
+			$this->userSettings['preferences']['common']['maxmatchs'] = 5;
+			Settings::getInstance()->set('user', $this->userSettings);
+
+			$prefs = $this->userSettings['preferences'];
 
 			if (isset($prefs['property']['mainscreen_workorder_1']) && $prefs['property']['mainscreen_workorder_1'] == 'yes')
 			{
@@ -710,10 +758,10 @@ JS;
 					'tertiary'					 => $this->navbar_bg,
 					'width'						 => '100%',
 					'outerborderwidth'			 => '0',
-					'header_background_image'	 => $GLOBALS['phpgw']->common->image('phpgwapi', 'bg_filler', '.png', False)
+					'header_background_image'	 => $this->phpgwapi_common->image('phpgwapi', 'bg_filler', '.png', False)
 				));
 
-				$app_id = $GLOBALS['phpgw']->applications->name2id('property');
+				$app_id = $this->app_id;
 				if (!isset($GLOBALS['portal_order']) || !in_array($app_id, $GLOBALS['portal_order']))
 				{
 					$GLOBALS['portal_order'][] = $app_id;
@@ -736,7 +784,7 @@ JS;
 							'id'		 => $workorder['workorder_id']))
 					);
 				}
-				if($GLOBALS['phpgw_info']['user']['preferences']['common']['template_set'] == 'bootstrap')
+				if($this->userSettings['preferences']['common']['template_set'] == 'bootstrap')
 				{
 					$grid_element = 'row mt-4';
 				}
@@ -768,10 +816,10 @@ JS;
 					'tertiary'					 => $this->navbar_bg,
 					'width'						 => '100%',
 					'outerborderwidth'			 => '0',
-					'header_background_image'	 => $GLOBALS['phpgw']->common->image('phpgwapi', 'bg_filler', '.png', False)
+					'header_background_image'	 => $this->phpgwapi_common->image('phpgwapi', 'bg_filler', '.png', False)
 				));
 
-				$app_id = $GLOBALS['phpgw']->applications->name2id('property');
+				$app_id = $this->app_id;
 				if (!isset($GLOBALS['portal_order']) || !in_array($app_id, $GLOBALS['portal_order']))
 				{
 					$GLOBALS['portal_order'][] = $app_id;
@@ -795,7 +843,7 @@ JS;
 					);
 				}
 
-				if($GLOBALS['phpgw_info']['user']['preferences']['common']['template_set'] == 'bootstrap')
+				if($this->userSettings['preferences']['common']['template_set'] == 'bootstrap')
 				{
 					$grid_element = 'row mt-4';
 				}
@@ -826,10 +874,10 @@ JS;
 					'tertiary'					 => $this->navbar_bg,
 					'width'						 => '100%',
 					'outerborderwidth'			 => '0',
-					'header_background_image'	 => $GLOBALS['phpgw']->common->image('phpgwapi', 'bg_filler', '.png', False)
+					'header_background_image'	 => $this->phpgwapi_common->image('phpgwapi', 'bg_filler', '.png', False)
 				));
 
-				$app_id = $GLOBALS['phpgw']->applications->name2id('property');
+				$app_id = $this->app_id;
 
 				if (!isset($GLOBALS['portal_order']) || !in_array($app_id, $GLOBALS['portal_order']))
 				{
@@ -843,7 +891,7 @@ JS;
 					//			$portalbox->set_controls($key,$value);
 				}
 
-				if($GLOBALS['phpgw_info']['user']['preferences']['common']['template_set'] == 'bootstrap')
+				if($this->userSettings['preferences']['common']['template_set'] == 'bootstrap')
 				{
 					$grid_element = 'row mt-4';
 				}
@@ -861,7 +909,7 @@ JS;
 
 				$lang = js_lang('responsible', 'id', 'date', 'cancel');
 
-				phpgwapi_cache::session_set('property', 'return_to_self', $_SERVER['REQUEST_URI']);
+				Cache::session_set('property', 'return_to_self', $_SERVER['REQUEST_URI']);
 
 				$js = <<<JS
 						<script type="text/javascript">
@@ -919,10 +967,10 @@ JS;
 					'tertiary'					 => $this->navbar_bg,
 					'width'						 => '100%',
 					'outerborderwidth'			 => '0',
-					'header_background_image'	 => $GLOBALS['phpgw']->common->image('phpgwapi', 'bg_filler', '.png', False)
+					'header_background_image'	 => $this->phpgwapi_common->image('phpgwapi', 'bg_filler', '.png', False)
 				));
 
-				$app_id = $GLOBALS['phpgw']->applications->name2id('property');
+				$app_id = $this->app_id;
 
 				if (!isset($GLOBALS['portal_order']) || !in_array($app_id, $GLOBALS['portal_order']))
 				{
@@ -940,7 +988,7 @@ JS;
 				$portalbox->setvar('title', $title);
 				$portalbox->start_template();
 
-				if($GLOBALS['phpgw_info']['user']['preferences']['common']['template_set'] == 'bootstrap')
+				if($this->userSettings['preferences']['common']['template_set'] == 'bootstrap')
 				{
 					$grid_element = 'row mt-4';
 				}
@@ -1018,20 +1066,25 @@ JS;
 				echo "\n</div>";
 			}
 
-			$GLOBALS['phpgw_info']['flags']['currentapp']						 = $save_app;
-			$GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] = $maxmatches;
+			$this->flags['currentapp']						 = $save_app;
+		Settings::getInstance()->set('flags', $this->flags);
+
+			$this->userSettings['preferences']['common']['maxmatchs'] = $maxmatches;
+			Settings::getInstance()->set('user', $this->userSettings);
 		}
 
 		function after_navbar()
 		{
 			$sosubstitute		 = CreateObject('property.sosubstitute');
-			$user_id			 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$user_id			 = $this->userSettings['account_id'];
 			$substitute_user_id	 = $sosubstitute->get_substitute($user_id);
-			$lang_substitute	 = $GLOBALS['phpgw']->translation->translate('substitute', array(), false, 'property');
+			$accounts = new \App\modules\phpgwapi\controllers\Accounts\Accounts();
+
+			$lang_substitute	 = Translation::getInstance()->translate('substitute', array(), false, 'property');
 			if ($substitute_user_id)
 			{
 				echo '<div class="msg_good">';
-				echo $lang_substitute . ': ' . $GLOBALS['phpgw']->accounts->get($substitute_user_id)->__toString();
+				echo $lang_substitute . ': ' . $accounts->get($substitute_user_id)->__toString();
 				echo '</div>';
 			}
 
@@ -1039,7 +1092,7 @@ JS;
 			$names					 = array();
 			foreach ($users_for_substitute as $user_for_substitute)
 			{
-				$names[] = $GLOBALS['phpgw']->accounts->get($user_for_substitute)->__toString();
+				$names[] = $accounts->get($user_for_substitute)->__toString();
 			}
 			if ($names)
 			{
@@ -1060,6 +1113,6 @@ JS;
 		{
 			$contact_id	 = (int)$data['contact_id'];
 			$sql		 = "DELETE FROM fm_responsibility_contact WHERE contact_id = {$contact_id}";
-			$GLOBALS['phpgw']->db->query($sql, __LINE__, __FILE__);
+			$this->db->query($sql, __LINE__, __FILE__);
 		}
 	}

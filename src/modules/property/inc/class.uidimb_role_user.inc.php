@@ -302,7 +302,7 @@
 			}
 			else
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uidimb_role_user.index',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uidimb_role_user.index',
 					'user_id'	 => $user_id, 'dimb_id'	 => $dimb_id, 'role_id'	 => $role_id, 'query'		 => $query));
 			}
 		}

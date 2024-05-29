@@ -668,7 +668,7 @@
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -1087,14 +1087,14 @@
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
 			$workorder_id = Sanitizer::get_var('workorder_id'); // in case of bigint
 			if (Sanitizer::get_var('done', 'bool'))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uiwo_hour.index',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uiwo_hour.index',
 					'workorder_id'	 => $workorder_id));
 			}
 
@@ -1112,7 +1112,7 @@
 
 			if ($_SERVER['REQUEST_METHOD'] == 'POST' && $GLOBALS['phpgw']->session->is_repost())
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array(
+				phpgw::redirect_link('/index.php', array(
 					'menuaction'	 => 'property.uiwo_hour.view',
 					'workorder_id'	 => $workorder_id,
 					'from'			 => Sanitizer::get_var('from')));
@@ -1389,7 +1389,7 @@
 					if (!$_ok)
 					{
 						phpgwapi_cache::message_set(lang('order is not approved'), 'error');
-						$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uiwo_hour.view',
+						phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uiwo_hour.view',
 							'workorder_id'	 => $workorder_id, 'from'			 => Sanitizer::get_var('from')));
 					}
 					unset($_ok);
@@ -1399,7 +1399,7 @@
 					if (!$this->_validate_purchase_grant($workorder_id, $project['ecodimb'] ? $project['ecodimb'] : $workorder['ecodimb'], $project['id']))
 					{
 						phpgwapi_cache::message_set(lang('order is not approved'), 'error');
-						$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uiwo_hour.view',
+						phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uiwo_hour.view',
 							'workorder_id'	 => $workorder_id, 'from'			 => Sanitizer::get_var('from')));
 					}
 				}
@@ -2150,7 +2150,7 @@ HTML;
 					phpgwapi_cache::message_set(lang('order %1 is not approved', $workorder_id), 'error');
 					if($redirect_on_error)
 					{
-						$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiwo_hour.view',
+						phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiwo_hour.view',
 							'workorder_id' => $workorder_id, 'from' => Sanitizer::get_var('from')));
 					}
 					else
@@ -2174,7 +2174,7 @@ HTML;
 				if (!$_validated)
 				{
 					throw new Exception(lang('order %1 is not approved', $workorder_id) );
-//					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiwo_hour.view',
+//					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiwo_hour.view',
 //						'workorder_id' => $workorder_id, 'from' => Sanitizer::get_var('from')));
 				}
 			}
@@ -2451,7 +2451,7 @@ HTML;
 			$pdf = CreateObject('phpgwapi.pdf');
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 			$show_cost		 = Sanitizer::get_var('show_cost', 'bool');
@@ -2536,7 +2536,7 @@ HTML;
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -2877,7 +2877,7 @@ HTML;
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -3269,7 +3269,7 @@ HTML;
 		{
 			if (!$this->acl_edit)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
 			$from					 = Sanitizer::get_var('from');
@@ -3436,7 +3436,7 @@ HTML;
 		{
 			if (!$this->acl_edit)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
 			$id				 = Sanitizer::get_var('id', 'int');
@@ -3495,7 +3495,7 @@ HTML;
 				{
 					$this->bo->delete($id);
 				}
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 
 			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));

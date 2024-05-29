@@ -27,20 +27,26 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Settings;
+	use App\Database\Db;
+	use App\modules\phpgwapi\security\Acl;
+
 	/**
 	 * Description
 	 * @package property
 	 */
 	class property_socustom
 	{
-		var $db, $join, $left_join, $like,$account,$total_records,$uicols;
+		var $db, $join, $left_join, $like,$account,$total_records,$uicols, $acl;
 
 		function __construct()
 		{
-			$this->account	 = $GLOBALS['phpgw_info']['user']['account_id'];
-			$this->db		 = & $GLOBALS['phpgw']->db;
-			$this->join		 = & $this->db->join;
-			$this->like		 = & $this->db->like;
+			$userSettings = Settings::getInstance()->get('user');
+			$this->account	 = $userSettings['account_id'];
+			$this->acl		 = Acl::getInstance();
+			$this->db		 = Db::getInstance();
+			$this->join		 = $this->db->join;
+			$this->like		 = $this->db->like;
 		}
 
 		function read( $data )
@@ -313,7 +319,7 @@
 				return array();
 			}
 
-			$sysadmin	 = $GLOBALS['phpgw']->acl->check('run', phpgwapi_acl::READ, 'admin');
+			$sysadmin	 = $this->acl->check('run', Acl::READ, 'admin');
 
 			if (!$sysadmin && preg_match('/(INSERT INTO|DELETE FROM|CREATE|DROP|ALTER|UPDATE)/i', trim($sql)))
 			{

@@ -23,7 +23,7 @@ class UserController
     public function __construct(ContainerInterface $container)
 	{
 		// only for testing
-		//$vfs = new \App\modules\phpgwapi\services\Vfs\Vfs;
+		//$vfs = new \App\modules\phpgwapi\services\Vfs\Vfs();
 
 		$this->db =	Db::getInstance();
 		$this->userSettings = Settings::getInstance()->get('user');

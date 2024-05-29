@@ -341,7 +341,7 @@
 			//--validacion para permisos
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 			//-- captura datos de URL
@@ -2451,7 +2451,7 @@ JS;
 
 			if (!$this->acl_delete)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 8, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -2466,7 +2466,7 @@ JS;
 			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete($voucher_id);
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 
 			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
@@ -2495,7 +2495,7 @@ JS;
 		{
 			if (!$this->acl_add)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -2681,7 +2681,7 @@ JS;
 					{
 						unset($values);
 						$GLOBALS['phpgw']->session->appsession('session_data', 'add_receipt', $receipt);
-						$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiinvoice.add'));
+						phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiinvoice.add'));
 					}
 				}
 				else
@@ -2697,7 +2697,7 @@ JS;
 
 			if (isset($receipt['voucher_id']) && $receipt['voucher_id'])
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array
+				phpgw::redirect_link('/index.php', array
 					(
 					'menuaction' => 'property.uiinvoice.list_sub',
 					'user_lid'	 => $GLOBALS['phpgw_info']['user']['account_lid'],
@@ -2845,7 +2845,7 @@ JS;
 
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -3196,11 +3196,11 @@ JS;
 			switch ($order_type)
 			{
 				case 'workorder':
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiworkorder.edit',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiworkorder.edit',
 						'id'		 => $order_id, 'tab'		 => 'budget', 'nonavbar'	 => $nonavbar, 'lean'		 => $lean));
 					break;
 				case 's_agreement':
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uis_agreement.view',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uis_agreement.view',
 						'id'		 => $order_id, 'nonavbar'	 => $nonavbar, 'lean'		 => $lean));
 					break;
 				default:

@@ -388,12 +388,7 @@
 		{
 			if (is_object($db))
 			{
-				$db_config = $db->get_config();
-				$db2 = new Db2("pgsql:host={$db_config['db_host']};port={$db_config['db_port']};dbname={$db_config['db_name']}", $db_config['db_user'], $db_config['db_pass']);
-				$db2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-				$db2->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-				$db2->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-				return $db2;
+				return new Db2();
 			}
 			else
 			{

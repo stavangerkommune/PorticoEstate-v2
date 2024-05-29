@@ -25,7 +25,13 @@
 	 * @package registration
 	 * @version $Id: class.sodimb_role_user.inc.php 16610 2017-04-21 14:21:03Z sigurdne $
 	 */
-	phpgw::import_class('phpgwapi.datetime');
+
+use App\Database\Db;
+use App\Database\Db2;
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\Cache;
+
+	 phpgw::import_class('phpgwapi.datetime');
 
 	class property_sosubstitute
 	{
@@ -35,12 +41,14 @@
 
 		function __construct()
 		{
-			$this->account_id	 = (int)$GLOBALS['phpgw_info']['user']['account_id'];
-			$this->db			 = & $GLOBALS['phpgw']->db;
-			$this->db2			 = clone($this->db);
-			$this->join			 = & $this->db->join;
-			$this->left_join	 = & $this->db->left_join;
-			$this->like			 = & $this->db->like;
+			$userSettings = Settings::getInstance()->get('user');
+
+			$this->account_id	 = (int)$userSettings['account_id'];
+			$this->db			 = Db::getInstance();
+			$this->db2			 = new Db2();
+			$this->join			 = $this->db->join;
+			$this->left_join	 = $this->db->left_join;
+			$this->like			 = $this->db->like;
 		}
 
 		function read( $data )
@@ -114,7 +122,7 @@
 			$this->db->query($sql, __LINE__, __FILE__);
 			if ($this->db->next_record() || $user_id == $substitute_user_id)
 			{
-				phpgwapi_cache::message_set(lang('substitute') . ' ' . lang('circle reference'), 'error');
+				Cache::message_set(lang('substitute') . ' ' . lang('circle reference'), 'error');
 				$error = true;
 			}
 			else

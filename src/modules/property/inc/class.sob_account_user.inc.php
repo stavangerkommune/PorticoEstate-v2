@@ -25,7 +25,11 @@
 	 * @package registration
 	 * @version $Id$
 	 */
-	phpgw::import_class('phpgwapi.datetime');
+
+	use App\modules\phpgwapi\services\Settings;
+	use App\Database\Db;
+
+	 phpgw::import_class('phpgwapi.datetime');
 
 	class property_sob_account_user
 	{
@@ -35,8 +39,9 @@
 
 		function __construct()
 		{
-			$this->account_id	 = (int)$GLOBALS['phpgw_info']['user']['account_id'];
-			$this->db			 = & $GLOBALS['phpgw']->db;
+			$userSettings = Settings::getInstance()->get('user');
+			$this->account_id	 = $userSettings['account_id'];
+			$this->db		 = Db::getInstance();
 			$this->join			 = & $this->db->join;
 			$this->left_join	 = & $this->db->left_join;
 		}

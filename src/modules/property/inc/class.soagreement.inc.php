@@ -27,6 +27,10 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Settings;
+	use App\Database\Db;
+	use App\Database\Db2;
+
 	/**
 	 * Description
 	 * @package property
@@ -35,15 +39,17 @@
 	{
 
 		var $role,$custom,$bocommon, $uicols;
-		var $db, $db2, $join, $left_join, $like,$account, $total_records;
+		var $db, $db2, $join, $left_join, $like,$account, $total_records, $userSettings;
 
 		function __construct()
 		{
-			$this->account	 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->userSettings = Settings::getInstance()->get('user');
+
+			$this->account	 = $this->userSettings['account_id'];
 			$this->custom	 = createObject('property.custom_fields');
 			$this->bocommon	 = CreateObject('property.bocommon');
-			$this->db		 = clone($GLOBALS['phpgw']->db);
-			$this->db2		 = clone($this->db);
+			$this->db		 = Db::getInstance();
+			$this->db2		 = new Db2();
 			$this->join		 = $this->db->join;
 			$this->left_join = $this->db->left_join;
 			$this->like		 = $this->db->like;
@@ -90,7 +96,7 @@
 
 			$entity_table		 = 'fm_agreement';
 			$category_table		 = 'fm_branch';
-			$location_id		 = $GLOBALS['phpgw']->locations->get_id('property', '.agreement');
+			$location_id = 		(new \App\modules\phpgwapi\controllers\Locations())->get_id('property', '.agreement');
 			$attribute_filter	 = " location_id = {$location_id}";
 			$paranthesis		 = '(';
 			$joinmethod			 = " {$this->join} {$category_table} ON ( {$entity_table}.category = {$category_table}.id)";
@@ -187,7 +193,7 @@
 
 			$i = count($uicols['name']);
 
-			$user_columns		 = isset($GLOBALS['phpgw_info']['user']['preferences']['property']['agreement_columns' . !!$agreement_id]) ? $GLOBALS['phpgw_info']['user']['preferences']['property']['agreement_columns' . !!$agreement_id] : '';
+			$user_columns		 = isset($this->userSettings['preferences']['property']['agreement_columns' . !!$agreement_id]) ? $this->userSettings['preferences']['property']['agreement_columns' . !!$agreement_id] : '';
 			$user_column_filter	 = '';
 			if (isset($user_columns) AND is_array($user_columns) AND $user_columns[0])
 			{
@@ -464,7 +470,8 @@
 				$this->db->query($sql . $ordermethod, __LINE__, __FILE__);
 			}
 
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
+			$phpgwapi_common = new \phpgwapi_common();
 
 			$details = array();
 			while ($this->db->next_record())
@@ -483,7 +490,7 @@
 					'total_cost'	 => $this->db->f('total_cost'),
 					'this_index'	 => $this->db->f('this_index'),
 					'index_count'	 => $this->db->f('index_count'),
-					'index_date'	 => $GLOBALS['phpgw']->common->show_date($this->db->f('index_date'), $dateformat)
+					'index_date'	 => $phpgwapi_common->show_date($this->db->f('index_date'), $dateformat)
 				);
 			}
 			//html_print_r($details);
@@ -497,6 +504,7 @@
 				$agreement_id	 = (isset($data['agreement_id']) ? $data['agreement_id'] : 0);
 				$activity_id	 = (isset($data['activity_id']) ? $data['activity_id'] : 0);
 				$results		 = isset($data['results']) ? (int)$data['results'] : 0;
+				$start			 = isset($data['start']) && $data['start'] ? $data['start'] : 0;
 			}
 
 			$entity_table = 'fm_activity_price_index';
@@ -574,7 +582,7 @@
 
 			$this->db2->query($sql, __LINE__, __FILE__);
 			$this->total_records = $this->db2->num_rows();
-			if (!$allrows)
+			if ($results > 0)
 			{
 				$this->db->limit_query($sql . $ordermethod, $start, __LINE__, __FILE__, $results);
 			}
@@ -1227,7 +1235,7 @@
 				return array();
 			}
 
-			$dateformat =$GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat =$this->userSettings['preferences']['common']['dateformat'];
 
 			$now = phpgwapi_datetime::date_to_timestamp(date($dateformat)); //1 pm
 

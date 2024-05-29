@@ -649,14 +649,14 @@
 					if ($values['save'])
 					{
 						$GLOBALS['phpgw']->session->appsession('session_data', 'alarm_receipt', $receipt);
-						$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uialarm.index'));
+						phpgw::redirect_link('/index.php', array('menuaction' => 'property.uialarm.index'));
 					}
 				}
 			}
 
 			if ($values['cancel'])
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uialarm.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uialarm.index'));
 			}
 
 			if ($async_id)
@@ -734,7 +734,7 @@
 			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete($owner_id);
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 
 			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));

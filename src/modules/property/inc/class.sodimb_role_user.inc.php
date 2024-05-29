@@ -25,22 +25,33 @@
 	 * @package registration
 	 * @version $Id$
 	 */
-	phpgw::import_class('phpgwapi.datetime');
+
+	use App\modules\phpgwapi\services\Settings;
+	use App\Database\Db;
+	use App\Database\Db2;
+	use App\modules\phpgwapi\security\Acl;
+	use App\modules\phpgwapi\services\Cache;
+
+
+	 phpgw::import_class('phpgwapi.datetime');
 
 	class property_sodimb_role_user
 	{
 
 		var $total_records = 0;
-		var $account_id, $db, $db2, $join, $left_join, $like;
+		var $account_id, $db, $db2, $join, $left_join, $like, $acl;
 
 		function __construct()
 		{
-			$this->account_id	 = (int)$GLOBALS['phpgw_info']['user']['account_id'];
-			$this->db			 = & $GLOBALS['phpgw']->db;
-			$this->db2			 = clone($this->db);
-			$this->join			 = & $this->db->join;
-			$this->left_join	 = & $this->db->left_join;
-			$this->like			 = & $this->db->like;
+			$userSettings = Settings::getInstance()->get('user');
+			$this->account_id	 = $userSettings['account_id'];
+			$this->acl		 = Acl::getInstance();
+			$this->db		 = Db::getInstance();
+			$this->db2		 = new Db2();
+
+			$this->join			 = $this->db->join;
+			$this->left_join	 = $this->db->left_join;
+			$this->like			 = $this->db->like;
 		}
 
 		function read( $data )
@@ -153,7 +164,7 @@
 
 			if ($dimb_id && !$user_id)
 			{
-				$users = $GLOBALS['phpgw']->acl->get_user_list_right(ACL_READ, '.invoice', 'property');
+				$users = $this->acl->get_user_list_right(ACL_READ, '.invoice', 'property');
 			}
 			else
 			{
@@ -281,25 +292,25 @@
 
 				if ($delete)
 				{
-					phpgwapi_cache::message_set(lang('%1 roles deleted', count($delete)), 'message');
+					Cache::message_set(lang('%1 roles deleted', count($delete)), 'message');
 				}
 				if ($c_alter_date)
 				{
-					phpgwapi_cache::message_set(lang('%1 dates altered', $c_alter_date), 'message');
+					Cache::message_set(lang('%1 dates altered', $c_alter_date), 'message');
 				}
 				if ($add)
 				{
-					phpgwapi_cache::message_set(lang('%1 roles added', count($add)), 'message');
+					Cache::message_set(lang('%1 roles added', count($add)), 'message');
 				}
 
 				if ($c_default_user)
 				{
-					phpgwapi_cache::message_set(lang('%1 roles set as default', $c_default_user), 'message');
+					Cache::message_set(lang('%1 roles set as default', $c_default_user), 'message');
 				}
 
 				if ($c_default_user_orig)
 				{
-					phpgwapi_cache::message_set(lang('%1 roles removed as default', $c_default_user_orig), 'message');
+					Cache::message_set(lang('%1 roles removed as default', $c_default_user_orig), 'message');
 				}
 			}
 

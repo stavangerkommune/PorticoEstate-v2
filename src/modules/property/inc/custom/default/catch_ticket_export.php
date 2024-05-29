@@ -92,7 +92,7 @@
 				'new_choice' => 'ssh'
 				)
 			);
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'admin.uiconfig2.list_attrib',
+			phpgw::redirect_link('/index.php', array('menuaction'	 => 'admin.uiconfig2.list_attrib',
 				'section_id'	 => $receipt_section['section_id'], 'location_id'	 => $GLOBALS['phpgw']->locations->get_id('property', '.ticket')));
 		}
 

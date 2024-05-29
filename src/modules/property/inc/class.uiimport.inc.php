@@ -147,7 +147,7 @@
 			if ($check_method > 1)
 			{
 				phpgwapi_cache::session_set('property', 'import_message', 'choose only one target!');
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiimport.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiimport.index'));
 			}
 
 
@@ -171,7 +171,7 @@
 				if ($GLOBALS['phpgw']->session->is_repost() && !Sanitizer::get_var('debug', 'bool'))
 				{
 					phpgwapi_cache::session_set('property', 'import_message', 'Hmm... looks like a repost!');
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiimport.index'));
+					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiimport.index'));
 				}
 
 
@@ -221,7 +221,7 @@
 				if (!$files)
 				{
 					phpgwapi_cache::session_set('property', 'import_message', 'Ingen filer er valgt');
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiimport.index'));
+					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiimport.index'));
 				}
 
 				foreach ($files as $file)
@@ -978,7 +978,7 @@ HTML;
 			if ($check_method > 1)
 			{
 				phpgwapi_cache::session_set('property', 'import_message', 'choose only one target!');
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiimport.components'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiimport.components'));
 			}
 
 
@@ -997,7 +997,7 @@ HTML;
 				if ($GLOBALS['phpgw']->session->is_repost() && !Sanitizer::get_var('debug', 'bool'))
 				{
 					phpgwapi_cache::session_set('property', 'import_message', 'Hmm... looks like a repost!');
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiimport.components'));
+					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiimport.components'));
 				}
 
 				$start = date("G:i:s", $this->start_time);
@@ -1046,7 +1046,7 @@ HTML;
 				if (!$files)
 				{
 					phpgwapi_cache::session_set('property', 'import_message', 'Ingen filer er valgt');
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiimport.components'));
+					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiimport.components'));
 				}
 
 				$entity_categories_in_xml = array();

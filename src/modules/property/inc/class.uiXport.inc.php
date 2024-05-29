@@ -80,7 +80,7 @@
 		{
 			if (!$this->acl_add)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -243,7 +243,7 @@
 						unset($payment_date);
 						unset($conv_type);
 						unset($auto_tax);
-						//						$GLOBALS['phpgw']->redirect_link('/index.php',array('menuaction'=> 'property.uiXport.import'));
+						//						phpgw::redirect_link('/index.php',array('menuaction'=> 'property.uiXport.import'));
 					}
 					else
 					{
@@ -485,7 +485,7 @@
 		{
 			if (!$this->acl_manage)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 16, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -566,7 +566,7 @@
 		{
 			if (!$this->acl_manage)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 16, 'acl_location'	 => $this->acl_location));
 			}
 

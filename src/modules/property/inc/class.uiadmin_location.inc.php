@@ -102,7 +102,7 @@
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -425,7 +425,7 @@
 
 				$message = $GLOBALS['phpgw']->common->msgbox($msgbox_data);
 				phpgwapi_cache::message_set($message[0]['msgbox_text'], 'message');
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiadmin_location.edit',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiadmin_location.edit',
 					'id'		 => $id));
 			}
 			else
@@ -438,7 +438,7 @@
 		{
 			if (!$this->acl_add)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -506,7 +506,7 @@
 		{
 			if (!$this->acl_delete)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 8, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -571,7 +571,7 @@
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -736,7 +736,7 @@
 		{
 			if (!$this->acl_add)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -863,7 +863,7 @@
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -1106,7 +1106,7 @@
 				$message = $GLOBALS['phpgw']->common->msgbox($msgbox_data);
 
 				phpgwapi_cache::message_set($message[0]['msgbox_text'], 'message');
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiadmin_location.edit_attrib',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiadmin_location.edit_attrib',
 					'id'		 => $id, 'type_id'	 => $type_id));
 			}
 			else
@@ -1119,7 +1119,7 @@
 		{
 			if (!$this->acl_add)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -1344,7 +1344,7 @@
 		{
 			if (!$this->acl_manage)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 16, 'acl_location'	 => $this->acl_location));
 			}
 

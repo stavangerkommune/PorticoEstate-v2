@@ -657,7 +657,7 @@
 
 				self::message_set($receipt);
 				phpgwapi_cache::message_set($message[0]['msgbox_text'], 'message');
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uitemplate.edit_template',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uitemplate.edit_template',
 					'template_id'	 => $template_id));
 			}
 			else

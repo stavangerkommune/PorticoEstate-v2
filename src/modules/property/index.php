@@ -48,4 +48,4 @@
 		$start_page = $GLOBALS['phpgw_info']['user']['preferences']['property']['default_start_page'];
 	}
 
-	$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => "property.ui{$start_page}.index"));
+	phpgw::redirect_link('/index.php', array('menuaction' => "property.ui{$start_page}.index"));

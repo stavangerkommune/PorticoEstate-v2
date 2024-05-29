@@ -27,6 +27,9 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Settings;
+	use App\Database\Db;
+
 	/**
 	 * Description
 	 * @package property
@@ -40,7 +43,8 @@
 
 		function __construct()
 		{
-			$this->account				 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$userSettings = Settings::getInstance()->get('user');
+			$this->account	 = $userSettings['account_id'];
 			$this->bocommon				 = CreateObject('property.bocommon');
 			$this->historylog			 = CreateObject('property.historylog', 'document');
 			$this->vfs					 = CreateObject('phpgwapi.vfs');
@@ -49,9 +53,10 @@
 			$this->cats					 = CreateObject('phpgwapi.categories', -1, 'property', '.document');
 			$this->cats->supress_info	 = true;
 
-			$this->db	 = & $GLOBALS['phpgw']->db;
-			$this->join	 = & $this->db->join;
-			$this->like	 = & $this->db->like;
+			$this->db		 = Db::getInstance();
+			$this->join			 = $this->db->join;
+			$this->left_join	 = $this->db->left_join;
+			$this->like			 = $this->db->like;
 		}
 
 		function select_status_list()
@@ -272,8 +277,8 @@
 
 			$filtermethod = '';
 
-			$GLOBALS['phpgw']->config->read();
-			if (isset($GLOBALS['phpgw']->config->config_data['acl_at_location']) && $GLOBALS['phpgw']->config->config_data['acl_at_location'])
+			$config = createObject('phpgwapi.config', 'property')->read();
+			if (isset($config['acl_at_location']) && $config['acl_at_location'])
 			{
 				$access_location = $this->bocommon->get_location_list(ACL_READ);
 				$filtermethod	 = " WHERE fm_document.loc1 in ('" . implode("','", $access_location) . "')";
@@ -740,7 +745,7 @@
 
 			$value_set = $this->db->validate_update($value_set);
 
-			$this->db->query("UPDATE fm_document set $value_set $vals WHERE id= '" . $document['id'] . "'", __LINE__, __FILE__);
+			$this->db->query("UPDATE fm_document SET $value_set WHERE id= '" . $document['id'] . "'", __LINE__, __FILE__);
 
 			$receipt['id']	 = $document['id'];
 			$receipt['message'][]	 = array('msg' => lang('document %1 has been edited', "'" . $document['title'] . "'"));
@@ -898,7 +903,8 @@
 		 */
 		public function read_file_tree( $dirname = '', $maks_level = 2, $filter_level =1, $filter ='', $menuaction = '' )
 		{
-			$dirname = $dirname ? $dirname : $GLOBALS['phpgw_info']['server']['temp_dir'];
+			$serverSettings = Settings::getInstance()->get('server');
+			$dirname = $dirname ? $dirname : $serverSettings['temp_dir'];
 			// prevent path traversal
 			if (preg_match('/\./', $dirname) || !is_dir($dirname))
 			{

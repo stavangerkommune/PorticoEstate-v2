@@ -65,7 +65,7 @@
 
 			if (!isset($this->config->config_data['common']['method']))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'admin.uiconfig2.index',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'admin.uiconfig2.index',
 					'location_id'	 => $GLOBALS['phpgw']->locations->get_id('property', '.invoice')));
 			}
 

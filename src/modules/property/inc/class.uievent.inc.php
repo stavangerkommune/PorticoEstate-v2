@@ -175,7 +175,7 @@
 			$this->acl_location = '.scheduled_events';
 			if (!$this->acl->check($this->acl_location, ACL_READ, 'property'))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 

@@ -163,7 +163,7 @@
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => ACL_READ, 'acl_location'	 => $this->acl_location));
 			}
 			ExecMethod('property.bofiles.get_file', Sanitizer::get_var('file_id', 'int'));
@@ -625,7 +625,7 @@
 //				if (!$claim_id)
 //				{
 //					phpgwapi_cache::message_set('ID is required for the function uiproject::view()', 'error');
-//					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uitenant_claim.index'));
+//					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uitenant_claim.index'));
 //				}
 			}
 			else
@@ -738,7 +738,7 @@
 
 			if ($values['cancel'])
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uitenant_claim.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uitenant_claim.index'));
 			}
 
 
@@ -1247,7 +1247,7 @@
 
 			if (!$this->acl_delete)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 8, 'acl_location'	 => $this->acl_location));
 			}
 

@@ -8,6 +8,13 @@ use App\modules\phpgwapi\services\Settings;
 $serverSettings = Settings::getInstance()->get('server');
 $userSettings = Settings::getInstance()->get('user');
 $flags = Settings::getInstance()->get('flags');
+Settings::getInstance()->set('flags', $this->flags);
+
+håndtert sentralt i phpGW
+//use App\modules\phpgwapi\services\Preferences;
+//$Preferences = Preferences::getInstance();
+
+use App\modules\phpgwapi\controllers\Applications;
 
 
 $GLOBALS['phpgw_info']['user']
@@ -28,6 +35,10 @@ Cache
 
 $GLOBALS['phpgw']->link
 phpgw::link
+
+$GLOBALS['phpgw']->redirect_link
+phpgw::redirect_link
+
 
 phpgw::get_var
 Sanitizer::get_var

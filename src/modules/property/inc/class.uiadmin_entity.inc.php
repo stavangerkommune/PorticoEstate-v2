@@ -135,7 +135,7 @@
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -688,7 +688,7 @@
 				$msgbox_data = $this->bocommon->msgbox_data($this->receipt);
 				$message	 = $GLOBALS['phpgw']->common->msgbox($msgbox_data);
 				phpgwapi_cache::message_set($message[0]['msgbox_text'], 'message');
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiadmin_entity.edit',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiadmin_entity.edit',
 					'type'		 => $this->type, 'id'		 => $id));
 			}
 			else
@@ -701,7 +701,7 @@
 		{
 			if (!$this->acl_add)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
 			$id		 = (int)Sanitizer::get_var('id');
@@ -853,7 +853,7 @@
 				$message	 = $GLOBALS['phpgw']->common->msgbox($msgbox_data);
 
 				phpgwapi_cache::message_set($message[0]['msgbox_text'], 'message');
-				$GLOBALS['phpgw']->redirect_link('/index.php', array
+				phpgw::redirect_link('/index.php', array
 					(
 					'menuaction' => 'property.uiadmin_entity.edit_category',
 					'type'		 => $this->type,
@@ -873,7 +873,7 @@
 		{
 			if (!$this->acl_add)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => ACL_ADD, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -1123,7 +1123,7 @@
 				}
 				else
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+					phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 						'perm'			 => 8, 'acl_location'	 => $this->acl_location));
 				}
 			}
@@ -1650,7 +1650,7 @@
 		{
 			if (!$this->acl_add)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -1815,7 +1815,7 @@
 		{
 			if (!$this->acl_add)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -2274,7 +2274,7 @@
 		{
 			if (!$this->acl_add)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -2413,12 +2413,12 @@
 			if (Sanitizer::get_var('delete', 'bool', 'POST'))
 			{
 				$this->bo->convert_to_eav();
-				$GLOBALS['phpgw']->redirect_link('/index.php', $redirect_args);
+				phpgw::redirect_link('/index.php', $redirect_args);
 			}
 
 			if (Sanitizer::get_var('cancel', 'bool', 'POST'))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', $redirect_args);
+				phpgw::redirect_link('/index.php', $redirect_args);
 			}
 
 			phpgwapi_xslttemplates::getInstance()->add_file(array('delete'));
@@ -2623,7 +2623,7 @@
 				$message	 = $GLOBALS['phpgw']->common->msgbox($msgbox_data);
 
 				phpgwapi_cache::message_set($message[0]['msgbox_text'], 'message');
-				$GLOBALS['phpgw']->redirect_link('/index.php', array(
+				phpgw::redirect_link('/index.php', array(
 					'menuaction' => 'property.uiadmin_entity.edit_checklist',
 					'id'		 => $id
 					)
@@ -3162,7 +3162,7 @@
 				$message	 = $GLOBALS['phpgw']->common->msgbox($msgbox_data);
 
 				phpgwapi_cache::message_set($message[0]['msgbox_text'], 'message');
-				$GLOBALS['phpgw']->redirect_link('/index.php', array(
+				phpgw::redirect_link('/index.php', array(
 					'menuaction' => 'property.uiadmin_entity.edit_checklist_stage',
 					'id'		 => $id
 					)

@@ -170,7 +170,7 @@
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 			ExecMethod('property.bofiles.get_file', Sanitizer::get_var('file_id', 'int'));
@@ -658,7 +658,7 @@
 
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uiproject.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uiproject.stop',
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -1623,7 +1623,7 @@ JS;
 
 			if ($mode == 'edit' && (!$this->acl_add && !$this->acl_edit))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiproject.view',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiproject.view',
 					'id'		 => $id));
 			}
 
@@ -1638,7 +1638,7 @@ JS;
 				if (!$id)
 				{
 					phpgwapi_cache::message_set('ID is required for the function uiproject::view()', 'error');
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiproject.index'));
+					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiproject.index'));
 				}
 			}
 			else
@@ -1750,7 +1750,7 @@ JS;
 
 				if (!isset($values['workorder_budget']) && $save && !$_transfer_new_project && !$values['project_type_id'] == 3)
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiworkorder.edit',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiworkorder.edit',
 						'project_id' => $id));
 				}
 
@@ -2908,7 +2908,7 @@ JS;
 				if (!$receipt['error'])
 				{
 					$id = $receipt['id'];
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiworkorder.edit',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiworkorder.edit',
 						'project_id' => $id));
 				}
 			}
@@ -3094,7 +3094,7 @@ JS;
 		{
 			if (!$this->acl_edit)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => ACL_EDIT, 'acl_location'	 => $this->acl_location));
 			}
 

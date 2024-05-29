@@ -122,7 +122,7 @@
 			}
 			else
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiinvoice2.index',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiinvoice2.index',
 					'voucher_id' => $voucher_id, 'line_id'	 => $line_id));
 			}
 		}
@@ -278,7 +278,7 @@
 			  }
 			  else
 			  {
-			  $GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiinvoice2.index', 'voucher_id' => $voucher_id, 'line_id' => $line_id));
+			  phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiinvoice2.index', 'voucher_id' => $voucher_id, 'line_id' => $line_id));
 			  }
 			 */
 		}
@@ -359,7 +359,7 @@
 			}
 			else
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiinvoice2.index',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiinvoice2.index',
 					'voucher_id' => $voucher_id, 'line_id'	 => $line_id));
 			}
 		}

@@ -526,7 +526,7 @@
 						if (isset($values['save']) && $values['save'])
 						{
 							$GLOBALS['phpgw']->session->appsession('session_data', 'responsible_receipt', $receipt);
-							$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiresponsible.index',
+							phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiresponsible.index',
 								'appname'	 => $this->appname));
 						}
 					}
@@ -542,7 +542,7 @@
 					}
 					self::message_set($receipt);
 
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiresponsible.edit',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiresponsible.edit',
 						'appname'	 => $this->appname, 'id'		 => $id));
 				}
 				else
@@ -560,7 +560,7 @@
 		{
 			if (!$this->acl_add && !$this->acl_edit)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uilocation.stop',
 					'perm'			 => 2, 'acl_location'	 => $this->acl_location));
 			}
 
@@ -574,7 +574,7 @@
 
 			if (isset($values['cancel']) && $values['cancel'])
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uiresponsible.index',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiresponsible.index',
 					'appname'	 => $this->appname));
 			}
 
@@ -744,7 +744,7 @@
 					if (isset($values['save']) && $values['save'])
 					{
 						$GLOBALS['phpgw']->session->appsession('session_data', 'responsible_receipt', $receipt);
-						$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uigeneric.index',
+						phpgw::redirect_link('/index.php', array('menuaction' => 'property.uigeneric.index',
 							'type'		 => 'responsibility_role', 'appname'	 => $this->appname));
 					}
 				}
@@ -752,7 +752,7 @@
 
 			if (isset($values['cancel']) && $values['cancel'])
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uigeneric.index',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uigeneric.index',
 					'type'		 => 'responsibility_role', 'appname'	 => $this->appname));
 			}
 
@@ -1130,7 +1130,7 @@
 						if (isset($values['save']) && $values['save'])
 						{
 							$GLOBALS['phpgw']->session->appsession('session_data', 'responsible_contact_receipt', $receipt);
-							$GLOBALS['phpgw']->redirect_link('/index.php', array
+							phpgw::redirect_link('/index.php', array
 								(
 								'menuaction' => 'property.uiresponsible.contact',
 								'appname'	 => $this->appname,
@@ -1140,7 +1140,7 @@
 						}
 						else if (isset($values['apply']) && $values['apply'])
 						{
-							$GLOBALS['phpgw']->redirect_link('/index.php', array
+							phpgw::redirect_link('/index.php', array
 								(
 								'menuaction' => 'property.uiresponsible.edit_contact',
 								'appname'	 => $this->appname,
@@ -1168,7 +1168,7 @@
 				}
 				else
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array
+					phpgw::redirect_link('/index.php', array
 						(
 						'menuaction' => 'property.uiresponsible.contact',
 						'appname'	 => $this->appname,

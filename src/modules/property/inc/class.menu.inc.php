@@ -51,6 +51,7 @@
 			
 			$incoming_app			 = $flags['currentapp'];
 			$flags['currentapp']	 = 'property';
+			Settings::getInstance()->set('flags', $flags);
 			$acl					 =	Acl::getInstance();
 			$menus					 = array();
 

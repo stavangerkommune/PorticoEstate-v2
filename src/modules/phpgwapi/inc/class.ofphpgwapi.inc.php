@@ -84,9 +84,6 @@ class phpgwapi_ofphpgwapi extends phpgwapi_object_factory
 		list($appname, $classname) = explode('.', $class, 2);
 		switch ($classname)
 		{
-			case 'auth':
-				return	new \App\modules\phpgwapi\security\Auth\Auth();
-
 			case 'accounts':
 				$account_id   = ($p1 !== '_UNDEF_') ? $p1 : null;
 				$account_type = ($p2 !== '_UNDEF_') ? $p2 : null;
@@ -96,29 +93,44 @@ class phpgwapi_ofphpgwapi extends phpgwapi_object_factory
 				$account_id   = ($p1 !== '_UNDEF_') ? $p1 : null;
 				return \App\modules\phpgwapi\security\Acl::getInstance($account_id);
 
-			case 'mapping':
-				$auth_info = ($p1 !== '_UNDEF_') ? $p1 : null;
-				return new \App\modules\phpgwapi\security\Sso\Mapping($auth_info);
+			case 'asyncservice':
+				return \App\modules\phpgwapi\services\AsyncService::getInstance();
+			case 'auth':
+				return	new \App\modules\phpgwapi\security\Auth\Auth();
+			case 'config':
+				$app = ($p1 !== '_UNDEF_') ? $p1 : null;
+				return new \App\modules\phpgwapi\services\Config($app);
 
 			case 'db':
 				$query = ($p1 !== '_UNDEF_') ? $p1 : null;
 				$db_type = ($p2 !== '_UNDEF_') ? $p2 : null;
 				$delay_connect = ($p3 !== '_UNDEF_') ? $p3 : null;
 				return \App\Database\Db::getInstance();
+
 			case 'hooks':
 				$db = ($p1 !== '_UNDEF_') ? $p1 : null;
 				return new \App\modules\phpgwapi\services\Hooks($db);
-			case 'asyncservice':
-				return \App\modules\phpgwapi\services\AsyncService::getInstance();
-			case 'config':
-				$app = ($p1 !== '_UNDEF_') ? $p1 : null;
-				return new \App\modules\phpgwapi\services\Config($app);
+
+			case 'mapping':
+				$auth_info = ($p1 !== '_UNDEF_') ? $p1 : null;
+				return new \App\modules\phpgwapi\security\Sso\Mapping($auth_info);
+
+			case 'preferences':
+				$account_id = ($p1 !== '_UNDEF_') ? $p1 : null;
+				$Preferences = App\modules\phpgwapi\services\Preferences::getInstance();
+				if($account_id)
+				{
+					$Preferences->setAccountId($account_id);
+				}
+				return $Preferences;
 			case 'send':
 				return new \App\modules\phpgwapi\services\Send();
 			case 'template':
 				$root = ($p1 !== '_UNDEF_') ? $p1 : null;
 				$unknowns = ($p2 !== '_UNDEF_') ? $p2 : null;
 				return App\helpers\Template::getInstance($root, $unknowns);
+			case 'vfs':
+				return new \App\modules\phpgwapi\services\Vfs\Vfs();
 			default:
 				return parent::createObject(
 					$class,

@@ -47,6 +47,17 @@ function lang($key, $m1 = '', $m2 = '', $m3 = '', $m4 = '', $m5 = '', $m6 = '', 
 	return $translation->translate($key, $vars);
 }
 
+function js_lang()
+{
+	$keys = func_get_args();
+	$strings = array();
+	foreach ($keys as $key)
+	{
+		$strings[$key] = is_string($key) ? lang($key) : call_user_func_array('lang', $key);
+	}
+	return json_encode($strings);
+}
+
 /**
  * Fix global phpgw_link from XSLT templates by adding session id and click_history
  * @return string containing parts of url
@@ -57,3 +68,4 @@ function get_phpgw_session_url()
 	$url_parts = parse_url($base_url);
 	return $url_parts['query'];
 }
+
