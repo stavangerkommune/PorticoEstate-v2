@@ -68,6 +68,8 @@
 		 * @var string $_like SQL LIKE statement
 		 */
 		protected $_like;
+		protected $serverSettings;
+		protected $userSettings;
 		protected $_global_lock = false;
 
 		public $custom;
@@ -76,9 +78,10 @@
 
 		public function __construct()
 		{
-			
-			$userSettings =		Settings::getInstance()->get('user');
-			$this->account		 = (int)$userSettings['account_id'];
+
+			$this->userSettings =		Settings::getInstance()->get('user');
+			$this->serverSettings = Settings::getInstance()->get('server');
+			$this->account		 = (int)$this->userSettings['account_id'];
 			$this->_db			 = Db::getInstance();
 			$this->_join		 = & $this->_db->join;
 			$this->_like		 = & $this->_db->like;

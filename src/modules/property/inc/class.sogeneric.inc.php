@@ -26,7 +26,10 @@
 	 * @subpackage admin
 	 * @version $Id: class.sogeneric.inc.php 15493 2016-08-19 11:45:55Z sigurdne $
 	 */
-	phpgw::import_class('property.sogeneric_');
+
+	use App\modules\phpgwapi\services\Cache;
+
+	 phpgw::import_class('property.sogeneric_');
 
 	/**
 	 * Description
@@ -2966,7 +2969,7 @@
 
 				default:
 					$message = lang('ERROR: illegal type %1', $type);
-					phpgwapi_cache::message_set($message, 'error');
+					Cache::message_set($message, 'error');
 //				throw new Exception(lang('ERROR: illegal type %1', $type));
 			}
 			$info['type']		 = $type;

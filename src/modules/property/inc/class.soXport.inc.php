@@ -26,6 +26,16 @@
 	 * @subpackage admin
 	 * @version $Id$
 	 */
+
+use App\Database\Db;
+use App\Database\Db2;
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\Log;
+use App\modules\phpgwapi\security\Acl;
+use App\modules\phpgwapi\services\Cache;
+use App\modules\phpgwapi\controllers\Accounts\Accounts;
+use App\modules\phpgwapi\controllers\Locations;
+
 	phpgw::import_class('phpgwapi.datetime');
 
 	/**
@@ -47,14 +57,19 @@
 
 		function __construct()
 		{
-			$GLOBALS['phpgw_info']['flags']['currentapp']	 = 'property';
+			$flags = Settings::getInstance()->get('flags');
+			$flags['currentapp']	 = 'property';
+			Settings::getInstance()->set('flags', $flags);
+			
+
 			$this->soinvoice								 = CreateObject('property.soinvoice', true);
-			$this->db										 = & $GLOBALS['phpgw']->db;
-			$this->like										 = & $this->db->like;
-			$this->join										 = & $this->db->join;
-			$this->left_join								 = & $this->db->left_join;
+			$this->db										 = Db::getInstance();
+			$this->like										 = $this->db->like;
+			$this->join										 = $this->db->join;
+			$this->left_join								 = $this->db->left_join;
 			$this->datetimeformat							 = $this->db->datetime_format();
-			$this->account_id								 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$userSettings = Settings::getInstance()->get('user');
+			$this->account_id								 = $userSettings['account_id'];
 		}
 
 		function auto_tax( $loc1 = '' )
@@ -136,12 +151,12 @@
 				. " fm_location1.part_of_town_id = fm_part_of_town.id ";
 			//	. "      and (fm_owner.category=0 or fm_owner.category=2)";
 
-			$GLOBALS['phpgw']->db->query($sql, __LINE__, __FILE__);
-			$GLOBALS['phpgw']->db->next_record();
+			$this->db->query($sql, __LINE__, __FILE__);
+			$this->db->next_record();
 
-			$gabinfo['loc1']		 = $GLOBALS['phpgw']->db->f('loc1');
-			$gabinfo['dima']		 = $GLOBALS['phpgw']->db->f('loc1') . $GLOBALS['phpgw']->db->f('loc2') . $GLOBALS['phpgw']->db->f('loc3');
-			$gabinfo['district_id']	 = $GLOBALS['phpgw']->db->f('district_id');
+			$gabinfo['loc1']		 = $this->db->f('loc1');
+			$gabinfo['dima']		 = $this->db->f('loc1') . $this->db->f('loc2') . $this->db->f('loc3');
+			$gabinfo['district_id']	 = $this->db->f('district_id');
 
 			return $gabinfo;
 		}
@@ -152,9 +167,9 @@
 			$loc2	 = substr($dima, 4, 2);
 			$loc3	 = substr($dima, 6, 2);
 			$sql	 = "SELECT loc3_name FROM fm_location3 WHERE loc1 = '$loc1' and loc2= '$loc2' and loc3 = '$loc3' ";
-			$GLOBALS['phpgw']->db->query($sql, __LINE__, __FILE__);
-			$GLOBALS['phpgw']->db->next_record();
-			$address = $GLOBALS['phpgw']->db->f('loc3_name');
+			$this->db->query($sql, __LINE__, __FILE__);
+			$this->db->next_record();
+			$address = $this->db->f('loc3_name');
 			return $address;
 		}
 
@@ -214,7 +229,7 @@
 
 					if ($fields['pmwrkord_code'])
 					{
-						phpgwapi_cache::system_clear('property', "budget_order_{$fields['pmwrkord_code']}");
+						Cache::system_clear('property', "budget_order_{$fields['pmwrkord_code']}");
 					}
 
 					$values = array(
@@ -718,6 +733,7 @@
 			$this->voucher_id	 = $values[0]['bilagsnr'];
 
 			$voucher = $this->get_voucher($values[0]['bilagsnr']);
+			$account_obj = new Accounts();
 			foreach ($voucher as &$line)
 			{
 				$line['overftid']			 = date($_dateformat, phpgwapi_datetime::date_to_timestamp($values[0]['paid_date']));
@@ -727,7 +743,7 @@
 				$line['saksigndato']		 = date($_dateformat);
 				$line['budsjettsigndato']	 = date($_dateformat);
 				$line['utbetalingsigndato']	 = date($_dateformat);
-				$line['utbetalingid']		 = $GLOBALS['phpgw']->accounts->get($this->account_id)->lid;
+				$line['utbetalingid']		 = $account_obj->get($this->account_id)->lid;
 				$line['manual_record']		 = 1;
 
 				$this->add_OverfBilag($line);
@@ -818,7 +834,7 @@
 						{
 							if ($e)
 							{
-								phpgwapi_cache::message_set($e->getMessage(), 'error');
+								Cache::message_set($e->getMessage(), 'error');
 							}
 						}
 					}
@@ -828,7 +844,7 @@
 
 				foreach ($orders_affected as $order_id => $dummy)
 				{
-					phpgwapi_cache::system_clear('property', "budget_order_{$order_id}");
+					Cache::system_clear('property', "budget_order_{$order_id}");
 
 					// Not yet processed
 					$this->db->query("SELECT max(amount) AS amount FROM fm_orders_paid_or_pending_view WHERE order_id = {$order_id} AND periode IS NULL", __LINE__, __FILE__);
@@ -850,7 +866,7 @@
 							{
 								if ($e)
 								{
-									phpgwapi_cache::message_set($e->getMessage(), 'error');
+									Cache::message_set($e->getMessage(), 'error');
 								}
 							}
 						}
@@ -863,7 +879,7 @@
 		// operator="-" ved tilbakerulling
 		public function correct_actual_cost( $order_id, $amount, $actual_cost_field, $operator )
 		{
-			phpgwapi_cache::system_clear('property', "budget_order_{$order_id}");
+			Cache::system_clear('property', "budget_order_{$order_id}");
 
 			$sql = "SELECT type FROM fm_orders WHERE id='{$order_id}'";
 			$this->db->query($sql, __LINE__, __FILE__);
@@ -894,7 +910,8 @@
 			if (!$table)
 			{
 				$message = 'property_soXport::correct_actual_cost() ERROR: the order id %1 seems to not correspond with any order type';
-				$GLOBALS['phpgw']->log->error(array(
+				$log = new Log();
+				$log->error(array(
 					'text'	 => $message,
 					'p1'	 => $order_id,
 					'p2'	 => '',

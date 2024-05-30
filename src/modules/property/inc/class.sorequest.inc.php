@@ -26,6 +26,10 @@
 	 * @subpackage project
 	 * @version $Id$
 	 */
+
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+	use App\modules\phpgwapi\controllers\Locations;
+
 	phpgw::import_class('phpgwapi.datetime');
 	phpgw::import_class('property.socommon_core');
 
@@ -112,7 +116,7 @@
 
 			foreach ($request as $id)
 			{
-				if ($GLOBALS['phpgw_info']['server']['db_type'] == 'pgsql' || $GLOBALS['phpgw_info']['server']['db_type'] == 'postgres')
+				if ($this->serverSettings['db_type'] == 'pgsql' || $this->serverSettings['db_type'] == 'postgres')
 				{
 					$sql = "UPDATE fm_request SET score = (SELECT sum(CAST(priority_key as int4) * ( CAST(degree as int4) * CAST(probability as int4) * ( CAST(consequence as int4) )))  FROM fm_request_condition"
 						. " {$this->_join}  fm_request_condition_type ON (fm_request_condition.condition_type = fm_request_condition_type.id) WHERE request_id = {$id}) WHERE fm_request.id = {$id}";
@@ -327,13 +331,15 @@
 			$responsible_unit	 = (int)$data['responsible_unit'];
 			$recommended_year	 = (int)$data['recommended_year'];
 
-			$location_id		 = $GLOBALS['phpgw']->locations->get_id('property', '.project.request');
+			$locations_obj = new Locations();
+			$location_id		 = $locations_obj->get_id('property', '.project.request');
 			$attribute_table	 = 'phpgw_cust_attribute';
 			$attribute_filter	 = " location_id = {$location_id}";
 
 			$entity_table = 'fm_request';
 
-			$GLOBALS['phpgw']->config->read();
+			$config = createObject('phpgwapi.config', 'property');
+			$config->read();
 
 			$uicols			 = array();
 			$cols			 = "{$entity_table}.location_code";
@@ -585,7 +591,7 @@
 			$cols_group[]			 = 'coordinator';
 			$uicols['input_type'][]	 = 'text';
 			$uicols['name'][]		 = 'coordinator';
-			$uicols['descr'][]		 = isset($GLOBALS['phpgw']->config->config_data['lang_request_coordinator']) && $GLOBALS['phpgw']->config->config_data['lang_request_coordinator'] ? $GLOBALS['phpgw']->config->config_data['lang_request_coordinator'] : lang('Coordinator');
+			$uicols['descr'][]		 = isset($config->config_data['lang_request_coordinator']) && $config->config_data['lang_request_coordinator'] ? $config->config_data['lang_request_coordinator'] : lang('Coordinator');
 			$uicols['statustext'][]	 = lang('Project coordinator');
 			$uicols['exchange'][]	 = '';
 			$uicols['align'][]		 = '';
@@ -605,7 +611,7 @@
 			$paranthesis .= '(';
 			$joinmethod	 .= "{$this->_left_join} fm_request_condition ON {$entity_table}.id = fm_request_condition.request_id)";
 
-			$_location_level = isset($GLOBALS['phpgw']->config->config_data['request_location_level']) && $GLOBALS['phpgw']->config->config_data['request_location_level'] ? $GLOBALS['phpgw']->config->config_data['request_location_level'] : 0;
+			$_location_level = isset($config->config_data['request_location_level']) && $config->config_data['request_location_level'] ? $config->config_data['request_location_level'] : 0;
 			$sql			 = $this->bocommon->generate_sql(array('entity_table'	 => $entity_table,
 				'cols'			 => $cols, 'cols_return'	 => $cols_return,
 				'uicols'		 => array(), 'joinmethod'	 => $joinmethod, 'paranthesis'	 => $paranthesis,
@@ -649,7 +655,7 @@
 			$where			 = 'WHERE';
 			$filtermethod	 = '';
 
-			if (isset($GLOBALS['phpgw']->config->config_data['acl_at_location']) && $GLOBALS['phpgw']->config->config_data['acl_at_location'])
+			if (isset($config->config_data['acl_at_location']) && $config->config_data['acl_at_location'])
 			{
 				$access_location = $this->bocommon->get_location_list(ACL_READ);
 				$filtermethod	 = " WHERE fm_request.loc1 in ('" . implode("','", $access_location) . "')";
@@ -1462,8 +1468,10 @@
 
 		public function get_user_list()
 		{
+			
 			$values	 = array();
-			$users	 = $GLOBALS['phpgw']->accounts->get_list('accounts', $start	 = -1, $sort	 = 'ASC', $order	 = 'account_lastname', $query = '', $offset	 = -1);
+			$account_obj = new Accounts();
+			$users	 = $account_obj->get_list('accounts', $start	 = -1, $sort	 = 'ASC', $order	 = 'account_lastname', $query = '', $offset	 = -1);
 			$sql	 = 'SELECT DISTINCT coordinator FROM fm_request';
 			$this->_db->query($sql, __LINE__, __FILE__);
 

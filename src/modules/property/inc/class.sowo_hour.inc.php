@@ -27,6 +27,11 @@
 	 * @version $Id$
 	 */
 
+	use App\Database\Db;
+	use App\Database\Db2;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Locations;
+
 	/**
 	 * Description
 	 * @package property
@@ -38,13 +43,13 @@
 
 		function __construct()
 		{
-			$this->account = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->account = Settings::getInstance()->get('user')['account_id'];
 
-			$this->db		 = & $GLOBALS['phpgw']->db;
-			$this->db2		 = clone($this->db);
-			$this->like		 = & $this->db->like;
-			$this->join		 = & $this->db->join;
-			$this->left_join = & $this->db->left_join;
+			$this->db		 = Db::getInstance();
+			$this->db2		 = new Db2();
+			$this->like		 = $this->db->like;
+			$this->join		 = $this->db->join;
+			$this->left_join = $this->db->left_join;
 		}
 
 		function get_chapter_list()
@@ -701,7 +706,8 @@
 		function get_email( $vendor_id = 0 )
 		{
 			$vendor_id	 = (int)$vendor_id;
-			$location_id = $GLOBALS['phpgw']->locations->get_id('property', '.vendor');
+			$location_obj = new Locations();
+			$location_id = $location_obj->get_id('property', '.vendor');
 			$this->db->query("SELECT column_name FROM phpgw_cust_attribute WHERE location_id = {$location_id} AND datatype='email'", __LINE__, __FILE__);
 			$email_list	 = array();
 			while ($this->db->next_record())

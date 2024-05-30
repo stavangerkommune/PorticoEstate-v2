@@ -27,23 +27,29 @@
 	 * @subpackage logistic
 	 * @version $Id: class.sogeneric_document.inc.php 14913 2016-04-27 12:27:37Z sigurdne $
 	 */
-	class property_sogeneric_document
+
+	use App\Database\Db;
+	use App\modules\phpgwapi\services\Settings;
+
+	 class property_sogeneric_document
 	{
 
 		protected
 			$perform_update_relation_path = false;
 		
-		var $vfs, $db, $join, $left_join, $like, $total_records, $total_records_componentes;
+		var $vfs, $db, $join, $left_join, $like, $total_records, $total_records_componentes, $userSettings;
 
 		function __construct()
 		{
+			$this->userSettings = Settings::getInstance()->get('user');
+
 			$this->vfs			 = CreateObject('phpgwapi.vfs');
 			$this->vfs->fakebase = '/property';
 
-			$this->db			 = & $GLOBALS['phpgw']->db;
-			$this->join			 = & $this->db->join;
-			$this->left_join	 = & $this->db->left_join;
-			$this->like			 = & $this->db->like;
+			$this->db			 = Db::getInstance();
+			$this->join			 = $this->db->join;
+			$this->left_join	 = $this->db->left_join;
+			$this->like			 = $this->db->like;
 			$this->total_records = 0;
 		}
 
@@ -153,8 +159,9 @@
 				{
 					$this->db->query($sql . $ordermethod, __LINE__, __FILE__);
 				}
-				$dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+				$dateformat	 = $this->userSettings['preferences']['common']['dateformat'];
 				$ids		 = array();
+				$phpgwapi_common = new \phpgwapi_common();
 				while ($this->db->next_record())
 				{
 					$id			 = $this->db->f('file_id');
@@ -165,8 +172,8 @@
 						'owner_id'		 => $this->db->f('owner_id'),
 						'createdby_id'	 => $this->db->f('createdby_id'),
 						'modifiedby_id'	 => $this->db->f('modifiedby_id'),
-						'created'		 => $GLOBALS['phpgw']->common->show_date(strtotime($this->db->f('created')), $dateformat),
-						'modified'		 => $GLOBALS['phpgw']->common->show_date(strtotime($this->db->f('modified')), $dateformat),
+						'created'		 => $phpgwapi_common->show_date(strtotime($this->db->f('created')), $dateformat),
+						'modified'		 => $phpgwapi_common->show_date(strtotime($this->db->f('modified')), $dateformat),
 						'size'			 => $this->db->f('size'),
 						'mime_type'		 => $this->db->f('mime_type', true),
 						'app'			 => $this->db->f('app'),
@@ -313,7 +320,7 @@
 						'location_id'		 => (int)$location_id,
 						'location_item_id'	 => (int)$item,
 						'is_private'		 => 0,
-						'account_id'		 => $GLOBALS['phpgw_info']['user']['account_id'],
+						'account_id'		 => $this->userSettings['account_id'],
 						'entry_date'		 => $date,
 						'start_date'		 => $date,
 						'end_date'			 => $date

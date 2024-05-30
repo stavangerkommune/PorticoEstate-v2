@@ -27,7 +27,12 @@
 	 * @subpackage logistic
 	 * @version $Id: class.soreport.inc.php 14913 2016-04-27 12:27:37Z sigurdne $
 	 */
-	class property_soreport
+
+	use App\Database\Db;
+	use App\modules\phpgwapi\services\Settings;
+
+
+	 class property_soreport
 	{
 		public
 			$operators,
@@ -43,13 +48,15 @@
 			$db,
 			$join,
 			$left_join,
-			$like;
+			$like,
+			$account_id;
 		function __construct()
 		{
-			$this->db			 = & $GLOBALS['phpgw']->db;
-			$this->join			 = & $this->db->join;
-			$this->left_join	 = & $this->db->left_join;
-			$this->like			 = & $this->db->like;
+			$this->account_id	 = Settings::getInstance()->get('user')['account_id'];
+			$this->db			 = Db::getInstance();
+			$this->join			 = $this->db->join;
+			$this->left_join	 = $this->db->left_join;
+			$this->like			 = $this->db->like;
 			$this->total_records = 0;
 
 			$this->operators_equal	 = array(
@@ -622,7 +629,7 @@
 				'dataset_id'		 => $data['dataset_id'],
 				'report_name'		 => $this->db->db_addslashes($data['report_name']),
 				'report_definition'	 => json_encode($data['report_definition']),
-				'owner_id'			 => $GLOBALS['phpgw_info']['user']['account_id'],
+				'owner_id'			 => $this->account_id,
 				'entry_date'		 => time()
 			);
 
@@ -653,7 +660,7 @@
 				'dataset_id'		 => $data['dataset_id'],
 				'report_name'		 => $this->db->db_addslashes($data['report_name']),
 				'report_definition'	 => json_encode($data['report_definition']),
-				'owner_id'			 => $GLOBALS['phpgw_info']['user']['account_id'],
+				'owner_id'			 => $this->account_id,
 				'entry_date'		 => time()
 			);
 
@@ -705,7 +712,7 @@
 				(
 				'view_name'		 => $this->db->db_addslashes($data['view_name']),
 				'dataset_name'	 => $this->db->db_addslashes($data['dataset_name']),
-				'owner_id'		 => $GLOBALS['phpgw_info']['user']['account_id'],
+				'owner_id'		 => $this->account_id,
 				'entry_date'	 => time()
 			);
 
@@ -735,7 +742,7 @@
 				(
 				'view_name'		 => $this->db->db_addslashes($data['view_name']),
 				'dataset_name'	 => $this->db->db_addslashes($data['dataset_name']),
-				'owner_id'		 => $GLOBALS['phpgw_info']['user']['account_id'],
+				'owner_id'		 => $this->account_id,
 				'entry_date'	 => time()
 			);
 

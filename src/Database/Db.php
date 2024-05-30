@@ -11,7 +11,7 @@ use ReflectionProperty;
 class Db
 {
 	private static $instance = null;
-	private $db;
+	protected $db;
 	protected $isTransactionActive = false;
 	protected static $domain;
 	protected static $config;

@@ -26,7 +26,16 @@
 	 * @subpackage project
 	 * @version $Id$
 	 */
-	phpgw::import_class('phpgwapi.datetime');
+
+	use App\Database\Db;
+	use App\Database\Db2;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\security\Acl;
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+	use App\modules\phpgwapi\controllers\Locations;
+
+	 phpgw::import_class('phpgwapi.datetime');
 
 	/**
 	 * Description
@@ -41,27 +50,30 @@
 		protected $historylog;
 
 		var $db, $db2, $join, $left_join, $like, $custom, $account, $bocommon, $acl,$grants;
-		var $interlink, $config, $cols_extra, $uicols;
+		var $interlink, $config, $cols_extra, $uicols, $userSettings, $locations, $account_obj;
 
 		function __construct()
 		{
-			$this->account	 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->account	 = $this->userSettings['account_id'];
 			$this->bocommon	 = CreateObject('property.bocommon');
 			$this->interlink = CreateObject('property.interlink');
 			$this->custom	 = createObject('property.custom_fields');
 
-			$this->db		 = & $GLOBALS['phpgw']->db;
-			$this->db2		 = clone ($this->db);
-			$this->join		 = & $this->db->join;
-			$this->left_join = & $this->db->left_join;
-			$this->like		 = & $this->db->like;
+			$this->db		 = Db::getInstance();
+			$this->db2		 = new Db2();
+			$this->join		 = $this->db->join;
+			$this->left_join = $this->db->left_join;
+			$this->like		 = $this->db->like;
 
-			$this->acl			 = & $GLOBALS['phpgw']->acl;
+			$this->acl			 = Acl::getInstance();
 			$this->acl->set_account_id($this->account);
 			$this->grants		 = $this->acl->get_grants2('property', '.project');
 			$this->config		 = CreateObject('phpgwapi.config', 'property');
 			$this->config->read();
 			$this->historylog	 = CreateObject('property.historylog', 'project');
+			$this->locations	 = new Locations();
+			$this->account_obj	 = new Accounts();
 		}
 
 		function select_status_list()
@@ -370,7 +382,7 @@
 				$this->cols_extra	 = $this->bocommon->fm_cache('cols_extra_project_' . !!$wo_hour_cat_id);
 			}
 
-			$user_columns	 = isset($GLOBALS['phpgw_info']['user']['preferences']['property']['project_columns']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['project_columns'] ? $GLOBALS['phpgw_info']['user']['preferences']['property']['project_columns'] : array();
+			$user_columns	 = isset($this->userSettings['preferences']['property']['project_columns']) && $this->userSettings['preferences']['property']['project_columns'] ? $this->userSettings['preferences']['property']['project_columns'] : array();
 			$_user_columns	 = array();
 			foreach ($user_columns as $user_column_id)
 			{
@@ -380,7 +392,7 @@
 				}
 			}
 			$user_column_filter	 = '';
-			$location_id		 = $GLOBALS['phpgw']->locations->get_id('property', '.project');
+			$location_id		 = $this->locations->get_id('property', '.project');
 			$attribute_filter	 = " location_id = {$location_id}";
 
 			if ($_user_columns)
@@ -470,8 +482,9 @@
 
 			$filtermethod = '';
 
-			$GLOBALS['phpgw']->config->read();
-			if (isset($GLOBALS['phpgw']->config->config_data['acl_at_location']) && $GLOBALS['phpgw']->config->config_data['acl_at_location'])
+			$config = createObject('phpgwapi.config', 'property');
+			$config->read();
+			if (isset($config->config_data['acl_at_location']) && $config->config_data['acl_at_location'])
 			{
 				$access_location = $this->bocommon->get_location_list(ACL_READ);
 				$filtermethod	 = " WHERE fm_project.loc1 in ('" . implode("','", $access_location) . "')";
@@ -703,9 +716,11 @@
 
 //			$sql .= " $filtermethod $querymethod";
 			$sql_full = "{$sql} {$filtermethod} {$querymethod}";
-			//echo substr($sql,strripos($sql,'from'));
+		//echo substr($sql,strripos($sql,'from'));
 
-			if ($GLOBALS['phpgw_info']['server']['db_type'] == 'postgres')
+			$serverSettings = Settings::getInstance()->get('server');
+
+			if ($serverSettings['db_type'] == 'postgres')
 			{
 				$sql_minimized		 = 'SELECT DISTINCT fm_project.id ' . substr($sql_full, strripos($sql_full, 'FROM'));
 				$sql_count			 = "SELECT count(id) as cnt FROM ({$sql_minimized}) as t";
@@ -760,9 +775,9 @@
 //$test=array();
 				foreach ($project_list as &$project)
 				{
-					$this->db->query("{$sql} WHERE fm_project.id = '{$project['project_id']}' {$group_method}");
+					$this->db->query("{$sql} WHERE fm_project.id = '{$project['project_id']}'");
 					$this->db->next_record();
-//_debug_array("{$sql} WHERE fm_project.id = '{$project['project_id']}' {$group_method}");
+//_debug_array("{$sql} WHERE fm_project.id = '{$project['project_id']}'");
 					for ($i = 0; $i < $count_cols_return; $i++)
 					{
 						$project[$cols_return[$i]] = $this->db->f($cols_return[$i], true);
@@ -906,7 +921,7 @@
 				$meter_register_location = '.' . str_replace('_', '.', ltrim($meter_register, '.'));
 			}
 
-			return $location_id_meter_register = $GLOBALS['phpgw']->locations->get_id('property', $meter_register_location);
+			return $location_id_meter_register = $this->locations->get_id('property', $meter_register_location);
 		}
 
 		function read_single( $project_id, $values = array() )
@@ -1385,9 +1400,9 @@
 				{
 					$interlink_data = array
 						(
-						'location1_id'		 => $GLOBALS['phpgw']->locations->get_id('property', $project['origin']),
+						'location1_id'		 => $this->locations->get_id('property', $project['origin']),
 						'location1_item_id'	 => $project['origin_id'],
-						'location2_id'		 => $GLOBALS['phpgw']->locations->get_id('property', '.project'),
+						'location2_id'		 => $this->locations->get_id('property', '.project'),
 						'location2_item_id'	 => $id,
 						'account_id'		 => $this->account
 					);
@@ -1457,7 +1472,7 @@
 					$this->db->next_record();
 					$attrib_id = $this->db->f('attrib_id');
 
-					$meter_info		 = $GLOBALS['phpgw']->locations->get_name($location_id_meter_register);
+					$meter_info		 = $this->locations->get_name($location_id_meter_register);
 					$meter_location	 = str_replace('.', '_', ltrim($meter_info['location'], '.'));
 					$historylog		 = CreateObject('property.historylog', $meter_location);
 					$historylog->add('SO', $id, $power_meter, $old_power_meter, $attrib_id);
@@ -1703,7 +1718,7 @@
 				{
 					$workorder_id	 = $this->db->f('id');
 					$workorders[]	 = $workorder_id;
-					phpgwapi_cache::system_clear('property', "budget_order_{$workorder_id}");
+					Cache::system_clear('property', "budget_order_{$workorder_id}");
 				}
 
 				if ($workorders)
@@ -1957,7 +1972,7 @@
 			if ($old_coordinator != $project['coordinator'])
 			{
 				$historylog->add('C', $project['id'], $project['coordinator'], $old_coordinator);
-				$receipt['notice_owner'][] = lang('Coordinator changed') . ': ' . $GLOBALS['phpgw']->accounts->id2name($project['coordinator']);
+				$receipt['notice_owner'][] = lang('Coordinator changed') . ': ' . $this->account_obj->id2name($project['coordinator']);
 			}
 
 
@@ -2730,9 +2745,9 @@
 				{
 					$interlink_data = array
 						(
-						'location1_id'		 => $GLOBALS['phpgw']->locations->get_id('property', '.project.request'),
+						'location1_id'		 => $this->locations->get_id('property', '.project.request'),
 						'location1_item_id'	 => $add_request['request_id'][$i],
-						'location2_id'		 => $GLOBALS['phpgw']->locations->get_id('property', '.project'),
+						'location2_id'		 => $this->locations->get_id('property', '.project'),
 						'location2_item_id'	 => $id,
 						'account_id'		 => $this->account
 					);
@@ -2748,12 +2763,12 @@
 						$this->db->query("UPDATE fm_request SET status='{$request_project_hookup_status}' WHERE id='" . $add_request['request_id'][$i] . "'", __LINE__, __FILE__);
 					}
 
-					phpgwapi_cache::message_set(lang('request %1 has been added', $add_request['request_id'][$i]), 'message');
+					Cache::message_set(lang('request %1 has been added', $add_request['request_id'][$i]), 'message');
 //					$receipt['message'][] = array('msg' => lang('request %1 has been added', $add_request['request_id'][$i]));
 				}
 				else
 				{
-					phpgwapi_cache::message_set(lang('request %1 has already been added to project %2', $add_request['request_id'][$i], $project_id), 'error');
+					Cache::message_set(lang('request %1 has already been added to project %2', $add_request['request_id'][$i], $project_id), 'error');
 //					$receipt['error'][] = array('msg' => lang('request %1 has already been added to project %2', $add_request['request_id'][$i], $project_id));
 				}
 			}
@@ -2914,7 +2929,7 @@
 							{
 								if ($e)
 								{
-									phpgwapi_cache::message_set($e->getMessage(), 'error');
+									Cache::message_set($e->getMessage(), 'error');
 								}
 							}
 							break;
@@ -2927,7 +2942,7 @@
 							{
 								if ($e)
 								{
-									phpgwapi_cache::message_set($e->getMessage(), 'error');
+									Cache::message_set($e->getMessage(), 'error');
 								}
 							}
 
@@ -3069,8 +3084,9 @@
 
 			$this->db->query($sql, __LINE__, __FILE__);
 			$values		 = array();
-			$dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat	 = $this->userSettings['preferences']['common']['dateformat'];
 
+			$phpgwapi_common = new \phpgwapi_common();
 			while ($this->db->next_record())
 			{
 				$values[] = array(
@@ -3081,7 +3097,7 @@
 					'title'				 => $this->db->f('title', true),
 					'status'			 => $this->db->f('status', true),
 					'actual_cost'		 => (float)$this->db->f('actual_cost'),
-					'start_date'		 => $GLOBALS['phpgw']->common->show_date($this->db->f('start_date'), $dateformat),
+					'start_date'		 => $phpgwapi_common->show_date($this->db->f('start_date'), $dateformat),
 					'num_open'			 => (int)$this->db->f('num_open'),
 					'project_type_id'	 => $this->db->f('project_type_id'),
 					'continuous'		 => $this->db->f('continuous') ? 'X' : '',
@@ -3121,7 +3137,7 @@
 				$entry['budget']			 = implode(' ;', $budget);
 				$entry['latest_year']		 = $_year;
 				$entry['active_amount']		 = array_sum($_active_amount);
-				$entry['coordinator_name']	 = $GLOBALS['phpgw']->accounts->get($entry['coordinator'])->__toString();
+				$entry['coordinator_name']	 = $this->account_obj->get($entry['coordinator'])->__toString();
 			}
 
 			return $values;
@@ -3237,7 +3253,7 @@
 
 				if ($old_status != $status_new)
 				{
-					phpgwapi_cache::system_clear('property', "budget_order_{$id}");
+					Cache::system_clear('property', "budget_order_{$id}");
 					$this->db->query("UPDATE fm_workorder SET status = '{$status_new}' WHERE id = '{$id}'", __LINE__, __FILE__);
 					$historylog->add('S', $id, $status_new, $old_status);
 					$historylog->add('RM', $id, 'Status endret via masseoppdatering eller prosjekt');
@@ -3297,7 +3313,7 @@
 		public function get_user_list()
 		{
 			$values	 = array();
-			$users	 = $GLOBALS['phpgw']->accounts->get_list('accounts', $start	 = -1, $sort	 = 'ASC', $order	 = 'account_lastname', $query='', $offset	 = -1);
+			$users	 = $this->account_obj->get_list('accounts', $start	 = -1, $sort	 = 'ASC', $order	 = 'account_lastname', $query='', $offset	 = -1);
 			$sql	 = 'SELECT DISTINCT coordinator AS user_id FROM fm_project';
 			$this->db->query($sql, __LINE__, __FILE__);
 
@@ -3491,7 +3507,7 @@
 			{
 				$id		 = $this->db->f('id');
 				$ids[]	 = $id;
-				phpgwapi_cache::system_clear('property', "budget_order_{$id}");
+				Cache::system_clear('property', "budget_order_{$id}");
 			}
 			if (!$ids)
 			{
@@ -3615,8 +3631,8 @@
 					if ($pending_action->close_pending_action($action_params))
 					{
 						$budget_amount = execMethod('property.boworkorder.get_budget_amount', $order_id);
-						$historylog->add('OA', $order_id, $GLOBALS['phpgw']->accounts->get($this->account)->__toString() . "::{$budget_amount}");
-						phpgwapi_cache::message_set(lang('order %1 approved for amount %2', $order_id, $budget_amount), 'message');
+						$historylog->add('OA', $order_id, $this->account_obj->get($this->account)->__toString() . "::{$budget_amount}");
+						Cache::message_set(lang('order %1 approved for amount %2', $order_id, $budget_amount), 'message');
 					}
 				}
 			}

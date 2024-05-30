@@ -26,6 +26,11 @@
 	 * @subpackage helpdesk
 	 * @version $Id$
 	 */
+
+	use App\modules\phpgwapi\services\Settings;
+	use App\Database\Db;
+	use App\modules\phpgwapi\security\Acl;
+	
 	phpgw::import_class('phpgwapi.datetime');
 
 	/**
@@ -68,15 +73,17 @@
 
 		function __construct()
 		{
-			$this->account		 = (int)$GLOBALS['phpgw_info']['user']['account_id'];
-			$this->historylog	 = CreateObject('property.historylog', 'tts');
-			$this->db			 = & $GLOBALS['phpgw']->db;
-			$this->like			 = & $this->db->like;
-			$this->join			 = & $this->db->join;
-			$this->left_join	 = & $this->db->left_join;
-			$this->dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$userSettings = Settings::getInstance()->get('user');
 
-			$this->acl	 = & $GLOBALS['phpgw']->acl;
+			$this->account		 = (int)$userSettings['account_id'];
+			$this->historylog	 = CreateObject('property.historylog', 'tts');
+			$this->db		 	 = Db::getInstance();
+			$this->like			 = $this->db->like;
+			$this->join			 = $this->db->join;
+			$this->left_join	 = $this->db->left_join;
+			$this->dateformat	 = $userSettings['preferences']['common']['dateformat'];
+
+			$this->acl	 = Acl::getInstance();
 			$this->type	 = 'entity';
 		}
 
@@ -151,7 +158,7 @@
 					{
 						if ($_attrib_filter_value = Sanitizer::get_var($attrib['column_name'], 'int'))
 						{
-							$attrib_filter[] = "fm_{$this->type}_{$this->entity_id}_{$this->cat_id}.{$attrib['column_name']} {$GLOBALS['phpgw']->db->like} '%,{$_attrib_filter_value},%'";
+							$attrib_filter[] = "fm_{$this->type}_{$this->entity_id}_{$this->cat_id}.{$attrib['column_name']} {$this->like} '%,{$_attrib_filter_value},%'";
 						}
 					}
 				}

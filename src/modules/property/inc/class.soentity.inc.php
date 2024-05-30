@@ -35,8 +35,6 @@ use App\modules\phpgwapi\controllers\Locations;
 use App\modules\phpgwapi\services\Cache;
 
 
-
-
 	/**
 	 * Description
 	 * @package property
@@ -1492,6 +1490,9 @@ use App\modules\phpgwapi\services\Cache;
 
 				//		$cols .= ", {$entity_table}.user_id";
 				$cols_return[] = 'user_id';
+				$joinmethod = '';
+				$paranthesis = '';
+				$query		 = '';
 
 				// Don't work with LDAP - where phpgw_accounts is empty
 				//			$joinmethod = " $this->join phpgw_accounts ON ($entity_table.user_id = phpgw_accounts.account_id))";

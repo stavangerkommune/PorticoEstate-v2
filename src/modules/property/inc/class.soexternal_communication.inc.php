@@ -27,6 +27,10 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\services\Cache;
+	use App\Database\Db;
+
 	/**
 	 * Description
 	 * @package property
@@ -41,14 +45,17 @@
 
 		public function __construct( $currentapp = 'property' )
 		{
-			$this->currentapp = $currentapp ? $currentapp : $GLOBALS['phpgw_info']['flags']['currentapp'];
+			$flags = Settings::getInstance()->get('flags');
+			$userSettings = Settings::getInstance()->get('user');
 
-			$this->db			 = & $GLOBALS['phpgw']->db;
-			$this->like			 = & $this->db->like;
-			$this->join			 = & $this->db->join;
-			$this->left_join	 = & $this->db->left_join;
+			$this->currentapp = $currentapp ? $currentapp : $flags['currentapp'];
+
+			$this->db			 = Db::getInstance();
+			$this->like			 = $this->db->like;
+			$this->join			 = $this->db->join;
+			$this->left_join	 = $this->db->left_join;
 			$this->historylog	 = CreateObject('phpgwapi.historylog', $this->currentapp, 'external_communication');
-			$this->account		 = (int)$GLOBALS['phpgw_info']['user']['account_id'];
+			$this->account		 = (int)$userSettings['account_id'];
 		}
 
 		function read( $params )
@@ -327,7 +334,7 @@
 			{
 				$this->db->query("UPDATE {$table} SET subject='{$new_subject}' WHERE id={$id}", __LINE__, __FILE__);
 				$this->historylog->add('S', $id, $new_subject, $old_subject);
-				phpgwapi_cache::message_set(lang('Subject has been updated'), 'message');
+				Cache::message_set(lang('Subject has been updated'), 'message');
 			}
 
 			$new_message = $values['message'];
@@ -479,7 +486,7 @@
 						}
 						else
 						{
-							phpgwapi_cache::message_set(lang('%1 is not a valid address', $_temp), 'error');
+							Cache::message_set(lang('%1 is not a valid address', $_temp), 'error');
 						}
 					}
 				}

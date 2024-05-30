@@ -27,6 +27,9 @@
 	 * @version $Id$
 	 */
 
+	use App\Database\Db;
+	use App\modules\phpgwapi\services\Settings;
+
 	/**
 	 * Description
 	 * @package property
@@ -38,11 +41,11 @@
 		function __construct()
 		{
 			$this->socommon	 = CreateObject('property.socommon');
-			$this->account	 = $GLOBALS['phpgw_info']['user']['account_id'];
-			$this->db		 = & $GLOBALS['phpgw']->db;
-			$this->join		 = & $this->db->join;
-			$this->left_join = & $this->db->left_join;
-			$this->like		 = & $this->db->like;
+			$this->account	 = Settings::getInstance()->get('user')['account_id'];
+			$this->db		 = Db::getInstance();
+			$this->join		 = $this->db->join;
+			$this->left_join = $this->db->left_join;
+			$this->like		 = $this->db->like;
 		}
 
 		function add_activity_first_prize( $m_cost, $w_cost, $total_cost, $activity_id, $agreement_id, $date )

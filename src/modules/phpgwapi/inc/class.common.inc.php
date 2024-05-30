@@ -981,7 +981,9 @@ HTML;
 			}
 
 			/* used for xslt apps without xslt framework */
-			if ( isset($this->flags['xslt_app']) && $this->flags['xslt_app'] )
+			$flags = Settings::getInstance()->get('flags');
+
+			if ( isset($flags['xslt_app']) && $flags['xslt_app'] )
 			{
 				phpgwapi_xslttemplates::getInstance()->add_file('app_data');
 			}
@@ -996,15 +998,17 @@ HTML;
 			if ( !$footer_rendered )
 			{
 				$footer_rendered = true;
+				$flags = Settings::getInstance()->get('flags');
+
 				/* used for xslt apps without xslt framework */
-				if ( isset($this->flags['xslt_app'])
-					&& $this->flags['xslt_app'] )
+				if ( isset($flags['xslt_app'])
+					&& $flags['xslt_app'] )
 				{
 					phpgwapi_xslttemplates::getInstance()->pparse();
 				}
 
-				if ( !isset($this->flags['nofooter'])
-					|| !$this->flags['nofooter'] )
+				if ( !isset($flags['nofooter'])
+					|| !$flags['nofooter'] )
 				{
 					require_once PHPGW_API_INC . '/footer.inc.php';
 				}
@@ -1023,13 +1027,15 @@ HTML;
 		*/
 		public function get_css($cache_refresh_token = '')
 		{
+			$flags = Settings::getInstance()->get('flags');
+			
 			$all_css = '';
 	
 			$all_css .= phpgwapi_css::getInstance()->get_css_links($cache_refresh_token);			
 
-			if ( isset($this->flags['css_link']) )
+			if ( isset($flags['css_link']) )
 			{
-				$all_css .= $this->flags['css_link'] . "\n";
+				$all_css .= $flags['css_link'] . "\n";
 			}
 
 			//FIXME drop app_css, use the new css stuff
@@ -1046,9 +1052,9 @@ HTML;
 				}
 			}
 
-			if ( isset($this->flags['css']) )
+			if ( isset($flags['css']) )
 			{
-				$app_css .= $this->flags['css'] . "\n";
+				$app_css .= $flags['css'] . "\n";
 			}
 
 			if($app_css)
@@ -1079,6 +1085,7 @@ HTML;
 		*/
 		public function get_javascript($cache_refresh_token = '')
 		{
+			$flags = Settings::getInstance()->get('flags');
 			$js = '';
 			$js .= phpgwapi_js::getInstance()->get_script_links($cache_refresh_token);
 
@@ -1096,9 +1103,9 @@ HTML;
 				}
 			}
 
-			if (isset($this->flags['java_script']))
+			if (isset($flags['java_script']))
 			{
-				$js .= $this->flags['java_script'] . "\n";
+				$js .= $flags['java_script'] . "\n";
 			}
 			Settings::getInstance()->set('java_script', $js);
 			return $js;
@@ -1116,12 +1123,13 @@ HTML;
 		*/
 		public function get_javascript_end($cache_refresh_token = '')
 		{
+			$flags = Settings::getInstance()->get('flags');
 			$js = '';			
 			$js .= phpgwapi_js::getInstance()->get_script_links($cache_refresh_token, true);
 
-			if (isset($this->flags['java_script_end']))
+			if (isset($flags['java_script_end']))
 			{
-				$js .= $this->flags['java_script_end'] . "\n";
+				$js .= $flags['java_script_end'] . "\n";
 			}
 			return $js;
 		}
@@ -1590,10 +1598,11 @@ HTML;
 					break;
 			}
 
-			if ($text=='' && @isset($this->flags['msgbox_data']))
+			$flags = Settings::getInstance()->get('flags');
+			if ($text=='' && @isset($flags['msgbox_data']))
 			{
-				$text = $this->flags['msgbox_data'];
-				unset($this->flags['msgbox_data']);
+				$text = $flags['msgbox_data'];
+				unset($flags['msgbox_data']);
 			}
 			elseif($text=='')
 			{

@@ -27,6 +27,11 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\services\Cache;
+use App\Database\Db;
+use App\Database\Db2;
+
 	/**
 	 * Description
 	 * @package property
@@ -34,20 +39,21 @@
 	class property_sogab
 	{
 
-		var $gab_insert_level;
 		var $payment_date = array();
 		var $custom, $bocommon, $config, $total_records, $uicols,$cols_extra;
-		var $account, $db, $db2, $join, $left_join, $like;
+		var $account, $db, $db2, $join, $left_join, $like, $userSettings, $gab_insert_level;
 
 		function __construct()
 		{
-			$this->account	 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->userSettings = Settings::getInstance()->get('user');
+
+			$this->account	 = $this->userSettings['account_id'];
 			$this->bocommon	 = CreateObject('property.bocommon');
-			$this->db		 = & $GLOBALS['phpgw']->db;
-			$this->db2		 = clone($this->db);
-			$this->join		 = & $this->db->join;
-			$this->left_join = & $this->db->left_join;
-			$this->like		 = & $this->db->like;
+			$this->db		 = Db::getInstance();
+			$this->db2		 = new Db2();
+			$this->join		 = $this->db->join;
+			$this->left_join = $this->db->left_join;
+			$this->like		 = $this->db->like;
 			$this->custom	 = createObject('property.custom_fields');
 
 			$this->config			 = CreateObject('phpgwapi.config', 'property');
@@ -183,7 +189,9 @@
 
 				$spvend_code	 = 9901;
 				$spbudact_code	 = '11954111';
-				switch ($GLOBALS['phpgw_info']['server']['db_type'])
+				$serverSettings = Settings::getInstance()->get('server');
+
+				switch ($serverSettings['db_type'])
 				{
 					case 'postgres':
 						$due_date	 = "to_char(forfallsdato,'MM/YYYY') as due_date";
@@ -247,9 +255,9 @@
 			}
 			else
 			{
-				if ($GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'])
+				if ($this->userSettings['preferences']['common']['dateformat'])
 				{
-					$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+					$dateformat = $this->userSettings['preferences']['common']['dateformat'];
 				}
 				else
 				{
@@ -361,6 +369,11 @@
 			$cols_return[]	 = 'owner';
 			$cols_return[]	 = 'address';
 
+			$uicols =[];
+			$paranthesis = '';
+			$query = '';
+			$joinmethod = '';
+			
 			$sql = $this->bocommon->generate_sql(array('entity_table'	 => $entity_table, 'cols'			 => $cols,
 				'cols_return'	 => $cols_return,
 				'uicols'		 => $uicols, 'joinmethod'	 => $joinmethod, 'paranthesis'	 => $paranthesis,

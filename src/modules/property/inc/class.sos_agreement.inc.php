@@ -26,7 +26,13 @@
 	 * @subpackage agreement
 	 * @version $Id$
 	 */
-	phpgw::import_class('phpgwapi.datetime');
+
+	use App\Database\Db;
+	use App\Database\Db2;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Locations;
+
+	 phpgw::import_class('phpgwapi.datetime');
 
 	/**
 	 * Description
@@ -37,18 +43,22 @@
 
 		var $role;
 		var $uicols = array();
-		var $db, $db2, $join, $left_join, $like, $acl,$account,$socommon,$total_records;
+		var $db, $db2, $join, $left_join, $like, $acl,$account,$socommon,$total_records,
+		 $userSettings, $location_obj;
 
 		function __construct()
 		{
-			$this->account	 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->account	 = $this->userSettings['account_id'];
 			$this->socommon	 = CreateObject('property.socommon');
-			$this->db		 = & $GLOBALS['phpgw']->db;
-			$this->db2		 = clone($this->db);
+			$this->db		 = Db::getInstance();
+			$this->db2		 = new Db2();
 
-			$this->join		 = & $this->db->join;
-			$this->left_join = & $this->db->left_join;
-			$this->like		 = & $this->db->like;
+			$this->join		 = $this->db->join;
+			$this->left_join = $this->db->left_join;
+			$this->like		 = $this->db->like;
+			$this->location_obj = new Locations();
+
 		}
 
 		function select_vendor_list()
@@ -97,7 +107,7 @@
 			{
 				$entity_table		 = 'fm_s_agreement';
 				$category_table		 = 'fm_s_agreement_category';
-				$location_id		 = $GLOBALS['phpgw']->locations->get_id('property', '.s_agreement');
+				$location_id		 = $this->location_obj->get_id('property', '.s_agreement');
 				$attribute_filter	 = " location_id = {$location_id}";
 
 				$paranthesis = '(';
@@ -157,7 +167,7 @@
 				$query				 = '';
 				$allrows			 = true;
 				$entity_table		 = 'fm_s_agreement_detail';
-				$location_id		 = $GLOBALS['phpgw']->locations->get_id('property', '.s_agreement.detail');
+				$location_id		 = $this->location_obj->get_id('property', '.s_agreement.detail');
 				$attribute_filter	 = " location_id = {$location_id}";
 
 				$paranthesis .= '(';
@@ -254,7 +264,7 @@
 
 			$i = count($uicols['name']);
 
-			$user_columns		 = isset($GLOBALS['phpgw_info']['user']['preferences']['property']['s_agreement_columns' . !!$s_agreement_id]) ? $GLOBALS['phpgw_info']['user']['preferences']['property']['s_agreement_columns' . !!$s_agreement_id] : '';
+			$user_columns		 = isset($this->userSettings['preferences']['property']['s_agreement_columns' . !!$s_agreement_id]) ? $this->userSettings['preferences']['property']['s_agreement_columns' . !!$s_agreement_id] : '';
 			$user_column_filter	 = '';
 			if (is_array($user_columns) && $user_columns[0])
 			{
@@ -587,11 +597,11 @@
 						}
 						else if ($return_extra['datatype'] == 'D' && $value)
 						{
-							$s_agreement_list[$j][$return_extra['name']] = date($GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'], strtotime($value));
+							$s_agreement_list[$j][$return_extra['name']] = date($this->userSettings['preferences']['common']['dateformat'], strtotime($value));
 						}
 						else if ($cols_return_extra[$i]['datatype'] == 'timestamp' && $value)
 						{
-							$s_agreement_list[$j][$return_extra['name']] = date($GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'], $value);
+							$s_agreement_list[$j][$return_extra['name']] = date($this->userSettings['preferences']['common']['dateformat'], $value);
 						}
 						else if ($cols_return_extra[$i]['datatype'] == 'link' && $value)
 						{
@@ -659,13 +669,14 @@
 			$uicols['descr'][]		 = lang('date');
 			$uicols['statustext'][]	 = lang('date');
 
-			$sql = "SELECT $cols FROM $entity_table $joinmethod";
+			$sql = "SELECT $cols FROM $entity_table";
 
 			$this->uicols = $uicols;
 
 			$ordermethod = " order by $entity_table.id ASC";
 
 			$where = 'WHERE';
+			$filtermethod = '';
 
 
 			if ($s_agreement_id)
@@ -1271,7 +1282,7 @@
 		{
 			$value				 = $this->db->db_addslashes($value);
 			$choice_table		 = 'phpgw_cust_choice';
-			$location_id		 = $GLOBALS['phpgw']->locations->get_id('property', '.s_agreement.detail');
+			$location_id		 = $this->location_obj->get_id('property', '.s_agreement.detail');
 			$attribute_filter	 = " location_id = {$location_id}";
 
 			$sql = "SELECT id FROM $choice_table WHERE $attribute_filter AND value = '$value' AND attrib_id = $id";

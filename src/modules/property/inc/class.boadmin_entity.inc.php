@@ -27,6 +27,11 @@
 	 * @version $Id$
 	 */
 
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\security\Acl;
+use App\modules\phpgwapi\controllers\Locations;
+use App\modules\phpgwapi\services\Cache;
+
 	/**
 	 * Description
 	 * @package property
@@ -89,12 +94,13 @@
 			'get_category_list'	 => true,
 			'get_attrib_list'	 => true
 		);
-		var $type_app,$bocommon,$so,$allrows,$location_id, $acl_location;
+		var $type_app,$bocommon,$so,$allrows,$location_id, $acl_location, $location_obj, $custom_functions;
 
 		function __construct()
 		{
 			$this->bocommon	 = CreateObject('property.bocommon');
 			$this->custom	 = createObject('property.custom_fields');
+			$this->custom_functions = createObject('phpgwapi.custom_functions');
 
 			$start		 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
 			$query		 = Sanitizer::get_var('query');
@@ -106,9 +112,11 @@
 			$entity_id	 = Sanitizer::get_var('entity_id', 'int');
 
 			$location_id = Sanitizer::get_var('location_id', 'int');
+
+			$this->location_obj = new Locations();
 			if ($location_id)
 			{
-				$loc_arr	 = $GLOBALS['phpgw']->locations->get_name($location_id);
+				$loc_arr	 = $this->location_obj->get_name($location_id);
 				$type_arr	 = explode('.', $loc_arr['location']);
 				if (count($type_arr) == 4 && in_array($type_arr[1], array('entity', 'catch')))
 				{
@@ -135,15 +143,15 @@
 			{
 				if($this->cat_id)
 				{
-					$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$this->entity_id}.{$this->cat_id}");
+					$location_id = $this->location_obj->get_id($this->type_app[$this->type], ".{$this->type}.{$this->entity_id}.{$this->cat_id}");
 				}
 				else if($this->entity_id)
 				{
-					$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$this->entity_id}");
+					$location_id = $this->location_obj->get_id($this->type_app[$this->type], ".{$this->type}.{$this->entity_id}");
 				}
 				else
 				{
-					$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], $this->acl_location);
+					$location_id = $this->location_obj->get_id($this->type_app[$this->type], $this->acl_location);
 
 				}
 			}
@@ -431,7 +439,7 @@
 
 			if (!empty($location_id))
 			{
-				$location_info	 = $GLOBALS['phpgw']->locations->get_name($location_id);
+				$location_info	 = $this->location_obj->get_name($location_id);
 				$location		 = $location_info['location'];
 				$appname		 = $location_info['appname'];
 			}
@@ -465,7 +473,7 @@
 
 			if (!empty($template_location_id))
 			{
-				$template_location_info	 = $GLOBALS['phpgw']->locations->get_name($template_location_id);
+				$template_location_info	 = $this->location_obj->get_name($template_location_id);
 				$template_location		 = $template_location_info['location'];
 				$template_appname		 = $template_location_info['appname'];
 			}
@@ -545,7 +553,7 @@
 			}
 			else if ($custom_function_id && $acl_location)
 			{
-				$GLOBALS['phpgw']->custom_functions->delete($this->type_app[$this->type], $acl_location, $custom_function_id);
+				$this->custom_functions->delete($this->type_app[$this->type], $acl_location, $custom_function_id);
 			}
 		}
 
@@ -575,7 +583,7 @@
 
 			if(!empty($data['location_id']))
 			{
-				$location_info = $GLOBALS['phpgw']->locations->get_name($data['location_id']);
+				$location_info = $this->location_obj->get_name($data['location_id']);
 				$location = $location_info['location'];
 				$appname = $location_info['appname'];
 			}
@@ -601,7 +609,7 @@
 
 			if (!empty($data['location_id']))
 			{
-				$location_info	 = $GLOBALS['phpgw']->locations->get_name($data['location_id']);
+				$location_info	 = $this->location_obj->get_name($data['location_id']);
 				$location		 = $location_info['location'];
 				$appname		 = $location_info['appname'];
 			}
@@ -703,7 +711,7 @@
 			$receipt			 = array();
 			$attrib['appname']	 = $this->type_app[$this->type];
 			$attrib['location']	 = ".{$this->type}.{$attrib['entity_id']}.{$attrib['cat_id']}";
-			$attrib_table		 = $GLOBALS['phpgw']->locations->get_attrib_table($attrib['appname'], $attrib['location']);
+			$attrib_table		 = $this->location_obj->get_attrib_table($attrib['appname'], $attrib['location']);
 			if ($action == 'edit' && $attrib['id'])
 			{
 				if ($this->custom->edit($attrib))
@@ -753,9 +761,9 @@
 					break;
 			}
 
-			$values = $GLOBALS['phpgw']->custom_functions->find($data);
+			$values = $this->custom_functions->find($data);
 
-			$this->total_records = $GLOBALS['phpgw']->custom_functions->total_records;
+			$this->total_records = $this->custom_functions->total_records;
 
 			return $values;
 		}
@@ -763,7 +771,7 @@
 		function resort_custom_function( $id, $resort )
 		{
 			$location = ".{$this->type}.{$this->entity_id}.{$this->cat_id}";
-			return $GLOBALS['phpgw']->custom_functions->resort($id, $resort, $this->type_app[$this->type], $location);
+			return $this->custom_functions->resort($id, $resort, $this->type_app[$this->type], $location);
 		}
 
 		function save_custom_function( $custom_function, $action = '' )
@@ -781,7 +789,7 @@
 				{
 
 					$receipt['id'] = $custom_function['id'];
-					if ($GLOBALS['phpgw']->custom_functions->edit($custom_function))
+					if ($this->custom_functions->edit($custom_function))
 					{
 						$receipt['message'][] = array('msg' => 'OK');
 					}
@@ -793,7 +801,7 @@
 			}
 			else
 			{
-				if ($receipt['id'] = $GLOBALS['phpgw']->custom_functions->add($custom_function))
+				if ($receipt['id'] = $this->custom_functions->add($custom_function))
 				{
 					$receipt['message'][] = array('msg' => 'OK');
 				}
@@ -817,7 +825,7 @@
 			{
 				$location = ".{$this->type}.{$entity_id}.{$cat_id}";
 			}
-			return $GLOBALS['phpgw']->custom_functions->get($this->type_app[$this->type], $location, $id);
+			return $this->custom_functions->get($this->type_app[$this->type], $location, $id);
 		}
 
 		function get_path( $entity_id, $node )

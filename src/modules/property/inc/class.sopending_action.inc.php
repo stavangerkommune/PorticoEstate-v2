@@ -26,7 +26,12 @@
 	 * @subpackage core
 	 * @version $Id$
 	 */
-	/**
+
+	use App\Database\Db;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Locations;
+
+	 /**
 	 * Description
 	 * @package property
 	 */
@@ -36,7 +41,7 @@
 	{
 
 		public $total_records;
-		var $db, $account, $join, $left_join, $like;
+		var $db, $account, $join, $left_join, $like, $locations;
 
 		/**
 		 * @var array valid responsible types
@@ -51,11 +56,13 @@
 
 		function __construct()
 		{
-			$this->account	 = $GLOBALS['phpgw_info']['user']['account_id'];
-			$this->db		 = & $GLOBALS['phpgw']->db;
-			$this->join		 = & $this->db->join;
-			$this->left_join = & $this->db->left_join;
-			$this->like		 = & $this->db->like;
+			$this->account	 = Settings::getInstance()->get('user')['account_id'];
+			$this->db		 = Db::getInstance(); 
+			$this->join		 = $this->db->join;
+			$this->left_join = $this->db->left_join;
+			$this->like		 = $this->db->like;
+
+			$this->locations = new Locations();
 		}
 
 		/**
@@ -103,7 +110,7 @@
 				throw new Exception("'{$action}' is not a valid action_type");
 			}
 
-			$location_id = $GLOBALS['phpgw']->locations->get_id($appname, $location);
+			$location_id = $this->locations->get_id($appname, $location);
 
 			if (!$location_id)
 			{
@@ -252,14 +259,14 @@
 			{
 				foreach ($location as $_location)
 				{
-					$_location_id				 = $GLOBALS['phpgw']->locations->get_id($appname, $_location);
+					$_location_id				 = $this->locations->get_id($appname, $_location);
 					$location_ids[]				 = $_location_id;
 					$location_map[$_location_id] = $_location;
 				}
 			}
 			else
 			{
-				$_location_id				 = $GLOBALS['phpgw']->locations->get_id($appname, $location);
+				$_location_id				 = $this->locations->get_id($appname, $location);
 				$location_ids[]				 = $_location_id;
 				$location_map[$_location_id] = $location;
 			}
@@ -338,7 +345,7 @@
 			{
 				if (!$location_map)
 				{
-					$location_map[$entry['location_id']] = $GLOBALS['phpgw']->locations->get_name($entry['location_id']);
+					$location_map[$entry['location_id']] = $this->locations->get_name($entry['location_id']);
 				}
 				$entry['url'] = $interlink->get_relation_link($location_map[$entry['location_id']], $entry['item_id'], 'edit');
 				if($entry['data'])

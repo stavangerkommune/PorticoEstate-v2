@@ -27,6 +27,8 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Settings;
+
 	/**
 	 * Description
 	 * @package property
@@ -46,13 +48,16 @@
 
 		function date()
 		{
-			$date1 = date($GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
+		$userSettings = Settings::getInstance()->get('user');
 
-			$start_field = $GLOBALS['phpgw']->jqcal->add_listener('start_date', $date1);
-			$end_field	 = $GLOBALS['phpgw']->jqcal->add_listener('end_date');
+			$date1 = date($userSettings['preferences']['common']['dateformat']);
+
+			$jqcal = createObject('phpgwapi.jqcal');
+			$start_field = $jqcal->add_listener('start_date', $date1);
+			$end_field	 = $jqcal->add_listener('end_date');
 
 			//Only if not xslt_app
-			$GLOBALS['phpgw']->common->phpgw_header(true);
+			(new \phpgwapi_common())->phpgw_header(true);
 
 			$html = <<<HTML
 			<div>
@@ -77,6 +82,5 @@
 HTML;
 
 			echo $html;
-//			$GLOBALS['phpgw']->common->phpgw_exit();
 		}
 	}

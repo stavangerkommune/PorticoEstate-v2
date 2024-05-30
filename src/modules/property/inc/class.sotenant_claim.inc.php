@@ -27,6 +27,10 @@
 	 * @version $Id$
 	 */
 
+	use App\Database\Db;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Locations;
+
 	/**
 	 * Description
 	 * @package property
@@ -34,16 +38,17 @@
 	class property_sotenant_claim
 	{
 		var $db, $join, $left_join, $like, $account,$total_records;
-		var $interlink;
+		var $interlink, $location_obj;
 
 		function __construct()
 		{
-			$this->account	 = $GLOBALS['phpgw_info']['user']['account_id'];
-			$this->db		 = & $GLOBALS['phpgw']->db;
-			$this->join		 = & $this->db->join;
-			$this->left_join = & $this->db->left_join;
-			$this->like		 = & $this->db->like;
+			$this->account	 = Settings::getInstance()->get('user')['account_id'];
+			$this->db		 = Db::getInstance();
+			$this->join		 = $this->db->join;
+			$this->left_join = $this->db->left_join;
+			$this->like		 = $this->db->like;
 			$this->interlink = CreateObject('property.interlink');
+			$this->location_obj = new Locations();
 		}
 
 		function read( $data )
@@ -347,9 +352,9 @@
 			{
 				$interlink_data = array
 					(
-					'location1_id'		 => $GLOBALS['phpgw']->locations->get_id('property', '.project.workorder'),
+					'location1_id'		 => $this->location_obj->get_id('property', '.project.workorder'),
 					'location1_item_id'	 => $workorder_id,
-					'location2_id'		 => $GLOBALS['phpgw']->locations->get_id('property', '.tenant_claim'),
+					'location2_id'		 => $this->location_obj->get_id('property', '.tenant_claim'),
 					'location2_item_id'	 => $claim_id,
 					'account_id'		 => $this->account
 				);
@@ -363,9 +368,9 @@
 			{
 				$interlink_data = array
 					(
-					'location1_id'		 => $GLOBALS['phpgw']->locations->get_id('property', '.ticket'),
+					'location1_id'		 => $this->location_obj->get_id('property', '.ticket'),
 					'location1_item_id'	 => $ticket_id,
-					'location2_id'		 => $GLOBALS['phpgw']->locations->get_id('property', '.tenant_claim'),
+					'location2_id'		 => $this->location_obj->get_id('property', '.tenant_claim'),
 					'location2_item_id'	 => $claim_id,
 					'account_id'		 => $this->account
 				);
@@ -438,9 +443,9 @@
 			{
 				$interlink_data = array
 					(
-					'location1_id'		 => $GLOBALS['phpgw']->locations->get_id('property', '.project.workorder'),
+					'location1_id'		 => $this->location_obj->get_id('property', '.project.workorder'),
 					'location1_item_id'	 => $workorder_id,
-					'location2_id'		 => $GLOBALS['phpgw']->locations->get_id('property', '.tenant_claim'),
+					'location2_id'		 => $this->location_obj->get_id('property', '.tenant_claim'),
 					'location2_item_id'	 => $claim_id,
 					'account_id'		 => $this->account
 				);
@@ -454,9 +459,9 @@
 			{
 				$interlink_data = array
 					(
-					'location1_id'		 => $GLOBALS['phpgw']->locations->get_id('property', '.ticket'),
+					'location1_id'		 => $this->location_obj->get_id('property', '.ticket'),
 					'location1_item_id'	 => $ticket_id,
-					'location2_id'		 => $GLOBALS['phpgw']->locations->get_id('property', '.tenant_claim'),
+					'location2_id'		 => $this->location_obj->get_id('property', '.tenant_claim'),
 					'location2_item_id'	 => $claim_id,
 					'account_id'		 => $this->account
 				);

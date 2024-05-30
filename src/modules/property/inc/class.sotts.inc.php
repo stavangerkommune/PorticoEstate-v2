@@ -26,7 +26,15 @@
 	 * @subpackage helpdesk
 	 * @version $Id$
 	 */
-	phpgw::import_class('phpgwapi.datetime');
+
+	use App\Database\Db;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\security\Acl;
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+	use App\modules\phpgwapi\controllers\Locations;
+
+	 phpgw::import_class('phpgwapi.datetime');
 
 	/**
 	 * Description
@@ -60,18 +68,24 @@
 		);
 
 		var $db, $join, $left_join, $like, $account,$historylog;
-		var $custom, $dateformat;
+		var $custom, $dateformat, $userSettings, $serverSettings, $location_obj, $acl,$account_obj;
 
 		function __construct()
 		{
-			$this->account		 = (int)$GLOBALS['phpgw_info']['user']['account_id'];
+			$this->userSettings =		Settings::getInstance()->get('user');
+			$this->serverSettings = Settings::getInstance()->get('server');
+
+			$this->account		 = (int)$this->userSettings['account_id'];
 			$this->historylog	 = CreateObject('property.historylog', 'tts');
 			$this->custom		 = createObject('property.custom_fields');
-			$this->db			 = & $GLOBALS['phpgw']->db;
-			$this->like			 = & $this->db->like;
-			$this->join			 = & $this->db->join;
-			$this->left_join	 = & $this->db->left_join;
-			$this->dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$this->db			 = Db::getInstance();
+			$this->like			 = $this->db->like;
+			$this->join			 = $this->db->join;
+			$this->left_join	 = $this->db->left_join;
+			$this->dateformat	 = $this->userSettings['preferences']['common']['dateformat'];
+			$this->location_obj	 = new Locations();
+			$this->account_obj	 = new Accounts();
+			$this->acl			 = Acl::getInstance();
 		}
 
 		function list_methods( $_type = 'xmlrpc' )
@@ -121,7 +135,7 @@
 //			$_end_time_ts	 = $end_date + 3600 * 16 + phpgwapi_datetime::user_timezone();
 //			$_start_date_ts = $start_date - 3600 * 8 + phpgwapi_datetime::user_timezone();
 
-			$timezone		 = !empty($GLOBALS['phpgw_info']['user']['preferences']['common']['timezone']) ? $GLOBALS['phpgw_info']['user']['preferences']['common']['timezone'] : 'UTC';
+			$timezone		 = !empty($this->userSettings['preferences']['common']['timezone']) ? $this->userSettings['preferences']['common']['timezone'] : 'UTC';
 			$DateTimeZone	 = new DateTimeZone($timezone);
 			$_start_time	 = new DateTime(date('Y-m-d', $start_date));
 			$_start_time->setTimezone($DateTimeZone);
@@ -200,7 +214,7 @@
 			$include_location_parent = !empty($data['include_location_parent']) ? true : false;
 
 
-			$location_id = $GLOBALS['phpgw']->locations->get_id('property', '.ticket');
+			$location_id = $this->location_obj->get_id('property', '.ticket');
 
 			$result_order_field	 = array();
 			$order_join			 = " {$this->join} phpgw_accounts ON fm_tts_tickets.user_id=phpgw_accounts.account_id";
@@ -242,18 +256,18 @@
 			if (!$start_date && (!isset($config['bypass_acl_at_tickets']) || !$config['bypass_acl_at_tickets']))
 			{
 				$order_join	 .= " {$this->join} phpgw_group_map ON (phpgw_accounts.account_id = phpgw_group_map.account_id)";
-				$GLOBALS['phpgw']->acl->set_account_id($this->account);
-				$grants		 = $GLOBALS['phpgw']->acl->get_grants2('property', '.ticket');
+				$this->acl->set_account_id($this->account);
+				$grants		 = $this->acl->get_grants2('property', '.ticket');
 
 				$public_user_list = array();
 				if (isset($config['acl_at_tts_category']) && $config['acl_at_tts_category'])
 				{
-					$categories = $GLOBALS['phpgw']->locations->get_subs('property', '.ticket.category');
+					$categories = $this->location_obj->get_subs('property', '.ticket.category');
 
 					$category_grants = array();
 					foreach ($categories as $location)
 					{
-						$category_grants = $GLOBALS['phpgw']->acl->get_grants2('property', $location);
+						$category_grants = $this->acl->get_grants2('property', $location);
 						foreach ($category_grants['accounts'] as $user => $right)
 						{
 							$grants['accounts'][$user] = $right;
@@ -313,7 +327,9 @@
 				}
 			}
 
-			if ($tenant_id = $GLOBALS['phpgw']->session->appsession('tenant_id', 'property'))
+			$tenant_id = Cache::session_get('property', 'tenant_id');
+			
+			if ($tenant_id)
 			{
 				$filtermethod	 .= $where . ' fm_tts_tickets.tenant_id=' . $tenant_id;
 				$where			 = 'AND';
@@ -453,14 +469,14 @@
 					{
 						if ($_user_id < 0)
 						{
-							$_membership = array_merge($_membership, $GLOBALS['phpgw']->accounts->membership(abs($_user_id)));
+							$_membership = array_merge($_membership, $this->account_obj->membership(abs($_user_id)));
 						}
 						$user_ids[] = abs($_user_id);
 					}
 				}
 				else if ($user_id > 0)
 				{
-					$_user = $GLOBALS['phpgw']->accounts->get($user_id);
+					$_user = $this->account_obj->get($user_id);
 
 					if ($_user->type == 'g')
 					{
@@ -477,7 +493,7 @@
 					{
 						$user_ids[] = $user_for_substitute;
 					}
-					$_membership = $GLOBALS['phpgw']->accounts->membership(abs($user_id));
+					$_membership = $this->account_obj->membership(abs($user_id));
 
 					$order_join	 .= " {$this->left_join} phpgw_notification ON "
 					. "( phpgw_notification.location_id = $location_id"
@@ -547,10 +563,10 @@
 
 			if ($start_date)
 			{
-				$order_add	 = $GLOBALS['phpgw']->acl->check('.ticket.order', ACL_ADD, 'property');
-				$order_edit	 = $GLOBALS['phpgw']->acl->check('.ticket.order', ACL_EDIT, 'property');
+				$order_add	 = $this->acl->check('.ticket.order', ACL_ADD, 'property');
+				$order_edit	 = $this->acl->check('.ticket.order', ACL_EDIT, 'property');
 
-				$timezone		 = !empty($GLOBALS['phpgw_info']['user']['preferences']['common']['timezone']) ? $GLOBALS['phpgw_info']['user']['preferences']['common']['timezone'] : 'UTC';
+				$timezone		 = !empty($this->userSettings['preferences']['common']['timezone']) ? $this->userSettings['preferences']['common']['timezone'] : 'UTC';
 				$DateTimeZone	 = new DateTimeZone($timezone);
 				$_start_time	 = new DateTime(date('Y-m-d', $start_date));
 				$_start_time->setTimezone($DateTimeZone);
@@ -858,7 +874,7 @@
 				$sql2 = "SELECT count(*) as cnt, SUM(budget) AS sum_budget, SUM(actual_cost) AS sum_actual_cost FROM ({$sql_cnt} {$filter_closed} GROUP BY fm_tts_tickets.id) as t";
 			}
 
-			$cache_info = phpgwapi_cache::session_get('property', 'tts_listing_metadata');
+			$cache_info = Cache::session_get('property', 'tts_listing_metadata');
 
 			if (!isset($cache_info['sql_hash']) || $cache_info['sql_hash'] != md5($cache_test))
 			{
@@ -883,7 +899,7 @@
 					'sql_hash'			 => md5($cache_test)
 				);
 
-				phpgwapi_cache::session_set('property', 'tts_listing_metadata', $cache_info);
+				Cache::session_set('property', 'tts_listing_metadata', $cache_info);
 			}
 			$this->total_records	 = (int)$cache_info['total_records'];
 			$this->sum_budget		 = (int)$cache_info['sum_budget'];
@@ -1080,10 +1096,10 @@
 
 				$user_id = (int)$this->db->f('user_id');
 
-				$ticket['user_name'] = $GLOBALS['phpgw']->accounts->get($user_id)->__toString();
+				$ticket['user_name'] = $this->account_obj->get($user_id)->__toString();
 				if ($ticket['assignedto'] > 0)
 				{
-					$ticket['assignedto_name'] = $GLOBALS['phpgw']->accounts->get($ticket['assignedto'])->__toString();
+					$ticket['assignedto_name'] = $this->account_obj->get($ticket['assignedto'])->__toString();
 				}
 
 				if (isset($values['attributes']) && is_array($values['attributes']))
@@ -1104,13 +1120,13 @@
 			// Have they viewed this ticket before ?
 			$id = (int)$id;
 			$this->db->query("SELECT count(*) as cnt FROM fm_tts_views where id={$id}"
-				. " AND account_id='" . $GLOBALS['phpgw_info']['user']['account_id'] . "'", __LINE__, __FILE__);
+				. " AND account_id='" . (int)$this->userSettings['account_id'] . "'", __LINE__, __FILE__);
 			$this->db->next_record();
 
 			if (!$this->db->f('cnt'))
 			{
 				$this->db->query("INSERT INTO fm_tts_views (id,account_id,time) values ({$id},'"
-					. $GLOBALS['phpgw_info']['user']['account_id'] . "','" . time() . "')", __LINE__, __FILE__);
+					. (int)$this->userSettings['account_id'] . "','" . time() . "')", __LINE__, __FILE__);
 			}
 		}
 
@@ -1190,7 +1206,7 @@
 			unset($_address);
 
 			$value_set['priority']			 = isset($ticket['priority']) ? $ticket['priority'] : 0;
-			$value_set['user_id']			 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$value_set['user_id']			 = $this->userSettings['account_id'];
 			$value_set['assignedto']		 = $ticket['assignedto'];
 			$value_set['group_id']			 = $ticket['group_id'];
 			$value_set['subject']			 = $this->db->db_addslashes($ticket['subject']);
@@ -1230,14 +1246,14 @@
 
 			if (isset($ticket['origin']) && $ticket['origin'] && isset($ticket['origin_id']) && $ticket['origin_id'])
 			{
-				$ticket['origin_location_id']	 = $GLOBALS['phpgw']->locations->get_id('property', $ticket['origin']);
+				$ticket['origin_location_id']	 = $this->location_obj->get_id('property', $ticket['origin']);
 				$ticket['origin_item_id']		 = $ticket['origin_id'];
 
 				$interlink_data = array
 					(
 					'location1_id'		 => $ticket['origin_location_id'],
 					'location1_item_id'	 => $ticket['origin_item_id'],
-					'location2_id'		 => $GLOBALS['phpgw']->locations->get_id('property', '.ticket'),
+					'location2_id'		 => $this->location_obj->get_id('property', '.ticket'),
 					'location2_item_id'	 => $id,
 					'account_id'		 => $this->account
 				);
@@ -1255,13 +1271,13 @@
 						$this->db->query("UPDATE fm_request SET status='{$request_ticket_hookup_status}' WHERE id='" . (int)$ticket['origin_item_id'] . "'", __LINE__, __FILE__);
 					}
 
-					phpgwapi_cache::message_set(lang('request %1 has been edited', $ticket['origin_item_id']), 'message');
+					Cache::message_set(lang('request %1 has been edited', $ticket['origin_item_id']), 'message');
 				}
 			}
 
 			if (isset($ticket['extra']) && is_array($ticket['extra']) && isset($ticket['extra']['p_num']) && $ticket['extra']['p_num'])
 			{
-				$ticket['origin_location_id'] = $GLOBALS['phpgw']->locations->get_id('property', ".entity.{$ticket['extra']['p_entity_id']}.{$ticket['extra']['p_cat_id']}");
+				$ticket['origin_location_id'] = $this->location_obj->get_id('property', ".entity.{$ticket['extra']['p_entity_id']}.{$ticket['extra']['p_cat_id']}");
 
 				$this->db->query('SELECT prefix FROM fm_entity_category WHERE entity_id = ' . (int)$ticket['extra']['p_entity_id'] . ' AND id = ' . (int)$ticket['extra']['p_cat_id']);
 				$this->db->next_record();
@@ -1272,7 +1288,7 @@
 					(
 					'location1_id'		 => $ticket['origin_location_id'],
 					'location1_item_id'	 => $ticket['origin_item_id'],
-					'location2_id'		 => $GLOBALS['phpgw']->locations->get_id('property', '.ticket'),
+					'location2_id'		 => $this->location_obj->get_id('property', '.ticket'),
 					'location2_item_id'	 => $id,
 					'account_id'		 => $this->account
 				);
@@ -1392,9 +1408,9 @@
 
 				if (($this->db->f('closed') || $ticket['status'] == 'X') && ($old_status != 'X' && !$old_closed))
 				{
-					$location_id = $GLOBALS['phpgw']->locations->get_id('property', '.ticket');
+					$location_id = $this->location_obj->get_id('property', '.ticket');
 					// at controller
-					if (isset($GLOBALS['phpgw_info']['user']['apps']['controller']))
+					if (isset($this->userSettings['apps']['controller']))
 					{
 						$controller = CreateObject('controller.uicase');
 						$controller->updateStatusForCases($location_id, $id, 1);
@@ -1627,9 +1643,9 @@
 
 				if (($this->db->f('closed') || $ticket['status'] == 'X') && ($old_status != 'X' && !$old_closed))
 				{
-					$location_id = $GLOBALS['phpgw']->locations->get_id('property', '.ticket');
+					$location_id = $this->location_obj->get_id('property', '.ticket');
 					// at controller
-					if (isset($GLOBALS['phpgw_info']['user']['apps']['controller']))
+					if (isset($this->userSettings['apps']['controller']))
 					{
 						$controller = CreateObject('controller.uicase');
 						$controller->updateStatusForCases($location_id, $id, 1);
@@ -1833,7 +1849,7 @@
 				if ($order_id)
 				{
 					$this->db->query("UPDATE fm_tts_tickets SET order_id = {$order_id}, ordered_by = {$this->account} WHERE id={$id}", __LINE__, __FILE__);
-					$secret = $GLOBALS['phpgw']->common->randomstring();
+					$secret = (new \phpgwapi_common())->randomstring();
 					$this->db->query("INSERT INTO fm_orders (id,type, secret) VALUES ({$order_id},'ticket', '{$secret}')");
 
 					$ticket['invoice_remark'] = $ticket['subject'];
@@ -1887,8 +1903,8 @@
 
 			// check order-rights
 
-			$order_add	 = $GLOBALS['phpgw']->acl->check('.ticket.order', ACL_ADD, 'property');
-			$order_edit	 = $GLOBALS['phpgw']->acl->check('.ticket.order', ACL_EDIT, 'property');
+			$order_add	 = $this->acl->check('.ticket.order', ACL_ADD, 'property');
+			$order_edit	 = $this->acl->check('.ticket.order', ACL_EDIT, 'property');
 
 			if ($order_add || $order_edit)
 			{
@@ -2142,7 +2158,7 @@
 		{
 			$id = (int)$id;
 
-			$location_id = $GLOBALS['phpgw']->locations->get_id('property', '.ticket');
+			$location_id = $this->location_obj->get_id('property', '.ticket');
 
 			if (!$location_id)
 			{
@@ -2524,9 +2540,9 @@
 					if ($relation_type == 'request')
 					{
 						$interlink_data = array(
-							'location1_id'		 => $GLOBALS['phpgw']->locations->get_id('property', $acl_location),
+							'location1_id'		 => $this->location_obj->get_id('property', $acl_location),
 							'location1_item_id'	 => $relation_id,
-							'location2_id'		 => $GLOBALS['phpgw']->locations->get_id('property', '.ticket'),
+							'location2_id'		 => $this->location_obj->get_id('property', '.ticket'),
 							'location2_item_id'	 => $id,
 							'account_id'		 => $this->account
 						);
@@ -2534,9 +2550,9 @@
 					else
 					{
 						$interlink_data = array(
-							'location2_id'		 => $GLOBALS['phpgw']->locations->get_id('property', $acl_location),
+							'location2_id'		 => $this->location_obj->get_id('property', $acl_location),
 							'location2_item_id'	 => $relation_id,
-							'location1_id'		 => $GLOBALS['phpgw']->locations->get_id('property', '.ticket'),
+							'location1_id'		 => $this->location_obj->get_id('property', '.ticket'),
 							'location1_item_id'	 => $id,
 							'account_id'		 => $this->account
 						);
@@ -2553,11 +2569,11 @@
 							$this->db->query("UPDATE fm_request SET status='{$request_ticket_hookup_status}' WHERE id='" . $relation_id . "'", __LINE__, __FILE__);
 						}
 					}
-					phpgwapi_cache::message_set(lang('relation %1 has been added', $relation_id), 'message');
+					Cache::message_set(lang('relation %1 has been added', $relation_id), 'message');
 				}
 				else
 				{
-					phpgwapi_cache::message_set(lang('relation %1 has already been added to ticket %2', $relation_id, $target_id), 'error');
+					Cache::message_set(lang('relation %1 has already been added to ticket %2', $relation_id, $target_id), 'error');
 				}
 			}
 			$this->db->transaction_commit();

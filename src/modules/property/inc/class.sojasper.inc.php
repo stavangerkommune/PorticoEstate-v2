@@ -27,6 +27,11 @@
 	 * @version $Id$
 	 */
 
+	use App\Database\Db;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\security\Acl;
+	use App\modules\phpgwapi\controllers\Locations;
+
 	/**
 	 * Description
 	 * @package property
@@ -34,16 +39,19 @@
 	class property_sojasper
 	{
 
-		var $db, $join, $left_join, $like, $total_records, $account, $grants;
+		var $db, $join, $left_join, $like, $total_records, $account, $grants, $locations;
 
 		function __construct()
 		{
-			$this->account	 = $GLOBALS['phpgw_info']['user']['account_id'];
-			$this->db		 = & $GLOBALS['phpgw']->db;
-			$this->join		 = & $this->db->join;
-			$this->like		 = & $this->db->like;
-			$GLOBALS['phpgw']->acl->set_account_id($this->account);
-			$this->grants	 = $GLOBALS['phpgw']->acl->get_grants2('property', '.jasper');
+			$userSettings = Settings::getInstance()->get('user');
+			$this->account	 = $userSettings['account_id'];
+			$this->db		 = Db::getInstance();
+			$this->join		 = $this->db->join;
+			$this->like		 = $this->db->like;
+			$acl = Acl::getInstance();
+			$acl->set_account_id($this->account);
+			$this->grants	 = $acl->get_grants2('property', '.jasper');
+			$this->locations = new Locations();
 		}
 
 		public function read( $data )
@@ -63,7 +71,8 @@
 			$app_filter	 = '';
 			if ($app)
 			{
-				$app_id		 = (int)$GLOBALS['phpgw_info']['apps'][$app]['id'];
+				$apps = Settings::getInstance()->get('apps');
+				$app_id		 = (int)$apps[$app]['id'];
 				$app_filter	 = "{$this->join} phpgw_locations ON (phpgw_locations.app_id = {$app_id} AND phpgw_locations.location_id = {$table}.location_id)";
 			}
 
@@ -217,7 +226,7 @@
 
 			$value_set = array
 				(
-				'location_id'	 => $GLOBALS['phpgw']->locations->get_id($jasper['app'], $jasper['location']),
+				'location_id'	 => $this->locations->get_id($jasper['app'], $jasper['location']),
 				'title'			 => $this->db->db_addslashes($jasper['title']),
 				'descr'			 => $this->db->db_addslashes($jasper['descr']),
 				'formats'		 => serialize($jasper['formats']),
@@ -269,7 +278,7 @@
 
 			$value_set = array
 				(
-				'location_id'	 => $GLOBALS['phpgw']->locations->get_id($jasper['app'], $jasper['location']),
+				'location_id'	 => $this->locations->get_id($jasper['app'], $jasper['location']),
 				'title'			 => $this->db->db_addslashes($jasper['title']),
 				'descr'			 => $this->db->db_addslashes($jasper['descr']),
 				'formats'		 => serialize($jasper['formats']),

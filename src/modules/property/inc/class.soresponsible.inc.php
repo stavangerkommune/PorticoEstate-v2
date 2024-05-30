@@ -11,7 +11,7 @@
 	 * @category core
 	 * @version $Id$
 	 */
-	/*
+/*
 	  This program is free software: you can redistribute it and/or modify
 	  it under the terms of the GNU General Public License as published by
 	  the Free Software Foundation, either version 2 of the License, or
@@ -25,6 +25,10 @@
 	  You should have received a copy of the GNU General Public License
 	  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
+
+	use App\Database\Db;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Locations;
 
 	/**
 	 * ResponsibleMatrix - handles automated assigning of tasks based on (physical)location and category.
@@ -41,6 +45,7 @@
 		var $account;
 		var $acl_location;
 		var $appname = 'property';
+		var $location_obj;
 
 		/**
 		 * @var the total number of records for a search
@@ -53,11 +58,12 @@
 		 */
 		function __construct()
 		{
-			$this->account	 = & $GLOBALS['phpgw_info']['user']['account_id'];
-			$this->db		 = & $GLOBALS['phpgw']->db;
-			$this->like		 = & $this->db->like;
-			$this->join		 = & $this->db->join;
-			$this->left_join = & $this->db->left_join;
+			$this->account	 = Settings::getInstance()->get('user')['account_id'];
+			$this->db		 = Db::getInstance();
+			$this->like		 = $this->db->like;
+			$this->join		 = $this->db->join;
+			$this->left_join = $this->db->left_join;
+			$this->location_obj = new Locations();
 		}
 
 		/**
@@ -147,7 +153,7 @@
 				{
 
 					$location_arr	 = explode('_', $location);
-					$_location_info	 = $GLOBALS['phpgw']->locations->get_name($location_arr[0]);
+					$_location_info	 = $this->location_obj->get_name($location_arr[0]);
 
 					$category = $cats->return_single($location_arr[1]);
 
@@ -192,7 +198,7 @@
 
 			if ($data['cat_id'])
 			{
-				$location_id = $GLOBALS['phpgw']->locations->get_id($data['appname'], $data['location']);
+				$location_id = $this->location_obj->get_id($data['appname'], $data['location']);
 
 				$this->db->query("SELECT * FROM fm_responsibility_module  WHERE location_id = " . (int)$location_id . ' AND cat_id = ' . (int)$data['cat_id'], __LINE__, __FILE__);
 
@@ -249,7 +255,7 @@
 
 			if ($data['cat_id'])
 			{
-				$location_id = $GLOBALS['phpgw']->locations->get_id($data['appname'], $data['location']);
+				$location_id = $this->location_obj->get_id($data['appname'], $data['location']);
 
 				$this->db->query("SELECT * FROM fm_responsibility_module  WHERE responsibility_id = " . (int)$data['id'] . ' AND location_id = ' . (int)$location_id . ' AND cat_id = ' . (int)$data['cat_id'], __LINE__, __FILE__);
 

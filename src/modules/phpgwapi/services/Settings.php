@@ -142,8 +142,21 @@ class Settings
  
     public function set($name, $value)
     {
+		if($name == 'flags')
+		{
+//			_debug_array($value);
+		}
         $this->settings = array_merge($this->settings, array($name => $value));
     }
+
+	public function update($name, $data_set)
+	{
+		if(!is_array($data_set))
+		{
+			throw new Exception('Data set must be an array');
+		}
+		$this->settings[$name] = array_merge($this->settings[$name], $data_set);
+	}
 
     public function get($name)
     {

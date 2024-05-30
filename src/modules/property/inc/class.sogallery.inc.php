@@ -26,7 +26,11 @@
 	 * @subpackage admin
 	 * @version $Id$
 	 */
-	/*
+
+	use App\modules\phpgwapi\services\Settings;
+	use App\Database\Db;
+
+	 /*
 	 * Import the datetime class for date processing
 	 */
 	phpgw::import_class('phpgwapi.datetime');
@@ -41,11 +45,13 @@
 
 		function __construct()
 		{
-			$this->account		 = $GLOBALS['phpgw_info']['user']['account_id'];
-			$this->_db			 = & $GLOBALS['phpgw']->db;
-			$this->_join		 = & $this->_db->join;
-			$this->_left_join	 = & $this->_db->left_join;
-			$this->_like		 = & $this->_db->like;
+			$userSettings = Settings::getInstance()->get('user');
+
+			$this->account		 = $userSettings['account_id'];
+			$this->_db			 = Db::getInstance();
+			$this->_join		 = $this->_db->join;
+			$this->_left_join	 = $this->_db->left_join;
+			$this->_like		 = $this->_db->like;
 		}
 
 		function read( $data )

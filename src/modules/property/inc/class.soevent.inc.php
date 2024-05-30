@@ -26,7 +26,14 @@
 	 * @subpackage admin
 	 * @version $Id$
 	 */
-	/*
+
+	use App\modules\phpgwapi\services\Settings;
+	use App\Database\Db;
+	use App\modules\phpgwapi\controllers\Locations;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
+
+	 /*
 	 * Import the datetime class for date processing
 	 */
 	phpgw::import_class('phpgwapi.datetime');
@@ -38,15 +45,17 @@
 	class property_soevent
 	{
 		var $account, $_db, $_join, $_left_join, $_like;
-		var $total_records, $debug;
+		var $total_records, $debug, $accounts;
 
 		function __construct()
 		{
-			$this->account		 = $GLOBALS['phpgw_info']['user']['account_id'];
-			$this->_db			 = & $GLOBALS['phpgw']->db;
-			$this->_join		 = & $this->_db->join;
-			$this->_left_join	 = & $this->_db->left_join;
-			$this->_like		 = & $this->_db->like;
+			$userSettings = Settings::getInstance()->get('user');
+			$this->account		 = $userSettings['account_id'];
+			$this->_db		 	 = Db::getInstance();
+			$this->_join		 = $this->_db->join;
+			$this->_left_join	 = $this->_db->left_join;
+			$this->_like		 = $this->_db->like;
+			$this->accounts = new Accounts();
 		}
 
 		function read( $data )
@@ -87,7 +96,7 @@
 
 			if ($user_id)
 			{
-				$user			 = $GLOBALS['phpgw']->accounts->get($user_id);
+				$user			 = $this->accounts->get($user_id);
 				$filtermethod	 .= " AND fm_event.responsible_id =" . (int)$user->person_id;
 			}
 
@@ -228,7 +237,8 @@
 				{
 					throw new Exception("property_soevent::read - Missing location info in input");
 				}
-				$location_id = $GLOBALS['phpgw']->locations->get_id($data['appname'], $data['location']);
+				$locations = new Locations();
+				$location_id = $locations->get_id($data['appname'], $data['location']);
 			}
 			else
 			{
@@ -570,7 +580,7 @@
 			{
 				$sql .= $this->account;
 			}
-			$member_groups = $GLOBALS['phpgw']->accounts->membership($this->account);
+			$member_groups = $this->accounts->membership($this->account);
 			@reset($member_groups);
 			foreach ($member_groups as $key => $group_info)
 			{

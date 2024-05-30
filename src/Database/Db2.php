@@ -13,7 +13,6 @@ use PDOException;
  */
 class Db2 extends Db
 {
-	private $db;
 	function __construct($dsn= null, $username = null, $password = null, $options = null)
 	{
 		if (is_null($dsn))
@@ -32,19 +31,10 @@ class Db2 extends Db
 		try
 		{
 			$this->db = new PDO($dsn, $username, $password, $options);
-			$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		}
 		catch (PDOException $e)
 		{
 			throw new Exception($e->getMessage());
 		}
 	}
-	/**
-	 * Forwards method invocations to db object
-	 */
-	public function __call($method, $arguments)
-	{
-		return call_user_func_array(array($this->db, $method), $arguments);
-	}
-
 }

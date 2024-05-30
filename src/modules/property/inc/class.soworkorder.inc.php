@@ -26,7 +26,16 @@
 	 * @subpackage project
 	 * @version $Id$
 	 */
-	phpgw::import_class('phpgwapi.datetime');
+
+	use App\Database\Db;
+	use App\Database\Db2;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\security\Acl;
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+	use App\modules\phpgwapi\controllers\Locations;
+
+	 phpgw::import_class('phpgwapi.datetime');
 
 	/**
 	 * Description
@@ -39,22 +48,29 @@
 		protected $global_lock	 = false;
 		protected $historylog;
 		var $db,$db2, $join, $left_join, $like, $account,$bocommon;
-		var $interlink,$acl,$grants,$uicols;
+		var $interlink,$acl,$grants,$uicols, $userSettings, $account_obj, $config, $locations;
 
 		function __construct()
 		{
-			$this->account		 = $GLOBALS['phpgw_info']['user']['account_id'];
-			$this->bocommon		 = CreateObject('property.bocommon');
-			$this->db			 = & $GLOBALS['phpgw']->db;
-			$this->db2			 = clone($this->db);
-			$this->like			 = & $this->db->like;
-			$this->join			 = & $this->db->join;
-			$this->left_join	 = & $this->db->left_join;
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->account	 = $this->userSettings['account_id'];
+			$this->bocommon	 = CreateObject('property.bocommon');
+			$this->db		 = Db::getInstance();
+			$this->db2		 = new Db2();
+			$this->join		 = $this->db->join;
+			$this->left_join = $this->db->left_join;
+			$this->like		 = $this->db->like;
 			$this->interlink	 = CreateObject('property.interlink');
-			$this->acl			 = & $GLOBALS['phpgw']->acl;
+			$this->acl			 = Acl::getInstance();
 			$this->acl->set_account_id($this->account);
 			$this->grants		 = $this->acl->get_grants2('property', '.project');
 			$this->historylog	 = CreateObject('property.historylog', 'workorder');
+
+			$this->account_obj	 = new Accounts();
+			$this->locations	 = new Locations();
+			$this->config		 = createObject('phpgwapi.config', 'property');
+			$this->config->read();
+
 		}
 
 		function next_id()
@@ -170,7 +186,7 @@
 			$inspection_on_completion	 = isset($data['inspection_on_completion']) && $data['inspection_on_completion'] ? (int)$data['inspection_on_completion'] : 0;
 			$results					 = (isset($data['results']) ? $data['results'] : 0);
 
-			$GLOBALS['phpgw']->config->read();
+			$search_vendor = false;
 			$sql = $this->bocommon->fm_cache('sql_workorder' . !!$search_vendor . '_' . !!$wo_hour_cat_id . '_' . !!$b_group);
 			$joinmethod	 = '';
 			$paranthesis = '';
@@ -423,7 +439,7 @@
 				$cols	 .= ',fm_workorder.continuous';
 
 				$no_address = false;
-				if (isset($GLOBALS['phpgw']->config->config_data['location_at_workorder']) && $GLOBALS['phpgw']->config->config_data['location_at_workorder'])
+				if (isset($this->config->config_data['location_at_workorder']) && $this->config->config_data['location_at_workorder'])
 				{
 					$no_address				 = true;
 					$cols					 .= ',fm_workorder.location_code';
@@ -484,7 +500,7 @@
 			}
 
 			$location_table = 'fm_project';
-			if (isset($GLOBALS['phpgw']->config->config_data['location_at_workorder']) && $GLOBALS['phpgw']->config->config_data['location_at_workorder'])
+			if (isset($this->config->config_data['location_at_workorder']) && $this->config->config_data['location_at_workorder'])
 			{
 				$location_table = 'fm_workorder';
 			}
@@ -502,7 +518,7 @@
 						$order_field = ',fm_workorder.actual_cost';
 						break;
 					case 'address':
-						if (isset($GLOBALS['phpgw']->config->config_data['location_at_workorder']) && $GLOBALS['phpgw']->config->config_data['location_at_workorder'])
+						if (isset($this->config->config_data['location_at_workorder']) && $this->config->config_data['location_at_workorder'])
 						{
 							$order_field = ", fm_workorder.address";
 						}
@@ -582,7 +598,7 @@
 			$filtermethod = '';
 
 
-			if (isset($GLOBALS['phpgw']->config->config_data['acl_at_location']) && $GLOBALS['phpgw']->config->config_data['acl_at_location'])
+			if (isset($this->config->config_data['acl_at_location']) && $this->config->config_data['acl_at_location'])
 			{
 				$access_location = $this->bocommon->get_location_list(ACL_READ);
 				$filtermethod	 = " WHERE fm_project.loc1 in ('" . implode("','", $access_location) . "')";
@@ -1311,9 +1327,9 @@
 				$workorder['workorder_num'] = $id;
 			}
 
-			if (isset($GLOBALS['phpgw_info']['user']['preferences']['common']['currency']))
+			if (isset($this->userSettings['preferences']['common']['currency']))
 			{
-				$workorder['contract_sum'] = str_ireplace($GLOBALS['phpgw_info']['user']['preferences']['common']['currency'], '', $workorder['contract_sum']);
+				$workorder['contract_sum'] = str_ireplace($this->userSettings['preferences']['common']['currency'], '', $workorder['contract_sum']);
 			}
 			$workorder['contract_sum'] = str_replace(array(' ', ','), array('', '.'), $workorder['contract_sum']);
 
@@ -1380,7 +1396,7 @@
 				. "contract_id, tax_code, unspsc_code, service_id,building_part, order_dim1, mail_recipients, delivery_address $cols) "
 				. "VALUES ( {$values} {$vals})", __LINE__, __FILE__);
 
-			$secret = $GLOBALS['phpgw']->common->randomstring();
+			$secret = (new \phpgwapi_common())->randomstring();
 			$this->db->query("INSERT INTO fm_orders (id,type, secret) VALUES ({$id},'workorder', '{$secret}')");
 
 			$periodization_id = isset($workorder['budget_periodization']) && $workorder['budget_periodization'] ? (int)$workorder['budget_periodization'] : 0;
@@ -1404,9 +1420,9 @@
 			  {
 			  $interlink_data = array
 			  (
-			  'location1_id' => $GLOBALS['phpgw']->locations->get_id('property', $workorder['origin'][0]['location']),
+			  'location1_id' => $this->locations->get_id('property', $workorder['origin'][0]['location']),
 			  'location1_item_id' => $workorder['origin'][0]['data'][0]['id'],
-			  'location2_id' => $GLOBALS['phpgw']->locations->get_id('property', '.project.workorder'),
+			  'location2_id' => $this->locations->get_id('property', '.project.workorder'),
 			  'location2_item_id' => $id,
 			  'account_id' => $this->account
 			  );
@@ -1421,9 +1437,9 @@
 				{
 					$interlink_data = array
 						(
-						'location1_id'		 => $GLOBALS['phpgw']->locations->get_id('property', $workorder['origin']),
+						'location1_id'		 => $this->locations->get_id('property', $workorder['origin']),
 						'location1_item_id'	 => $workorder['origin_id'],
-						'location2_id'		 => $GLOBALS['phpgw']->locations->get_id('property', '.project.workorder'),
+						'location2_id'		 => $this->locations->get_id('property', '.project.workorder'),
 						'location2_item_id'	 => $id,
 						'account_id'		 => $this->account
 					);
@@ -1461,7 +1477,7 @@
 			$workorder['title']			 = $this->db->db_addslashes($workorder['title']);
 			$workorder['billable_hours'] = (float)str_replace(',', '.', $workorder['billable_hours']);
 
-			phpgwapi_cache::system_clear('property', "budget_order_{$workorder['id']}");
+			Cache::system_clear('property', "budget_order_{$workorder['id']}");
 
 			$this->db->query("SELECT status,calculation,billable_hours,approved FROM fm_workorder WHERE id = {$workorder['id']}", __LINE__, __FILE__);
 			$this->db->next_record();
@@ -1470,9 +1486,9 @@
 			$old_billable_hours	 = $this->db->f('billable_hours');
 			$old_approved		 = $this->db->f('approved');
 
-			if (isset($GLOBALS['phpgw_info']['user']['preferences']['common']['currency']))
+			if (isset($this->userSettings['preferences']['common']['currency']))
 			{
-				$workorder['contract_sum'] = str_ireplace($GLOBALS['phpgw_info']['user']['preferences']['common']['currency'], '', (float)$workorder['contract_sum']);
+				$workorder['contract_sum'] = str_ireplace($this->userSettings['preferences']['common']['currency'], '', (float)$workorder['contract_sum']);
 			}
 
 			$workorder['contract_sum'] = (float)str_replace(array(' ', ','), array('', '.'), $workorder['contract_sum']);
@@ -1890,7 +1906,7 @@
 		public function get_user_list()
 		{
 			$values	 = array();
-			$users	 = $GLOBALS['phpgw']->accounts->get_list('accounts', $start	 = -1, $sort	 = 'ASC', $order	 = 'account_lastname', $query='', $offset	 = -1);
+			$users	 = $this->account_obj->get_list('accounts', $start	 = -1, $sort	 = 'ASC', $order	 = 'account_lastname', $query='', $offset	 = -1);
 			$sql	 = 'SELECT DISTINCT user_id AS user_id FROM fm_workorder';
 			$this->db->query($sql, __LINE__, __FILE__);
 
@@ -1952,8 +1968,8 @@
 					{
 						case 'workorder':
 							$historylog_workorder->add('X', $id, $closed);
-							$GLOBALS['phpgw']->db->query("UPDATE fm_workorder SET status='{$closed}' WHERE id = '{$id}'");
-							$GLOBALS['phpgw']->db->query("UPDATE fm_workorder SET paid_percent=100 WHERE id= '{$id}'");
+							$this->db->query("UPDATE fm_workorder SET status='{$closed}' WHERE id = '{$id}'");
+							$this->db->query("UPDATE fm_workorder SET paid_percent=100 WHERE id= '{$id}'");
 							$receipt['message'][] = array('msg' => lang('Workorder %1 is %2', $id, $lang_closed));
 							break;
 					}
@@ -2000,7 +2016,7 @@
 				{
 					case 'workorder':
 						$historylog_workorder->add('R', $id, $reopen);
-						$GLOBALS['phpgw']->db->query("UPDATE fm_workorder set status='{$reopen}' WHERE id = '{$id}'");
+						$this->db->query("UPDATE fm_workorder set status='{$reopen}' WHERE id = '{$id}'");
 						$receipt['message'][] = array('msg' => lang('Workorder %1 is %2', $id, $lang_reopen));
 				}
 			}
@@ -2069,7 +2085,7 @@
 			}
 			$continuous = false;
 
-			$cached_info = phpgwapi_cache::system_get('property', "budget_order_{$order_id}");
+			$cached_info = Cache::system_get('property', "budget_order_{$order_id}");
 			if ($cached_info && is_array($cached_info))
 			{
 				$cache_result[$order_id][(int)$calculate_fictive_periods] = $cached_info;
@@ -2635,7 +2651,7 @@
 				$entry['fictive']	 = isset($fictive_period[$entry['period']]) && $fictive_period[$entry['period']];
 			}
 //			_debug_array($values);die();
-			phpgwapi_cache::system_set('property', "budget_order_{$order_id}", $values);
+			Cache::system_set('property', "budget_order_{$order_id}", $values);
 			$cache_result[$order_id][(int)$calculate_fictive_periods] = $values;
 
 			return $values;
@@ -2845,7 +2861,7 @@
 //~ * For Driftsbestillinger settes Betalt til null, Budsjett settes til restforpliktelse (budsjett tidligere trekkes ned med restforpliktelse)
 //~ * For Investeringsbestillinger skal disse ikke se på år
 
-			phpgwapi_cache::system_clear('property', "budget_order_{$id}");
+			Cache::system_clear('property', "budget_order_{$id}");
 
 			$updated_budget = false;
 			if ($continuous)

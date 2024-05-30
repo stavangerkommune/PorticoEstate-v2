@@ -26,10 +26,10 @@
 	 * @version $Id: class.sodimb_role_user.inc.php 16610 2017-04-21 14:21:03Z sigurdne $
 	 */
 
-use App\Database\Db;
-use App\Database\Db2;
-use App\modules\phpgwapi\services\Settings;
-use App\modules\phpgwapi\services\Cache;
+	use App\Database\Db;
+	use App\Database\Db2;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\services\Cache;
 
 	 phpgw::import_class('phpgwapi.datetime');
 

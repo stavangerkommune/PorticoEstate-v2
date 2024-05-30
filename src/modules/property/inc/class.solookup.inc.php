@@ -27,6 +27,9 @@
 	 * @version $Id$
 	 */
 
+	use App\Database\Db;
+	use App\modules\phpgwapi\services\Settings;
+
 	/**
 	 * Description
 	 * @package property
@@ -42,11 +45,11 @@
 
 		function __construct()
 		{
-			$this->db			 = & $GLOBALS['phpgw']->db;
-			$this->join			 = & $this->db->join;
-			$this->left_join	 = & $this->db->left_join;
-			$this->like			 = & $this->db->like;
-			$this->account_id	 = (int)$GLOBALS['phpgw_info']['user']['account_id'];
+			$this->db			 = Db::getInstance();
+			$this->join			 = $this->db->join;
+			$this->left_join	 = $this->db->left_join;
+			$this->like			 = $this->db->like;
+			$this->account_id	 = Settings::getInstance()->get('user')['account_id'];
 		}
 
 		function read_b_account( $data )

@@ -359,12 +359,11 @@ use App\modules\phpgwapi\services\Cache;
 		function columns()
 		{
 			$this->flags['xslt_app']	 = true;
-			$receipt									 = array();
-			phpgwapi_xslttemplates::getInstance()->add_file(array('columns'));
-
 			$this->flags['noframework']	 = true;
 			$this->flags['nofooter']		 = true;
 			Settings::getInstance()->set('flags', $this->flags);
+			$receipt									 = array();
+			phpgwapi_xslttemplates::getInstance()->add_file(array('columns'));
 
 			$values = Sanitizer::get_var('values');
 
@@ -389,8 +388,7 @@ use App\modules\phpgwapi\services\Cache;
 			$selected	 = isset($values['columns']) && $values['columns'] ? $values['columns'] : array();
 			$msgbox_data = $this->bocommon->msgbox_data($receipt);
 
-			$data = array
-				(
+			$data = array(
 				'msgbox_data'	 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'column_list'	 => $this->bo->column_list($selected, $this->type_id, $allrows		 = true),
 				'function_msg'	 => $function_msg,
@@ -400,8 +398,9 @@ use App\modules\phpgwapi\services\Cache;
 				'lang_save'		 => lang('save'),
 			);
 
-			$this->flags['app_header'] = $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+			$flags = Settings::getInstance()->get('flags');
+			$flags['app_header'] = $function_msg;
+			Settings::getInstance()->set('flags', $flags);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('columns' => $data));
 		}
 
@@ -877,7 +876,7 @@ use App\modules\phpgwapi\services\Cache;
 			{
 				$this->flags['menu_selection'] .= '::tenant';
 			}
-				Settings::getInstance()->set('flags', $this->flags);
+			Settings::getInstance()->set('flags', $this->flags);
 			if (!$this->acl_read)
 			{
 				$this->bocommon->no_access();
@@ -1401,8 +1400,10 @@ JS;
 				phpgwapi_js::getInstance()->add_code('', $code, true);
 			}
 
-			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+			
+			$flags = Settings::getInstance()->get('flags');
+			$flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->set('flags', $flags);
 
 			self::render_template_xsl('datatable_jquery', $data);
 		}
@@ -1460,7 +1461,7 @@ JS;
 			{
 				$this->flags['menu_selection'] .= '::responsibility_role';
 			}
-		Settings::getInstance()->set('flags', $this->flags);
+			Settings::getInstance()->set('flags', $this->flags);
 			if (!$this->acl_read)
 			{
 				$this->bocommon->no_access();
@@ -1742,9 +1743,9 @@ JS;
 				);
 			}
 
-			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
-//			self::render_template_xsl('datatable_jquery', $data);
+			$flags = Settings::getInstance()->get('flags');
+			$flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->set('flags', $flags);
 			self::render_template_xsl('lookup.entity', $data);
 		}
 
@@ -1871,7 +1872,7 @@ JS;
 		function edit( $values = array(), $mode = 'edit' )
 		{
 			$this->flags['xslt_app'] = true;
-		Settings::getInstance()->set('flags', $this->flags);
+			Settings::getInstance()->set('flags', $this->flags);
 
 			//$get_history 		= Sanitizer::get_var('get_history', 'bool', 'POST');
 			$lookup_tenant		 = Sanitizer::get_var('lookup_tenant', 'bool');
@@ -1909,7 +1910,7 @@ JS;
 			{
 				$this->flags['menu_selection'] .= '::tenant';
 			}
-		Settings::getInstance()->set('flags', $this->flags);
+			Settings::getInstance()->set('flags', $this->flags);
 			if ($mode == 'view')
 			{
 				if (!$this->acl_read)
@@ -2849,8 +2850,13 @@ JS;
 
 			self::add_javascript('property', 'base', 'location.edit.js');
 
-			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+			/**
+			 * Refresh flags which is altered within 'tabview_generate' function
+			 */
+
+			$flags = Settings::getInstance()->get('flags');
+			$flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->set('flags', $flags);
 			self::render_template_xsl(array(
 				'location',
 				'datatable_inline',
@@ -2978,7 +2984,7 @@ JS;
 			}
 
 			$this->flags['menu_selection'] .= "::loc_$type_id";
-		Settings::getInstance()->set('flags', $this->flags);
+			Settings::getInstance()->set('flags', $this->flags);
 
 			if (!$this->acl_delete)
 			{
@@ -3016,9 +3022,9 @@ JS;
 
 			$appname		 = lang('location');
 			$function_msg	 = lang('delete location');
-
-			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+			$flags = Settings::getInstance()->get('flags');
+			$flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->set('flags', $flags);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 
@@ -3062,7 +3068,7 @@ JS;
 		function update_cat()
 		{
 			$this->flags['menu_selection'] = 'admin::property::inactive_cats';
-		Settings::getInstance()->set('flags', $this->flags);
+			Settings::getInstance()->set('flags', $this->flags);
 
 			if (!$this->acl->check('.admin.location', ACL_EDIT, 'property'))
 			{
@@ -3108,8 +3114,9 @@ JS;
 
 			$appname										 = lang('location');
 			$function_msg									 = lang('Update the not active category for locations');
-			$this->flags['app_header']	 = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-			Settings::getInstance()->set('flags', $this->flags);
+			$flags = Settings::getInstance()->get('flags');
+			$flags['app_header']	 = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->set('flags', $flags);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('update_cat' => $data));
 		}
 
@@ -3121,7 +3128,7 @@ JS;
 		function update_location()
 		{
 			$this->flags['menu_selection'] = 'admin::property::location::update_location';
-		Settings::getInstance()->set('flags', $this->flags);
+			Settings::getInstance()->set('flags', $this->flags);
 
 			if (!$this->acl->check('.admin.location', ACL_EDIT, 'property'))
 			{
@@ -3162,8 +3169,9 @@ JS;
 
 			$appname										 = lang('location');
 			$function_msg									 = lang('Update the locations');
-			$this->flags['app_header']	 = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+			$flags = Settings::getInstance()->get('flags');
+			$flags['app_header']	 = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->set('flags', $flags);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('update_cat' => $data));
 		}
 
@@ -3193,15 +3201,16 @@ JS;
 			);
 
 			$appname										 = lang('Access error');
-			$this->flags['app_header']	 = lang('property') . ' : ' . $appname;
-		Settings::getInstance()->set('flags', $this->flags);
+			$flags = Settings::getInstance()->get('flags');
+			$flags['app_header']	 = lang('property') . ' : ' . $appname;
+			Settings::getInstance()->set('flags', $flags);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('stop' => $data));
 		}
 
 		function summary()
 		{
 			$this->flags['menu_selection'] .= '::summary';
-		Settings::getInstance()->set('flags', $this->flags);
+			Settings::getInstance()->set('flags', $this->flags);
 
 			if (!$this->acl_read)
 			{
@@ -3274,9 +3283,9 @@ JS;
 				array_push($data['datatable']['field'], $params);
 			}
 
-			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
-			//print_r($data); die;
+			$flags = Settings::getInstance()->get('flags');
+			$flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->set('flags', $flags);
 			self::render_template_xsl('datatable_jquery', $data);
 		}
 

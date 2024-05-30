@@ -110,7 +110,8 @@ class phpgwapi_ofphpgwapi extends phpgwapi_object_factory
 			case 'hooks':
 				$db = ($p1 !== '_UNDEF_') ? $p1 : null;
 				return new \App\modules\phpgwapi\services\Hooks($db);
-
+			case 'locations':
+				return new	\App\modules\phpgwapi\controllers\Locations();
 			case 'mapping':
 				$auth_info = ($p1 !== '_UNDEF_') ? $p1 : null;
 				return new \App\modules\phpgwapi\security\Sso\Mapping($auth_info);

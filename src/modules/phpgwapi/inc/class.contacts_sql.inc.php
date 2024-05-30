@@ -605,6 +605,8 @@
 		function __construct( $session = True )
 		{
 			$this->db = new Db2();
+//			$this->db = Db::getInstance();
+
 			$this->userSettings = Settings::getInstance()->get('user');
 			$this->serverSettings = Settings::getInstance()->get('server');
 			$this->accounts = new Accounts();

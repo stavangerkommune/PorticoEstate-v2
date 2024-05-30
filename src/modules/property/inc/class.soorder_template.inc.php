@@ -27,6 +27,10 @@
 	 * @version $Id$
 	 */
 
+	use App\Database\Db;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\services\Cache;
+
 	/**
 	 * Description
 	 * @package property
@@ -40,13 +44,14 @@
 
 		public function __construct( $currentapp = 'property' )
 		{
-			$this->currentapp = $currentapp ? $currentapp : $GLOBALS['phpgw_info']['flags']['currentapp'];
+			$this->currentapp = $currentapp ? $currentapp : Settings::getInstance()->get('flags')['currentapp'];
 
-			$this->db			 = & $GLOBALS['phpgw']->db;
-			$this->like			 = & $this->db->like;
-			$this->join			 = & $this->db->join;
-			$this->left_join	 = & $this->db->left_join;
-			$this->account		 = (int)$GLOBALS['phpgw_info']['user']['account_id'];
+			$this->db			 = Db::getInstance();
+			$this->like			 = $this->db->like;
+			$this->join			 = $this->db->join;
+			$this->left_join	 = $this->db->left_join;
+			$this->account	 	 = Settings::getInstance()->get('user')['account_id'];
+
 		}
 
 		
@@ -358,7 +363,7 @@
 						}
 						else
 						{
-							phpgwapi_cache::message_set(lang('%1 is not a valid address', $_temp), 'error');
+							Cache::message_set(lang('%1 is not a valid address', $_temp), 'error');
 						}
 					}
 				}
