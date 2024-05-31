@@ -11,7 +11,7 @@
 	 * @category core
 	 * @version $Id$
 	 */
-	/*
+/*
 	  This program is free software: you can redistribute it and/or modify
 	  it under the terms of the GNU General Public License as published by
 	  the Free Software Foundation, either version 2 of the License, or
@@ -26,7 +26,10 @@
 	  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
-	/*
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+
+	 /*
 	 * phpGroupWare::property file handler class
 	 *
 	 * @package phpgroupware
@@ -42,7 +45,7 @@
 		 */
 		var $fakebase = '/property';
 		var $rootdir;
-		var $vfs;
+		var $vfs, $flags, $userSettings, $serverSettings;
 
 		/**
 		 * constructor
@@ -53,6 +56,10 @@
 		 */
 		function __construct( $fakebase = '/property' )
 		{
+			$this->flags = Settings::getInstance()->get('flags');
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->serverSettings = Settings::getInstance()->get('server');
+
 			$this->vfs		 = CreateObject('phpgwapi.vfs');
 			$this->rootdir	 = $this->vfs->basedir;
 			if ($fakebase)
@@ -165,7 +172,7 @@
 
 				if ($check_path != trim($file_info['directory'], "/"))
 				{
-					phpgwapi_cache::message_set("deleting file from wrong location", 'error');
+					Cache::message_set("deleting file from wrong location", 'error');
 					return false;
 				}
 
@@ -183,11 +190,11 @@
 							)
 						)))
 					{
-						phpgwapi_cache::message_set(lang('failed to delete file') . ' :' . $file, 'error');
+						Cache::message_set(lang('failed to delete file') . ' :' . $file, 'error');
 					}
 					else
 					{
-						phpgwapi_cache::message_set(lang('file deleted') . ' :' . $file, 'message');
+						Cache::message_set(lang('file deleted') . ' :' . $file, 'message');
 					}
 					$this->vfs->override_acl = 0;
 				}
@@ -230,9 +237,10 @@
 		 */
 		function get_file( $file_id, $jasper = false )
 		{
-			$GLOBALS['phpgw_info']['flags']['noheader']	 = true;
-			$GLOBALS['phpgw_info']['flags']['nofooter']	 = true;
-			$GLOBALS['phpgw_info']['flags']['xslt_app']	 = false;
+			$this->flags['noheader']	 = true;
+			$this->flags['nofooter']	 = true;
+			$this->flags['xslt_app']	 = false;
+			Settings::getInstance()->set('flags', $this->flags);
 
 
 			if (!$jasper)
@@ -326,9 +334,10 @@
 		 */
 		function view_file( $type = '', $file = '', $jasper = '' )
 		{
-			$GLOBALS['phpgw_info']['flags']['noheader']	 = true;
-			$GLOBALS['phpgw_info']['flags']['nofooter']	 = true;
-			$GLOBALS['phpgw_info']['flags']['xslt_app']	 = false;
+			$this->flags['noheader']	 = true;
+			$this->flags['nofooter']	 = true;
+			$this->flags['xslt_app']	 = false;
+			Settings::getInstance()->set('flags', $this->flags);
 
 			if (!$file)
 			{
@@ -409,7 +418,7 @@
 
 				$attachments[] = array
 					(
-					'file'	 => "{$GLOBALS['phpgw_info']['server']['files_dir']}{$file}",
+					'file'	 => "{$this->serverSettings['files_dir']}{$file}",
 					'name'	 => $file_info['name'],
 					'type'	 => $file_info['mime_type']
 				);

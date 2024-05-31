@@ -10,7 +10,7 @@
 	 * @subpackage admin
 	 * @version $Id$
 	 */
-	/*
+/*
 	  This program is free software: you can redistribute it and/or modify
 	  it under the terms of the GNU General Public License as published by
 	  the Free Software Foundation, either version 2 of the License, or
@@ -24,6 +24,12 @@
 	  You should have received a copy of the GNU General Public License
 	  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
+
+	use App\modules\phpgwapi\security\Acl;
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
 
 	/**
 	 * FIXME I need a proper description
@@ -40,16 +46,17 @@
 		var $cat_id;
 		var $offset;
 		var $acl_app;
-		var $so, $bocommon, $right,$account_id, $use_session, $location,$granting_group, $allrows,$acl, $total_records;
+		var $so, $bocommon, $right,$account_id, $use_session, $location,$granting_group, $allrows,$acl, $total_records, $userSettings;
 
 		function __construct( $session = '' )
 		{
-			//	$this->currentapp	= $GLOBALS['phpgw_info']['flags']['currentapp'];
 			$this->so			 = CreateObject('property.soadmin');
-			$this->acl			 = & $GLOBALS['phpgw']->acl;
+			$this->acl			 = Acl::getInstance();
 			$this->bocommon		 = CreateObject('property.bocommon');
 			$this->right		 = array(1, 2, 4, 8, 16);
-			$this->account_id	 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->userSettings = Settings::getInstance()->get('user');
+
+			$this->account_id	 = $this->userSettings['account_id'];
 
 			if ($session)
 			{
@@ -114,7 +121,7 @@
 
 		function read_sessiondata()
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data', 'fm_admin');
+			$data = Cache::session_get('fm_admin', 'session_data');
 
 			$this->start			 = $data['start'];
 			$this->query			 = $data['query'];
@@ -130,7 +137,7 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', 'fm_admin', $data);
+				Cache::session_set('fm_admin', 'session_data', $data);
 			}
 		}
 
@@ -248,7 +255,7 @@
 			$cleared				 = $this->bocommon->reset_fm_cache_userlist();
 			$receipt['message'][]	 = array('msg' => lang('permissions are updated!'));
 			$receipt['message'][]	 = array('msg' => lang('%1 userlists cleared from cache', $cleared));
-			phpgwapi_cache::user_clear('phpgwapi', 'menu', -1);
+			Cache::user_clear('phpgwapi', 'menu', -1);
 			return $receipt;
 		}
 
@@ -258,13 +265,13 @@
 			{
 				$check_account_type	 = array('accounts');
 				$acl_account_type	 = 'accounts';
-				$valid_users		 = $GLOBALS['phpgw']->acl->get_ids_for_location('run', phpgwapi_acl::READ, $this->acl_app);
+				$valid_users		 = $this->acl->get_ids_for_location('run', Acl::READ, $this->acl_app);
 			}
 			else
 			{
 				$check_account_type	 = array('groups', 'accounts');
 				$acl_account_type	 = 'both';
-				$_valid_users		 = $GLOBALS['phpgw']->acl->get_user_list_right(phpgwapi_acl::READ, 'run', $this->acl_app);
+				$_valid_users		 = $this->acl->get_user_list_right(Acl::READ, 'run', $this->acl_app);
 				$valid_users		 = array();
 				foreach ($_valid_users as $_user)
 				{
@@ -294,7 +301,9 @@
 
 			$right = $this->right;
 
-			$allusers = $GLOBALS['phpgw']->accounts->get_list($type, -1, $this->sort, $this->order, $this->query);
+			$account_obj = new Accounts();
+
+			$allusers = $account_obj->get_list($type, -1, $this->sort, $this->order, $this->query);
 
 			//			$allusers	= array_intersect_key($allusers, $valid_users);
 
@@ -309,7 +318,7 @@
 			reset($allusers);
 
 			$this->total_records = count($allusers);
-			$length				 = $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
+			$length				 = $this->userSettings['preferences']['common']['maxmatchs'];
 
 			if ($this->allrows)
 			{

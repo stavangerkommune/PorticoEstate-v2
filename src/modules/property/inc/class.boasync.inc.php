@@ -27,6 +27,8 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Cache;
+
 	/**
 	 * Description
 	 * @package property
@@ -80,13 +82,13 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', 'async', $data);
+				Cache::session_set('async', 'session_data', $data);
 			}
 		}
 
 		function read_sessiondata()
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data', 'async');
+			$data = Cache::session_get('async', 'session_data');
 
 			$this->start	 = $data['start'];
 			$this->query	 = $data['query'];

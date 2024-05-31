@@ -26,6 +26,12 @@
 	 * @subpackage admin
 	 * @version $Id$
 	 */
+
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\security\Acl;
+	use App\modules\phpgwapi\controllers\Locations;
+	use App\modules\phpgwapi\services\Cache;
+
 	phpgw::import_class('phpgwapi.uicommon_jquery');
 
 	/**
@@ -63,15 +69,16 @@
 		{
 			parent::__construct();
 
-			$GLOBALS['phpgw_info']['flags']['xslt_app']			 = true;
-			$GLOBALS['phpgw_info']['flags']['menu_selection']	 = 'admin::property::location';
+			$this->flags['xslt_app']			 = true;
+			$this->flags['menu_selection']	 = 'admin::property::location';
+			Settings::getInstance()->set('flags', $this->flags);
 
 			$this->nextmatchs	 = CreateObject('phpgwapi.nextmatchs');
-			$this->account		 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->account	 	 = $this->userSettings['account_id'];
 			$this->bo			 = CreateObject('property.boadmin_location', true);
 			$this->bocommon		 = CreateObject('property.bocommon');
 
-			$this->acl			 = & $GLOBALS['phpgw']->acl;
+			$this->acl			 = Acl::getInstance();
 			$this->acl_location	 = '.admin.location';
 			$this->acl_read		 = $this->acl->check($this->acl_location, ACL_READ, 'property');
 			$this->acl_add		 = $this->acl->check($this->acl_location, ACL_ADD, 'property');
@@ -106,8 +113,6 @@
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
-			#$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::location';
-
 			$this->bocommon->reset_fm_cache();
 
 			if (Sanitizer::get_var('phpgw_return_as') == 'json')
@@ -125,7 +130,8 @@
 			$appname		 = lang('entity');
 			$function_msg	 = lang('list entity type');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			$data = array(
 				'datatable_name' => $appname,
@@ -333,6 +339,7 @@
 			$result_objects	 = array();
 			$result_count	 = 0;
 
+			$location_obj = new Locations();
 			switch ($data['method'])
 			{
 				case 'list_attribute':
@@ -345,7 +352,7 @@
 					$values	 = $this->bo->read($params);
 					foreach ($values as &$entry)
 					{
-						$entry['location_id'] = $GLOBALS['phpgw']->locations->get_id('property', ".location.{$entry['id']}");
+						$entry['location_id'] = $location_obj->get_id('property', ".location.{$entry['id']}");
 					}
 					break;
 			}
@@ -417,14 +424,14 @@
 
 					if ($e)
 					{
-						phpgwapi_cache::message_set($e->getMessage(), 'error');
+						Cache::message_set($e->getMessage(), 'error');
 						$this->edit($values);
 						return;
 					}
 				}
 
-				$message = $GLOBALS['phpgw']->common->msgbox($msgbox_data);
-				phpgwapi_cache::message_set($message[0]['msgbox_text'], 'message');
+				$message = $this->phpgwapi_common->msgbox($msgbox_data);
+				Cache::message_set($message[0]['msgbox_text'], 'message');
 				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiadmin_location.edit',
 					'id'		 => $id));
 			}
@@ -474,7 +481,7 @@
 
 			$data = array
 				(
-				'msgbox_data'				 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'				 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'lang_name_standardtext'	 => lang('Enter a name of the standard'),
 				'form_action'				 => phpgw::link('/index.php', $link_data),
 				'done_action'				 => phpgw::link('/index.php', array('menuaction' => 'property.uiadmin_location.index')),
@@ -498,7 +505,8 @@
 
 			$appname = lang('location');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit' => $data));
 		}
 
@@ -562,9 +570,9 @@
 			$appname		 = lang('location');
 			$function_msg	 = lang('delete location standard');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
-			//	$GLOBALS['phpgw']->xslttpl->pp();
 		}
 
 		function list_attribute_group()
@@ -579,7 +587,8 @@
 			$id		 = Sanitizer::get_var('id', 'int');
 			$resort	 = Sanitizer::get_var('resort');
 
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= "::location::attribute_loc_{$type_id}";
+			$this->flags['menu_selection'] .= "::location::attribute_loc_{$type_id}";
+			Settings::getInstance()->update('flags', ['menu_selection' => $this->flags['menu_selection']]);
 
 			if ($resort)
 			{
@@ -603,7 +612,8 @@
 			$appname		 = lang('attribute');
 			$function_msg	 = lang('list entity attribute group');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . '::' . $appname . '::' . $function_msg;
+			$this->flags['app_header'] = lang('property') . '::' . $appname . '::' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			$data = array(
 				'datatable_name' => $appname,
@@ -741,7 +751,9 @@
 			}
 
 			$type_id											 = Sanitizer::get_var('type_id', 'int');
-			$GLOBALS['phpgw_info']['flags']['menu_selection']	 .= "::location::attribute_loc_{$type_id}";
+			$this->flags['menu_selection']	 .= "::location::attribute_loc_{$type_id}";
+			Settings::getInstance()->update('flags', ['menu_selection' => $this->flags['menu_selection']]);
+
 			$location											 = ".location.{$type_id}";
 			$id													 = Sanitizer::get_var('id', 'int');
 			$values												 = Sanitizer::get_var('values');
@@ -827,7 +839,7 @@
 				(
 				'lang_entity'				 => lang('location'),
 				'entity_name'				 => $type['name'],
-				'msgbox_data'				 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'				 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'form_action'				 => phpgw::link('/index.php', $link_data),
 				'done_action'				 => phpgw::link('/index.php', array('menuaction' => 'property.uiadmin_location.list_attribute_group',
 					'type_id'	 => $type_id)),
@@ -855,7 +867,8 @@
 
 			$appname = lang('location');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit_attrib_group' => $data));
 		}
 
@@ -871,7 +884,9 @@
 			$id		 = Sanitizer::get_var('id', 'int');
 			$resort	 = Sanitizer::get_var('resort');
 
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= "::location::attribute_loc_{$type_id}";
+			$this->flags['menu_selection'] .= "::location::attribute_loc_{$type_id}";
+			Settings::getInstance()->update('flags', ['menu_selection' => $this->flags['menu_selection']]);
+
 
 			if ($resort)
 			{
@@ -894,7 +909,8 @@
 			$appname		 = lang('attribute');
 			$function_msg	 = lang('list entity attribute');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			$data = array(
 				'datatable_name' => $appname,
@@ -1098,14 +1114,14 @@
 				}
 				catch (Exception $e)
 				{
-					phpgwapi_cache::message_set($e->getMessage(), 'error');
+					Cache::message_set($e->getMessage(), 'error');
 					$this->edit_attrib($values);
 					return;
 				}
 
-				$message = $GLOBALS['phpgw']->common->msgbox($msgbox_data);
+				$message = $this->phpgwapi_common->msgbox($msgbox_data);
 
-				phpgwapi_cache::message_set($message[0]['msgbox_text'], 'message');
+				Cache::message_set($message[0]['msgbox_text'], 'message');
 				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiadmin_location.edit_attrib',
 					'id'		 => $id, 'type_id'	 => $type_id));
 			}
@@ -1131,7 +1147,9 @@
 			$tabs['general'] = array('label' => lang('general'), 'link' => '#general');
 			$active_tab		 = 'general';
 
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= "::location::attribute_loc_{$type_id}";
+			$this->flags['menu_selection'] .= "::location::attribute_loc_{$type_id}";
+			Settings::getInstance()->update('flags', ['menu_selection' => $this->flags['menu_selection']]);
+
 
 			if (!$values)
 			{
@@ -1181,7 +1199,7 @@
 				'lang_delete_value'				 => lang('Delete value'),
 				'lang_value'					 => lang('value'),
 				'lang_delete_choice_statustext'	 => lang('Delete this value from the list of multiple choice'),
-				'msgbox_data'					 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'					 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'form_action'					 => phpgw::link('/index.php', $link_data),
 				'done_action'					 => phpgw::link('/index.php', array('menuaction' => 'property.uiadmin_location.list_attribute',
 					'type_id'	 => $type_id)),
@@ -1225,7 +1243,8 @@
 
 			$appname = lang('location');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit_attrib' => $data));
 		}
 
@@ -1236,7 +1255,9 @@
 				phpgw::no_access();
 			}
 
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::config';
+			$this->flags['menu_selection'] .= '::config';
+			Settings::getInstance()->update('flags', ['menu_selection' => $this->flags['menu_selection']]);
+
 
 			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
@@ -1279,7 +1300,8 @@
 			$appname		 = lang('location');
 			$function_msg	 = lang('list config');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			$data = array(
 				'datatable_name' => $appname . ': ' . $function_msg,
@@ -1348,7 +1370,9 @@
 					'perm'			 => 16, 'acl_location'	 => $this->acl_location));
 			}
 
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::config';
+			$this->flags['menu_selection'] .= '::config';
+			Settings::getInstance()->update('flags', ['menu_selection' => $this->flags['menu_selection']]);
+
 
 			$column_name = Sanitizer::get_var('column_name');
 			$values		 = Sanitizer::get_var('values');
@@ -1374,7 +1398,7 @@
 
 			$data = array
 				(
-				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'			 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'form_action'			 => phpgw::link('/index.php', $link_data),
 				'done_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uiadmin_location.config')),
 				'lang_column_name'		 => lang('Column name'),
@@ -1393,7 +1417,8 @@
 			$appname = lang('location');
 
 			//_debug_array($data);
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit_config' => $data));
 		}
 	}

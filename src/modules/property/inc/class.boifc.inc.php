@@ -26,9 +26,13 @@
 	 * @subpackage ifc
 	 * @version $Id$
 	 */
-	/**
+
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+
+	 /**
 	 * Description
-	 * @package hrm
+	 * @package ifc
 	 */
 	phpgw::import_class('phpgwapi.datetime');
 
@@ -47,7 +51,7 @@
 		/**
 		 * @var object $custom reference to custom fields object
 		 */
-		protected $custom;
+		protected $custom, $userSettings, $phpgwapi_common;
 		var $public_functions = array
 			(
 			'read'			 => true,
@@ -111,7 +115,12 @@
 				$this->allrows = $allrows;
 			}
 
-			switch ($GLOBALS['phpgw_info']['server']['db_type'])
+			$this->userSettings = Settings::getInstance()->get('user');
+			$serverSettings = Settings::getInstance()->get('server');
+			$this->phpgwapi_common = new \phpgwapi_common();
+
+
+			switch ($serverSettings['db_type'])
 			{
 				case 'mssqlnative':
 				case 'mssql':
@@ -137,13 +146,14 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', 'ifc_app', $data);
+				Cache::session_set('ifc_app', 'session_data', $data);
+
 			}
 		}
 
 		function read_sessiondata()
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data', 'ifc_app');
+			$data = Cache::session_get('ifc_app', 'session_data');
 
 			$this->start	 = (isset($data['start']) ? $data['start'] : '');
 			$this->query	 = (isset($data['query']) ? $data['query'] : '');
@@ -214,10 +224,10 @@
 
 			$values		 = $this->custom->prepare($values, $appname	 = 'property', $location	 = $this->acl_location);
 
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
 			if (isset($values['entry_date']) && $values['entry_date'])
 			{
-				$values['entry_date'] = $GLOBALS['phpgw']->common->show_date($values['entry_date'], $dateformat);
+				$values['entry_date'] = $this->phpgwapi_common->show_date($values['entry_date'], $dateformat);
 			}
 
 			return $values;
@@ -268,7 +278,7 @@
 				'allrows'	 => true
 			);
 
-			$custom_functions = $GLOBALS['phpgw']->custom_functions->find($criteria);
+			$custom_functions = createObject('property.custom_functions')->find($criteria);
 
 			foreach ($custom_functions as $entry)
 			{
@@ -278,7 +288,7 @@
 					continue;
 				}
 
-				$file = PHPGW_SERVER_ROOT . "/property/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}/{$entry['file_name']}";
+				$file = PHPGW_SERVER_ROOT . "/property/inc/custom/{$this->userSettings['domain']}/{$entry['file_name']}";
 				if ($entry['active'] && is_file($file))
 				{
 					require_once $file;

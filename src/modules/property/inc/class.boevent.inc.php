@@ -26,6 +26,12 @@
 	 * @subpackage admin
 	 * @version $Id$
 	 */
+
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+	use App\modules\phpgwapi\controllers\Locations;
+
 	/*
 	 * Import the datetime class for date processing
 	 */
@@ -70,7 +76,7 @@
 		var $cached_events;
 		protected $event_functions	 = array();
 		var $so, $custom, $sbox, $asyncservice,$use_session,$location_id,$user_id, $allrows,$status_id,
-		$total_records,$uicols,$is_group, $debug,$repeating_events;
+		$total_records,$uicols,$is_group, $debug,$repeating_events,$locations_obj,$serverSettings,$phpgwapi_common,$userSettings;
 		var $public_functions	 = array
 			(
 			'event_schedule_data'		 => true,
@@ -84,8 +90,12 @@
 			$this->custom		 = CreateObject('property.custom_fields');//& $this->so->custom;
 			$this->sbox			 = CreateObject('phpgwapi.sbox');
 			$this->asyncservice	 = CreateObject('phpgwapi.asyncservice');
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->serverSettings = Settings::getInstance()->get('server');
+			$this->phpgwapi_common = new \phpgwapi_common();
+			$this->locations_obj = new Locations();
 
-			if (isset($GLOBALS['phpgw_info']['user']['apps']['sms']))
+			if (isset($this->userSettings['apps']['sms']))
 			{
 				$this->event_functions[1] = array
 					(
@@ -95,7 +105,7 @@
 				);
 			}
 
-			if (isset($GLOBALS['phpgw_info']['server']['smtp_server']) && $GLOBALS['phpgw_info']['server']['smtp_server'])
+			if (isset($this->serverSettings['smtp_server']) && $this->serverSettings['smtp_server'])
 			{
 				$this->event_functions[2] = array
 					(
@@ -139,15 +149,13 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', 'category', $data);
+				Cache::session_set('event', 'session_data', $data);
 			}
 		}
 
 		function read_sessiondata()
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data', 'category');
-
-			//		_debug_array($data);
+			$data = Cache::session_get('event', 'session_data');
 
 			$this->start		 = $data['start'];
 			$this->query		 = $data['query'];
@@ -163,20 +171,17 @@
 
 		public function read( $data = array() )
 		{
-//			$values = $this->so->read(array('start' => $this->start,'query' => $this->query,'sort' => $this->sort,'order' => $this->order,
-//			'allrows'=>$this->allrows, 'location_id' => $this->location_id, 'user_id' => $this->user_id, 'dry_run'=>$dry_run,
-//			'status_id' => $this->status_id));
 
 			$values = $this->so->read($data);
 
 			static $locations	 = array();
 			static $urls		 = array();
 			$interlink			 = CreateObject('property.interlink');
-			$dateformat			 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat			 = $this->userSettings['preferences']['common']['dateformat'];
 			foreach ($values as &$entry)
 			{
-				$entry['date']			 = $GLOBALS['phpgw']->common->show_date($entry['schedule_time'], $dateformat);
-				$entry['receipt_date']	 = $GLOBALS['phpgw']->common->show_date($entry['receipt_date'], $dateformat);
+				$entry['date']			 = $this->phpgwapi_common->show_date($entry['schedule_time'], $dateformat);
+				$entry['receipt_date']	 = $this->phpgwapi_common->show_date($entry['receipt_date'], $dateformat);
 
 				if ($locations[$entry['location_id']])
 				{
@@ -184,7 +189,7 @@
 				}
 				else
 				{
-					$location							 = $GLOBALS['phpgw']->locations->get_name($entry['location_id']);
+					$location							 = $this->locations_obj->get_name($entry['location_id']);
 					$locations[$entry['location_id']]	 = $location;
 				}
 
@@ -209,12 +214,12 @@
 
 		public function read_single( $id )
 		{
-			$dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat	 = $this->userSettings['preferences']['common']['dateformat'];
 			$values		 = $this->so->read_single($id);
 			if ($values)
 			{
-				$values['start_date']	 = $GLOBALS['phpgw']->common->show_date($values['start_date'], $dateformat);
-				$values['end_date']		 = $GLOBALS['phpgw']->common->show_date($values['end_date'], $dateformat);
+				$values['start_date']	 = $this->phpgwapi_common->show_date($values['start_date'], $dateformat);
+				$values['end_date']		 = $this->phpgwapi_common->show_date($values['end_date'], $dateformat);
 				if ($values['rpt_day'])
 				{
 					$rpt_day = array
@@ -241,7 +246,7 @@
 				$job_id		 = "property{$location}::{$values['location_item_id']}::{$values['attrib_id']}";
 				$job		 = execMethod('phpgwapi.asyncservice.read', $job_id);
 
-				$values['next'] = $GLOBALS['phpgw']->common->show_date($job[$job_id]['next'], $dateformat);
+				$values['next'] = $this->phpgwapi_common->show_date($job[$job_id]['next'], $dateformat);
 			}
 
 //			$this->find_scedules($criteria);
@@ -602,7 +607,8 @@
 				return false;
 			}
 
-			$account_id	 = $GLOBALS['phpgw']->accounts->search_person($contact_id);
+			$accounts_obj = new Accounts();
+			$account_id	 = $accounts_obj->search_person($contact_id);
 			$socommon	 = CreateObject('property.socommon');
 			$prefs		 = $socommon->create_preferences('common', $account_id);
 			$comms		 = execMethod('addressbook.boaddressbook.get_comm_contact_data', $contact_id);
@@ -610,18 +616,18 @@
 
 			$subject = lang('reminder');
 			$message = "<a href =\"{$relation_link}\">" . lang('record') . ' #' . $id . '</a>' . "\n";
-			if (!is_object($GLOBALS['phpgw']->send))
-			{
-				$GLOBALS['phpgw']->send = CreateObject('phpgwapi.send');
-			}
+
+			$send = CreateObject('phpgwapi.send');
+
 			try
 			{
-				$GLOBALS['phpgw']->send->msg('email', $_address, $subject, stripslashes($message), '', $cc='', $bcc='', $coordinator_email, $coordinator_name, 'html');
+				$send->msg('email', $_address, $subject, stripslashes($message), '', $cc='', $bcc='', $coordinator_email, $coordinator_name, 'html');
 			}
 			catch (Exception $e)
 			{
 				$receipt['error'][] = array('msg' => $e->getMessage());
-				$GLOBALS['phpgw']->log->error(array(
+				$log = new \App\modules\phpgwapi\services\Log();
+				$log->error(array(
 					'text'	 => 'property_boevent::send_email() failed with %1',
 					'p1'	 => $e->getMessage(),
 					'p2'	 => '',
@@ -653,7 +659,7 @@
 				{
 					throw new Exception("property_boevent::find_scedules - Missing location info in input");
 				}
-				$location_id = $GLOBALS['phpgw']->locations->get_id($params['appname'], $params['location']);
+				$location_id = $this->locations_obj->get_id($params['appname'], $params['location']);
 			}
 			else
 			{
@@ -1181,7 +1187,7 @@
 			//		    $date = new DateTime(Sanitizer::get_var('date')); Use this one when moving to php 5.3
 
 			$datetime		 = CreateObject('phpgwapi.datetime');
-			$date			 = $datetime->convertDate(Sanitizer::get_var('date'), 'Y-m-d', $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
+			$date			 = $datetime->convertDate(Sanitizer::get_var('date'), 'Y-m-d', $this->userSettings['preferences']['common']['dateformat']);
 			$datetime_start	 = $datetime->date_to_timestamp($date);
 
 			$id = Sanitizer::get_var('resource_id', 'int');
@@ -1279,7 +1285,7 @@
 			foreach ($schedules as $_date => $set)
 			{
 				$__date	 = substr($_date, 0, 4) . '-' . substr($_date, 4, 2) . '-' . substr($_date, 6, 2);
-				$date	 = phpgwapi_datetime::convertDate($__date, 'Y-m-d', $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
+				$date	 = phpgwapi_datetime::convertDate($__date, 'Y-m-d', $this->userSettings['preferences']['common']['dateformat']);
 
 				foreach ($set as $entry)
 				{
@@ -1327,7 +1333,7 @@
 			$locations	 = $this->so->get_event_location();
 			foreach ($locations as &$location)
 			{
-				$temp				 = $GLOBALS['phpgw']->locations->get_name($location['id']);
+				$temp				 = $this->locations_obj->get_name($location['id']);
 				$location['name']	 = $interlink->get_location_name($temp['location']);
 			}
 			return $locations;

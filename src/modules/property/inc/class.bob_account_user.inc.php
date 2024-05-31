@@ -26,17 +26,23 @@
 	 * @package registration
 	 * @version $Id$
 	 */
-	class property_bob_account_user
+
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
+	 class property_bob_account_user
 	{
 
-		var $account_id, $so;
+		var $account_id, $so, $userSettings;
 		var $public_functions = array
 			(
 		);
 
 		function __construct()
 		{
-			$this->account_id	 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->userSettings = Settings::getInstance()->get('user');
+
+			$this->account_id	 = $this->userSettings['account_id'];
 			$this->so			 = CreateObject('property.sob_account_user');
 		}
 
@@ -44,6 +50,7 @@
 		{
 			static $users	 = array();
 			$values			 = $this->so->read($data);
+			$accounts_obj	 = new Accounts();
 
 			foreach ($values as &$entry)
 			{
@@ -51,7 +58,7 @@
 				{
 					if (!$entry['user'] = $users[$entry['user_id']])
 					{
-						$entry['user']				 = $GLOBALS['phpgw']->accounts->get($entry['user_id'])->__toString();
+						$entry['user']				 = $accounts_obj->get($entry['user_id'])->__toString();
 						$users[$entry['user_id']]	 = $entry['user'];
 					}
 				}

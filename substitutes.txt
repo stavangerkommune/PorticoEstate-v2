@@ -10,6 +10,10 @@ $userSettings = Settings::getInstance()->get('user');
 $flags = Settings::getInstance()->get('flags');
 Settings::getInstance()->set('flags', $this->flags);
 
+Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
+Settings::getInstance()->update('flags', ['menu_selection' => $this->flags['menu_selection']]);
+
+
 håndtert sentralt i phpGW
 //use App\modules\phpgwapi\services\Preferences;
 //$Preferences = Preferences::getInstance();

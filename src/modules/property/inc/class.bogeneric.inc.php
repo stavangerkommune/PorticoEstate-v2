@@ -27,6 +27,10 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Locations;
+
 	/**
 	 * Description
 	 * @package property
@@ -42,7 +46,7 @@
 		var $cat_id;
 		var $location_info	 = array();
 		var $appname;
-		var $allrows, $custom, $so, $bocommon, $type, $type_id, $total_records, $uicols, $use_session;
+		var $allrows, $custom, $so, $bocommon, $type, $type_id, $total_records, $uicols, $use_session, $userSettings, $location_obj;
 		var $public_functions = array
 			(
 			'get_autocomplete'	 => true,
@@ -53,14 +57,19 @@
 		{
 			if (!$call_appname) // call from mobilefrontend
 			{
+				$apps = Settings::getInstance()->get('apps');
+
 				$called_class		 = get_called_class();
 				$called_class_arr	 = explode('_', $called_class);
-				$call_appname		 = !empty($called_class_arr[0]) && !empty($GLOBALS['phpgw_info']['apps'][$called_class_arr[0]]) ? $called_class_arr[0] : 'property';
+				$call_appname		 = !empty($called_class_arr[0]) && !empty($apps[$called_class_arr[0]]) ? $called_class_arr[0] : 'property';
 			}
 			$this->so = CreateObject("{$call_appname}.sogeneric");
 
 			$this->custom	 = & $this->so->custom;
 			$this->bocommon	 = CreateObject('property.bocommon');
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->location_obj = new Locations();
+
 
 			$start	 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
 			$query	 = Sanitizer::get_var('query');
@@ -103,13 +112,13 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', "generic_{$data['type']}", $data);
+				Cache::session_set("generic_{$data['type']}", 'session_data', $data);
 			}
 		}
 
 		function read_sessiondata( $type )
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data', "generic_{$type}");
+			$data = Cache::session_get("generic_{$type}", 'session_data');
 
 			//		_debug_array($data);
 
@@ -133,7 +142,7 @@
 		{
 			if (!$selected)
 			{
-				$selected = $GLOBALS['phpgw_info']['user']['preferences'][$this->location_info['acl_app']]["generic_columns_{$this->type}_{$this->type_id}"];
+				$selected = $this->userSettings['preferences'][$this->location_info['acl_app']]["generic_columns_{$this->type}_{$this->type_id}"];
 			}
 
 			$filter			 = array('list' => ''); // translates to "list IS NULL"
@@ -151,7 +160,12 @@
 
 			$values = $this->so->read($data);
 
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
+
+			$phpgwapi_common = new \phpgwapi_common();
+			$account_obj = new \App\modules\phpgwapi\controllers\Accounts\Accounts();
+
+
 
 			foreach ($values as &$entry)
 			{
@@ -161,11 +175,11 @@
 					{
 						if ($field['type'] == 'date')
 						{
-							$entry[$field['name']] = $GLOBALS['phpgw']->common->show_date($entry[$field['name']], $dateformat);
+							$entry[$field['name']] = $phpgwapi_common->show_date($entry[$field['name']], $dateformat);
 						}
 						else if (isset($field['values_def']['get_single_value']) && $field['values_def']['get_single_value'] == 'get_user')
 						{
-							$entry[$field['name']] = $GLOBALS['phpgw']->accounts->get($entry[$field['name']])->__toString();
+							$entry[$field['name']] = $account_obj->get($entry[$field['name']])->__toString();
 						}
 						else if ((isset($field['role']) && $field['role'] == 'parent' || isset($field['values_def']['method_input']['role']) && $field['values_def']['method_input']['role'] == 'parent') && !empty($field['values_def']['method_input']['type']))
 						{
@@ -217,7 +231,7 @@
 
 			$custom_fields	 = false;
 			$system_location = !empty($this->location_info['system_location']) ? $this->location_info['system_location'] : $this->location_info['acl_location'];
-			if ($GLOBALS['phpgw']->locations->get_attrib_table($this->location_info['acl_app'], $this->location_info['acl_location']))
+			if ($this->location_obj->get_attrib_table($this->location_info['acl_app'], $this->location_info['acl_location']))
 			{
 				$custom_fields			 = true;
 				$values['attributes']	 = $this->custom->find($this->location_info['acl_app'], $system_location, 0, '', 'ASC', 'attrib_sort', true, true);
@@ -336,7 +350,7 @@
 			{
 				foreach ($history_values as &$value_set)
 				{
-					$value_set['new_value'] = date($GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'], strtotime($value_set['new_value']));
+					$value_set['new_value'] = date($this->userSettings['preferences']['common']['dateformat'], strtotime($value_set['new_value']));
 				}
 			}
 
@@ -470,7 +484,7 @@
 		public function edit_field( $data = array() )
 		{
 			$system_location = !empty($this->location_info['system_location']) ? $this->location_info['system_location'] : $this->location_info['acl_location'];
-			if ($GLOBALS['phpgw']->locations->get_attrib_table($this->location_info['acl_app'], $this->location_info['acl_location']))
+			if ($this->location_obj->get_attrib_table($this->location_info['acl_app'], $this->location_info['acl_location']))
 			{
 				$attributes	 = $this->custom->find($this->location_info['acl_app'], $system_location, 0, '', 'ASC', 'attrib_sort', true, true);
 				foreach($attributes as $attribute)

@@ -27,6 +27,9 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+
 	/**
 	 * Description
 	 * @package property
@@ -44,7 +47,7 @@
 		var $member_id;
 		var $allrows;
 
-		var $so, $bocommon, $status_id, $uicols, $total_records, $vendor_id, $use_session;
+		var $so, $bocommon, $status_id, $uicols, $total_records, $vendor_id, $use_session, $userSettings, $phpgwapi_common;
 
 		/**
 		 * @var object $custom reference to custom fields object
@@ -60,6 +63,9 @@
 
 		function __construct( $session = false )
 		{
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->phpgwapi_common = new \phpgwapi_common();
+
 			$this->so		 = CreateObject('property.soagreement');
 			$this->bocommon	 = CreateObject('property.bocommon');
 			$this->custom	 = createObject('property.custom_fields');
@@ -109,15 +115,13 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', 'agreement', $data);
+				Cache::session_set('agreement', 'session_data', $data);
 			}
 		}
 
 		function read_sessiondata()
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data', 'agreement');
-
-//			_debug_array($data);die();
+			$data = Cache::session_get('agreement', 'session_data');
 
 			$this->start	 = $data['start'];
 			$this->query	 = $data['query'];
@@ -159,21 +163,21 @@
 			$this->total_records = $this->so->total_records;
 			$this->uicols		 = $this->so->uicols;
 
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
 			foreach ($agreements as &$agreement)
 			{
 				if ($agreement['start_date'])
 				{
-					$agreement['start_date'] = $GLOBALS['phpgw']->common->show_date($agreement['start_date'], $dateformat);
+					$agreement['start_date'] = $this->phpgwapi_common->show_date($agreement['start_date'], $dateformat);
 				}
 				if ($agreement['termination_date'])
 				{
-					$agreement['termination_date'] = $GLOBALS['phpgw']->common->show_date($agreement['termination_date'], $dateformat);
+					$agreement['termination_date'] = $this->phpgwapi_common->show_date($agreement['termination_date'], $dateformat);
 				}
 
 				if ($agreement['end_date'])
 				{
-					$agreement['end_date'] = $GLOBALS['phpgw']->common->show_date($agreement['end_date'], $dateformat);
+					$agreement['end_date'] = $this->phpgwapi_common->show_date($agreement['end_date'], $dateformat);
 				}
 			}
 			return $agreements;
@@ -219,7 +223,7 @@
 
 			for ($i = 0; $i < count($list); $i++)
 			{
-				$list[$i]['index_date'] = $GLOBALS['phpgw']->common->show_date($list[$i]['index_date'], $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
+				$list[$i]['index_date'] = $this->phpgwapi_common->show_date($list[$i]['index_date'], $this->userSettings['preferences']['common']['dateformat']);
 			}
 
 			return $list;
@@ -245,17 +249,17 @@
 
 			$values = $this->custom->prepare($values, 'property', '.agreement');
 
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
 			if (isset($values['entry_date']) && $values['entry_date'])
 			{
-				$values['entry_date'] = $GLOBALS['phpgw']->common->show_date($values['entry_date'], $dateformat);
+				$values['entry_date'] = $this->phpgwapi_common->show_date($values['entry_date'], $dateformat);
 			}
 
-			$values['start_date']	 = $GLOBALS['phpgw']->common->show_date($values['start_date'], $dateformat);
-			$values['end_date']		 = $GLOBALS['phpgw']->common->show_date($values['end_date'], $dateformat);
+			$values['start_date']	 = $this->phpgwapi_common->show_date($values['start_date'], $dateformat);
+			$values['end_date']		 = $this->phpgwapi_common->show_date($values['end_date'], $dateformat);
 			if (isset($values['termination_date']) && $values['termination_date'])
 			{
-				$values['termination_date'] = $GLOBALS['phpgw']->common->show_date($values['termination_date'], $dateformat);
+				$values['termination_date'] = $this->phpgwapi_common->show_date($values['termination_date'], $dateformat);
 			}
 
 			$vfs				 = CreateObject('phpgwapi.vfs');
@@ -372,7 +376,7 @@
 		{
 			if (!$selected)
 			{
-				$selected = isset($GLOBALS['phpgw_info']['user']['preferences']['property']["agreement_columns"]) ? $GLOBALS['phpgw_info']['user']['preferences']['property']["agreement_columns"] : '';
+				$selected = isset($this->userSettings['preferences']['property']["agreement_columns"]) ? $this->userSettings['preferences']['property']["agreement_columns"] : '';
 			}
 
 			$filter	 = array('list' => ''); // translates to "list IS NULL"

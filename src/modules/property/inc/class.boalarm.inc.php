@@ -27,6 +27,10 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
 	/**
 	 * Description
 	 * @package property
@@ -37,18 +41,24 @@
 		public $allrows;
 		public $method_id;
 
-		var $async, $so, $bocommon, $start,$query, $filter, $sort, $order, $config, $cat_id, $total_records, $use_session,$owner,$send,$user;
+		var $async, $so, $bocommon, $start,$query, $filter, $sort, $order,
+		 $config, $cat_id, $total_records, $use_session,$owner,$send,$user,
+		 $phpgwapi_common, $accounts_obj, $userSettings, $serverSettings;
 
 		function __construct( $session = '' )
 		{
-			$GLOBALS['phpgw_info']['flags']['currentapp'] = 'property';
-			if (!is_object($GLOBALS['phpgw']->asyncservice))
-			{
-				$GLOBALS['phpgw']->asyncservice = CreateObject('phpgwapi.asyncservice');
-			}
-			$this->async	 = & $GLOBALS['phpgw']->asyncservice;
+			$flags = Settings::getInstance()->get('flags');
+			$flags['currentapp'] = 'property';
+			Settings::getInstance()->set('flags', $flags);
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->serverSettings = Settings::getInstance()->get('server');
+
+			$this->async	 = CreateObject('phpgwapi.asyncservice');
 			$this->so		 = CreateObject('property.soalarm');
 			$this->bocommon	 = CreateObject('property.bocommon');
+			$this->phpgwapi_common = new \phpgwapi_common();
+			$this->accounts_obj = new Accounts();
+
 			if ($session)
 			{
 				$this->read_sessiondata();
@@ -107,13 +117,13 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', 'owner', $data);
+				Cache::session_set('owner', 'session_data', $data);
 			}
 		}
 
 		function read_sessiondata()
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data', 'owner');
+			$data =	Cache::session_get('owner', 'session_data');
 
 			$this->start	 = $data['start'];
 			$this->query	 = $data['query'];
@@ -161,8 +171,8 @@
 				{
 					$alarm				 = $job['data']; // text, enabled
 					$alarm['alarm_id']	 = $id;
-					$alarm['time']		 = $GLOBALS['phpgw']->common->show_date($job['next']);
-					$alarm['user']		 = $GLOBALS['phpgw']->accounts->id2name($alarm['owner']);
+					$alarm['time']		 = $this->phpgwapi_common->show_date($job['next']);
+					$alarm['user']		 = $this->accounts_obj->id2name($alarm['owner']);
 					$alarm['text']		 = $text;
 
 					$alarms[] = $alarm;
@@ -384,7 +394,8 @@
 		{
 
 //			echo "<p>boalarm::send_alarm("; print_r($alarm); echo ")</p>\n";
-			$GLOBALS['phpgw_info']['user']['account_id'] = $this->owner								 = $alarm['owner'];
+			$this->userSettings['account_id'] = $this->owner	 = $alarm['owner'];
+			Settings::getInstance()->set('user', $this->userSettings);
 
 			if (!$alarm['enabled'] || !$alarm['owner'])
 			{
@@ -407,13 +418,13 @@
 			//-----------from--------
 
 
-			$current_user_id = $GLOBALS['phpgw_info']['user']['account_id'];
+			$current_user_id = $this->userSettings['account_id'];
 
 			$current_user_firstname = 'FM';
 
 			$current_user_lastname = 'System';
 
-			$current_user_name =  $GLOBALS['phpgw']->accounts->get($alarm['owner'])->__toString();
+			$current_user_name =  $this->accounts_obj->get($alarm['owner'])->__toString();
 
 			$current_prefs_user		 = $this->bocommon->create_preferences('common', $alarm['owner']);
 			$current_user_address	 = $current_prefs_user['email'];
@@ -429,13 +440,13 @@
 					'id'		 => $info[1]), false, true) . '">' . $alarm['event_name'] . "</a>\n";
 			if (!is_array($alarm['time']))
 			{
-				$dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
-				$body		 .= lang('Deadline') . ': ' . $GLOBALS['phpgw']->common->show_date(($alarm['time'] + $alarm['offset']), $dateformat) . "\n";
+				$dateformat	 = $this->userSettings['preferences']['common']['dateformat'];
+				$body		 .= lang('Deadline') . ': ' . $this->phpgwapi_common->show_date(($alarm['time'] + $alarm['offset']), $dateformat) . "\n";
 			}
-			$body .= lang('Assigned To') . ': ' . $GLOBALS['phpgw']->accounts->id2name($alarm['owner']) . "\n";
+			$body .= lang('Assigned To') . ': ' . $this->accounts_obj->id2name($alarm['owner']) . "\n";
 
 			// add assigned to recipients
-			$members[] = array('account_id' => $alarm['owner'], 'account_name' => $GLOBALS['phpgw']->accounts->id2name($alarm['owner']));
+			$members[] = array('account_id' => $alarm['owner'], 'account_name' => $this->accounts_obj->id2name($alarm['owner']));
 
 			$error	 = Array();
 			$toarray = Array();
@@ -468,7 +479,7 @@
 			$cc = '';
 			$bcc = '';
 
-			if (isset($GLOBALS['phpgw_info']['server']['smtp_server']) && $GLOBALS['phpgw_info']['server']['smtp_server'])
+			if (isset($this->serverSettings['smtp_server']) && $this->serverSettings['smtp_server'])
 			{
 				$body	 = nl2br($body);
 				$rc		 = $this->send->msg('email', $to, $subject, $body, '', $cc, $bcc, $current_user_address, $current_user_name, 'html');

@@ -26,24 +26,32 @@
 	 * @package registration
 	 * @version $Id$
 	 */
+
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
 	class property_bodimb_role_user
 	{
 
-		var $so, $account_id;
+		var $so, $account_id, $userSettings, $phpgwapi_common;
 		var $public_functions = array(
 		);
 
 		function __construct()
 		{
-			$this->account_id	 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->phpgwapi_common = new \phpgwapi_common();
+
+			$this->account_id	 = $this->userSettings['account_id'];
 			$this->so			 = CreateObject('property.sodimb_role_user');
 		}
 
 		public function read( $data )
 		{
 			static $users	 = array();
-			$dateformat		 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat		 = $this->userSettings['preferences']['common']['dateformat'];
 			$values			 = $this->so->read($data);
+			$accounts_obj	 = new Accounts();
 
 			foreach ($values as &$entry)
 			{
@@ -51,13 +59,13 @@
 				{
 					if (!$entry['user'] = $users[$entry['user_id']])
 					{
-						$entry['user']				 = $GLOBALS['phpgw']->accounts->get($entry['user_id'])->__toString();
+						$entry['user']				 = $accounts_obj->get($entry['user_id'])->__toString();
 						$users[$entry['user_id']]	 = $entry['user'];
 					}
 				}
 
-				$entry['active_from']	 = isset($entry['active_from']) && $entry['active_from'] ? $GLOBALS['phpgw']->common->show_date($entry['active_from'], $dateformat) : '';
-				$entry['active_to']		 = isset($entry['active_from']) && $entry['active_from'] ? $GLOBALS['phpgw']->common->show_date($entry['active_to'], $dateformat) : '';
+				$entry['active_from']	 = isset($entry['active_from']) && $entry['active_from'] ? $this->phpgwapi_common->show_date($entry['active_from'], $dateformat) : '';
+				$entry['active_to']		 = isset($entry['active_from']) && $entry['active_from'] ? $this->phpgwapi_common->show_date($entry['active_to'], $dateformat) : '';
 			}
 
 			return $values;

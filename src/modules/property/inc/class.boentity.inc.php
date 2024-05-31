@@ -27,6 +27,12 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\security\Acl;
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+	use App\modules\phpgwapi\controllers\Locations;
+
 	/**
 	 * Description
 	 * @package property
@@ -72,13 +78,15 @@
 			'set_geolocation'		 => true,
 		);
 		var $type_app				 = array();
-		var $type;
+		var $type, $locations_obj, $acl, $userSettings;
 		private $location_relation_data	 = array();
 
 		function __construct( $session = false, $type = '', $entity_id = 0, $cat_id = 0 )
 		{
 			$this->solocation	 = CreateObject('property.solocation');
 			$this->bocommon		 = CreateObject('property.bocommon');
+			$this->acl = Acl::getInstance();
+			$this->userSettings = Settings::getInstance()->get('user');
 
 			if (!$type)
 			{
@@ -107,9 +115,11 @@
 			$p_num			 = Sanitizer::get_var('p_num');
 			$org_unit_id	 = Sanitizer::get_var('org_unit_id', 'int');
 
+			$this->locations_obj = new Locations();
+
 			if ($location_id = Sanitizer::get_var('location_id', 'int'))
 			{
-				$location_info	 = $GLOBALS['phpgw']->locations->get_name($location_id);
+				$location_info	 = $this->locations_obj->get_name($location_id);
 				$location_arr	 = explode('.', $location_info['location']);
 				$type			 = $location_arr[1];
 				$entity_id		 = $location_arr[2];
@@ -218,14 +228,14 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', $this->category_dir, $data);
+				Cache::session_set($this->category_dir, 'session_data', $data);
 			}
 		}
 
 		function read_sessiondata()
 		{
-			$data				 = $GLOBALS['phpgw']->session->appsession('session_data', $this->category_dir);
-			//_debug_array($data);
+			$data = Cache::session_get($this->category_dir, 'session_data');
+
 			$this->start		 = isset($data['start']) ? $data['start'] : '';
 			$this->query		 = isset($data['query']) ? $data['query'] : '';
 			$this->filter		 = isset($data['filter']) ? $data['filter'] : '';
@@ -253,7 +263,7 @@
 
 			$ok = false;
 			
-			if($GLOBALS['phpgw']->acl->check($this->acl_location, ACL_EDIT, 'property'))
+			if($this->acl->check($this->acl_location, ACL_EDIT, 'property'))
 			{
 				$ok = $this->so->set_geolocation($location_id,$component_id, $latitude, $longitude);
 			}
@@ -272,7 +282,7 @@
 			}
 			if (!$selected)
 			{
-				$selected = $GLOBALS['phpgw_info']['user']['preferences'][$this->type_app[$this->type]]["{$this->type}_columns_{$this->entity_id}_{$this->cat_id}"];
+				$selected = $this->userSettings['preferences'][$this->type_app[$this->type]]["{$this->type}_columns_{$this->entity_id}_{$this->cat_id}"];
 			}
 			$filter	 = array('list' => ''); // translates to "list IS NULL"
 			$columns = $this->custom->find($this->type_app[$this->type], ".{$this->type}.{$entity_id}.{$cat_id}", 0, '', '', '', true, false, $filter);
@@ -290,7 +300,7 @@
 			$columns = array();
 
 			// defined i property_bocommon::generate_sql()
-			$location_relation_data = phpgwapi_cache::system_get('property', 'location_relation_data');
+			$location_relation_data = Cache::system_get('property', 'location_relation_data');
 
 			$this->location_relation_data = $location_relation_data && is_array($location_relation_data) ? $location_relation_data : array();
 
@@ -439,7 +449,7 @@
 
 			$attrib_filter		 = array();
 			$javascript_action	 = array();
-			$location_id		 = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$this->entity_id}.{$this->cat_id}");
+			$location_id		 = $this->locations_obj->get_id($this->type_app[$this->type], ".{$this->type}.{$this->entity_id}.{$this->cat_id}");
 			if ($attrib_data)
 			{
 				foreach ($attrib_data as $attrib)
@@ -463,14 +473,14 @@
 					{
 						if ($_attrib_filter_value = Sanitizer::get_var($attrib['column_name'], 'int'))
 						{
+							$db = CreateObject('phpgwapi.db');
 							if ($category['is_eav'])
 							{
-//								$attrib_filter[] = "xmlexists('//{$attrib['column_name']}[contains(.,'',$_attrib_filter_value,'')]' PASSING BY REF xml_representation)";
-								$attrib_filter[] = "json_representation->>'{$attrib['column_name']}' {$GLOBALS['phpgw']->db->like} '%,{$_attrib_filter_value},%'";
+								$attrib_filter[] = "json_representation->>'{$attrib['column_name']}' {$db->like} '%,{$_attrib_filter_value},%'";
 							}
 							else
 							{
-								$attrib_filter[] = "fm_{$this->type}_{$this->entity_id}_{$this->cat_id}.{$attrib['column_name']} {$GLOBALS['phpgw']->db->like} '%,{$_attrib_filter_value},%'";
+								$attrib_filter[] = "fm_{$this->type}_{$this->entity_id}_{$this->cat_id}.{$attrib['column_name']} {$db->like} '%,{$_attrib_filter_value},%'";
 							}
 						}
 					}
@@ -531,7 +541,7 @@ JS;
 			$this->total_records = $this->so->total_records;
 			$this->uicols		 = $this->so->uicols;
 
-			$user_columns	 = isset($GLOBALS['phpgw_info']['user']['preferences'][$this->type_app[$this->type]]["{$this->type}_columns_{$this->entity_id}_{$this->cat_id}"]) ? (array)$GLOBALS['phpgw_info']['user']['preferences'][$this->type_app[$this->type]]["{$this->type}_columns_{$this->entity_id}_{$this->cat_id}"] : array();
+			$user_columns	 = isset($this->userSettings['preferences'][$this->type_app[$this->type]]["{$this->type}_columns_{$this->entity_id}_{$this->cat_id}"]) ? (array)$this->userSettings['preferences'][$this->type_app[$this->type]]["{$this->type}_columns_{$this->entity_id}_{$this->cat_id}"] : array();
 			$custom_cols	 = $this->get_column_list();
 
 //_debug_array($user_columns);
@@ -608,7 +618,8 @@ JS;
 
 				if ($entry['user_id'])
 				{
-					$entry['user_name'] = $GLOBALS['phpgw']->accounts->get($entry['user_id'])->__toString();
+					$accounts_obj = new Accounts();
+					$entry['user_name'] = $accounts_obj->get($entry['user_id'])->__toString();
 				}
 			}
 
@@ -691,7 +702,7 @@ JS;
 			//new
 			if ($values['p_id'] && $values['p_location_id'])
 			{
-				$p_location									 = $GLOBALS['phpgw']->locations->get_name($values['p_location_id']);
+				$p_location									 = $this->locations_obj->get_name($values['p_location_id']);
 				$p__location								 = explode('.', $p_location['location']);
 				$values['p'][$p__location[2]]['p_num']		 = $values['p_id'];
 				$values['p'][$p__location[2]]['p_entity_id'] = $p__location[2];
@@ -806,7 +817,8 @@ JS;
 				'allrows'	 => true
 			);
 
-			$custom_functions = $GLOBALS['phpgw']->custom_functions->find($criteria);
+			
+			$custom_functions = createObject('phpgwapi.custom_functions')->find($criteria);
 
 			foreach ($custom_functions as $entry)
 			{
@@ -816,7 +828,7 @@ JS;
 					continue;
 				}
 
-				$file = PHPGW_SERVER_ROOT . "/{$this->type_app[$this->type]}/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}/{$entry['file_name']}";
+				$file = PHPGW_SERVER_ROOT . "/{$this->type_app[$this->type]}/inc/custom/{$this->userSettings['domain']}/{$entry['file_name']}";
 
 				if ($entry['active'] && is_file($file) && !$entry['client_side'] && $entry['pre_commit'])
 				{
@@ -844,7 +856,7 @@ JS;
 					continue;
 				}
 
-				$file = PHPGW_SERVER_ROOT . "/{$this->type_app[$this->type]}/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}/{$entry['file_name']}";
+				$file = PHPGW_SERVER_ROOT . "/{$this->type_app[$this->type]}/inc/custom/{$this->userSettings['domain']}/{$entry['file_name']}";
 
 				if ($entry['active'] && is_file($file) && !$entry['client_side'] && !$entry['pre_commit'])
 				{
@@ -932,7 +944,7 @@ JS;
 			{
 				foreach ($history_values as &$value_set)
 				{
-					$value_set['new_value'] = date($GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'], strtotime($value_set['new_value']));
+					$value_set['new_value'] = date($this->userSettings['preferences']['common']['dateformat'], strtotime($value_set['new_value']));
 				}
 			}
 
@@ -1028,7 +1040,7 @@ JS;
 
 			if ($control_id && $assigned_to && $id)
 			{
-				if (!$GLOBALS['phpgw']->acl->check('.admin', ACL_EDIT, 'property'))
+				if (!$this->acl->check('.admin', ACL_EDIT, 'property'))
 				{
 					$receipt['error'][]	 = true;
 					$result				 = array
@@ -1040,7 +1052,7 @@ JS;
 				}
 				if (!$receipt['error'])
 				{
-					$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$type], ".{$type}.{$entity_id}.{$cat_id}");
+					$location_id = $this->locations_obj->get_id($this->type_app[$type], ".{$type}.{$entity_id}.{$cat_id}");
 
 					$so_control	 = CreateObject('controller.socontrol');
 					$values		 = array
@@ -1190,7 +1202,7 @@ JS;
 			foreach ($values as &$entry)
 			{
 
-				$loc_arr	 = $GLOBALS['phpgw']->locations->get_name($entry['location_id']);
+				$loc_arr	 = $this->locations_obj->get_name($entry['location_id']);
 				$type_arr	 = explode('.', $loc_arr['location']);
 
 				$type	 = $type_arr[1];

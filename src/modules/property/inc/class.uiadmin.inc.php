@@ -27,6 +27,10 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\security\Acl;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
 	phpgw::import_class('phpgwapi.jquery');
 
 	/**
@@ -48,7 +52,7 @@
 		var $sub;
 		var $acl_app;
 		var $currentapp, $nextmatchs, $account, $bo, $bocommon,$acl, $acl_location, $acl_read, $acl_add, $acl_edit,$acl_delete, $acl_manage;
-		var $bopreferences, $location,$granting_group, $allrows;
+		var $bopreferences, $location,$granting_group, $allrows, $flags, $phpgwapi_common, $account_obj, $userSettings;
 
 		var $public_functions = array
 			(
@@ -60,18 +64,27 @@
 
 		function __construct()
 		{
-			$GLOBALS['phpgw_info']['flags']['xslt_app']			 = true;
-			$GLOBALS['phpgw_info']['flags']['menu_selection']	 = 'admin::property';
+			$this->flags = Settings::getInstance()->get('flags');
+			$this->flags['xslt_app']			 = true;
+			$this->flags['menu_selection']	 = 'admin::property';
+			Settings::getInstance()->set('flags', $this->flags);
+			$this->userSettings = Settings::getInstance()->get('user');
+
+
+			$this->phpgwapi_common = new \phpgwapi_common();
+			$this->account_obj = new Accounts();
+
+
 
 			$this->nextmatchs	 = CreateObject('phpgwapi.nextmatchs');
-			$this->account		 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->account		 = $this->userSettings['account_id'];
 
 			$this->bo			 = CreateObject('property.boadmin', true);
 			$this->acl_app		 = $this->bo->acl_app;
 			$this->bopreferences = createObject('preferences.boadmin_acl');
 			$this->bocommon		 = CreateObject('property.bocommon');
 
-			$this->acl			 = & $GLOBALS['phpgw']->acl;
+			$this->acl			 = Acl::getInstance();
 			$this->acl_location	 = '.admin';
 			$this->acl_read		 = $this->acl->check($this->acl_location, ACL_READ, $this->acl_app);
 			$this->acl_add		 = $this->acl->check($this->acl_location, ACL_ADD, $this->acl_app);
@@ -255,7 +268,7 @@
 
 			$data = array
 				(
-				'msgbox_data'						 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'						 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'form_action'						 => phpgw::link('/index.php', $link_data),
 				'value_acl_app'						 => $this->acl_app,
 				'done_action'						 => phpgw::link('/preferences/index.php'),
@@ -265,12 +278,12 @@
 				'location'							 => $this->location,
 				'allow_allrows'						 => false,
 				'start_record'						 => $this->start,
-				'record_limit'						 => $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'],
+				'record_limit'						 => $this->userSettings['preferences']['common']['maxmatchs'],
 				'num_records'						 => $num_records,
 				'all_records'						 => (isset($this->bo->total_records) ? $this->bo->total_records : ''),
 				'link_url'							 => phpgw::link('/index.php', array('menuaction' => 'property.uiadmin.aclprefs',
 					'acl_app'	 => $this->acl_app)),
-				'img_path'							 => $GLOBALS['phpgw']->common->get_image_path('phpgwapi', 'default'),
+				'img_path'							 => $this->phpgwapi_common->get_image_path('phpgwapi', 'default'),
 				'lang_groups'						 => lang('groups'),
 				'lang_users'						 => lang('users'),
 				'lang_no_cat'						 => lang('no category'),
@@ -292,7 +305,7 @@
 				'lang_location_statustext'			 => lang('Select submodule'),
 				'select_name_location'				 => 'module',
 				'location_list'						 => $this->bopreferences->select_location('filter', $this->location, true),
-				'is_admin'							 => $GLOBALS['phpgw_info']['user']['apps']['admin'],
+				'is_admin'							 => $this->userSettings['apps']['admin'],
 				'lang_group_statustext'				 => lang('Select the granting group. To do not use a granting group select NO GRANTING GROUP'),
 				'select_group_name'					 => 'granting_group',
 				'lang_no_group'						 => lang('No granting group'),
@@ -303,20 +316,20 @@
 
 			$appname		 = lang('preferences');
 			$function_msg	 = lang('set grants');
-			$owner_name		 = $GLOBALS['phpgw']->accounts->id2name($this->account);  // get owner name for title
+			$owner_name		 = $this->account_obj->id2name($this->account);  // get owner name for title
 
 			phpgwapi_jquery::load_widget('select2');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang($this->acl_app) . ' - ' . $appname . ': ' . $function_msg . ': ' . $owner_name;
+			$this->flags['app_header'] = lang($this->acl_app) . ' - ' . $appname . ': ' . $function_msg . ': ' . $owner_name;
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('list_permission' => $data));
 			$this->save_sessiondata();
 		}
 
 		function list_acl()
 		{
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::permissions';
+			$this->flags['menu_selection'] .= '::permissions';
 
-			if (!isset($GLOBALS['phpgw_info']['user']['apps']['admin'])) //this one is different
+			if (!isset($this->userSettings['apps']['admin'])) //this one is different
 			{
 				$this->bocommon->no_access();
 				return;
@@ -516,7 +529,7 @@
 
 			if (!$this->allrows)
 			{
-				$record_limit = $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
+				$record_limit = $this->userSettings['preferences']['common']['maxmatchs'];
 			}
 			else
 			{
@@ -531,7 +544,7 @@
 				'allow_allrows'						 => true,
 				'start_record'						 => $this->start,
 				'record_limit'						 => $record_limit,
-				'msgbox_data'						 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'						 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'form_action'						 => phpgw::link('/index.php', $link_data),
 				'done_action'						 => phpgw::link('/admin/index.php'),
 				'lang_save'							 => lang('save'),
@@ -541,7 +554,7 @@
 				'num_records'						 => $num_records,
 				'all_records'						 => isset($this->bo->total_records) && $this->bo->total_records ? $this->bo->total_records : 0,
 				'link_url'							 => phpgw::link('/index.php', $link_data),
-				'img_path'							 => $GLOBALS['phpgw']->common->get_image_path('phpgwapi', 'default'),
+				'img_path'							 => $this->phpgwapi_common->get_image_path('phpgwapi', 'default'),
 				'lang_no_cat'						 => lang('no category'),
 				'lang_cat_statustext'				 => lang('Select the category the permissions belongs to. To do not use a category select NO CATEGORY'),
 				'select_name'						 => 'cat_id',
@@ -573,14 +586,14 @@
 
 			phpgwapi_jquery::load_widget('select2');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang($this->acl_app) . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang($this->acl_app) . ' - ' . $appname . ': ' . $function_msg;
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('list_permission' => $data));
 			$this->save_sessiondata();
 		}
 
 		function edit_id()
 		{
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::id_control';
+			$this->flags['menu_selection'] .= '::id_control';
 
 			if (!$this->acl_edit)
 			{
@@ -600,19 +613,20 @@
 			$content = $this->bo->read_fm_id();
 
 
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
+			$jqcal = createObject('phpgwapi.jqcal');
 			foreach ($content as $i => & $entry)
 			{
-				$GLOBALS['phpgw']->jqcal->add_listener("date_{$entry['name']}");
+				$jqcal->add_listener("date_{$entry['name']}");
 				$entry['key_id']	 = $i;
-				$entry['start_date'] = $GLOBALS['phpgw']->common->show_date($entry['start_date'], $dateformat);
+				$entry['start_date'] = $this->phpgwapi_common->show_date($entry['start_date'], $dateformat);
 			}
 //_debug_array($content);die();
 			$msgbox_data = $this->bocommon->msgbox_data($receipt);
 
 			$data = array
 				(
-				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'			 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'form_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uiadmin.edit_id')),
 				'done_action'			 => phpgw::link('/admin/index.php'),
 				'lang_submit'			 => lang('submit'),
@@ -626,14 +640,14 @@
 			$appname		 = lang('ID');
 			$function_msg	 = lang('edit ID');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit_id' => $data));
 			$this->save_sessiondata();
 		}
 
 		function contact_info()
 		{
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::user_contact';
+			$this->flags['menu_selection'] .= '::user_contact';
 
 			if (!$this->acl_edit)
 			{
@@ -649,44 +663,45 @@
 
 			if ($values['save'])
 			{
-				$GLOBALS['phpgw']->preferences->set_account_id($user_id, true);
+				$preferences = createObject('phpgwapi.preferences');
+				$preferences->set_account_id($user_id, true);
 
 				if ($values['old_email'] != $values['email'])
 				{
-					$GLOBALS['phpgw']->preferences->add('property', "email", $values['email'], 'user');
+					$preferences->add('property', "email", $values['email'], 'user');
 					$receipt['message'][] = array('msg' => lang('Users email is updated'));
 				}
 				if ($values['old_phone'] != $values['phone'])
 				{
-					$GLOBALS['phpgw']->preferences->add('common', "cellphone", $values['phone'], 'user');
+					$preferences->add('common', "cellphone", $values['phone'], 'user');
 					$receipt['message'][] = array('msg' => lang('Users phone is updated'));
 				}
 				if ($values['old_approval_from'] != $values['approval_from'])
 				{
-					$GLOBALS['phpgw']->preferences->add('property', "approval_from", $values['approval_from'], 'user');
+					$preferences->add('property', "approval_from", $values['approval_from'], 'user');
 					$receipt['message'][] = array('msg' => lang('Approval from is updated'));
 				}
 				if ($values['old_default_vendor_category'] != $values['default_vendor_category'])
 				{
-					$GLOBALS['phpgw']->preferences->add('property', "default_vendor_category", $values['default_vendor_category'], 'user');
+					$preferences->add('property', "default_vendor_category", $values['default_vendor_category'], 'user');
 					$receipt['message'][] = array('msg' => lang('default vendor category is updated'));
 				}
 				if ($values['old_default_tts_category'] != $values['default_tts_category'])
 				{
-					$GLOBALS['phpgw']->preferences->add('property', "tts_category", $values['default_tts_category'], 'user');
+					$preferences->add('property', "tts_category", $values['default_tts_category'], 'user');
 					$receipt['message'][] = array('msg' => lang('default ticket category is updated'));
 				}
 				if ($values['old_assigntodefault'] != $values['assigntodefault'])
 				{
-					$GLOBALS['phpgw']->preferences->add('property', "assigntodefault", $values['assigntodefault'], 'user');
+					$preferences->add('property', "assigntodefault", $values['assigntodefault'], 'user');
 					$receipt['message'][] = array('msg' => lang('default ticket assigned to is updated'));
 				}
 				if ($values['old_groupdefault'] != $values['groupdefault'])
 				{
-					$GLOBALS['phpgw']->preferences->add('property', "groupdefault", $values['groupdefault'], 'user');
+					$preferences->add('property', "groupdefault", $values['groupdefault'], 'user');
 					$receipt['message'][] = array('msg' => lang('default ticket group is updated'));
 				}
-				$GLOBALS['phpgw']->preferences->save_repository();
+				$preferences->save_repository();
 			}
 
 			if ($user_id)
@@ -704,8 +719,7 @@
 			$cat_data_tts = $cats->formatted_xslt_list(array('selected'	 => $prefs['tts_category'],
 				'globals'	 => true, 'link_data'	 => array()));
 
-			$acc		 = & $GLOBALS['phpgw']->accounts;
-			$group_list	 = $acc->get_list('groups', -1, 'ASC');
+			$group_list	 = $this->account_obj->get_list('groups', -1, 'ASC');
 			foreach ($group_list as $entry)
 			{
 				$groups_tts[] = array
@@ -716,7 +730,7 @@
 				);
 			}
 
-			$account_list = $acc->get_list('accounts', -1, 'ASC', 'account_lastname');
+			$account_list = $this->account_obj->get_list('accounts', -1, 'ASC', 'account_lastname');
 
 			foreach ($account_list as $entry)
 			{
@@ -735,7 +749,7 @@
 
 			$data = array
 				(
-				'msgbox_data'								 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'								 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'form_action'								 => phpgw::link('/index.php', array('menuaction' => 'property.uiadmin.contact_info')),
 				'done_action'								 => phpgw::link('/admin/index.php'),
 				'lang_submit'								 => lang('submit'),
@@ -784,7 +798,7 @@
 			$appname		 = lang('User contact info');
 			$function_msg	 = lang('edit info');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('contact_info' => $data));
 			$this->save_sessiondata();
 		}

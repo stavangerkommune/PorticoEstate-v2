@@ -26,6 +26,10 @@
 	 * @subpackage document
 	 * @version $Id$
 	 */
+
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
 	/**
 	 * Description
 	 * @package property
@@ -47,7 +51,7 @@
 		var $allrows;
 		var $acl_location	 = '.document';
 		var $so, $bocommon, $solocation, $historylog, $contacts, $cats, $bofiles,
-		$use_session, $doc_type, $query_location,$total_records,$uicols;
+		$use_session, $doc_type, $query_location,$total_records,$uicols,$serverSettings,$userSettings,$phpgwapi_common,$accounts_obj;
 		var $public_functions = array
 			(
 			'read'			 => true,
@@ -58,6 +62,11 @@
 
 		function __construct( $session = false )
 		{
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->phpgwapi_common = new \phpgwapi_common();
+			$this->serverSettings = Settings::getInstance()->get('server');
+			$this->accounts_obj = new Accounts();
+			
 			$this->so			 = CreateObject('property.sodocument');
 			$this->bocommon		 = CreateObject('property.bocommon');
 			$this->solocation	 = CreateObject('property.solocation');
@@ -104,15 +113,13 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', 'document', $data);
+				Cache::session_set('document', 'session_data', $data);
 			}
 		}
 
 		function read_sessiondata()
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data', 'document');
-
-			//_debug_array($data);
+			$data = Cache::session_get('document', 'session_data');
 
 			$this->start			 = $data['start'];
 			$this->query			 = $data['query'];
@@ -167,7 +174,7 @@
 			$this->uicols	 = $this->so->uicols;
 			$cols_extra		 = $this->so->cols_extra;
 
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
 			foreach ($documents as &$document)
 			{
 				$location_data = $this->solocation->read_single($document['location_code']);
@@ -202,7 +209,7 @@
 			$this->uicols	 = $this->so->uicols;
 			$cols_extra		 = $this->so->cols_extra;
 
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
 			foreach ($documents as &$document)
 			{
 				$location_data = $this->solocation->read_single($document['location_code']);
@@ -232,7 +239,7 @@
 		function read_at_location( $data = array() )
 		{
 			$use_svn = false;
-			if (preg_match('/svn[s:][:\/]\//', $GLOBALS['phpgw_info']['server']['files_dir']))
+			if (preg_match('/svn[s:][:\/]\//', $this->serverSettings['files_dir']))
 			{
 				//		$use_svn = true;
 			}
@@ -254,13 +261,13 @@
 			);
 			$this->total_records = $this->so->total_records;
 
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
 
 			foreach ($document as & $entry)
 			{
-				$entry['user']			 = $GLOBALS['phpgw']->accounts->id2name($entry['user_id']);
-				$entry['document_date']	 = $GLOBALS['phpgw']->common->show_date($entry['document_date'], $dateformat);
-				$entry['entry_date']	 = $GLOBALS['phpgw']->common->show_date($entry['entry_date'], $dateformat);
+				$entry['user']			 = $this->accounts_obj->id2name($entry['user_id']);
+				$entry['document_date']	 = $this->phpgwapi_common->show_date($entry['document_date'], $dateformat);
+				$entry['entry_date']	 = $this->phpgwapi_common->show_date($entry['entry_date'], $dateformat);
 				if ($use_svn)
 				{
 					$entry['journal'] = $this->get_file($entry['id'], true);
@@ -273,10 +280,10 @@
 		function read_single( $id )
 		{
 			$document					 = $this->so->read_single($id);
-			$dateformat					 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
-			$document['document_date']	 = $GLOBALS['phpgw']->common->show_date($document['document_date'], $dateformat);
+			$dateformat					 = $this->userSettings['preferences']['common']['dateformat'];
+			$document['document_date']	 = $this->phpgwapi_common->show_date($document['document_date'], $dateformat);
 
-			if (preg_match('/svn[s:][:\/]\//', $GLOBALS['phpgw_info']['server']['files_dir']))
+			if (preg_match('/svn[s:][:\/]\//', $this->serverSettings['files_dir']))
 			{
 				$document['journal'] = $this->get_file($id, true, $document);
 			}
@@ -338,7 +345,7 @@
 			//while (is_array($history_array) && list(, $value) = each($history_array))
 			foreach ($history_array as $value)
 			{
-				$record_history[$i]['value_date']	 = $GLOBALS['phpgw']->common->show_date($value['datetime']);
+				$record_history[$i]['value_date']	 = $this->phpgwapi_common->show_date($value['datetime']);
 				$record_history[$i]['value_user']	 = $value['owner'];
 
 				switch ($value['status'])
@@ -397,12 +404,12 @@
 					}
 					else
 					{
-						$record_history[$i]['value_new_value'] = $GLOBALS['phpgw']->accounts->id2name($value['new_value']);
+						$record_history[$i]['value_new_value'] = $this->accounts_obj->id2name($value['new_value']);
 					}
 				}
 				else if ($value['status'] == 'C' || $value['status'] == 'CO')
 				{
-					$record_history[$i]['value_new_value'] = $GLOBALS['phpgw']->accounts->id2name($value['new_value']);
+					$record_history[$i]['value_new_value'] = $this->accounts_obj->id2name($value['new_value']);
 				}
 				else if ($value['status'] == 'T' || $value['status'] == 'TO')
 				{

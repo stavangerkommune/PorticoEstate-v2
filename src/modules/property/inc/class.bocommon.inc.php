@@ -27,15 +27,12 @@
 	 * @version $Id$
 	 */
 
-use App\modules\phpgwapi\services\Settings;
-use App\modules\phpgwapi\services\AsyncService;
-use App\modules\phpgwapi\controllers\Accounts\Accounts;
-use App\modules\phpgwapi\security\Acl;
-use App\modules\phpgwapi\services\Config;
-
-
-
-use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\services\AsyncService;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+	use App\modules\phpgwapi\security\Acl;
+	use App\modules\phpgwapi\services\Config;
+	use App\modules\phpgwapi\services\Cache;
 
 	/**
 	 * Description

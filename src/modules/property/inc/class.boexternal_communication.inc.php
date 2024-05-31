@@ -26,7 +26,11 @@
 	 * @subpackage helpdesk
 	 * @version $Id$
 	 */
-	phpgw::import_class('phpgwapi.bocommon');
+
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
+	 phpgw::import_class('phpgwapi.bocommon');
 
 	/**
 	 * Description
@@ -35,17 +39,25 @@
 	class property_boexternal_communication extends phpgwapi_bocommon
 	{
 
-		var $so, $historylog, $config, $bocommon, $preview_html, $dateformat, $currentapp, $order_sent_adress;
+		var $so, $historylog, $config, $bocommon, $preview_html,
+		 $dateformat, $currentapp, $order_sent_adress, $fields,
+		 $accounts_obj, $phpgwapi_common, $serverSettings, $userSettings;
 
 		public function __construct( $currentapp = 'property' )
 		{
-			$this->currentapp	 = $currentapp ? $currentapp : $GLOBALS['phpgw_info']['flags']['currentapp'];
+			$this->flags = Settings::getInstance()->get('flags');
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->phpgwapi_common = new \phpgwapi_common();
+			$this->serverSettings = Settings::getInstance()->get('server');
+			$this->accounts_obj = new Accounts();
+
+			$this->currentapp	 = $currentapp ? $currentapp : $this->flags['currentapp'];
 			$this->so			 = createObject("{$this->currentapp}.soexternal_communication");
 			$this->historylog	 = & $this->so->historylog;
 			$this->bocommon		 = createObject('property.bocommon');
 			$this->config		 = CreateObject('phpgwapi.config', $this->currentapp)->read();
 			$this->preview_html	 = Sanitizer::get_var('preview_html', 'bool');
-			$this->dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$this->dateformat	 = $this->userSettings['preferences']['common']['dateformat'];
 			$this->fields		 = $this->so->get_fields();
 		}
 
@@ -53,13 +65,13 @@
 		{
 			$values		 = $this->so->read($params);
 			//		$status_text = eventplanner_customer::get_status_list();
-			$dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat	 = $this->userSettings['preferences']['common']['dateformat'];
 			foreach ($values['results'] as &$entry)
 			{
 				//				$entry['status'] = $status_text[$entry['status']];
-				$entry['created_on'] = $GLOBALS['phpgw']->common->show_date($entry['created_on']);
-				$entry['created']	 = $GLOBALS['phpgw']->common->show_date($entry['created']);
-				$entry['modified']	 = $GLOBALS['phpgw']->common->show_date($entry['modified']);
+				$entry['created_on'] = $this->phpgwapi_common->show_date($entry['created_on']);
+				$entry['created']	 = $this->phpgwapi_common->show_date($entry['created']);
+				$entry['modified']	 = $this->phpgwapi_common->show_date($entry['modified']);
 			}
 			return $values;
 		}
@@ -88,14 +100,14 @@
 				}
 				else if ($value['created_by'])
 				{
-					$value_user = $GLOBALS['phpgw']->accounts->get($value['created_by'])->__toString();
+					$value_user = $this->accounts_obj->get($value['created_by'])->__toString();
 				}
 
 				$additional_notes[] = array
 					(
 					'value_id'		 => $value['id'],
 					'value_count'	 => $i,
-					'value_date'	 => $GLOBALS['phpgw']->common->show_date($value['created_on']),
+					'value_date'	 => $this->phpgwapi_common->show_date($value['created_on']),
 					'value_user'	 => $value_user,
 					'value_note'	 => stripslashes($value['message']),
 				);
@@ -133,7 +145,7 @@
 				'allrows'	 => true
 			);
 
-			$custom_functions = $GLOBALS['phpgw']->custom_functions->find($criteria);
+			$custom_functions = createObject('phpgwapi.custom_functions')->find($criteria);
 
 			foreach ($custom_functions as $entry)
 			{
@@ -143,7 +155,7 @@
 					continue;
 				}
 
-				$file = PHPGW_SERVER_ROOT . "/{$this->currentapp}/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}/{$entry['file_name']}";
+				$file = PHPGW_SERVER_ROOT . "/{$this->currentapp}/inc/custom/{$this->userSettings['domain']}/{$entry['file_name']}";
 
 				if ($entry['active'] && is_file($file) && !$entry['client_side'] && $entry['pre_commit'])
 				{
@@ -184,7 +196,7 @@
 					continue;
 				}
 
-				$file = PHPGW_SERVER_ROOT . "/{$this->currentapp}/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}/{$entry['file_name']}";
+				$file = PHPGW_SERVER_ROOT . "/{$this->currentapp}/inc/custom/{$this->userSettings['domain']}/{$entry['file_name']}";
 
 				if ($entry['active'] && is_file($file) && !$entry['client_side'] && !$entry['pre_commit'])
 				{
@@ -204,7 +216,7 @@
 
 			foreach ($history_array as $value)
 			{
-				$record_history[$i]['value_date']	 = $GLOBALS['phpgw']->common->show_date($value['datetime']);
+				$record_history[$i]['value_date']	 = $this->phpgwapi_common->show_date($value['datetime']);
 				$record_history[$i]['value_user']	 = $value['owner'];
 
 				switch ($value['status'])
@@ -271,21 +283,19 @@
 				return false;
 			}
 
-			$config_admin = CreateObject('admin.soconfig', $GLOBALS['phpgw']->locations->get_id($this->currentapp, '.admin'))->read();
+			$locations_obj = CreateObject('phpgwapi.locations');
+			$config_admin = CreateObject('admin.soconfig', $locations_obj->get_id($this->currentapp, '.admin'))->read();
 
 			if (!empty($config_admin['xPortico']['sender_email_address']))
 			{
 				$from_email = $config_admin['xPortico']['sender_email_address'];
 			}
 
-			if (!is_object($GLOBALS['phpgw']->send))
-			{
-				$GLOBALS['phpgw']->send = CreateObject('phpgwapi.send');
-			}
+			$send = CreateObject('phpgwapi.send');
 
 			try
 			{
-				$GLOBALS['phpgw']->send->msg('email', $_to, $subject, stripslashes($html), '', $cc, $bcc, $from_email, $from_name, 'html', '', false);
+				$send->msg('email', $_to, $subject, stripslashes($html), '', $cc, $bcc, $from_email, $from_name, 'html', '', false);
 			}
 			catch (Exception $exc)
 			{
@@ -330,7 +340,7 @@ HTML;
 						'id'		 => $id), false, true) . '">' . lang('Ticket') . " # {$ticket_id}::{$id} </a>" . "\n";
 			}
 
-			$entry_date	 = $GLOBALS['phpgw']->common->show_date($message_info['created_on'], $this->dateformat);
+			$entry_date	 = $this->phpgwapi_common->show_date($message_info['created_on'], $this->dateformat);
 			$body		 .= "<table>\n";
 			if ($preview)
 			{
@@ -397,7 +407,7 @@ HTML;
 			  }
 			  if($ticket['assignedto'])
 			  {
-			  $body .= '<tr><td>'. lang('Assigned To').'</td><td>:&nbsp;'.$GLOBALS['phpgw']->accounts->id2name($ticket['assignedto'])."</td></tr>\n";
+			  $body .= '<tr><td>'. lang('Assigned To').'</td><td>:&nbsp;'.$this->accounts_obj->id2name($ticket['assignedto'])."</td></tr>\n";
 			  }
 			 */
 			$body .= "__ATTACHMENTS__\n</table><br/><br/>\n";
@@ -572,12 +582,10 @@ HTML;
 		{
 			if ((int)$ticket['assignedto'])
 			{
-//				$GLOBALS['phpgw']->preferences->set_account_id((int)$ticket['assignedto'], true);
 				$prefs = $this->bocommon->create_preferences('common', (int)$ticket['assignedto']);
 			}
 			else if ((int)$ticket['user_id'])
 			{
-//				$GLOBALS['phpgw']->preferences->set_account_id((int)$ticket['user_id'], true);
 				$prefs = $this->bocommon->create_preferences('common', (int)$ticket['user_id']);
 			}
 
@@ -618,12 +626,12 @@ HTML;
 
 			$order_id						 = $ticket['order_id'];
 			//account_display
-//			$user_phone						 = $GLOBALS['phpgw_info']['user']['preferences']['common']['cellphone'];
-//			$user_email						 = $GLOBALS['phpgw_info']['user']['preferences']['common']['email'];
+//			$user_phone						 = $this->userSettings['preferences']['common']['cellphone'];
+//			$user_email						 = $this->userSettings['preferences']['common']['email'];
 			$user_phone						 = $prefs['cellphone'];
 			$user_email						 = $prefs['email'];
-//			$order_email_template = $GLOBALS['phpgw_info']['user']['preferences'][$this->currentapp]['order_email_template'];
-			$order_contact_block_template	 = $GLOBALS['phpgw_info']['user']['preferences'][$this->currentapp]['order_contact_block_1'];
+//			$order_email_template = $this->userSettings['preferences'][$this->currentapp]['order_email_template'];
+			$order_contact_block_template	 = $this->userSettings['preferences'][$this->currentapp]['order_contact_block_1'];
 
 			/**
 			 * Only relevant for $this->currentapp = 'property'
@@ -639,9 +647,11 @@ HTML;
 
 				if ($_responsible)
 				{
-					$prefs																		 = $this->bocommon->create_preferences('common', $_responsible);
-					$GLOBALS['phpgw_info']['user']['preferences']['common']['account_display']	 = 'firstname';
-					$_responsible_name															 = $GLOBALS['phpgw']->accounts->get($_responsible)->__toString();
+					$prefs															 = $this->bocommon->create_preferences('common', $_responsible);
+					$this->userSettings['preferences']['common']['account_display']	 = 'firstname';
+					Settings::getInstance()->set('user', $this->userSettings);
+
+					$_responsible_name															 = $this->accounts_obj->get($_responsible)->__toString();
 					$_responsible_email															 = $prefs['email'];
 					$_responsible_cellphone														 = $prefs['cellphone'];
 					if ($contact_email && ($contact_data['value_contact_email'] != $_responsible_email))
@@ -649,7 +659,7 @@ HTML;
 						$contact_name2					 = $_responsible_name;
 						$contact_email2					 = $_responsible_email;
 						$contact_phone2					 = $_responsible_cellphone;
-						$order_contact_block_template	 = $GLOBALS['phpgw_info']['user']['preferences']['property']['order_contact_block_2'];
+						$order_contact_block_template	 = $this->userSettings['preferences']['property']['order_contact_block_2'];
 					}
 					else
 					{
@@ -689,7 +699,7 @@ HTML;
 			return array(
 				'organisation'	 => $organisation,
 				'department'	 => $department,
-				'user_name'		 => $GLOBALS['phpgw_info']['user']['fullname'],
+				'user_name'		 => $this->userSettings['fullname'],
 				'user_email'	 => $user_email,
 				'user_phone'	 => $user_phone,
 				'contact_name'	 => $contact_name,

@@ -27,6 +27,12 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\security\Acl;
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+	use App\modules\phpgwapi\controllers\Locations;
+
 	/**
 	 * Description
 	 * @package property
@@ -43,7 +49,7 @@
 		var $location_info	 = array();
 		var $appname;
 		var $allrows;
-		var $so, $custom, $bocommon, $dateformat, $cats, $type, $type_id, $total_records, $use_session;
+		var $so, $custom, $bocommon, $dateformat, $cats, $type, $type_id, $total_records, $use_session, $userSettings, $phpgwapi_common;
 		public $acl_location	 = '.project.condition_survey';
 		var $public_functions = array
 			(
@@ -52,10 +58,13 @@
 
 		function __construct( $session = false )
 		{
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->phpgwapi_common = new \phpgwapi_common();
+
 			$this->so			 = CreateObject('property.socondition_survey');
 			$this->custom		 = & $this->so->custom;
 			$this->bocommon		 = CreateObject('property.bocommon');
-			$this->dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$this->dateformat	 = $this->userSettings['preferences']['common']['dateformat'];
 
 			$this->cats					 = CreateObject('phpgwapi.categories', -1, 'property', $this->acl_location);
 			$this->cats->supress_info	 = true;
@@ -99,15 +108,13 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', $this->acl_location, $data);
+				Cache::session_set($this->acl_location, 'session_data', $data);
 			}
 		}
 
 		function read_sessiondata( $type )
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data', $this->acl_location);
-
-			//		_debug_array($data);
+			$data = Cache::session_get($this->acl_location, 'session_data');
 
 			$this->start	 = $data['start'];
 			$this->query	 = $data['query'];
@@ -122,7 +129,7 @@
 		{
 			if (!$selected)
 			{
-				$selected = $GLOBALS['phpgw_info']['user']['preferences']['property']["columns_{$this->acl_location}"];
+				$selected = $this->userSettings['preferences']['property']["columns_{$this->acl_location}"];
 			}
 
 			$filter		 = array('list' => ''); // translates to "list IS NULL"
@@ -134,11 +141,13 @@
 
 		public function addfiles()
 		{
-			$GLOBALS['phpgw_info']['flags']['xslt_app']		 = false;
-			$GLOBALS['phpgw_info']['flags']['noframework']	 = true;
-			$GLOBALS['phpgw_info']['flags']['nofooter']		 = true;
+			$flags = Settings::getInstance()->get('flags');
+			$flags['xslt_app']		 = false;
+			$flags['noframework']	 = true;
+			$flags['nofooter']		 = true;
+			Settings::getInstance()->set('flags', $flags);
 
-			$acl			 = & $GLOBALS['phpgw']->acl;
+			$acl			 = Acl::getInstance();
 			$acl_add		 = $acl->check($this->acl_location, ACL_ADD, 'property');
 			$acl_edit		 = $acl->check($this->acl_location, ACL_EDIT, 'property');
 			$id				 = Sanitizer::get_var('id', 'int');
@@ -147,12 +156,12 @@
 
 			if (!$acl_add && !$acl_edit)
 			{
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 
 			if (!$id)
 			{
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 
 			$test = false;
@@ -162,12 +171,13 @@
 				if (!empty($_FILES))
 				{
 					$tempFile	 = $_FILES['Filedata']['tmp_name'];
-					$targetPath	 = "{$GLOBALS['phpgw_info']['server']['temp_dir']}/";
+					$serverSettings = Settings::getInstance()->get('server');
+					$targetPath	 = "{$serverSettings['temp_dir']}/";
 					$targetFile	 = str_replace('//', '/', $targetPath) . $_FILES['Filedata']['name'];
 					move_uploaded_file($tempFile, $targetFile);
-					echo str_replace($GLOBALS['phpgw_info']['server']['temp_dir'], '', $targetFile);
+					echo str_replace($serverSettings['temp_dir'], '', $targetFile);
 				}
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 
 			if ($check)
@@ -195,7 +205,8 @@
 		public function read_single( $data = array() )
 		{
 			$custom_fields = false;
-			if ($GLOBALS['phpgw']->locations->get_attrib_table('property', $this->acl_location))
+			$locations_obj = new Locations();
+			if ($locations_obj->get_attrib_table('property', $this->acl_location))
 			{
 				$custom_fields		 = true;
 				$data['attributes']	 = $this->custom->find('property', $this->acl_location, 0, '', 'ASC', 'attrib_sort', true, true);
@@ -211,7 +222,7 @@
 				$values = $this->custom->prepare($values, 'property', $this->acl_location, $data['view']);
 			}
 
-			$values['report_date'] = $GLOBALS['phpgw']->common->show_date($values['report_date'], $this->dateformat);
+			$values['report_date'] = $this->phpgwapi_common->show_date($values['report_date'], $this->dateformat);
 
 			if (isset($values['vendor_id']) && $values['vendor_id'] && !$values['vendor_name'])
 			{
@@ -238,7 +249,8 @@
 
 			if ($values['coordinator_id'])
 			{
-				$values['coordinator_name'] = $GLOBALS['phpgw']->accounts->get($values['coordinator_id'])->__toString();
+				$accounts_obj = new Accounts();
+				$values['coordinator_name'] = $accounts_obj->get($values['coordinator_id'])->__toString();
 			}
 			return $values;
 		}

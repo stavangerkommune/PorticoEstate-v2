@@ -26,7 +26,13 @@
 	 * @subpackage admin
 	 * @version $Id$
 	 */
-	phpgw::import_class('phpgwapi.uicommon_jquery');
+
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\security\Acl;
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Translation;
+
+	 phpgw::import_class('phpgwapi.uicommon_jquery');
 
 	/**
 	 * Description
@@ -48,7 +54,7 @@
 		var $location_info;
 		var $bo, $bocommon,$allrows,$user_id,
 		$acl, $acl_location, $acl_read, $acl_add, $acl_edit,$acl_delete, $acl_manage,
-		$custom, $account,$type, $type_id;
+		$custom, $account,$type, $type_id, $translation;
 
 		var $public_functions = array
 			(
@@ -71,18 +77,19 @@
 			array_push(parent::$tmpl_search_path, PHPGW_SERVER_ROOT . '/property/templates/base');
 			$called_class		 = get_called_class();
 			$called_class_arr	 = explode('_', $called_class);
-			$call_appname		 = !empty($called_class_arr[0]) && !empty($GLOBALS['phpgw_info']['apps'][$called_class_arr[0]]) ? $called_class_arr[0] : 'property';
+			$call_appname		 = !empty($called_class_arr[0]) && !empty($this->apps[$called_class_arr[0]]) ? $called_class_arr[0] : 'property';
 			$this->bo			 = CreateObject("{$call_appname}.bogeneric");
 			$this->call_appname	 = $call_appname;
 
-			$this->account	 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->account	 = $this->userSettings['account_id'];
 			$this->bo->get_location_info();
 			$this->bocommon	 = & $this->bo->bocommon;
 			$this->custom	 = & $this->bo->custom;
+			$this->translation = Translation::getInstance();
 
 			$this->location_info								 = $this->bo->location_info;
-			$GLOBALS['phpgw_info']['flags']['menu_selection']	 = $this->location_info['menu_selection'];
-			$this->acl											 = & $GLOBALS['phpgw']->acl;
+			$this->flags['menu_selection']	 = $this->location_info['menu_selection'];
+			$this->acl											 = Acl::getInstance();
 			$this->acl_location									 = $this->location_info['acl_location'];
 			$this->acl_read										 = $this->acl->check($this->acl_location, ACL_READ, $this->location_info['acl_app']);
 			$this->acl_add										 = $this->acl->check($this->acl_location, ACL_ADD, $this->location_info['acl_app']);
@@ -101,9 +108,9 @@
 
 			if ($appname = $this->bo->appname)
 			{
-				if($GLOBALS['phpgw_info']['flags']['menu_selection'])
+				if($this->flags['menu_selection'])
 				{
-					$GLOBALS['phpgw_info']['flags']['menu_selection']	 = str_replace('property', $appname, $GLOBALS['phpgw_info']['flags']['menu_selection']);
+					$this->flags['menu_selection']	 = str_replace('property', $appname, $this->flags['menu_selection']);
 				}
 				$this->appname										 = $appname;
 			}
@@ -112,8 +119,11 @@
 			//Override
 			if ($_menu_selection)
 			{
-				$GLOBALS['phpgw_info']['flags']['menu_selection'] = $_menu_selection;
+				$this->flags['menu_selection'] = $_menu_selection;
 			}
+
+			Settings::getInstance()->update('flags', ['menu_selection' => $this->flags['menu_selection']]);
+
 		}
 
 		function get_list()
@@ -322,20 +332,21 @@
 
 		function columns()
 		{
-			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
+			$this->flags['xslt_app'] = true;
+			$this->flags['noframework']	 = true;
+			Settings::getInstance()->set('flags', $this->flags);
 
-			$template_set = isset($GLOBALS['phpgw_info']['server']['template_set']) ? $GLOBALS['phpgw_info']['server']['template_set'] : 'base';
+			$template_set = isset($this->serverSettings['template_set']) ? $this->serverSettings['template_set'] : 'base';
 			$xsl_rootdir = PHPGW_SERVER_ROOT . "/property/templates/{$template_set}";
 			phpgwapi_xslttemplates::getInstance()->add_file(array('columns'), $xsl_rootdir);
-			$GLOBALS['phpgw_info']['flags']['noframework']	 = true;
 			$values											 = Sanitizer::get_var('values');
 
 			if ($values['save'])
 			{
-				$GLOBALS['phpgw']->preferences->account_id = $this->account;
-				$GLOBALS['phpgw']->preferences->read();
-				$GLOBALS['phpgw']->preferences->add($this->location_info['acl_app'], "generic_columns_{$this->type}_{$this->type_id}", $values['columns'], 'user');
-				$GLOBALS['phpgw']->preferences->save_repository();
+				$preferences = createObject('phpgwapi.preferences', $this->account);
+				$preferences->read();
+				$preferences->add($this->location_info['acl_app'], "generic_columns_{$this->type}_{$this->type_id}", $values['columns'], 'user');
+				$preferences->save_repository();
 
 				$receipt['message'][] = array('msg' => lang('columns is updated'));
 			}
@@ -353,7 +364,7 @@
 
 			$data = array
 				(
-				'msgbox_data'	 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'	 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'column_list'	 => $this->bo->column_list($values['columns'], $allrows		 = true),
 				'function_msg'	 => $function_msg,
 				'form_action'	 => phpgw::link('/index.php', $link_data),
@@ -363,7 +374,8 @@
 				'select_name'	 => 'period'
 			);
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = $function_msg;
+			$this->flags['app_header'] = $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('columns' => $data));
 		}
 
@@ -375,7 +387,8 @@
 				return;
 			}
 
-			$GLOBALS['phpgw_info']['apps']['manual']['section'] = "general.index.{$this->type}";
+			$this->apps['manual']['section'] = "general.index.{$this->type}";
+			Settings::getInstance()->set('apps', $this->apps);
 
 			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
@@ -386,7 +399,8 @@
 			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 			$appname										 = $this->location_info['name'];
-			$GLOBALS['phpgw_info']['flags']['app_header']	 = $GLOBALS['phpgw']->translation->translate($this->location_info['acl_app'], array(), false, $this->location_info['acl_app']) . "::{$appname}";
+			$this->flags['app_header']	 = $this->translation->translate($this->location_info['acl_app'], array(), false, $this->location_info['acl_app']) . "::{$appname}";
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			$data = array(
 				'datatable_name' => $appname,
@@ -608,7 +622,8 @@
 			$id					 = isset($values['id']) && ($values['id'] || $values['id'] === '0') ? $values['id'] : Sanitizer::get_var($this->location_info['id']['name']);
 			$values_attribute	 = Sanitizer::get_var('values_attribute');
 
-			$GLOBALS['phpgw_info']['apps']['manual']['section'] = 'general.edit.' . $this->type;
+			$this->apps['manual']['section'] = 'general.edit.' . $this->type;
+			Settings::getInstance()->set('apps', $this->apps);
 
 			if ($id || $id === '0')
 			{
@@ -710,6 +725,7 @@
 				unset($values['attributes']);
 			}
 			$jscode = '';
+			$jqcal = createObject('phpgwapi.jqcal');
 			foreach ($this->location_info['fields'] as & $field)
 			{
 				$field['value'] = isset($values[$field['name']]) ? $values[$field['name']] : '';
@@ -720,9 +736,9 @@
 				}
 				else if ($field['type'] == 'date')
 				{
-					$GLOBALS['phpgw']->jqcal->add_listener($field['name']);
-					$dateformat		 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
-					$field['value']	 = $GLOBALS['phpgw']->common->show_date($field['value'], $dateformat);
+					$jqcal->add_listener($field['name']);
+					$dateformat		 = $this->userSettings['preferences']['common']['dateformat'];
+					$field['value']	 = $this->phpgwapi_common->show_date($field['value'], $dateformat);
 				}
 				elseif (in_array($field['type'], array('select', 'multiple_select')))
 				{
@@ -823,7 +839,7 @@ JS;
 
 			$data = array
 				(
-				'msgbox_data'		 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'		 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'form_action'		 => phpgw::link('/index.php', $link_save),
 				'cancel_url'		 => phpgw::link('/index.php', $link_index),
 				'done_action'		 => phpgw::link('/index.php', array('menuaction' => "{$this->call_appname}.uigeneric.index",
@@ -836,8 +852,8 @@ JS;
 				'value_descr'		 => $values['descr'],
 				'attributes_group'	 => $attributes,
 				'lookup_functions'	 => isset($values['lookup_functions']) ? $values['lookup_functions'] : '',
-				'textareacols'		 => isset($GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols'] ? $GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols'] : 60,
-				'textarearows'		 => isset($GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows'] ? $GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows'] : 10,
+				'textareacols'		 => isset($this->userSettings['preferences']['property']['textareacols']) && $this->userSettings['preferences']['property']['textareacols'] ? $this->userSettings['preferences']['property']['textareacols'] : 60,
+				'textarearows'		 => isset($this->userSettings['preferences']['property']['textarearows']) && $this->userSettings['preferences']['property']['textarearows'] ? $this->userSettings['preferences']['property']['textarearows'] : 10,
 				'tabs'				 => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
 				'id_name'			 => $this->location_info['id']['name'],
 				'id_type'			 => $this->location_info['id']['type'],
@@ -848,7 +864,8 @@ JS;
 
 			$appname = $this->location_info['name'];
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = $GLOBALS['phpgw']->translation->translate($this->location_info['acl_app'], array(), false, $this->location_info['acl_app']) . "::{$appname}::{$function_msg}";
+			$this->flags['app_header'] = $this->translation->translate($this->location_info['acl_app'], array(), false, $this->location_info['acl_app']) . "::{$appname}::{$function_msg}";
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 			phpgwapi_jquery::load_widget('select2');
 
 			if($jscode)
@@ -861,7 +878,8 @@ JS;
 
 		function attrib_history()
 		{
-			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
+			$this->flags['noframework'] = true;
+			Settings::getInstance()->update('flags', ['noframework' => $this->flags['noframework']]);
 
 			$appname		 = Sanitizer::get_var('appname', 'string');
 			$acl_location	 = Sanitizer::get_var('acl_location', 'string');
@@ -902,7 +920,7 @@ JS;
 			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$values		 = $this->bo->read_attrib_history($data_lookup);
-				$dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+				$dateformat	 = $this->userSettings['preferences']['common']['dateformat'];
 
 				$content = array();
 				//while (is_array($values) && list(, $entry) = each($values))
@@ -915,7 +933,7 @@ JS;
 							'id'			 => $entry['id'],
 							'value'			 => $entry['new_value'],
 							'user'			 => $entry['owner'],
-							'time_created'	 => $GLOBALS['phpgw']->common->show_date($entry['datetime'], "{$dateformat} G:i:s")
+							'time_created'	 => $this->phpgwapi_common->show_date($entry['datetime'], "{$dateformat} G:i:s")
 						);
 					}
 				}
@@ -1009,7 +1027,7 @@ JS;
 				'base_java_url'	 => json_encode(array('menuaction' => "{$this->call_appname}.uigeneric.attrib_history")),
 				'datatable_def'	 => $datatable_def,
 				'link_url'		 => phpgw::link('/index.php', $link_data),
-				'img_path'		 => $GLOBALS['phpgw']->common->get_image_path('phpgwapi', 'default')
+				'img_path'		 => $this->phpgwapi_common->get_image_path('phpgwapi', 'default')
 			);
 
 			$custom			 = createObject('phpgwapi.custom_fields');
@@ -1017,7 +1035,8 @@ JS;
 			$appname		 = $attrib_data['input_text'];
 			$function_msg	 = lang('history');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang($this->call_appname) . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang($this->call_appname) . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			self::render_template_xsl(array('attrib_history', 'datatable_inline'), array(
 				'attrib_history' => $data));
@@ -1098,7 +1117,7 @@ JS;
 				{
 					if ($e)
 					{
-						phpgwapi_cache::message_set($e->getMessage(), 'error');
+						Cache::message_set($e->getMessage(), 'error');
 						$this->edit();
 						return;
 					}

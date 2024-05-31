@@ -27,6 +27,9 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+
 	/**
 	 * Description
 	 * @package property
@@ -40,7 +43,7 @@
 		var $sort;
 		var $order;
 		var $cat_id;
-		var $so, $allrows, $total_records, $uicols,$use_session;
+		var $so, $allrows, $total_records, $uicols,$use_session,$phpgwapi_common;
 		var $public_functions = array
 			(
 			'read'			 => true,
@@ -52,6 +55,8 @@
 		function __construct( $session = false )
 		{
 			$this->so = CreateObject('property.socustom');
+			$this->phpgwapi_common = new \phpgwapi_common();
+
 
 			if ($session)
 			{
@@ -110,13 +115,13 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', 'custom', $data);
+				Cache::session_set('custom', 'session_data', $data);
 			}
 		}
 
 		function read_sessiondata()
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data', 'custom');
+			$data = Cache::session_get('custom', 'session_data');
 
 			$this->start	 = $data['start'];
 			$this->query	 = $data['query'];
@@ -128,16 +133,13 @@
 
 		function read( $data = array() )
 		{
-			/* $custom = $this->so->read(array('start' => $this->start,'query' => $this->query,'sort' => $this->sort,'order' => $this->order,
-			  'filter' => $this->filter,'cat_id' => $this->cat_id,'allrows'=>$this->allrows));
-			  $this->total_records = $this->so->total_records; */
-
 			$custom				 = $this->so->read($data);
 			$this->total_records = $this->so->total_records;
-
+			$userSettings = Settings::getInstance()->get('user');
+		
 			for ($i = 0; $i < count($custom); $i++)
 			{
-				$custom[$i]['entry_date'] = $GLOBALS['phpgw']->common->show_date($custom[$i]['entry_date'], $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
+				$custom[$i]['entry_date'] = $this->phpgwapi_common->show_date($custom[$i]['entry_date'], $userSettings['preferences']['common']['dateformat']);
 			}
 			return $custom;
 		}

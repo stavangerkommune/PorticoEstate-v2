@@ -51,7 +51,7 @@
 		public $flags;
 		public $serverSettings;
 		public $userSettings;
-		
+		public $apps;
 
 		public function __construct( $currentapp = '', $yui = '' )
 		{
@@ -60,6 +60,8 @@
 			$this->flags = Settings::getInstance()->get('flags');
 			$this->serverSettings = Settings::getInstance()->get('server');
 			$this->userSettings = Settings::getInstance()->get('user');
+			$this->apps = Settings::getInstance()->get('apps');
+
 
 			$yui = isset($yui) && $yui == 'yui3' ? 'yui3' : 'yahoo';
 			$currentapp = $currentapp ? $currentapp : Settings::getInstance()->get('flags')['currentapp'];
@@ -425,11 +427,12 @@
 
 		public static function render_template( $output )
 		{
-			$GLOBALS['phpgw']->common->phpgw_header(true);
+			$phpgwapi_common = new \phpgwapi_common();
+			$phpgwapi_common->phpgw_header(true);
 			if (self::$flash_msgs)
 			{
-				$msgbox_data = $GLOBALS['phpgw']->common->msgbox_data(self::$flash_msgs);
-				$msgbox_data = $GLOBALS['phpgw']->common->msgbox($msgbox_data);
+				$msgbox_data = $phpgwapi_common->msgbox_data(self::$flash_msgs);
+				$msgbox_data = $phpgwapi_common->msgbox($msgbox_data);
 				foreach ($msgbox_data as & $message)
 				{
 					echo "<div class='{$message['msgbox_class']}'>";
@@ -438,7 +441,7 @@
 				}
 			}
 			echo htmlspecialchars_decode($output);
-			$GLOBALS['phpgw']->common->phpgw_exit();
+			$phpgwapi_common->phpgw_exit();
 		}
 
 		/**
@@ -534,7 +537,10 @@
 
 		public static function render_template_xsl( $files, $data, $xsl_rootdir = '' , $base = 'data')
 		{
-			Settings::getInstance()->get('flags')['xslt_app'] = true;
+			$flags = Settings::getInstance()->get('flags');
+			$flags['xslt_app'] = true;
+			Settings::getInstance()->set('flags', $flags);
+			$phpgwapi_common = new \phpgwapi_common();
 
 			if($xsl_rootdir)
 			{
@@ -546,7 +552,7 @@
 
 			if (self::$flash_msgs)
 			{
-				$data['msgbox_data'] = $GLOBALS['phpgw']->common->msgbox(self::$flash_msgs);
+				$data['msgbox_data'] = $phpgwapi_common->msgbox(self::$flash_msgs);
 			}
 			else
 			{
@@ -570,7 +576,7 @@
 			if (\Sanitizer::get_var('phpgw_return_as', 'string', 'GET') == 'json' )
 			{
 //				echo json_encode($data);
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$phpgwapi_common->phpgw_exit();
 			}
 
 			$output = \Sanitizer::get_var('output', 'string', 'REQUEST', 'html');

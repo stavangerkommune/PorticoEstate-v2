@@ -26,7 +26,14 @@
 	 * @subpackage admin
 	 * @version $Id$
 	 */
-	/*
+
+use App\modules\phpgwapi\services\Cache;
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\controllers\Accounts\Accounts;
+use App\modules\phpgwapi\security\Acl;
+
+
+	 /*
 	 * Import the datetime class for date processing
 	 */
 	phpgw::import_class('phpgwapi.datetime');
@@ -46,11 +53,16 @@
 		var $cat_id;
 		var $location_info = array();
 		var$so,$mime_magic, $interlink, $use_session, $location_id, $user_id,$allrows,
-		$start_date,$end_date,$total_records,$mime_type;
+		$start_date,$end_date,$total_records,$mime_type,$flags,$userSettings,$phpgwapi_common,$serverSettings;
 
 		function __construct( $session = false )
 		{
-			$this->so			 = CreateObject('property.sogallery');
+		$this->flags = Settings::getInstance()->get('flags');
+		$this->userSettings = Settings::getInstance()->get('user');
+		$this->phpgwapi_common = new \phpgwapi_common();
+		$this->serverSettings = Settings::getInstance()->get('server');
+
+		$this->so			 = CreateObject('property.sogallery');
 			$this->mime_magic	 = createObject('phpgwapi.mime_magic');
 			$this->interlink	 = CreateObject('property.interlink');
 
@@ -95,15 +107,14 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', 'gallery', $data);
+				Cache::session_set('gallery', 'session_data', $data);
+
 			}
 		}
 
 		function read_sessiondata()
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data', 'gallery');
-
-			//		_debug_array($data);
+			$data = Cache::session_get('gallery', 'session_data');
 
 			$this->start	 = $data['start'];
 			$this->query	 = $data['query'];
@@ -128,7 +139,7 @@
 			);
 			static $locations	 = array();
 			static $urls		 = array();
-			$dateformat			 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat			 = $this->userSettings['preferences']['common']['dateformat'];
 			$i					 = 0;
 			foreach ($values as &$entry)
 			{
@@ -151,7 +162,7 @@
 					$entry['thumbnail_flag'] = 'thumb=1';
 				}
 
-				$entry['date'] = $GLOBALS['phpgw']->common->show_date(strtotime($entry['created']), $dateformat);
+				$entry['date'] = $this->phpgwapi_common->show_date(strtotime($entry['created']), $dateformat);
 
 				$directory = explode('/', $entry['directory']);
 
@@ -170,7 +181,8 @@
 
 				if($entry['createdby_id'])
 				{
-					$entry['user']			 = $GLOBALS['phpgw']->accounts->get($entry['createdby_id'])->__toString();
+					$accounts_obj = new Accounts();
+					$entry['user']			 = $accounts_obj->get($entry['createdby_id'])->__toString();
 				}
 			}
 			//_debug_array($values);
@@ -254,7 +266,8 @@
 				if (!empty($directory[2]) && !isset($directory[3]))
 				{
 					$location_info = $this->get_location($directory);
-					if ($GLOBALS['phpgw']->acl->check($location_info['location'], ACL_READ, 'property'))
+					$acl =Acl::getInstance();
+					if ($acl->check($location_info['location'], ACL_READ, 'property'))
 					{
 						$locations[] = array
 							(

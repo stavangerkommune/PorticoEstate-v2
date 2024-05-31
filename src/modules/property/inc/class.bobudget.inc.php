@@ -27,6 +27,9 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+
 	/**
 	 * Description
 	 * @package property
@@ -34,7 +37,7 @@
 	class property_bobudget
 	{
 
-		var $so, $bocommon, $cats, $use_session, $direction, $dimb_id, $org_unit_id, $part_of_town_id, $month;
+		var $so, $bocommon, $cats, $use_session, $direction, $dimb_id, $org_unit_id, $part_of_town_id, $month, $userSettings;
 		var $start;
 		var $query;
 		var $filter;
@@ -66,6 +69,8 @@
 			$this->so		 = CreateObject('property.sobudget');
 			$this->bocommon	 = CreateObject('property.bocommon');
 			$this->cats		 = & $this->so->cats;
+
+			$this->userSettings = Settings::getInstance()->get('user');
 
 			if ($session)
 			{
@@ -103,8 +108,8 @@
 			$this->sort			 = isset($sort) && $sort ? $sort : '';
 			$this->order		 = isset($order) && $order ? $order : '';
 			$this->cat_id		 = isset($cat_id) && $cat_id ? $cat_id : '';
-			$this->dimb_id		 = isset($dimb_id) && $dimb_id ? $dimb_id : '';//$GLOBALS['phpgw_info']['user']['preferences']['property']['dimb'];
-			$this->org_unit_id	 = isset($org_unit_id) && $org_unit_id ? $org_unit_id : '';//$GLOBALS['phpgw_info']['user']['preferences']['property']['org_unit_id'];
+			$this->dimb_id		 = isset($dimb_id) && $dimb_id ? $dimb_id : '';
+			$this->org_unit_id	 = isset($org_unit_id) && $org_unit_id ? $org_unit_id : '';
 
 			$this->part_of_town_id	 = isset($part_of_town_id) && $part_of_town_id ? $part_of_town_id : '';
 			$this->district_id		 = isset($district_id) && $district_id ? $district_id : '';
@@ -115,7 +120,8 @@
 			$this->month			 = isset($month) && $month ? $month : 0;
 			$this->details			 = $details;
 
-			if (isset($year) && $this->year != $year && $GLOBALS['phpgw_info']['menuaction'] != 'property.uibudget.obligations')
+			$menuaction = Settings::getInstance()->get('menuaction');
+			if (isset($year) && $this->year != $year && $menuaction != 'property.uibudget.obligations')
 			{
 				$this->grouping	 = '';
 				$this->revision	 = '';
@@ -126,13 +132,13 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', 'budget', $data);
+				Cache::session_set('budget', 'session_data', $data);
 			}
 		}
 
 		function read_sessiondata()
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data', 'budget');
+			$data = Cache::session_get('budget', 'session_data');
 
 			$this->start	 = isset($data['start']) ? $data['start'] : '';
 			$this->filter	 = isset($data['filter']) ? $data['filter'] : '';
@@ -147,10 +153,6 @@
 
 		function read( $data = array() )
 		{
-			/* $budget = $this->so->read(array('start' => $this->start,'query' => $this->query,'sort' => $this->sort,'order' => $this->order,
-			  'filter' => $this->filter,'cat_id' => $this->cat_id,'allrows'=>$this->allrows,
-			  'district_id' => $this->district_id,'year' => $this->year,'grouping' => $this->grouping,'revision' => $this->revision,
-			  'cat_id' => $this->cat_id, 'dimb_id' => $this->dimb_id, 'org_unit_id' => $this->org_unit_id)); */
 
 			$budget = $this->so->read(array
 				(
@@ -176,7 +178,6 @@
 			$this->sum_budget_cost	 = $this->so->sum_budget_cost;
 			foreach ($budget as & $entry)
 			{
-//				$entry['entry_date']	= $GLOBALS['phpgw']->common->show_date($entry['entry_date'],$GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
 				$category			 = $this->cats->return_single($entry['cat_id']);
 				$entry['category']	 = $category[0]['name'];
 			}
@@ -186,9 +187,6 @@
 
 		function read_basis( $data = array() )
 		{
-			/* $budget = $this->so->read_basis(array('start' => $this->start,'query' => $this->query,'sort' => $this->sort,'order' => $this->order,
-			  'filter' => $this->filter,'cat_id' => $this->cat_id,'allrows'=>$this->allrows,
-			  'district_id' => $this->district_id,'year' => $this->year,'grouping' => $this->grouping,'revision' => $this->revision,)); */
 
 			$budget = $this->so->read_basis(array
 				(
@@ -208,10 +206,11 @@
 			);
 
 			$this->total_records = $this->so->total_records;
+			$phpgwapi_common = new \phpgwapi_common();
 
 			for ($i = 0; $i < count($budget); $i++)
 			{
-				$budget[$i]['entry_date'] = $GLOBALS['phpgw']->common->show_date($budget[$i]['entry_date'], $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
+				$budget[$i]['entry_date'] = $phpgwapi_common->show_date($budget[$i]['entry_date'], $this->userSettings['preferences']['common']['dateformat']);
 			}
 			return $budget;
 		}
