@@ -27,6 +27,8 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Settings;
+	
 	/**
 	 * This is a class used to gain access to custom classes stored in /inc/cron to be run as cron jobs
 	 * or from the admin interface.
@@ -41,10 +43,17 @@
 			'index' => true
 		);
 
+		private $userSettings;
+		private $flags;
+
+
 		function __construct()
 		{
-			$GLOBALS['phpgw_info']['flags']['noheader']	 = true;
-			$GLOBALS['phpgw_info']['flags']['nonavbar']	 = true;
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->flags = Settings::getInstance()->get('flags');
+			$this->flags['noheader']	 = true;
+			$this->flags['nonavbar']	 = true;
+			Settings::getInstance()->set('flags', $this->flags);
 		}
 
 		/**
@@ -54,7 +63,7 @@
 		 */
 		function index( $data = '' )
 		{
-			if (!isset($GLOBALS['phpgw_info']['user']['apps']['admin']))
+			if (!isset($this->userSettings['apps']['admin']))
 			{
 				return;
 			}
@@ -83,7 +92,7 @@
 				return;
 			}
 
-			$file = PHPGW_SERVER_ROOT . "/property/inc/cron/{$GLOBALS['phpgw_info']['user']['domain']}/{$function}.php";
+			$file = PHPGW_SERVER_ROOT . "/property/inc/cron/{$this->userSettings['domain']}/{$function}.php";
 
 			if (is_file($file))
 			{
@@ -93,7 +102,7 @@
 			}
 			else
 			{
-				echo "no such file: path_to_phpgw_server_root/property/inc/cron/{$GLOBALS['phpgw_info']['user']['domain']}/{$function}.php";
+				echo "no such file: path_to_phpgw_server_root/property/inc/cron/{$this->userSettings['domain']}/{$function}.php";
 			}
 		}
 	}

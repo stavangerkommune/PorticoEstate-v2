@@ -27,6 +27,10 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
 	/**
 	 * Description
 	 * @package property
@@ -34,7 +38,7 @@
 	class property_bopending_action
 	{
 
-		var $so, $account, $start,$order, $sort;
+		var $so, $account, $start,$order, $sort, $userSettings;
 		var $public_functions = array(
 			'get_pending_action_ajax'	 => true,
 			'cancel_pending_action'		 => true
@@ -42,8 +46,9 @@
 
 		public function __construct()
 		{
+			$this->userSettings = Settings::getInstance()->get('user');
 			$this->so = CreateObject('property.sopending_action');
-			$this->account = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->account = $this->userSettings['account_id'];
 
 		}
 
@@ -77,14 +82,16 @@
 
 			$values			 = $this->so->get_pending_action($data);
 			$total_records	 = $this->so->total_records;
-			$dateformat		 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat		 = $this->userSettings['preferences']['common']['dateformat'];
+			$accounts_obj	 = new Accounts();
+			$phpgwapi_common = new \phpgwapi_common();
 
 			foreach ($values as &$entry)
 			{
 				$entry['id']				 = $entry['item_id'];
-				$entry['responsible_name']	 = $entry['responsible'] ? $GLOBALS['phpgw']->accounts->get($entry['responsible'])->__toString() : '';
-				$entry['created_by_name']	 = $entry['created_by'] ? $GLOBALS['phpgw']->accounts->get($entry['created_by'])->__toString() : '';
-				$entry['requested_date']	 = $GLOBALS['phpgw']->common->show_date($entry['action_requested']);//, $dateFormat);
+				$entry['responsible_name']	 = $entry['responsible'] ? $accounts_obj->get($entry['responsible'])->__toString() : '';
+				$entry['created_by_name']	 = $entry['created_by'] ? $accounts_obj->get($entry['created_by'])->__toString() : '';
+				$entry['requested_date']	 = $phpgwapi_common->show_date($entry['action_requested']);//, $dateFormat);
 				$entry['link']				 = $entry['url'];
 				$entry['dellink']			 = $this->account == $entry['created_by'] || $this->account == $entry['responsible'] ? phpgw::link(
 						'/index.php', array(
@@ -114,7 +121,7 @@
 			$location_id = Sanitizer::get_var('location_id', 'int');
 			$this->so->cancel_pending_action($location_id, $item_id);
 
-			$request_uri = phpgwapi_cache::session_get('property', 'return_to_self');
+			$request_uri = Cache::session_get('property', 'return_to_self');
 
 			header('Location: ' . $request_uri);
 			exit;

@@ -27,7 +27,8 @@
 	 * @subpackage logistic
 	 * @version $Id: class.boreport.inc.php 14913 2016-04-27 12:27:37Z sigurdne $
 	 */
-	class property_boreport
+
+	 class property_boreport
 	{
 
 		private $so;

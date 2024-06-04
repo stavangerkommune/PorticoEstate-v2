@@ -26,7 +26,10 @@
 	 * @subpackage location
 	 * @version $Id$
 	 */
-	/**
+
+	use App\modules\phpgwapi\services\Settings;
+
+	 /**
 	 * Description
 	 * @package property
 	 */
@@ -35,9 +38,14 @@
 	class property_multiuploader extends UploadHandler
 	{
 
-		var $bofiles;
+		var $bofiles, $serverSettings, $flags, $userSettings;
 		function __construct( $options = null, $initialize = true, $error_messages = null )
 		{
+		$this->serverSettings = Settings::getInstance()->get('server');
+		$this->flags = Settings::getInstance()->get('flags');
+		$this->userSettings = Settings::getInstance()->get('user');
+		
+
 			$fakebase = !empty($options['fakebase']) ? $options['fakebase'] : '/property';
 
 			$this->bofiles = CreateObject('property.bofiles', $fakebase);
@@ -46,12 +54,13 @@
 			if(empty($options['upload_dir']))
 			{
 //				$options['upload_dir'] = '/tmp';
-				$options['upload_dir'] = $GLOBALS['phpgw_info']['server']['temp_dir'] . '/';
+				$options['upload_dir'] = $this->serverSettings['temp_dir'] . '/';
 			}
 
+			
 			if(empty($options['accept_file_types']))
 			{
-				$currentapp = $GLOBALS['phpgw_info']['flags']['currentapp'];
+				$currentapp = $this->flags['currentapp'];
 				$config = CreateObject('phpgwapi.config', $currentapp)->read();
 				if (empty($config['uploader_filetypes']))
 				{
@@ -78,8 +87,8 @@
 			 */
 			if($content_range_header)
 			{
-				$this->options['upload_dir'] = "{$GLOBALS['phpgw_info']['server']['temp_dir']}/{$GLOBALS['phpgw_info']['user']['account_id']}/";
-//				$this->options['user_dirs'] = '/' . $GLOBALS['phpgw_info']['user']['account_id'];
+				$this->options['upload_dir'] = "{$this->serverSettings['temp_dir']}/{$this->userSettings['account_id']}/";
+//				$this->options['user_dirs'] = '/' . $this->userSettings['account_id'];
 
 				$is_last_chunk = false;
 
@@ -244,7 +253,7 @@
 
 			$max_file_size_in_bytes = 2147483647; // 2GB in bytes
 
-			$currentapp = $GLOBALS['phpgw_info']['flags']['currentapp'];
+			$currentapp = $this->flags['currentapp'];
 
 			$config = CreateObject('phpgwapi.config', $currentapp)->read();
 			if (empty($config['uploader_filetypes']))

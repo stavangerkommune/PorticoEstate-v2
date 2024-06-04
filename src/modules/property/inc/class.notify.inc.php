@@ -11,7 +11,7 @@
 	 * @category core
 	 * @version $Id$
 	 */
-	/*
+/*
 	  This program is free software: you can redistribute it and/or modify
 	  it under the terms of the GNU General Public License as published by
 	  the Free Software Foundation, either version 2 of the License, or
@@ -26,6 +26,12 @@
 	  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Locations;
+	use App\modules\phpgwapi\security\Acl;
+	use App\Database\Db;
+	use App\Database\Db2;
+
 	/**
 	 * Notify - handles notification to contacts related to items across locations.
 	 *
@@ -39,7 +45,7 @@
 		/**
 		 * @var object $_db Database connection
 		 */
-		protected $_db, $_db2, $_join, $_left_join, $account;
+		protected $_db, $_db2, $_join, $_left_join, $account, $userSettings;
 		var $public_functions = array
 			(
 			'update_data' => true,
@@ -51,11 +57,14 @@
 		 */
 		function __construct()
 		{
-			$this->_db			 = & $GLOBALS['phpgw']->db;
-			$this->_db2			 = clone($this->_db);
-			$this->_join		 = & $this->_db->join;
-			$this->_left_join	 = & $this->_db->left_join;
-			$this->account		 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->_db			 = Db::getInstance();
+			$this->_db2			 = new Db2();
+			$this->_join		 = $this->_db->join;
+			$this->_left_join	 = $this->_db->left_join;
+
+			$this->userSettings = Settings::getInstance()->get('user');
+
+			$this->account		 = $this->userSettings['account_id'];
 		}
 
 		/**
@@ -83,10 +92,11 @@
 			$this->_db->query($sql, __LINE__, __FILE__);
 
 			$values		 = array();
-			$dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat	 = $this->userSettings['preferences']['common']['dateformat'];
 			$lang_yes	 = lang('yes');
 			$lang_no	 = lang('no');
 
+			$phpgwapi_common = new \phpgwapi_common();
 			while ($this->_db->next_record())
 			{
 				$values[] = array
@@ -98,7 +108,7 @@
 					'is_active'				 => $this->_db->f('is_active'),
 					'notification_method'	 => $this->_db->f('notification_method', true),
 					'user_id'				 => $this->_db->f('user_id'),
-					'entry_date'			 => $GLOBALS['phpgw']->common->show_date($this->_db->f('entry_date'), $dateformat),
+					'entry_date'			 => $phpgwapi_common->show_date($this->_db->f('entry_date'), $dateformat),
 					'first_name'			 => $this->_db->f('first_name', true),
 					'last_name'				 => $this->_db->f('last_name', true)
 				);
@@ -340,9 +350,10 @@ JS;
 		 */
 		function refresh_notify_contact_2($location_id, $location_item_id, $contact_id, $type = '', $notify = false, $ids = array() )
 		{
-			$location_info = $GLOBALS['phpgw']->locations->get_name($location_id);
+			$locations_obj = new Locations();
+			$location_info = $locations_obj->get_name($location_id);
 
-			if (!$GLOBALS['phpgw']->acl->check($location_info['location'], ACL_EDIT, $location_info['appname']))
+			if (!Acl::getInstance()->check($location_info['location'], ACL_EDIT, $location_info['appname']))
 			{
 				return array();
 			}

@@ -11,7 +11,7 @@
 	 * @category core
 	 * @version $Id$
 	 */
-	/*
+/*
 	  This program is free software: you can redistribute it and/or modify
 	  it under the terms of the GNU General Public License as published by
 	  the Free Software Foundation, either version 2 of the License, or
@@ -25,6 +25,10 @@
 	  You should have received a copy of the GNU General Public License
 	  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
+
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Locations;
+	use App\Database\Db;
 
 	/**
 	 * interlink - handles information of relations of items across locations.
@@ -40,7 +44,7 @@
 		 * @var object $_db Database connection
 		 */
 		protected $_db,$_join;
-		var $boadmin_entity,$soadmin_entity;
+		var $boadmin_entity,$soadmin_entity,$locations_obj;
 
 		/**
 		 * Constructor
@@ -48,13 +52,14 @@
 		 */
 		function __construct()
 		{
-			$this->_db						 = & $GLOBALS['phpgw']->db;
+			$this->_db						 = Db::getInstance();
+			$this->locations_obj			 = new Locations();
 			$this->boadmin_entity			 = CreateObject('property.boadmin_entity');
 			$this->soadmin_entity			 = & $this->boadmin_entity->so;
 			$this->soadmin_entity->type		 = & $this->boadmin_entity->type;
 			$this->soadmin_entity->type_app	 = & $this->boadmin_entity->type_app;
 
-			$this->_join = & $this->_db->join;
+			$this->_join = $this->_db->join;
 		}
 
 		/**
@@ -69,7 +74,7 @@
 		 */
 		public function get_relation( $appname, $location, $id, $role = 'origin' )
 		{
-			$location_id = $GLOBALS['phpgw']->locations->get_id($appname, $location);
+			$location_id = $this->locations_obj->get_id($appname, $location);
 			$id			 = (int)$id;
 
 			switch ($role)
@@ -105,7 +110,7 @@
 
 			foreach ($relation as &$entry)
 			{
-				$linkend_location	 = $GLOBALS['phpgw']->locations->get_name($entry['linkend_location']);
+				$linkend_location	 = $this->locations_obj->get_name($entry['linkend_location']);
 				$entry['location']	 = $linkend_location['location'];
 
 				$entry['descr'] = $this->get_location_name($linkend_location['location']);
@@ -134,8 +139,8 @@
 		 */
 		public function get_specific_relation( $appname, $location1, $location2, $id, $role = 'origin' )
 		{
-			$location1_id	 = $GLOBALS['phpgw']->locations->get_id($appname, $location1);
-			$location2_id	 = $GLOBALS['phpgw']->locations->get_id($appname, $location2);
+			$location1_id	 = $this->locations_obj->get_id($appname, $location1);
+			$location2_id	 = $this->locations_obj->get_id($appname, $location2);
 			$id				 = (int)$id;
 			$targets		 = array();
 
@@ -193,7 +198,7 @@
 		 */
 		public function get_location_link( $location_id, $id, $action = 'view' )
 		{
-			$system_location = $GLOBALS['phpgw']->locations->get_name($location_id);
+			$system_location = $this->locations_obj->get_name($location_id);
 
 			$name = 'N∕A';
 			if (preg_match('/.location./i', $system_location['location']))
@@ -426,7 +431,7 @@
 				$type		 = explode('.', $type);
 				$entity_id	 = $type[2];
 				$cat_id		 = $type[3];
-				$location_id = $GLOBALS['phpgw']->locations->get_id('property', ".entity.{$entity_id}.{$cat_id}");
+				$location_id = $this->locations_obj->get_id('property', ".entity.{$entity_id}.{$cat_id}");
 				if ($location_id)
 				{
 					$metadata = $this->_db->metadata("fm_entity_{$entity_id}_{$cat_id}");
@@ -488,10 +493,12 @@
 		 */
 		public function get_child_date( $appname, $origin_location, $target_location, $id, $entity_id = '', $cat_id = '' )
 		{
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$userSettings = Settings::getInstance()->get('user');
 
-			$location1_id	 = $GLOBALS['phpgw']->locations->get_id($appname, $origin_location);
-			$location2_id	 = $GLOBALS['phpgw']->locations->get_id($appname, $target_location);
+			$dateformat = $userSettings['preferences']['common']['dateformat'];
+
+			$location1_id	 = $this->locations_obj->get_id($appname, $origin_location);
+			$location2_id	 = $this->locations_obj->get_id($appname, $target_location);
 
 			$sql = "SELECT entry_date, location2_item_id AS item_id, '{$target_location}' AS location FROM phpgw_interlink WHERE location1_item_id = {$id} AND location1_id = {$location1_id} AND location2_id = {$location2_id} ";
 			$sql .= "UNION "; 
@@ -500,10 +507,11 @@
 			$this->_db->query($sql, __LINE__, __FILE__);
 
 			$date_info = array();
+			$phpgwapi_common = new \phpgwapi_common();
 			while ($this->_db->next_record())
 			{
 				$date_info[] = array(
-					'entry_date' => $GLOBALS['phpgw']->common->show_date($this->_db->f('entry_date'), $dateformat),
+					'entry_date' => $phpgwapi_common->show_date($this->_db->f('entry_date'), $dateformat),
 					'item_id'	 => $this->_db->f('item_id'),
 					'location'	 => $this->_db->f('location')
 				);
@@ -572,8 +580,8 @@
 				$db = $this->_db;
 			}
 
-			$location1_id	 = $GLOBALS['phpgw']->locations->get_id($appname, $location1);
-			$location2_id	 = $GLOBALS['phpgw']->locations->get_id($appname, $location2);
+			$location1_id	 = $this->locations_obj->get_id($appname, $location1);
+			$location2_id	 = $this->locations_obj->get_id($appname, $location2);
 			//			$id				= (int) $id;
 
 			$sql = "DELETE FROM phpgw_interlink WHERE location1_id = {$location1_id} AND location2_id = {$location2_id} AND location1_item_id = '{$id}'";
@@ -598,7 +606,7 @@
 				$db = $this->_db;
 			}
 
-			$location_id = $GLOBALS['phpgw']->locations->get_id($appname, $location);
+			$location_id = $this->locations_obj->get_id($appname, $location);
 			//			$id 		 = (int) $id;
 
 			$sql = "DELETE FROM phpgw_interlink WHERE location1_id = {$location_id} AND location1_item_id = '{$id}'";
@@ -623,7 +631,7 @@
 				$db = $this->_db;
 			}
 
-			$location_id = $GLOBALS['phpgw']->locations->get_id($appname, $location);
+			$location_id = $this->locations_obj->get_id($appname, $location);
 			$id			 = (int)$id;
 
 			$sql = "DELETE FROM phpgw_interlink WHERE location2_id = {$location_id} AND location2_item_id = {$id}";

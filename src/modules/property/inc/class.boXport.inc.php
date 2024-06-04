@@ -27,6 +27,10 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Locations;
+
 	/**
 	 * Description
 	 * @package property
@@ -45,15 +49,20 @@
 		var $sort;
 		var $order;
 		var $filter;
-		var $cat_id, $config,$debug;
+		var $cat_id, $config,$debug,$userSettings,$flags;
 		var $use_session		 = false;
 
 		function __construct( $session = false )
 		{
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->flags = Settings::getInstance()->get('flags');
 
-			$GLOBALS['phpgw_info']['flags']['currentapp'] = 'property';
+			$this->flags['currentapp'] = 'property';
+			Settings::getInstance()->set('flags', $this->flags);
 
-			$this->config = CreateObject('admin.soconfig', $GLOBALS['phpgw']->locations->get_id('property', '.invoice'));
+			$locations_obj = new Locations();
+
+			$this->config = CreateObject('admin.soconfig', $locations_obj->get_id('property', '.invoice'));
 
 			if ($session)
 			{
@@ -96,8 +105,7 @@
 
 			if ($this->use_session)
 			{
-				$data = array
-					(
+				$data = array(
 					'start'	 => $this->start,
 					'query'	 => $this->query,
 					'sort'	 => $this->sort,
@@ -110,13 +118,13 @@
 					echo '<br>Save:';
 					_debug_array($data);
 				}
-				$GLOBALS['phpgw']->session->appsession('session_data', 'export', $data);
+				Cache::session_set('export', 'session_data', $data);
 			}
 		}
 
 		function read_sessiondata()
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data', 'export');
+			$data = Cache::session_get('export', 'session_data');
 
 			$this->start	 = $data['start'];
 			$this->query	 = $data['query'];
@@ -128,12 +136,12 @@
 
 		function select_import_conv( $selected = '' )
 		{
-			$dir_handle	 = opendir(PHPGW_SERVER_ROOT . "/property/inc/import/{$GLOBALS['phpgw_info']['user']['domain']}");
+			$dir_handle	 = opendir(PHPGW_SERVER_ROOT . "/property/inc/import/{$this->userSettings['domain']}");
 			$i			 = 0;
 			$myfilearray = array();
 			while ($file		 = readdir($dir_handle))
 			{
-				if ((substr($file, 0, 1) != '.') && is_file(PHPGW_SERVER_ROOT . "/property/inc/import/{$GLOBALS['phpgw_info']['user']['domain']}/{$file}"))
+				if ((substr($file, 0, 1) != '.') && is_file(PHPGW_SERVER_ROOT . "/property/inc/import/{$this->userSettings['domain']}/{$file}"))
 				{
 					$myfilearray[$i] = $file;
 					$i++;
@@ -172,12 +180,12 @@
 
 		function select_export_conv( $selected = '' )
 		{
-			$dir_handle	 = @opendir(PHPGW_SERVER_ROOT . "/property/inc/export/{$GLOBALS['phpgw_info']['user']['domain']}");
+			$dir_handle	 = @opendir(PHPGW_SERVER_ROOT . "/property/inc/export/{$this->userSettings['domain']}");
 			$i			 = 0;
 			$myfilearray = array();
 			while ($file		 = readdir($dir_handle))
 			{
-				if ((substr($file, 0, 1) != '.') && is_file(PHPGW_SERVER_ROOT . "/property/inc/export/{$GLOBALS['phpgw_info']['user']['domain']}/{$file}"))
+				if ((substr($file, 0, 1) != '.') && is_file(PHPGW_SERVER_ROOT . "/property/inc/export/{$this->userSettings['domain']}/{$file}"))
 				{
 					$myfilearray[$i] = $file;
 					$i++;
@@ -269,7 +277,7 @@
 
 		function import( $invoice_common, $download )
 		{
-			include (PHPGW_SERVER_ROOT . "/property/inc/import/{$GLOBALS['phpgw_info']['user']['domain']}/{$invoice_common['conv_type']}");
+			include (PHPGW_SERVER_ROOT . "/property/inc/import/{$this->userSettings['domain']}/{$invoice_common['conv_type']}");
 			$invoice = new import_conv;
 
 			$buffer = $invoice->import($invoice_common, $download);
@@ -293,7 +301,7 @@
 			$pre_transfer		 = $data['pre_transfer'];
 			$force_period_year	 = $data['force_period_year'];
 
-			$file_name = PHPGW_SERVER_ROOT . "/property/inc/export/{$GLOBALS['phpgw_info']['user']['domain']}/{$conv_type}";
+			$file_name = PHPGW_SERVER_ROOT . "/property/inc/export/{$this->userSettings['domain']}/{$conv_type}";
 
 			if(is_file("{$file_name}.php"))
 			{
@@ -313,7 +321,7 @@
 
 		function rollback( $conv_type, $role_back_date, $rollback_file, $rollback_voucher, $voucher_id_intern )
 		{
-			$file_name = PHPGW_SERVER_ROOT . "/property/inc/export/{$GLOBALS['phpgw_info']['user']['domain']}/{$conv_type}";
+			$file_name = PHPGW_SERVER_ROOT . "/property/inc/export/{$this->userSettings['domain']}/{$conv_type}";
 			if(is_file("{$file_name}.php"))
 			{
 				require_once "{$file_name}.php";

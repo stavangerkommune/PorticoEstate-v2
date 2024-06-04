@@ -26,6 +26,11 @@
 	 * @subpackage project
 	 * @version $Id$
 	 */
+
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
 	phpgw::import_class('phpgwapi.datetime');
 
 	/**
@@ -56,10 +61,14 @@
 		);
 
 		var $so, $bocommon, $solocation, $historylog, $cats, $custom, $use_session, $p_num, $condition_survey_id, $district_id, $property_cat_id,$status_id,
-		$degree_id, $uicols, $allrows, $start_date,$end_date, $total_records, $recommended_year, $building_part, $criteria_id;
+		$degree_id, $uicols, $allrows, $start_date,$end_date, $total_records, $recommended_year, $building_part, $criteria_id, $userSettings, $phpgwapi_common, $accounts_obj;
 
 		function __construct( $session = false )
 		{
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->phpgwapi_common = new \phpgwapi_common();
+			$this->accounts_obj = new Accounts();
+
 			$this->so					 = CreateObject('property.sorequest');
 			$this->bocommon				 = CreateObject('property.bocommon');
 			$this->solocation			 = CreateObject('property.solocation');
@@ -175,13 +184,13 @@
 		{
 			if ($this->use_session)
 			{
-				phpgwapi_cache::session_set('property.request', 'session_data', $data);
+				Cache::session_set('property.request', 'session_data', $data);
 			}
 		}
 
 		function read_sessiondata()
 		{
-			$data = phpgwapi_cache::session_get('property.request', 'session_data');
+			$data = Cache::session_get('property.request', 'session_data');
 
 			$this->start			 = $data['start'];
 			$this->query			 = $data['query'];
@@ -204,7 +213,7 @@
 		{
 			if (!$selected)
 			{
-				$selected = isset($GLOBALS['phpgw_info']['user']['preferences']['property']['request_columns']) ? $GLOBALS['phpgw_info']['user']['preferences']['property']['request_columns'] : '';
+				$selected = isset($this->userSettings['preferences']['property']['request_columns']) ? $this->userSettings['preferences']['property']['request_columns'] : '';
 			}
 
 			$columns = $this->get_column_list();
@@ -257,7 +266,7 @@
 			}
 			else
 			{
-				$selected = $GLOBALS['phpgw_info']['user']['preferences']['property'][$degreedefault_type];
+				$selected = $this->userSettings['preferences']['property'][$degreedefault_type];
 			}
 
 			$degree_comment[0]	 = ' - ' . lang('no symptoms');
@@ -308,7 +317,7 @@
 
 		function select_reference_list( $reference_value = 0 )
 		{
-			$selected = $reference_value ? $reference_value : (int)$GLOBALS['phpgw_info']['user']['preferences']['property']['request_reference_level'];
+			$selected = $reference_value ? $reference_value : (int)$this->userSettings['preferences']['property']['request_reference_level'];
 
 			$reference_list			 = array();
 			$reference_comment		 = array();
@@ -404,7 +413,7 @@
 			}
 			else
 			{
-				$selected = $GLOBALS['phpgw_info']['user']['preferences']['property'][$consequencedefault_type];
+				$selected = $this->userSettings['preferences']['property'][$consequencedefault_type];
 			}
 
 			static $consequence_list = array();
@@ -500,6 +509,7 @@
 			$attrib_data = $custom->find('property', $this->acl_location, 0, '', '', '', true, true);
 
 			$attrib_filter = array();
+			$db = CreateObject('phpgwapi.db');
 			if ($attrib_data)
 			{
 				foreach ($attrib_data as $attrib)
@@ -515,7 +525,7 @@
 					{
 						if ($_attrib_filter_value = Sanitizer::get_var($attrib['column_name'], 'int'))
 						{
-							$attrib_filter[] = "fm_request.{$attrib['column_name']} {$GLOBALS['phpgw']->db->like} '%,{$_attrib_filter_value},%'";
+							$attrib_filter[] = "fm_request.{$attrib['column_name']} {$db->like} '%,{$_attrib_filter_value},%'";
 						}
 					}
 				}
@@ -548,21 +558,21 @@
 			$this->uicols				 = $this->so->uicols;
 			$cols_extra					 = $this->so->cols_extra;
 
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
-			$custom_cols = isset($GLOBALS['phpgw_info']['user']['preferences']['property']['request_columns']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['request_columns'] ? $GLOBALS['phpgw_info']['user']['preferences']['property']['request_columns'] : array();
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
+			$custom_cols = isset($this->userSettings['preferences']['property']['request_columns']) && $this->userSettings['preferences']['property']['request_columns'] ? $this->userSettings['preferences']['property']['request_columns'] : array();
 
 			$request_responsible_unit = createObject('property.bogeneric');
 			$request_responsible_unit->get_location_info('request_responsible_unit');
 
 			foreach ($values as & $value)
 			{
-				$value['coordinator']		 = $GLOBALS['phpgw']->accounts->id2name($value['coordinator']);
-				$value['start_date']		 = $GLOBALS['phpgw']->common->show_date($value['start_date'], $dateformat);
-				$value['entry_date']		 = $GLOBALS['phpgw']->common->show_date($value['entry_date'], $dateformat);
+				$value['coordinator']		 = $this->accounts_obj->id2name($value['coordinator']);
+				$value['start_date']		 = $this->phpgwapi_common->show_date($value['start_date'], $dateformat);
+				$value['entry_date']		 = $this->phpgwapi_common->show_date($value['entry_date'], $dateformat);
 				$value['planned_year']		 = $value['planned_year'] ? date('Y', $value['planned_year']) : '';
-				$value['closed_date']		 = $GLOBALS['phpgw']->common->show_date($value['closed_date'], $dateformat);
-				$value['in_progress_date']	 = $GLOBALS['phpgw']->common->show_date($value['in_progress_date'], $dateformat);
-				$value['delivered_date']	 = $GLOBALS['phpgw']->common->show_date($value['delivered_date'], $dateformat);
+				$value['closed_date']		 = $this->phpgwapi_common->show_date($value['closed_date'], $dateformat);
+				$value['in_progress_date']	 = $this->phpgwapi_common->show_date($value['in_progress_date'], $dateformat);
+				$value['delivered_date']	 = $this->phpgwapi_common->show_date($value['delivered_date'], $dateformat);
 
 				if ($cols_extra)
 				{
@@ -615,13 +625,13 @@
 				return $values;
 			}
 
-			$dateformat					 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
-			$values['start_date']		 = $GLOBALS['phpgw']->common->show_date($values['start_date'], $dateformat);
-			$values['end_date']			 = $GLOBALS['phpgw']->common->show_date($values['end_date'], $dateformat);
-			$values['entry_date']		 = $GLOBALS['phpgw']->common->show_date($values['entry_date'], $dateformat);
-			$values['closed_date']		 = $GLOBALS['phpgw']->common->show_date($values['closed_date'], $dateformat);
-			$values['in_progress_date']	 = $GLOBALS['phpgw']->common->show_date($values['in_progress_date'], $dateformat);
-			$values['delivered_date']	 = $GLOBALS['phpgw']->common->show_date($values['delivered_date'], $dateformat);
+			$dateformat					 = $this->userSettings['preferences']['common']['dateformat'];
+			$values['start_date']		 = $this->phpgwapi_common->show_date($values['start_date'], $dateformat);
+			$values['end_date']			 = $this->phpgwapi_common->show_date($values['end_date'], $dateformat);
+			$values['entry_date']		 = $this->phpgwapi_common->show_date($values['entry_date'], $dateformat);
+			$values['closed_date']		 = $this->phpgwapi_common->show_date($values['closed_date'], $dateformat);
+			$values['in_progress_date']	 = $this->phpgwapi_common->show_date($values['in_progress_date'], $dateformat);
+			$values['delivered_date']	 = $this->phpgwapi_common->show_date($values['delivered_date'], $dateformat);
 
 			if ($values['location_code'])
 			{
@@ -632,7 +642,7 @@
 			{
 				foreach ($values['planning'] as &$planning)
 				{
-					$planning['date'] = $GLOBALS['phpgw']->common->show_date($planning['date'], 'Y');
+					$planning['date'] = $this->phpgwapi_common->show_date($planning['date'], 'Y');
 				}
 			}
 			else
@@ -643,7 +653,7 @@
 			{
 				foreach ($values['consume'] as &$consume)
 				{
-					$consume['date'] = $GLOBALS['phpgw']->common->show_date($consume['date'], 'Y');
+					$consume['date'] = $this->phpgwapi_common->show_date($consume['date'], 'Y');
 				}
 			}
 			else
@@ -708,7 +718,7 @@
 			foreach ($history_array as $value)
 			{
 
-				$record_history[$i]['value_date']	 = $GLOBALS['phpgw']->common->show_date($value['datetime']);
+				$record_history[$i]['value_date']	 = $this->phpgwapi_common->show_date($value['datetime']);
 				$record_history[$i]['value_user']	 = $value['owner'];
 
 				switch ($value['status'])
@@ -760,17 +770,17 @@
 					}
 					else
 					{
-						$record_history[$i]['value_new_value'] = $GLOBALS['phpgw']->accounts->id2name($value['new_value']);
+						$record_history[$i]['value_new_value'] = $this->accounts_obj->id2name($value['new_value']);
 					}
 				}
 				else if ($value['status'] == 'C')
 				{
-					$record_history[$i]['value_new_value']	 = $GLOBALS['phpgw']->accounts->id2name($value['new_value']);
-					$record_history[$i]['value_old_value']	 = $GLOBALS['phpgw']->accounts->id2name($value['old_value']);
+					$record_history[$i]['value_new_value']	 = $this->accounts_obj->id2name($value['new_value']);
+					$record_history[$i]['value_old_value']	 = $this->accounts_obj->id2name($value['old_value']);
 				}
 				else if ($value['status'] == 'CO')
 				{
-					$record_history[$i]['value_new_value'] = $GLOBALS['phpgw']->accounts->id2name($value['new_value']);
+					$record_history[$i]['value_new_value'] = $this->accounts_obj->id2name($value['new_value']);
 				}
 				else if ($value['status'] == 'T' || $value['status'] == 'TO')
 				{

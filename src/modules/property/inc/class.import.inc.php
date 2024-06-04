@@ -27,6 +27,8 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Settings;
+
 	/**
 	 * Description
 	 * @package property
@@ -41,7 +43,7 @@
 
 		function __construct()
 		{
-			$GLOBALS['phpgw_info']['flags']['xslt_app']	 = true;
+			Settings::getInstance()->update('flags', ['xslt_app' => true]);
 			$this->bocommon								 = CreateObject('property.bocommon');
 		}
 
@@ -94,7 +96,9 @@
 			if ($importfile)
 			{
 				$old		 = $importfile;
-				$importfile	 = $GLOBALS['phpgw_info']['server']['temp_dir'] . '/service_import_' . basename($importfile);
+				$serverSettings = Settings::getInstance()->get('server');
+
+				$importfile	 = $serverSettings['temp_dir'] . '/service_import_' . basename($importfile);
 				if (is_file($old))
 				{
 					rename($old, $importfile);
@@ -176,7 +180,7 @@
 				'lang_cancel'			 => lang('cancel')
 			);
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = $header_info . ': ' . lang('import');
+			Settings::getInstance()->update('flags', ['app_header' => $header_info . ': ' . lang('import')]);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('import' => $data));
 		}
 	}

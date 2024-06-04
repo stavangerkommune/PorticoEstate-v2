@@ -27,6 +27,8 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Settings;
+
 	/**
 	 * Description
 	 * @package property
@@ -34,11 +36,18 @@
 	class property_fileuploader
 	{
 
+		private $flags, $serverSettings, $phpgwapi_common;
 		function __construct()
 		{
-			$GLOBALS['phpgw_info']['flags']['xslt_app']			 = false;
-			$GLOBALS['phpgw_info']['flags']['noframework']		 = true;
-			$GLOBALS['phpgw_info']['flags']['no_reset_fonts']	 = true;
+			$this->flags = Settings::getInstance()->get('flags');
+
+			$this->flags['xslt_app']			 = false;
+			$this->flags['noframework']		 = true;
+			$this->flags['no_reset_fonts']	 = true;
+			Settings::getInstance()->set('flags', $this->flags);
+
+			$this->serverSettings = Settings::getInstance()->get('server');
+			$this->phpgwapi_common = new \phpgwapi_common();
 		}
 
 
@@ -59,7 +68,7 @@
 			{
 				echo 0;
 			}
-			$GLOBALS['phpgw']->common->phpgw_exit();
+			$this->phpgwapi_common->phpgw_exit();
 		}
 
 		function upload( $save_path = '', $fakebase = '/property' )
@@ -75,14 +84,14 @@
 			{
 				header("HTTP/1.1 500 Internal Server Error"); // This will trigger an uploadError event in SWFUpload
 				echo "POST exceeded maximum allowed size.";
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 
 			// Settings
 
 			if (!$save_path)
 			{
-				$save_path	 = "{$GLOBALS['phpgw_info']['server']['temp_dir']}";
+				$save_path	 = "{$this->serverSettings['temp_dir']}";
 				$use_vfs	 = false;
 			}
 			$upload_name			 = "Filedata";
@@ -115,22 +124,22 @@
 			if (!isset($_FILES[$upload_name]))
 			{
 				$this->HandleError("No upload found in \$_FILES for " . $upload_name);
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 			else if (isset($_FILES[$upload_name]["error"]) && $_FILES[$upload_name]["error"] != 0)
 			{
 				$this->HandleError($uploadErrors[$_FILES[$upload_name]["error"]]);
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 			else if (!isset($_FILES[$upload_name]["tmp_name"]) || !@is_uploaded_file($_FILES[$upload_name]["tmp_name"]))
 			{
 				$this->HandleError("Upload failed is_uploaded_file test.");
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 			else if (!isset($_FILES[$upload_name]['name']))
 			{
 				$this->HandleError("File has no name.");
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 
 			// Validate the file size (Warning: the largest files supported by this code is 2GB)
@@ -138,13 +147,13 @@
 			if (!$file_size || $file_size > $max_file_size_in_bytes)
 			{
 				$this->HandleError("File exceeds the maximum allowed size");
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 
 			if ($file_size <= 0)
 			{
 				$this->HandleError("File size outside allowed lower bound");
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 
 			// Validate file name (for our purposes we'll just remove invalid characters)
@@ -152,7 +161,7 @@
 			if (strlen($file_name) == 0 || strlen($file_name) > $MAX_FILENAME_LENGTH)
 			{
 				$this->HandleError("Invalid file name");
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 
 
@@ -194,7 +203,7 @@
 			if (!$is_valid_extension)
 			{
 				$this->HandleError("Invalid file extension");
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 
 			// Validate file contents (extension and mime-type can't be trusted)

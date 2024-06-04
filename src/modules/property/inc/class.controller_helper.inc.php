@@ -27,6 +27,11 @@
 	 * @version $Id: class.uientity.inc.php 16615 2017-04-23 10:01:37Z sigurdne $
 	 */
 
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+	use App\modules\phpgwapi\controllers\Locations;
+	use App\modules\phpgwapi\security\Acl;
+
 	/**
 	 * Description
 	 * @package property
@@ -41,7 +46,11 @@
 			$acl_read,
 			$acl_add,
 			$acl_edit,
-			$acl_delete;
+			$acl_delete,
+			$userSettings,
+			$phpgwapi_common,
+			$accounts_obj,
+			$locations_obj;
 		public $public_functions = array
 			(
 			'get_controls_at_component'	 => true,
@@ -61,6 +70,12 @@
 			$this->acl_delete	 = !empty($data['acl_delete']) ? $data['acl_delete'] : false;
 			$this->type_app		 = !empty($data['type_app']) ? $data['type_app'] : array();
 			$this->type			 = !empty($data['type']) ? $data['type'] : false;
+
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->phpgwapi_common = new \phpgwapi_common();
+			$this->accounts_obj = new Accounts();
+			$this->locations_obj = new Locations();
+
 		}
 
 		public function get_check_lst_time_span()
@@ -88,8 +103,10 @@
 
 		function get_assigned_history()
 		{
-			$GLOBALS['phpgw_info']['flags']['noframework']	 = true;
-			$GLOBALS['phpgw_info']['flags']['xslt_app']		 = false;
+			$flags = Settings::getInstance()->get('flags');
+			$flags['noframework']	 = true;
+			$flags['xslt_app']		 = false;
+			Settings::getInstance()->set('flags', $flags);
 
 			if ($this->acl_read)
 			{
@@ -118,7 +135,7 @@
 HTML;
 			foreach ($history as $entry)
 			{
-				$date	 = $GLOBALS['phpgw']->common->show_date($entry['assigned_date']);
+				$date	 = $this->phpgwapi_common->show_date($entry['assigned_date']);
 				$ret	 .= <<<HTML
 						<tr align = 'left'>
 							<td>
@@ -148,7 +165,7 @@ HTML;
 				$cat_id		 = Sanitizer::get_var('cat_id', 'int');
 				$type		 = Sanitizer::get_var('type', 'string', 'REQUEST', 'entity');
 
-				$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$type], ".{$type}.{$entity_id}.{$cat_id}");
+				$location_id = $this->locations_obj->get_id($this->type_app[$type], ".{$type}.{$entity_id}.{$cat_id}");
 			}
 
 			$id = $id ? $id : Sanitizer::get_var('id', 'int');
@@ -189,7 +206,7 @@ HTML;
 				$entry['title']				 = '<a href="' . phpgw::link('/index.php', $control_link_data) . '" target="_blank">' . $entry['title'] . '</a>';
 				$entry['assigned_to_name']	 = "<a title=\"{$lang_history}\" onclick='javascript:showlightbox_assigned_history({$entry['serie_id']});'>{$entry['assigned_to_name']}</a>";
 
-				$entry['start_date']	 = $GLOBALS['phpgw']->common->show_date($entry['start_date'], $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
+				$entry['start_date']	 = $this->phpgwapi_common->show_date($entry['start_date'], $this->userSettings['preferences']['common']['dateformat']);
 				$entry['repeat_type']	 = $repeat_type_array[$entry['repeat_type']];
 				$entry['total_time']	 = $entry['service_time'] + $entry['controle_time'];
 			}
@@ -256,6 +273,7 @@ HTML;
 
 				$socheck_list	 = CreateObject('controller.socheck_list');
 				$control_id		 = $socheck_list->get_single($case['check_list_id'])->get_control_id();
+				$_control_name = '';
 				foreach ($_controls as $_control)
 				{
 					if ($_control['control_id'] == $control_id)
@@ -317,8 +335,8 @@ HTML;
 					'title'		 => "<a href=\"{$_link}\" > {$case['title']}</a>",
 					'value'		 => implode('</br>', $_value_arr),
 					'status'	 => $_statustext[$case['status']],
-					'user'		 => $GLOBALS['phpgw']->accounts->get($case['user_id'])->__toString(),
-					'entry_date' => $GLOBALS['phpgw']->common->show_date($case['modified_date'], $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']),
+					'user'		 => $this->accounts_obj->get($case['user_id'])->__toString(),
+					'entry_date' => $this->phpgwapi_common->show_date($case['modified_date'], $this->userSettings['preferences']['common']['dateformat']),
 				);
 				unset($_link);
 			}
@@ -425,8 +443,8 @@ HTML;
 						'title'		 => "<a href=\"{$_link}\" >" . $check_item->get_control_item()->get_title() . "</a>",
 						'value'		 => implode('</br>', $_value_arr),
 						'status'	 => $_statustext[$case->get_status()],
-						'user'		 => $GLOBALS['phpgw']->accounts->get($case->get_user_id())->__toString(),
-						'entry_date' => $GLOBALS['phpgw']->common->show_date($case->get_modified_date(), $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']),
+						'user'		 => $this->accounts_obj->get($case->get_user_id())->__toString(),
+						'entry_date' => $this->phpgwapi_common->show_date($case->get_modified_date(), $this->userSettings['preferences']['common']['dateformat']),
 					);
 					unset($_link);
 				}
@@ -514,10 +532,10 @@ HTML;
 						'id'				 => $check_list->get_id(),
 						'control_name'		 => "<a href=\"{$_link}\" >{$_control_name}</a>",
 						'status'			 => $_statustext[$check_list->get_status()],
-						'user'				 => $check_list->get_assigned_to() ? $GLOBALS['phpgw']->accounts->get($check_list->get_assigned_to())->__toString() : 'N/A',
-						'deadline'			 => $GLOBALS['phpgw']->common->show_date($check_list->get_deadline(), $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']),
-						'planned_date'		 => $GLOBALS['phpgw']->common->show_date($check_list->get_planned_date(), $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']),
-						'completed_date'	 => $GLOBALS['phpgw']->common->show_date($check_list->get_completed_date(), $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']),
+						'user'				 => $check_list->get_assigned_to() ? $this->accounts_obj->get($check_list->get_assigned_to())->__toString() : 'N/A',
+						'deadline'			 => $this->phpgwapi_common->show_date($check_list->get_deadline(), $this->userSettings['preferences']['common']['dateformat']),
+						'planned_date'		 => $this->phpgwapi_common->show_date($check_list->get_planned_date(), $this->userSettings['preferences']['common']['dateformat']),
+						'completed_date'	 => $this->phpgwapi_common->show_date($check_list->get_completed_date(), $this->userSettings['preferences']['common']['dateformat']),
 						'num_open_cases'	 => $check_list->get_num_open_cases(),
 						'num_pending_cases'	 => $check_list->get_num_pending_cases(),
 					);
@@ -552,7 +570,7 @@ HTML;
 			$controle_time	 = Sanitizer::get_var('controle_time', 'float');
 			$service_time	 = Sanitizer::get_var('service_time', 'float');
 
-//			$location_info = $GLOBALS['phpgw']->locations->get_name($location_id);
+//			$location_info = $this->locations_obj->get_name($location_id);
 //
 //			if (substr($location_info['location'], 1, 6) == 'entity')
 //			{
@@ -587,7 +605,7 @@ HTML;
 
 			if ($control_id && $assigned_to && $id)
 			{
-				if (!$GLOBALS['phpgw']->acl->check('.admin', ACL_EDIT, 'property'))
+				if (!Acl::getInstance()->check('.admin', ACL_EDIT, 'property'))
 				{
 					$receipt['error'][]	 = true;
 					$result				 = array

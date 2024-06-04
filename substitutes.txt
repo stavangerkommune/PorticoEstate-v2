@@ -8,6 +8,8 @@ use App\modules\phpgwapi\services\Settings;
 $serverSettings = Settings::getInstance()->get('server');
 $userSettings = Settings::getInstance()->get('user');
 $flags = Settings::getInstance()->get('flags');
+$apps = Settings::getInstance()->get('apps');
+
 Settings::getInstance()->set('flags', $this->flags);
 
 Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);

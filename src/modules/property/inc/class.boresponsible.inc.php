@@ -11,7 +11,7 @@
 	 * @category core
 	 * @version $Id$
 	 */
-	/*
+/*
 	  This program is free software: you can redistribute it and/or modify
 	  it under the terms of the GNU General Public License as published by
 	  the Free Software Foundation, either version 2 of the License, or
@@ -25,6 +25,10 @@
 	  You should have received a copy of the GNU General Public License
 	  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
+
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
 
 	/**
 	 * ResponsibleMatrix - handles automated assigning of tasks based on (physical)location and category.
@@ -44,7 +48,7 @@
 		public $cat_id;
 		public $allrows;
 		protected $acl_location	 = '.admin';
-		var $so, $appname, $sort, $order, $cats,$dateformat;
+		var $so, $appname, $sort, $order, $cats,$dateformat,$phpgwapi_common,$accounts_obj;
 
 		/**
 		 * Constructor
@@ -104,7 +108,13 @@
 			}
 
 			$this->cats			 = CreateObject('phpgwapi.categories', -1, $this->appname, $location);
-			$this->dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$userSettings = Settings::getInstance()->get('user');
+
+			$this->dateformat	 = $userSettings['preferences']['common']['dateformat'];
+
+			$this->phpgwapi_common = new \phpgwapi_common();
+			$this->accounts_obj = new Accounts();
+
 		}
 
 		public function get_acl_location()
@@ -123,7 +133,7 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', 'responsible', $data);
+				Cache::session_set('responsible', 'session_data', $data);
 			}
 		}
 
@@ -141,7 +151,7 @@
 
 			if (isset($referer_out['menuaction']) && isset($self_out['menuaction']) && $referer_out['menuaction'] == $self_out['menuaction'])
 			{
-				$data = $GLOBALS['phpgw']->session->appsession('session_data', 'responsible');
+				$data = Cache::session_get('responsible', 'session_data');
 			}
 
 			$this->cat_id	 = isset($data['cat_id']) ? $data['cat_id'] : '';
@@ -198,8 +208,8 @@
 					$category			 = $this->cats->return_single($value['cat_id']);
 					$value['category']	 = $category[0]['name'];
 					$value['app_name']	 = $category[0]['app_name'];
-					$value['created_by'] = $GLOBALS['phpgw']->accounts->id2name($value['created_by']);
-					$value['created_on'] = $GLOBALS['phpgw']->common->show_date($value['created_on'], $this->dateformat);
+					$value['created_by'] = $this->accounts_obj->id2name($value['created_by']);
+					$value['created_on'] = $this->phpgwapi_common->show_date($value['created_on'], $this->dateformat);
 				}
 			}
 
@@ -217,7 +227,7 @@
 			$values				 = $this->so->read_type(array('start'		 => $this->start, 'query'		 => $this->query,
 				'sort'		 => $this->sort,
 				'order'		 => $this->order, 'location'	 => '', 'allrows'	 => true,
-				'filter'	 => $filter, 'appname'	 => $data['appname']));
+				'filter'	 => $data['filter'], 'appname'	 => $data['appname']));
 			$responsibilities	 = array();
 			foreach ($values as $value)
 			{
@@ -254,15 +264,15 @@
 			{
 				$contact				 = $bocontact->get_principal_persons_data($value['contact_id']);
 				$value['contact_name']	 = $contact['per_full_name'];
-				$value['created_by']	 = $GLOBALS['phpgw']->accounts->id2name($value['created_by']);
-				$value['created_on']	 = $GLOBALS['phpgw']->common->show_date($value['created_on'], $this->dateformat);
+				$value['created_by']	 = $this->accounts_obj->id2name($value['created_by']);
+				$value['created_on']	 = $this->phpgwapi_common->show_date($value['created_on'], $this->dateformat);
 				if (isset($value['expired_on']) && $value['expired_on'])
 				{
-					$value['expired_by'] = $GLOBALS['phpgw']->accounts->id2name($value['expired_by']);
-					$value['expired_on'] = $GLOBALS['phpgw']->common->show_date($value['expired_on'], $this->dateformat);
+					$value['expired_by'] = $this->accounts_obj->id2name($value['expired_by']);
+					$value['expired_on'] = $this->phpgwapi_common->show_date($value['expired_on'], $this->dateformat);
 				}
-				$value['active_from']	 = $GLOBALS['phpgw']->common->show_date($value['active_from'], $this->dateformat);
-				$value['active_to']		 = $GLOBALS['phpgw']->common->show_date($value['active_to'], $this->dateformat);
+				$value['active_from']	 = $this->phpgwapi_common->show_date($value['active_from'], $this->dateformat);
+				$value['active_to']		 = $this->phpgwapi_common->show_date($value['active_to'], $this->dateformat);
 				if (isset($value['p_cat_id']) && $value['p_cat_id'])
 				{
 					$value['p_cat_name'] = $soadmin_entity->read_category_name($value['p_entity_id'], $value['p_cat_id']);
@@ -448,7 +458,7 @@
 		public function read_single_type( $id )
 		{
 			$values					 = $this->so->read_single_type($id);
-			$values['entry_date']	 = $GLOBALS['phpgw']->common->show_date($values['created_on'], $this->dateformat);
+			$values['entry_date']	 = $this->phpgwapi_common->show_date($values['created_on'], $this->dateformat);
 			return $values;
 		}
 
@@ -475,7 +485,7 @@
 		public function read_single( $id )
 		{
 			$values					 = $this->so->read_single($id);
-			$values['entry_date']	 = $GLOBALS['phpgw']->common->show_date($values['created_on'], $this->dateformat);
+			$values['entry_date']	 = $this->phpgwapi_common->show_date($values['created_on'], $this->dateformat);
 			return $values;
 		}
 
@@ -489,7 +499,7 @@
 		public function read_single_contact( $id )
 		{
 			$values					 = $this->so->read_single_contact($id);
-			$values['entry_date']	 = $GLOBALS['phpgw']->common->show_date($values['created_on'], $this->dateformat);
+			$values['entry_date']	 = $this->phpgwapi_common->show_date($values['created_on'], $this->dateformat);
 			$contacts				 = CreateObject('phpgwapi.contacts');
 			$contact_data			 = $contacts->read_single_entry($values['contact_id'], array
 				(
@@ -498,8 +508,8 @@
 				'email'		 => 'email'
 			));
 			$values['contact_name']	 = "{$contact_data[0]['n_family']}, {$contact_data[0]['n_given']}";
-			$values['active_from']	 = $GLOBALS['phpgw']->common->show_date($values['active_from'], $this->dateformat);
-			$values['active_to']	 = $GLOBALS['phpgw']->common->show_date($values['active_to'], $this->dateformat);
+			$values['active_from']	 = $this->phpgwapi_common->show_date($values['active_from'], $this->dateformat);
+			$values['active_to']	 = $this->phpgwapi_common->show_date($values['active_to'], $this->dateformat);
 
 			$solocation				 = CreateObject('property.solocation');
 			$values['location_data'] = $solocation->read_single($values['location_code']);

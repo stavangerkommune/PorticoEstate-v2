@@ -27,6 +27,15 @@
 	 * @version $Id$
 	 */
 
+use App\modules\phpgwapi\services\Cache;
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\controllers\Accounts\Accounts;
+use App\modules\phpgwapi\controllers\Locations;
+use App\modules\phpgwapi\security\Acl;
+use App\modules\phpgwapi\services\Translation;
+use App\Database\Db;
+
+
 	/**
 	 * Description
 	 * @package property
@@ -39,7 +48,9 @@
 		var $filter;
 		var $sort;
 		var $order;
-		var $cat_id, $so, $bocommon, $use_session,$allrows,$chapter_id,$total_records;
+		var $cat_id, $so, $bocommon, $use_session,$allrows,$chapter_id,
+		$total_records;
+
 		var $public_functions = array
 			(
 			'read'			 => true,
@@ -50,6 +61,7 @@
 
 		function __construct( $session = false )
 		{
+
 			$this->so		 = CreateObject('property.sowo_hour');
 			$this->bocommon	 = CreateObject('property.bocommon');
 
@@ -111,13 +123,13 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', 'wo_hour', $data);
+				Cache::session_set('wo_hour', 'session_data', $data);
 			}
 		}
 
 		function read_sessiondata()
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data', 'wo_hour');
+			$data = Cache::session_get('wo_hour', 'session_data');
 
 			$this->start		 = $data['start'];
 			$this->query		 = $data['query'];
@@ -414,7 +426,7 @@
 		 */
 		function import_calculation( $data, $workorder_id )
 		{
-			$GLOBALS['phpgw']->db->transaction_begin();
+			Db::getInstance()->transaction_begin();
 			foreach ($data as $section => $valueset)
 			{
 				$section_name = $valueset['name'];
@@ -454,7 +466,7 @@
 					}
 				}
 			}
-			$GLOBALS['phpgw']->db->transaction_commit();
+			Db::getInstance()->transaction_commit();
 		}
 
 		function get_email( $selected, $vendor_id )

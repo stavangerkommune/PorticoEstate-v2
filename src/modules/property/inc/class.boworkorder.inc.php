@@ -27,6 +27,10 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
 	/**
 	 * Description
 	 * @package property
@@ -44,7 +48,7 @@
 		var $order_sent_adress; // in case we want to resend the order as an reminder
 		var $allrows, $so, $bocommon, $cats, $interlink, $status_id,$wo_hour_cat_id,
 		$start_date,$end_date,$b_group, $ecodimb, $paid, $b_account, $district_id,
-		$criteria_id,$obligation, $total_records,$uicols,$config;
+		$criteria_id,$obligation, $total_records,$uicols,$config, $phpgwapi_common, $accounts_obj, $userSettings, $serverSettings;
 		var $public_functions = array
 			(
 			'read'			 => true,
@@ -56,6 +60,11 @@
 
 		function __construct()
 		{
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->serverSettings = Settings::getInstance()->get('server');
+			$this->phpgwapi_common = new \phpgwapi_common();
+			$this->accounts_obj = new Accounts();
+
 			$this->so					 = CreateObject('property.soworkorder');
 			$this->bocommon				 = CreateObject('property.bocommon');
 			$this->cats					 = CreateObject('phpgwapi.categories', -1, 'property', '.project');
@@ -64,10 +73,10 @@
 
 			$default_filter_year = 'all';
 
-			if (isset($GLOBALS['phpgw_info']['user']['preferences']['property']['default_project_filter_year']))
+			if (isset($this->userSettings['preferences']['property']['default_project_filter_year']))
 			{
 				$_last_year = date('Y') - 1;
-				switch ($GLOBALS['phpgw_info']['user']['preferences']['property']['default_project_filter_year'])
+				switch ($this->userSettings['preferences']['property']['default_project_filter_year'])
 				{
 					case 'current_year':
 						$default_filter_year = date('Y');
@@ -161,7 +170,7 @@
 		{
 			if (!$selected)
 			{
-				$selected = isset($GLOBALS['phpgw_info']['user']['preferences']['property']['workorder_columns']) ? $GLOBALS['phpgw_info']['user']['preferences']['property']['workorder_columns'] : '';
+				$selected = isset($this->userSettings['preferences']['property']['workorder_columns']) ? $this->userSettings['preferences']['property']['workorder_columns'] : '';
 			}
 
 			$columns = $this->get_column_list();
@@ -548,10 +557,10 @@
 
 			$this->total_records = $this->so->total_records;
 
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
 
 			$this->uicols	 = $this->so->uicols;
-			$custom_cols	 = isset($GLOBALS['phpgw_info']['user']['preferences']['property']['workorder_columns']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['workorder_columns'] ? $GLOBALS['phpgw_info']['user']['preferences']['property']['workorder_columns'] : array();
+			$custom_cols	 = isset($this->userSettings['preferences']['property']['workorder_columns']) && $this->userSettings['preferences']['property']['workorder_columns'] ? $this->userSettings['preferences']['property']['workorder_columns'] : array();
 
 			$column_list = $this->get_column_list();
 
@@ -588,17 +597,17 @@
 
 			foreach ($workorder as &$entry)
 			{
-				$entry['user_lid'] = $GLOBALS['phpgw']->accounts->id2name($GLOBALS['phpgw']->accounts->name2id($entry['user_lid']));
+				$entry['user_lid'] = $this->accounts_obj->id2name($this->accounts_obj->name2id($entry['user_lid']));
 				$entry['tender_delay']	 = phpgwapi_datetime::get_working_days($entry['tender_deadline'], $entry['tender_received']);
 				$entry['end_date_delay'] = round((int)phpgwapi_datetime::get_working_days($entry['end_date'], $entry['inspection_on_completion'] ? $entry['inspection_on_completion'] : time()));
 
 				//Formatting
-				$entry['entry_date']				 = $GLOBALS['phpgw']->common->show_date($entry['entry_date'], $dateformat);
-				$entry['start_date']				 = $GLOBALS['phpgw']->common->show_date($entry['start_date'], $dateformat);
-				$entry['end_date']					 = $GLOBALS['phpgw']->common->show_date($entry['end_date'], $dateformat);
-				$entry['tender_deadline']			 = $GLOBALS['phpgw']->common->show_date($entry['tender_deadline'], $dateformat);
-				$entry['tender_received']			 = $GLOBALS['phpgw']->common->show_date($entry['tender_received'], $dateformat);
-				$entry['inspection_on_completion']	 = $GLOBALS['phpgw']->common->show_date($entry['inspection_on_completion'], $dateformat);
+				$entry['entry_date']				 = $this->phpgwapi_common->show_date($entry['entry_date'], $dateformat);
+				$entry['start_date']				 = $this->phpgwapi_common->show_date($entry['start_date'], $dateformat);
+				$entry['end_date']					 = $this->phpgwapi_common->show_date($entry['end_date'], $dateformat);
+				$entry['tender_deadline']			 = $this->phpgwapi_common->show_date($entry['tender_deadline'], $dateformat);
+				$entry['tender_received']			 = $this->phpgwapi_common->show_date($entry['tender_received'], $dateformat);
+				$entry['inspection_on_completion']	 = $this->phpgwapi_common->show_date($entry['inspection_on_completion'], $dateformat);
 				$entry['contract_id']				 = $entry['contract_id'] < 0 ?  $dummy_contracts[$entry['contract_id']] : $entry['contract_id'];
 			}
 
@@ -615,16 +624,16 @@
 			$contacts								 = CreateObject('property.sogeneric');
 			$contacts->get_location_info('vendor', false);
 			$workorder								 = $this->so->read_single($workorder_id);
-			$dateformat								 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat								 = $this->userSettings['preferences']['common']['dateformat'];
 			//Delay;
 			$workorder['tender_delay']				 = phpgwapi_datetime::get_working_days($workorder['tender_deadline'], $workorder['tender_received']);
 			$workorder['end_date_delay']			 = phpgwapi_datetime::get_working_days($workorder['end_date'], $workorder['inspection_on_completion']);
 			//formtatting
-			$workorder['start_date']				 = $GLOBALS['phpgw']->common->show_date($workorder['start_date'], $dateformat);
-			$workorder['end_date']					 = $GLOBALS['phpgw']->common->show_date($workorder['end_date'], $dateformat);
-			$workorder['tender_deadline']			 = $GLOBALS['phpgw']->common->show_date($workorder['tender_deadline'], $dateformat);
-			$workorder['tender_received']			 = $GLOBALS['phpgw']->common->show_date($workorder['tender_received'], $dateformat);
-			$workorder['inspection_on_completion']	 = $GLOBALS['phpgw']->common->show_date($workorder['inspection_on_completion'], $dateformat);
+			$workorder['start_date']				 = $this->phpgwapi_common->show_date($workorder['start_date'], $dateformat);
+			$workorder['end_date']					 = $this->phpgwapi_common->show_date($workorder['end_date'], $dateformat);
+			$workorder['tender_deadline']			 = $this->phpgwapi_common->show_date($workorder['tender_deadline'], $dateformat);
+			$workorder['tender_received']			 = $this->phpgwapi_common->show_date($workorder['tender_received'], $dateformat);
+			$workorder['inspection_on_completion']	 = $this->phpgwapi_common->show_date($workorder['inspection_on_completion'], $dateformat);
 
 			if (isset($workorder['vendor_id']) && $workorder['vendor_id'])
 			{
@@ -737,7 +746,7 @@
 			foreach ($history_array as $value)
 			{
 
-				$record_history[$i]['value_date']	 = $GLOBALS['phpgw']->common->show_date($value['datetime']);
+				$record_history[$i]['value_date']	 = $this->phpgwapi_common->show_date($value['datetime']);
 				$record_history[$i]['value_user']	 = $value['owner'];
 
 				switch ($value['status'])
@@ -814,7 +823,7 @@
 					}
 					else
 					{
-						$record_history[$i]['value_new_value'] = $GLOBALS['phpgw']->accounts->id2name($value['new_value']);
+						$record_history[$i]['value_new_value'] = $this->accounts_obj->id2name($value['new_value']);
 					}
 					if (!$value['old_value'])
 					{
@@ -822,19 +831,19 @@
 					}
 					else
 					{
-						$record_history[$i]['value_old_value'] = $GLOBALS['phpgw']->accounts->id2name($value['old_value']);
+						$record_history[$i]['value_old_value'] = $this->accounts_obj->id2name($value['old_value']);
 					}
 				}
 				else if ($value['status'] == 'C' || $value['status'] == 'CO')
 				{
-					$record_history[$i]['value_new_value'] = $GLOBALS['phpgw']->accounts->id2name($value['new_value']);
+					$record_history[$i]['value_new_value'] = $this->accounts_obj->id2name($value['new_value']);
 					if (!$value['old_value'])
 					{
 						$record_history[$i]['value_old_value'] = '';
 					}
 					else
 					{
-						$record_history[$i]['value_old_value'] = $GLOBALS['phpgw']->accounts->id2name($value['old_value']);
+						$record_history[$i]['value_old_value'] = $this->accounts_obj->id2name($value['old_value']);
 					}
 				}
 				else if ($value['status'] == 'T' || $value['status'] == 'TO')
@@ -896,8 +905,7 @@
 				'allrows'	 => true
 			);
 
-
-			$custom_functions = $GLOBALS['phpgw']->custom_functions->find($criteria);
+			$custom_functions = createObject('phpgwapi.custom_functions')->find($criteria);
 
 			foreach ($custom_functions as $entry)
 			{
@@ -907,7 +915,7 @@
 					continue;
 				}
 
-				$file = PHPGW_SERVER_ROOT . "/property/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}/{$entry['file_name']}";
+				$file = PHPGW_SERVER_ROOT . "/property/inc/custom/{$this->userSettings['domain']}/{$entry['file_name']}";
 				if ($entry['active'] && is_file($file) && !$entry['client_side'] && !$entry['pre_commit'])
 				{
 					require $file;
@@ -1072,10 +1080,10 @@
 					return false;
 				}
 
-				if (isset($GLOBALS['phpgw_info']['user']['preferences']['common']['email']) && $GLOBALS['phpgw_info']['user']['preferences']['common']['email'])
+				if (isset($this->userSettings['preferences']['common']['email']) && $this->userSettings['preferences']['common']['email'])
 				{
-					$from_name	 = $GLOBALS['phpgw_info']['user']['fullname'];
-					$from_email	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['email'];
+					$from_name	 = $this->userSettings['fullname'];
+					$from_email	 = $this->userSettings['preferences']['common']['email'];
 				}
 				else
 				{
@@ -1141,18 +1149,16 @@
 				</table>
 HTML;
 
-				if (!is_object($GLOBALS['phpgw']->send))
-				{
-					$GLOBALS['phpgw']->send = CreateObject('phpgwapi.send');
-				}
+
+				$send = CreateObject('phpgwapi.send');
 
 				try
 				{
-					$ok = $GLOBALS['phpgw']->send->msg('email', $to, $subject, $body, false, $cc, $bcc, $from_email, $from_name, 'html');
+					$ok = $send->msg('email', $to, $subject, $body, false, $cc, $bcc, $from_email, $from_name, 'html');
 				}
 				catch (Exception $e)
 				{
-					phpgwapi_cache::message_set($e->getMessage(), 'error');
+					Cache::message_set($e->getMessage(), 'error');
 				}
 
 				if ($ok)
@@ -1177,7 +1183,7 @@ HTML;
 				'allrows'	 => true
 			);
 
-			$custom_functions = $GLOBALS['phpgw']->custom_functions->find($criteria);
+			$custom_functions = createObject('phpgwapi.custom_functions')->find($criteria);
 
 			foreach ($custom_functions as $entry)
 			{
@@ -1187,7 +1193,7 @@ HTML;
 					continue;
 				}
 
-				$file = PHPGW_SERVER_ROOT . "/property/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}/{$entry['file_name']}";
+				$file = PHPGW_SERVER_ROOT . "/property/inc/custom/{$this->userSettings['domain']}/{$entry['file_name']}";
 				if ($entry['active'] && is_file($file) && !$entry['client_side'] && !$entry['pre_commit'])
 				{
 					require $file;
@@ -1196,7 +1202,7 @@ HTML;
 			// $result from the custom function
 			return array(
 				'result' => $result,
-				'time'	 => $GLOBALS['phpgw']->common->show_date(time())
+				'time'	 => $this->phpgwapi_common->show_date(time())
 			);
 		}
 

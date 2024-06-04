@@ -27,6 +27,11 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+	use App\modules\phpgwapi\security\Acl;
+
 	/**
 	 * Description
 	 * @package property
@@ -77,13 +82,14 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', 'lookup', $data);
+				Cache::session_set('lookup', 'session_data', $data);
+
 			}
 		}
 
 		function read_sessiondata()
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data', 'lookup');
+			$data = Cache::session_get('lookup', 'session_data');
 
 			//_debug_array($data);
 
@@ -111,7 +117,8 @@
 
 		function read_addressbook( $data = array() )
 		{
-			$accounts	 = & $GLOBALS['phpgw']->accounts;
+			
+			$accounts	 = new Accounts();
 			$users		 = $accounts->get_list('accounts', $data['start'], $data['sort'], $data['order'], $data['query'], $data['offset'], array(
 				'active' => true));
 			$values		 = array();
@@ -168,9 +175,11 @@
 		 */
 		function read_organisation( $data = array() )
 		{
-			if ($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] && $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] > 0)
+			$userSettings = Settings::getInstance()->get('user');
+
+			if (!empty($userSettings['preferences']['common']['maxmatchs']))
 			{
-				$limit = $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
+				$limit = $userSettings['preferences']['common']['maxmatchs'];
 			}
 			else
 			{
@@ -270,7 +279,9 @@
 		{
 			if ($data['acl_app'] && $data['acl_location'] && $data['acl_required'])
 			{
-				$users		 = $GLOBALS['phpgw']->acl->get_user_list_right($data['acl_required'], $data['acl_location'], $data['acl_app']);
+
+				$acl = Acl::getInstance();
+				$users		 = $acl->get_user_list_right($data['acl_required'], $data['acl_location'], $data['acl_app']);
 				$user_list	 = array();
 				foreach ($users as $user)
 				{

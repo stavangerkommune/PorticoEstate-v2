@@ -27,13 +27,19 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\controllers\Locations;
+
 	/**
 	 * hook management for categories
 	 * @package property
 	 */
 	class property_cat_hooks
 	{
-
+		private $locations_obj;
+		function __construct()
+		{
+			$this->locations_obj = new Locations();
+		}
 		/**
 		 * Handle a new category being added, create location to hold ACL-data
 		 */
@@ -47,10 +53,10 @@
 			$location = '';
 			if ($data['location_id'])
 			{
-				$location_info	 = $GLOBALS['phpgw']->locations->get_name($data['location_id']);
+				$location_info	 = $this->locations_obj->get_name($data['location_id']);
 				$location		 = $location_info['location'];
 			}
-			$GLOBALS['phpgw']->locations->add("{$location}.category.{$data['cat_id']}", $data['cat_name'], 'property');
+			$this->locations_obj->add("{$location}.category.{$data['cat_id']}", $data['cat_name'], 'property');
 		}
 
 		/**
@@ -64,9 +70,9 @@
 			}
 			if ($data['location_id'])
 			{
-				$location_info	 = $GLOBALS['phpgw']->locations->get_name($data['location_id']);
+				$location_info	 = $this->locations_obj->get_name($data['location_id']);
 				$location		 = "{$location_info['location']}.category.{$data['cat_id']}";
-				$GLOBALS['phpgw']->locations->delete('property', $location, false);
+				$this->locations_obj->delete('property', $location, false);
 			}
 		}
 
@@ -82,9 +88,9 @@
 
 			if ($data['location_id'])
 			{
-				$location_info	 = $GLOBALS['phpgw']->locations->get_name($data['location_id']);
+				$location_info	 = $this->locations_obj->get_name($data['location_id']);
 				$location		 = "{$location_info['location']}.category.{$data['cat_id']}";
-				$GLOBALS['phpgw']->locations->update_description($location, $data['cat_name'], 'property');
+				$this->locations_obj->update_description($location, $data['cat_name'], 'property');
 			}
 		}
 	}

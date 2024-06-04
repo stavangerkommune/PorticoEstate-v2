@@ -27,6 +27,11 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+	use App\modules\phpgwapi\controllers\Locations;
+
 	/**
 	 * Description
 	 * @package property
@@ -42,10 +47,13 @@
 		var $cat_id;
 		var $grants;
 		var $app;
-		var $so, $use_session,$user_id,$allrows,$total_records;
+		var $so, $use_session,$user_id,$allrows,$total_records,$userSettings,$flags;
 
 		function __construct( $session = false )
 		{
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->flags = Settings::getInstance()->get('flags');
+
 			$this->so		 = CreateObject('property.sojasper');
 			$this->grants	 = & $this->so->grants;
 			if ($session)
@@ -78,13 +86,13 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', 'jasper', $data);
+				Cache::session_set('jasper', 'session_data', $data);
 			}
 		}
 
 		public function read_sessiondata()
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data', 'jasper');
+			$data = Cache::session_get('jasper', 'session_data');
 
 			//_debug_array($data);
 			$this->start	 = isset($data['start']) ? $data['start'] : '';
@@ -94,7 +102,7 @@
 			$this->order	 = isset($data['order']) ? $data['order'] : '';
 			$this->cat_id	 = isset($data['cat_id']) ? $data['cat_id'] : '';
 			$this->allrows	 = isset($data['allrows']) ? $data['allrows'] : '';
-			$this->app		 = isset($data['app']) && $data['app'] ? $data['app'] : $GLOBALS['phpgw_info']['flags']['currentapp'];
+			$this->app		 = isset($data['app']) && $data['app'] ? $data['app'] : $this->flags['currentapp'];
 		}
 
 		public function read( $data = array() )
@@ -106,11 +114,15 @@
 			$vfs				 = CreateObject('phpgwapi.vfs');
 			$vfs->override_acl	 = 1;
 
+			$phpgwapi_common = new \phpgwapi_common();
+			$accounts_obj = new Accounts();
+			$locations_obj = new Locations();
+
 			foreach ($jasper as &$entry)
 			{
-				$entry['entry_date'] = $GLOBALS['phpgw']->common->show_date($entry['entry_date'], $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
-				$entry['user']		 = $GLOBALS['phpgw']->accounts->get($entry['user_id'])->__toString();
-				$location_info		 = $GLOBALS['phpgw']->locations->get_name($entry['location_id']);
+				$entry['entry_date'] = $phpgwapi_common->show_date($entry['entry_date'], $this->userSettings['preferences']['common']['dateformat']);
+				$entry['user']		 = $accounts_obj->get($entry['user_id'])->__toString();
+				$location_info		 = $locations_obj->get_name($entry['location_id']);
 				$entry['location']	 = $location_info['descr'];
 				if ($entry['formats'])
 				{
@@ -204,11 +216,13 @@
 		{
 			if (!$selected)
 			{
-				$selected = $GLOBALS['phpgw_info']['flags']['currentapp'];
+				$selected = $this->flags['currentapp'];
 			}
 
 			$apps = array();
-			foreach ($GLOBALS['phpgw_info']['apps'] as $app => $app_info)
+			$_apps = Settings::getInstance()->get('apps');
+
+			foreach ($_apps as $app => $app_info)
 			{
 				if ($app_info['enabled'] == 1 && $app_info['status'] == 1)
 				{

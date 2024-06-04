@@ -26,6 +26,8 @@
 	 * @subpackage helpdesk
 	 * @version $Id$
 	 */
+
+	use App\modules\phpgwapi\services\Settings;
 	phpgw::import_class('phpgwapi.bocommon');
 
 	/**
@@ -39,11 +41,13 @@
 
 		public function __construct( $currentapp = 'property' )
 		{
-			$this->currentapp	 = $currentapp ? $currentapp : $GLOBALS['phpgw_info']['flags']['currentapp'];
+			$flags = Settings::getInstance()->get('flags');
+			$userSettings = Settings::getInstance()->get('user');
+			$this->currentapp	 = $currentapp ? $currentapp : $flags['currentapp'];
 			$this->so			 = createObject("{$this->currentapp}.soorder_template");
 			$this->bocommon		 = createObject('property.bocommon');
 			$this->config		 = CreateObject('phpgwapi.config', $this->currentapp)->read();
-			$this->dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$this->dateformat	 = $userSettings['preferences']['common']['dateformat'];
 			$this->fields = $this->so->get_fields();
 
 		}
@@ -51,10 +55,11 @@
 		public function read($params)
 		{
 			$values =  $this->so->read($params);
+			$phpgwapi_common = new \phpgwapi_common();
 			foreach ($values['results'] as &$entry)
 			{
-				$entry['created_text'] = $GLOBALS['phpgw']->common->show_date($entry['created']);
-				$entry['modified_text'] = $GLOBALS['phpgw']->common->show_date($entry['modified']);
+				$entry['created_text'] = $phpgwapi_common->show_date($entry['created']);
+				$entry['modified_text'] = $phpgwapi_common->show_date($entry['modified']);
 			}
 			return $values;
 		}

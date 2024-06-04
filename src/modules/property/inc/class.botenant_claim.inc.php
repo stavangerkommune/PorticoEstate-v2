@@ -27,6 +27,10 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
 	/**
 	 * Description
 	 * @package property
@@ -40,11 +44,15 @@
 		var $sort;
 		var $order;
 		var $cat_id, $bocommon, $so,$use_session,$district_id,$project_id,$user_id,$status,
-		$allrows,$total_records,$config;
+		$allrows,$total_records,$config,$userSettings,$phpgwapi_common,$accounts_obj;
 
 		function __construct( $session = false )
 		{
-			$this->bocommon	 = CreateObject('property.bocommon');
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->phpgwapi_common = new \phpgwapi_common();
+			$this->accounts_obj = new Accounts();
+
+		$this->bocommon	 = CreateObject('property.bocommon');
 			$this->so		 = CreateObject('property.sotenant_claim');
 
 			if ($session)
@@ -115,13 +123,13 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', 'tenant_claim', $data);
+				Cache::session_set('tenant_claim', 'session_data', $data);
 			}
 		}
 
 		function read_sessiondata()
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data', 'tenant_claim');
+			$data = Cache::session_get('tenant_claim', 'session_data');
 
 			$this->start		 = $data['start'];
 			$this->query		 = $data['query'];
@@ -182,9 +190,9 @@
 
 			foreach ($claims as &$entry)
 			{
-				$entry['entry_date']	 = $GLOBALS['phpgw']->common->show_date($entry['entry_date'], $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
+				$entry['entry_date']	 = $this->phpgwapi_common->show_date($entry['entry_date'], $this->userSettings['preferences']['common']['dateformat']);
 				$entry['status']		 = lang($entry['status']);
-				$entry['user']			 = $GLOBALS['phpgw']->accounts->get($entry['user_id'])->__toString();
+				$entry['user']			 = $this->accounts_obj->get($entry['user_id'])->__toString();
 				$location_info			 = execMethod('property.solocation.read_single', $entry['location_code']);
 				$entry['loc1_name']		 = $location_info['loc1_name'];
 				$entry['loc_category']	 = $location_info['category_name'];
@@ -230,21 +238,20 @@
 			if ($claim_notify_mails)
 			{
 				// notify via email
-				$current_user_id	 = $GLOBALS['phpgw_info']['user']['account_id'];
+				$current_user_id	 = $this->userSettings['account_id'];
 				$current_prefs_user	 = $this->bocommon->create_preferences('common', $current_user_id);
 				$from				 = $current_prefs_user['email'];
 				$subject			 = lang("Tenant claim %1", $receipt['claim_id']) . ' ' . $action;
 				$body				 = lang('Reminder');
 
-				if (!is_object($GLOBALS['phpgw']->send))
-				{
-					$GLOBALS['phpgw']->send = CreateObject('phpgwapi.send');
-				}
-				$subject		 = $GLOBALS['phpgw']->send->encode_subject($subject);
+				
+				$send = CreateObject('phpgwapi.send');
+				
+				$subject		 = $send->encode_subject($subject);
 				$notify_mails	 = explode(',', $claim_notify_mails);
 				foreach ($notify_mails as $to)
 				{
-					$GLOBALS['phpgw']->send->msg('email', $to, $subject, $body, '', '', '', $from, $from);
+					$send->msg('email', $to, $subject, $body, '', '', '', $from, $from);
 				}
 			}
 
@@ -278,7 +285,7 @@
 			foreach ($history_array as $value)
 			{
 
-				$record_history[$i]['value_date']	 = $GLOBALS['phpgw']->common->show_date($value['datetime']);
+				$record_history[$i]['value_date']	 = $this->phpgwapi_common->show_date($value['datetime']);
 				$record_history[$i]['value_user']	 = $value['owner'];
 
 				switch ($value['status'])

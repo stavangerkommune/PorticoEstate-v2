@@ -27,6 +27,14 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+	use App\modules\phpgwapi\controllers\Locations;
+	use App\modules\phpgwapi\security\Acl;
+	use App\modules\phpgwapi\services\Translation;
+
+
 	/**
 	 * Description
 	 * @package property
@@ -69,22 +77,29 @@
 
 		var $account, $so, $custom, $bocommon, $historylog, $config, $dateformat, $cats, $allrows, $location_code,
 		$vendor_id, $ecodimb, $b_account, $building_part, $branch_id, $order_dim1, $p_num, $uicols,
-		$send, $order_sent_adress;
+		$send, $order_sent_adress,$userSettings, $flags, $phpgwapi_common, $accounts_obj, $locations_obj, $serverSettings;
 
 		function __construct()
 		{
-			if ($GLOBALS['phpgw_info']['flags']['currentapp'] != 'property')
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->serverSettings = Settings::getInstance()->get('server');
+			$this->flags = Settings::getInstance()->get('flags');
+			$this->phpgwapi_common = new \phpgwapi_common();
+			$this->accounts_obj = new Accounts();
+			$this->locations_obj = new Locations();
+
+			if ($this->flags['currentapp'] != 'property')
 			{
-				$GLOBALS['phpgw']->translation->add_app('property');
+				Translation::getInstance()->add_app('property');
 			}
 
-			$this->account				 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->account				 = $this->userSettings['account_id'];
 			$this->so					 = CreateObject('property.sotts');
 			$this->custom				 = & $this->so->custom;
 			$this->bocommon				 = CreateObject('property.bocommon');
 			$this->historylog			 = & $this->so->historylog;
 			$this->config				 = CreateObject('phpgwapi.config', 'property');
-			$this->dateformat			 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$this->dateformat			 = $this->userSettings['preferences']['common']['dateformat'];
 			$this->cats					 = CreateObject('phpgwapi.categories', -1, 'property', '.ticket');
 			$this->cats->supress_info	 = true;
 			$this->acl_location			 = $this->so->acl_location;
@@ -102,7 +117,7 @@
 				$this->simple = true;
 			}
 
-			$user_groups	 = $GLOBALS['phpgw']->accounts->membership($this->account);
+			$user_groups	 = $this->accounts_obj->membership($this->account);
 			$simple_group	 = isset($this->config->config_data['fmttssimple_group']) ? $this->config->config_data['fmttssimple_group'] : array();
 
 			foreach ($user_groups as $group => $dummy)
@@ -162,7 +177,7 @@
 			$this->reported_by		 = Sanitizer::get_var('reported_by', 'int');
 			$this->cat_id			 = Sanitizer::get_var('cat_id', 'int');
 			$this->part_of_town_id	 = Sanitizer::get_var('part_of_town_id', 'int');
-			$default_district		 = (isset($GLOBALS['phpgw_info']['user']['preferences']['property']['default_district']) ? $GLOBALS['phpgw_info']['user']['preferences']['property']['default_district'] : '');
+			$default_district		 = (isset($this->userSettings['preferences']['property']['default_district']) ? $this->userSettings['preferences']['property']['default_district'] : '');
 			$district_id			 = Sanitizer::get_var('district_id', 'int');
 			$this->district_id		 = isset($_REQUEST['district_id']) ? $district_id : $default_district;
 			$this->allrows			 = Sanitizer::get_var('allrows', 'bool');
@@ -182,7 +197,7 @@
 		{
 			if (!$selected)
 			{
-				$selected = isset($GLOBALS['phpgw_info']['user']['preferences']['property']['ticket_columns']) ? $GLOBALS['phpgw_info']['user']['preferences']['property']['ticket_columns'] : '';
+				$selected = isset($this->userSettings['preferences']['property']['ticket_columns']) ? $this->userSettings['preferences']['property']['ticket_columns'] : '';
 			}
 			$_columns = $this->get_columns();
 
@@ -239,7 +254,7 @@
 				'name'	 => lang('assigned to')
 			);
 
-			if ($GLOBALS['phpgw']->acl->check('.ticket.order', ACL_ADD, 'property'))
+			if (Acl::getInstance()->check('.ticket.order', ACL_ADD, 'property'))
 			{
 				$columns['order_id']	 = array
 					(
@@ -556,7 +571,7 @@
 		{
 			if (!$selected)
 			{
-				$selected = isset($GLOBALS['phpgw_info']['user']['preferences']['property']['prioritydefault']) ? $GLOBALS['phpgw_info']['user']['preferences']['property']['prioritydefault'] : 0;
+				$selected = isset($this->userSettings['preferences']['property']['prioritydefault']) ? $this->userSettings['preferences']['property']['prioritydefault'] : 0;
 			}
 			return execMethod('property.bogeneric.get_list', array('type'		 => 'ticket_priority',
 				'selected'	 => $selected));
@@ -641,7 +656,7 @@
 			}
 
 
-			$selected_columns = !empty($GLOBALS['phpgw_info']['user']['preferences']['property']['ticket_columns']) ? $GLOBALS['phpgw_info']['user']['preferences']['property']['ticket_columns'] : array();
+			$selected_columns = !empty($this->userSettings['preferences']['property']['ticket_columns']) ? $this->userSettings['preferences']['property']['ticket_columns'] : array();
 
 			$custom_status	 = $this->so->get_custom_status();
 			$closed_status	 = array('X');
@@ -706,7 +721,7 @@
 
 				if (!isset($account[$ticket['user_id']]))
 				{
-					$ticket['user']				 = $GLOBALS['phpgw']->accounts->id2name($ticket['user_id']);
+					$ticket['user']				 = $this->accounts_obj->id2name($ticket['user_id']);
 					$account[$ticket['user_id']] = $ticket['user'];
 				}
 				else
@@ -731,7 +746,7 @@
 				{
 					if (!isset($account[$ticket['assignedto']]))
 					{
-						$ticket['assignedto']			 = $GLOBALS['phpgw']->accounts->id2name($ticket['assignedto']);
+						$ticket['assignedto']			 = $this->accounts_obj->id2name($ticket['assignedto']);
 						$account[$ticket['assignedto']]	 = $ticket['assignedto'];
 					}
 					else
@@ -743,7 +758,7 @@
 				{
 					if (!isset($account[$ticket['group_id']]))
 					{
-						$ticket['assignedto']			 = $GLOBALS['phpgw']->accounts->id2name($ticket['group_id']);
+						$ticket['assignedto']			 = $this->accounts_obj->id2name($ticket['group_id']);
 						$account[$ticket['group_id']]	 = $ticket['assignedto'];
 					}
 					else
@@ -752,22 +767,22 @@
 					}
 				}
 
-				$ticket['entry_date']	 = $GLOBALS['phpgw']->common->show_date($ticket['entry_date'], $this->dateformat);
-				$ticket['modified_date'] = $GLOBALS['phpgw']->common->show_date($ticket['modified_date'], $this->dateformat);
+				$ticket['entry_date']	 = $this->phpgwapi_common->show_date($ticket['entry_date'], $this->dateformat);
+				$ticket['modified_date'] = $this->phpgwapi_common->show_date($ticket['modified_date'], $this->dateformat);
 				if ($ticket['finnish_date2'])
 				{
 					$ticket['delay']		 = round(($ticket['finnish_date2'] - $ticket['finnish_date']) / (24 * 3600));
 					$ticket['finnish_date']	 = $ticket['finnish_date2'];
 				}
-				$ticket['finnish_date']		 = !empty($ticket['finnish_date']) ? $GLOBALS['phpgw']->common->show_date($ticket['finnish_date'], $this->dateformat) : '';
-				$ticket['order_deadline']	 = !empty($ticket['order_deadline']) ? $GLOBALS['phpgw']->common->show_date($ticket['order_deadline'], $this->dateformat) : '';
-				$ticket['order_deadline2']	 = !empty($ticket['order_deadline2']) ? $GLOBALS['phpgw']->common->show_date($ticket['order_deadline2'], $this->dateformat) : '';
+				$ticket['finnish_date']		 = !empty($ticket['finnish_date']) ? $this->phpgwapi_common->show_date($ticket['finnish_date'], $this->dateformat) : '';
+				$ticket['order_deadline']	 = !empty($ticket['order_deadline']) ? $this->phpgwapi_common->show_date($ticket['order_deadline'], $this->dateformat) : '';
+				$ticket['order_deadline2']	 = !empty($ticket['order_deadline2']) ? $this->phpgwapi_common->show_date($ticket['order_deadline2'], $this->dateformat) : '';
 
 				/*
 				  if ($ticket['status'] == 'X')
 				  {
 				  $history_values = $this->historylog->return_array(array(),array('X'),'history_timestamp','DESC',$ticket['id']);
-				  $ticket['timestampclosed'] = $GLOBALS['phpgw']->common->show_date($history_values[0]['datetime'],$this->dateformat);
+				  $ticket['timestampclosed'] = $this->phpgwapi_common->show_date($history_values[0]['datetime'],$this->dateformat);
 				  }
 				 */
 				if ($ticket['new_ticket'])
@@ -835,8 +850,8 @@
 			$ticket					 = $this->so->read_single($id, $values);
 			$ticket					 = $this->custom->prepare($ticket, 'property', '.ticket', $view);
 
-			$ticket['user_lid']	 = $GLOBALS['phpgw']->accounts->id2name($ticket['user_id']);
-			$ticket['group_lid'] = $GLOBALS['phpgw']->accounts->id2name($ticket['group_id']);
+			$ticket['user_lid']	 = $this->accounts_obj->id2name($ticket['user_id']);
+			$ticket['group_lid'] = $this->accounts_obj->id2name($ticket['group_id']);
 
 			$interlink			 = CreateObject('property.interlink');
 			$ticket['origin']	 = $interlink->get_relation('property', '.ticket', $id, 'origin');
@@ -849,15 +864,15 @@
 
 			if ($ticket['finnish_date'])
 			{
-				$ticket['finnish_date'] = $GLOBALS['phpgw']->common->show_date($ticket['finnish_date'], $this->dateformat);
+				$ticket['finnish_date'] = $this->phpgwapi_common->show_date($ticket['finnish_date'], $this->dateformat);
 			}
 			if ($ticket['order_deadline'])
 			{
-				$ticket['order_deadline'] = $GLOBALS['phpgw']->common->show_date($ticket['order_deadline'], $this->dateformat);
+				$ticket['order_deadline'] = $this->phpgwapi_common->show_date($ticket['order_deadline'], $this->dateformat);
 			}
 			if ($ticket['order_deadline2'])
 			{
-				$ticket['order_deadline2'] = $GLOBALS['phpgw']->common->show_date($ticket['order_deadline2'], $this->dateformat);
+				$ticket['order_deadline2'] = $this->phpgwapi_common->show_date($ticket['order_deadline2'], $this->dateformat);
 			}
 
 			if ($ticket['location_code'])
@@ -897,23 +912,23 @@
 			// Figure out when it was opened
 
 			$ticket['timestamp']	 = $ticket['entry_date'];
-			$ticket['entry_date']	 = $GLOBALS['phpgw']->common->show_date($ticket['entry_date'], $this->dateformat);
+			$ticket['entry_date']	 = $this->phpgwapi_common->show_date($ticket['entry_date'], $this->dateformat);
 
 			// Figure out when it was last closed
 			$history_values			 = $this->historylog->return_array(array(), array('O'), 'history_timestamp', 'ASC', $id);
-			$ticket['last_opened']	 = $GLOBALS['phpgw']->common->show_date($history_values[0]['datetime']);
+			$ticket['last_opened']	 = $this->phpgwapi_common->show_date($history_values[0]['datetime']);
 
 			if ($ticket['status'] == 'X')
 			{
 
 				$history_values				 = $this->historylog->return_array(array(), array('X'), 'history_timestamp', 'DESC', $id);
-				$ticket['timestampclosed']	 = $GLOBALS['phpgw']->common->show_date($history_values[0]['datetime'], $this->dateformat);
+				$ticket['timestampclosed']	 = $this->phpgwapi_common->show_date($history_values[0]['datetime'], $this->dateformat);
 			}
 
 			$status_text = $this->get_status_text();
 
 			$ticket['status_name']	 = $status_text[$ticket['status']];
-			$ticket['user_lid']		 = $GLOBALS['phpgw']->accounts->id2name($ticket['user_id']);
+			$ticket['user_lid']		 = $this->accounts_obj->id2name($ticket['user_id']);
 			$ticket['category_name'] = ucfirst($this->get_category_name($ticket['cat_id']));
 
 			$vfs				 = CreateObject('phpgwapi.vfs');
@@ -951,7 +966,7 @@
 					(
 					'value_id'		 => $value['id'],
 					'value_count'	 => $i,
-					'value_date'	 => $GLOBALS['phpgw']->common->show_date($value['datetime']),
+					'value_date'	 => $this->phpgwapi_common->show_date($value['datetime']),
 					'value_user'	 => $value['owner'],
 					'value_note'	 => stripslashes($value['new_value']),
 					'value_publish'	 => $value['publish'],
@@ -971,7 +986,7 @@
 
 			foreach ($history_array as $value)
 			{
-				$record_history[$i]['value_date']	 = $GLOBALS['phpgw']->common->show_date($value['datetime']);
+				$record_history[$i]['value_date']	 = $this->phpgwapi_common->show_date($value['datetime']);
 				$record_history[$i]['value_user']	 = $value['owner'];
 
 				switch ($value['status'])
@@ -1046,7 +1061,7 @@
 				{
 					if ((int)$value['new_value'] > 0)
 					{
-						$record_history[$i]['value_new_value'] = $GLOBALS['phpgw']->accounts->id2name($value['new_value']);
+						$record_history[$i]['value_new_value'] = $this->accounts_obj->id2name($value['new_value']);
 					}
 					else
 					{
@@ -1055,7 +1070,7 @@
 
 					if ((int)$value['old_value'] > 0)
 					{
-						$record_history[$i]['value_old_value'] = $value['old_value'] ? $GLOBALS['phpgw']->accounts->id2name($value['old_value']) : '';
+						$record_history[$i]['value_old_value'] = $value['old_value'] ? $this->accounts_obj->id2name($value['old_value']) : '';
 					}
 					else
 					{
@@ -1069,7 +1084,7 @@
 				}
 				else if (($value['status'] == 'F') || ($value['status'] == 'IF'))
 				{
-					$record_history[$i]['value_new_value'] = $GLOBALS['phpgw']->common->show_date($value['new_value'], $this->dateformat);
+					$record_history[$i]['value_new_value'] = $this->phpgwapi_common->show_date($value['new_value'], $this->dateformat);
 				}
 				else if ($value['status'] != 'O' && $value['new_value'])
 				{
@@ -1123,7 +1138,7 @@
 
 			if ($assignedto)
 			{
-				$group_or_user = get_class($GLOBALS['phpgw']->accounts->get($assignedto));
+				$group_or_user = get_class($this->accounts_obj->get($assignedto));
 			}
 
 			if ($group_or_user == "phpgwapi_group")
@@ -1144,7 +1159,7 @@
 
 			$priority_list = $this->get_priority_list();
 
-			$default_priority = isset($GLOBALS['phpgw_info']['user']['preferences']['property']['prioritydefault']) ? $GLOBALS['phpgw_info']['user']['preferences']['property']['prioritydefault'] : count($priority_list);
+			$default_priority = isset($this->userSettings['preferences']['property']['prioritydefault']) ? $this->userSettings['preferences']['property']['prioritydefault'] : count($priority_list);
 
 			$ticket = array
 				(
@@ -1232,7 +1247,7 @@
 				'allrows'	 => true
 			);
 
-			$custom_functions = $GLOBALS['phpgw']->custom_functions->find($criteria);
+			$custom_functions = createObject('phpgwapi.custom_functions')->find($criteria);
 
 			foreach ($custom_functions as $entry)
 			{
@@ -1242,7 +1257,7 @@
 					continue;
 				}
 
-				$file = PHPGW_SERVER_ROOT . "/property/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}/{$entry['file_name']}";
+				$file = PHPGW_SERVER_ROOT . "/property/inc/custom/{$this->userSettings['domain']}/{$entry['file_name']}";
 				if ($entry['active'] && is_file($file) && !$entry['client_side'] && $entry['pre_commit'])
 				{
 					require $file;
@@ -1273,7 +1288,7 @@
 					continue;
 				}
 
-				$file = PHPGW_SERVER_ROOT . "/property/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}/{$entry['file_name']}";
+				$file = PHPGW_SERVER_ROOT . "/property/inc/custom/{$this->userSettings['domain']}/{$entry['file_name']}";
 				if ($entry['active'] && is_file($file) && !$entry['client_side'] && !$entry['pre_commit'])
 				{
 					require_once $file;
@@ -1290,7 +1305,7 @@
 		function add_ticket_notify_item( $ticket_id, $account_id )
 		{
 
-			$location_id = $GLOBALS['phpgw']->locations->get_id('property', '.ticket');
+			$location_id = $this->locations_obj->get_id('property', '.ticket');
 			$notify = CreateObject('property.notify');
 			if(is_array($account_id))
 			{
@@ -1303,7 +1318,7 @@
 
 			foreach ($account_ids as $_account_id)
 			{
-				$contact_id = $GLOBALS['phpgw']->accounts->get($_account_id)->person_id;
+				$contact_id = $this->accounts_obj->get($_account_id)->person_id;
 				$notify->refresh_notify_contact_2($location_id, $ticket_id, $contact_id);
 			}
 			
@@ -1381,25 +1396,25 @@
 			$address_element = $this->get_address_element($ticket['location_code']);
 
 			$history_values	 = $this->historylog->return_array(array(), array('O'), 'history_timestamp', 'DESC', $id);
-			$entry_date		 = $GLOBALS['phpgw']->common->show_date($ticket['timestamp']);
+			$entry_date		 = $this->phpgwapi_common->show_date($ticket['timestamp']);
 
 			$status_text = $this->get_status_text();
 
 			if ($ticket['status'] == 'X')
 			{
 				$history_values	 = $this->historylog->return_array(array(), array('X'), 'history_timestamp', 'DESC', $id);
-				$timestampclosed = $GLOBALS['phpgw']->common->show_date($history_values[0]['datetime']);
+				$timestampclosed = $this->phpgwapi_common->show_date($history_values[0]['datetime']);
 			}
 
-			$group_name = $GLOBALS['phpgw']->accounts->id2name($ticket['group_id']);
+			$group_name = $this->accounts_obj->id2name($ticket['group_id']);
 
 			// build subject
 			$subject = '[' . lang('Ticket') . ' #' . $id . '] : ' . $location_code . ' ' . $this->get_category_name($ticket['cat_id']) . '; ' . $ticket['subject'];
 
 			//-----------from--------
 
-			$current_prefs_user		 = $this->bocommon->create_preferences('common', $GLOBALS['phpgw_info']['user']['account_id']);
-			$current_user_address	 = "{$GLOBALS['phpgw_info']['user']['fullname']}<{$current_prefs_user['email']}>";
+			$current_prefs_user		 = $this->bocommon->create_preferences('common', $this->userSettings['account_id']);
+			$current_user_address	 = "{$this->userSettings['fullname']}<{$current_prefs_user['email']}>";
 
 			//-----------from--------
 			// build body
@@ -1408,7 +1423,7 @@
 
 			if ($request_scheme == 'https')
 			{
-				$GLOBALS['phpgw_info']['server']['enforce_ssl'] = true;
+				Settings::getInstance()->update('server', ['enforce_ssl' => true]);
 			}
 
 			$body = 'Vennligst følg opp ved å trykke på linken <a href ="' . phpgw::link('/index.php', array('menuaction' => 'property.uitts.view',
@@ -1438,7 +1453,7 @@
 					$body .= '<tr><td>' . lang('Contact phone') . '</td><td>:&nbsp;' . $tenant_data['contact_phone'] . "</td></tr>";
 				}
 			}
-			$body .= '<tr><td>' . lang('Assigned To') . '</td><td>:&nbsp;' . $GLOBALS['phpgw']->accounts->id2name($ticket['assignedto']) . "</td></tr>";
+			$body .= '<tr><td>' . lang('Assigned To') . '</td><td>:&nbsp;' . $this->accounts_obj->id2name($ticket['assignedto']) . "</td></tr>";
 			if (empty($this->config->config_data['disable_priority']))
 			{
 				$body .= '<tr><td>' . lang('Priority') . '</td><td>:&nbsp;' . $ticket['priority'] . "</td></tr>";
@@ -1458,7 +1473,7 @@
 			if (!empty($ticket['attributes']))
 			{
 				$custom		 = createObject('property.custom_fields');
-				$location_id = $GLOBALS['phpgw']->locations->get_id('property', '.ticket');
+				$location_id = $this->locations_obj->get_id('property', '.ticket');
 
 				foreach ($ticket['attributes'] as $attribute)
 				{
@@ -1551,7 +1566,7 @@ HTML;
 			else if ((isset($this->config->config_data['groupnotification']) && $this->config->config_data['groupnotification'] == 1 && $ticket['group_id'] ) || ($force_send && $ticket['group_id']))
 			{
 				$log_recipients[]	 = $group_name;
-				$members_gross		 = $GLOBALS['phpgw']->accounts->member($ticket['group_id'], true);
+				$members_gross		 = $this->accounts_obj->member($ticket['group_id'], true);
 				foreach ($members_gross as $user)
 				{
 					$members[$user['account_id']] = $user['account_name'];
@@ -1559,25 +1574,26 @@ HTML;
 				unset($members_gross);
 			}
 
-			$GLOBALS['phpgw']->preferences->set_account_id($ticket['user_id'], true);
-			if ((isset($GLOBALS['phpgw']->preferences->data['property']['tts_notify_me']) && ($GLOBALS['phpgw']->preferences->data['property']['tts_notify_me'] == 1)
+			$preferences = createObject('phpgwapi.preferences');
+			$preferences->set_account_id($ticket['user_id'], true);
+			if ((isset($preferences->data['property']['tts_notify_me']) && ($preferences->data['property']['tts_notify_me'] == 1)
 				) || ($this->config->config_data['ownernotification'] && $ticket['user_id']))
 			{
 				// add owner to recipients
-				$members[$ticket['user_id']] = $GLOBALS['phpgw']->accounts->id2name($ticket['user_id']);
-				$log_recipients[]			 = $GLOBALS['phpgw']->accounts->get($ticket['user_id'])->__toString();
+				$members[$ticket['user_id']] = $this->accounts_obj->id2name($ticket['user_id']);
+				$log_recipients[]			 = $this->accounts_obj->get($ticket['user_id'])->__toString();
 			}
 
 			if ($ticket['assignedto'])
 			{
-				$GLOBALS['phpgw']->preferences->set_account_id($ticket['assignedto'], true);
-				if ((isset($GLOBALS['phpgw']->preferences->data['property']['tts_notify_me']) && ($GLOBALS['phpgw']->preferences->data['property']['tts_notify_me'] == 1)
+				$preferences->set_account_id($ticket['assignedto'], true);
+				if ((isset($preferences->data['property']['tts_notify_me']) && ($preferences->data['property']['tts_notify_me'] == 1)
 					) || ($this->config->config_data['assignednotification'] && $ticket['assignedto']) || ($force_send && $ticket['assignedto'])
 				)
 				{
 					// add assigned to recipients
-					$members[$ticket['assignedto']]	 = $GLOBALS['phpgw']->accounts->id2name($ticket['assignedto']);
-					$log_recipients[]				 = $GLOBALS['phpgw']->accounts->get($ticket['assignedto'])->__toString();
+					$members[$ticket['assignedto']]	 = $this->accounts_obj->id2name($ticket['assignedto']);
+					$log_recipients[]				 = $this->accounts_obj->get($ticket['assignedto'])->__toString();
 				}
 			}
 
@@ -1596,8 +1612,8 @@ HTML;
 					 */
 					if (!$prefs['email'])
 					{
-						$email_domain	 = !empty($GLOBALS['phpgw_info']['server']['email_domain']) ? $GLOBALS['phpgw_info']['server']['email_domain'] : 'bergen.kommune.no';
-						$account_lid	 = $GLOBALS['phpgw']->accounts->get($account_id)->lid;
+						$email_domain	 = !empty($this->serverSettings['email_domain']) ? $this->serverSettings['email_domain'] : 'bergen.kommune.no';
+						$account_lid	 = $this->accounts_obj->get($account_id)->lid;
 						$prefs['email']	 = "{$account_lid}@{$email_domain}";
 					}
 
@@ -1624,15 +1640,15 @@ HTML;
 
 			$notify_list = execMethod('property.notify.read', array
 				(
-				'location_id'		 => $GLOBALS['phpgw']->locations->get_id('property', $this->acl_location),
+				'location_id'		 => $this->locations_obj->get_id('property', $this->acl_location),
 				'location_item_id'	 => $id
 				)
 			);
 
-			if (isset($GLOBALS['phpgw_info']['user']['apps']['sms']))
+			if (isset($this->userSettings['apps']['sms']))
 			{
 
-				$sms_text	 = "{$subject}. \r\n{$GLOBALS['phpgw_info']['user']['fullname']} \r\n{$GLOBALS['phpgw_info']['user']['preferences']['common']['email']}";
+				$sms_text	 = "{$subject}. \r\n{$this->userSettings['fullname']} \r\n{$this->userSettings['preferences']['common']['email']}";
 				$sms		 = CreateObject('sms.sms');
 
 				foreach ($notify_list as $entry)
@@ -1669,11 +1685,11 @@ HTML;
 				$to = implode(';', $toarray);
 				$cc='';
 				$bcc='';
-				if (isset($GLOBALS['phpgw_info']['server']['smtp_server']) && $GLOBALS['phpgw_info']['server']['smtp_server'])
+				if (isset($this->serverSettings['smtp_server']) && $this->serverSettings['smtp_server'])
 				{
 					try
 					{
-						$rc = $this->send->msg('email', $to, $subject, $html, '', $cc, $bcc, $current_user_address, $GLOBALS['phpgw_info']['user']['fullname'], 'html');
+						$rc = $this->send->msg('email', $to, $subject, $html, '', $cc, $bcc, $current_user_address, $this->userSettings['fullname'], 'html');
 					}
 					catch (Exception $e)
 					{
@@ -1740,7 +1756,8 @@ HTML;
 				'allrows'	 => true
 			);
 
-			$custom_functions = $GLOBALS['phpgw']->custom_functions->find($criteria);
+			$custom_functions = createObject('phpgwapi.custom_functions')->find($criteria);
+
 
 			foreach ($custom_functions as $entry)
 			{
@@ -1750,7 +1767,7 @@ HTML;
 					continue;
 				}
 
-				$file = PHPGW_SERVER_ROOT . "/property/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}/{$entry['file_name']}";
+				$file = PHPGW_SERVER_ROOT . "/property/inc/custom/{$this->userSettings['domain']}/{$entry['file_name']}";
 				if ($entry['active'] && is_file($file) && !$entry['client_side'] && $entry['pre_commit'])
 				{
 					require $file;
@@ -1771,7 +1788,7 @@ HTML;
 					continue;
 				}
 
-				$file = PHPGW_SERVER_ROOT . "/property/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}/{$entry['file_name']}";
+				$file = PHPGW_SERVER_ROOT . "/property/inc/custom/{$this->userSettings['domain']}/{$entry['file_name']}";
 				if ($entry['active'] && is_file($file) && !$entry['client_side'] && !$entry['pre_commit'])
 				{
 					require $file;
@@ -1831,7 +1848,7 @@ HTML;
 			}
 			else if (!empty($data['charge_tenant']) && empty($data['tenant_id']))
 			{
-				phpgwapi_cache::message_set(lang('tenant is not defined, claim not issued'),	'error');
+				Cache::message_set(lang('tenant is not defined, claim not issued'),	'error');
 			}
 
 			return $receipt;
@@ -1965,11 +1982,12 @@ HTML;
 
 		public function addfiles()
 		{
-			$GLOBALS['phpgw_info']['flags']['xslt_app']		 = false;
-			$GLOBALS['phpgw_info']['flags']['noframework']	 = true;
-			$GLOBALS['phpgw_info']['flags']['nofooter']		 = true;
+			$this->flags['xslt_app']		 = false;
+			$this->flags['noframework']	 = true;
+			$this->flags['nofooter']		 = true;
+			Settings::getInstance()->set('flags', $this->flags);
 
-			$acl			 = & $GLOBALS['phpgw']->acl;
+			$acl			 = Acl::getInstance();
 			$acl_add		 = $acl->check('.ticket', ACL_ADD, 'property');
 			$acl_edit		 = $acl->check('.ticket', ACL_EDIT, 'property');
 			$id				 = Sanitizer::get_var('id', 'int');
@@ -1978,12 +1996,12 @@ HTML;
 
 			if (!$acl_add && !$acl_edit)
 			{
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 
 			if (!$id)
 			{
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 
 			$test = false;
@@ -1992,12 +2010,12 @@ HTML;
 				if (!empty($_FILES))
 				{
 					$tempFile	 = $_FILES['Filedata']['tmp_name'];
-					$targetPath	 = "{$GLOBALS['phpgw_info']['server']['temp_dir']}/";
+					$targetPath	 = "{$this->serverSettings['temp_dir']}/";
 					$targetFile	 = str_replace('//', '/', $targetPath) . $_FILES['Filedata']['name'];
 					move_uploaded_file($tempFile, $targetFile);
-					echo str_replace($GLOBALS['phpgw_info']['server']['temp_dir'], '', $targetFile);
+					echo str_replace($this->serverSettings['temp_dir'], '', $targetFile);
 				}
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 
 			if ($check)
@@ -2022,7 +2040,7 @@ HTML;
 			$budgets = $this->so->get_budgets($id);
 			foreach ($budgets as &$budget)
 			{
-				$budget['created_on_date'] = $GLOBALS['phpgw']->common->show_date($budget['created_on'], $this->dateformat);
+				$budget['created_on_date'] = $this->phpgwapi_common->show_date($budget['created_on'], $this->dateformat);
 			}
 			return $budgets;
 		}
@@ -2032,7 +2050,7 @@ HTML;
 			$payments = $this->so->get_payments($id);
 			foreach ($payments as &$payment)
 			{
-				$payment['created_on_date'] = $GLOBALS['phpgw']->common->show_date($payment['created_on'], $this->dateformat);
+				$payment['created_on_date'] = $this->phpgwapi_common->show_date($payment['created_on'], $this->dateformat);
 			}
 			return $payments;
 		}
@@ -2071,7 +2089,7 @@ HTML;
 				'allrows'	 => true
 			);
 
-			$custom_functions = $GLOBALS['phpgw']->custom_functions->find($criteria);
+		$custom_functions = createObject('phpgwapi.custom_functions')->find($criteria);
 
 			foreach ($custom_functions as $entry)
 			{
@@ -2081,7 +2099,7 @@ HTML;
 					continue;
 				}
 
-				$file = PHPGW_SERVER_ROOT . "/property/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}/{$entry['file_name']}";
+				$file = PHPGW_SERVER_ROOT . "/property/inc/custom/{$this->userSettings['domain']}/{$entry['file_name']}";
 				if ($entry['active'] && is_file($file) && !$entry['client_side'] && !$entry['pre_commit'])
 				{
 					require $file;
@@ -2090,7 +2108,7 @@ HTML;
 			// $result from the custom function
 			return array(
 				'result' => $result,
-				'time'	 => $GLOBALS['phpgw']->common->show_date(time())
+				'time'	 => $this->phpgwapi_common->show_date(time())
 			);
 		}
 
@@ -2128,7 +2146,7 @@ HTML;
 				$approval_amount_limit	 = 0;
 			}
 
-			$config					 = CreateObject('admin.soconfig', $GLOBALS['phpgw']->locations->get_id('property', '.ticket'));
+			$config					 = CreateObject('admin.soconfig', $this->locations_obj->get_id('property', '.ticket'));
 			$check_external_register = !!$config->config_data['external_register']['check_external_register'];
 			$supervisors			 = array();
 			if (isset($this->config->config_data['invoice_acl']) && $this->config->config_data['invoice_acl'] == 'dimb')
@@ -2153,7 +2171,7 @@ HTML;
 				$sodimb_role_users = execMethod('property.sodimb_role_user.read', array(
 					'dimb_id'		 => $ecodimb,
 					'role_id'		 => 2,
-					'query_start'	 => date($GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']),
+					'query_start'	 => date($this->userSettings['preferences']['common']['dateformat']),
 					'get_netto_list' => true
 					)
 				);
@@ -2237,7 +2255,7 @@ HTML;
 
 				if ($supervisor_lid)
 				{
-					$supervisor_id	 = $GLOBALS['phpgw']->accounts->name2id($supervisor_lid);
+					$supervisor_id	 = $this->accounts_obj->name2id($supervisor_lid);
 					$substitute		 = $sosubstitute->get_substitute($supervisor_id);
 					$supervisors[$supervisor_id] = array(
 						'id' => $supervisor_id,
@@ -2250,9 +2268,9 @@ HTML;
 			{
 				$supervisor_id = 0;
 
-				if (!empty($GLOBALS['phpgw_info']['user']['preferences']['property']['approval_from']))
+				if (!empty($this->userSettings['preferences']['property']['approval_from']))
 				{
-					$supervisor_id = $GLOBALS['phpgw_info']['user']['preferences']['property']['approval_from'];
+					$supervisor_id = $this->userSettings['preferences']['property']['approval_from'];
 				}
 
 				if ($supervisor_id)
@@ -2302,7 +2320,7 @@ HTML;
 				$sodimb_role_users = execMethod('property.sodimb_role_user.read', array(
 					'dimb_id'		 => $ecodimb,
 					'role_id'		 => $dimb_role_id,
-					'query_start'	 => date($GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']),
+					'query_start'	 => date($this->userSettings['preferences']['common']['dateformat']),
 					'get_netto_list' => true
 					)
 				);
@@ -2333,9 +2351,9 @@ HTML;
 				}
 
 			}
-			else if (!empty($GLOBALS['phpgw_info']['user']['preferences']['property']['approval_from']))
+			else if (!empty($this->userSettings['preferences']['property']['approval_from']))
 			{
-				$supervisor_id =  $GLOBALS['phpgw_info']['user']['preferences']['property']['approval_from'];
+				$supervisor_id =  $this->userSettings['preferences']['property']['approval_from'];
 				$substitute = $sosubstitute->get_substitute($supervisor_id);
 				$supervisors[$supervisor_id] = array(
 					'id' => $supervisor_id,
@@ -2345,10 +2363,10 @@ HTML;
 				);
 			}
 
-//			if(!$check_external_register && !empty($GLOBALS['phpgw_info']['user']['preferences']['property']['approval_from'])
-//				&& empty($supervisors[$GLOBALS['phpgw_info']['user']['preferences']['property']['approval_from']]))
+//			if(!$check_external_register && !empty($this->userSettings['preferences']['property']['approval_from'])
+//				&& empty($supervisors[$this->userSettings['preferences']['property']['approval_from']]))
 //			{
-//				$supervisor_id =  $GLOBALS['phpgw_info']['user']['preferences']['property']['approval_from'];
+//				$supervisor_id =  $this->userSettings['preferences']['property']['approval_from'];
 //				$substitute = $sosubstitute->get_substitute($supervisor_id);
 //				if($substitute)
 //				{
@@ -2446,7 +2464,7 @@ HTML;
 
 			if ($supervisors)
 			{
-				$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+				$dateformat = $this->userSettings['preferences']['common']['dateformat'];
 
 				foreach ($supervisors as $supervisor_id => $info)
 				{
@@ -2504,8 +2522,8 @@ HTML;
 					}
 					else
 					{
-						$email_domain	 = !empty($GLOBALS['phpgw_info']['server']['email_domain']) ? $GLOBALS['phpgw_info']['server']['email_domain'] : 'bergen.kommune.no';
-						$address		 = $GLOBALS['phpgw']->accounts->id2name($supervisor_id) . '&lt;' . $GLOBALS['phpgw']->accounts->id2lid($supervisor_id) . "@{$email_domain}&gt;";
+						$email_domain	 = !empty($this->serverSettings['email_domain']) ? $this->serverSettings['email_domain'] : 'bergen.kommune.no';
+						$address		 = $this->accounts_obj->id2name($supervisor_id) . '&lt;' . $this->accounts_obj->id2lid($supervisor_id) . "@{$email_domain}&gt;";
 					}
 
 					$requested = false;
@@ -2534,9 +2552,9 @@ HTML;
 						'required'		 => $info['required'],
 						'default'		 => !!$info['default'],
 						'requested'		 => $requested,
-						'requested_time' => $GLOBALS['phpgw']->common->show_date($requests[0]['action_requested'], $dateformat),
+						'requested_time' => $this->phpgwapi_common->show_date($requests[0]['action_requested'], $dateformat),
 						'approved'		 => $approved,
-						'approved_time'	 => $GLOBALS['phpgw']->common->show_date($approvals[0]['action_performed'], $dateformat),
+						'approved_time'	 => $this->phpgwapi_common->show_date($approvals[0]['action_performed'], $dateformat),
 						'is_user'		 => $supervisor_id == $this->account ? true : false,
 						'is_substitute'	 => $info['substitute'] == $this->account ? true : false
 					);
@@ -2684,8 +2702,8 @@ HTML;
 						if (!$purchase_grant_ok && !$purchase_grant['is_user']  && !$purchase_grant['approved'])
 						{
 							$purchase_grant_ok = false;
-							phpgwapi_cache::message_set(lang('approval from %1 is required for order %2',
-											  $GLOBALS['phpgw']->accounts->get($purchase_grant['id'])->__toString(), $order_id),
+							Cache::message_set(lang('approval from %1 is required for order %2',
+											  $this->accounts_obj->get($purchase_grant['id'])->__toString(), $order_id),
 													'error'
 							);
 							break;
@@ -2711,7 +2729,7 @@ HTML;
 								execMethod('property.sopending_action.set_pending_action', $action_params);
 							}
 							execMethod('property.sopending_action.close_pending_action', $action_params);
-							$historylog->add($history_code, $location_item_id, $GLOBALS['phpgw']->accounts->get($_account_id)->__toString() . "::{$budget_amount}");
+							$historylog->add($history_code, $location_item_id, $this->accounts_obj->get($_account_id)->__toString() . "::{$budget_amount}");
 							$purchase_grant_ok = true;
 						}
 					}
@@ -2719,13 +2737,13 @@ HTML;
 			}
 			else
 			{
-				if(empty($GLOBALS['phpgw_info']['user']['preferences']['property']['approval_from']))
+				if(empty($this->userSettings['preferences']['property']['approval_from']))
 				{
-					phpgwapi_cache::message_set('Du må ha satt opp en som du rapporterer til','error');
+					Cache::message_set('Du må ha satt opp en som du rapporterer til','error');
 				}
 				else
 				{
-					phpgwapi_cache::message_set('er rettigheter til ansvarsstedet satt opp korrekt?','error');
+					Cache::message_set('er rettigheter til ansvarsstedet satt opp korrekt?','error');
 				}
 			}
 

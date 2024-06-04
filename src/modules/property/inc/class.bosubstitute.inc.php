@@ -26,17 +26,25 @@
 	 * @package registration
 	 * @version $Id: class.bodimb_role_user.inc.php 16604 2017-04-20 14:53:00Z sigurdne $
 	 */
+
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
 	class property_bosubstitute
 	{
 
 		var $public_functions = array(
 		);
 
-		var $so,$account_id;
+		var $so,$account_id,$userSettings,$phpgwapi_common,$accounts_obj;
 
 		function __construct()
 		{
-			$this->account_id	 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->phpgwapi_common = new \phpgwapi_common();
+			$this->accounts_obj = new Accounts();
+
+			$this->account_id	 = $this->userSettings['account_id'];
 			$this->so			 = CreateObject('property.sosubstitute');
 		}
 
@@ -51,7 +59,7 @@
 				{
 					if (!$entry['user'] = $users[$entry['user_id']])
 					{
-						$entry['user']				 = $GLOBALS['phpgw']->accounts->get($entry['user_id'])->__toString();
+						$entry['user']				 = $this->accounts_obj->get($entry['user_id'])->__toString();
 						$users[$entry['user_id']]	 = $entry['user'];
 					}
 				}
@@ -59,7 +67,7 @@
 				{
 					if (!$entry['substitute'] = $users[$entry['substitute_user_id']])
 					{
-						$entry['substitute']				 = $GLOBALS['phpgw']->accounts->get($entry['substitute_user_id'])->__toString();
+						$entry['substitute']				 = $this->accounts_obj->get($entry['substitute_user_id'])->__toString();
 						$users[$entry['substitute_user_id']] = $entry['substitute'];
 					}
 				}

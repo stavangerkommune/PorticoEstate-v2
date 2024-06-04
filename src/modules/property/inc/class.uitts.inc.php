@@ -26,7 +26,14 @@
 	 * @subpackage helpdesk
 	 * @version $Id$
 	 */
-	/**
+
+use App\modules\phpgwapi\controllers\Locations;
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\security\Acl;
+use App\modules\phpgwapi\controllers\Accounts\Accounts;
+use App\modules\phpgwapi\services\Cache;
+
+	 /**
 	 * Description
 	 * @package property
 	 */
@@ -80,26 +87,33 @@
 		var $user_filter,$bo, $cats,$acl, $acl_location, $acl_read, $acl_add, $acl_edit, $acl_delete, $acl_manage,
 		$district_id, $tenant_id, $account, $bocommon, $start, $query, $sort, $order, $status_id, $user_id, $group_id, $reported_by, $cat_id,
 		$allrows, $vendor_id, $start_date, $end_date, $location_code, $p_num, $show_finnish_date, $ecodimb,$b_account,
-		$building_part, $branch_id, $parent_cat_id,$order_dim1,$decimal_separator;
+		$building_part, $branch_id, $parent_cat_id,$order_dim1,$decimal_separator, $accounts_obj, $jqcal;
 
 		public function __construct()
 		{
 			parent::__construct();
 
-			$GLOBALS['phpgw_info']['flags']['menu_selection']	 = 'property::helpdesk';
-			if ($this->tenant_id = $GLOBALS['phpgw']->session->appsession('tenant_id', 'property'))
+			$this->flags['menu_selection']	 = 'property::helpdesk';
+			$this->tenant_id = Cache::session_get('property', 'tenant_id');
+			if ($this->tenant_id)
 			{
-				//			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
-				$GLOBALS['phpgw_info']['flags']['noheader']	 = true;
-				$GLOBALS['phpgw_info']['flags']['nofooter']	 = true;
+				//			$this->flags['noframework'] = true;
+				$this->flags['noheader']	 = true;
+				$this->flags['nofooter']	 = true;
 			}
+			$this->flags['xslt_app']	 = true;
+			Settings::getInstance()->set('flags', $this->flags);
 
-			$this->account								 = $GLOBALS['phpgw_info']['user']['account_id'];
-			$GLOBALS['phpgw_info']['flags']['xslt_app']	 = true;
+		//	$this->userSettings = Settings::getInstance()->get('user');
+
+		$this->accounts_obj							 = new Accounts();
+		$this->jqcal = CreateObject('phpgwapi.jqcal');
+
+			$this->account								 = $this->userSettings['account_id'];
 			$this->bo									 = CreateObject('property.botts', true);
 			$this->bocommon								 = & $this->bo->bocommon;
 			$this->cats									 = & $this->bo->cats;
-			$this->acl									 = & $GLOBALS['phpgw']->acl;
+			$this->acl									 = Acl::getInstance();
 			$this->acl_location							 = $this->bo->acl_location;
 			$this->acl_read								 = $this->acl->check($this->acl_location, ACL_READ, 'property');
 			$this->acl_add								 = $this->acl->check($this->acl_location, ACL_ADD, 'property');
@@ -224,7 +238,7 @@
 		function query2()
 		{
 			$length				 = Sanitizer::get_var('length', 'int', 'REQUEST', 10);
-			//	$num_rows = !empty($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs']) ? (int)$GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] : 15;
+			//	$num_rows = !empty($this->userSettings['preferences']['common']['maxmatchs']) ? (int)$this->userSettings['preferences']['common']['maxmatchs'] : 15;
 			$_REQUEST['start']	 = Sanitizer::get_var('startIndex');
 			$_REQUEST['length']	 = $length;
 
@@ -252,9 +266,10 @@
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
-			$GLOBALS['phpgw_info']['flags']['noheader']	 = true;
-			$GLOBALS['phpgw_info']['flags']['nofooter']	 = true;
-			$GLOBALS['phpgw_info']['flags']['xslt_app']	 = false;
+			$this->flags['noheader']	 = true;
+			$this->flags['nofooter']	 = true;
+			$this->flags['xslt_app']	 = false;
+			Settings::getInstance()->set('flags', $this->flags);
 			$id											 = Sanitizer::get_var('id', 'int');
 
 			$ticket			 = $this->bo->mail_ticket($id, $fields_updated	 = true, $receipt		 = array(), $location_code	 = '', $get_message	 = true);
@@ -266,7 +281,7 @@
 			<html>
 				<head>
 					<title>{$ticket['subject']}</title>
-					<link href="{$GLOBALS['phpgw_info']['server']['webserver_url']}/phpgwapi/templates/pure/css/version_3/pure-min.css" type="text/css" rel="StyleSheet">
+					<link href="{$this->serverSettings['webserver_url']}/phpgwapi/templates/pure/css/version_3/pure-min.css" type="text/css" rel="StyleSheet">
 				</head>
 				<body>
 					<script type="text/javascript">
@@ -288,13 +303,14 @@ HTML;
 			{
 				phpgw::no_access();
 			}
-			$GLOBALS['phpgw_info']['flags']['noheader']	 = true;
-			$GLOBALS['phpgw_info']['flags']['nofooter']	 = true;
-			$GLOBALS['phpgw_info']['flags']['xslt_app']	 = false;
+			$this->flags['noheader']	 = true;
+			$this->flags['nofooter']	 = true;
+			$this->flags['xslt_app']	 = false;
+			Settings::getInstance()->set('flags', $this->flags);
 
 			$file_name				 = urldecode(Sanitizer::get_var('file_name'));
 			$key					 = Sanitizer::get_var('key');
-			$invoice_config			 = CreateObject('admin.soconfig', $GLOBALS['phpgw']->locations->get_id('property', '.invoice'));
+			$invoice_config			 = CreateObject('admin.soconfig', $this->locations->get_id('property', '.invoice'));
 			$directory_attachment	 = rtrim($invoice_config->config_data['import']['local_path'], '/') . '/attachment/' . $key;
 
 			$file = "$directory_attachment/$file_name";
@@ -422,7 +438,7 @@ HTML;
 			array_push($descr, lang('finnish date'), lang('delay'));
 
 
-			$custom_cols = isset($GLOBALS['phpgw_info']['user']['preferences']['property']['ticket_columns']) ? $GLOBALS['phpgw_info']['user']['preferences']['property']['ticket_columns'] : array();
+			$custom_cols = isset($this->userSettings['preferences']['property']['ticket_columns']) ? $this->userSettings['preferences']['property']['ticket_columns'] : array();
 
 			foreach ($custom_cols as $col)
 			{
@@ -461,7 +477,7 @@ HTML;
 			}
 
 			$this->bo->update_status(array('status' => $new_status), $id);
-			if ((isset($this->bo->config->config_data['mailnotification']) && $this->bo->config->config_data['mailnotification']) || (isset($GLOBALS['phpgw_info']['user']['preferences']['property']['tts_notify_me']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['tts_notify_me'] == 1 && $this->bo->fields_updated
+			if ((isset($this->bo->config->config_data['mailnotification']) && $this->bo->config->config_data['mailnotification']) || (isset($this->userSettings['preferences']['property']['tts_notify_me']) && $this->userSettings['preferences']['property']['tts_notify_me'] == 1 && $this->bo->fields_updated
 				)
 			)
 			{
@@ -491,7 +507,7 @@ HTML;
 //			$ticket = $this->bo->read_single($id);
 
 			$receipt = $this->bo->update_priority(array('priority' => $new_priority), $id);
-			if ((isset($this->bo->config->config_data['mailnotification']) && $this->bo->config->config_data['mailnotification']) || (isset($GLOBALS['phpgw_info']['user']['preferences']['property']['tts_notify_me']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['tts_notify_me'] == 1 && $this->bo->fields_updated
+			if ((isset($this->bo->config->config_data['mailnotification']) && $this->bo->config->config_data['mailnotification']) || (isset($this->userSettings['preferences']['property']['tts_notify_me']) && $this->userSettings['preferences']['property']['tts_notify_me'] == 1 && $this->bo->fields_updated
 				)
 			)
 			{
@@ -526,7 +542,7 @@ HTML;
 
 			$options = array();
 			$options['base_dir']	 = 'fmticket/' . $id;
-			$options['upload_dir']	 = $GLOBALS['phpgw_info']['server']['files_dir'] . '/property/' . $options['base_dir'] . '/';
+			$options['upload_dir']	 = $this->serverSettings['files_dir'] . '/property/' . $options['base_dir'] . '/';
 			$options['script_url']	 = html_entity_decode(self::link(array('menuaction' => 'property.uitts.handle_multi_upload_file',
 					'id'		 => $id)));
 			$upload_handler			 = new property_multiuploader($options, false);
@@ -535,7 +551,7 @@ HTML;
 			{
 				$response = array('files' => array(array('error' => 'missing id in request')));
 				$upload_handler->generate_response($response);
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 
 			switch ($_SERVER['REQUEST_METHOD'])
@@ -566,7 +582,7 @@ HTML;
 					$upload_handler->header('HTTP/1.1 405 Method Not Allowed');
 			}
 
-			$GLOBALS['phpgw']->common->phpgw_exit();
+			$this->phpgwapi_common->phpgw_exit();
 		}
 
 		public function build_multi_upload_file()
@@ -574,8 +590,10 @@ HTML;
 			phpgwapi_jquery::init_multi_upload_file();
 			$id = Sanitizer::get_var('id', 'int');
 
-			$GLOBALS['phpgw_info']['flags']['noframework']	 = true;
-			$GLOBALS['phpgw_info']['flags']['nofooter']		 = true;
+			$this->flags['noframework']	 = true;
+			$this->flags['nofooter']		 = true;
+			Settings::getInstance()->set('flags', $this->flags);
+
 
 			$multi_upload_action = phpgw::link('/index.php', array('menuaction' => 'property.uitts.handle_multi_upload_file',
 				'id'		 => $id));
@@ -594,8 +612,10 @@ HTML;
 			$receipt = array();
 			phpgwapi_xslttemplates::getInstance()->add_file(array('columns'));
 
-			$GLOBALS['phpgw_info']['flags']['noframework']	 = true;
-			$GLOBALS['phpgw_info']['flags']['nofooter']		 = true;
+			$this->flags['noframework']	 = true;
+			$this->flags['nofooter']		 = true;
+			Settings::getInstance()->set('flags', $this->flags);
+
 
 			$values = Sanitizer::get_var('values');
 
@@ -616,11 +636,11 @@ HTML;
 			);
 
 			$selected	 = isset($values['columns']) && $values['columns'] ? $values['columns'] : array();
-			$msgbox_data = $GLOBALS['phpgw']->common->msgbox_data($receipt);
+			$msgbox_data = $this->phpgwapi_common->msgbox_data($receipt);
 
 			$data = array
 				(
-				'msgbox_data'	 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'	 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'column_list'	 => $this->bo->column_list($selected),
 				'function_msg'	 => $function_msg,
 				'form_action'	 => phpgw::link('/index.php', $link_data),
@@ -629,7 +649,10 @@ HTML;
 				'lang_save'		 => lang('save'),
 			);
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = $function_msg;
+			$this->flags['app_header'] = $function_msg;
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
+
+
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('columns' => $data));
 		}
 
@@ -666,7 +689,7 @@ HTML;
 			$uicols['name'][]	 = 'entry_date';
 			$uicols['descr'][]	 = lang('entry date');
 
-			$custom_cols = isset($GLOBALS['phpgw_info']['user']['preferences']['property']['ticket_columns']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['ticket_columns'] ? $GLOBALS['phpgw_info']['user']['preferences']['property']['ticket_columns'] : array();
+			$custom_cols = isset($this->userSettings['preferences']['property']['ticket_columns']) && $this->userSettings['preferences']['property']['ticket_columns'] ? $this->userSettings['preferences']['property']['ticket_columns'] : array();
 			$columns	 = $this->bo->get_columns();
 
 			foreach ($custom_cols as $col)
@@ -850,10 +873,10 @@ HTML;
 					array_unshift($values_combo_box[4], array('id' => $assigned_group['id'], 'name' => $assigned_group['name']));
 				}
 
-				$filter_tts_assigned_to_me = $GLOBALS['phpgw_info']['user']['preferences']['property']['tts_assigned_to_me'];
+				$filter_tts_assigned_to_me = $this->userSettings['preferences']['property']['tts_assigned_to_me'];
 
 				array_unshift($values_combo_box[4], array(
-					'id'		 => -1 * $GLOBALS['phpgw_info']['user']['account_id'],
+					'id'		 => -1 * $this->userSettings['account_id'],
 					'name'		 => lang('my assigned tickets'),
 					'selected'	 => ((int)$this->user_id < 0 || (int)$filter_tts_assigned_to_me == 1) ? 1 : 0));
 
@@ -868,7 +891,7 @@ HTML;
 
 			$values_combo_box[5] = $this->bo->get_reported_by($this->reported_by);
 
-			array_unshift($values_combo_box[5], array('id'	 => $GLOBALS['phpgw_info']['user']['account_id'],
+			array_unshift($values_combo_box[5], array('id'	 => $this->userSettings['account_id'],
 				'name'	 => lang('my submitted tickets')));
 			array_unshift($values_combo_box[5], array('id' => '', 'name' => lang('reported by')));
 			$combos[] = array('type'	 => 'filter',
@@ -921,7 +944,7 @@ HTML;
 					'list'	 => $buildingpart_list
 				);
 
-				if (isset($GLOBALS['phpgw_info']['user']['preferences']['property']['tts_branch_list']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['tts_branch_list'] == 1)
+				if (isset($this->userSettings['preferences']['property']['tts_branch_list']) && $this->userSettings['preferences']['property']['tts_branch_list'] == 1)
 				{
 					$combos[] = array('type'	 => 'filter',
 						'name'	 => 'branch_id',
@@ -1026,8 +1049,8 @@ HTML;
 			$start_date	 = !empty($this->start_date) ? urldecode($this->start_date) : '';
 			$end_date	 = !empty($this->end_date) ? urldecode($this->end_date) : '';
 
-			$GLOBALS['phpgw']->jqcal->add_listener('filter_start_date');
-			$GLOBALS['phpgw']->jqcal->add_listener('filter_end_date');
+			$this->jqcal->add_listener('filter_start_date');
+			$this->jqcal->add_listener('filter_end_date');
 
 			$appname		 = lang('helpdesk');
 			$function_msg	 = lang('list ticket');
@@ -1120,7 +1143,7 @@ HTML;
 				'parameters' => json_encode($parameters)
 			);
 
-			$jasper = execMethod('property.sojasper.read', array('location_id' => $GLOBALS['phpgw']->locations->get_id('property', $this->acl_location)));
+			$jasper = execMethod('property.sojasper.read', array('location_id' => $this->locations->get_id('property', $this->acl_location)));
 
 			foreach ($jasper as $report)
 			{
@@ -1170,7 +1193,7 @@ HTML;
 				);
 			}
 
-			if (!$this->simple && isset($GLOBALS['phpgw_info']['user']['preferences']['property']['tts_status_link']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['tts_status_link'] == 'yes' && $this->acl_edit)
+			if (!$this->simple && isset($this->userSettings['preferences']['property']['tts_status_link']) && $this->userSettings['preferences']['property']['tts_status_link'] == 'yes' && $this->acl_edit)
 			{
 				$status['X'] = array
 					(
@@ -1254,7 +1277,9 @@ HTML;
 			{
 				$data['datatable']['group_buttons'] = false;
 			}
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
+
 
 			self::render_template_xsl('datatable_jquery', $data);
 		}
@@ -1267,15 +1292,17 @@ HTML;
 				return;
 			}
 
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= "::report";
+			$this->flags['menu_selection'] .= "::report";
+			Settings::getInstance()->update('flags', ['menu_selection' => $this->flags['menu_selection']]);
 
-			$GLOBALS['phpgw']->jqcal->add_listener('filter_start_date');
-			$GLOBALS['phpgw']->jqcal->add_listener('filter_end_date');
+
+			$this->jqcal->add_listener('filter_start_date');
+			$this->jqcal->add_listener('filter_end_date');
 			phpgwapi_jquery::load_widget('chart');
 			phpgwapi_jquery::load_widget('print');
 
-			$start_date	 = $GLOBALS['phpgw']->common->show_date(mktime(0, 0, 0, date("m"), '01', date("Y")), $this->dateFormat);
-			$end_date	 = $GLOBALS['phpgw']->common->show_date(mktime(0, 0, 0, date("m"), date("d"), date("Y")), $this->dateFormat);
+			$start_date	 = $this->phpgwapi_common->show_date(mktime(0, 0, 0, date("m"), '01', date("Y")), $this->dateFormat);
+			$end_date	 = $this->phpgwapi_common->show_date(mktime(0, 0, 0, date("m"), date("d"), date("Y")), $this->dateFormat);
 
 			$appname		 = lang('helpdesk');
 			$function_msg	 = lang('Report');
@@ -1285,10 +1312,13 @@ HTML;
 			$data = array(
 				'start_date'	 => $start_date,
 				'end_date'		 => $end_date,
-				'image_loader'	 => $GLOBALS['phpgw']->common->image('property', 'ajax-loader', '.gif', false)
+				'image_loader'	 => $this->phpgwapi_common->image('property', 'ajax-loader', '.gif', false)
 			);
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
+
 			self::render_template_xsl(array('tts_report'), $data);
 		}
 
@@ -1384,7 +1414,8 @@ HTML;
 				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uitts.add2'));
 			}
 
-			$GLOBALS['phpgw_info']['flags']['breadcrumb_selection'] = $GLOBALS['phpgw_info']['flags']['menu_selection'] . "::add";
+			$this->flags['breadcrumb_selection'] = $this->flags['menu_selection'] . "::add";
+			Settings::getInstance()->update('flags', ['breadcrumb_selection' => $this->flags['breadcrumb_selection']]);
 
 			$bolocation = CreateObject('property.bolocation');
 
@@ -1450,9 +1481,9 @@ HTML;
 			//_debug_array($insert_record);
 			if (!empty($values['save']) || !empty($values['apply']))
 			{
-				$insert_record = $GLOBALS['phpgw']->session->appsession('insert_record', 'property');
+				$insert_record = Cache::session_get('property', 'insert_record');
 
-				$insert_record_entity = $GLOBALS['phpgw']->session->appsession('insert_record_values' . $this->acl_location, 'property');
+				$insert_record_entity = Cache::session_get('property', 'insert_record_values' . $this->acl_location);
 
 				if (isset($insert_record_entity) && is_array($insert_record_entity))
 				{
@@ -1512,7 +1543,7 @@ HTML;
 
 				if (empty($values['group_id']))
 				{
-					$values['group_id'] = (isset($GLOBALS['phpgw_info']['user']['preferences']['property']['groupdefault']) ? $GLOBALS['phpgw_info']['user']['preferences']['property']['groupdefault'] : '');
+					$values['group_id'] = (isset($this->userSettings['preferences']['property']['groupdefault']) ? $this->userSettings['preferences']['property']['groupdefault'] : '');
 				}
 
 				if (!$values['assignedto'] && !$values['group_id'])
@@ -1520,7 +1551,7 @@ HTML;
 					$_responsible = execMethod('property.boresponsible.get_responsible', $values);
 					if (!$_responsible)
 					{
-						if (!$values['assignedto'] = $GLOBALS['phpgw_info']['user']['preferences']['property']['assigntodefault'])
+						if (!$values['assignedto'] = $this->userSettings['preferences']['property']['assigntodefault'])
 						{
 
 							$receipt['error'][] = array('msg' => lang('Please select a person or a group to handle the ticket !'));
@@ -1528,7 +1559,7 @@ HTML;
 					}
 					else
 					{
-						if ($GLOBALS['phpgw']->accounts->get($_responsible)->type == phpgwapi_account::TYPE_USER)
+						if ($this->accounts_obj->get($_responsible)->type == phpgwapi_account::TYPE_USER)
 						{
 							$values['assignedto'] = $_responsible;
 						}
@@ -1599,8 +1630,7 @@ HTML;
 						}
 					}
 				//--------------end files
-					$GLOBALS['phpgw']->session->appsession('receipt', 'property', $receipt);
-					//	$GLOBALS['phpgw']->session->appsession('session_data','fm_tts','');
+					Cache::session_set('property', 'receipt', $receipt);
 
 					if (Sanitizer::get_var('phpgw_return_as') == 'json')
 					{
@@ -1690,9 +1720,9 @@ HTML;
 				'entity_data'	 => (isset($values['p']) ? $values['p'] : '')
 			));
 
-			if (isset($GLOBALS['phpgw_info']['user']['preferences']['property']['tts_me_as_contact']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['tts_me_as_contact'] == 1)
+			if (isset($this->userSettings['preferences']['property']['tts_me_as_contact']) && $this->userSettings['preferences']['property']['tts_me_as_contact'] == 1)
 			{
-				$ticket['contact_id'] = $GLOBALS['phpgw']->accounts->get($this->account)->person_id;
+				$ticket['contact_id'] = $this->accounts_obj->get($this->account)->person_id;
 			}
 			$contact_data = $this->bocommon->initiate_ui_contact_lookup(array(
 				'contact_id' => $ticket['contact_id'],
@@ -1706,16 +1736,16 @@ HTML;
 
 			if (!isset($values['assignedto']))
 			{
-				$values['assignedto'] = (isset($GLOBALS['phpgw_info']['user']['preferences']['property']['assigntodefault']) ? $GLOBALS['phpgw_info']['user']['preferences']['property']['assigntodefault'] : '');
+				$values['assignedto'] = (isset($this->userSettings['preferences']['property']['assigntodefault']) ? $this->userSettings['preferences']['property']['assigntodefault'] : '');
 			}
 			if (!isset($values['group_id']))
 			{
-				$values['group_id'] = (isset($GLOBALS['phpgw_info']['user']['preferences']['property']['groupdefault']) ? $GLOBALS['phpgw_info']['user']['preferences']['property']['groupdefault'] : '');
+				$values['group_id'] = (isset($this->userSettings['preferences']['property']['groupdefault']) ? $this->userSettings['preferences']['property']['groupdefault'] : '');
 			}
 
 			if (!isset($values['cat_id']))
 			{
-				$this->cat_id = (isset($GLOBALS['phpgw_info']['user']['preferences']['property']['tts_category']) ? $GLOBALS['phpgw_info']['user']['preferences']['property']['tts_category'] : '');
+				$this->cat_id = (isset($this->userSettings['preferences']['property']['tts_category']) ? $this->userSettings['preferences']['property']['tts_category'] : '');
 			}
 			else
 			{
@@ -1727,10 +1757,10 @@ HTML;
 
 			if (!$this->simple && $this->show_finnish_date)
 			{
-				$GLOBALS['phpgw']->jqcal->add_listener('values_finnish_date');
+				$this->jqcal->add_listener('values_finnish_date');
 			}
 
-			$membership	 = $GLOBALS['phpgw']->accounts->membership($this->account);
+			$membership	 = $this->accounts_obj->membership($this->account);
 			$my_groups	 = array();
 			foreach ($membership as $group_id => $group)
 			{
@@ -1775,7 +1805,7 @@ HTML;
 				'value_origin'					 => isset($values['origin_data']) ? $values['origin_data'] : '',
 				'value_origin_type'				 => (isset($origin) ? $origin : ''),
 				'value_origin_id'				 => (isset($origin_id) ? $origin_id : ''),
-				'msgbox_data'					 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'					 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'location_data2'				 => $location_data,
 				'lang_no_user'					 => lang('Select user'),
 				'lang_user_statustext'			 => lang('Select the user the selection belongs to. To do not use a user select NO USER'),
@@ -1806,7 +1836,7 @@ HTML;
 				'lang_part_of_town'				 => lang('Part of town'),
 				'lang_no_part_of_town'			 => lang('No part of town'),
 				'cat_select'					 => $cat_select,
-				'pref_send_mail'				 => (isset($GLOBALS['phpgw_info']['user']['preferences']['property']['tts_user_mailnotification']) ? $GLOBALS['phpgw_info']['user']['preferences']['property']['tts_user_mailnotification'] : ''),
+				'pref_send_mail'				 => (isset($this->userSettings['preferences']['property']['tts_user_mailnotification']) ? $this->userSettings['preferences']['property']['tts_user_mailnotification'] : ''),
 				'fileupload'					 => (isset($this->bo->config->config_data['fmttsfileupload']) ? $this->bo->config->config_data['fmttsfileupload'] : ''),
 				'tabs'							 => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
 				'multi_upload_action' => phpgw::link('/index.php', array('menuaction' => 'property.uitts.handle_multi_upload_file'))
@@ -1822,7 +1852,9 @@ HTML;
 
 			phpgwapi_jquery::formvalidator_generate(array('date', 'security', 'file'));
 			$this->_insert_custom_js();
-			$GLOBALS['phpgw_info']['flags']['app_header']	 = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header']	 = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
+
 			self::render_template_xsl(array('tts', 'files', 'attributes_form'), $data, $xsl_rootdir	 = '', 'add');
 		}
 
@@ -1843,13 +1875,13 @@ HTML;
 
 		function view_image()
 		{
-			$GLOBALS['phpgw_info']['flags']['noheader'] = true;
-			$GLOBALS['phpgw_info']['flags']['nofooter'] = true;
-			$GLOBALS['phpgw_info']['flags']['xslt_app'] = false;
+			$this->flags['noheader'] = true;
+			$this->flags['nofooter'] = true;
+			$this->flags['xslt_app'] = false;
 
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 
 			$thumb = Sanitizer::get_var('thumb', 'bool');
@@ -1980,7 +2012,7 @@ HTML;
 					}
 				}
 				$datetime = new DateTime($_entry['created'], new DateTimeZone('UTC'));
-				$datetime->setTimeZone(new DateTimeZone($GLOBALS['phpgw_info']['user']['preferences']['common']['timezone']));
+				$datetime->setTimeZone(new DateTimeZone($this->userSettings['preferences']['common']['timezone']));
 				$created = $datetime->format('Y-m-d H:i:s');
 				$_checked = '';
 				if (in_array($_entry['file_id'], $file_attachments))
@@ -2043,10 +2075,9 @@ HTML;
 			{
 				phpgw::no_access();
 			}
-
-			$GLOBALS['phpgw_info']['flags']['breadcrumb_selection'] = $GLOBALS['phpgw_info']['flags']['menu_selection'] . "::view::{$id}";
-
 			$id = Sanitizer::get_var('id', 'int');
+			$this->flags['breadcrumb_selection'] = $this->flags['menu_selection'] . "::view::{$id}";
+			Settings::getInstance()->update('flags', ['breadcrumb_selection' => $this->flags['breadcrumb_selection']]);
 
 			$add_external_communication = Sanitizer::get_var('external_communication', 'int');
 
@@ -2090,8 +2121,9 @@ HTML;
 
 			$values_attribute = Sanitizer::get_var('values_attribute');
 
-			$receipt = $GLOBALS['phpgw']->session->appsession('receipt', 'property');
-			$GLOBALS['phpgw']->session->appsession('receipt', 'property', '');
+			$receipt = Cache::session_get('property', 'receipt');
+			Cache::session_clear('property', 'receipt');
+
 			if (!$receipt)
 			{
 				$receipt = array();
@@ -2117,8 +2149,8 @@ HTML;
 						'perm'			 => 4, 'acl_location'	 => $this->acl_location));
 				}
 
-				$insert_record			 = $GLOBALS['phpgw']->session->appsession('insert_record', 'property');
-				$insert_record_entity	 = $GLOBALS['phpgw']->session->appsession('insert_record_values' . $this->acl_location, 'property');
+				$insert_record = Cache::session_get('property', 'insert_record');
+				$insert_record_entity	 = Cache::session_get('property', 'insert_record_values' . $this->acl_location);
 
 				if (isset($insert_record_entity) && is_array($insert_record_entity))
 				{
@@ -2211,7 +2243,7 @@ HTML;
 				$receipt = $this->bo->update_ticket($values, $id, $receipt, $values_attribute);
 
 				if ((isset($values['send_mail']) && $values['send_mail']) || (isset($this->bo->config->config_data['mailnotification']) && $this->bo->config->config_data['mailnotification'] && $this->bo->fields_updated
-					) || (isset($GLOBALS['phpgw_info']['user']['preferences']['property']['tts_notify_me']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['tts_notify_me'] == 1 && $this->bo->fields_updated
+					) || (isset($this->userSettings['preferences']['property']['tts_notify_me']) && $this->userSettings['preferences']['property']['tts_notify_me'] == 1 && $this->bo->fields_updated
 					)
 				)
 				{
@@ -2319,7 +2351,7 @@ HTML;
 			$add_to_project_link = '';
 			$request_link		 = '';
 
-			if ($GLOBALS['phpgw']->acl->check('.project.request', ACL_ADD, 'property'))
+			if ($this->acl->check('.project.request', ACL_ADD, 'property'))
 			{
 				$request_link_data = array
 					(
@@ -2337,7 +2369,7 @@ HTML;
 				$request_link = phpgw::link('/index.php', $request_link_data);
 			}
 
-			if ($GLOBALS['phpgw']->acl->check('.project', ACL_ADD, 'property'))
+			if ($this->acl->check('.project', ACL_ADD, 'property'))
 			{
 				$order_link_data = array
 					(
@@ -2429,7 +2461,7 @@ HTML;
 				$i = 0;
 				foreach ($start_entity as $entry)
 				{
-					if ($GLOBALS['phpgw']->acl->check(".entity.{$entry['id']}", ACL_ADD, 'property'))
+					if ($this->acl->check(".entity.{$entry['id']}", ACL_ADD, 'property'))
 					{
 						$link_entity[$i]['link'] = phpgw::link('/index.php', array
 							(
@@ -2460,7 +2492,7 @@ HTML;
 
 			if (!$this->simple && $this->show_finnish_date)
 			{
-				$GLOBALS['phpgw']->jqcal->add_listener('values_finnish_date');
+				$this->jqcal->add_listener('values_finnish_date');
 			}
 
 			// -------- start order section
@@ -2476,8 +2508,8 @@ HTML;
 
 			if ($access_order)
 			{
-				$GLOBALS['phpgw']->jqcal->add_listener('order_deadline');
-				$GLOBALS['phpgw']->jqcal->add_listener('order_deadline2');
+				$this->jqcal->add_listener('order_deadline');
+				$this->jqcal->add_listener('order_deadline2');
 
 				$b_account_data = $this->bocommon->initiate_ui_budget_account_lookup(array
 					(
@@ -2498,9 +2530,9 @@ HTML;
 				// approval
 				$supervisor_id = 0;
 
-				if (isset($GLOBALS['phpgw_info']['user']['preferences']['property']['approval_from']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['approval_from'])
+				if (isset($this->userSettings['preferences']['property']['approval_from']) && $this->userSettings['preferences']['property']['approval_from'])
 				{
-					$supervisor_id = $GLOBALS['phpgw_info']['user']['preferences']['property']['approval_from'];
+					$supervisor_id = $this->userSettings['preferences']['property']['approval_from'];
 				}
 
 				$need_approval = isset($this->bo->config->config_data['workorder_approval']) ? $this->bo->config->config_data['workorder_approval'] : '';
@@ -2518,12 +2550,12 @@ HTML;
 			if ($preview_pdf)
 			{
 				$this->_pdf_order($id, true);
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 			if ($preview_html)
 			{
 				$this->_html_order($id, true);
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 
 			$_budget_amount	 = $this->_get_budget_amount($id);
@@ -2531,22 +2563,21 @@ HTML;
 
 			if (isset($values['approval']) && $values['approval'] && $this->bo->config->config_data['workorder_approval'])
 			{
-				$coordinator_name	 = $GLOBALS['phpgw_info']['user']['fullname'];
-				$coordinator_email	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['email'];
+				$coordinator_name	 = $this->userSettings['fullname'];
+				$coordinator_email	 = $this->userSettings['preferences']['common']['email'];
 
 				$subject = lang('Approval') . ": " . $ticket['order_id'];
 				$message = '<a href ="' . phpgw::link('/index.php', array('menuaction' => 'property.uitts.view',
 						'id'		 => $id), false, true) . '">' . lang('Workorder %1 needs approval', $ticket['order_id']) . '</a>';
 
-				if (empty($GLOBALS['phpgw_info']['server']['smtp_server']))
+				if (empty($this->serverSettings['smtp_server']))
 				{
 					$receipt['error'][] = array('msg' => lang('SMTP server is not set! (admin section)'));
 				}
 
-				if (!is_object($GLOBALS['phpgw']->send))
-				{
-					$GLOBALS['phpgw']->send = CreateObject('phpgwapi.send');
-				}
+
+				$send = CreateObject('phpgwapi.send');
+
 
 				$action_params	 = array(
 					'appname'			 => 'property',
@@ -2576,16 +2607,16 @@ HTML;
 					}
 					else
 					{
-						$email_domain	 = !empty($GLOBALS['phpgw_info']['server']['email_domain']) ? $GLOBALS['phpgw_info']['server']['email_domain'] : 'bergen.kommune.no';
-						$_address		 = $GLOBALS['phpgw']->accounts->id2lid($_account_id) . "@{$email_domain}";
+						$email_domain	 = !empty($this->serverSettings['email_domain']) ? $this->serverSettings['email_domain'] : 'bergen.kommune.no';
+						$_address		 = $this->accounts_obj->id2lid($_account_id) . "@{$email_domain}";
 					}
 
 					$action_params['responsible'] = $_account_id;
 					try
 					{
-						$historylog->add('AR', $id, $GLOBALS['phpgw']->accounts->get($_account_id)->__toString() . "::{$_budget_amount}");
+						$historylog->add('AR', $id, $this->accounts_obj->get($_account_id)->__toString() . "::{$_budget_amount}");
 						execMethod('property.sopending_action.set_pending_action', $action_params);
-						$rcpt = $GLOBALS['phpgw']->send->msg('email', $_address, $subject, stripslashes($message), '', $cc, $bcc, $coordinator_email, $coordinator_name, 'html');
+						$rcpt = $send->msg('email', $_address, $subject, stripslashes($message), '', $cc, $bcc, $coordinator_email, $coordinator_name, 'html');
 						if ($rcpt)
 						{
 							phpgwapi_cache::message_set(lang('%1 is notified', $_address), 'message');
@@ -2619,7 +2650,7 @@ HTML;
 //						execMethod('property.sopending_action.set_pending_action', $action_params);
 //					}
 //					execMethod('property.sopending_action.close_pending_action', $action_params);
-//					$historylog->add('AA', $id, $GLOBALS['phpgw']->accounts->get($_account_id)->__toString() . "::{$_budget_amount}");
+//					$historylog->add('AA', $id, $this->accounts_obj->get($_account_id)->__toString() . "::{$_budget_amount}");
 //				}
 ////
 				foreach ($values['do_approve'] as $_account_id => $_dummy)
@@ -2644,7 +2675,7 @@ HTML;
 							execMethod('property.sopending_action.set_pending_action', $action_params);
 						}
 						execMethod('property.sopending_action.close_pending_action', $action_params);
-						$historylog->add('AA', $id, $GLOBALS['phpgw']->accounts->get($__account_id)->__toString() . "::{$_budget_amount}");
+						$historylog->add('AA', $id, $this->accounts_obj->get($__account_id)->__toString() . "::{$_budget_amount}");
 					}
 					unset($action_params['responsible']);
 				}
@@ -2662,7 +2693,7 @@ HTML;
 					(
 					'value_id'		 => '', //not from historytable
 					'value_count'	 => 1,
-					'value_date'	 => $GLOBALS['phpgw']->common->show_date($ticket['timestamp']),
+					'value_date'	 => $this->phpgwapi_common->show_date($ticket['timestamp']),
 					'value_user'	 => $ticket['user_name'],
 					'value_note'	 => $ticket['details'],
 					'value_publish'	 => $ticket['publish_note']
@@ -2671,7 +2702,7 @@ HTML;
 
 			$additional_notes = array_merge($notes, $additional_notes);
 
-			if (isset($GLOBALS['phpgw_info']['user']['preferences']['common']['yui_table_nowrap']) && $GLOBALS['phpgw_info']['user']['preferences']['common']['yui_table_nowrap'])
+			if (isset($this->userSettings['preferences']['common']['yui_table_nowrap']) && $this->userSettings['preferences']['common']['yui_table_nowrap'])
 			{
 				foreach ($additional_notes as &$_note)
 				{
@@ -2707,7 +2738,7 @@ HTML;
 				}
 			}
 
-			if ($GLOBALS['phpgw_info']['apps']['frontend']['enabled'])
+			if ($this->apps['frontend']['enabled'])
 			{
 				$note_def[] = array('key'		 => 'publish_note', 'label'		 => lang('publish text'),
 					'sortable'	 => false, 'resizeable' => true, 'formatter'	 => 'FormatterCenter');
@@ -2795,7 +2826,7 @@ HTML;
 					$_checked = 'checked="checked"';
 				}
 				$datetime = new DateTime($_entry['created'], new DateTimeZone('UTC'));
-				$datetime->setTimeZone(new DateTimeZone($GLOBALS['phpgw_info']['user']['preferences']['common']['timezone']));
+				$datetime->setTimeZone(new DateTimeZone($this->userSettings['preferences']['common']['timezone']));
 				$created = $datetime->format('Y-m-d H:i:s');
 
 				$tags = array();
@@ -2870,7 +2901,7 @@ HTML;
 
 			$requestUrl	 = json_encode(self::link(array(
 				'menuaction' => 'property.uitts.update_file_data',
-				'location_id' => $GLOBALS['phpgw']->locations->get_id('property', '.ticket'),
+				'location_id' => $this->locations->get_id('property', '.ticket'),
 				'location_item_id' => $id,
 				'phpgw_return_as'	 => 'json')
 				));
@@ -3083,7 +3114,7 @@ JS;
 				)
 			);
 
-			$location_id = $GLOBALS['phpgw']->locations->get_id('property', $this->acl_location);
+			$location_id = $this->locations->get_id('property', $this->acl_location);
 			$notify_info = execMethod('property.notify.get_jquery_table_def', array
 				(
 				'location_id'		 => $location_id,
@@ -3201,8 +3232,8 @@ JS;
 					'external_project_id'	 => $entry['project_id'],
 					'currency'				 => $entry['currency'],
 					'budget_responsible'	 => $entry['budget_responsible'],
-					'budsjettsigndato'		 => $entry['budsjettsigndato'] ? $GLOBALS['phpgw']->common->show_date(strtotime($entry['budsjettsigndato']), $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']) : '',
-					'transfer_time'			 => $entry['transfer_time'] ? $GLOBALS['phpgw']->common->show_date(strtotime($entry['transfer_time']), $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']) : '',
+					'budsjettsigndato'		 => $entry['budsjettsigndato'] ? $this->phpgwapi_common->show_date(strtotime($entry['budsjettsigndato']), $this->userSettings['preferences']['common']['dateformat']) : '',
+					'transfer_time'			 => $entry['transfer_time'] ? $this->phpgwapi_common->show_date(strtotime($entry['transfer_time']), $this->userSettings['preferences']['common']['dateformat']) : '',
 				);
 
 				$amount			 += $entry['amount'];
@@ -3212,7 +3243,7 @@ JS;
 
 			if ($invoices)
 			{
-				$invoice_config = CreateObject('admin.soconfig', $GLOBALS['phpgw']->locations->get_id('property', '.invoice'));
+				$invoice_config = CreateObject('admin.soconfig', $this->locations->get_id('property', '.invoice'));
 			}
 
 			foreach ($invoices as $entry)
@@ -3389,7 +3420,7 @@ JS;
 
 			foreach ($external_messages as &$external_message)
 			{
-				$external_message['modified_date']	 = $GLOBALS['phpgw']->common->show_date($external_message['modified_date']);
+				$external_message['modified_date']	 = $this->phpgwapi_common->show_date($external_message['modified_date']);
 				$external_message['mail_recipients'] = implode(', ', $external_message['mail_recipients']);
 				$external_message['subject_link']	 = "<a href=\"" . self::link(array('menuaction' => 'property.uiexternal_communication.edit',
 						'id'		 => $external_message['id'], 'ticket_id'	 => $id)) . "\">{$external_message['subject']}</a>";
@@ -3566,7 +3597,7 @@ JS;
 				$year++;
 			}
 
-			$membership	 = $GLOBALS['phpgw']->accounts->membership($this->account);
+			$membership	 = $this->accounts_obj->membership($this->account);
 			$my_groups	 = array();
 			foreach ($membership as $group_id => $group)
 			{
@@ -3582,7 +3613,7 @@ JS;
 			$tabs['history'] = array('label' => lang('History'), 'link' => '#history');
 			$active_tab		 = 'general';
 
-			$unspsc_code			 = $ticket['unspsc_code'] ? $ticket['unspsc_code'] : $GLOBALS['phpgw_info']['user']['preferences']['property']['unspsc_code'];
+			$unspsc_code			 = $ticket['unspsc_code'] ? $ticket['unspsc_code'] : $this->userSettings['preferences']['property']['unspsc_code'];
 			$enable_order_service_id = !empty($this->bo->config->config_data['enable_order_service_id']) ? true : false;
 			$enable_unspsc			 = !empty($this->bo->config->config_data['enable_unspsc']) ? true : false;
 			$relation_type_list		 = array(
@@ -3660,10 +3691,10 @@ JS;
 								'__user_job_title__',
 							),
 							array(
-								$GLOBALS['phpgw_info']['user']['preferences']['property']['ressursnr'],
+								$this->userSettings['preferences']['property']['ressursnr'],
 								$ticket['order_id'],
 								$_delivery_address,
-								$GLOBALS['phpgw_info']['user']['preferences']['common']['job_title'],
+								$this->userSettings['preferences']['common']['job_title'],
 							),
 							$payment_type['descr']
 						);
@@ -3696,7 +3727,7 @@ JS;
 				$delivery_address = CreateObject('property.solocation')->get_delivery_address($location_data['loc1']);
 			}
 
-			if(!$payment_info && $GLOBALS['phpgw_info']['user']['preferences']['property']['order_payment_info'])
+			if(!$payment_info && $this->userSettings['preferences']['property']['order_payment_info'])
 			{
 				$payment_info = str_replace(
 					array(
@@ -3704,10 +3735,10 @@ JS;
 						'__order_id__',
 					),
 					array(
-						$GLOBALS['phpgw_info']['user']['preferences']['property']['ressursnr'],
+						$this->userSettings['preferences']['property']['ressursnr'],
 						$ticket['order_id']
 					),
-					$GLOBALS['phpgw_info']['user']['preferences']['property']['order_payment_info']
+					$this->userSettings['preferences']['property']['order_payment_info']
 					);
 			}
 
@@ -3768,7 +3799,7 @@ JS;
 				'send_response'					 => isset($this->bo->config->config_data['tts_send_response']) ? $this->bo->config->config_data['tts_send_response'] : '',
 				'value_sms_phone'				 => $ticket['contact_phone'],
 				'access_order'					 => $access_order,
-				'currency'						 => $GLOBALS['phpgw_info']['user']['preferences']['common']['currency'],
+				'currency'						 => $this->userSettings['preferences']['common']['currency'],
 				'enable_unspsc'					 => $enable_unspsc,
 				'enable_order_service_id'		 => $enable_order_service_id,
 				'value_order_id'				 => $ticket['order_id'],
@@ -3803,7 +3834,7 @@ JS;
 				'value_order_deadline'			 => $ticket['order_deadline'],
 				'value_order_deadline2'			 => $ticket['order_deadline2'],
 				'link_entity'					 => $link_entity,
-				'msgbox_data'					 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'					 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'location_data2'				 => $location_data,
 				'value_status'					 => $ticket['status'],
 				'status_list'					 => array('options' => $this->bo->get_status_list($ticket['status'])),
@@ -3844,7 +3875,7 @@ JS;
 				'add_to_project_link'			 => $add_to_project_link,
 				//			'lang_name'						=> lang('name'),
 				'contact_phone'					 => $ticket['contact_phone'],
-				'pref_send_mail'				 => isset($GLOBALS['phpgw_info']['user']['preferences']['property']['tts_user_mailnotification']) ? $GLOBALS['phpgw_info']['user']['preferences']['property']['tts_user_mailnotification'] : '',
+				'pref_send_mail'				 => isset($this->userSettings['preferences']['property']['tts_user_mailnotification']) ? $this->userSettings['preferences']['property']['tts_user_mailnotification'] : '',
 				'fileupload'					 => isset($this->bo->config->config_data['fmttsfileupload']) ? $this->bo->config->config_data['fmttsfileupload'] : '',
 				'link_view_file'				 => phpgw::link('/index.php', $link_file_data),
 				'link_to_files'					 => isset($this->bo->config->config_data['files_url']) ? $this->bo->config->config_data['files_url'] : '',
@@ -3855,8 +3886,8 @@ JS;
 				'lang_file_action_statustext'	 => lang('Check to delete file'),
 				'lang_upload_file'				 => lang('Upload file'),
 				'lang_file_statustext'			 => lang('Select file to upload'),
-				'textareacols'					 => isset($GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols'] ? $GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols'] : 60,
-				'textarearows'					 => isset($GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows'] ? $GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows'] : 6,
+				'textareacols'					 => isset($this->userSettings['preferences']['property']['textareacols']) && $this->userSettings['preferences']['property']['textareacols'] ? $this->userSettings['preferences']['property']['textareacols'] : 60,
+				'textarearows'					 => isset($this->userSettings['preferences']['property']['textarearows']) && $this->userSettings['preferences']['property']['textarearows'] ? $this->userSettings['preferences']['property']['textarearows'] : 6,
 //					'order_cat_list'				=> $order_catetory,
 				'building_part_list'			 => array('options' => $this->bocommon->select_category_list(array(
 						'type'		 => 'building_part', 'selected'	 => $ticket['building_part'], 'order'		 => 'id',
@@ -3867,13 +3898,13 @@ JS;
 				'tax_code_list'					 => array('options' => $this->bocommon->select_category_list(array(
 						'type'		 => 'tax', 'selected'	 => $ticket['tax_code'], 'order'		 => 'id',
 						'id_in_name' => 'num'))),
-				'branch_list'					 => isset($GLOBALS['phpgw_info']['user']['preferences']['property']['tts_branch_list']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['tts_branch_list'] == 1 ? array(
+				'branch_list'					 => isset($this->userSettings['preferences']['property']['tts_branch_list']) && $this->userSettings['preferences']['property']['tts_branch_list'] == 1 ? array(
 				'options' => execMethod('property.boproject.select_branch_list', $values['branch_id'])) : '',
 				'preview_html'					 => "javascript:preview_html($id)",
 				'preview_pdf'					 => "javascript:preview_pdf($id)",
 				'tabs'							 => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
 				'value_order_sent'				 => !!$ticket['order_sent'],
-				'value_order_received'			 => $ticket['order_received'] ? $GLOBALS['phpgw']->common->show_date($ticket['order_received']) : '[ DD/MM/YYYY - H:i ]',
+				'value_order_received'			 => $ticket['order_received'] ? $this->phpgwapi_common->show_date($ticket['order_received']) : '[ DD/MM/YYYY - H:i ]',
 				'value_order_received_amount'	 => (int)$ticket['order_received_amount'],
 				'value_extra_mail_address'		 => $value_extra_mail_address,
 				'value_continuous'				 => $ticket['continuous'],
@@ -3909,7 +3940,9 @@ JS;
 
 			$appname										 = lang('helpdesk');
 			$function_msg									 = lang('view ticket detail');
-			$GLOBALS['phpgw_info']['flags']['app_header']	 = lang('property') . ' - ' . $appname . ': ' . $function_msg . "#{$id}";
+			$this->flags['app_header']	 = lang('property') . ' - ' . $appname . ': ' . $function_msg . "#{$id}";
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
+
 			self::render_template_xsl(array('tts', 'multi_upload_file_inline', 'attributes_form','datatable_inline', 'cat_sub_select'),
 				$data, $xsl_rootdir = '', 'view');
 		}
@@ -4010,7 +4043,7 @@ JS;
 
 		public function receive_order()
 		{
-			if (!$GLOBALS['phpgw']->acl->check('.project', ACL_ADD, 'property'))
+			if (!$this->acl->check('.project', ACL_ADD, 'property'))
 			{
 				return;
 			}
@@ -4064,9 +4097,9 @@ JS;
 				phpgw::no_access();
 			}
 
-			$GLOBALS['phpgw_info']['flags']['noheader']	 = true;
-			$GLOBALS['phpgw_info']['flags']['nofooter']	 = true;
-			$GLOBALS['phpgw_info']['flags']['xslt_app']	 = false;
+			$this->flags['noheader']	 = true;
+			$this->flags['nofooter']	 = true;
+			$this->flags['xslt_app']	 = false;
 
 			if (!$id)
 			{
@@ -4084,8 +4117,8 @@ JS;
 
 			$content = array(); //$this->_get_order_details($common_data['content'],	$show_cost);
 
-			$dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
-			$date		 = $GLOBALS['phpgw']->common->show_date(time(), $dateformat);
+			$dateformat	 = $this->userSettings['preferences']['common']['dateformat'];
+			$date		 = $this->phpgwapi_common->show_date(time(), $dateformat);
 
 			set_time_limit(1800);
 			$pdf = CreateObject('phpgwapi.pdf');
@@ -4147,17 +4180,17 @@ JS;
 			{
 				$user_name										 = $ticket['assignedto_name'];
 				$GLOBALS['phpgw']->preferences->set_account_id($ticket['assignedto'], true);
-				$GLOBALS['phpgw_info']['user']['preferences']	 = $GLOBALS['phpgw']->preferences->data;
+				$this->userSettings['preferences']	 = $GLOBALS['phpgw']->preferences->data;
 				if (!$preview)
 				{
-					$_behalf_alert = lang('this order is sent by %1 on behalf of %2', $GLOBALS['phpgw_info']['user']['fullname'], $user_name);
+					$_behalf_alert = lang('this order is sent by %1 on behalf of %2', $this->userSettings['fullname'], $user_name);
 					$historylog->add('C', $id, $_behalf_alert);
 					unset($_behalf_alert);
 				}
 			}
 			else
 			{
-				$user_name = $GLOBALS['phpgw_info']['user']['fullname'];
+				$user_name = $this->userSettings['fullname'];
 			}
 
 			$order_id						 = $ticket['order_id'];
@@ -4181,7 +4214,7 @@ JS;
 				)
 			));
 
-			$ressursnr	 = $GLOBALS['phpgw_info']['user']['preferences']['property']['ressursnr'];
+			$ressursnr	 = $this->userSettings['preferences']['property']['ressursnr'];
 			$data		 = array(
 				array(
 					'col1'	 => "{$organisation}\n{$department}\nOrg.nr: {$this->bo->config->config_data['org_unit_id']}",
@@ -4299,11 +4332,11 @@ JS;
 				$contact_phone = $contact_data['value_contact_tel'];
 			}
 
-			$user_phone						 = $GLOBALS['phpgw_info']['user']['preferences']['common']['cellphone'];
-			$user_email						 = $GLOBALS['phpgw_info']['user']['preferences']['common']['email'];
-			$user_job_title					 = $GLOBALS['phpgw_info']['user']['preferences']['common']['job_title'];
-			$order_email_template			 = $GLOBALS['phpgw_info']['user']['preferences']['property']['order_email_template'];
-			$order_contact_block_template	 = $GLOBALS['phpgw_info']['user']['preferences']['property']['order_contact_block_1'];
+			$user_phone						 = $this->userSettings['preferences']['common']['cellphone'];
+			$user_email						 = $this->userSettings['preferences']['common']['email'];
+			$user_job_title					 = $this->userSettings['preferences']['common']['job_title'];
+			$order_email_template			 = $this->userSettings['preferences']['property']['order_email_template'];
+			$order_contact_block_template	 = $this->userSettings['preferences']['property']['order_contact_block_1'];
 
 			if (!empty($this->bo->config->config_data['contact_at_location']))
 			{
@@ -4317,8 +4350,8 @@ JS;
 				if ($_responsible)
 				{
 					$prefs																		 = $this->bocommon->create_preferences('common', $_responsible);
-					$GLOBALS['phpgw_info']['user']['preferences']['common']['account_display']	 = 'firstname';
-					$_responsible_name															 = $GLOBALS['phpgw']->accounts->get($_responsible)->__toString();
+					$this->userSettings['preferences']['common']['account_display']	 = 'firstname';
+					$_responsible_name															 = $this->accounts_obj->get($_responsible)->__toString();
 					$_responsible_email															 = $prefs['email'];
 					$_responsible_cellphone														 = $prefs['cellphone'];
 					if ($contact_email && ($contact_data['value_contact_email'] != $_responsible_email))
@@ -4326,7 +4359,7 @@ JS;
 						$contact_name2					 = $_responsible_name;
 						$contact_email2					 = $_responsible_email;
 						$contact_phone2					 = $_responsible_cellphone;
-						$order_contact_block_template	 = $GLOBALS['phpgw_info']['user']['preferences']['property']['order_contact_block_2'];
+						$order_contact_block_template	 = $this->userSettings['preferences']['property']['order_contact_block_2'];
 					}
 					else
 					{
@@ -4445,7 +4478,7 @@ JS;
 						$ressursnr,
 						$order_id
 					),
-					$GLOBALS['phpgw_info']['user']['preferences']['property']['order_payment_info']
+					$this->userSettings['preferences']['property']['order_payment_info']
 					);
 			}
 
@@ -4525,14 +4558,14 @@ JS;
 				));
 			}
 //start SMS::QRCODE
-			$sms_location_id	 = $GLOBALS['phpgw']->locations->get_id('sms', 'run');
+			$sms_location_id	 = $this->locations->get_id('sms', 'run');
 			$config_sms			 = CreateObject('admin.soconfig', $sms_location_id);
 			$gateway_number		 = $config_sms->config_data['common']['gateway_number'];
 			$gateway_codeword	 = $config_sms->config_data['common']['gateway_codeword'];
 			phpgw::import_class('phpgwapi.phpqrcode');
 			$code_text			 = "SMSTO:{$gateway_number}: {$gateway_codeword} STATUS {$ticket['order_id']} ";
 
-			$filename = $GLOBALS['phpgw_info']['server']['temp_dir'] . '/' . md5($code_text) . '.png';
+			$filename = $this->serverSettings['temp_dir'] . '/' . md5($code_text) . '.png';
 			QRcode::png($code_text, $filename);
 			$pdf->ezSetDy(-20);
 
@@ -4603,7 +4636,7 @@ JS;
 				$id			 = Sanitizer::get_var('id'); // in case of bigint
 				$show_cost	 = Sanitizer::get_var('show_cost', 'bool');
 			}
-			$GLOBALS['phpgw_info']['user']['preferences']['common']['account_display'] = 'firstname';
+			$this->userSettings['preferences']['common']['account_display'] = 'firstname';
 
 			if (!$show_cost)
 			{
@@ -4638,19 +4671,19 @@ JS;
 			{
 				$user_name										 = $ticket['assignedto_name'];
 				$GLOBALS['phpgw']->preferences->set_account_id($ticket['assignedto'], true);
-				$GLOBALS['phpgw_info']['user']['preferences']	 = $GLOBALS['phpgw']->preferences->data;
+				$this->userSettings['preferences']	 = $GLOBALS['phpgw']->preferences->data;
 				if (!$preview)
 				{
-					$_behalf_alert = lang('this order is sent by %1 on behalf of %2', $GLOBALS['phpgw_info']['user']['fullname'], $user_name);
+					$_behalf_alert = lang('this order is sent by %1 on behalf of %2', $this->userSettings['fullname'], $user_name);
 					$historylog->add('C', $id, $_behalf_alert);
 					unset($_behalf_alert);
 				}
 			}
 			else
 			{
-				$user_name = $GLOBALS['phpgw_info']['user']['fullname'];
+				$user_name = $this->userSettings['fullname'];
 			}
-			$ressursnr = $GLOBALS['phpgw_info']['user']['preferences']['property']['ressursnr'];
+			$ressursnr = $this->userSettings['preferences']['property']['ressursnr'];
 
 
 			if($ticket['delivery_address'])
@@ -4696,11 +4729,11 @@ JS;
 
 			$order_id						 = $ticket['order_id'];
 //account_display
-			$user_phone						 = $GLOBALS['phpgw_info']['user']['preferences']['common']['cellphone'];
-			$user_email						 = $GLOBALS['phpgw_info']['user']['preferences']['common']['email'];
-			$user_job_title					 = $GLOBALS['phpgw_info']['user']['preferences']['common']['job_title'];
-			$order_email_template			 = $GLOBALS['phpgw_info']['user']['preferences']['property']['order_email_template'];
-			$order_contact_block_template	 = $GLOBALS['phpgw_info']['user']['preferences']['property']['order_contact_block_1'];
+			$user_phone						 = $this->userSettings['preferences']['common']['cellphone'];
+			$user_email						 = $this->userSettings['preferences']['common']['email'];
+			$user_job_title					 = $this->userSettings['preferences']['common']['job_title'];
+			$order_email_template			 = $this->userSettings['preferences']['property']['order_email_template'];
+			$order_contact_block_template	 = $this->userSettings['preferences']['property']['order_contact_block_1'];
 
 			if (!empty($this->bo->config->config_data['contact_at_location']))
 			{
@@ -4714,8 +4747,8 @@ JS;
 				if ($_responsible)
 				{
 					$prefs																		 = $this->bocommon->create_preferences('common', $_responsible);
-					$GLOBALS['phpgw_info']['user']['preferences']['common']['account_display']	 = 'firstname';
-					$_responsible_name															 = $GLOBALS['phpgw']->accounts->get($_responsible)->__toString();
+					$this->userSettings['preferences']['common']['account_display']	 = 'firstname';
+					$_responsible_name															 = $this->accounts_obj->get($_responsible)->__toString();
 					$_responsible_email															 = $prefs['email'];
 					$_responsible_cellphone														 = $prefs['cellphone'];
 					if ($contact_email && ($contact_data['value_contact_email'] != $_responsible_email))
@@ -4723,7 +4756,7 @@ JS;
 						$contact_name2					 = $_responsible_name;
 						$contact_email2					 = "<a href='mailto:{$_responsible_email}'>{$_responsible_email}</a>";
 						$contact_phone2					 = $_responsible_cellphone;
-						$order_contact_block_template	 = $GLOBALS['phpgw_info']['user']['preferences']['property']['order_contact_block_2'];
+						$order_contact_block_template	 = $this->userSettings['preferences']['property']['order_contact_block_2'];
 					}
 					else
 					{
@@ -4805,8 +4838,8 @@ JS;
 				$contact_block = '';
 			}
 
-			$dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
-			$date		 = $GLOBALS['phpgw']->common->show_date(time(), $dateformat);
+			$dateformat	 = $this->userSettings['preferences']['common']['dateformat'];
+			$date		 = $this->phpgwapi_common->show_date(time(), $dateformat);
 
 
 			$lang_order	 = lang('order');
@@ -4912,7 +4945,7 @@ JS;
 						$ressursnr,
 						$order_id
 					),
-					$GLOBALS['phpgw_info']['user']['preferences']['property']['order_payment_info'])
+					$this->userSettings['preferences']['property']['order_payment_info'])
 					);
 			}
 
@@ -5066,11 +5099,11 @@ JS;
 			if ($preview)
 			{
 
-				$GLOBALS['phpgw_info']['flags']['noheader']	 = true;
-				$GLOBALS['phpgw_info']['flags']['nofooter']	 = true;
-				$GLOBALS['phpgw_info']['flags']['xslt_app']	 = false;
+				$this->flags['noheader']	 = true;
+				$this->flags['nofooter']	 = true;
+				$this->flags['xslt_app']	 = false;
 				echo $html;
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 
 			return $html;
@@ -5131,11 +5164,11 @@ JS;
 					continue;
 				}
 
-				$file = PHPGW_SERVER_ROOT . "/property/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}/{$entry['file_name']}";
+				$file = PHPGW_SERVER_ROOT . "/property/inc/custom/{$this->userSettings['domain']}/{$entry['file_name']}";
 
 				if ($entry['active'] && $entry['client_side'] && is_file($file))
 				{
-					phpgwapi_js::getInstance()->add_external_file("property/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}/{$entry['file_name']}");
+					phpgwapi_js::getInstance()->add_external_file("property/inc/custom/{$this->userSettings['domain']}/{$entry['file_name']}");
 					$js_found = true;
 				}
 			}
@@ -5149,11 +5182,11 @@ JS;
 
 		private function _get_user_list( $selected )
 		{
-			$xsl_rootdir = PHPGW_SERVER_ROOT . "/property/templates/{$GLOBALS['phpgw_info']['server']['template_set']}";
+			$xsl_rootdir = PHPGW_SERVER_ROOT . "/property/templates/{$this->serverSettings['template_set']}";
 
 			phpgwapi_xslttemplates::getInstance()->add_file(array('user_id_select'), $xsl_rootdir);
 
-			$users			 = $GLOBALS['phpgw']->acl->get_user_list_right(ACL_EDIT, $this->acl_location, 'property', $this->group_candidates);
+			$users			 = $this->acl->get_user_list_right(ACL_EDIT, $this->acl_location, 'property', $this->group_candidates);
 			$user_list		 = array();
 			$selected_found	 = false;
 			foreach ($users as $user)
@@ -5175,7 +5208,7 @@ JS;
 				$user_list[] = array
 					(
 					'id'		 => $selected,
-					'name'		 => $GLOBALS['phpgw']->accounts->get($selected)->__toString(),
+					'name'		 => $this->accounts_obj->get($selected)->__toString(),
 					'selected'	 => 1
 				);
 			}
@@ -5211,7 +5244,7 @@ JS;
 					$_attachment_log[] = $_attachment['name'];
 					if($bofiles->is_image($_attachment['file']))
 					{
-						$resized = $GLOBALS['phpgw_info']['server']['temp_dir'] . "/resized_{$ticket['order_id']}_" . basename($_attachment['file']);
+						$resized = $this->serverSettings['temp_dir'] . "/resized_{$ticket['order_id']}_" . basename($_attachment['file']);
 						$bofiles->resize_image($_attachment['file'], $resized, 800);
 						$_attachment['file'] = $resized;
 						$_attachment['resized'] = $resized;
@@ -5227,7 +5260,7 @@ JS;
 				$pdfcode = $this->_pdf_order($id);
 				if ($pdfcode)
 				{
-					$dir = "{$GLOBALS['phpgw_info']['server']['temp_dir']}/pdf_files";
+					$dir = "{$this->serverSettings['temp_dir']}/pdf_files";
 
 					//save the file
 					if (!file_exists($dir))
@@ -5253,14 +5286,13 @@ JS;
 				$body = $this->_html_order($id);
 			}
 
-			if (empty($GLOBALS['phpgw_info']['server']['smtp_server']))
+			if (empty($this->serverSettings['smtp_server']))
 			{
 				phpgwapi_cache::message_set(lang('SMTP server is not set! (admin section)'), 'error');
 			}
-			if (!is_object($GLOBALS['phpgw']->send))
-			{
-				$GLOBALS['phpgw']->send = CreateObject('phpgwapi.send');
-			}
+
+				$send = CreateObject('phpgwapi.send');
+
 
 			$on_behalf_of_assigned = Sanitizer::get_var('on_behalf_of_assigned', 'bool');
 			if ($on_behalf_of_assigned && isset($ticket['assignedto_name']))
@@ -5269,14 +5301,14 @@ JS;
 			}
 			else
 			{
-				$coordinator_name = $GLOBALS['phpgw_info']['user']['fullname'];
+				$coordinator_name = $this->userSettings['fullname'];
 			}
 
-			$coordinator_email = "{$coordinator_name}<{$GLOBALS['phpgw_info']['user']['preferences']['common']['email']}>";
+			$coordinator_email = "{$coordinator_name}<{$this->userSettings['preferences']['common']['email']}>";
 
 			$validator = CreateObject('phpgwapi.EmailAddressValidator');
 
-			if (!$validator->check_email_address($GLOBALS['phpgw_info']['user']['preferences']['common']['email']))
+			if (!$validator->check_email_address($this->userSettings['preferences']['common']['email']))
 			{
 				$bcc = '';
 				phpgwapi_cache::message_set(lang('please update <a href="%1">your email address here</a>', phpgw::link('/preferences/preferences.php', array(
@@ -5326,7 +5358,7 @@ JS;
 			{
 				try
 				{
-					$rcpt = $GLOBALS['phpgw']->send->msg('email', $_to, $subject, stripslashes($body), '', $cc, $bcc, $coordinator_email, $coordinator_name, 'html', '', $attachments, true);
+					$rcpt = $send->msg('email', $_to, $subject, stripslashes($body), '', $cc, $bcc, $coordinator_email, $coordinator_name, 'html', '', $attachments, true);
 					foreach ($attachments as $_attachment)
 					{
 						if (!empty($_attachment['resized']))

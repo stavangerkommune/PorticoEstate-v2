@@ -27,6 +27,12 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+	use App\modules\phpgwapi\controllers\Locations;
+	use App\modules\phpgwapi\controllers\Applications;
+	use App\Database\Db;
+
 	/**
 	 * Description
 	 * @package property
@@ -53,14 +59,18 @@
 
 		function __construct( $appname, $acl_location = '' )
 		{
+			$flags = Settings::getInstance()->get('flags');
+			$userSettings = Settings::getInstance()->get('user');
+
+
 			if (!$this->account)
 			{
-				$this->account = $GLOBALS['phpgw_info']['user']['account_id'];
+				$this->account = $userSettings['account_id'];
 			}
 
 			if (!$appname)
 			{
-				$appname = $GLOBALS['phpgw_info']['flags']['currentapp'];
+				$appname = $flags['currentapp'];
 			}
 
 			if (substr($appname, 0, 6) == 'entity')
@@ -80,6 +90,10 @@
 			{
 				$selector = $acl_location;
 			}
+
+			$locations_obj = new Locations();
+			$applications_obj = new Applications();
+
 			switch ($selector)
 			{
 				case 'request':
@@ -116,8 +130,8 @@
 					$this->attrib_id_field	 = 'history_attrib_id';
 					$this->location_id_field = 'location_id';
 					$this->app_id_field		 = 'app_id';
-					$this->app_id			 = $GLOBALS['phpgw']->applications->name2id($appname);
-					$this->location_id		 = $GLOBALS['phpgw']->locations->get_id($appname, '.vendor');
+					$this->app_id			 = $applications_obj->name2id($appname);
+					$this->location_id		 = $locations_obj->get_id($appname, '.vendor');
 					break;
 				default:
 					throw new Exception(lang('Unknown history register for acl_location: %1', $selector));
@@ -125,7 +139,7 @@
 
 			$this->appname = $appname;
 
-			$this->db = & $GLOBALS['phpgw']->db;
+			$this->db = Db::getInstance();
 		}
 
 		function delete( $record_id, $attrib_id = 0 )
@@ -273,6 +287,7 @@
 			$this->db->query("SELECT * FROM {$this->table} {$location_filter}"
 				. " AND history_record_id={$record_id} {$filter} {$only_show_filter} {$orderby}", __LINE__, __FILE__);
 
+			$accounts_obj = new Accounts();
 			$return_values = array();
 			while ($this->db->next_record())
 			{
@@ -280,7 +295,7 @@
 					(
 					'id'		 => $this->db->f('history_id'),
 					'record_id'	 => $this->db->f('history_record_id'),
-					'owner'		 => $GLOBALS['phpgw']->accounts->id2name($this->db->f('history_owner')),
+					'owner'		 => $accounts_obj->id2name($this->db->f('history_owner')),
 					'status'	 => preg_replace('/ /', '', $this->db->f('history_status')),
 					'new_value'	 => $this->db->f('history_new_value', true),
 					'old_value'	 => $this->db->f('history_old_value', true),

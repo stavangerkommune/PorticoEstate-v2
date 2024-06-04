@@ -26,7 +26,9 @@
 	 * @subpackage eco
 	 * @version $Id$
 	 */
-	/**
+
+	use App\modules\phpgwapi\services\Cache;
+	 /**
 	 * Description
 	 * @package property
 	 */
@@ -115,7 +117,8 @@
 
 		function read_sessiondata()
 		{
-			$data					 = $GLOBALS['phpgw']->session->appsession('session_data', 'investment');
+			$data = Cache::session_get('investment', 'session_data');
+
 			$this->start			 = $data['start'];
 			$this->query			 = $data['query'];
 			$this->filter			 = $data['filter'];
@@ -130,23 +133,14 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', 'investment', $data);
+				Cache::session_set('investment', 'session_data', $data);
 			}
 		}
 
 		function read( $data = array() )
 		{
-
 			$investment			 = $this->so->read($data);
-//			$investment = $this->so->read(array('start' => $this->start,'query' => $this->query,'sort' => $this->sort,'order' => $this->order,
-//            'filter' => $this->filter,'cat_id' => $this->cat_id,'part_of_town_id' => $this->part_of_town_id,'allrows'=>$this->allrows));
 			$this->total_records = $this->so->total_records;
-
-			/* 		for ($i=0; $i<count($investment); $i++)
-			  {
-			  $investment[$i]['date']  = $GLOBALS['phpgw']->common->show_date($investment[$i]['date']);
-			  }
-			 */
 			return $investment;
 		}
 
@@ -224,8 +218,9 @@
 
 			//_debug_array($values);
 
+			$db = CreateObject('phpgwapi.db');
 			$values['date']	 = $this->bocommon->date_to_timestamp($values['date']);
-			$values['date']	 = date($GLOBALS['phpgw']->db->date_format(), $values['date']);
+			$values['date']	 = date($db->date_format(), $values['date']);
 
 			$values['initial_value'] = abs($values['initial_value']);
 
@@ -264,8 +259,10 @@
 
 			$date_array = phpgwapi_datetime::date_array($values['date']);
 
+			$db = CreateObject('phpgwapi.db');
+
 			$date	 = mktime(2, 0, 0, $date_array['month'], $date_array['day'], $date_array['year']);
-			$date	 = date($GLOBALS['phpgw']->db->date_format(), $date);
+			$date	 = date($db->date_format(), $date);
 
 			$new_index = str_replace(",", ".", $values['new_index']);
 

@@ -27,6 +27,10 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
 	/**
 	 * Description
 	 * @package property
@@ -39,7 +43,7 @@
 		var $filter;
 		var $sort;
 		var $order;
-		var $cat_id, $so, $bocommon, $use_session, $allrows,$chapter_id,$total_records;
+		var $cat_id, $so, $bocommon, $use_session, $allrows,$chapter_id,$total_records,$userSettings,$phpgwapi_common,$accounts_obj;
 		var $public_functions = array
 			(
 			'read'			 => true,
@@ -50,6 +54,9 @@
 
 		function __construct( $session = false )
 		{
+			$this->userSettings = Settings::getInstance()->get('user');
+			$this->phpgwapi_common = new \phpgwapi_common();
+			$this->accounts_obj = new Accounts();
 			$this->so		 = CreateObject('property.sotemplate');
 			$this->bocommon	 = CreateObject('property.bocommon');
 
@@ -111,13 +118,13 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', 'template', $data);
+				Cache::session_set('template', 'session_data', $data);
 			}
 		}
 
 		function read_sessiondata()
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data', 'template');
+			$data = Cache::session_get('template', 'session_data');
 
 			$this->start		 = $data['start'];
 			$this->query		 = $data['query'];
@@ -137,24 +144,24 @@
 
 			  $this->total_records = $this->so->total_records;
 
-			  $dateformat					= $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			  $dateformat					= $this->userSettings['preferences']['common']['dateformat'];
 
 			  for ($i=0; $i<count($template); $i++)
 			  {
-			  $template[$i]['owner'] = $GLOBALS['phpgw']->accounts->id2name($template[$i]['owner']);
-			  $template[$i]['entry_date']		= $GLOBALS['phpgw']->common->show_date($template[$i]['entry_date'],$dateformat);
+			  $template[$i]['owner'] = $this->accounts_obj->id2name($template[$i]['owner']);
+			  $template[$i]['entry_date']		= $this->phpgwapi_common->show_date($template[$i]['entry_date'],$dateformat);
 			  }
 
 			  return $template;
 			 */
 			$values				 = $this->so->read($data);
 			$this->total_records = $this->so->total_records;
-			$dateformat			 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat			 = $this->userSettings['preferences']['common']['dateformat'];
 
 			for ($i = 0; $i < count($values); $i++)
 			{
-				$values[$i]['owner']		 = $GLOBALS['phpgw']->accounts->id2name($values[$i]['owner']);
-				$values[$i]['entry_date']	 = $GLOBALS['phpgw']->common->show_date($values[$i]['entry_date'], $dateformat);
+				$values[$i]['owner']		 = $this->accounts_obj->id2name($values[$i]['owner']);
+				$values[$i]['entry_date']	 = $this->phpgwapi_common->show_date($values[$i]['entry_date'], $dateformat);
 			}
 			return $values;
 		}
@@ -167,7 +174,7 @@
 //				'chapter_id' => $this->chapter_id,'allrows'=>$this->allrows, 'template_id'=>$template_id));
 			$this->total_records = $this->so->total_records;
 
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
 
 			return $template;
 		}

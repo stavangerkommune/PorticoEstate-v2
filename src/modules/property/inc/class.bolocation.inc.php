@@ -32,8 +32,6 @@
 	use App\modules\phpgwapi\services\Settings;
 	use App\modules\phpgwapi\controllers\Accounts\Accounts;
 
-
-
 	/**
 	 * Description
 	 * @package property

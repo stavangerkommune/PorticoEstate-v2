@@ -26,6 +26,10 @@
 	 * @subpackage agreement
 	 * @version $Id$
 	 */
+
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+
 	/**
 	 * Description
 	 * @package property
@@ -51,7 +55,6 @@
 
 		function __construct( $session = false )
 		{
-			//	$this->currentapp	= $GLOBALS['phpgw_info']['flags']['currentapp'];
 			$this->so		 = CreateObject('property.sopricebook');
 			$this->socommon	 = CreateObject('property.socommon');
 			$this->bocommon	 = CreateObject('property.bocommon');
@@ -109,13 +112,13 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', 'pricebook', $data);
+				Cache::session_set('pricebook', 'session_data', $data);
 			}
 		}
 
 		function read_sessiondata()
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data', 'pricebook');
+			$data = Cache::session_get('pricebook', 'session_data');
 
 			//_debug_array($data);
 
@@ -208,9 +211,11 @@
 		{
 			$values = $this->so->read_single_agreement_group($id);
 
-			$dateformat				 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
-			$values['start_date']	 = $GLOBALS['phpgw']->common->show_date($values['start_date'], $dateformat);
-			$values['end_date']		 = $GLOBALS['phpgw']->common->show_date($values['end_date'], $dateformat);
+			$userSettings = Settings::getInstance()->get('user');
+			$phpgwapi_common = new \phpgwapi_common();
+			$dateformat				 = $userSettings['common']['dateformat'];
+			$values['start_date']	 = $phpgwapi_common ->show_date($values['start_date'], $dateformat);
+			$values['end_date']		 = $phpgwapi_common ->show_date($values['end_date'], $dateformat);
 
 			return $values;
 		}
@@ -227,7 +232,6 @@
 			$date_array = phpgwapi_datetime::date_array($values['date']);
 
 			$date = mktime(2, 0, 0, $date_array['month'], $date_array['day'], $date_array['year']);
-//			$date= date($GLOBALS['phpgw']->db->date_format(),$date);
 
 			$new_index = str_replace(",", ".", $values['new_index']);
 
@@ -297,7 +301,6 @@
 			$date_array = phpgwapi_datetime::date_array($values['date']);
 
 			$date = mktime(2, 0, 0, $date_array['month'], $date_array['day'], $date_array['year']);
-//			$date= date($GLOBALS['phpgw']->db->date_format(),$date);
 
 			$m_cost			 = str_replace(",", ".", $values['m_cost']);
 			$w_cost			 = str_replace(",", ".", $values['w_cost']);

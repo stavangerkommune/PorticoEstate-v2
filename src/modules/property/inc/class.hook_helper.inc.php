@@ -24,13 +24,11 @@
 	  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
-use App\modules\phpgwapi\services\Cache;
-use App\Database\Db;
-use App\modules\phpgwapi\services\Settings;
-use App\modules\phpgwapi\services\Translation;
-use App\modules\phpgwapi\controllers\Applications;
-
-
+	use App\modules\phpgwapi\services\Cache;
+	use App\Database\Db;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\services\Translation;
+	use App\modules\phpgwapi\controllers\Applications;
 
 	phpgw::import_class('phpgwapi.datetime');
 

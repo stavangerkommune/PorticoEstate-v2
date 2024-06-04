@@ -27,12 +27,12 @@
 	 * @version $Id$
 	 */
 
-use App\Database\Db;
-use App\Database\Db2;
-use App\modules\phpgwapi\controllers\Locations;
-use App\modules\phpgwapi\services\Settings;
-use App\modules\phpgwapi\security\Acl;
-use App\modules\phpgwapi\services\SchemaProc\SchemaProc;
+	use App\Database\Db;
+	use App\Database\Db2;
+	use App\modules\phpgwapi\controllers\Locations;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\security\Acl;
+	use App\modules\phpgwapi\services\SchemaProc\SchemaProc;
 
 
 	/**

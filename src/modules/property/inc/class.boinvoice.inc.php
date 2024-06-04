@@ -26,7 +26,13 @@
 	 * @subpackage eco
 	 * @version $Id$
 	 */
-	phpgw::import_class('phpgwapi.datetime');
+
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+	use App\modules\phpgwapi\controllers\Locations;
+
+	 phpgw::import_class('phpgwapi.datetime');
 
 	/**
 	 * Description
@@ -52,9 +58,12 @@
 
 		function __construct( $session = false )
 		{
+
+		$userSettings = Settings::getInstance()->get('user');
+
 			$this->so			 = CreateObject('property.soinvoice', true);
 			$this->bocommon		 = CreateObject('property.bocommon');
-			$this->account_id	 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->account_id	 = $userSettings['account_id'];
 
 			if ($session)
 			{
@@ -115,14 +124,13 @@
 		{
 			if ($this->use_session)
 			{
-				$GLOBALS['phpgw']->session->appsession('session_data', 'invoice', $data);
+				Cache::session_set('invoice', 'session_data', $data);
 			}
 		}
 
 		function read_sessiondata()
 		{
-			$data = $GLOBALS['phpgw']->session->appsession('session_data', 'invoice');
-
+			$data = Cache::session_get('invoice', 'session_data');
 //_debug_array($data);
 
 			$this->start			 = isset($data['start']) ? $data['start'] : '';
@@ -543,7 +551,8 @@
 		public function add_manual_invoice( $values )
 		{
 			$receipt = array();
-			$config	 = CreateObject('admin.soconfig', $GLOBALS['phpgw']->locations->get_id('property', '.invoice'));
+			$locations_obj = new Locations();
+			$config	 = CreateObject('admin.soconfig', $locations_obj->get_id('property', '.invoice'));
 
 			$buffer						 = array();
 			$soXport					 = CreateObject('property.soXport');
@@ -562,7 +571,8 @@
 			$values['belop']		 = $values['amount'];
 			$values['godkjentbelop'] = $values['amount'];
 
-			$_dateformat = $GLOBALS['phpgw']->db->date_format();
+			$db = createObject('phpgwapi.db');
+			$_dateformat = $db->date_format();
 
 			$invoice_date	 = $values['invoice_date'] ? phpgwapi_datetime::date_to_timestamp($values['invoice_date']) : time();
 			$payment_date	 = $values['payment_date'] ? phpgwapi_datetime::date_to_timestamp($values['payment_date']) : time();
@@ -672,15 +682,16 @@
 			$values['belop']		 = $values['amount'];
 			$values['godkjentbelop'] = $values['amount'];
 
-			$values['fakturadato'] = date($GLOBALS['phpgw']->db->date_format(), mktime(2, 0, 0, $values['smonth'], $values['sday'], $values['syear']));
+			$db = createObject('phpgwapi.db');
+			$values['fakturadato'] = date($db->date_format(), mktime(2, 0, 0, $values['smonth'], $values['sday'], $values['syear']));
 
 			if ($values['num_days'])
 			{
-				$values['forfallsdato'] = date($GLOBALS['phpgw']->db->date_format(), mktime(2, 0, 0, $values['smonth'], $values['sday'], $values['syear']) + (86400 * $values['num_days']));
+				$values['forfallsdato'] = date($db->date_format(), mktime(2, 0, 0, $values['smonth'], $values['sday'], $values['syear']) + (86400 * $values['num_days']));
 			}
 			else
 			{
-				$values['forfallsdato'] = date($GLOBALS['phpgw']->db->date_format(), mktime(2, 0, 0, $values['emonth'], $values['eday'], $values['eyear']));
+				$values['forfallsdato'] = date($db->date_format(), mktime(2, 0, 0, $values['emonth'], $values['eday'], $values['eyear']));
 			}
 
 			$values['artid']				 = $values['art'];
@@ -831,6 +842,7 @@
 
 		function set_responsible( $values, $user_id = 0, $b_account_id = '' )
 		{
+			$accounts_obj = new Accounts();
 			$config					 = CreateObject('phpgwapi.config', 'property');
 			$config->read();
 			$responsible_supervisor	 = isset($config->config_data['dimb_responsible_1']) && $config->config_data['dimb_responsible_1'] ? $config->config_data['dimb_responsible_1'] : 0;
@@ -843,7 +855,7 @@
 				if ($budget_responsible_contact_id	 = $responsible->get_responsible($criteria_budget_responsible))
 				{
 					$budget_responsible_user_id		 = $responsible->get_contact_user_id($budget_responsible_contact_id);
-					$values['budget_responsible']	 = $GLOBALS['phpgw']->accounts->get($budget_responsible_user_id)->lid;
+					$values['budget_responsible']	 = $accounts_obj->get($budget_responsible_user_id)->lid;
 					$values['budsjettansvarligid']	 = $values['budget_responsible'];
 				}
 			}
@@ -860,12 +872,12 @@
 				if ($supervisor_contact_id	 = $responsible->get_responsible($criteria_supervisor))
 				{
 					$supervisor_user_id			 = $responsible->get_contact_user_id($supervisor_contact_id);
-					$values['supervisor']		 = $GLOBALS['phpgw']->accounts->get($supervisor_user_id)->lid;
+					$values['supervisor']		 = $accounts_obj->get($supervisor_user_id)->lid;
 					$values['saksbehandlerid']	 = $values['supervisor'];
 				}
 			}
 
-			$values['janitor']		 = $GLOBALS['phpgw']->accounts->get($user_id)->lid;
+			$values['janitor']		 = $accounts_obj->get($user_id)->lid;
 			$values['oppsynsmannid'] = $values['janitor'];
 
 			if (!$values['supervisor'])
@@ -873,12 +885,12 @@
 				$acl = CreateObject('phpgwapi.acl', $user_id);
 				if ($acl->check('.invoice', 32, 'property') && !$acl->check('.invoice', 64, 'property'))
 				{
-					$values['janitor']		 = $GLOBALS['phpgw']->accounts->get($user_id)->lid;
+					$values['janitor']		 = $accounts_obj->get($user_id)->lid;
 					$values['oppsynsmannid'] = $values['janitor'];
 				}
 				else if ($acl->check('.invoice', 64, 'property'))
 				{
-					$values['supervisor']		 = $GLOBALS['phpgw']->accounts->get($user_id)->lid;
+					$values['supervisor']		 = $accounts_obj->get($user_id)->lid;
 					$values['saksbehandlerid']	 = $values['supervisor'];
 				}
 			}
