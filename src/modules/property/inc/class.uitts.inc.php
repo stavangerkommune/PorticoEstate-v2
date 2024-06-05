@@ -27,11 +27,13 @@
 	 * @version $Id$
 	 */
 
-use App\modules\phpgwapi\controllers\Locations;
-use App\modules\phpgwapi\services\Settings;
-use App\modules\phpgwapi\security\Acl;
-use App\modules\phpgwapi\controllers\Accounts\Accounts;
-use App\modules\phpgwapi\services\Cache;
+	use App\Database\Db;
+	use App\modules\phpgwapi\services\Preferences;
+	use App\modules\phpgwapi\controllers\Accounts\phpgwapi_account;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\security\Acl;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+	use App\modules\phpgwapi\services\Cache;
 
 	 /**
 	 * Description
@@ -87,7 +89,7 @@ use App\modules\phpgwapi\services\Cache;
 		var $user_filter,$bo, $cats,$acl, $acl_location, $acl_read, $acl_add, $acl_edit, $acl_delete, $acl_manage,
 		$district_id, $tenant_id, $account, $bocommon, $start, $query, $sort, $order, $status_id, $user_id, $group_id, $reported_by, $cat_id,
 		$allrows, $vendor_id, $start_date, $end_date, $location_code, $p_num, $show_finnish_date, $ecodimb,$b_account,
-		$building_part, $branch_id, $parent_cat_id,$order_dim1,$decimal_separator, $accounts_obj, $jqcal;
+		$building_part, $branch_id, $parent_cat_id,$order_dim1,$decimal_separator, $accounts_obj, $jqcal, $db;
 
 		public function __construct()
 		{
@@ -104,10 +106,10 @@ use App\modules\phpgwapi\services\Cache;
 			$this->flags['xslt_app']	 = true;
 			Settings::getInstance()->set('flags', $this->flags);
 
-		//	$this->userSettings = Settings::getInstance()->get('user');
 
-		$this->accounts_obj							 = new Accounts();
-		$this->jqcal = CreateObject('phpgwapi.jqcal');
+			$this->accounts_obj							 = new Accounts();
+			$this->jqcal = CreateObject('phpgwapi.jqcal');
+			$this->db = Db::getInstance();
 
 			$this->account								 = $this->userSettings['account_id'];
 			$this->bo									 = CreateObject('property.botts', true);
@@ -481,7 +483,7 @@ HTML;
 				)
 			)
 			{
-				$this->bo->mail_ticket($id, $this->bo->fields_updated, $receipt);
+				$this->bo->mail_ticket($id, $this->bo->fields_updated);
 			}
 
 			if ($this->bo->fields_updated)
@@ -619,12 +621,13 @@ HTML;
 
 			$values = Sanitizer::get_var('values');
 
-			$GLOBALS['phpgw']->preferences->set_account_id($this->account, true);
+			$preferences = createObject('phpgwapi.preferences');
+			$preferences->set_account_id($this->account, true);
 
 			if (isset($values['save']) && $values['save'])
 			{
-				$GLOBALS['phpgw']->preferences->add('property', 'ticket_columns', $values['columns'], 'user');
-				$GLOBALS['phpgw']->preferences->save_repository();
+				$preferences->add('property', 'ticket_columns', $values['columns'], 'user');
+				$preferences->save_repository();
 				$receipt['message'][] = array('msg' => lang('columns is updated'));
 			}
 
@@ -650,9 +653,7 @@ HTML;
 			);
 
 			$this->flags['app_header'] = $function_msg;
-		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
-
-
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('columns' => $data));
 		}
 
@@ -1657,7 +1658,7 @@ HTML;
 
 					if (Sanitizer::get_var('phpgw_return_as') == 'json')
 					{
-						phpgwapi_cache::session_clear('phpgwapi', 'history');
+						Cache::session_clear('phpgwapi', 'history');
 						return array(
 							'status' => 'error',
 							'parent_cat_id' => $this->parent_cat_id,
@@ -2026,7 +2027,7 @@ HTML;
 					$tags = json_decode($_entry['tags'],true);
 					foreach ($tags as &$tag)
 					{
-						$tag = $GLOBALS['phpgw']->db->stripslashes($tag);
+						$tag = $this->db->stripslashes($tag);
 					}
 					unset($tag);
 				}
@@ -2225,7 +2226,7 @@ HTML;
 					{
 						foreach ($values['order_text'] as $_text)
 						{
-							$values['order_descr'] .= "\n" . $GLOBALS['phpgw']->db->stripslashes($_text);
+							$values['order_descr'] .= "\n" . $this->db->stripslashes($_text);
 						}
 					}
 				}
@@ -2589,7 +2590,8 @@ HTML;
 					'remark'			 => '',
 					'deadline'			 => ''
 				);
-				$bcc			 = '';//$coordinator_email;
+				$cc			 = '';
+				$bcc		 = '';//$coordinator_email;
 
 				foreach ($values['approval'] as $_account_id => $_address)
 				{
@@ -2619,12 +2621,12 @@ HTML;
 						$rcpt = $send->msg('email', $_address, $subject, stripslashes($message), '', $cc, $bcc, $coordinator_email, $coordinator_name, 'html');
 						if ($rcpt)
 						{
-							phpgwapi_cache::message_set(lang('%1 is notified', $_address), 'message');
+							Cache::message_set(lang('%1 is notified', $_address), 'message');
 						}
 					}
 					catch (Exception $exc)
 					{
-						phpgwapi_cache::message_set($exc->getMessage(), 'error');
+						Cache::message_set($exc->getMessage(), 'error');
 					}
 				}
 			}
@@ -2715,7 +2717,7 @@ HTML;
 //			{
 //				foreach ($values['order_text'] as $_text)
 //				{
-//					$ticket['order_descr'] .= "\n" . $GLOBALS['phpgw']->db->stripslashes($_text);
+//					$ticket['order_descr'] .= "\n" . $this->db->stripslashes($_text);
 //				}
 //			}
 
@@ -2835,7 +2837,7 @@ HTML;
 					$tags = json_decode($_entry['tags'],true);
 					foreach ($tags as &$tag)
 					{
-						$tag = $GLOBALS['phpgw']->db->stripslashes($tag);
+						$tag = $this->db->stripslashes($tag);
 					}
 					unset($tag);
 				}
@@ -4121,7 +4123,8 @@ JS;
 			$date		 = $this->phpgwapi_common->show_date(time(), $dateformat);
 
 			set_time_limit(1800);
-			$pdf = CreateObject('phpgwapi.pdf');
+		//	$pdf = CreateObject('phpgwapi.pdf');
+			$pdf = new Cezpdf('a4', 'portrait');
 
 			$pdf->ezSetMargins(50, 70, 50, 50);
 			$pdf->selectFont('Helvetica');
@@ -4179,11 +4182,12 @@ JS;
 			if ($on_behalf_of_assigned && isset($ticket['assignedto_name']))
 			{
 				$user_name										 = $ticket['assignedto_name'];
-				$GLOBALS['phpgw']->preferences->set_account_id($ticket['assignedto'], true);
-				$this->userSettings['preferences']	 = $GLOBALS['phpgw']->preferences->data;
+				$preferences = createObject('phpgwapi.preferences', $ticket['assignedto']);
+				$this->userSettings['preferences']	 = $preferences->data;
 				if (!$preview)
 				{
 					$_behalf_alert = lang('this order is sent by %1 on behalf of %2', $this->userSettings['fullname'], $user_name);
+					$historylog = CreateObject('property.historylog', 'tts');
 					$historylog->add('C', $id, $_behalf_alert);
 					unset($_behalf_alert);
 				}
@@ -4611,7 +4615,8 @@ JS;
 
 			if ($preview)
 			{
-				$pdf->print_pdf($document, "order_{$ticket['order_id']}");
+				//$pdf->print_pdf($document, "order_{$ticket['order_id']}");
+				$pdf->ezStream(['compress' => 0]);
 			}
 			else
 			{
@@ -4670,8 +4675,8 @@ JS;
 			if ($on_behalf_of_assigned && isset($ticket['assignedto_name']))
 			{
 				$user_name										 = $ticket['assignedto_name'];
-				$GLOBALS['phpgw']->preferences->set_account_id($ticket['assignedto'], true);
-				$this->userSettings['preferences']	 = $GLOBALS['phpgw']->preferences->data;
+				$preferences = createObject('phpgwapi.preferences', $ticket['assignedto']);
+				$this->userSettings['preferences']	 = $preferences->data;
 				if (!$preview)
 				{
 					$_behalf_alert = lang('this order is sent by %1 on behalf of %2', $this->userSettings['fullname'], $user_name);
@@ -5149,7 +5154,9 @@ JS;
 				'allrows'	 => true
 			);
 
-			if (!$custom_functions = $GLOBALS['phpgw']->custom_functions->find($criteria))
+			$custom_functions = createObject('phpgwapi.custom_functions')->find($criteria);
+
+			if (!$custom_functions)
 			{
 				return false;
 			}
@@ -5223,7 +5230,7 @@ JS;
 
 			if (!$_to)
 			{
-				phpgwapi_cache::message_set(lang('missing recipient for order %1', $ticket['order_id']), 'error');
+				Cache::message_set(lang('missing recipient for order %1', $ticket['order_id']), 'error');
 				return false;
 			}
 			$historylog = CreateObject('property.historylog', 'tts');
@@ -5288,7 +5295,7 @@ JS;
 
 			if (empty($this->serverSettings['smtp_server']))
 			{
-				phpgwapi_cache::message_set(lang('SMTP server is not set! (admin section)'), 'error');
+				Cache::message_set(lang('SMTP server is not set! (admin section)'), 'error');
 			}
 
 				$send = CreateObject('phpgwapi.send');
@@ -5311,7 +5318,7 @@ JS;
 			if (!$validator->check_email_address($this->userSettings['preferences']['common']['email']))
 			{
 				$bcc = '';
-				phpgwapi_cache::message_set(lang('please update <a href="%1">your email address here</a>', phpgw::link('/preferences/preferences.php', array(
+				Cache::message_set(lang('please update <a href="%1">your email address here</a>', phpgw::link('/preferences/preferences.php', array(
 							'appname'	 => 'property', 'type'		 => 'user'))), 'error');
 			}
 			else
@@ -5337,12 +5344,11 @@ JS;
 				{
 					if($on_behalf_of_assigned)
 					{
-						$GLOBALS['phpgw']->preferences->set_account_id($ticket['user_id'], true);
+						Preferences::getInstance()->setAccountId($ticket['user_id']);
 					}
 					$purchase_grant_ok = $this->bo->validate_purchase_grant($ticket['ecodimb'], $budget_amount, $order_id);
 
-					$GLOBALS['phpgw']->preferences->set_account_id($this->account, true);
-
+					Preferences::getInstance()->setAccountId($this->account);
 				}
 				catch (Exception $ex)
 				{
@@ -5368,13 +5374,13 @@ JS;
 					}
 					unset($_attachment);
 
-					phpgwapi_cache::message_set(lang('%1 is notified', $_to), 'message');
+					Cache::message_set(lang('%1 is notified', $_to), 'message');
 					$historylog->add('M', $id, "{$_to}{$attachment_log}");
-					phpgwapi_cache::message_set(lang('Workorder %1 is sent by email to %2', $order_id, $_to), 'message');
+					Cache::message_set(lang('Workorder %1 is sent by email to %2', $order_id, $_to), 'message');
 				}
 				catch (Exception $exc)
 				{
-					phpgwapi_cache::message_set($exc->getMessage(), 'error');
+					Cache::message_set($exc->getMessage(), 'error');
 				}
 			}
 		}

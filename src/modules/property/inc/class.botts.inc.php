@@ -2737,7 +2737,8 @@ HTML;
 			}
 			else
 			{
-				if(empty($this->userSettings['preferences']['property']['approval_from']))
+				$userSettings = Settings::getInstance()->get('user');//userSettings could be altered.
+				if(empty($userSettings['preferences']['property']['approval_from']))
 				{
 					Cache::message_set('Du må ha satt opp en som du rapporterer til','error');
 				}

@@ -20,8 +20,8 @@
 	/**
 	* Include shared vfs class
 	*/
-	require_once  SRC_ROOT_PATH . '/services/Vfs/VfsShared.php';
+	require_once  SRC_ROOT_PATH . '/modules/phpgwapi/services/Vfs/VfsShared.php';
 	/**
 	* Include vfs class
 	*/
-	require_once SRC_ROOT_PATH . "/services/Vfs/Vfs{$file_repository}.php";
+	require_once SRC_ROOT_PATH . "/modules/phpgwapi/services/Vfs/Vfs{$file_repository}.php";

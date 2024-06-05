@@ -27,14 +27,11 @@
 	 * @version $Id$
 	 */
 
-use App\Database\Db;
-use App\Database\Db2;
-use App\modules\phpgwapi\services\Settings;
-use App\modules\phpgwapi\services\Log;
-use App\modules\phpgwapi\security\Acl;
-use App\modules\phpgwapi\services\Cache;
-use App\modules\phpgwapi\controllers\Accounts\Accounts;
-use App\modules\phpgwapi\controllers\Locations;
+	use App\Database\Db;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\services\Log;
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
 
 	phpgw::import_class('phpgwapi.datetime');
 

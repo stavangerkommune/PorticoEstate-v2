@@ -20,7 +20,7 @@ class Preferences
 	public $forced;
 	public $default;
 	public $user;
-	private $data;
+	public $data;
 	private $values;
 	private $vars;
 	private $serverSettings;
@@ -50,6 +50,14 @@ class Preferences
 		$this->account_id = $account_id;
 		$this->preferences = $this->Readpreferences();
 		$this->set('account_id', $account_id);
+	}
+
+	/**
+	 * Leacy method
+	 */
+	public function set_account_id($account_id)
+	{
+		$this->setAccountId($account_id);
 	}
 
 	public static function getInstance($account_id = null)

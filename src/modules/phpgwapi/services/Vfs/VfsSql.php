@@ -183,21 +183,25 @@
 		 */
 		function extra_sql($data)
 		{
-			if (!is_array($data)) {
+			if (!is_array($data))
+			{
 				$data = array('query_type' => VFS_SQL_SELECT);
 			}
 
 			$sql = '';
 			$params = [];
 
-			if ($data['query_type'] == VFS_SQL_SELECT || $data['query_type'] == VFS_SQL_DELETE || $data['query_type'] == VFS_SQL_UPDATE) {
+			if ($data['query_type'] == VFS_SQL_SELECT || $data['query_type'] == VFS_SQL_DELETE || $data['query_type'] == VFS_SQL_UPDATE)
+			{
 				$sql = ' AND((';
 
-				if (is_array($this->meta_types)) {
+				if (is_array($this->meta_types))
+				{
 					$conditions = [];
-					foreach ($this->meta_types as $num => $type) {
-						$conditions[] = "mime_type != ?";
-						$params[] = $type;
+					foreach ($this->meta_types as $num => $type)
+					{
+						$conditions[] = "mime_type != :type{$num}";
+						$params[":type{$num}"] = $type;
 					}
 					$sql .= implode(' AND ', $conditions);
 				}
