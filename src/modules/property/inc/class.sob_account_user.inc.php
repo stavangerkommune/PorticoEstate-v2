@@ -62,12 +62,12 @@
 			$where			 = 'AND';
 			if ($check_user_id)
 			{
-				$filtermethod	 .= "{$where} ( fm_b_account_user.user_id = {$check_user_id} OR fm_b_account_user.user_id IS NULL )";
+				$filtermethod	 .= " {$where} ( fm_b_account_user.user_id = {$check_user_id} OR fm_b_account_user.user_id IS NULL )";
 				$where			 = 'AND';
 			}
 			if ($b_account_id)
 			{
-				$filtermethod	 .= "{$where} fm_b_account.id = '{$b_account_id}'";
+				$filtermethod	 .= " {$where} fm_b_account.id = '{$b_account_id}'";
 				$where			 = 'AND';
 			}
 

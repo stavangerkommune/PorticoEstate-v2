@@ -26,6 +26,9 @@
 	 * @subpackage budget
 	 * @version $Id$
 	 */
+
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\Cache;
 	/**
 	 * Description
 	 * @package property
@@ -71,10 +74,11 @@
 		{
 			parent::__construct();
 
-			$GLOBALS['phpgw_info']['flags']['xslt_app']			 = true;
-			$GLOBALS['phpgw_info']['flags']['menu_selection']	 = 'property::economy::budget';
+			$this->flags['xslt_app']			 = true;
+			$this->flags['menu_selection']	 = 'property::economy::budget';
+			Settings::getInstance()->set('flags', $this->flags);
 
-			$this->account = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->account = $this->userSettings['account_id'];
 
 			$this->bo		 = CreateObject('property.bobudget', true);
 			$this->bocommon	 = & $this->bo->bocommon;
@@ -95,8 +99,6 @@
 			$this->revision		 = $this->bo->revision;
 			$this->details		 = $this->bo->details;
 			$this->direction	 = $this->bo->direction;
-
-			$this->acl = & $GLOBALS['phpgw']->acl;
 		}
 
 		function save_sessiondata()
@@ -195,6 +197,7 @@
 
 			$cat_filter = $this->cats->formatted_xslt_list(array('select_name'	 => 'cat_id',
 				'selected'		 => $this->cat_id, 'globals'		 => True, 'link_data'		 => $link_data));
+			$values_combo_box[4] = array();
 			foreach ($cat_filter['cat_list'] as $_cat)
 			{
 				$values_combo_box[4][] = array
@@ -378,6 +381,7 @@
 
 			$cat_filter = $this->cats->formatted_xslt_list(array('select_name'	 => 'cat_id',
 				'selected'		 => $this->cat_id, 'globals'		 => True, 'link_data'		 => $link_data));
+			$values_combo_box[4] = array();
 			foreach ($cat_filter['cat_list'] as $_cat)
 			{
 				$values_combo_box[4][] = array
@@ -489,7 +493,7 @@
 			$acl_edit	 = $this->acl->check($acl_location, ACL_EDIT, 'property');
 			$acl_delete	 = $this->acl->check($acl_location, ACL_DELETE, 'property');
 
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::budget';
+			$this->flags['menu_selection'] .= '::budget';
 
 			$data = array(
 				'datatable_name' => lang('list budget'),
@@ -598,7 +602,8 @@
 //                        var_dump($data['form']['toolbar']['item'][5]);
 //                        exit();
 			//Title of Page
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('budget') . ': ' . lang('list budget');
+			$this->flags['app_header'] = lang('budget') . ': ' . lang('list budget');
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			phpgwapi_jquery::load_widget('numberformat');
 
@@ -671,7 +676,7 @@
 			$acl_edit	 = $this->acl->check($acl_location, ACL_EDIT, 'property');
 			$acl_delete	 = $this->acl->check($acl_location, ACL_DELETE, 'property');
 
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::basis';
+			$this->flags['menu_selection'] .= '::basis';
 
 			$data = array(
 				'datatable_name' => lang('list budget'),
@@ -766,7 +771,9 @@
 			unset($parameters);
 
 			//Title of Page
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('budget') . ': ' . lang('list budget');
+			$this->flags['app_header'] = lang('budget') . ': ' . lang('list budget');
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
+
 
 			phpgwapi_jquery::load_widget('numberformat');
 			self::add_javascript('property', 'base', 'budget.basis.js');
@@ -834,7 +841,9 @@
 				return $this->query_obligations();
 			}
 
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::obligations';
+			$this->flags['menu_selection'] .= '::obligations';
+			Settings::getInstance()->update('flags', ['menu_selection' => $this->flags['menu_selection']]);
+
 
 			$data = array(
 				'datatable_name' => lang('list obligations'),
@@ -916,7 +925,8 @@
 			$data['datatable']['actions'][] = array();
 
 			//Title of Page
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('budget') . ': ' . lang('list obligations');
+			$this->flags['app_header'] = lang('budget') . ': ' . lang('list obligations');
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			phpgwapi_jquery::load_widget('numberformat');
 			self::add_javascript('property', 'base', 'budget.obligations.js');
@@ -952,8 +962,8 @@
 			{
 				//$details = $this->details ? false : true;
 
-				$start_date	 = $GLOBALS['phpgw']->common->show_date(mktime(0, 0, 0, 1, 1, $this->year), $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
-				$end_date	 = $GLOBALS['phpgw']->common->show_date(mktime(0, 0, 0, 12, 31, $this->year), $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
+				$start_date	 =$this->phpgwapi_common->show_date(mktime(0, 0, 0, 1, 1, $this->year), $this->userSettings['preferences']['common']['dateformat']);
+				$end_date	 =$this->phpgwapi_common->show_date(mktime(0, 0, 0, 12, 31, $this->year), $this->userSettings['preferences']['common']['dateformat']);
 
 				//$sum_obligation = $sum_hits = $sum_budget_cost = $sum_actual_cost = 0;
 				foreach ($location_list as $entry)
@@ -1079,7 +1089,7 @@
 				'lang_district_statustext'	 => lang('Select the district'),
 				'select_district_name'		 => 'values[district_id]',
 				'district_list'				 => $this->bocommon->select_district_list('select', $values['district_id']),
-				'msgbox_data'				 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'				 =>$this->phpgwapi_common->msgbox($msgbox_data),
 				'edit_url'					 => phpgw::link('/index.php', $link_data),
 				'done_action'				 => phpgw::link('/index.php', array('menuaction' => 'property.uibudget.index')),
 				'lang_budget_id'			 => lang('ID'),
@@ -1100,7 +1110,8 @@
 				'validator'					 => phpgwapi_jquery::formvalidator_generate(array('location',
 					'date', 'security', 'file'))
 			);
-			$GLOBALS['phpgw_info']['flags']['app_header']	 = lang('budget') . ': ' . ($budget_id ? lang('edit budget') : lang('add budget'));
+			$this->flags['app_header']	 = lang('budget') . ': ' . ($budget_id ? lang('edit budget') : lang('add budget'));
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			self::render_template_xsl(array('budget'), array('edit' => $data));
 		}
@@ -1145,7 +1156,7 @@
 				{
 					if ($e)
 					{
-						phpgwapi_cache::message_set($e->getMessage(), 'error');
+						Cache::message_set($e->getMessage(), 'error');
 						$this->edit($values);
 						return;
 					}
@@ -1260,7 +1271,7 @@
 				'value_district_id'					 => $values['district_id'],
 				'value_b_group'						 => $values['b_group'],
 				'value_revision'					 => $values['revision'],
-				'msgbox_data'						 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'						 =>$this->phpgwapi_common->msgbox($msgbox_data),
 				'edit_url'							 => phpgw::link('/index.php', $link_data),
 				'done_action'						 => phpgw::link('/index.php', array('menuaction' => 'property.uibudget.basis')),
 				'lang_budget_id'					 => lang('ID'),
@@ -1283,7 +1294,8 @@
 					'date', 'security', 'file'))
 			);
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('budget') . ': ' . ($budget_id ? lang('edit budget') : lang('add budget'));
+			$this->flags['app_header'] = lang('budget') . ': ' . ($budget_id ? lang('edit budget') : lang('add budget'));
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			self::render_template_xsl(array('budget'), array('edit_basis' => $data));
 		}
@@ -1335,7 +1347,7 @@
 				{
 					if ($e)
 					{
-						phpgwapi_cache::message_set($e->getMessage(), 'error');
+						Cache::message_set($e->getMessage(), 'error');
 						$this->edit_basis($values);
 						return;
 					}
@@ -1395,7 +1407,8 @@
 			$appname		 = lang('budget');
 			$function_msg	 = lang('delete budget');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 
@@ -1441,7 +1454,8 @@
 			$appname		 = lang('budget');
 			$function_msg	 = lang('delete budget');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 
@@ -1482,7 +1496,8 @@
 
 			$budget_name = $this->bo->read_budget_name($budget_id);
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('budget') . ': ' . $budget_name;
+			$this->flags['app_header'] = lang('budget') . ': ' . $budget_name;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			$link_data = array
 				(
@@ -1497,7 +1512,7 @@
 
 			if (!$this->allrows)
 			{
-				$record_limit = $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
+				$record_limit = $this->userSettings['preferences']['common']['maxmatchs'];
 			}
 			else
 			{
@@ -1529,7 +1544,7 @@
 				'num_records'					 => count($list),
 				'all_records'					 => $this->bo->total_records,
 				'link_url'						 => phpgw::link('/index.php', $link_data),
-				'img_path'						 => $GLOBALS['phpgw']->common->get_image_path('phpgwapi', 'default'),
+				'img_path'						 =>$this->phpgwapi_common->get_image_path('phpgwapi', 'default'),
 				'select_action'					 => phpgw::link('/index.php', $link_data),
 				'lang_searchfield_statustext'	 => lang('Enter the search string. To show all entries, empty this field and press the SUBMIT button again'),
 				'lang_searchbutton_statustext'	 => lang('Submit the search string'),

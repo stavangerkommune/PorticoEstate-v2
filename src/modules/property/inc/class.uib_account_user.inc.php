@@ -25,7 +25,11 @@
 	 * @package registration
 	 * @version $Id$
 	 */
-	phpgw::import_class('phpgwapi.uicommon_jquery');
+
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\services\Cache;
+
+	 phpgw::import_class('phpgwapi.uicommon_jquery');
 
 	class property_uib_account_user extends phpgwapi_uicommon_jquery
 	{
@@ -49,8 +53,11 @@
 		{
 			parent::__construct();
 
-			$GLOBALS['phpgw_info']['flags']['xslt_app']	 = true;
-			$this->account_id							 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->flags['xslt_app']	 = true;
+			$this->flags['menu_selection'] = 'preferences::property::b_account_user';
+			Settings::getInstance()->set('flags', $this->flags);
+
+			$this->account_id							 = $this->userSettings['account_id'];
 			$this->bo									 = CreateObject('property.bob_account_user');
 			$this->bocommon								 = CreateObject('property.bocommon');
 			$this->start								 = $this->bo->start;
@@ -61,7 +68,6 @@
 			$this->status_id							 = $this->bo->status_id;
 			$this->allrows								 = $this->bo->allrows;
 
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] = 'preferences::property::b_account_user';
 		}
 
 		function index()
@@ -74,11 +80,11 @@
 			}
 
 			$msgbox_data = array();
-			if (Sanitizer::get_var('phpgw_return_as') != 'json' && $receipt	 = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
+			if (Sanitizer::get_var('phpgw_return_as') != 'json' && $receipt	 = Cache::session_get('phpgwapi', 'phpgw_messages'))
 			{
-				phpgwapi_cache::session_clear('phpgwapi', 'phpgw_messages');
-				$msgbox_data = $GLOBALS['phpgw']->common->msgbox_data($receipt);
-				$msgbox_data = $GLOBALS['phpgw']->common->msgbox($msgbox_data);
+				Cache::session_clear('phpgwapi', 'phpgw_messages');
+				$msgbox_data = $this->phpgwapi_common->msgbox_data($receipt);
+				$msgbox_data = $this->phpgwapi_common->msgbox($msgbox_data);
 			}
 
 			$myColumnDefs = array
@@ -137,10 +143,10 @@
 				)
 			);
 
-			if (!$GLOBALS['phpgw']->acl->check('.admin', ACL_EDIT, 'property'))
+			if (!$this->acl->check('.admin', ACL_EDIT, 'property'))
 			{
 				$user_list = array(
-					array('id' => $this->account_id, 'name' => $GLOBALS['phpgw_info']['user']['fullname'])
+					array('id' => $this->account_id, 'name' => $this->userSettings['fullname'])
 				);
 			}
 			else
@@ -171,10 +177,11 @@
 				'update_action'	 => self::link(array('menuaction' => 'property.uib_account_user.edit'))
 			);
 
-			$GLOBALS['phpgw']->jqcal->add_listener('query_start');
-			$GLOBALS['phpgw']->jqcal->add_listener('query_end');
-			$GLOBALS['phpgw']->jqcal->add_listener('active_from');
-			$GLOBALS['phpgw']->jqcal->add_listener('active_to');
+			$jqcal = createObject('phpgwapi.jqcal');
+			$jqcal->add_listener('query_start');
+			$jqcal->add_listener('query_end');
+			$jqcal->add_listener('active_from');
+			$jqcal->add_listener('active_to');
 
 			self::add_javascript('property', 'base', 'ajax_b_account_user.js');
 
@@ -231,10 +238,10 @@
 
 			if ($values = Sanitizer::get_var('values'))
 			{
-//				if (!$GLOBALS['phpgw']->acl->check('.admin', ACL_EDIT, 'property'))
+//				if (!$this->acl->check('.admin', ACL_EDIT, 'property'))
 //				{
 //					$receipt['error'][] = true;
-//					phpgwapi_cache::message_set(lang('you are not approved for this task'), 'error');
+//					Cache::message_set(lang('you are not approved for this task'), 'error');
 //				}
 				if (!$receipt['error'])
 				{
@@ -257,9 +264,9 @@
 
 			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				if ($receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
+				if ($receipt = Cache::session_get('phpgwapi', 'phpgw_messages'))
 				{
-					phpgwapi_cache::session_clear('phpgwapi', 'phpgw_messages');
+					Cache::session_clear('phpgwapi', 'phpgw_messages');
 					$result['receipt'] = $receipt;
 				}
 				else

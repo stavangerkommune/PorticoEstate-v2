@@ -26,7 +26,10 @@
 	 * @subpackage admin
 	 * @version $Id$
 	 */
-	/**
+
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\services\Cache;
+	 /**
 	 * Description
 	 * @package property
 	 */
@@ -60,14 +63,14 @@
 		{
 			parent::__construct();
 
-			$GLOBALS['phpgw_info']['flags']['xslt_app']			 = true;
-			$GLOBALS['phpgw_info']['flags']['menu_selection']	 = 'admin::property::async';
+			$this->flags['xslt_app']			 = true;
+			$this->flags['menu_selection']	 = 'admin::property::async';
+			Settings::getInstance()->set('flags', $this->flags);
 
-			$this->account	 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->account	 = $this->userSettings['account_id'];
 			$this->bo		 = CreateObject('property.boasync', true);
 			$this->bocommon	 = CreateObject('property.bocommon');
 
-			$this->acl			 = & $GLOBALS['phpgw']->acl;
 			$this->acl_location	 = '.admin';
 			$this->acl_read		 = $this->acl->check($this->acl_location, ACL_READ, 'property');
 			$this->acl_add		 = $this->acl->check($this->acl_location, ACL_ADD, 'property');
@@ -119,7 +122,8 @@
 			$appname		 = lang('method');
 			$function_msg	 = lang('list async method');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			$data = array(
 				'datatable_name' => $appname,
@@ -386,15 +390,15 @@
 			{
 				if ($e)
 				{
-					phpgwapi_cache::message_set($e->getMessage(), 'error');
+					Cache::message_set($e->getMessage(), 'error');
 					$this->edit();
 					return;
 				}
 			}
 
-			$message = $GLOBALS['phpgw']->common->msgbox($msgbox_data);
+			$message = $this->phpgwapi_common->msgbox($msgbox_data);
 
-			phpgwapi_cache::message_set($message[0]['msgbox_text'], 'message');
+			Cache::message_set($message[0]['msgbox_text'], 'message');
 			phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiasync.edit',
 				'id'		 => $id));
 		}
@@ -444,7 +448,7 @@
 
 			$data = array
 				(
-				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'			 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'form_action'			 => phpgw::link('/index.php', $link_data),
 				'done_action'			 => phpgw::link('/index.php', array('menuaction' => 'property.uiasync.index')),
 				'lang_id'				 => lang('method ID'),
@@ -471,7 +475,9 @@
 
 			$appname = lang('async method');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
+
 
 			phpgwapi_jquery::load_widget('core');
 			phpgwapi_jquery::load_widget('numberformat');
@@ -512,7 +518,8 @@
 			$appname		 = lang('async method');
 			$function_msg	 = lang('delete async method');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 	}

@@ -26,7 +26,11 @@
 	 * @subpackage admin
 	 * @version $Id$
 	 */
-	/**
+
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\services\Cache;
+
+	 /**
 	 * Description
 	 * @package property
 	 */
@@ -64,10 +68,12 @@
 		{
 			parent::__construct();
 
-			$GLOBALS['phpgw_info']['flags']['xslt_app']			 = true;
-			$GLOBALS['phpgw_info']['flags']['menu_selection']	 = 'admin::property::admin_async';
+			$this->flags['xslt_app']			 = true;
+			$this->flags['menu_selection']	 = 'admin::property::admin_async';
+			Settings::getInstance()->set('flags', $this->flags);
 
-			$this->account = $GLOBALS['phpgw_info']['user']['account_id'];
+
+			$this->account = $this->userSettings['account_id'];
 
 			$this->bo		 = CreateObject('property.boalarm', true);
 			$this->boasync	 = CreateObject('property.boasync');
@@ -140,8 +146,8 @@
 				$content[] = array
 					(
 					'id'		 => $alarm['id'],
-					'next_run'	 => $GLOBALS['phpgw']->common->show_date($alarm['next']),
-					'times'		 => is_array($alarm['times']) ? print_r($alarm['times'], true) : $GLOBALS['phpgw']->common->show_date($alarm['times']),
+					'next_run'	 => $this->phpgwapi_common->show_date($alarm['next']),
+					'times'		 => is_array($alarm['times']) ? print_r($alarm['times'], true) : $this->phpgwapi_common->show_date($alarm['times']),
 					'method'	 => $alarm['method'],
 					'data'		 => print_r($alarm['data'], true),
 					'enabled'	 => $alarm['enabled'],
@@ -193,7 +199,8 @@
 			$appname		 = lang('alarm');
 			$function_msg	 = lang('list alarm');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			$data = array(
 				'datatable_name' => $appname . ': ' . $function_msg,
@@ -397,6 +404,7 @@
 			//while (is_array($list) && list($id, $alarm) = each($list))
 			if (is_array($list))
 			{
+				$times = '';
 				foreach ($list as $id => $alarm)
 				{
 					if (is_array($alarm['times']))
@@ -409,12 +417,13 @@
 					}
 					else
 					{
-						$times = $GLOBALS['phpgw']->common->show_date($alarm['times']);
+						$times = $this->phpgwapi_common->show_date($alarm['times']);
 					}
 
 					if (is_array($alarm['data']))
 					{
-						//while (is_array($alarm['data']) && list($key, $value) = each($alarm['data']))
+					//while (is_array($alarm['data']) && list($key, $value) = each($alarm['data']))
+						$data = '';
 						foreach ($alarm['data'] as $key => $value)
 						{
 							if ($key == 'owner')
@@ -439,7 +448,7 @@
 						(
 						'id_cod'	 => $id[1],
 						'id'		 => $alarm['id'],
-						'next_run'	 => $GLOBALS['phpgw']->common->show_date($alarm['next']),
+						'next_run'	 => $this->phpgwapi_common->show_date($alarm['next']),
 						'method'	 => $alarm['method'],
 						'times'		 => $times,
 						'data'		 => $data,
@@ -468,9 +477,9 @@
 
 		function list_alarm()
 		{
-			$GLOBALS['phpgw_info']['flags']['menu_selection']	 = 'property::agreement::alarm';
-			$receipt											 = $GLOBALS['phpgw']->session->appsession('session_data', 'alarm_receipt');
-			$GLOBALS['phpgw']->session->appsession('session_data', 'alarm_receipt', '');
+			$this->flags['menu_selection']	 = 'property::agreement::alarm';
+			$receipt	= Cache::session_get('session_data', 'alarm_receipt');
+			Cache::session_clear('session_data', 'alarm_receipt');
 
 			$values = Sanitizer::get_var('values');
 			if ($values['delete_alarm'] && count($values['alarm']))
@@ -497,7 +506,8 @@
 			$appname		 = lang('alarm');
 			$function_msg	 = lang('list alarm');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			$data = array(
 				'datatable_name' => $appname,
@@ -648,7 +658,7 @@
 
 					if ($values['save'])
 					{
-						$GLOBALS['phpgw']->session->appsession('session_data', 'alarm_receipt', $receipt);
+						Cache::session_set('session_data', 'alarm_receipt', $receipt);
 						phpgw::redirect_link('/index.php', array('menuaction' => 'property.uialarm.index'));
 					}
 				}
@@ -677,7 +687,7 @@
 			//_debug_array($alarm);
 			$data											 = array
 				(
-				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'			 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'abook_data'			 => $abook_data,
 				'edit_url'				 => phpgw::link('/index.php', $link_data),
 				'lang_async_id'			 => lang('ID'),
@@ -712,7 +722,8 @@
 					'date', 'security', 'file'))
 			);
 			//_debug_array($data);
-			$GLOBALS['phpgw_info']['flags']['app_header']	 = lang('async') . ': ' . ($async_id ? lang('edit timer') : lang('add timer'));
+			$this->flags['app_header']	 = lang('async') . ': ' . ($async_id ? lang('edit timer') : lang('add timer'));
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit' => $data));
 			//	$GLOBALS['phpgw']->xslttpl->pp();
@@ -754,16 +765,17 @@
 			$appname		 = lang('owner');
 			$function_msg	 = lang('delete owner');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
-			//	$GLOBALS['phpgw']->xslttpl->pp();
 		}
 
 		function view()
 		{
 			$owner_id = Sanitizer::get_var('owner_id', 'int', 'GET');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('owner') . ': ' . lang('view owner');
+			$this->flags['app_header'] = lang('owner') . ': ' . lang('view owner');
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			phpgwapi_xslttemplates::getInstance()->add_file('owner');
 
@@ -778,11 +790,10 @@
 				'lang_done'			 => lang('done'),
 				'value_name'		 => $owner['name'],
 				'value_cat'			 => $this->bo->read_category_name($owner['cat_id']),
-				'value_date'		 => $GLOBALS['phpgw']->common->show_date($owner['entry_date'])
+				'value_date'		 => $this->phpgwapi_common->show_date($owner['entry_date'])
 			);
 
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('view' => $data));
-			//	$GLOBALS['phpgw']->xslttpl->pp();
 		}
 
 		function run()
@@ -815,7 +826,8 @@
 			);
 
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . "::cron::run ::" . $id;
+			$this->flags['app_header'] = lang('property') . "::cron::run ::" . $id;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 	}
