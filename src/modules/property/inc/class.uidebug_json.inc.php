@@ -27,6 +27,10 @@
 	 * @version $Id$
 	 */
 
+	use App\modules\phpgwapi\security\Acl;
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+
 	/**
 	 * Description
 	 * @package property
@@ -38,12 +42,16 @@
 			'index' => true
 		);
 		
-		var $acl, $acl_location, $acl_read;
+		var $acl, $acl_location, $acl_read, $phpgwapi_common;
 		
 		public function __construct()
 		{
-			$GLOBALS['phpgw_info']['flags']['xslt_app']	 = false;
-			$this->acl									 = & $GLOBALS['phpgw']->acl;
+			$flags = Settings::getInstance()->get('flags');
+			$flags['xslt_app']	 = false;
+			Settings::getInstance()->set('flags', $flags);
+			$this->phpgwapi_common = new \phpgwapi_common();
+
+			$this->acl									 = Acl::getInstance();
 			$this->acl_location							 = '.admin';
 			$this->acl_read								 = $this->acl->check($this->acl_location, ACL_READ, 'property');
 		}
@@ -53,17 +61,17 @@
 			if (!$this->acl_read)
 			{
 				echo lang('no access');
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 
 			$app = Sanitizer::get_var('app', 'string', 'GET');
 
 			//get session's values
-			$data = phpgwapi_cache::session_get($app, 'id_debug');
+			$data = Cache::session_get($app, 'id_debug');
 			if (isset($data))
 			{
 				//clear session
-				phpgwapi_cache::session_clear($app, 'id_debug');
+				Cache::session_clear($app, 'id_debug');
 				//replace '<' and '>'
 				if (is_array($data))
 				{
@@ -79,7 +87,7 @@
 			{
 				echo "empty session's value";
 			}
-			$GLOBALS['phpgw']->common->phpgw_exit();
+			$this->phpgwapi_common->phpgw_exit();
 		}
 
 		static protected function _my_print_rec( &$val, $nivel = 0 )
@@ -92,7 +100,6 @@
 				}
 				else
 				{
-					//	$value = str_replace(array('<','>'),array('&lt;','&gt;'),$value);
 					$value = htmlspecialchars($value);
 				}
 			}

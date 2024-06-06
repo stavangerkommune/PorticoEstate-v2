@@ -491,7 +491,7 @@
 
 			if ((isset($values['save']) && $values['save']) || (isset($values['apply']) && $values['apply']))
 			{
-				if ($GLOBALS['phpgw']->session->is_repost())
+				if (phpgw::is_repost())
 				{
 					//				$receipt['error'][]=array('msg'=>lang('Hmm... looks like a repost!'));
 				}
@@ -712,7 +712,7 @@
 
 			if ((isset($values['save']) && $values['save']) || (isset($values['apply']) && $values['apply']))
 			{
-				if ($GLOBALS['phpgw']->session->is_repost())
+				if (phpgw::is_repost())
 				{
 					//				$receipt['error'][]=array('msg'=>lang('Hmm... looks like a repost!'));
 				}
@@ -1065,8 +1065,8 @@
 
 				if ((isset($values['save']) && $values['save']) || (isset($values['apply']) && $values['apply']))
 				{
-					$insert_record			 = $GLOBALS['phpgw']->session->appsession('insert_record', 'property');
-					$insert_record_entity	 = $GLOBALS['phpgw']->session->appsession('insert_record_entity', 'property');
+					$insert_record	=	Cache::session_get('property',	'insert_record');
+					$insert_record_entity = (array)Cache::session_get('property',	'insert_record_entity');
 
 					if (isset($insert_record_entity) && is_array($insert_record_entity))
 					{
@@ -1117,7 +1117,7 @@
 						//			$receipt['error'][]=array('msg'=>lang('Please select a location!'));
 					}
 
-					if ($GLOBALS['phpgw']->session->is_repost())
+					if (phpgw::is_repost())
 					{
 						$receipt['error'][] = array('msg' => lang('Hmm... looks like a repost!'));
 					}

@@ -168,7 +168,7 @@
 			// If the parameter 'importsubmit' exist (submit button in import form), set path
 			if (Sanitizer::get_var("importsubmit"))
 			{
-				if ($GLOBALS['phpgw']->session->is_repost() && !Sanitizer::get_var('debug', 'bool'))
+				if (phpgw::is_repost() && !Sanitizer::get_var('debug', 'bool'))
 				{
 					phpgwapi_cache::session_set('property', 'import_message', 'Hmm... looks like a repost!');
 					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiimport.index'));
@@ -811,17 +811,17 @@ HTML;
 
 			if ($get_identificator)
 			{
-				$this->identificator = $spreadsheet->getActiveSheet()->getCellByColumnAndRow(1, 1)->getCalculatedValue();
+				$this->identificator = $spreadsheet->getActiveSheet()->getCell([1, 1])->getCalculatedValue();
 				for ($j = 1; $j <= $highestColumnIndex; $j++)
 				{
-					$this->fields[] = $spreadsheet->getActiveSheet()->getCellByColumnAndRow($j, 2)->getCalculatedValue();
+					$this->fields[] = $spreadsheet->getActiveSheet()->getCell([$j, 2])->getCalculatedValue();
 				}
 			}
 			else
 			{
 				for ($j = 1; $j <= $highestColumnIndex; $j++)
 				{
-					$this->fields[] = $spreadsheet->getActiveSheet()->getCellByColumnAndRow($j, 1)->getCalculatedValue();
+					$this->fields[] = $spreadsheet->getActiveSheet()->getCell([$j, 1])->getCalculatedValue();
 				}
 			}
 
@@ -832,7 +832,7 @@ HTML;
 
 				for ($j = 1; $j <= $highestColumnIndex; $j++)
 				{
-					$_result[] = $spreadsheet->getActiveSheet()->getCellByColumnAndRow($j, $row)->getCalculatedValue();
+					$_result[] = $spreadsheet->getActiveSheet()->getCell([$j, $row])->getCalculatedValue();
 				}
 
 				$result[] = $_result;
@@ -994,7 +994,7 @@ HTML;
 			// If the parameter 'importsubmit' exist (submit button in import form), set path
 			if (Sanitizer::get_var("importsubmit"))
 			{
-				if ($GLOBALS['phpgw']->session->is_repost() && !Sanitizer::get_var('debug', 'bool'))
+				if (phpgw::is_repost() && !Sanitizer::get_var('debug', 'bool'))
 				{
 					phpgwapi_cache::session_set('property', 'import_message', 'Hmm... looks like a repost!');
 					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiimport.components'));

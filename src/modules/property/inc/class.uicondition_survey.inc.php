@@ -26,6 +26,11 @@
 	 * @subpackage logistic
 	 * @version $Id$
 	 */
+
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
 	phpgw::import_class('phpgwapi.uicommon_jquery');
 	phpgw::import_class('phpgwapi.jquery');
 
@@ -68,7 +73,6 @@
 
 			$this->bo			 = CreateObject('property.bocondition_survey');
 			$this->bocommon		 = & $this->bo->bocommon;
-			$this->acl			 = & $GLOBALS['phpgw']->acl;
 			$this->acl_location	 = $this->bo->acl_location;
 			$this->acl_read		 = $this->acl->check($this->acl_location, ACL_READ, 'property');
 			$this->acl_add		 = $this->acl->check($this->acl_location, ACL_ADD, 'property');
@@ -76,8 +80,8 @@
 			$this->acl_delete	 = $this->acl->check($this->acl_location, ACL_DELETE, 'property');
 			$this->acl_manage	 = $this->acl->check($this->acl_location, 16, 'property');
 
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] = "property::project::condition_survey";
-			//			phpgwapi_css::getInstance()->add_external_file('logistic/templates/base/css/base.css');
+			$this->flags['menu_selection'] = "property::project::condition_survey";
+			Settings::getInstance()->update('flags', ['menu_selection' => $this->flags['menu_selection']]);
 		}
 
 		public function download()
@@ -119,7 +123,7 @@
 
 			$options = array();
 			$options['base_dir']	 = "condition_survey/{$id}";
-			$options['upload_dir']	 = $GLOBALS['phpgw_info']['server']['files_dir'] . '/property/' . $options['base_dir'] . '/';
+			$options['upload_dir']	 = $this->serverSettings['files_dir'] . '/property/' . $options['base_dir'] . '/';
 			$options['script_url']	 = html_entity_decode($multi_upload_action);
 			$upload_handler			 = new property_multiuploader($options, false);
 
@@ -144,7 +148,7 @@
 					$upload_handler->header('HTTP/1.1 405 Method Not Allowed');
 			}
 
-			$GLOBALS['phpgw']->common->phpgw_exit();
+			$this->phpgwapi_common->phpgw_exit();
 		}
 
 		public function build_multi_upload_file()
@@ -153,9 +157,10 @@
 
 			$id = Sanitizer::get_var('id');
 
-			$GLOBALS['phpgw_info']['flags']['xslt_app']		 = true;
-			$GLOBALS['phpgw_info']['flags']['noframework']	 = true;
-			$GLOBALS['phpgw_info']['flags']['nofooter']		 = true;
+			$this->flags['xslt_app']		 = true;
+			$this->flags['noframework']	 = true;
+			$this->flags['nofooter']		 = true;
+			Settings::getInstance()->set('flags', $this->flags);
 
 			$multi_upload_action = phpgw::link('/index.php',
 												  array('menuaction' => 'property.uicondition_survey.handle_multi_upload_file',
@@ -194,7 +199,9 @@
 			$status_list = execMethod('property.bogeneric.get_list', array(
 				'type'		 => 'condition_survey_status', 'selected'	 => 0, 'add_empty'	 => true));
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('condition survey');
+			$this->flags['app_header'] = lang('condition survey');
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
+
 
 			$data = array(
 				'datatable_name' => lang('condition survey'),
@@ -349,7 +356,7 @@
 			);
 
 
-			if ($GLOBALS['phpgw']->acl->check('.admin', ACL_DELETE, 'property'))
+			if ($this->acl->check('.admin', ACL_DELETE, 'property'))
 			{
 				$data['datatable']['actions'][] = array
 					(
@@ -364,7 +371,7 @@
 				);
 			}
 
-			if ($GLOBALS['phpgw']->acl->check('.admin', ACL_DELETE, 'property'))
+			if ($this->acl->check('.admin', ACL_DELETE, 'property'))
 			{
 				$data['datatable']['actions'][] = array
 					(
@@ -471,7 +478,7 @@
 				}
 			}
 
-			phpgwapi_cache::session_clear('property.request', 'session_data');
+			Cache::session_clear('property.request', 'session_data');
 
 			//phpgwapi_jquery::tabview_setup('survey_edit_tabview');
 			$tabs				 = array();
@@ -629,7 +636,7 @@
 			$data = array
 				(
 				'datatable_def'		 => $datatable_def,
-				'msgbox_data'		 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'		 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'survey'			 => $values,
 				'location_data2'	 => $location_data,
 				'lang_coordinator'	 => isset($this->config->config_data['lang_request_coordinator']) && $this->config->config_data['lang_request_coordinator'] ? $this->config->config_data['lang_request_coordinator'] : lang('coordinator'),
@@ -645,12 +652,14 @@
 
 			//print_r($data['tabs']); die;
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . '::' . lang('condition survey');
+			$this->flags['app_header'] = lang('property') . '::' . lang('condition survey');
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			$data['multi_upload_parans'] = '""';
 			if ($mode == 'edit')
 			{
-				$GLOBALS['phpgw']->jqcal->add_listener('report_date');
+				$jqcal = createObject('phpgwapi.jqcal');
+				$jqcal->add_listener('report_date');
 				phpgwapi_jquery::load_widget('core');
 				self::add_javascript('property', 'base', 'condition_survey_edit.js', false, array('combine' => true ));
 				phpgwapi_jquery::formvalidator_generate(array('location', 'date', 'security',
@@ -718,7 +727,7 @@
 				{
 					if ($e)
 					{
-						phpgwapi_cache::message_set($e->getMessage(), 'error');
+						Cache::message_set($e->getMessage(), 'error');
 						$this->edit($values);
 						return;
 					}
@@ -731,7 +740,7 @@
 				}
 				else
 				{
-					phpgwapi_cache::message_set('ok!', 'message');
+					Cache::message_set('ok!', 'message');
 					self::redirect(array('menuaction' => 'property.uicondition_survey.edit',
 						'id'		 => $id));
 				}
@@ -779,7 +788,7 @@
 			$start			 = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
 			$total_records	 = count($files);
 
-			$num_rows = isset($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs']) && $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] ? (int)$GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] : 15;
+			$num_rows = isset($this->userSettings['preferences']['common']['maxmatchs']) && $this->userSettings['preferences']['common']['maxmatchs'] ? (int)$this->userSettings['preferences']['common']['maxmatchs'] : 15;
 
 			if ($allrows)
 			{
@@ -835,7 +844,7 @@
 
 			if (!$num_rows)
 			{
-				$num_rows = !empty($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs']) ? (int)$GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] : 15;
+				$num_rows = !empty($this->userSettings['preferences']['common']['maxmatchs']) ? (int)$this->userSettings['preferences']['common']['maxmatchs'] : 15;
 			}
 
 			$start = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
@@ -898,7 +907,7 @@
 				$_entry['url'] = "<a href=\"{$base_url}&id={$_entry['id']}\" >{$_entry['id']}</a>";
 			}
 
-			$num_rows = isset($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs']) && $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] ? (int)$GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] : 15;
+			$num_rows = isset($this->userSettings['preferences']['common']['maxmatchs']) && $this->userSettings['preferences']['common']['maxmatchs'] ? (int)$this->userSettings['preferences']['common']['maxmatchs'] : 15;
 
 			return array(
 				'recordsTotal'		 => $total_records,
@@ -950,7 +959,7 @@
 			{
 				if (!is_file($_FILES['file']['tmp_name']))
 				{
-					phpgwapi_cache::message_set(lang('Failed to upload file !'), 'error');
+					Cache::message_set(lang('Failed to upload file !'), 'error');
 					return;
 				}
 
@@ -960,7 +969,7 @@
 						'relatives'	 => Array(RELATIVE_NONE)
 					)))
 				{
-					phpgwapi_cache::message_set(lang('This file already exists !'), 'error');
+					Cache::message_set(lang('This file already exists !'), 'error');
 				}
 				else
 				{
@@ -972,7 +981,7 @@
 							'to'		 => $to_file,
 							'relatives'	 => array(RELATIVE_NONE | VFS_REAL, RELATIVE_ALL))))
 					{
-						phpgwapi_cache::message_set(lang('Failed to upload file !'), 'error');
+						Cache::message_set(lang('Failed to upload file !'), 'error');
 					}
 					$bofiles->vfs->override_acl = 0;
 				}
@@ -1046,9 +1055,9 @@
 			}
 			else
 			{
-				$filename = str_replace(' ', '_', $GLOBALS['phpgw_info']['user']['account_lid']);
+				$filename = str_replace(' ', '_', $this->userSettings['account_lid']);
 			}
-			$date_time = str_replace(array(' ', '/'), '_', $GLOBALS['phpgw']->common->show_date(time()));
+			$date_time = str_replace(array(' ', '/'), '_', $this->phpgwapi_common->show_date(time()));
 
 			$suffix = 'xlsx';
 
@@ -1059,9 +1068,9 @@
 
 			$spreadsheet = new PhpOffice\PhpSpreadsheet\Spreadsheet();
 
-			$spreadsheet->getProperties()->setCreator($GLOBALS['phpgw_info']['user']['fullname'])
-				->setLastModifiedBy($GLOBALS['phpgw_info']['user']['fullname'])
-				->setTitle("Download from {$GLOBALS['phpgw_info']['server']['system_name']}")
+			$spreadsheet->getProperties()->setCreator($this->userSettings['fullname'])
+				->setLastModifiedBy($this->userSettings['fullname'])
+				->setTitle("Download from {$this->serverSettings['system_name']}")
 				->setSubject("Office 2007 XLSX Document")
 				->setDescription("document for Office 2007 XLSX, generated using PHP classes.")
 				->setKeywords("office 2007 openxml php")
@@ -1106,8 +1115,8 @@
 			{
 				if (isset($condition_survey[$key]))
 				{
-					$spreadsheet->setActiveSheetIndex(0)->setCellValueByColumnAndRow(1, $row, $translation);
-					$spreadsheet->setActiveSheetIndex(0)->setCellValueByColumnAndRow(2, $row, $condition_survey[$key]);
+					$spreadsheet->setActiveSheetIndex(0)->setCellValue([1, $row], $translation);
+					$spreadsheet->setActiveSheetIndex(0)->setCellValue([2, $row], $condition_survey[$key]);
 					$spreadsheet->getActiveSheet()->getStyle("B{$row}")->getAlignment()->applyFromArray(
 						array(
 							'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
@@ -1149,7 +1158,7 @@
 					{
 						$text_format[$m] = true;
 					}
-					$spreadsheet->setActiveSheetIndex(0)->setCellValueByColumnAndRow($m, $_first_row, $descr[$k]);
+					$spreadsheet->setActiveSheetIndex(0)->setCellValue([$m, $_first_row], $descr[$k]);
 //					if ($m > 0)
 					{
 						$spreadsheet->getActiveSheet()->getStyle("{$col}{$_first_row}")->getAlignment()->setTextRotation(90);
@@ -1185,11 +1194,11 @@
 					{
 						if (isset($text_format[$i]))
 						{
-							$spreadsheet->setActiveSheetIndex(0)->setCellValueExplicitByColumnAndRow($i, $line, $row[$i], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+							$spreadsheet->setActiveSheetIndex(0)->setCellValueExplicit([$i, $line], $row[$i], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 						}
 						else
 						{
-							$spreadsheet->setActiveSheetIndex(0)->setCellValueByColumnAndRow($i, $line, $row[$i]);
+							$spreadsheet->setActiveSheetIndex(0)->setCellValue([$i, $line], $row[$i]);
 						}
 						$spreadsheet->getActiveSheet()->getStyle("{$col}{$line}")->getAlignment()->applyFromArray(
 							array(
@@ -1241,9 +1250,9 @@
 
 			if (!$step)
 			{
-				if ($cached_file = phpgwapi_cache::session_get('property', 'condition_survey_import_file'))
+				if ($cached_file = Cache::session_get('property', 'condition_survey_import_file'))
 				{
-					phpgwapi_cache::session_clear('property', 'condition_survey_import_file');
+					Cache::session_clear('property', 'condition_survey_import_file');
 					unlink($cached_file);
 					unset($cached_file);
 				}
@@ -1251,29 +1260,29 @@
 
 			if ($start_line = Sanitizer::get_var('start_line', 'int', 'REQUEST'))
 			{
-				phpgwapi_cache::system_set('property', 'import_sheet_start_line', $start_line);
+				Cache::system_set('property', 'import_sheet_start_line', $start_line);
 			}
 			else
 			{
-				$start_line	 = phpgwapi_cache::system_get('property', 'import_sheet_start_line');
+				$start_line	 = Cache::system_get('property', 'import_sheet_start_line');
 				$start_line	 = $start_line ? $start_line : 1;
 			}
 
 
 			if ($columns = Sanitizer::get_var('columns'))
 			{
-				phpgwapi_cache::system_set('property', 'import_sheet_columns', $columns);
+				Cache::system_set('property', 'import_sheet_columns', $columns);
 			}
 			else
 			{
-				$columns = phpgwapi_cache::system_get('property', 'import_sheet_columns');
+				$columns = Cache::system_get('property', 'import_sheet_columns');
 				$columns = $columns && is_array($columns) ? $columns : array();
 			}
 
 
 			if ($step > 1)
 			{
-				$cached_file = phpgwapi_cache::session_get('property', 'condition_survey_import_file');
+				$cached_file = Cache::session_get('property', 'condition_survey_import_file');
 			}
 
 			if ($step == 1 || isset($_FILES['import_file']['tmp_name']))
@@ -1282,7 +1291,7 @@
 				$cached_file = "{$file}_temporary_import_file";
 				// save a copy to survive multiple steps
 				file_put_contents($cached_file, file_get_contents($file));
-				phpgwapi_cache::session_set('property', 'condition_survey_import_file', $cached_file);
+				Cache::session_set('property', 'condition_survey_import_file', $cached_file);
 				$step		 = 1;
 
 				// Add the file to documents
@@ -1380,7 +1389,7 @@
 					break;
 				/*
 				  case 4://temporary
-				  phpgwapi_cache::session_clear('property', 'condition_survey_import_file');
+				  Cache::session_clear('property', 'condition_survey_import_file');
 				  unlink($cached_file);
 				  phpgw::redirect_link('/index.php',array('menuaction' => 'property.uicondition_survey.import', 'id' =>$id, 'step' => 0));
 				  break;
@@ -1391,7 +1400,7 @@
 
 			if (!$step)
 			{
-				phpgwapi_cache::session_clear('property', 'condition_survey_import_file');
+				Cache::session_clear('property', 'condition_survey_import_file');
 				unlink($cached_file);
 			}
 			else if ($cached_file)
@@ -1428,8 +1437,8 @@
 				{
 					if ($e)
 					{
-						phpgwapi_cache::message_set($e->getMessage(), 'error');
-						phpgwapi_cache::session_clear('property', 'condition_survey_import_file');
+						Cache::message_set($e->getMessage(), 'error');
+						Cache::session_clear('property', 'condition_survey_import_file');
 						unlink($cached_file);
 					}
 				}
@@ -1515,7 +1524,7 @@
 				for ($j = 1; $j <= $highestColumnIndex; $j++)
 				{
 					$_column	 = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($j);
-					$_value		 = $spreadsheet->getActiveSheet()->getCellByColumnAndRow($j, $start_line)->getCalculatedValue();
+					$_value		 = $spreadsheet->getActiveSheet()->getCell([$j, $start_line])->getCalculatedValue();
 					$selected	 = isset($columns[$_column]) && $columns[$_column] ? $columns[$_column] : '';
 
 					$_listbox	 = phpgwapi_sbox::getArrayItem("columns[{$_column}]", $selected, $_options, true);
@@ -1553,13 +1562,13 @@
 					{
 						if ($e)
 						{
-							phpgwapi_cache::message_set($e->getMessage(), 'error');
+							Cache::message_set($e->getMessage(), 'error');
 						}
 					}
 				}
 
 //				$msg = "'{$cached_file}' contained " . count($import_data) . " lines";
-//				phpgwapi_cache::message_set($msg, 'message'); 
+//				Cache::message_set($msg, 'message'); 
 			}
 
 
@@ -1591,10 +1600,11 @@
 				'start_line'	 => $start_line,
 				'html_table'	 => $html_table,
 				'sheets'		 => array('options' => $sheets),
-				'tabs'			 => $GLOBALS['phpgw']->common->create_tabs($tabs, $active_tab),
+				'tabs'			 => $this->phpgwapi_common->create_tabs($tabs, $active_tab),
 			);
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . '::' . lang('condition survey import');
+			$this->flags['app_header'] = lang('property') . '::' . lang('condition survey import');
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			self::render_template_xsl(array('condition_survey_import'), $data);
 		}
@@ -1625,7 +1635,9 @@
 
 			$query = Sanitizer::get_var('query');
 
-			$accounts = $GLOBALS['phpgw']->accounts->get_list('accounts', $start, $sort, $order, $query, $offset);
+
+			$accounts_obj = new Accounts();
+			$accounts = $accounts_obj->get_list('accounts', $start, $sort, $order, $query, $offset);
 
 			$values = array();
 			foreach ($accounts as $account)
@@ -1727,7 +1739,7 @@
 		 */
 		public function delete()
 		{
-			if (!$GLOBALS['phpgw']->acl->check('.admin', ACL_DELETE, 'property'))
+			if (!$this->acl->check('.admin', ACL_DELETE, 'property'))
 			{
 				return 'No access';
 			}
@@ -1756,7 +1768,7 @@
 		 */
 		public function delete_imported_records()
 		{
-			if (!$GLOBALS['phpgw']->acl->check('.admin', ACL_DELETE, 'property'))
+			if (!$this->acl->check('.admin', ACL_DELETE, 'property'))
 			{
 				return 'No access';
 			}
@@ -1783,7 +1795,8 @@
 		 */
 		public function summation()
 		{
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] = "property::project::condition_survey::summation";
+			$this->flags['menu_selection'] = "property::project::condition_survey::summation";
+			Settings::getInstance()->update('flags', ['menu_selection' => $this->flags['menu_selection']]);
 
 			if (!$this->acl_read)
 			{
@@ -1876,7 +1889,8 @@
 			phpgwapi_jquery::load_widget('numberformat');
 			phpgwapi_jquery::load_widget('bootstrap-multiselect');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . '::' . lang('condition survey');
+			$this->flags['app_header'] = lang('property') . '::' . lang('condition survey');
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			self::render_template_xsl(array('condition_survey_summation'), $data);
 		}
@@ -1886,7 +1900,7 @@
 
 		private function _populate( $data = array() )
 		{
-			$insert_record = phpgwapi_cache::session_get('property', 'insert_record');
+			$insert_record = Cache::session_get('property', 'insert_record');
 
 			$values = Sanitizer::get_var('values');
 

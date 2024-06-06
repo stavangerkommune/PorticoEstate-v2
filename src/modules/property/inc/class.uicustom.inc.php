@@ -26,7 +26,12 @@
 	 * @subpackage custom
 	 * @version $Id$
 	 */
-	/**
+
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\Cache;
+use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
+	 /**
 	 * Description
 	 * @package property
 	 */
@@ -72,11 +77,12 @@
 		{
 			parent::__construct();
 
-			$GLOBALS['phpgw_info']['flags']['xslt_app']			 = true;
-			$GLOBALS['phpgw_info']['flags']['menu_selection']	 = 'property::custom';
+			$this->flags['xslt_app']			 = true;
+			$this->flags['menu_selection']	 = 'property::custom';
+			Settings::getInstance()->set('flags', $this->flags);
 
-			$this->currentapp	 = $GLOBALS['phpgw_info']['flags']['currentapp'];
-			$this->account		 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->currentapp	 = $this->flags['currentapp'];
+			$this->account		 = $this->userSettings['account_id'];
 
 			$this->bo		 = CreateObject('property.bocustom', true);
 			$this->bocommon	 = CreateObject('property.bocommon');
@@ -89,7 +95,6 @@
 			$this->cat_id	 = $this->bo->cat_id;
 			$this->allrows	 = $this->bo->allrows;
 
-			$this->acl			 = & $GLOBALS['phpgw']->acl;
 			$this->acl_location	 = '.custom';
 			$this->acl_read		 = $this->acl->check('.custom', ACL_READ, $this->currentapp);
 			$this->acl_add		 = $this->acl->check('.custom', ACL_ADD, $this->currentapp);
@@ -115,8 +120,8 @@
 				phpgw::no_access();
 			}
 
-			$receipt = $GLOBALS['phpgw']->session->appsession('session_data', 'custom_receipt');
-			$GLOBALS['phpgw']->session->appsession('session_data', 'custom_receipt', '');
+			$receipt = Cache::session_get('custom_receipt', 'session_data');
+			Cache::session_clear('custom_receipt', 'session_data');
 
 			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
@@ -129,7 +134,8 @@
 			$appname		 = lang('custom');
 			$function_msg	 = lang('list custom');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = $this->lang_app_name . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = $this->lang_app_name . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			$data = array(
 				'datatable_name' => $appname,
@@ -305,7 +311,7 @@
 
 						if ($values['save'])
 						{
-							$GLOBALS['phpgw']->session->appsession('session_data', 'custom_receipt', $receipt);
+							Cache::session_set('custom_receipt','session_data', $receipt);
 							phpgw::redirect_link('/index.php', array('menuaction' => "{$this->currentapp}.uicustom.index"));
 						}
 					}
@@ -313,7 +319,7 @@
 					{
 						if ($e)
 						{
-							phpgwapi_cache::message_set($e->getMessage(), 'error');
+							Cache::message_set($e->getMessage(), 'error');
 							$this->edit();
 							return;
 						}
@@ -429,7 +435,7 @@
 			$data = array
 				(
 				'datatable_def'					 => $datatable_def,
-				'msgbox_data'					 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'					 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'edit_url'						 => phpgw::link('/index.php', $link_data),
 				'lang_custom_id'				 => lang('ID'),
 				'value_custom_id'				 => $custom_id,
@@ -463,7 +469,9 @@
 					'date', 'security', 'file'))
 			);
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('custom') . ': ' . ($custom_id ? lang('edit custom') : lang('add custom'));
+			$this->flags['app_header'] = lang('custom') . ': ' . ($custom_id ? lang('edit custom') : lang('add custom'));
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
+
 
 			phpgwapi_jquery::load_widget('core');
 			phpgwapi_jquery::load_widget('numberformat');
@@ -508,7 +516,9 @@
 			$appname		 = lang('custom');
 			$function_msg	 = lang('delete custom');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = $this->lang_app_name . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = $this->lang_app_name . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
+
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 
@@ -531,7 +541,9 @@
 			$appname		 = $this->lang_app_name;
 			$function_msg	 = $custom['name'];
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
+
 
 			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{

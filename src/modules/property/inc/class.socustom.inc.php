@@ -30,6 +30,8 @@
 	use App\modules\phpgwapi\services\Settings;
 	use App\Database\Db;
 	use App\modules\phpgwapi\security\Acl;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+	use App\modules\phpgwapi\services\Log;
 
 	/**
 	 * Description
@@ -104,6 +106,7 @@
 				$this->db->query($sql . $ordermethod, __LINE__, __FILE__);
 			}
 
+			$accounts_obj = new Accounts();
 			$customs = array();
 			while ($this->db->next_record())
 			{
@@ -112,7 +115,7 @@
 					'custom_id'	 => $this->db->f('id'),
 					'name'		 => stripslashes($this->db->f('name')),
 					'entry_date' => $this->db->f('entry_date'),
-					'user'		 => $GLOBALS['phpgw']->accounts->id2name($this->db->f('user_id'))
+					'user'		 => $accounts_obj->id2name($this->db->f('user_id'))
 				);
 			}
 			return $customs;
@@ -325,7 +328,8 @@
 			{
 				$message = lang('you are not approved for this task') . ": {$sql}";
 
-					$GLOBALS['phpgw']->log->error(array(
+				$log = new Log();
+				$log->error(array(
 					'text'	=> $message,
 					'line'	=> __LINE__,
 					'file'	=> __FILE__

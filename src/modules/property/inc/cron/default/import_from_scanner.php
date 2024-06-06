@@ -182,7 +182,7 @@
 							{
 								$this->bolocation->initiate_ui_location(array('type_id' => -1, 'tenant' => true));
 
-								$insert_record = $GLOBALS['phpgw']->session->appsession('insert_record', 'property');
+								$insert_record = Cache::session_get('property', 'insert_record');
 
 								$values = $this->bolocation->read_single($values['location_code'], array(
 									'tenant_id' => 'lookup'));
@@ -221,7 +221,7 @@
 								{
 									$this->bolocation->initiate_ui_location(array('type_id' => -1, 'tenant' => true));
 
-									$insert_record = $GLOBALS['phpgw']->session->appsession('insert_record', 'property');
+									$insert_record = Cache::session_get('property', 'insert_record');
 
 									$values = $this->bolocation->read_single($values['location_code'], array(
 										'tenant_id' => 'lookup'));

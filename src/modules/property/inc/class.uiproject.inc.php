@@ -1103,9 +1103,10 @@ JS;
 //			$values['ecodimb'] = Sanitizer::get_var('ecodimb');
 			$values['contact_id']	 = Sanitizer::get_var('contact', 'int', 'POST');
 
-			$insert_record = $GLOBALS['phpgw']->session->appsession('insert_record', 'property');
 
-			$insert_record_entity = $GLOBALS['phpgw']->session->appsession("insert_record_values{$this->acl_location}", 'property');
+			$insert_record	=	Cache::session_get('property',	'insert_record');
+			$insert_record_entity = (array)Cache::session_get('property',	"insert_record_values{$this->acl_location}");
+
 
 			if (isset($insert_record_entity) && is_array($insert_record_entity))
 			{

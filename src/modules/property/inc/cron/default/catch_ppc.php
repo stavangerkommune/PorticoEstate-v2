@@ -250,7 +250,7 @@
 								'allrows'	 => true
 							);
 
-							$custom_functions = $GLOBALS['phpgw']->custom_functions->find($criteria);
+							$custom_functions = createObject('phpgwapi.custom_functions')->find($criteria);
 
 							foreach ($custom_functions as $entry)
 							{

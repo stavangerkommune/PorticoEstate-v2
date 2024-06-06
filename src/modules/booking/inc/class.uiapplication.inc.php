@@ -1171,7 +1171,7 @@
 				/**
 				 * In rare case of refresh or double-click
 				 */
-				if ($GLOBALS['phpgw']->session->is_repost())
+				if (phpgw::is_repost())
 				{
 					if ($is_partial1)
 					{

@@ -309,7 +309,7 @@
 				for ($j = 1; $j <= $highestColumnIndex; $j++)
 				{
 					$_column	 = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($j);
-					$_value		 = nl2br($spreadsheet->getActiveSheet()->getCellByColumnAndRow($j, $start_line)->getCalculatedValue());
+					$_value		 = nl2br($spreadsheet->getActiveSheet()->getCell([$j, $start_line])->getCalculatedValue());
 					$selected	 = isset($columns[$_column]) && $columns[$_column] ? $columns[$_column] : '';
 
 					$_listbox	 = phpgwapi_sbox::getArrayItem("columns[{$_column}]", $selected, $_options, true);

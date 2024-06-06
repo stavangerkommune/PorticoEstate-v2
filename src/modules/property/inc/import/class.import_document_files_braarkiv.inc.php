@@ -323,6 +323,7 @@
 			$accepted_file_formats = array('xls', 'xlsx', 'ods', 'csv');
 
 			$dir_handle	 = opendir($path);
+			$input_file	 = null;
 			while ($file		 = readdir($dir_handle))
 			{
 				if ((substr($file, 0, 1) != '.') && is_file("{$path}/{$file}"))
@@ -370,13 +371,13 @@
 			$highestColumm		 = $spreadsheet->getActiveSheet()->getHighestDataColumn();
 			$highestColumnIndex	 = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumm);
 			$rows				 = $spreadsheet->getActiveSheet()->getHighestDataRow();
-			$first_cell_value	 = $spreadsheet->getActiveSheet()->getCellByColumnAndRow($highestColumnIndex, 1)->getCalculatedValue();
+			$first_cell_value	 = $spreadsheet->getActiveSheet()->getCell([$highestColumnIndex, 1])->getCalculatedValue();
 
 			$start = $first_cell_value ? 1 : 2; // Read the first line to get the headers out of the way
 
 			for ($j = 1; $j < $highestColumnIndex + 1; $j++)
 			{
-				$this->fields[] = $spreadsheet->getActiveSheet()->getCellByColumnAndRow($j, $start)->getCalculatedValue();
+				$this->fields[] = $spreadsheet->getActiveSheet()->getCell([$j, $start])->getCalculatedValue();
 			}
 
 			$start++; // first data line
@@ -388,7 +389,7 @@
 
 				for ($j = 1; $j <= $highestColumnIndex; $j++)
 				{
-					$value		 = $spreadsheet->getActiveSheet()->getCellByColumnAndRow($j, $row)->getCalculatedValue();
+					$value		 = $spreadsheet->getActiveSheet()->getCell([$j, $row])->getCalculatedValue();
 					$_result[]	 = $value;
 				}
 

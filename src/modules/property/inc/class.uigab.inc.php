@@ -103,7 +103,7 @@
 			$values				 = (array)Sanitizer::get_var('values');
 			$values_attribute	 = (array)Sanitizer::get_var('values_attribute');
 
-			$insert_record	 = $GLOBALS['phpgw']->session->appsession('insert_record', 'property');
+			$insert_record	 = Cache::session_get('property', 'insert_record');
 			$values			 = $this->bocommon->collect_locationdata($values, $insert_record);
 
 			$values['gab_id'] = $gab_id;

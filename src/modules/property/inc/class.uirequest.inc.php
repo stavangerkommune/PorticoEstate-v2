@@ -599,8 +599,8 @@
 
 			$bypass = Sanitizer::get_var('bypass', 'bool');
 
-			$insert_record			 = $GLOBALS['phpgw']->session->appsession('insert_record', 'property');
-			$insert_record_entity	 = $GLOBALS['phpgw']->session->appsession("insert_record_values{$this->acl_location}", 'property');
+			$insert_record	=	Cache::session_get('property',	'insert_record');
+			$insert_record_entity = (array)Cache::session_get('property',	"insert_record_values{$this->acl_location}");
 
 			if($insert_record_entity && is_array($insert_record_entity))
 			{

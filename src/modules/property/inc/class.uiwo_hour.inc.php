@@ -1110,7 +1110,7 @@
 			$send_as_pdf	 = Sanitizer::get_var('send_as_pdf', 'bool');
 			$email_receipt	 = Sanitizer::get_var('email_receipt', 'bool');
 
-			if ($_SERVER['REQUEST_METHOD'] == 'POST' && $GLOBALS['phpgw']->session->is_repost())
+			if ($_SERVER['REQUEST_METHOD'] == 'POST' && phpgw::is_repost())
 			{
 				phpgw::redirect_link('/index.php', array(
 					'menuaction'	 => 'property.uiwo_hour.view',
@@ -1388,7 +1388,7 @@
 
 					if (!$_ok)
 					{
-						phpgwapi_cache::message_set(lang('order is not approved'), 'error');
+						Cache::message_set(lang('order is not approved'), 'error');
 						phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uiwo_hour.view',
 							'workorder_id'	 => $workorder_id, 'from'			 => Sanitizer::get_var('from')));
 					}
@@ -1398,7 +1398,7 @@
 				{
 					if (!$this->_validate_purchase_grant($workorder_id, $project['ecodimb'] ? $project['ecodimb'] : $workorder['ecodimb'], $project['id']))
 					{
-						phpgwapi_cache::message_set(lang('order is not approved'), 'error');
+						Cache::message_set(lang('order is not approved'), 'error');
 						phpgw::redirect_link('/index.php', array('menuaction'	 => 'property.uiwo_hour.view',
 							'workorder_id'	 => $workorder_id, 'from'			 => Sanitizer::get_var('from')));
 					}
@@ -1415,7 +1415,7 @@
 
 					$transfer_action = 'workorder'; // trigger for transfer
 
-					$custom_functions = $GLOBALS['phpgw']->custom_functions->find($criteria);
+					$custom_functions = createObject('phpgwapi.custom_functions')->find($criteria);
 
 					foreach ($custom_functions as $entry)
 					{
@@ -1683,7 +1683,7 @@ HTML;
 					if (!$_status)
 					{
 						//				throw new Exception('status on ordered not given in config');
-						phpgwapi_cache::message_set("Automatisk endring av status for bestilt er ikke konfigurert", 'error');
+						Cache::message_set("Automatisk endring av status for bestilt er ikke konfigurert", 'error');
 					}
 
 					if (!is_object($GLOBALS['phpgw']->send))
@@ -1705,7 +1705,7 @@ HTML;
 						unset($_attachment);
 						if(!$rcpt)
 						{
-							phpgwapi_cache::message_set("Noe gikk feil, eposten ble ikke sendt. Prøv igjen", 'error');
+							Cache::message_set("Noe gikk feil, eposten ble ikke sendt. Prøv igjen", 'error');
 						}
 					}
 					catch (Exception $e)
@@ -1720,7 +1720,7 @@ HTML;
 						unset($_attachment);
 						if ($e)
 						{
-							phpgwapi_cache::message_set($e->getMessage(), 'error');
+							Cache::message_set($e->getMessage(), 'error');
 						}
 					}
 				}
@@ -1786,7 +1786,7 @@ HTML;
 							$rcpt = $GLOBALS['phpgw']->send->msg('email', $_to, $subject, $message, '', '', '', $_address, $GLOBALS['phpgw_info']['user']['fullname'], 'html');
 							if ($rcpt)
 							{
-								phpgwapi_cache::message_set(lang('%1 is notified', $_address), 'message');
+								Cache::message_set(lang('%1 is notified', $_address), 'message');
 							}
 						}
 						catch (Exception $exc)
@@ -2147,7 +2147,7 @@ HTML;
 
 				if (!$_ok)
 				{
-					phpgwapi_cache::message_set(lang('order %1 is not approved', $workorder_id), 'error');
+					Cache::message_set(lang('order %1 is not approved', $workorder_id), 'error');
 					if($redirect_on_error)
 					{
 						phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiwo_hour.view',
@@ -3536,7 +3536,7 @@ HTML;
 						'relatives'	 => Array(RELATIVE_NONE)
 					)))
 				{
-					phpgwapi_cache::message_set(lang('This file already exists !'), 'error');
+					Cache::message_set(lang('This file already exists !'), 'error');
 				}
 				else
 				{
@@ -3548,15 +3548,15 @@ HTML;
 							'to'		 => $to_file,
 							'relatives'	 => array(RELATIVE_NONE | VFS_REAL, RELATIVE_ALL))))
 					{
-						phpgwapi_cache::message_set(lang('Failed to upload file !'), 'error');
+						Cache::message_set(lang('Failed to upload file !'), 'error');
 					}
 					$bofiles->vfs->override_acl = 0;
 				}
 			}
 
-			if ($receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
+			if ($receipt = Cache::session_get('phpgwapi', 'phpgw_messages'))
 			{
-				phpgwapi_cache::session_clear('phpgwapi', 'phpgw_messages');
+				Cache::session_clear('phpgwapi', 'phpgw_messages');
 			}
 
 			$tabs				 = array();
@@ -3594,7 +3594,7 @@ HTML;
 			}
 			else
 			{
-				phpgwapi_cache::message_set('Ingen fil er valgt', 'error');
+				Cache::message_set('Ingen fil er valgt', 'error');
 				return;
 			}
 
@@ -3606,7 +3606,7 @@ HTML;
 					$data	 = $this->getexceldata($file['name']);
 					break;
 				default:
-					phpgwapi_cache::message_set("Not a valid filetype: {$file['type']}", 'error');
+					Cache::message_set("Not a valid filetype: {$file['type']}", 'error');
 					$error	 = true;
 			}
 
@@ -3621,7 +3621,7 @@ HTML;
 				{
 					if ($e)
 					{
-						phpgwapi_cache::message_set($e->getMessage(), 'error');
+						Cache::message_set($e->getMessage(), 'error');
 						$error = true;
 					}
 				}
@@ -3629,7 +3629,7 @@ HTML;
 
 			if (!$error)
 			{
-				phpgwapi_cache::message_set(lang('workorder is updated'), 'message');
+				Cache::message_set(lang('workorder is updated'), 'message');
 			}
 		}
 
@@ -3664,7 +3664,7 @@ HTML;
 
 //				for ($j = 1; $j <= $highestColumnIndex; $j++)
 //				{
-//					$this->fields[] = $spreadsheet->getActiveSheet()->getCellByColumnAndRow($j, 1)->getCalculatedValue();
+//					$this->fields[] = $spreadsheet->getActiveSheet()->getCell([$j, 1])->getCalculatedValue();
 //				}
 
 				for ($row = $start; $row <= $rows; $row++)
@@ -3673,7 +3673,7 @@ HTML;
 
 					for ($j = 1; $j <= $highestColumnIndex; $j++)
 					{
-						$_data[] = $spreadsheet->getActiveSheet()->getCellByColumnAndRow($j, $row)->getCalculatedValue();
+						$_data[] = $spreadsheet->getActiveSheet()->getCell([$j, $row])->getCalculatedValue();
 					}
 
 					$result[$_index]['data'][] = $_data;
@@ -3702,7 +3702,7 @@ HTML;
 				$status = $db->f('status');
 				if ($status == 'Avbrutt' || $status == 'Dublisert')
 				{
-					phpgwapi_cache::message_set("Hopper over [{$status}]: " . $db->f('id'), 'error');
+					Cache::message_set("Hopper over [{$status}]: " . $db->f('id'), 'error');
 				}
 				else
 				{
@@ -3718,7 +3718,7 @@ HTML;
 				}
 				catch (Exception $e)
 				{
-					phpgwapi_cache::message_set($e->getMessage(), 'error');
+					Cache::message_set($e->getMessage(), 'error');
 				}
 			}
 		}
@@ -3735,7 +3735,7 @@ HTML;
 			}
 			catch (Exception $e)
 			{
-				phpgwapi_cache::message_set($e->getMessage(), 'error');
+				Cache::message_set($e->getMessage(), 'error');
 				throw $e;
 			}
 
@@ -3748,7 +3748,7 @@ HTML;
 
 			$transfer_action = 'workorder';
 
-			$custom_functions = $GLOBALS['phpgw']->custom_functions->find($criteria);
+			$custom_functions = createObject('phpgwapi.custom_functions')->find($criteria);
 
 			foreach ($custom_functions as $entry)
 			{
@@ -3838,14 +3838,14 @@ HTML;
 
 			if (!$_status)
 			{
-				phpgwapi_cache::message_set("Automatisk endring av status for bestilt er ikke konfigurert", 'error');
+				Cache::message_set("Automatisk endring av status for bestilt er ikke konfigurert", 'error');
 			}
 
 			try
 			{
 				$GLOBALS['phpgw']->send->msg('email', $_to, $subject, $body, '', $cc, $bcc, $from_email, $from_name, 'html', '', $attachments, $email_receipt);
-				phpgwapi_cache::message_set(lang('Workorder %1 is sent by email to %2', $workorder_id, $_to), 'message');
-				phpgwapi_cache::message_set(lang('%1 is notified', $bcc), 'message');
+				Cache::message_set(lang('Workorder %1 is sent by email to %2', $workorder_id, $_to), 'message');
+				Cache::message_set(lang('%1 is notified', $bcc), 'message');
 				foreach ($attachments as $_attachment)
 				{
 					if (!empty($_attachment['resized']))
@@ -3868,8 +3868,8 @@ HTML;
 						}
 					}
 					unset($_attachment);
-					phpgwapi_cache::message_set($e->getMessage(), 'error');
-					phpgwapi_cache::message_set("Bestilling {$workorder_id} er ikke sendt", 'error');
+					Cache::message_set($e->getMessage(), 'error');
+					Cache::message_set("Bestilling {$workorder_id} er ikke sendt", 'error');
 					throw $e;
 				}
 			}
@@ -3891,7 +3891,7 @@ HTML;
 					$rcpt = $GLOBALS['phpgw']->send->msg('email', $_to, $subject, $message, '', '', '', $_address, $GLOBALS['phpgw_info']['user']['fullname'], 'html');
 					if ($rcpt)
 					{
-						phpgwapi_cache::message_set(lang('%1 is notified', $_address), 'message');
+						Cache::message_set(lang('%1 is notified', $_address), 'message');
 					}
 				}
 				catch (Exception $exc)

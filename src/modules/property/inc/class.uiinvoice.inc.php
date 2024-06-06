@@ -1997,7 +1997,7 @@ JS;
 			if (isset($values['save']))
 			{
 				$values['external_project_id'] = Sanitizer::get_var('external_project_id', 'string', 'POST');
-				if ($GLOBALS['phpgw']->session->is_repost())
+				if (phpgw::is_repost())
 				{
 					$this->receipt['error'][] = array('msg' => lang('repost'));
 				}
@@ -2561,7 +2561,7 @@ JS;
 
 				$values['order_id'] = Sanitizer::get_var('order_id');
 
-				$insert_record	 = $GLOBALS['phpgw']->session->appsession('insert_record', 'property');
+				$insert_record	 = Cache::session_get('property', 'insert_record');
 				$values			 = $this->bocommon->collect_locationdata($values, $insert_record);
 
 				$GLOBALS['phpgw']->session->appsession('session_data', 'add_values', $values);
@@ -3307,7 +3307,7 @@ JS;
 			$receipt = array();
 			if (isset($values['save']))
 			{
-				if ($GLOBALS['phpgw']->session->is_repost())
+				if (phpgw::is_repost())
 				{
 					$this->receipt['error'][] = array('msg' => lang('repost'));
 				}

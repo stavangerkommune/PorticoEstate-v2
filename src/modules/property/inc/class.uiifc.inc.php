@@ -300,7 +300,7 @@
 			{
 				if ((isset($values['save']) && $values['save']) || (isset($values['apply']) && $values['apply']))
 				{
-					$insert_record	 = $GLOBALS['phpgw']->session->appsession('insert_record', 'property');
+					$insert_record	 = Cache::session_get('property', 'insert_record');
 					$values			 = $this->bocommon->collect_locationdata($values, $insert_record);
 
 					$ifcfile = $_FILES['ifcfile']['tmp_name'];

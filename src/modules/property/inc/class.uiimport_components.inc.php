@@ -399,7 +399,7 @@ HTML;
 			for ($j = 1; $j <= $highestColumnIndex; $j++)
 			{
 				$_column	 = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($j);
-				$_value		 = $spreadsheet->getActiveSheet()->getCellByColumnAndRow($j, $start_line)->getCalculatedValue();
+				$_value		 = $spreadsheet->getActiveSheet()->getCell([$j, $start_line])->getCalculatedValue();
 				$selected	 = isset($profile['columns']['columns'][$_column]) && $profile['columns']['columns'][$_column] ? $profile['columns']['columns'][$_column] : '';
 
 				$_listbox	 = $this->_getArrayItem("column_{$_column}", "columns[{$_column}]", $selected, $_options, true, "onchange=\"enabledAtributes('{$_column}')\" class='columns'");

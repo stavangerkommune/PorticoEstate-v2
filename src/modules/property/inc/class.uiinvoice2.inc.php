@@ -1037,7 +1037,7 @@
 
 			for ($j = 1; $j <= $highestColumnIndex; $j++)
 			{
-				$this->fields[] = $spreadsheet->getActiveSheet()->getCellByColumnAndRow($j, 1)->getCalculatedValue();
+				$this->fields[] = $spreadsheet->getActiveSheet()->getCell([$j, 1])->getCalculatedValue();
 			}
 
 			$rows = $rows ? $rows : 1;
@@ -1047,7 +1047,7 @@
 
 				for ($j = 1; $j <= $highestColumnIndex; $j++)
 				{
-					$_result[] = $spreadsheet->getActiveSheet()->getCellByColumnAndRow($j, $row)->getCalculatedValue();
+					$_result[] = $spreadsheet->getActiveSheet()->getCell([$j, $row])->getCalculatedValue();
 				}
 
 				$result[] = $_result;

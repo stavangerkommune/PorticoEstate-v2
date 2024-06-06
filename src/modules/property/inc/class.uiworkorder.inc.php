@@ -1112,7 +1112,7 @@
 
 			$project = (isset($values['project_id']) ? $boproject->read_single_mini($values['project_id']) : '');
 
-			if ($GLOBALS['phpgw']->session->is_repost())
+			if (phpgw::is_repost())
 			{
 				$this->receipt['error'][] = array(
 					'msg' => lang('Hmm... looks like a repost!'));
@@ -1148,7 +1148,7 @@
 				}
 			}
 
-			$insert_record = $GLOBALS['phpgw']->session->appsession('insert_record', 'property');
+			$insert_record = Cache::session_get('property', 'insert_record');
 
 			if (is_array($insert_record))
 			{

@@ -399,7 +399,7 @@
 
 			if ((isset($values['save']) && $values['save']) || (isset($values['apply']) && $values['apply']))
 			{
-				if ($GLOBALS['phpgw']->session->is_repost())
+				if (phpgw::is_repost())
 				{
 					//				$receipt['error'][]=array('msg'=>lang('Hmm... looks like a repost!'));
 				}

@@ -26,6 +26,12 @@
 	 * @subpackage entity
 	 * @version $Id$
 	 */
+
+use App\modules\phpgwapi\services\Cache;
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\controllers\Accounts\Accounts;
+use App\Database\Db;
+
 	/**
 	 * Description
 	 * @package property
@@ -67,7 +73,8 @@
 		$type_app,
 		$acl_location,
 		$criteria_id,
-		$custom;
+		$custom,
+		$accounts_obj;
 
 		var $public_functions	 = array(
 			'summary'					 => true,
@@ -107,10 +114,12 @@
 		{
 			parent::__construct();
 
-			//	$GLOBALS['phpgw_info']['flags']['nonavbar'] = true; // menus added where needed via bocommon::get_menu
-			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
+			$this->flags['xslt_app'] = true;
+			Settings::getInstance()->update('flags', ['xslt_app' => true]);
 
-			$this->account = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->accounts_obj = new Accounts();
+
+			$this->account = $this->userSettings['account_id'];
 
 			$this->bo				 = CreateObject('property.boentity', true);
 			$this->bocommon			 = & $this->bo->bocommon;
@@ -130,13 +139,12 @@
 			$this->location_code	 = $this->bo->location_code;
 			$this->p_num			 = $this->bo->p_num;
 			$this->category_dir		 = $this->bo->category_dir;
-			$GLOBALS['phpgw']->session->appsession('entity_id', 'property', $this->entity_id);
+			Cache::session_set('property', 'entity_id', $this->entity_id);
 			$this->start_date		 = $this->bo->start_date;
 			$this->end_date			 = $this->bo->end_date;
 			$this->allrows			 = $this->bo->allrows;
 			$this->type				 = $this->bo->type;
 			$this->type_app			 = $this->bo->type_app;
-			$this->acl				 = & $GLOBALS['phpgw']->acl;
 			$this->custom			 = $this->bo->custom;
 
 			$this->acl_location = ".{$this->type}.$this->entity_id";
@@ -167,17 +175,19 @@
 				'acl_delete'	 => $this->acl_delete,
 			));
 
-			$GLOBALS['phpgw_info']['flags']['menu_selection'] = "{$this->type_app[$this->type]}::entity_{$this->entity_id}";
+			$this->flags['menu_selection'] = "{$this->type_app[$this->type]}::entity_{$this->entity_id}";
 			if ($this->cat_id > 0)
 			{
-//				$GLOBALS['phpgw_info']['flags']['menu_selection'] .= "::{$this->cat_id}";
-				$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], $this->acl_location);
-				$GLOBALS['phpgw_info']['flags']['menu_selection'] = "navbar#{$location_id}";
+//				$this->flags['menu_selection'] .= "::{$this->cat_id}";
+				$location_id = $this->locations->get_id($this->type_app[$this->type], $this->acl_location);
+				$this->flags['menu_selection'] = "navbar#{$location_id}";
 
 			}
+			Settings::getInstance()->update('flags', ['menu_selection' => $this->flags['menu_selection']]);
 			if (Sanitizer::get_var('noframework', 'bool'))
 			{
-				$GLOBALS['phpgw_info']['flags']['noframework'] = true;
+				$this->flags['noframework'] = true;
+				Settings::getInstance()->update('flags', ['noframework' => true]);
 			}
 		}
 		/*
@@ -196,8 +206,8 @@
 
 			if (!$bypass)
 			{
-				$insert_record			 = $GLOBALS['phpgw']->session->appsession('insert_record', 'property');
-				$insert_record_entity	 = $GLOBALS['phpgw']->session->appsession('insert_record_values' . $this->acl_location, $this->type_app[$this->type]);
+				$insert_record	=	Cache::session_get('property',	'insert_record');
+				$insert_record_entity = (array)Cache::session_get($this->type_app[$this->type],	'insert_record_values' . $this->acl_location);
 
 				if (is_array($insert_record_entity))
 				{
@@ -249,7 +259,7 @@
 					$values['org_unit_id']			 = $values['extra']['org_unit_id'];
 					$values['org_unit_name']		 = Sanitizer::get_var('org_unit_name', 'string');
 				}
-				if ($GLOBALS['phpgw']->session->is_repost())
+				if (phpgw::is_repost())
 				{
 					$this->receipt['error'][] = array('msg' => lang('Hmm... looks like a repost!'));
 				}
@@ -439,7 +449,7 @@
 
 			$options = array();
 			$options['base_dir']	 = "{$this->category_dir}/{$loc1}/{$id}";
-			$options['upload_dir']	 = $GLOBALS['phpgw_info']['server']['files_dir'] . '/property/' . $options['base_dir'] . '/';
+			$options['upload_dir']	 = $this->serverSettings['files_dir'] . '/property/' . $options['base_dir'] . '/';
 			$options['script_url']	 = html_entity_decode($multi_upload_action);
 			$upload_handler			 = new property_multiuploader($options, false);
 
@@ -464,7 +474,7 @@
 					$upload_handler->header('HTTP/1.1 405 Method Not Allowed');
 			}
 
-			$GLOBALS['phpgw']->common->phpgw_exit();
+			$this->phpgwapi_common->phpgw_exit();
 		}
 
 		public function build_multi_upload_file()
@@ -476,8 +486,9 @@
 			$cat_id		 = Sanitizer::get_var('_cat_id');
 			$type		 = Sanitizer::get_var('_type');
 
-			$GLOBALS['phpgw_info']['flags']['noframework']	 = true;
-			$GLOBALS['phpgw_info']['flags']['nofooter']		 = true;
+			$this->flags['noframework']	 = true;
+			$this->flags['nofooter']		 = true;
+			Settings::getInstance()->update('flags', ['noframework' => true, 'nofooter' => true]);
 
 			$multi_upload_action = phpgw::link('/index.php',
 												  array('menuaction' => 'property.uientity.handle_multi_upload_file',
@@ -670,11 +681,11 @@
 				$values[]		 = array('document_name' => $document_name, 'title' => $item['title']);
 			}
 
-			//$location_id = $GLOBALS['phpgw']->locations->get_id('property', '.location.' . count(explode('-', $location_code)));
+			//$location_id = $this->locations->get_id('property', '.location.' . count(explode('-', $location_code)));
 			$generic_document = CreateObject('property.sogeneric_document');
 			if (empty($location_id))
 			{
-				$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$this->entity_id}.{$this->cat_id}");
+				$location_id = $this->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$this->entity_id}.{$this->cat_id}");
 			}
 			$params['location_id']	 = $location_id;
 			$params['order']		 = 'name';
@@ -703,8 +714,8 @@
 
 			if ($start_date && empty($end_date))
 			{
-				$dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
-				$end_date	 = urlencode($GLOBALS['phpgw']->common->show_date(mktime(0, 0, 0, date("m"), date("d"), date("Y")), $dateformat));
+				$dateformat	 = $this->userSettings['preferences']['common']['dateformat'];
+				$end_date	 = urlencode($this->phpgwapi_common->show_date(mktime(0, 0, 0, date("m"), date("d"), date("Y")), $dateformat));
 			}
 
 			$search	 = Sanitizer::get_var('search');
@@ -732,7 +743,7 @@
 				return $values;
 			}
 
-			$location_id	 = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], $this->acl_location);
+			$location_id	 = $this->locations->get_id($this->type_app[$this->type], $this->acl_location);
 			$custom_config	 = CreateObject('admin.soconfig', $location_id);
 			$_config		 = isset($custom_config->config_data) && $custom_config->config_data ? $custom_config->config_data : array();
 
@@ -865,7 +876,7 @@
 			{
 				try
 				{
-					$GLOBALS['phpgw']->db->transaction_begin();
+					Db::getInstance()->transaction_begin();
 					$receipt		 = $this->bo->save($values, $attributes, $action, $this->entity_id, $this->cat_id);
 					$values['id']	 = $receipt['id'];
 					$values_checklist_stage = Sanitizer::get_var('values_checklist_stage');
@@ -874,7 +885,7 @@
 					{
 						$this->bo->save_checklist($receipt['id'], $values_checklist_stage, $receipt);
 					}
-					$GLOBALS['phpgw']->db->transaction_commit();
+					Db::getInstance()->transaction_commit();
 
 					$this->receipt	 = $receipt;
 					if (Sanitizer::get_var('phpgw_return_as') == 'json')
@@ -890,7 +901,7 @@
 				{
 					if ($e)
 					{
-						$GLOBALS['phpgw']->db->transaction_abort();
+						Db::getInstance()->transaction_abort();
 
 						if (Sanitizer::get_var('phpgw_return_as') == 'json')
 						{
@@ -900,7 +911,7 @@
 							);
 						}
 
-						phpgwapi_cache::message_set($e->getMessage(), 'error');
+						Cache::message_set($e->getMessage(), 'error');
 						$this->edit($values);
 						return;
 					}
@@ -908,7 +919,7 @@
 
 				$this->_handle_files($values);
 
-				//phpgwapi_cache::message_set($receipt, 'message');
+				//Cache::message_set($receipt, 'message');
 				if ($values['apply'])
 				{
 					if ($id || (isset($receipt['id']) && $receipt['id']))
@@ -950,9 +961,10 @@
 
 		function download()
 		{
-			$GLOBALS['phpgw_info']['flags']['noheader']	 = true;
-			$GLOBALS['phpgw_info']['flags']['nofooter']	 = true;
-			$GLOBALS['phpgw_info']['flags']['xslt_app']	 = false;
+			$this->flags['noheader']	 = true;
+			$this->flags['nofooter']	 = true;
+			$this->flags['xslt_app']	 = false;
+			Settings::getInstance()->update('flags', ['noheader' => true, 'nofooter' => true, 'xslt_app' => false]);
 
 			//$start_date 	= urldecode($this->start_date);
 			//$end_date 	= urldecode($this->end_date);
@@ -965,9 +977,9 @@
 		/*
 		  function addfiles()
 		  {
-		  $GLOBALS['phpgw_info']['flags']['xslt_app'] = false;
-		  $GLOBALS['phpgw_info']['flags']['noframework'] = true;
-		  $GLOBALS['phpgw_info']['flags']['nofooter'] = true;
+		  $this->flags['xslt_app'] = false;
+		  $this->flags['noframework'] = true;
+		  $this->flags['nofooter'] = true;
 
 		  $id = Sanitizer::get_var('id', 'int');
 		  $jasperfile = Sanitizer::get_var('jasperfile', 'bool');
@@ -977,12 +989,12 @@
 
 		  if (!$this->acl_add && !$this->acl_edit)
 		  {
-		  $GLOBALS['phpgw']->common->phpgw_exit();
+		  $this->phpgwapi_common->phpgw_exit();
 		  }
 
 		  if (!$id)
 		  {
-		  $GLOBALS['phpgw']->common->phpgw_exit();
+		  $this->phpgwapi_common->phpgw_exit();
 		  }
 
 		  $test = false;//true;
@@ -991,12 +1003,12 @@
 		  if (!empty($_FILES))
 		  {
 		  $tempFile = $_FILES['Filedata']['tmp_name'];
-		  $targetPath = "{$GLOBALS['phpgw_info']['server']['temp_dir']}/";
+		  $targetPath = "{$this->serverSettings['temp_dir']}/";
 		  $targetFile = str_replace('//', '/', $targetPath) . $_FILES['Filedata']['name'];
 		  move_uploaded_file($tempFile, $targetFile);
-		  echo str_replace($GLOBALS['phpgw_info']['server']['temp_dir'], '', $targetFile);
+		  echo str_replace($this->serverSettings['temp_dir'], '', $targetFile);
 		  }
-		  $GLOBALS['phpgw']->common->phpgw_exit();
+		  $this->phpgwapi_common->phpgw_exit();
 		  }
 
 		  $values = $this->bo->read_single(array('entity_id' => $this->entity_id, 'cat_id' => $this->cat_id,
@@ -1096,8 +1108,8 @@
 							'type'		 => $_target_section['descr'],
 							'title'		 => $_target_entry['title'],
 							'status'	 => $_target_entry['statustext'],
-							'user'		 => $GLOBALS['phpgw']->accounts->get($_target_entry['account_id'])->__toString(),
-							'entry_date' => $GLOBALS['phpgw']->common->show_date($_target_entry['entry_date'], $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']),
+							'user'		 => $this->accounts_obj->get($_target_entry['account_id'])->__toString(),
+							'entry_date' => $this->phpgwapi_common->show_date($_target_entry['entry_date'], $this->userSettings['preferences']['common']['dateformat']),
 						);
 					}
 				}
@@ -1120,17 +1132,17 @@
 					'type'		 => $lang_workorder,
 					'title'		 => $workorder['title'],
 					'status'	 => $workorder['statustext'],
-					'user'		 => $GLOBALS['phpgw']->accounts->get($workorder['user_id'])->__toString(),
-					'entry_date' => $GLOBALS['phpgw']->common->show_date($workorder['entry_date'], $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']),
+					'user'		 => $this->accounts_obj->get($workorder['user_id'])->__toString(),
+					'entry_date' => $this->phpgwapi_common->show_date($workorder['entry_date'], $this->userSettings['preferences']['common']['dateformat']),
 				);
 			}
 
 //			$controller_cases = array();
-//			if (isset($GLOBALS['phpgw_info']['user']['apps']['controller']))
+//			if (isset($this->userSettings['apps']['controller']))
 //			{
 //
 //				$lang_controller = $GLOBALS['phpgw']->translation->translate('controller', array(), false, 'controller');
-//				$location_id = $GLOBALS['phpgw']->locations->get_id('property', $this->acl_location);
+//				$location_id = $this->locations->get_id('property', $this->acl_location);
 //				$socase = CreateObject('controller.socase');
 //				$controller_cases = $socase->get_cases_by_component($location_id, $id);
 //
@@ -1168,8 +1180,8 @@
 //					'type' => $lang_controller,
 //					'title' => $case['descr'],
 //					'status' => $_statustext[$case['status']],
-//					'user' => $GLOBALS['phpgw']->accounts->get($case['user_id'])->__toString(),
-//					'entry_date' => $GLOBALS['phpgw']->common->show_date($case['modified_date'], $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']),
+//					'user' => $this->accounts_obj->get($case['user_id'])->__toString(),
+//					'entry_date' => $this->phpgwapi_common->show_date($case['modified_date'], $this->userSettings['preferences']['common']['dateformat']),
 //				);
 //				unset($_link);
 //			}
@@ -1295,21 +1307,22 @@
 		function columns()
 		{
 			//cramirez: necesary for windows.open . Avoid error JS
-			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
+			$this->flags['xslt_app'] = true;
 			phpgwapi_xslttemplates::getInstance()->add_file(array('columns'));
 
-			$GLOBALS['phpgw_info']['flags']['noframework']	 = true;
-			$GLOBALS['phpgw_info']['flags']['nofooter']		 = true;
+			$this->flags['noframework']	 = true;
+			$this->flags['nofooter']		 = true;
+			Settings::getInstance()->update('flags', array('noframework' => true, 'nofooter' => true, 'xslt_app' => true));
 
 			$values	 = Sanitizer::get_var('values');
 			$receipt = array();
 
 			if (isset($values['save']) && $values['save'] && $this->cat_id)
 			{
-				$GLOBALS['phpgw']->preferences->account_id = $this->account;
-				$GLOBALS['phpgw']->preferences->read();
-				$GLOBALS['phpgw']->preferences->add($this->type_app[$this->type], "entity_columns_" . $this->entity_id . '_' . $this->cat_id, $values['columns'], 'user');
-				$GLOBALS['phpgw']->preferences->save_repository();
+				$preferences = CreateObject('phpgwapi.preferences', $this->account);
+				$preferences->read();
+				$preferences->add($this->type_app[$this->type], "entity_columns_" . $this->entity_id . '_' . $this->cat_id, $values['columns'], 'user');
+				$preferences->save_repository();
 
 				$receipt['message'][] = array('msg' => lang('columns is updated'));
 			}
@@ -1333,7 +1346,7 @@
 
 			$data = array
 				(
-				'msgbox_data'	 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'	 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'column_list'	 => $this->bo->column_list($values['columns'], $entity_id		 = $this->entity_id, $cat_id			 = $this->cat_id, $allrows		 = true),
 				'function_msg'	 => $function_msg,
 				'form_action'	 => phpgw::link('/index.php', $link_data),
@@ -1342,7 +1355,8 @@
 				'lang_save'		 => lang('save'),
 			);
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = $function_msg;
+			$this->flags['app_header'] = $function_msg;
+			Settings::getInstance()->update('flags', array('app_header' => $function_msg));
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('columns' => $data));
 		}
 
@@ -1387,7 +1401,7 @@
 //					'perm' => 1, 'acl_location' => $this->acl_location));
 			}
 
-			$default_district = (isset($GLOBALS['phpgw_info']['user']['preferences']['property']['default_district']) ? $GLOBALS['phpgw_info']['user']['preferences']['property']['default_district'] : '');
+			$default_district = (isset($this->userSettings['preferences']['property']['default_district']) ? $this->userSettings['preferences']['property']['default_district'] : '');
 
 			if ($default_district && !isset($_REQUEST['district_id']))
 			{
@@ -1408,8 +1422,9 @@
 			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
 			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
-			$GLOBALS['phpgw']->jqcal->add_listener('filter_start_date');
-			$GLOBALS['phpgw']->jqcal->add_listener('filter_end_date');
+			$jqcal = CreateObject('phpgwapi.jqcal');
+			$jqcal->add_listener('filter_start_date');
+			$jqcal->add_listener('filter_end_date');
 			phpgwapi_jquery::load_widget('datepicker');
 
 			if ($this->entity_id && $this->cat_id)
@@ -1709,7 +1724,7 @@
 				);
 			}
 
-			$jasper = execMethod('property.sojasper.read', array('location_id' => $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], $this->acl_location)));
+			$jasper = execMethod('property.sojasper.read', array('location_id' => $this->locations->get_id($this->type_app[$this->type], $this->acl_location)));
 
 			foreach ($jasper as $report)
 			{
@@ -1745,7 +1760,8 @@
 				);
 			}
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang($this->type_app[$this->type]) . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang($this->type_app[$this->type]) . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			self::render_template_xsl('datatable_jquery', $data);
 		}
@@ -1948,7 +1964,7 @@
 				'cat_id'		 => $this->cat_id,
 				'type'			 => $this->type,
 				'lean'			 => $_lean,
-				'noframework'	 => isset($GLOBALS['phpgw_info']['flags']['noframework']) ? $GLOBALS['phpgw_info']['flags']['noframework'] : false
+				'noframework'	 => isset($this->flags['noframework']) ? $this->flags['noframework'] : false
 			);
 
 			if (isset($values['files']) && is_array($values['files']))
@@ -2063,7 +2079,8 @@
 					$tabs['controller']	 = array('label'		 => lang('controller'), 'link'		 => '#controller',
 						'function'	 => "set_tab('controller')");
 					$active_tab			 = $active_tab ? $active_tab : 'location';
-					$GLOBALS['phpgw']->jqcal->add_listener('control_start_date');
+					$jqcal = CreateObject('phpgwapi.jqcal');
+					$jqcal->add_listener('control_start_date');
 				}
 
 				$location			 = ".{$this->type}.{$this->entity_id}.{$this->cat_id}";
@@ -2134,7 +2151,7 @@
 //			_debug_array($attributes);
 // ---- START INTEGRATION -------------------------
 
-			$custom_config	 = CreateObject('admin.soconfig', $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], $this->acl_location));
+			$custom_config	 = CreateObject('admin.soconfig', $this->locations->get_id($this->type_app[$this->type], $this->acl_location));
 			$_config		 = isset($custom_config->config_data) && $custom_config->config_data ? $custom_config->config_data : array();
 
 			$integration = array();
@@ -2144,7 +2161,7 @@
 				{
 					if (!isset($_config_section_data['url']))
 					{
-						phpgwapi_cache::message_set("'url' is a required setting for integrations, '{$_config_section}' is disabled", 'error');
+						Cache::message_set("'url' is a required setting for integrations, '{$_config_section}' is disabled", 'error');
 						break;
 					}
 
@@ -2162,9 +2179,9 @@
 						),
 					);
 
-					if (isset($GLOBALS['phpgw_info']['server']['httpproxy_server']))
+					if (isset($this->serverSettings['httpproxy_server']))
 					{
-						$aContext['http']['proxy'] = "{$GLOBALS['phpgw_info']['server']['httpproxy_server']}:{$GLOBALS['phpgw_info']['server']['httpproxy_port']}";
+						$aContext['http']['proxy'] = "{$this->serverSettings['httpproxy_server']}:{$this->serverSettings['httpproxy_port']}";
 					}
 
 					$cxContext	 = stream_context_create($aContext);
@@ -2254,7 +2271,7 @@
 
 			if ($id)
 			{
-				$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], $this->acl_location);
+				$location_id = $this->locations->get_id($this->type_app[$this->type], $this->acl_location);
 
 				$check_doc = $this->bocommon->get_lookup_entity('document');
 				foreach ($check_doc as $_check)
@@ -2674,7 +2691,7 @@ JS;
 				'value_org_unit_id'				 => $values['org_unit_id'],
 				'value_org_unit_name'			 => $values['org_unit_name'],
 				'value_org_unit_name_path'		 => $values['org_unit_name_path'],
-				'value_location_id'				 => $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], $this->acl_location),
+				'value_location_id'				 => $this->locations->get_id($this->type_app[$this->type], $this->acl_location),
 				'link_pdf'						 => phpgw::link('/index.php', $pdf_data),
 				'start_project'					 => $category['start_project'],
 				'lang_start_project'			 => lang('start project'),
@@ -2715,7 +2732,7 @@ JS;
 				'entity_name'					 => $entity['name'],
 				'lang_category'					 => lang('category'),
 				'category_name'					 => $category['name'],
-				'msgbox_data'					 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'					 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'attributes_group'				 => $attributes,
 				'attributes_general'			 => array('attributes' => $attributes_general),
 				'lookup_functions'				 => isset($values['lookup_functions']) ? $values['lookup_functions'] : '',
@@ -2734,8 +2751,8 @@ JS;
 				'lang_history_help'				 => lang('history of this attribute'),
 				'lang_history_date_statustext'	 => lang('Enter the date for this reading'),
 				'lang_date'						 => lang('date'),
-				'textareacols'					 => isset($GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols'] ? $GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols'] : 40,
-				'textarearows'					 => isset($GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows'] ? $GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows'] : 6,
+				'textareacols'					 => isset($this->userSettings['preferences']['property']['textareacols']) && $this->userSettings['preferences']['property']['textareacols'] ? $this->userSettings['preferences']['property']['textareacols'] : 40,
+				'textarearows'					 => isset($this->userSettings['preferences']['property']['textarearows']) && $this->userSettings['preferences']['property']['textarearows'] ? $this->userSettings['preferences']['property']['textarearows'] : 6,
 				'tabs'							 => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
 				'active_tab'					 => $active_tab,
 				'integration'					 => $integration,
@@ -2755,7 +2772,8 @@ JS;
 
 			$appname = $entity['name'];
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang($this->type_app[$this->type]) . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang($this->type_app[$this->type]) . ' - ' . $appname . ': ' . $function_msg;
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			self::add_javascript('property', 'base', 'entity.edit.js');
 			phpgwapi_jquery::load_widget('glider');
@@ -2775,8 +2793,7 @@ JS;
 				'allrows'	 => true
 			);
 
-			$custom_functions = $GLOBALS['phpgw']->custom_functions->find($criteria);
-
+			$custom_functions = createObject('phpgwapi.custom_functions')->find($criteria);
 
 			foreach ($custom_functions as $entry)
 			{
@@ -2786,11 +2803,11 @@ JS;
 					continue;
 				}
 
-				$file = PHPGW_SERVER_ROOT . "/{$this->type_app[$this->type]}/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}/{$entry['file_name']}";
+				$file = PHPGW_SERVER_ROOT . "/{$this->type_app[$this->type]}/inc/custom/{$this->userSettings['domain']}/{$entry['file_name']}";
 
 				if ($entry['active'] && $entry['client_side'] && is_file($file))
 				{
-					phpgwapi_js::getInstance()->add_external_file("{$this->type_app[$this->type]}/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}/{$entry['file_name']}");
+					phpgwapi_js::getInstance()->add_external_file("{$this->type_app[$this->type]}/inc/custom/{$this->userSettings['domain']}/{$entry['file_name']}");
 				}
 			}
 
@@ -2801,11 +2818,12 @@ JS;
 
 		function attrib_help()
 		{
-			$t = & $GLOBALS['phpgw']->template;
+			$t = createObject('phpgwapi.template');
 			$t->set_root(PHPGW_APP_TPL);
 
-			$GLOBALS['phpgw_info']['flags']['xslt_app']	 = false;
-			$GLOBALS['phpgw_info']['flags']['nofooter']	 = true;
+			$this->flags['xslt_app']	 = false;
+			$this->flags['nofooter']	 = true;
+			Settings::getInstance()->set('flags', $this->flags);
 
 			$entity_id	 = Sanitizer::get_var('entity_id', 'int');
 			$cat_id		 = Sanitizer::get_var('cat_id', 'int');
@@ -2834,7 +2852,7 @@ JS;
 			$t->set_var('help_msg', $help_msg);
 			$t->set_var('lang_close', lang('close'));
 
-			$GLOBALS['phpgw']->common->phpgw_header();
+			$this->phpgwapi_common->phpgw_header();
 			$t->pfp('out', 'help');
 		}
 
@@ -2891,7 +2909,9 @@ JS;
 			$appname		 = lang('entity');
 			$function_msg	 = lang('delete entity');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang($this->type_app[$this->type]) . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang($this->type_app[$this->type]) . ' - ' . $appname . ': ' . $function_msg;
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
+
 			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 
@@ -2907,8 +2927,8 @@ JS;
 
 //		function get_assigned_history()
 //		{
-//			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
-//			$GLOBALS['phpgw_info']['flags']['xslt_app'] = false;
+//			$this->flags['noframework'] = true;
+//			$this->flags['xslt_app'] = false;
 //
 //			if ($this->acl_read)
 //			{
@@ -2938,7 +2958,7 @@ JS;
 //HTML;
 //			foreach ($history as $entry)
 //			{
-//				$date = $GLOBALS['phpgw']->common->show_date($entry['assigned_date']);
+//				$date = $this->phpgwapi_common->show_date($entry['assigned_date']);
 //				$ret .= <<<HTML
 //						<tr align = 'left'>
 //							<td>
@@ -2960,7 +2980,8 @@ JS;
 
 		function attrib_history()
 		{
-			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
+			$this->flags['noframework'] = true;
+			Settings::getInstance()->update('flags', ['noframework' => true]);
 
 			$acl_location	 = Sanitizer::get_var('acl_location', 'string');
 			$id				 = Sanitizer::get_var('id', 'int');
@@ -3002,7 +3023,7 @@ JS;
 			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$values		 = $this->bo->read_attrib_history($data_lookup);
-				$dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+				$dateformat	 = $this->userSettings['preferences']['common']['dateformat'];
 
 				$content = array();
 				//while (is_array($values) && list(, $entry) = each($values))
@@ -3015,7 +3036,7 @@ JS;
 							'id'			 => $entry['id'],
 							'value'			 => $entry['new_value'],
 							'user'			 => $entry['owner'],
-							'time_created'	 => $GLOBALS['phpgw']->common->show_date($entry['datetime'], "{$dateformat} G:i:s")
+							'time_created'	 => $this->phpgwapi_common->show_date($entry['datetime'], "{$dateformat} G:i:s")
 						);
 					}
 				}
@@ -3114,7 +3135,7 @@ JS;
 				'base_java_url'	 => json_encode(array('menuaction' => "property.uientity.attrib_history")),
 				'datatable_def'	 => $datatable_def,
 				'link_url'		 => phpgw::link('/index.php', $link_data),
-				'img_path'		 => $GLOBALS['phpgw']->common->get_image_path('phpgwapi', 'default')
+				'img_path'		 => $this->phpgwapi_common->get_image_path('phpgwapi', 'default')
 			);
 
 			$custom			 = createObject('phpgwapi.custom_fields');
@@ -3122,7 +3143,8 @@ JS;
 			$appname		 = $attrib_data['input_text'];
 			$function_msg	 = lang('history');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang($this->type_app[$this->type]) . ' - ' . $appname . ': ' . $function_msg;
+			$this->flags['app_header'] = lang($this->type_app[$this->type]) . ' - ' . $appname . ': ' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 			self::render_template_xsl(array('attrib_history', 'datatable_inline'), array(
 				'attrib_history' => $data));
@@ -3136,9 +3158,10 @@ JS;
 					'perm'			 => 1, 'acl_location'	 => $this->acl_location));
 			}
 
-			$GLOBALS['phpgw_info']['flags']['noheader']	 = true;
-			$GLOBALS['phpgw_info']['flags']['nofooter']	 = true;
-			$GLOBALS['phpgw_info']['flags']['xslt_app']	 = false;
+			$this->flags['noheader']	 = true;
+			$this->flags['nofooter']	 = true;
+			$this->flags['xslt_app']	 = false;
+			Settings::getInstance()->update('flags', $this->flags);
 
 			$bolocation = CreateObject('property.bolocation');
 
@@ -3198,8 +3221,8 @@ JS;
 			//_debug_array($values);
 			$pdf = CreateObject('phpgwapi.pdf');
 
-			$date		 = $GLOBALS['phpgw']->common->show_date('', $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
-			$entry_date	 = $GLOBALS['phpgw']->common->show_date($values['entry_date'], $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
+			$date		 = $this->phpgwapi_common->show_date('', $this->userSettings['preferences']['common']['dateformat']);
+			$entry_date	 = $this->phpgwapi_common->show_date($values['entry_date'], $this->userSettings['preferences']['common']['dateformat']);
 
 			// don't want any warnings turning up in the pdf code if the server is set to 'anal' mode.
 			//error_reporting(7);
@@ -3214,7 +3237,7 @@ JS;
 			$pdf->setStrokeColor(0, 0, 0, 1);
 			$pdf->line(20, 760, 578, 760);
 
-			$pdf->addText(50, 790, 10, $GLOBALS['phpgw']->accounts->id2name($values['user_id']) . ': ' . $entry_date);
+			$pdf->addText(50, 790, 10, $this->accounts_obj->id2name($values['user_id']) . ': ' . $entry_date);
 			$pdf->addText(50, 770, 16, $entity['name'] . '::' . $category['name'] . ' #' . $id);
 			$pdf->addText(300, 28, 10, $date);
 
@@ -3317,7 +3340,7 @@ JS;
 			}
 
 			$document = $pdf->ezOutput();
-			$pdf->print_pdf($document, $entity['name'] . '_' . str_replace(' ', '_', $GLOBALS['phpgw']->accounts->id2name($this->account)));
+			$pdf->print_pdf($document, $entity['name'] . '_' . str_replace(' ', '_', $this->accounts_obj->id2name($this->account)));
 		}
 
 		public function get_inventory()
@@ -3329,7 +3352,7 @@ JS;
 			if (!$id)
 			{
 				$location_id		 = Sanitizer::get_var('location_id', 'int');
-				$system_location	 = $GLOBALS['phpgw']->locations->get_name($location_id);
+				$system_location	 = $this->locations->get_name($location_id);
 				$location			 = explode('.', $system_location['location']);
 				$this->bo->type		 = $location[1];
 				$this->bo->entity_id = $location[1];
@@ -3337,7 +3360,7 @@ JS;
 			}
 			else
 			{
-				$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$this->entity_id}.{$this->cat_id}");
+				$location_id = $this->locations->get_id($this->type_app[$this->type], ".{$this->type}.{$this->entity_id}.{$this->cat_id}");
 			}
 
 			$values = $this->bo->get_inventory(array('id' => $id, 'location_id' => $location_id));
@@ -3387,14 +3410,14 @@ JS;
 			$id				 = Sanitizer::get_var('id', 'int');
 			$inventory_id	 = Sanitizer::get_var('inventory_id', 'int');
 
-			$system_location = $GLOBALS['phpgw']->locations->get_name($location_id);
+			$system_location = $this->locations->get_name($location_id);
 
 			$this->acl_add = $this->acl->check($system_location['location'], ACL_ADD, $system_location['appname']);
 
 			if (!$this->acl_add)
 			{
 				echo lang('No Access');
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 			$unit_id	 = '';
 			if ($inventory	 = $this->bo->get_inventory(array('id'			 => $id, 'location_id'	 => $location_id,
@@ -3469,11 +3492,11 @@ JS;
 				'entity_data'	 => isset($values['p']) ? $values['p'] : ''
 			));
 
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
 
 			$data = array
 				(
-				'msgbox_data'		 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'		 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'location_data'		 => $location_data,
 				'system_location'	 => $system_location,
 				'location_id'		 => $location_id,
@@ -3484,24 +3507,27 @@ JS;
 				'value_inventory'	 => $values['inventory'] ? $values['inventory'] : $inventory[0]['inventory'],
 				'value_write_off'	 => $values['write_off'],
 				'bookable'			 => $values['bookable'] ? $values['bookable'] : $inventory[0]['bookable'],
-				'value_active_from'	 => $values['active_from'] ? $values['active_from'] : $GLOBALS['phpgw']->common->show_date($inventory[0]['active_from'], $dateformat),
-				'value_active_to'	 => $values['active_to'] ? $values['active_to'] : $GLOBALS['phpgw']->common->show_date($inventory[0]['active_to'], $dateformat),
+				'value_active_from'	 => $values['active_from'] ? $values['active_from'] : $this->phpgwapi_common->show_date($inventory[0]['active_from'], $dateformat),
+				'value_active_to'	 => $values['active_to'] ? $values['active_to'] : $this->phpgwapi_common->show_date($inventory[0]['active_to'], $dateformat),
 				'value_remark'		 => $values['remark'] ? $values['remark'] : $inventory[0]['remark'],
 			);
 
-			$GLOBALS['phpgw']->jqcal->add_listener('active_from');
-			$GLOBALS['phpgw']->jqcal->add_listener('active_to');
+			$jqcal = CreateObject('phpgwapi.jqcal');
+			$jqcal->add_listener('active_from');
+			$jqcal->add_listener('active_to');
 
 			self::add_javascript('property', 'base', 'entity.edit_inventory.js');
 
 			self::render_template_xsl(array('entity', 'attributes_form', 'files'), array(
 				'edit_inventory' => $data));
 
-			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
+			$this->flags['noframework'] = true;
 
 			$function_msg = lang('add inventory');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = $system_location['appname'] . '::' . $system_location['descr'] . '::' . $function_msg;
+			$this->flags['app_header'] = $system_location['appname'] . '::' . $system_location['descr'] . '::' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header'], 'noframework' => true]);
+
 		}
 
 		public function add()
@@ -3513,14 +3539,14 @@ JS;
 		{
 			$location_id	 = Sanitizer::get_var('location_id', 'int');
 			$id				 = Sanitizer::get_var('id', 'int');
-			$system_location = $GLOBALS['phpgw']->locations->get_name($location_id);
+			$system_location = $this->locations->get_name($location_id);
 
 			$this->acl_add = $this->acl->check($system_location['location'], ACL_ADD, $system_location['appname']);
 
 			if (!$this->acl_add)
 			{
 				echo lang('No Access');
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 
 			$unit_id	 = '';
@@ -3541,7 +3567,7 @@ JS;
 			{
 				$values['location_id']	 = $location_id;
 				$values['item_id']		 = $id;
-				$insert_record			 = $GLOBALS['phpgw']->session->appsession('insert_record', 'property');
+				$insert_record			 = Cache::session_get('property', 'insert_record');
 
 				if (is_array($insert_record_entity))
 				{
@@ -3588,7 +3614,7 @@ JS;
 
 			$data = array
 				(
-				'msgbox_data'		 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+				'msgbox_data'		 => $this->phpgwapi_common->msgbox($msgbox_data),
 				'location_data'		 => $location_data,
 				'system_location'	 => $system_location,
 				'location_id'		 => $location_id,
@@ -3603,17 +3629,21 @@ JS;
 				'value_remark'		 => $values['remark']
 			);
 
-			$GLOBALS['phpgw']->jqcal->add_listener('active_from');
-			$GLOBALS['phpgw']->jqcal->add_listener('active_to');
+			$jqcal = CreateObject('phpgwapi.jqcal');
+			$jqcal->add_listener('active_from');
+			$jqcal->add_listener('active_to');
 
-			self::render_template_xsl(array('entity', 'attributes_form', 'files', 'conditional_function'), array(
-				'add_inventory' => $data));
 
-			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
+			$this->flags['noframework'] = true;
 
 			$function_msg = lang('add inventory');
 
-			$GLOBALS['phpgw_info']['flags']['app_header'] = $system_location['appname'] . '::' . $system_location['descr'] . '::' . $function_msg;
+			$this->flags['app_header'] = $system_location['appname'] . '::' . $system_location['descr'] . '::' . $function_msg;
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header'], 'noframework' => true]);
+
+			self::render_template_xsl(array('entity', 'attributes_form', 'files', 'conditional_function'), array(
+				'add_inventory' => $data
+			));
 		}
 
 		public function inventory_calendar()
@@ -3622,17 +3652,17 @@ JS;
 			$id				 = Sanitizer::get_var('id', 'int');
 			$inventory_id	 = Sanitizer::get_var('inventory_id', 'int');
 
-			$system_location = $GLOBALS['phpgw']->locations->get_name($location_id);
+			$system_location = $this->locations->get_name($location_id);
 
 			$this->acl_add = $this->acl->check($system_location['location'], ACL_ADD, $system_location['appname']);
 
 			if (!$this->acl_add)
 			{
 				echo lang('No Access');
-				$GLOBALS['phpgw']->common->phpgw_exit();
+				$this->phpgwapi_common->phpgw_exit();
 			}
 			echo "Planlagt: Visning av kalenderoppføringer for ressursen";
-			$GLOBALS['phpgw']->common->phpgw_exit();
+			$this->phpgwapi_common->phpgw_exit();
 		}
 
 
@@ -3659,7 +3689,7 @@ JS;
 			self::set_active_menu("property::entity_{$this->entity_id}");
 			$entity	 = $this->soadmin_entity->read_single($this->entity_id);
 
-			if ($GLOBALS['phpgw']->session->is_repost())
+			if (phpgw::is_repost())
 			{
 				$this->receipt['error'][] = array('msg' => lang('Hmm... looks like a repost!'));
 			}
@@ -3694,7 +3724,8 @@ JS;
 				'tabs'						 => phpgwapi_jquery::tabview_generate($tabs, 0),
 				'value_active_tab'			 => 0,
 			);
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang($this->type_app[$this->type]) . ' - ' . $entity['name'] . ' - ' . lang('summary');
+			$this->flags['app_header'] = lang($this->type_app[$this->type]) . ' - ' . $entity['name'] . ' - ' . lang('summary');
+			Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 
 			phpgwapi_jquery::load_widget('core');
@@ -3709,10 +3740,10 @@ JS;
 		private function writetospreadsheet( $location_code )
 		{
 			set_time_limit(500);
-			$GLOBALS['phpgw_info']['flags']['noheader']	 = true;
-			$GLOBALS['phpgw_info']['flags']['nofooter']	 = true;
-			$GLOBALS['phpgw_info']['flags']['xslt_app']	 = false;
-
+			$this->flags['noheader']	 = true;
+			$this->flags['nofooter']	 = true;
+			$this->flags['xslt_app']	 = false;
+			Settings::getInstance()->set('flags', $this->flags);
 
 //			_debug_array($location_code);
 			$items = array();
@@ -3720,7 +3751,7 @@ JS;
 			$entity	 = $this->soadmin_entity->read_single($this->entity_id);
 			$filename = str_replace(' ', '_', $entity['name']);
 
-			$date_time	 = str_replace(array(' ', '/'), '_', $GLOBALS['phpgw']->common->show_date(time()));
+			$date_time	 = str_replace(array(' ', '/'), '_', $this->phpgwapi_common->show_date(time()));
 			$filename	 .= "_{$date_time}.xlsx";
 
 			$writer = CreateObject('phpgwapi.xlsxwriter');
@@ -3728,8 +3759,8 @@ JS;
 			$browser = CreateObject('phpgwapi.browser');
 			$browser->content_header($writer::sanitize_filename($filename), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
-			$writer->setauthor($GLOBALS['phpgw_info']['user']['fullname']);
-			$writer->setTitle("Download from {$GLOBALS['phpgw_info']['server']['system_name']}");
+			$writer->setauthor($this->userSettings['fullname']);
+			$writer->setTitle("Download from {$this->serverSettings['system_name']}");
 
 			$soentity = createObject('property.soentity');
 			$categories = $this->soadmin_entity->read_category(array
@@ -3808,7 +3839,7 @@ JS;
 //				$cat_id = Sanitizer::get_var('cat_id', 'int');
 //				$type = Sanitizer::get_var('type', 'string', 'REQUEST', 'entity');
 //
-//				$location_id = $GLOBALS['phpgw']->locations->get_id($this->type_app[$type], ".{$type}.{$entity_id}.{$cat_id}");
+//				$location_id = $this->locations->get_id($this->type_app[$type], ".{$type}.{$entity_id}.{$cat_id}");
 //			}
 //
 //			$id = $id ? $id : Sanitizer::get_var('id', 'int');
@@ -3820,7 +3851,7 @@ JS;
 //			if (!$this->acl_read)
 //			{
 //				echo lang('No Access');
-//				$GLOBALS['phpgw']->common->phpgw_exit();
+//				$this->phpgwapi_common->phpgw_exit();
 //			}
 //
 //			$repeat_type_array = array
@@ -3849,7 +3880,7 @@ JS;
 //				$entry['title'] = '<a href="' . phpgw::link('/index.php', $control_link_data) . '" target="_blank">' . $entry['title'] . '</a>';
 //				$entry['assigned_to_name'] = "<a title=\"{$lang_history}\" onclick='javascript:showlightbox_assigned_history({$entry['serie_id']});'>{$entry['assigned_to_name']}</a>";
 //
-//				$entry['start_date'] = $GLOBALS['phpgw']->common->show_date($entry['start_date'], $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
+//				$entry['start_date'] = $this->phpgwapi_common->show_date($entry['start_date'], $this->userSettings['preferences']['common']['dateformat']);
 //				$entry['repeat_type'] = $repeat_type_array[$entry['repeat_type']];
 //				$entry['total_time'] = $entry['service_time'] + $entry['controle_time'];
 //			}
@@ -3965,8 +3996,8 @@ JS;
 //					'title' => "<a href=\"{$_link}\" > {$case['title']}</a>",
 //					'value' => implode('</br>', $_value_arr),
 //					'status' => $_statustext[$case['status']],
-//					'user' => $GLOBALS['phpgw']->accounts->get($case['user_id'])->__toString(),
-//					'entry_date' => $GLOBALS['phpgw']->common->show_date($case['modified_date'], $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']),
+//					'user' => $this->accounts_obj->get($case['user_id'])->__toString(),
+//					'entry_date' => $this->phpgwapi_common->show_date($case['modified_date'], $this->userSettings['preferences']['common']['dateformat']),
 //				);
 //				unset($_link);
 //			}
@@ -4053,8 +4084,8 @@ JS;
 //						'title' => "<a href=\"{$_link}\" >" . $check_item->get_control_item()->get_title() . "</a>",
 //						'value' => implode('</br>', $_value_arr),
 //						'status' => $_statustext[$case->get_status()],
-//						'user' => $GLOBALS['phpgw']->accounts->get($case->get_user_id())->__toString(),
-//						'entry_date' => $GLOBALS['phpgw']->common->show_date($case->get_modified_date(), $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']),
+//						'user' => $this->accounts_obj->get($case->get_user_id())->__toString(),
+//						'entry_date' => $this->phpgwapi_common->show_date($case->get_modified_date(), $this->userSettings['preferences']['common']['dateformat']),
 //					);
 //					unset($_link);
 //				}
@@ -4142,10 +4173,10 @@ JS;
 //						'id' => $check_list->get_id(),
 //						'control_name' => "<a href=\"{$_link}\" >{$_control_name}</a>",
 //						'status' => $_statustext[$check_list->get_status()],
-//						'user' => $GLOBALS['phpgw']->accounts->get($check_list->get_assigned_to())->__toString(),
-//						'deadline' => $GLOBALS['phpgw']->common->show_date($check_list->get_deadline(), $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']),
-//						'planned_date' => $GLOBALS['phpgw']->common->show_date($check_list->get_planned_date(), $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']),
-//						'completed_date' => $GLOBALS['phpgw']->common->show_date($check_list->get_completed_date(), $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']),
+//						'user' => $this->accounts_obj->get($check_list->get_assigned_to())->__toString(),
+//						'deadline' => $this->phpgwapi_common->show_date($check_list->get_deadline(), $this->userSettings['preferences']['common']['dateformat']),
+//						'planned_date' => $this->phpgwapi_common->show_date($check_list->get_planned_date(), $this->userSettings['preferences']['common']['dateformat']),
+//						'completed_date' => $this->phpgwapi_common->show_date($check_list->get_completed_date(), $this->userSettings['preferences']['common']['dateformat']),
 //						'num_open_cases' => $check_list->get_num_open_cases(),
 //						'num_pending_cases' => $check_list->get_num_pending_cases(),
 //					);
@@ -4206,7 +4237,7 @@ JS;
 
 			if(isset($checklist_list[0]['location_id']))
 			{
-				$location_info = $GLOBALS['phpgw']->locations->get_name($location_id);
+				$location_info = $this->locations->get_name($location_id);
 			}
 
 

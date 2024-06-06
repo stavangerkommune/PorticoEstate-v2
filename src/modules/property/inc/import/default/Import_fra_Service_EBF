@@ -95,7 +95,7 @@
 				$j = 0;
 				foreach ($data[$row] as $key => $_dummy)
 				{
-					$value = $objPHPExcel->getActiveSheet()->getCellByColumnAndRow($j, $row)->getCalculatedValue();
+					$value = $objPHPExcel->getActiveSheet()->getCell([$j, $row])->getCalculatedValue();
 
 					if ($name = $this->import[$this->header[$j]])
 					{

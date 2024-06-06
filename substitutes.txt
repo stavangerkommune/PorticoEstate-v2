@@ -99,3 +99,7 @@ ACL_READ
 
 PHPGW_ACL_PRIVATE
 ACL_PRIVATE
+
+
+$GLOBALS['phpgw']->session->is_repost()
+phpgw::is_repost()
