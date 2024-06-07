@@ -79,12 +79,6 @@ class phpgwapi_xslttemplates
 	{
 		$this->serverSettings = Settings::getInstance()->get('server');
 		$this->userSettings = Settings::getInstance()->get('user');
-		$this->flags = Settings::getInstance()->get('flags');
-		//FIXME Print view/mode should be handled by CSS not different markup
-		if (isset($this->flags['printview']) && $this->flags['printview'])
-		{
-			$this->print = true;
-		}
 		$this->set_root($root);
 		if (phpgwapi_browser::is_mobile())
 		{
@@ -406,7 +400,8 @@ XSLT;
 
 	function parse($parsexsl = true, $parsexml = true)
 	{
-		$output_header = !(isset($this->flags['noframework']) && $this->flags['noframework']);
+		
+		$output_header =	empty(Settings::getInstance()->get('flags')['noframework']);
 
 		$stripped_htm	= Sanitizer::get_var('phpgw_return_as') == 'stripped_html';
 
