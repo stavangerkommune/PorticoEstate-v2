@@ -184,14 +184,14 @@ class Db
 	{
 		//old naming of sequenses
 		$sql = "SELECT relname FROM pg_class WHERE NOT relname ~ 'pg_.*'"
-		. " AND relname = '{$table}_{$field}_seq' AND relkind='S' ORDER BY relname";
+			. " AND relname = '{$table}_{$field}_seq' AND relkind='S' ORDER BY relname";
 		$this->query($sql, __LINE__, __FILE__);
 		if ($this->next_record())
 		{
 			return $this->f('relname');
 		}
 		$sql = "SELECT relname FROM pg_class WHERE NOT relname ~ 'pg_.*'"
-		. " AND relname = 'seq_{$table}' AND relkind='S' ORDER BY relname";
+			. " AND relname = 'seq_{$table}' AND relkind='S' ORDER BY relname";
 		$this->query($sql, __LINE__, __FILE__);
 		if ($this->next_record())
 		{
@@ -341,37 +341,77 @@ class Db
 		{
 			case 'pgsql':
 			case 'postgres':
-				$stmt = $this->db->prepare("SELECT column_name, data_type, character_maximum_length
-				FROM   information_schema.columns
-				WHERE  table_schema = 'public'
-				AND    table_name   = :table");
+				$stmt = $this->db->prepare("
+					SELECT a.column_name, a.data_type, a.character_maximum_length, 
+						   CASE WHEN pk.column_name IS NULL THEN false ELSE true END AS primary_key
+					FROM information_schema.columns a
+					LEFT JOIN (
+						SELECT ku.table_schema, ku.table_name, ku.column_name
+						FROM information_schema.table_constraints tc
+						JOIN information_schema.key_column_usage ku
+							ON tc.constraint_name = ku.constraint_name
+							AND tc.table_schema = ku.table_schema
+							AND tc.table_name = ku.table_name
+						WHERE tc.constraint_type = 'PRIMARY KEY'
+					) pk
+					ON a.table_schema = pk.table_schema
+					AND a.table_name = pk.table_name
+					AND a.column_name = pk.column_name
+					WHERE a.table_schema = 'public'
+					AND a.table_name = :table");
 				$stmt->execute(['table' => $table]);
-
 				$meta = $stmt->fetchAll(PDO::FETCH_ASSOC);
 				break;
 			case 'mysql':
-				$stmt = $this->db->prepare("SHOW COLUMNS FROM $table");
-				$stmt->execute();
+				$stmt = $this->db->prepare("
+					SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, 
+						   COLUMN_KEY='PRI' as primary_key
+					FROM INFORMATION_SCHEMA.COLUMNS 
+					WHERE TABLE_NAME = :table
+				");
+				$stmt->execute(['table' => $table]);
 				$meta = $stmt->fetchAll(PDO::FETCH_ASSOC);
 				break;
 			case 'mssql':
 			case 'mssqlnative':
-				$stmt = $this->db->prepare("SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH
-				FROM INFORMATION_SCHEMA.COLUMNS
-				WHERE TABLE_NAME = :table");
+				$stmt = $this->db->prepare("
+					SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, 
+						   COLUMN_NAME = (SELECT KU.COLUMN_NAME 
+										  FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS TC 
+										  JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS KU 
+										  ON TC.CONSTRAINT_TYPE = 'PRIMARY KEY' 
+										  AND TC.CONSTRAINT_NAME = KU.CONSTRAINT_NAME 
+										  WHERE KU.TABLE_NAME = :table) as primary_key
+					FROM INFORMATION_SCHEMA.COLUMNS 
+					WHERE TABLE_NAME = :table
+				");
 				$stmt->execute(['table' => $table]);
 				$meta = $stmt->fetchAll(PDO::FETCH_ASSOC);
 				break;
 			case 'oci8':
-				$stmt = $this->db->prepare("SELECT COLUMN_NAME, DATA_TYPE, DATA_LENGTH
-				FROM ALL_TAB_COLUMNS
-				WHERE TABLE_NAME = :table");
+				$stmt = $this->db->prepare("
+					SELECT COLUMN_NAME, DATA_TYPE, DATA_LENGTH, 
+						   COLUMN_NAME = (SELECT cols.column_name 
+										  FROM all_constraints cons, all_cons_columns cols 
+										  WHERE cols.table_name = :table 
+										  AND cons.constraint_type = 'P' 
+										  AND cons.constraint_name = cols.constraint_name 
+										  AND cons.owner = cols.owner) as primary_key
+					FROM ALL_TAB_COLUMNS 
+					WHERE TABLE_NAME = :table
+				");
 				$stmt->execute(['table' => $table]);
 				$meta = $stmt->fetchAll(PDO::FETCH_ASSOC);
 				break;
 			default:
 				throw new Exception("Database type not supported");
 		}
+		// Convert the resulting array into an array of objects with column_name as the key
+		$meta = array_reduce($meta, function ($carry, $item)
+		{
+			$carry[$item['column_name']] = (object) $item;
+			return $carry;
+		}, []);
 
 		return $meta;
 	}
@@ -463,7 +503,7 @@ class Db
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
 		$next_id = (int)$row['maximum'] + 1;
 
-		if($table == 'phpgw_nextid')
+		if ($table == 'phpgw_nextid')
 		{
 			$update = false;
 			if ($next_id == 1)
