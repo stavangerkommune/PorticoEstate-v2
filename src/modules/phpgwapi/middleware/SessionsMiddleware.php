@@ -87,7 +87,6 @@ class SessionsMiddleware implements MiddlewareInterface
 			}
 			else
 			{
-				$sessions->phpgw_setcookie('login_second_pass', true, 0);
 				$process_login = new Login();
 				if($process_login->login())
 				{
@@ -95,6 +94,7 @@ class SessionsMiddleware implements MiddlewareInterface
 				}
 				else
 				{
+					$sessions->phpgw_setcookie('login_second_pass', true, 0);
 					if (Sanitizer::get_var('menuaction', 'string', 'GET')  && Sanitizer::get_var('phpgw_return_as', 'string') != 'json')
 					{
 						unset($_GET['click_history']);
