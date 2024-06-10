@@ -1,13 +1,11 @@
 <?php
 
 use App\modules\phpgwapi\security\Acl;
-
 use App\modules\phpgwapi\services\Cache;
 use App\modules\phpgwapi\services\Settings;
-use App\modules\phpgwapi\controllers\Accounts\Accounts;
 use App\Database\Db;
-phpgw::import_class('phpgwapi.uicommon_jquery');
 
+phpgw::import_class('phpgwapi.uicommon_jquery');
 phpgw::import_class('phpgwapi.datetime');
 
 class property_uiimport extends phpgwapi_uicommon_jquery

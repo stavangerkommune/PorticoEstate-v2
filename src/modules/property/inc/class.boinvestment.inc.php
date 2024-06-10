@@ -169,7 +169,7 @@
 
 			$categories = $this->so->write_off_period_list();
 
-			//while (is_array($categories) && list(, $category) = each($categories))
+			$category_list = array();
 			if (is_array($categories))
 			{
 				foreach ($categories as $category)

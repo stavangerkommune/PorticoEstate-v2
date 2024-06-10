@@ -342,8 +342,18 @@ class Db
 			case 'pgsql':
 			case 'postgres':
 				$stmt = $this->db->prepare("
-					SELECT a.column_name, a.data_type, a.character_maximum_length, 
-						   CASE WHEN pk.column_name IS NULL THEN false ELSE true END AS primary_key
+					SELECT a.column_name, a.data_type AS type, 
+						   CASE 
+							   WHEN a.data_type = 'smallint' THEN 2
+							   WHEN a.data_type = 'integer' THEN 4
+							   WHEN a.data_type = 'bigint' THEN 8
+							   ELSE a.character_maximum_length 
+						   END as max_length, 
+						   CASE WHEN a.is_nullable = 'NO' THEN true ELSE false END AS not_null,
+						   CASE WHEN pk.column_name IS NULL THEN false ELSE true END AS primary_key,
+						   CASE WHEN uk.column_name IS NULL THEN false ELSE true END AS unique_key,
+						   CASE WHEN a.column_default IS NOT NULL THEN true ELSE false END AS has_default,
+						   a.column_default AS default_value
 					FROM information_schema.columns a
 					LEFT JOIN (
 						SELECT ku.table_schema, ku.table_name, ku.column_name
@@ -357,6 +367,18 @@ class Db
 					ON a.table_schema = pk.table_schema
 					AND a.table_name = pk.table_name
 					AND a.column_name = pk.column_name
+					LEFT JOIN (
+						SELECT ku.table_schema, ku.table_name, ku.column_name
+						FROM information_schema.table_constraints tc
+						JOIN information_schema.key_column_usage ku
+							ON tc.constraint_name = ku.constraint_name
+							AND tc.table_schema = ku.table_schema
+							AND tc.table_name = ku.table_name
+						WHERE tc.constraint_type = 'UNIQUE'
+					) uk
+					ON a.table_schema = uk.table_schema
+					AND a.table_name = uk.table_name
+					AND a.column_name = uk.column_name
 					WHERE a.table_schema = 'public'
 					AND a.table_name = :table");
 				$stmt->execute(['table' => $table]);
@@ -364,7 +386,7 @@ class Db
 				break;
 			case 'mysql':
 				$stmt = $this->db->prepare("
-					SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, 
+					SELECT COLUMN_NAME, DATA_TYPE AS type, CHARACTER_MAXIMUM_LENGTH AS MAX_LENGTH, 
 						   COLUMN_KEY='PRI' as primary_key
 					FROM INFORMATION_SCHEMA.COLUMNS 
 					WHERE TABLE_NAME = :table
@@ -375,7 +397,7 @@ class Db
 			case 'mssql':
 			case 'mssqlnative':
 				$stmt = $this->db->prepare("
-					SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, 
+					SELECT COLUMN_NAME, DATA_TYPE AS type, CHARACTER_MAXIMUM_LENGTH AS MAX_LENGTH, 
 						   COLUMN_NAME = (SELECT KU.COLUMN_NAME 
 										  FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS TC 
 										  JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS KU 
@@ -390,7 +412,7 @@ class Db
 				break;
 			case 'oci8':
 				$stmt = $this->db->prepare("
-					SELECT COLUMN_NAME, DATA_TYPE, DATA_LENGTH, 
+					SELECT COLUMN_NAME, DATA_TYPE AS type, DATA_LENGTH AS MAX_LENGTH, 
 						   COLUMN_NAME = (SELECT cols.column_name 
 										  FROM all_constraints cons, all_cons_columns cols 
 										  WHERE cols.table_name = :table 

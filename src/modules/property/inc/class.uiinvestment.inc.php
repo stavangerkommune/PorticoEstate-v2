@@ -27,6 +27,10 @@
  * @subpackage eco
  * @version $Id$
  */
+
+use App\modules\phpgwapi\services\Cache;
+use App\modules\phpgwapi\services\Settings;
+
 /**
  * Description
  * @package property
@@ -62,15 +66,15 @@ class property_uiinvestment extends phpgwapi_uicommon_jquery
 	{
 		parent::__construct();
 
-		$GLOBALS['phpgw_info']['flags']['xslt_app']			 = true;
-		$GLOBALS['phpgw_info']['flags']['menu_selection']	 = 'property::economy::investment';
+		$this->flags['xslt_app']			 = true;
+		$this->flags['menu_selection']	 = 'property::economy::investment';
+		Settings::getInstance()->update('flags', ['menu_selection' => $this->flags['menu_selection'], 'xslt_app' => true]);
 
-		$this->account = $GLOBALS['phpgw_info']['user']['account_id'];
+		$this->account = $this->userSettings['account_id'];
 
 		$this->bo			 = CreateObject('property.boinvestment', true);
 		$this->bocommon		 = CreateObject('property.bocommon');
 		$this->bolocation	 = CreateObject('property.bolocation');
-		$this->acl			 = &$GLOBALS['phpgw']->acl;
 		$this->acl_location	 = '.invoice';
 		$this->acl_read		 = $this->acl->check('.invoice', ACL_READ, 'property');
 		$this->acl_add		 = $this->acl->check('.invoice', ACL_ADD, 'property');
@@ -168,7 +172,7 @@ class property_uiinvestment extends phpgwapi_uicommon_jquery
 
 		$investment_list = $this->bo->read($params);
 
-		$dateformat						 = strtolower($GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
+		$dateformat						 = strtolower($this->userSettings['preferences']['common']['dateformat']);
 		$sep							 = '/';
 		$dlarr[strpos($dateformat, 'y')] = 'Y';
 		$dlarr[strpos($dateformat, 'm')] = 'm';
@@ -176,7 +180,8 @@ class property_uiinvestment extends phpgwapi_uicommon_jquery
 		ksort($dlarr);
 		$dateformat						 = (implode($sep, $dlarr));
 
-		$GLOBALS['phpgw']->jqcal->add_listener('start_date');
+		$jqcal = createObject('phpgwapi.jqcal');
+		$jqcal->add_listener('start_date');
 		$counter			 = $sum_initial_value	 = $sum_value			 = 0;
 
 		if (is_array($investment_list))
@@ -277,11 +282,14 @@ class property_uiinvestment extends phpgwapi_uicommon_jquery
 		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
 		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
-		$GLOBALS['phpgw']->jqcal->add_listener('filter_start_date');
-		$GLOBALS['phpgw']->jqcal->add_listener('filter_end_date');
+		$jqcal = createObject('phpgwapi.jqcal');
+		$jqcal->add_listener('filter_start_date');
+		$jqcal->add_listener('filter_end_date');
 		phpgwapi_jquery::load_widget('datepicker');
 
-		$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . lang('investment') . ': ' . lang('list investment');
+		$this->flags['app_header'] = lang('property') . ' - ' . lang('investment') . ': ' . lang('list investment');
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
+
 
 		$data = array(
 			'datatable_name' => lang('list investment'),
@@ -489,7 +497,7 @@ class property_uiinvestment extends phpgwapi_uicommon_jquery
 
 		$investment_list = $this->bo->read_single($entity_id, $investment_id);
 
-		$dateformat						 = strtolower($GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
+		$dateformat						 = strtolower($this->userSettings['preferences']['common']['dateformat']);
 		$sep							 = '/';
 		$dlarr[strpos($dateformat, 'y')] = 'Y';
 		$dlarr[strpos($dateformat, 'm')] = 'm';
@@ -545,7 +553,8 @@ class property_uiinvestment extends phpgwapi_uicommon_jquery
 
 		$uicols = $this->get_history_cols();
 
-		$GLOBALS['phpgw']->jqcal->add_listener('filter_start_date');
+		$jqcal = createObject('phpgwapi.jqcal');
+		$jqcal->add_listener('filter_start_date');
 		phpgwapi_jquery::load_widget('datepicker');
 
 		$column_def		 = array();
@@ -642,14 +651,15 @@ class property_uiinvestment extends phpgwapi_uicommon_jquery
 			'end_toolbar'	 => $end_toolbar,
 			'info'			 => $info,
 			'hidden'		 => $hidden,
-			'msgbox_data'	 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+			'msgbox_data'	 => $this->phpgwapi_common->msgbox($msgbox_data),
 		);
 
 		$appname		 = lang('investment');
 		$function_msg	 = lang('investment history');
 
 		//Title of Page
-		$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+		$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 		self::add_javascript('property', 'base', 'investment.history.js');
 
 		self::render_template_xsl(array('investment', 'datatable_inline'), array('history' => $data));
@@ -751,10 +761,12 @@ class property_uiinvestment extends phpgwapi_uicommon_jquery
 
 		$msgbox_data = $this->bocommon->msgbox_data($receipt);
 
-		$GLOBALS['phpgw']->jqcal->add_listener('values_date');
+		$jqcal = createObject('phpgwapi.jqcal');
+
+		$jqcal->add_listener('values_date');
 
 		$data = array(
-			'msgbox_data'						 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+			'msgbox_data'						 => $this->phpgwapi_common->msgbox($msgbox_data),
 			'location_data'						 => $location_data,
 			'lang_date_statustext'				 => lang('insert the date for the initial value'),
 			'lang_date'							 => lang('Date'),
@@ -801,7 +813,9 @@ class property_uiinvestment extends phpgwapi_uicommon_jquery
 		$appname		 = lang('investment');
 		$function_msg	 = lang('add investment');
 
-		$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+		$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
+
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('add' => $data));
 	}
 
@@ -848,7 +862,9 @@ class property_uiinvestment extends phpgwapi_uicommon_jquery
 		$appname		 = lang('investment');
 		$function_msg	 = lang('delete investment history element');
 
-		$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+		$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
+
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 	}
 }
