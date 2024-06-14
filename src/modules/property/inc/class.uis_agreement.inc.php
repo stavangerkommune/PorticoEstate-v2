@@ -31,6 +31,10 @@
  * Description
  * @package property
  */
+
+use App\modules\phpgwapi\services\Cache;
+use App\modules\phpgwapi\services\Settings;
+
 phpgw::import_class('phpgwapi.uicommon_jquery');
 
 class property_uis_agreement extends phpgwapi_uicommon_jquery
@@ -71,9 +75,10 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 	{
 		parent::__construct();
 
-		$GLOBALS['phpgw_info']['flags']['xslt_app']			 = true;
-		$GLOBALS['phpgw_info']['flags']['menu_selection']	 = 'property::agreement::service';
-		$this->account										 = $GLOBALS['phpgw_info']['user']['account_id'];
+		$this->flags['xslt_app']			 = true;
+
+		self::set_active_menu('property::agreement::service');
+		$this->account										 = $this->userSettings['account_id'];
 
 		$this->bo		 = CreateObject('property.bos_agreement', true);
 		$this->bocommon	 = &$this->bo->bocommon;
@@ -81,7 +86,6 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 		$this->role = $this->bo->role;
 
 		$this->cats			 = &$this->bo->cats;
-		$this->acl			 = &$GLOBALS['phpgw']->acl;
 		$this->acl_location	 = '.s_agreement';
 
 		$this->acl_read		 = $this->acl->check($this->acl_location, ACL_READ, 'property');
@@ -127,17 +131,16 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 
 		phpgwapi_xslttemplates::getInstance()->add_file(array('columns'));
 
-		$GLOBALS['phpgw_info']['flags']['noframework'] = true;
+		$this->flags['noframework'] = true;
+		Settings::getInstance()->update('flags', ['noframework' => true]);
 
 		$values = Sanitizer::get_var('values');
 
 		if ($values['save'])
 		{
-
-			$GLOBALS['phpgw']->preferences->account_id = $this->account;
-			$GLOBALS['phpgw']->preferences->read();
-			$GLOBALS['phpgw']->preferences->add('property', 's_agreement_columns', $values['columns'], 'user');
-			$GLOBALS['phpgw']->preferences->save_repository();
+			$preferences = createObject('phpgwapi.preferences', $this->account);
+			$preferences->add('property', 's_agreement_columns', $values['columns'], 'user');
+			$preferences->save_repository();
 
 			$receipt['message'][] = array('msg' => lang('columns is updated'));
 		}
@@ -152,7 +155,7 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 		$msgbox_data = $this->bocommon->msgbox_data($receipt);
 
 		$data = array(
-			'msgbox_data'	 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+			'msgbox_data'	 => $this->phpgwapi_common->msgbox($msgbox_data),
 			'column_list'	 => $this->bo->column_list($values['columns'], $allrows		 = true),
 			'function_msg'	 => $function_msg,
 			'form_action'	 => phpgw::link('/index.php', $link_data),
@@ -162,7 +165,8 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 			'select_name'	 => 'period'
 		);
 
-		$GLOBALS['phpgw_info']['flags']['app_header'] = $function_msg;
+		$this->flags['app_header'] = $function_msg;
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('columns' => $data));
 	}
 
@@ -248,8 +252,8 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 			));
 		}
 
-		$receipt = $GLOBALS['phpgw']->session->appsession('session_data', 's_agreement_receipt');
-		$GLOBALS['phpgw']->session->appsession('session_data', 's_agreement_receipt', '');
+		$receipt = Cache::session_get('s_agreement_receipt', 'session_data');
+		Cache::session_clear('s_agreement_receipt', 'session_data');
 
 		if (Sanitizer::get_var('phpgw_return_as') == 'json')
 		{
@@ -262,7 +266,8 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 		$appname		 = lang('agreement');
 		$function_msg	 = lang('List') . ' ' . lang($this->role);
 
-		$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+		$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 		$data = array(
 			'datatable_name' => $appname,
@@ -352,7 +357,7 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 				'parameters' => json_encode($parameters)
 			);
 
-			$jasper = execMethod('property.sojasper.read', array('location_id' => $GLOBALS['phpgw']->locations->get_id('property', $this->acl_location)));
+			$jasper = execMethod('property.sojasper.read', array('location_id' => $this->locations->get_id('property', $this->acl_location)));
 
 			foreach ($jasper as $report)
 			{
@@ -616,7 +621,8 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 			$values['b_account_name']	 = Sanitizer::get_var('b_account_name', 'string', 'POST');
 
 			$values_attribute			 = Sanitizer::get_var('values_attribute');
-			$insert_record_s_agreement	 = $GLOBALS['phpgw']->session->appsession('insert_record_values.s_agreement', 'property');
+			$insert_record_s_agreement = Cache::session_get('property', 'insert_record_values.s_agreement');
+
 			for ($j = 0; $j < count($insert_record_s_agreement); $j++)
 			{
 				$insert_record['extra'][$insert_record_s_agreement[$j]] = $insert_record_s_agreement[$j];
@@ -731,7 +737,6 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 					if ($values['save'])
 					{
 						self::message_set($receipt);
-						//					$GLOBALS['phpgw']->session->appsession('session_data', 's_agreement_receipt', $receipt);
 						phpgw::redirect_link('/index.php', array(
 							'menuaction' => 'property.uis_agreement.index',
 							'role'		 => $this->role
@@ -1003,9 +1008,10 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 
 		phpgwapi_xslttemplates::getInstance()->add_file(array('s_agreement', 'attributes_form', 'files'));
 
-		$GLOBALS['phpgw']->jqcal->add_listener('values_start_date');
-		$GLOBALS['phpgw']->jqcal->add_listener('values_end_date');
-		$GLOBALS['phpgw']->jqcal->add_listener('values_termination_date');
+		$jqcal = CreateObject('phpgwapi.jqcal');
+		$jqcal->add_listener('values_start_date');
+		$jqcal->add_listener('values_end_date');
+		$jqcal->add_listener('values_termination_date');
 		$set_column = array();
 
 		if ($id)
@@ -1027,7 +1033,8 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 
 			if ($content)
 			{
-				$GLOBALS['phpgw']->jqcal->add_listener('values_date');
+				$jqcal = CreateObject('phpgwapi.jqcal');
+				$jqcal->add_listener('values_date');
 
 				$table_update[] = array(
 					'lang_new_index'			 => lang('New index'),
@@ -1473,7 +1480,7 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 			'lang_budget'						 => lang('Budget'),
 			'lang_budget_statustext'			 => lang('Budget for selected year'),
 			'value_budget'						 => $values['budget'] ? $values['budget'] : '',
-			'currency'							 => $GLOBALS['phpgw_info']['user']['preferences']['common']['currency'],
+			'currency'							 => $this->userSettings['preferences']['common']['currency'],
 			'lang_year'							 => lang('year'),
 			'lang_year_statustext'				 => lang('Budget year'),
 			'year'								 => $this->bocommon->select_list($values['year'], $this->bo->get_year_list($id)),
@@ -1502,13 +1509,13 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 				'id'		 => $id
 			)),
 			'lang_select_all'					 => lang('Select All'),
-			'img_check'							 => $GLOBALS['phpgw']->common->get_image_path('property') . '/check.png',
+			'img_check'							 => $this->phpgwapi_common->get_image_path('property') . '/check.png',
 			'set_column'						 => $set_column,
 			'lang_import_detail'				 => lang('import detail'),
 			'lang_detail_import_statustext'		 => lang('import details to this agreement from spreadsheet'),
 			'lang_import'						 => lang('import'),
-			'textareacols'						 => isset($GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols'] ? $GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols'] : 40,
-			'textarearows'						 => isset($GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows'] ? $GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows'] : 6,
+			'textareacols'						 => isset($this->userSettings['preferences']['property']['textareacols']) && $this->userSettings['preferences']['property']['textareacols'] ? $this->userSettings['preferences']['property']['textareacols'] : 40,
+			'textarearows'						 => isset($this->userSettings['preferences']['property']['textarearows']) && $this->userSettings['preferences']['property']['textarearows'] ? $this->userSettings['preferences']['property']['textarearows'] : 6,
 			'tabs'								 => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
 			'validator'							 => phpgwapi_jquery::formvalidator_generate(array(
 				'location',
@@ -1516,7 +1523,8 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 			))
 		);
 
-		$GLOBALS['phpgw_info']['flags']['app_header'] = lang('service agreement') . ': ' . ($id ? lang('edit') . ' ' . lang($this->role) : lang('add') . ' ' . lang($this->role));
+		$this->flags['app_header'] = lang('service agreement') . ': ' . ($id ? lang('edit') . ' ' . lang($this->role) : lang('add') . ' ' . lang($this->role));
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 		phpgwapi_jquery::load_widget('core');
 		phpgwapi_jquery::load_widget('numberformat');
@@ -1647,8 +1655,7 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 			$insert_record	=	Cache::session_get('property',	'insert_record');
 			$insert_record_entity = (array)Cache::session_get('property',	'insert_record_entity');
 
-			$insert_record_s_agreement1 = $GLOBALS['phpgw']->session->appsession('insert_record_values.s_agreement.detail', 'property');
-			//_debug_array($insert_record_s_agreement1);
+			$insert_record_s_agreement1 = Cache::session_get('property', 'insert_record_values.s_agreement.detail');
 
 			for ($j = 0; $j < count($insert_record_entity); $j++)
 			{
@@ -1676,7 +1683,7 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 
 					if ($values['save'])
 					{
-						$GLOBALS['phpgw']->session->appsession('session_data', 's_agreement_receipt', $receipt);
+						Cache::session_set('s_agreement_receipt', 'session_data', $receipt);
 						phpgw::redirect_link('/index.php', array(
 							'menuaction' => 'property.uis_agreement.edit',
 							'id'		 => $s_agreement_id
@@ -1759,7 +1766,8 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 		if ($id)
 		{
 			$list = $this->bo->read_prizing(array('s_agreement_id' => $s_agreement_id, 'item_id' => $id));
-			$GLOBALS['phpgw']->jqcal->add_listener('values_date');
+			$jqcal = CreateObject('phpgwapi.jqcal');
+			$jqcal->add_listener('values_date');
 		}
 
 		$uicols			 = $this->bo->uicols;
@@ -1966,7 +1974,7 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 			'datatable'						 => $datavalues,
 			'myColumnDefs'					 => $myColumnDefs,
 			'myButtons'						 => $myButtons,
-			'msgbox_data'					 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+			'msgbox_data'					 => $this->phpgwapi_common->msgbox($msgbox_data),
 			'edit_url'						 => phpgw::link('/index.php', $link_data),
 			'lang_id'						 => lang('ID'),
 			'value_id'						 => $values['id'],
@@ -1992,7 +2000,7 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 				's_agreement_id' => $s_agreement_id, 'id'			 => $id
 			)),
 			'lang_select_all'				 => lang('Select All'),
-			'img_check'						 => $GLOBALS['phpgw']->common->get_image_path('property') . '/check.png',
+			'img_check'						 => $this->phpgwapi_common->get_image_path('property') . '/check.png',
 			'location_data'					 => $location_data,
 			'lang_cost'						 => lang('cost'),
 			'lang_cost_statustext'			 => lang('cost'),
@@ -2007,8 +2015,8 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 			'lang_history'					 => lang('history'),
 			'lang_history_help'				 => lang('history of this attribute'),
 			'lang_history_date_statustext'	 => lang('Enter the date for this reading'),
-			'textareacols'					 => isset($GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols'] ? $GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols'] : 40,
-			'textarearows'					 => isset($GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows'] ? $GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows'] : 6,
+			'textareacols'					 => isset($this->userSettings['preferences']['property']['textareacols']) && $this->userSettings['preferences']['property']['textareacols'] ? $this->userSettings['preferences']['property']['textareacols'] : 40,
+			'textarearows'					 => isset($this->userSettings['preferences']['property']['textarearows']) && $this->userSettings['preferences']['property']['textarearows'] ? $this->userSettings['preferences']['property']['textarearows'] : 6,
 			'tabs'							 => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
 			'validator'						 => phpgwapi_jquery::formvalidator_generate(array(
 				'location',
@@ -2016,7 +2024,8 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 			))
 		);
 
-		$GLOBALS['phpgw_info']['flags']['app_header'] = lang('service agreement') . ': ' . ($values['id'] ? lang('edit item') . ' ' . $s_agreement['name'] : lang('add item') . ' ' . $s_agreement['name']);
+		$this->flags['app_header'] = lang('service agreement') . ': ' . ($values['id'] ? lang('edit item') . ' ' . $s_agreement['name'] : lang('add item') . ' ' . $s_agreement['name']);
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 		phpgwapi_jquery::load_widget('core');
 		phpgwapi_jquery::load_widget('numberformat');
@@ -2056,7 +2065,7 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 			'id'		 => $s_agreement_id
 		);
 
-		$dateformat						 = strtolower($GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
+		$dateformat						 = strtolower($this->userSettings['preferences']['common']['dateformat']);
 		$sep							 = '/';
 		$dlarr[strpos($dateformat, 'y')] = 'yyyy';
 		$dlarr[strpos($dateformat, 'm')] = 'MM';
@@ -2220,7 +2229,7 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 			'base_java_url'			 => json_encode(array('menuaction' => "property.uis_agreement.view_item")),
 			'datatable'				 => $datavalues,
 			'myColumnDefs'			 => $myColumnDefs,
-			'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
+			'msgbox_data'			 => $this->phpgwapi_common->msgbox($msgbox_data),
 			'edit_url'				 => phpgw::link('/index.php', $link_data),
 			'lang_id'				 => lang('ID'),
 			'value_id'				 => $values['id'],
@@ -2242,8 +2251,8 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 			'set_column'			 => $set_column,
 			'lang_history'			 => lang('history'),
 			'lang_history_help'		 => lang('history of this attribute'),
-			'textareacols'			 => isset($GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols'] ? $GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols'] : 40,
-			'textarearows'			 => isset($GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows'] ? $GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows'] : 6,
+			'textareacols'			 => isset($this->userSettings['preferences']['property']['textareacols']) && $this->userSettings['preferences']['property']['textareacols'] ? $this->userSettings['preferences']['property']['textareacols'] : 40,
+			'textarearows'			 => isset($this->userSettings['preferences']['property']['textarearows']) && $this->userSettings['preferences']['property']['textarearows'] ? $this->userSettings['preferences']['property']['textarearows'] : 6,
 			'tabs'					 => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
 			'validator'				 => phpgwapi_jquery::formvalidator_generate(array(
 				'location',
@@ -2252,7 +2261,8 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 			))
 		);
 
-		$GLOBALS['phpgw_info']['flags']['app_header'] = lang('service agreement') . ': ' . lang('view item') . ' ' . $s_agreement['name'];
+		$this->flags['app_header'] = lang('service agreement') . ': ' . lang('view item') . ' ' . $s_agreement['name'];
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 		phpgwapi_jquery::load_widget('core');
 		phpgwapi_jquery::load_widget('numberformat');
 
@@ -2304,9 +2314,9 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 		$appname		 = lang('service agreement');
 		$function_msg	 = lang('delete') . ' ' . lang($this->role);
 
-		$GLOBALS['phpgw_info']['flags']['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+		$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
-		//	$GLOBALS['phpgw']->xslttpl->pp();
 	}
 
 	function view()
@@ -2377,7 +2387,7 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 			)
 		);
 
-		$dateformat						 = strtolower($GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
+		$dateformat						 = strtolower($this->userSettings['preferences']['common']['dateformat']);
 		$sep							 = '/';
 		$dlarr[strpos($dateformat, 'y')] = 'yyyy';
 		$dlarr[strpos($dateformat, 'm')] = 'MM';
@@ -2641,8 +2651,8 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 			'table_add'					 => $table_add,
 			'values'					 => $content,
 			'table_header'				 => $table_header,
-			'textareacols'				 => isset($GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols'] ? $GLOBALS['phpgw_info']['user']['preferences']['property']['textareacols'] : 40,
-			'textarearows'				 => isset($GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows']) && $GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows'] ? $GLOBALS['phpgw_info']['user']['preferences']['property']['textarearows'] : 6,
+			'textareacols'				 => isset($this->userSettings['preferences']['property']['textareacols']) && $this->userSettings['preferences']['property']['textareacols'] ? $this->userSettings['preferences']['property']['textareacols'] : 40,
+			'textarearows'				 => isset($this->userSettings['preferences']['property']['textarearows']) && $this->userSettings['preferences']['property']['textarearows'] ? $this->userSettings['preferences']['property']['textarearows'] : 6,
 			'tabs'						 => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
 			'validator'					 => phpgwapi_jquery::formvalidator_generate(array(
 				'location',
@@ -2651,7 +2661,8 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 			))
 		);
 
-		$GLOBALS['phpgw_info']['flags']['app_header'] = lang('service agreement') . ': ' . lang('view');
+		$this->flags['app_header'] = lang('service agreement') . ': ' . lang('view');
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 		phpgwapi_jquery::load_widget('core');
 		phpgwapi_jquery::load_widget('numberformat');

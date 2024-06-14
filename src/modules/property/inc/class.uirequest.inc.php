@@ -26,7 +26,14 @@
 	 * @subpackage project
 	 * @version $Id$
 	 */
-	phpgw::import_class('phpgwapi.uicommon_jquery');
+
+use App\modules\phpgwapi\services\Cache;
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\controllers\Accounts\Accounts;
+use App\Database\Db;
+use App\modules\phpgwapi\services\Log;
+
+phpgw::import_class('phpgwapi.uicommon_jquery');
 
 	/**
 	 * Description

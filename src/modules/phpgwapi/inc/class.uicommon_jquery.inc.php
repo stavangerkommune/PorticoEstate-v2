@@ -33,6 +33,7 @@
 	use App\modules\phpgwapi\controllers\Locations;
 	use App\modules\phpgwapi\services\Cache;
 	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\services\Log;
 	
 
 	phpgw::import_class('phpgwapi.jquery');
@@ -379,7 +380,8 @@
 			if($end_of_page === "text/javascript")
 			{			
 				$bt = debug_backtrace();
-				$GLOBALS['phpgw']->log->error(array(
+				$log = new Log();
+				$log->error(array(
 					'text'	=> 'js::%1 Called from file: %2 line: %3',
 					'p1'	=> $bt[0]['function'],
 					'p2'	=> $bt[0]['file'],
@@ -394,7 +396,7 @@
 
 		public static function set_active_menu( $item )
 		{
-			Settings::getInstance()->get('flags')['menu_selection'] = $item;
+			Settings::getInstance()->update('flags', ['menu_selection' => $item]);
 		}
 
 		/**

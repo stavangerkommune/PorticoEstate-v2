@@ -25,6 +25,12 @@
 	 * @package registration
 	 * @version $Id: class.uidimb_role_user.inc.php 16610 2017-04-21 14:21:03Z sigurdne $
 	 */
+
+use App\modules\phpgwapi\services\Cache;
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\controllers\Accounts\Accounts;
+use App\Database\Db;
+use App\modules\phpgwapi\services\Log;
 	phpgw::import_class('phpgwapi.uicommon_jquery');
 
 	class property_uisubstitute extends phpgwapi_uicommon_jquery
