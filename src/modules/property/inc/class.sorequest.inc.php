@@ -611,7 +611,7 @@
 			$paranthesis .= '(';
 			$joinmethod	 .= "{$this->_left_join} fm_request_condition ON {$entity_table}.id = fm_request_condition.request_id)";
 
-			$_location_level = isset($config->config_data['request_location_level']) && $config->config_data['request_location_level'] ? $config->config_data['request_location_level'] : 0;
+			$_location_level = isset($config->config_data['request_location_level']) && $config->config_data['request_location_level'] ? $config->config_data['request_location_level'] : 1;
 			$sql			 = $this->bocommon->generate_sql(array('entity_table'	 => $entity_table,
 				'cols'			 => $cols, 'cols_return'	 => $cols_return,
 				'uicols'		 => array(), 'joinmethod'	 => $joinmethod, 'paranthesis'	 => $paranthesis,

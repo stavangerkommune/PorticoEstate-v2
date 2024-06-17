@@ -52,7 +52,7 @@ class PreferenceHelper
 	{
 		if (self::$instance === null)
 		{
-			self::$instance = new self();
+			self::$instance = new PreferenceHelper();
 		}
 		return self::$instance;
 	}
@@ -604,7 +604,7 @@ CSS;
 	 * @param $max_size
 	 * @return boolean
 	 */
-	function create_password_box($label_name, $preference_name, $help = '', $size = '', $max_size = '')
+	public function create_password_box($label_name, $preference_name, $help = '', $size = '', $max_size = '')
 	{
 
 		$_appname = $this->check_app();
@@ -627,7 +627,7 @@ CSS;
 	 * @param $type
 	 * @return boolean
 	 */
-	function create_input_box($label, $name, $help = '', $default = '', $size = '', $maxsize = '', $type = '', $run_lang = true)
+	public function create_input_box($label, $name, $help = '', $default = '', $size = '', $maxsize = '', $type = '', $run_lang = true)
 	{
 
 		$t = $this->template;
@@ -711,7 +711,7 @@ CSS;
 	 * @param string $help
 	 * @param $default
 	 */
-	function create_check_box($label, $name, $help = '', $default = '')
+	public function create_check_box($label, $name, $help = '', $default = '')
 	{
 		// checkboxes itself can't be use as they return nothing if uncheckt !!!
 
@@ -737,7 +737,7 @@ CSS;
 	 * @param string $values
 	 * @return string String with HTML option
 	 */
-	function create_option_string($selected, $values)
+	public function create_option_string($selected, $values)
 	{
 		$s = '';
 		if (!is_array($values))
@@ -766,7 +766,7 @@ CSS;
 	 * @param string $help
 	 * @param string $default
 	 */
-	function create_select_box($label, $name, $values, $help = '', $default = '')
+	public function create_select_box($label, $name, $values, $help = '', $default = '')
 	{
 		$t = $this->template;
 
@@ -819,7 +819,7 @@ CSS;
 	 * @param $vars2 array with extra substitution-variables of the form key => help-text
 	 * @param boolean $subst_help
 	 */
-	function create_notify($label, $name, $rows, $cols, $help = '', $default = '', $vars2 = '', $subst_help = True)
+	public function create_notify($label, $name, $rows, $cols, $help = '', $default = '', $vars2 = '', $subst_help = True)
 	{
 		$t = $this->template;
 
@@ -866,7 +866,7 @@ CSS;
 	 * @param boolean $run_lang
 	 * @return boolean
 	 */
-	function create_text_area($label, $name, $rows, $cols, $help = '', $default = '', $run_lang = True)
+	public function create_text_area($label, $name, $rows, $cols, $help = '', $default = '', $run_lang = True)
 	{
 		$t = $this->template;
 

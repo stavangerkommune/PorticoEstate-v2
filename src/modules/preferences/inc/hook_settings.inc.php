@@ -1,7 +1,4 @@
 <?php
-
-use App\modules\preferences\helpers\PreferenceHelper;
-
 /**
  * Preferences - settings hook
  *
@@ -11,6 +8,7 @@ use App\modules\preferences\helpers\PreferenceHelper;
  * @version $Id$
  */
 
+use App\modules\preferences\helpers\PreferenceHelper;
 use App\modules\phpgwapi\services\Preferences as Prefs;
 use App\modules\phpgwapi\services\Settings;
 
