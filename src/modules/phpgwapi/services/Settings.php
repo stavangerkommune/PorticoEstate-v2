@@ -57,6 +57,7 @@ class Settings
 
 		$settings = require $rootDir . '/config/header.inc.php';
 		$this->config_data = $settings['phpgw_info'];
+		$this->config_data['external_db'] = $settings['external_db'];
 		
 		//$this->config_data  = require_once SRC_ROOT_PATH . '/../config/config.php';
 		require_once (SRC_ROOT_PATH . '/modules/phpgwapi/setup/setup.inc.php');

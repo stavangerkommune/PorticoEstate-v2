@@ -935,7 +935,7 @@
 					(
 					array(
 						'text'	 => $translation->translate('Preferences', array(), true),
-						'url'	 => phpgw::link('/preferences/preferences.php', array('appname'	 => 'property',
+						'url'	 => phpgw::link('/preferences/section', array('appname'	 => 'property',
 							'type'		 => 'user'))
 					),
 					array(

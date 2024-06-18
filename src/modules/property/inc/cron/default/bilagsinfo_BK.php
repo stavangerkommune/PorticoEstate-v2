@@ -31,7 +31,13 @@
 	 * example cron : /usr/local/bin/php -q /var/www/html/phpgroupware/property/inc/cron/cron.php default bilagsinfo_BK
 	 * @package property
 	 */
-	include_class('property', 'cron_parent', 'inc/cron/');
+
+use App\modules\phpgwapi\services\Cache;
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\controllers\Locations;
+
+
+	 include_class('property', 'cron_parent', 'inc/cron/');
 
 	class bilagsinfo_BK extends property_cron_parent
 	{
@@ -47,10 +53,10 @@
 			$this->function_name = get_class($this);
 			$this->sub_location	 = lang('property');
 			$this->function_msg	 = 'Hent bilagsinformasjon fra Agresso - og oppdatere Portico';
-			$this->db			 = & $GLOBALS['phpgw']->db;
-			$this->join			 = & $this->db->join;
+			$this->db			 = parent::$db;
+			$this->join			 = $this->db->join;
 
-			$config = CreateObject('admin.soconfig', $GLOBALS['phpgw']->locations->get_id('property', '.admin'));
+			$config = CreateObject('admin.soconfig', $this->location_obj->get_id('property', '.admin'));
 			$this->username	 = $config->config_data['UBW']['username'];
 			$this->password	 = $config->config_data['UBW']['password'];
 		}
@@ -247,7 +253,7 @@
 			$tax_code	 = 0;
 			$netto_belop = 0;
 
-			phpgwapi_cache::system_clear('property', "budget_order_{$bilag[0]['order_id']}");
+			Cache::system_clear('property', "budget_order_{$bilag[0]['order_id']}");
 
 			foreach ($bilag as $line)
 			{

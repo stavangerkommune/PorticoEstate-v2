@@ -146,6 +146,10 @@ class Sessions
 		return $this->_sessionid;
 	}
 
+	public function set_session_id($sessionid)
+	{
+		$this->_sessionid = $sessionid;
+	}
 
 	/**
 	 * Configure cookies to be used properly for this session

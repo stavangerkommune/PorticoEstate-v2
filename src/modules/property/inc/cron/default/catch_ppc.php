@@ -26,6 +26,9 @@
 	 * @subpackage catch
 	 * @version $Id$
 	 */
+
+use App\modules\phpgwapi\services\Settings;
+
 	/**
 	 * Description
 	 * example cron : /usr/local/bin/php -q /var/www/html/phpgroupware/property/inc/cron/cron.php default catch_ppc
@@ -188,8 +191,10 @@
 						}
 
 						$bofiles->set_account_id($user_id);
-						$GLOBALS['phpgw_info']['user']['account_id']	 = $user_id; // needed for the vfs::mkdir()
-						$GLOBALS['phpgw_info']['flags']['currentapp']	 = 'property';
+						$this->userSettings['account_id']	 = $user_id; // needed for the vfs::mkdir()
+						Settings::getInstance()->update('user', ['account_id' => $user_id]);
+						$this->flags['currentapp']	 = 'property';
+						Settings::getInstance()->update('flags', ['currentapp' => 'property']);
 
 						$insert_values = $this->db->validate_insert($insert_values);
 						$this->db->query("INSERT INTO $target_table (id, num, user_id, " . implode(',', $cols) . ')'
@@ -260,7 +265,7 @@
 									continue;
 								}
 
-								$file = PHPGW_SERVER_ROOT . "/catch/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}/{$entry['file_name']}";
+								$file = PHPGW_SERVER_ROOT . "/catch/inc/custom/{$this->userSettings['domain']}/{$entry['file_name']}";
 								if ($entry['active'] && is_file($file))
 								{
 									require $file;

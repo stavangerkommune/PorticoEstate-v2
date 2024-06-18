@@ -240,9 +240,11 @@ HTML;
 	*/
 	$phpgw_info['server']['versions']['header'] = '1.32';
 
+	$external_db = array();
 	return array(
 		'phpgw_info' => $phpgw_info,
-		'phpgw_domain' => $phpgw_domain
+		'phpgw_domain' => $phpgw_domain,
+		'external_db' => !empty($external_db) ? $external_db : array()
 	);	
 
 	// Leave off the final php closing tag, some editors will add

@@ -44,6 +44,13 @@ else if (isset($_COOKIE['ConfigDomain']))
 {
 	$user_domain =	\Sanitizer::get_var('ConfigDomain', 'string', 'COOKIE', false);
 }
+/**
+ * Cron-Job
+ */
+else if (isset($_GET['domain']))
+{
+	$user_domain =	\Sanitizer::get_var('domain', 'string', 'GET', false);
+}
 else
 {
 	$user_domain = \Sanitizer::get_var('last_domain', 'string', 'COOKIE', false);
@@ -70,5 +77,4 @@ else
 	$db_server['db_type']			= $phpgw_domain[$default_domain]['db_type'];
 	$db_server['domain']      = $default_domain;
 }
-
 return $db_server;
