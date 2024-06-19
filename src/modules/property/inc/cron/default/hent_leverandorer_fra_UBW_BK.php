@@ -47,10 +47,9 @@
 			$this->function_name = get_class($this);
 			$this->sub_location	 = lang('property');
 			$this->function_msg	 = 'Hent leverandører fra UBW (Agresso) til Portico';
-			$this->db			 = & $GLOBALS['phpgw']->db;
-			$this->join			 = & $this->db->join;
+			$this->join			 = $this->db->join;
 
-			$config = CreateObject('admin.soconfig', $GLOBALS['phpgw']->locations->get_id('property', '.admin'));
+			$config = CreateObject('admin.soconfig', $this->location_obj->get_id('property', '.admin'));
 			$this->username	 = $config->config_data['UBW']['username'];
 			$this->password	 = $config->config_data['UBW']['password'];
 		}
@@ -91,7 +90,7 @@
 
 		function update_vendor()
 		{
-			$metadata = $GLOBALS['phpgw']->db->metadata('fm_vendor_temp');
+			$metadata = $this->db->metadata('fm_vendor_temp');
 			if (!$metadata)
 			{
 				$sql_table = <<<SQL
@@ -110,14 +109,14 @@
 				  CONSTRAINT fm_vendor_temp_pkey PRIMARY KEY (id)
 				);
 SQL;
-				$GLOBALS['phpgw']->db->query($sql_table, __LINE__, __FILE__);
+				$this->db->query($sql_table, __LINE__, __FILE__);
 			}
 			else if (empty($metadata['email']))
 			{
-				$GLOBALS['phpgw']->db->query('ALTER TABLE public.fm_vendor_temp ADD COLUMN email character varying(64)', __LINE__, __FILE__);
+				$this->db->query('ALTER TABLE public.fm_vendor_temp ADD COLUMN email character varying(64)', __LINE__, __FILE__);
 			}
 
-			$GLOBALS['phpgw']->db->query('DELETE FROM fm_vendor_temp', __LINE__, __FILE__);
+			$this->db->query('DELETE FROM fm_vendor_temp', __LINE__, __FILE__);
 
 			$error = false;
 
@@ -134,7 +133,7 @@ SQL;
 				throw $exc;
 			}
 
-			$GLOBALS['phpgw']->db->transaction_begin();
+			$this->db->transaction_begin();
 
 			$sql = 'INSERT INTO fm_vendor_temp (id, status, navn, adresse, postnummer, sted, organisasjonsnr, bankkontonr, aktiv, email)'
 				. ' VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
@@ -233,7 +232,7 @@ SQL;
 
 			if ($valueset && !$error)
 			{
-				$GLOBALS['phpgw']->db->insert($sql, $valueset, __LINE__, __FILE__);
+				$this->db->insert($sql, $valueset, __LINE__, __FILE__);
 			}
 
 			/*
@@ -254,17 +253,17 @@ SQL;
 				. " FROM fm_vendor RIGHT OUTER JOIN fm_vendor_temp ON (fm_vendor.id = fm_vendor_temp.id)"
 				. " WHERE fm_vendor.id IS NULL";
 
-			$GLOBALS['phpgw']->db->query($sql, __LINE__, __FILE__);
+			$this->db->query($sql, __LINE__, __FILE__);
 			$vendors = array();
-			while ($GLOBALS['phpgw']->db->next_record())
+			while ($this->db->next_record())
 			{
 				$vendors[] = array(
 					1	 => array(
-						'value'	 => (int)$GLOBALS['phpgw']->db->f('id'),
+						'value'	 => (int)$this->db->f('id'),
 						'type'	 => PDO::PARAM_INT
 					),
 					2	 => array(
-						'value'	 => $GLOBALS['phpgw']->db->f('navn'),
+						'value'	 => $this->db->f('navn'),
 						'type'	 => PDO::PARAM_STR
 					),
 					3	 => array(
@@ -276,31 +275,31 @@ SQL;
 						'type'	 => PDO::PARAM_INT
 					),
 					5	 => array(
-						'value'	 => (int)$GLOBALS['phpgw']->db->f('aktiv'),
+						'value'	 => (int)$this->db->f('aktiv'),
 						'type'	 => PDO::PARAM_INT
 					),
 					6	 => array(
-						'value'	 => $GLOBALS['phpgw']->db->f('adresse'),
+						'value'	 => $this->db->f('adresse'),
 						'type'	 => PDO::PARAM_STR
 					),
 					7	 => array(
-						'value'	 => $GLOBALS['phpgw']->db->f('postnummer'),
+						'value'	 => $this->db->f('postnummer'),
 						'type'	 => PDO::PARAM_STR
 					),
 					8	 => array(
-						'value'	 => $GLOBALS['phpgw']->db->f('sted'),
+						'value'	 => $this->db->f('sted'),
 						'type'	 => PDO::PARAM_STR
 					),
 					9	 => array(
-						'value'	 => $GLOBALS['phpgw']->db->f('organisasjonsnr'),
+						'value'	 => $this->db->f('organisasjonsnr'),
 						'type'	 => PDO::PARAM_STR
 					),
 					10	 => array(
-						'value'	 => $GLOBALS['phpgw']->db->f('bankkontonr'),
+						'value'	 => $this->db->f('bankkontonr'),
 						'type'	 => PDO::PARAM_STR
 					),
 					11	 => array(
-						'value'	 => $GLOBALS['phpgw']->db->f('email'),
+						'value'	 => $this->db->f('email'),
 						'type'	 => PDO::PARAM_STR
 					)
 				);
@@ -310,11 +309,11 @@ SQL;
 
 			if ($valueset && !$error)
 			{
-				$GLOBALS['phpgw']->db->insert($sql, $vendors, __LINE__, __FILE__);
+				$this->db->insert($sql, $vendors, __LINE__, __FILE__);
 
-				$GLOBALS['phpgw']->db->query("UPDATE fm_vendor SET active = 0 WHERE category != 2", __LINE__, __FILE__); // intern leverandør
+				$this->db->query("UPDATE fm_vendor SET active = 0 WHERE category != 2", __LINE__, __FILE__); // intern leverandør
 
-				$GLOBALS['phpgw']->db->query("UPDATE fm_vendor SET"
+				$this->db->query("UPDATE fm_vendor SET"
 					. " active = 1,"
 					. " org_name = fm_vendor_temp.navn,"
 					. " adresse = fm_vendor_temp.adresse,"
@@ -323,14 +322,14 @@ SQL;
 					. " org_nr = fm_vendor_temp.organisasjonsnr"
 					. " FROM fm_vendor_temp WHERE fm_vendor.id = fm_vendor_temp.id", __LINE__, __FILE__);
 
-				$GLOBALS['phpgw']->db->query("UPDATE fm_vendor SET"
+				$this->db->query("UPDATE fm_vendor SET"
 					. " email = fm_vendor_temp.email"
 					. " FROM fm_vendor_temp"
 					. " WHERE fm_vendor.id = fm_vendor_temp.id"
 					. " AND length(fm_vendor_temp.email) !=0  AND (fm_vendor.email IS NULL OR length(fm_vendor.email) = 0)", __LINE__, __FILE__);
 			}
 
-			$GLOBALS['phpgw']->db->transaction_commit();
+			$this->db->transaction_commit();
 		}
 
 		function get_vendors()

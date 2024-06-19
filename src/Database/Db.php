@@ -14,7 +14,7 @@ class Db
 	protected $db;
 	protected $isTransactionActive = false;
 	protected static $domain;
-	protected static $config;
+	private $config;
 	protected $affected_rows = 0;
 	protected $fetch_single = false;
 	protected $pdo_fetchmode = PDO::FETCH_ASSOC;
@@ -86,7 +86,7 @@ class Db
 	{
 		if (!$this->isTransactionActive)
 		{
-			if (self::$config['db_type'] == 'mysql')
+			if ($this->config['db_type'] == 'mysql')
 			{
 				$this->db->setAttribute(PDO::ATTR_AUTOCOMMIT, 1);
 				$this->db->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
@@ -101,7 +101,7 @@ class Db
 		if ($this->isTransactionActive)
 		{
 			$commitSuccess = $this->db->commit();
-			if (self::$config['db_type'] == 'mysql')
+			if ($this->config['db_type'] == 'mysql')
 			{
 				$this->db->setAttribute(PDO::ATTR_AUTOCOMMIT, 1);
 			}
@@ -145,7 +145,7 @@ class Db
 	 */
 	public function get_last_insert_id($table, $field = '')
 	{
-		switch (self::$config['db_type'])
+		switch ($this->config['db_type'])
 		{
 			case 'postgres':
 				$sequence = $this->_get_sequence_field_for_table($table, $field);
@@ -335,7 +335,7 @@ class Db
 
 	public function metadata($table)
 	{
-		$db_type = self::$config['db_type'];
+		$db_type = $this->config['db_type'];
 
 		switch ($db_type)
 		{
@@ -397,17 +397,19 @@ class Db
 			case 'mssql':
 			case 'mssqlnative':
 				$stmt = $this->db->prepare("
-					SELECT COLUMN_NAME, DATA_TYPE AS type, CHARACTER_MAXIMUM_LENGTH AS MAX_LENGTH, 
-						   COLUMN_NAME = (SELECT KU.COLUMN_NAME 
-										  FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS TC 
-										  JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS KU 
-										  ON TC.CONSTRAINT_TYPE = 'PRIMARY KEY' 
-										  AND TC.CONSTRAINT_NAME = KU.CONSTRAINT_NAME 
-										  WHERE KU.TABLE_NAME = :table) as primary_key
+					SELECT column_name, DATA_TYPE AS type, CHARACTER_MAXIMUM_LENGTH AS max_length, 
+						   CASE WHEN COLUMN_NAME IN (
+							   SELECT KU.COLUMN_NAME 
+							   FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS TC 
+							   JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS KU 
+							   ON TC.CONSTRAINT_TYPE = 'PRIMARY KEY' 
+							   AND TC.CONSTRAINT_NAME = KU.CONSTRAINT_NAME 
+							   WHERE KU.TABLE_NAME = :table1
+						   ) THEN 1 ELSE 0 END as primary_key
 					FROM INFORMATION_SCHEMA.COLUMNS 
-					WHERE TABLE_NAME = :table
+					WHERE TABLE_NAME = :table2
 				");
-				$stmt->execute(['table' => $table]);
+				$stmt->execute(['table1' => $table, 'table2' => $table]);
 				$meta = $stmt->fetchAll(PDO::FETCH_ASSOC);
 				break;
 			case 'oci8':
@@ -481,12 +483,12 @@ class Db
 
 	public function set_config($config)
 	{
-		self::$config = $config;
+		$this->config = $config;
 	}
 
 	public function get_config()
 	{
-		return self::$config;
+		return $this->config;
 	}
 
 	/**
@@ -565,12 +567,12 @@ class Db
 	{
 		$return = array();
 
-		if (!isset(self::$config['db_type']))
+		if (!isset($this->config['db_type']))
 		{
 			return $return;
 		}
 
-		$db_type = self::$config['db_type'];
+		$db_type = $this->config['db_type'];
 
 		switch ($db_type)
 		{
@@ -681,7 +683,7 @@ class Db
 
 	public function metaindexes($table, $primary = false)
 	{
-		$db_type = self::$config['db_type'];
+		$db_type = $this->config['db_type'];
 
 		switch ($db_type)
 		{
@@ -749,7 +751,7 @@ class Db
 		 * CREATE OPERATOR ~@& (LEFTARG = jsonb, RIGHTARG = text[], PROCEDURE = jsonb_exists_all);
 		 */
 
-		if (in_array(self::$config['db_type'], array('mssql', 'mssqlnative')))
+		if (in_array($this->config['db_type'], array('mssql', 'mssqlnative')))
 		{
 			if (preg_match('/(^SELECT)/i', $sql) && !preg_match('/TOP 100 PERCENT/i', $sql))
 			{
@@ -943,7 +945,7 @@ class Db
 			$num_rows = $maxmatches;
 		}
 
-		switch (self::$config['db_type'])
+		switch ($this->config['db_type'])
 		{
 			case 'mssqlnative':
 			case 'mssql':
@@ -1053,7 +1055,7 @@ class Db
 		{
 			if ($value && $this->isJson($value))
 			{
-				if (self::$config['db_type'] == 'mysql')
+				if ($this->config['db_type'] == 'mysql')
 				{
 					$insert_value[] = "'" . str_ireplace(array('\\'), array('\\\\'), $value) . "'";
 				}

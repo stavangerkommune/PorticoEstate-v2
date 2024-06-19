@@ -46,11 +46,10 @@
 			$this->function_name = get_class($this);
 			$this->sub_location	 = lang('property');
 			$this->function_msg	 = 'Sjekk manglende ordreregistering i Agresso fra Portico';
-			$this->db			 = & $GLOBALS['phpgw']->db;
-			$this->join			 = & $this->db->join;
-			$this->account		 = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->join			 = $this->db->join;
+			$this->account		 = $this->userSettings['account_id'];
 
-			$config = CreateObject('admin.soconfig', $GLOBALS['phpgw']->locations->get_id('property', '.admin'));
+			$config = CreateObject('admin.soconfig', $this->location_obj->get_id('property', '.admin'));
 			$this->username	 = $config->config_data['UBW']['username'];
 			$this->password	 = $config->config_data['UBW']['password'];
 		}
@@ -262,7 +261,7 @@ HTML;
 
 			$subject = 'Manglende ordreregistering i Agresso fra Portico';
 		
-			$toarray = array($GLOBALS['phpgw_info']['user']['preferences']['common']['email']);
+			$toarray = array($this->userSettings['preferences']['common']['email']);
 			if(!$toarray)
 			{
 				$toarray = array('hc483@bergen.kommune.no');

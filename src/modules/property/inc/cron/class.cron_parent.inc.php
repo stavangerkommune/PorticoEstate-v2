@@ -30,6 +30,7 @@
 
 use App\modules\phpgwapi\services\Settings;
 use App\modules\phpgwapi\controllers\Locations;
+use App\modules\phpgwapi\services\Log;
 use App\Database\Db;
 
 /**
@@ -45,7 +46,7 @@ abstract class property_cron_parent
 	protected $sub_location	 = 'sub_location';
 	protected $function_msg	 = 'function_msg';
 	protected $cron			 = false;
-	protected $db, $join, $left_join, $like, $phpgwapi_common,$flags,$location_obj,$serverSettings,$userSettings;
+	protected $db, $join, $left_join, $like, $phpgwapi_common,$flags,$location_obj,$serverSettings,$userSettings,$log;
 
 	function __construct()
 	{
@@ -59,6 +60,8 @@ abstract class property_cron_parent
 		$this->userSettings = Settings::getInstance()->get('user');
 
 		$this->location_obj = new Locations();
+		$this->log = new Log();
+
 
 	}
 

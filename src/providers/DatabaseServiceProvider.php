@@ -1,4 +1,5 @@
 <?php
+
 namespace App\providers;
 
 use PDO;
@@ -9,18 +10,21 @@ use PDOException;
 
 class DatabaseServiceProvider
 {
-    public static function register(App $app)
-    {
-        $container = $app->getContainer();
+	public static function register(App $app)
+	{
+		$container = $app->getContainer();
 		$config = $container->get('settings')['db'];
 
-		if (!isset($config['db_host'])) {
+		if (!isset($config['db_host']))
+		{
 			return;
-//			throw new Exception("Database configuration not found");
+			//			throw new Exception("Database configuration not found");
 		}
-		try {
 
-			switch ($config['db_type']) {
+		try
+		{
+			switch ($config['db_type'])
+			{
 				case 'postgres':
 				case 'pgsql':
 					$dsn = "pgsql:host={$config['db_host']};port={$config['db_port']};dbname={$config['db_name']}";
@@ -51,14 +55,17 @@ class DatabaseServiceProvider
 			$db = Db::getInstance($dsn, $config['db_user'], $config['db_pass'], $options);
 			$db->set_domain($config['domain']);
 			$db->set_config($config);
-		} catch (PDOException $e) {
-		//	throw new Exception("Error connecting to database: " . $e->getMessage());
-		//	echo "Error connecting to database: " . $e->getMessage();
+		}
+		catch (PDOException $e)
+		{
+			//	throw new Exception("Error connecting to database: " . $e->getMessage());
+			//	echo "Error connecting to database: " . $e->getMessage();
 		}
 
-		$container->set('db', function () use ($container) {
+		$container->set('db', function () use ($container)
+		{
 
 			return Db::getInstance();
 		});
-    }
+	}
 }

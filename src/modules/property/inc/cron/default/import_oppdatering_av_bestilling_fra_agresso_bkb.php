@@ -51,7 +51,7 @@
 			$this->function_msg	 = 'Importer rapport fra Agresso for oppdatering av meldinger';
 
 			$this->sotts		 = CreateObject('property.sotts');
-			$this->config		 = CreateObject('admin.soconfig', $GLOBALS['phpgw']->locations->get_id('property', '.invoice'));
+			$this->config		 = CreateObject('admin.soconfig', $this->location_obj->get_id('property', '.invoice'));
 			$this->send			 = CreateObject('phpgwapi.send');
 			$this->historylog	 = CreateObject('property.historylog', 'tts');
 		}
@@ -400,7 +400,7 @@
 
 		private function send_notification( $assignedto = 0, $id = 0 )
 		{
-			if (!isset($GLOBALS['phpgw_info']['server']['smtp_server']) || !$GLOBALS['phpgw_info']['server']['smtp_server'])
+			if (!isset($this->serverSettings['smtp_server']) || !$this->serverSettings['smtp_server'])
 			{
 				return;
 			}
@@ -426,7 +426,7 @@
 
 		private function send_error_messages_as_email()
 		{
-			if (!isset($GLOBALS['phpgw_info']['server']['smtp_server']) || !$GLOBALS['phpgw_info']['server']['smtp_server'])
+			if (!isset($this->serverSettings['smtp_server']) || !$this->serverSettings['smtp_server'])
 			{
 				return;
 			}

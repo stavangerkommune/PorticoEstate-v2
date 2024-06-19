@@ -46,10 +46,9 @@
 			$this->function_name = get_class($this);
 			$this->sub_location	 = lang('property');
 			$this->function_msg	 = 'Hent opne bestillinger som er løpende, og skal kunne motta flere fakturaer';
-			$this->db			 = & $GLOBALS['phpgw']->db;
-			$this->join			 = & $this->db->join;
+			$this->join			 = $this->db->join;
 
-			$config = CreateObject('admin.soconfig', $GLOBALS['phpgw']->locations->get_id('property', '.admin'));
+			$config = CreateObject('admin.soconfig', $this->location_obj->get_id('property', '.admin'));
 			$this->username	 = $config->config_data['UBW']['username'];
 			$this->password	 = $config->config_data['UBW']['password'];
 		}
@@ -164,7 +163,7 @@ HTML;
 
 			if ($content)
 			{
-				$dir = "{$GLOBALS['phpgw_info']['server']['temp_dir']}/csv_files";
+				$dir = "{$this->serverSettings['temp_dir']}/csv_files";
 
 				//save the file
 				if (!file_exists($dir))

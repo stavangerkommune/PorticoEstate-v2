@@ -64,10 +64,10 @@
 			$this->sub_location		 = lang('property');
 			$this->function_msg		 = 'Manglende fakturamottak i Agresso';
 			$this->soap_url			 = 'https://agrpweb.adm.bgo/UBW-webservices/service.svc?QueryEngineService/QueryEngineV201101';
-			$this->config_invoice	 = CreateObject('admin.soconfig', $GLOBALS['phpgw']->locations->get_id('property', '.invoice'));
+			$this->config_invoice	 = CreateObject('admin.soconfig', $this->location_obj->get_id('property', '.invoice'));
 			require_once PHPGW_SERVER_ROOT . '/property/inc/soap_client/agresso/autoload.php';
 
-			$config = CreateObject('admin.soconfig', $GLOBALS['phpgw']->locations->get_id('property', '.admin'));
+			$config = CreateObject('admin.soconfig', $this->location_obj->get_id('property', '.admin'));
 			$this->username	 = $config->config_data['UBW']['username'];
 			$this->password	 = $config->config_data['UBW']['password'];
 		}
@@ -139,7 +139,7 @@
 			$this->check_if_received($data);
 			$send = CreateObject('phpgwapi.send');
 
-			if (!isset($GLOBALS['phpgw_info']['server']['smtp_server']) || !$GLOBALS['phpgw_info']['server']['smtp_server'])
+			if (!isset($this->serverSettings['smtp_server']) || !$this->serverSettings['smtp_server'])
 			{
 				_debug_array($data);
 			}

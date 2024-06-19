@@ -72,7 +72,7 @@
 
 			$this->dateformat		 = $this->db->date_format();
 			$this->datetimeformat	 = $this->db->datetime_format();
-			$this->config			 = CreateObject('admin.soconfig', $GLOBALS['phpgw']->locations->get_id('property', '.invoice'));
+			$this->config			 = CreateObject('admin.soconfig', $this->location_obj->get_id('property', '.invoice'));
 			$this->send				 = CreateObject('phpgwapi.send');
 
 			include (PHPGW_SERVER_ROOT . "/property/inc/export/{$GLOBALS['phpgw_info']['user']['domain']}/Agresso_X114");

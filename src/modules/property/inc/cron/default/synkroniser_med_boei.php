@@ -64,10 +64,15 @@ class synkroniser_med_boei extends property_cron_parent
 		$port	 = isset($host_info[1]) && $host_info[1] ? $host_info[1] : $external_db['boei']['db_port'];
 
 		$boei_dsn = "sqlsrv:Server={$host},{$port};Database={$external_db['boei']['db_name']}";
+		$options = [
+			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+		];
 
 		try
 		{
-			$this->db_boei = new Db2($boei_dsn, $external_db['boei']['db_user'], $external_db['boei']['db_pass']);
+			$this->db_boei = new Db2($boei_dsn, $external_db['boei']['db_user'], $external_db['boei']['db_pass'], $options);
+
+			$this->db_boei->set_config($external_db['boei']);
 		}
 		catch (Exception $e)
 		{
@@ -76,6 +81,18 @@ class synkroniser_med_boei extends property_cron_parent
 
 		$this->db_boei2	 = clone ($this->db_boei);
 		$this->db2		 = new Db2();
+
+/*		echo "db\n";
+		_debug_array($this->db->get_config());
+		echo "db2\n";
+		_debug_array($this->db2->get_config());
+		echo "db_boei\n";
+		_debug_array($this->db_boei->get_config());
+		echo "db_boei2\n";
+		_debug_array($this->db_boei2->get_config());
+*/
+
+
 	}
 
 	function execute()
@@ -316,10 +333,10 @@ SQL;
 	function update_table_Gateadresse()
 	{
 		$metadata_boei	 = $this->db_boei->metadata('Gateadresse');
-		//_debug_array($metadata_boei);
+	//	_debug_array($metadata_boei);
 		$metadata		 = $this->db->metadata('boei_gateadresse');
 		//_debug_array($metadata);
-		//die();
+
 		if (!$metadata)
 		{
 			$sql_table = <<<SQL

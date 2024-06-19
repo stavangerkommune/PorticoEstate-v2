@@ -34,6 +34,10 @@
 	include_class('property', 'cron_parent', 'inc/cron/');
 	require_once PHPGW_SERVER_ROOT . '/phpgwapi/inc/ews/vendor/autoload.php';
 
+use App\Database\Db2;
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
 	use \jamesiarmes\PhpEws\Client;
 	use \jamesiarmes\PhpEws\Request\FindItemType;
 	use \jamesiarmes\PhpEws\ArrayType\NonEmptyArrayOfBaseFolderIdsType;
@@ -83,12 +87,11 @@
 			$this->function_name = get_class($this);
 			$this->sub_location	 = lang('property');
 			$this->function_msg	 = 'Hent epost fra eksterne';
-			$this->db			 = & $GLOBALS['phpgw']->db;
-			$this->join			 = & $this->db->join;
+			$this->join			 =  $this->db->join;
 
-			$this->config = CreateObject('admin.soconfig', $GLOBALS['phpgw']->locations->get_id('property', '.admin'));
+			$this->config = CreateObject('admin.soconfig', $this->location_obj->get_id('property', '.admin'));
 
-//			$GLOBALS['phpgw_info']['server']['enforce_ssl'] = true;
+//			$this->serverSettings['enforce_ssl'] = true;
 		}
 
 		function execute()
@@ -138,9 +141,9 @@
 			$ch=curl_init();
 			curl_setopt($ch,CURLOPT_URL,$url);
 
-			if (!empty($GLOBALS['phpgw_info']['server']['httpproxy_server']))
+			if (!empty($this->serverSettings['httpproxy_server']))
 			{
-				$proxy = "{$GLOBALS['phpgw_info']['server']['httpproxy_server']}:{$GLOBALS['phpgw_info']['server']['httpproxy_port']}";
+				$proxy = "{$this->serverSettings['httpproxy_server']}:{$this->serverSettings['httpproxy_port']}";
 			}
 			else
 			{
@@ -190,9 +193,9 @@
 				$ei->ConnectingSID = $sid;
 				$client->setImpersonation($ei);
 
-				if (!empty($GLOBALS['phpgw_info']['server']['httpproxy_server']))
+				if (!empty($this->serverSettings['httpproxy_server']))
 				{
-					$proxy = "{$GLOBALS['phpgw_info']['server']['httpproxy_server']}:{$GLOBALS['phpgw_info']['server']['httpproxy_port']}";
+					$proxy = "{$this->serverSettings['httpproxy_server']}:{$this->serverSettings['httpproxy_port']}";
 				}
 				else
 				{
@@ -257,7 +260,7 @@
 				{
 					$code	 = $response_message->ResponseCode;
 					$message = $response_message->MessageText;
-					$GLOBALS['phpgw']->log->error(array(
+					$this->log->error(array(
 					'text'	=> 'Failed to search for messages with %1 : %2.',
 					'p1'	=> $code,
 					'p2'	=> $message,
@@ -295,7 +298,7 @@
 						{
 							$code	 = $response_message2->ResponseCode;
 							$message = $response_message2->MessageText;
-							$GLOBALS['phpgw']->log->error(array(
+							$this->log->error(array(
 							'text'	=> 'Failed to search for messages with %1 : %2.',
 							'p1'	=> $code,
 							'p2'	=> $message,
@@ -399,7 +402,7 @@
 				{
 					$code	 = $response_message->ResponseCode;
 					$message = $response_message->MessageText;
-					$GLOBALS['phpgw']->log->error(array(
+					$this->log->error(array(
 					'text'	=> 'Failed to find folders with %1 : %2.',
 					'p1'	=> $code,
 					'p2'	=> $message,
@@ -794,7 +797,7 @@
 
 				if(!$location_code)
 				{
-					$GLOBALS['phpgw']->log->debug(array(
+					$this->log->debug(array(
 						'text' => "mangler lokasjonskode for : %1",// fra: %2 ",
 						'p1' => Sanitizer::clean_value($subject),
 //						'p2' => $value ? $value : ' ',
@@ -950,7 +953,7 @@
 				{
 					$code	 = $response_message2->ResponseCode;
 					$message = $response_message2->MessageText;
-					$GLOBALS['phpgw']->log->error(array(
+					$this->log->error(array(
 					'text'	=> 'Failed to search for messages with %1 : %2.',
 					'p1'	=> $code,
 					'p2'	=> $message,

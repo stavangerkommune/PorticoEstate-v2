@@ -8,14 +8,8 @@ use Psr\Container\ContainerInterface;
 
 $_GET['domain'] = isset($_SERVER['argv'][1]) ? $_SERVER['argv'][1] : 'default';
 
-if (!$function = $_SERVER['argv'][2])
-{
-	echo "Nothing to execute\n";
-	return;
-}
 
-
-$rootDir = dirname(__DIR__, 5);
+$rootDir = dirname(__DIR__, 4);
 require_once $rootDir . '/vendor/autoload.php';
 
 define('SRC_ROOT_PATH', $rootDir . '/src');
@@ -80,4 +74,4 @@ $container->set('CronJobs', function (ContainerInterface $c)
 // Now you can retrieve the CronJobs service from the container and use it
 /** @var CronJobs $cronJobs */
 $cronJobs = $container->get('CronJobs');
-$cronJobs->runTask($argv, $argc);
+$cronJobs->CheckRun();

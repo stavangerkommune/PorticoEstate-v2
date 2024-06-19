@@ -31,7 +31,6 @@
 	 * @package property
 	 */
 	include_class('property', 'cron_parent', 'inc/cron/');
-	require_once PHPGW_API_INC . '/flysystem3/vendor/autoload.php';
 
 	use League\Flysystem\Filesystem;
 	use League\Flysystem\Ftp\FtpAdapter;
@@ -51,7 +50,7 @@
 			$this->sub_location	 = lang('invoice');
 			$this->function_msg	 = 'Importer tillegsvedlegg til faktura fra Agresso';
 
-			$this->config = CreateObject('admin.soconfig', $GLOBALS['phpgw']->locations->get_id('property', '.invoice'));
+			$this->config = CreateObject('admin.soconfig', $this->location_obj->get_id('property', '.invoice'));
 		}
 
 		public function execute()

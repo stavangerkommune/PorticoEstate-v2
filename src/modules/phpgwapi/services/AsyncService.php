@@ -587,26 +587,25 @@ class AsyncService
 	function read($id = 0)
 	{
 		$id = $this->db->db_addslashes($id);
+		$params = ['last_check_run' => '##last-check-run##'];
 		if (strpos($id, '%') !== False || strpos($id, '_') !== False)
 		{
-			$where = "id LIKE :id AND id!='##last-check-run##'";
+			$where = "id LIKE :id AND id!=:last_check_run";
+			$params['id'] = $id;
 		}
 		elseif (!$id)
 		{
-			$where = 'next<=:time AND id!="##last-check-run##"';
+			$where = 'next<=:time AND id!=:last_check_run';
+			$params['time'] = time();
 		}
 		else
 		{
 			$where = "id=:id";
+			$params['id'] = $id;
+			unset($params['last_check_run']);
 		}
 		$stmt = $this->db->prepare("SELECT * FROM $this->db_table WHERE $where");
-		$params = ['id' => $id];
-		if (!$id)
-		{
-			$params['time'] = time();
-		}
 		$stmt->execute($params);
-
 		$jobs = array();
 		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 		{
