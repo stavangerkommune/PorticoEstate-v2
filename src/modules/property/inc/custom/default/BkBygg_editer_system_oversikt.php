@@ -1,6 +1,6 @@
 <?php
 	/*
-	 * This class will update classification records baed on input.
+	 * This class will update classification records based on input.
 	 */
 
 	class ikt_systemoversikt extends property_boentity

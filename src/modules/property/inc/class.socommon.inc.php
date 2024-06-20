@@ -60,7 +60,9 @@
 
 			$this->account	= isset($this->userSettings['account_id']) ? (int)$this->userSettings['account_id'] : -1;
 
-			switch ($GLOBALS['phpgw_info']['server']['db_type'])
+			$serverSettings = Settings::getInstance()->get('server');
+
+			switch ($serverSettings['db_type'])
 			{
 				case 'pgsql':
 					$this->join	 = " JOIN ";

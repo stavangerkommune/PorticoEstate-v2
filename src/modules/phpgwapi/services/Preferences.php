@@ -49,6 +49,8 @@ class Preferences
 	{
 		$this->account_id = $account_id;
 		$this->preferences = $this->Readpreferences();
+		Settings::getInstance()->update('user', ['preferences' => $this->preferences]);
+		Settings::getInstance()->update('user', ['account_id' => $account_id]);
 		$this->set('account_id', $account_id);
 	}
 

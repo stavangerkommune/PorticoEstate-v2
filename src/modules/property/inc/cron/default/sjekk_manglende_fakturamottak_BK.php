@@ -34,6 +34,7 @@
 	require_once PHPGW_API_INC . '/flysystem3/vendor/autoload.php';
 
 	use League\Flysystem\Filesystem;
+	use League\Flysystem\FilesystemException;
 	use League\Flysystem\Ftp\FtpAdapter;
 	use League\Flysystem\Ftp\FtpConnectionOptions;
 
@@ -316,7 +317,7 @@ SQL;
 							$filesystem->write(basename($remote_file), $content);
 							$transfer_ok = true;
 						}
-						catch (FilesystemError $exception)
+						catch (FilesystemException $exception)
 						{
 //								_debug_array($exception);
 							$transfer_ok = false;

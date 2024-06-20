@@ -29,12 +29,13 @@
  */
 
 use App\modules\phpgwapi\services\Settings;
+include_class('property', 'cron_parent', 'inc/cron/');
 
 /**
  * Description
  * @package property
  */
-class organize_drawing
+class organize_drawing extends property_cron_parent
 {
 	/* In Admin->Property->Async servises:
 		 *  Name: property.custom_functions.index

@@ -1,10 +1,14 @@
 <?php
+
+use App\Database\Db;
+use App\modules\phpgwapi\controllers\Locations;
+
 //_debug_array($values);
 //_debug_array($values_attribute);
 //_debug_array($action);
 	// this routine will only work with the exact configuration of Bergen Bolig og Byfornyelse - but can serve as an example
 
-	$db = & $GLOBALS['phpgw']->db;
+	$db = Db::getInstance();
 
 	if (isSet($values_attribute) AND is_array($values_attribute))
 	{
@@ -75,9 +79,9 @@
 
 		$db->transaction_begin();
 
-		$location_id = $GLOBALS['phpgw']->locations->get_id('property', '.entity.2.6');
+		$location_obj = new Locations();
+		$location_id = $location_obj->get_id('property', '.entity.2.6');
 
-//		$sql = "UPDATE fm_entity_2_6 set $value_set WHERE id=" . (int)$receipt['id'];
 
 		foreach ($value_set as $_key => $_value)
 		{

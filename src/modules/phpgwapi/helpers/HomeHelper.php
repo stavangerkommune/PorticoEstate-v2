@@ -268,10 +268,12 @@ HTML;
 
 		$this->hooks->process('home', $sorted_apps);
 
-		if (isset($GLOBALS['portal_order']) && is_array($GLOBALS['portal_order']))
+		$portal_order = Cache::session_get('phpgwapi', 'portal_order');
+
+		if (isset($portal_order) && is_array($portal_order))
 		{
 			Preferences::getInstance()->delete('portal_order');
-			foreach ($GLOBALS['portal_order']  as $app_order => $app_id)
+			foreach ($portal_order  as $app_order => $app_id)
 			{
 				Preferences::getInstance()->add('portal_order', $app_order, $app_id);
 			}

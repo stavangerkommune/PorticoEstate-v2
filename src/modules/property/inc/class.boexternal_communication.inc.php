@@ -265,7 +265,7 @@
 
 			$_to		 = $contact_data['user_email'];
 			$from_email	 = 'ikkesvar@bergen.kommune.no';
-			$from_name	 = $GLOBALS['phpgw_info']['server']['site_title'];
+			$from_name	 = $this->serverSettings['site_title'];
 
 			$cc	 = '';
 			$bcc = '';
