@@ -10,17 +10,19 @@
 	 * @subpackage custom
 	 * @version $Id$
 	 */
-	/**
-	 * Description
-	 * usage:
-	 * @package property
-	 */
+/**
+ * Description
+ * usage: * example cron : /usr/bin/php -q /var/www/Api/src/modules/property/inc/cron/cron.php default update_phpgw
+ * @package property
+ */
 	include_class('property', 'cron_parent', 'inc/cron/');
+
+	use App\modules\phpgwapi\services\setup\Detection;
+	use App\modules\phpgwapi\services\setup\Process;
 
 	class update_phpgw extends property_cron_parent
 	{
-
-		var $bocommon;
+		private $detection;
 		function __construct()
 		{
 			parent::__construct();
@@ -29,7 +31,8 @@
 			$this->sub_location	 = lang('Async service');
 			$this->function_msg	 = 'Update all installed apps of phpgw';
 
-			$this->bocommon = CreateObject('property.bocommon');
+			$this->detection = new Detection();
+
 		}
 
 		function execute()
@@ -39,24 +42,27 @@
 
 		function perform_update_db()
 		{
-			$GLOBALS['phpgw_setup']							 = CreateObject('phpgwapi.setup', true, true);
-			$setup_info										 = $GLOBALS['phpgw_setup']->detection->get_versions();
-			$GLOBALS['phpgw_setup']->db						 = CreateObject('phpgwapi.db');
-			$GLOBALS['phpgw_info']['setup']['stage']['db']	 = $GLOBALS['phpgw_setup']->detection->check_db();
-			$setup_info										 = $GLOBALS['phpgw_setup']->detection->get_db_versions($setup_info);
-			$setup_info										 = $GLOBALS['phpgw_setup']->detection->compare_versions($setup_info);
-			$setup_info										 = $GLOBALS['phpgw_setup']->detection->check_depends($setup_info);
+
+			$setup_info = $this->detection->get_versions();
+			/* Check current versions and dependencies */
+			$setup_info = $this->detection->get_db_versions($setup_info);
+			$setup_info = $this->detection->compare_versions($setup_info);
+			$setup_info = $this->detection->check_depends($setup_info);
+
+			$process = new Process();
+
 			ksort($setup_info);
-			$clear_cache									 = '';
+			$clear_cache	 = '';
+			$message		 = array();
 			foreach ($setup_info as $app => $appinfo)
 			{
-				if (isset($appinfo['status']) && $appinfo['status'] == 'U' && isset($appinfo['currentver']) && $appinfo['currentver'])
+				if (isset($appinfo['status']) && $appinfo['status'] == 'U' && !empty($appinfo['currentver']))
 				{
 					$terror						 = array();
 					$terror[]					 = $setup_info[$appinfo['name']];
-					$GLOBALS['phpgw_setup']->process->upgrade($terror, false);
-					$GLOBALS['phpgw_setup']->process->upgrade_langs($terror, false);
-					$this->receipt['message'][]	 = array('msg' => 'Upgraded application: ' . $appinfo['name']);
+					$process->upgrade($terror, false);
+					$process->upgrade_langs($terror, false);
+					$message[]	 = array('msg' => 'Upgraded application: ' . $appinfo['name']);
 					if ($appinfo['name'] == 'property')
 					{
 						$clear_cache = true;
@@ -67,5 +73,6 @@
 			{
 				$this->db->query('DELETE FROM fm_cache');
 			}
+			print_r($message);
 		}
 	}
