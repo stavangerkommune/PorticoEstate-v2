@@ -603,6 +603,7 @@ class Bra5WsdlClass extends stdClass implements ArrayAccess,Iterator,Countable
      * @uses Bra5WsdlClass::getInternArrayToIterateIsArray()
      * @return int
      */
+	#[\ReturnTypeWillChange]
     public function count()
     {
         return $this->getInternArrayToIterateIsArray()?count($this->getInternArrayToIterate()):-1;
@@ -612,6 +613,7 @@ class Bra5WsdlClass extends stdClass implements ArrayAccess,Iterator,Countable
      * @uses Bra5WsdlClass::offsetGet()
      * @return mixed
      */
+	#[\ReturnTypeWillChange]
     public function current()
     {
         return $this->offsetGet($this->internArrayToIterateOffset);
@@ -622,6 +624,7 @@ class Bra5WsdlClass extends stdClass implements ArrayAccess,Iterator,Countable
      * @uses Bra5WsdlClass::setInternArrayToIterateOffset()
      * @return int
      */
+	#[\ReturnTypeWillChange]
     public function next()
     {
         return $this->setInternArrayToIterateOffset($this->getInternArrayToIterateOffset() + 1);
@@ -631,6 +634,7 @@ class Bra5WsdlClass extends stdClass implements ArrayAccess,Iterator,Countable
      * @uses Bra5WsdlClass::setInternArrayToIterateOffset()
      * @return int
      */
+	#[\ReturnTypeWillChange]
     public function rewind()
     {
         return $this->setInternArrayToIterateOffset(0);
@@ -641,6 +645,7 @@ class Bra5WsdlClass extends stdClass implements ArrayAccess,Iterator,Countable
      * @uses Bra5WsdlClass::offsetExists()
      * @return bool true|false
      */
+	#[\ReturnTypeWillChange]
     public function valid()
     {
         return $this->offsetExists($this->getInternArrayToIterateOffset());
@@ -650,6 +655,7 @@ class Bra5WsdlClass extends stdClass implements ArrayAccess,Iterator,Countable
      * @uses Bra5WsdlClass::getInternArrayToIterateOffset()
      * @return int
      */
+	#[\ReturnTypeWillChange]
     public function key()
     {
         return $this->getInternArrayToIterateOffset();
@@ -739,7 +745,8 @@ class Bra5WsdlClass extends stdClass implements ArrayAccess,Iterator,Countable
      * @param int $_offset
      * @return bool true|false
      */
-    public function offsetExists($_offset)
+	#[\ReturnTypeWillChange]
+	 public function offsetExists($_offset)
     {
         return ($this->getInternArrayToIterateIsArray() && array_key_exists($_offset,$this->getInternArrayToIterate()));
     }
@@ -749,6 +756,7 @@ class Bra5WsdlClass extends stdClass implements ArrayAccess,Iterator,Countable
      * @param int $_offset
      * @return mixed
      */
+	#[\ReturnTypeWillChange]
     public function offsetGet($_offset)
     {
         return $this->offsetExists($_offset)?$this->internArrayToIterate[$_offset]:null;
@@ -759,6 +767,7 @@ class Bra5WsdlClass extends stdClass implements ArrayAccess,Iterator,Countable
      * @param mixed $_value
      * @return null
      */
+	#[\ReturnTypeWillChange]
     public function offsetSet($_offset,$_value)
     {
         return null;
@@ -768,6 +777,7 @@ class Bra5WsdlClass extends stdClass implements ArrayAccess,Iterator,Countable
      * @param mixed $_offset
      * @return null
      */
+	#[\ReturnTypeWillChange]
     public function offsetUnset($_offset)
     {
         return null;

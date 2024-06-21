@@ -156,6 +156,10 @@ class Settings
 		{
 			throw new Exception('Data set must be an array');
 		}
+		if(!isset($this->settings[$name]))
+		{
+			$this->settings[$name] = [];
+		}
 		$this->settings[$name] = array_merge($this->settings[$name], $data_set);
 	}
 
