@@ -22,6 +22,8 @@
 	class SchemaProcMysql
 	{
 		var $m_sStatementTerminator;
+		var $check_contstaints = array();
+
 		/* Following added to convert sql to array */
 		var $sCol = array();
 		var $pk = array();
