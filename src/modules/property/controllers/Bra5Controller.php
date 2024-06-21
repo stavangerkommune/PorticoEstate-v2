@@ -84,11 +84,6 @@ class Bra5Controller
 		$this->where_parameter = $c->config_data[$section]['where_parameter'];
 		$this->baseclassname	 = !empty($c->config_data[$section]['baseclassname']) ? $c->config_data[$section]['baseclassname'] : 'Eiendomsarkiver';
 
-
-		/**
-		 * @global object $GLOBALS['server']
-		 */
-		//	ini_set('memory_limit', '512M');
 		ini_set('display_errors', true);
 		error_reporting(-1);
 		/**

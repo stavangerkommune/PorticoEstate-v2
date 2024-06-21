@@ -89,10 +89,17 @@ class property_bomigrate
 
 	public function read()
 	{
-		$domain_info = $GLOBALS['phpgw_domain'];
-		unset($domain_info[$GLOBALS['phpgw_info']['user']['domain']]);
+		$serverSettings = Settings::getInstance()->get('server');
+		$phpgw_domain = $this->get_phpgw_domain();
+		unset($phpgw_domain[$serverSettings['default_domain']]);
+		return $phpgw_domain;
+	}
 
-		return $domain_info;
+	private function get_phpgw_domain()
+	{
+		$settings = require SRC_ROOT_PATH . '/../config/header.inc.php';
+		$phpgw_domain = $settings['phpgw_domain'];
+		return $phpgw_domain;
 	}
 
 	public function migrate($values, $download_script = false)
@@ -147,8 +154,8 @@ class property_bomigrate
 		}
 
 		set_time_limit(0);
-		$settings	  = require SRC_ROOT_PATH . '/../config/header.inc.php';
-		$phpgw_domain = $settings['phpgw_domain'];
+
+		$phpgw_domain = $this->get_phpgw_domain();
 
 		foreach ($values as $domain)
 		{
