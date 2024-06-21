@@ -14,7 +14,7 @@ class Db
 	protected $db;
 	protected $isTransactionActive = false;
 	protected static $domain;
-	private $config;
+	protected $config;
 	protected $affected_rows = 0;
 	protected $fetch_single = false;
 	protected $pdo_fetchmode = PDO::FETCH_ASSOC;
@@ -61,7 +61,37 @@ class Db
 		return self::$instance;
 	}
 
+	public static function CreateDsn($config)
+	{
+		$dsn = '';
+		switch ($config['db_type'])
+		{
+			case 'postgres':
+			case 'pgsql':
+				$dsn = "pgsql:host={$config['db_host']};port={$config['db_port']};dbname={$config['db_name']}";
+				break;
+			case 'mysql':
+				$dsn = "mysql:host={$config['db_host']};port={$config['db_port']};dbname={$config['db_name']}";
+				break;
+			case 'sqlsrv':
+			case 'mssqlnative':
+				$dsn = "sqlsrv:Server={$config['db_host']},{$config['db_port']};Database={$config['db_name']}";
+				break;
+			case 'mssql':
+			case 'sybase':
+				$dsn = "dblib:host={$config['db_host']}:{$config['db_port']};dbname={$config['db_name']}";
+				break;
+			case 'oci8':
+				$port = $config['db_port'] ? $config['db_port'] : 1521;
+				$_charset = ';charset=AL32UTF8';
+				$dsn = "oci:dbname={$config['db_host']}:{$port}/{$config['db_name']}{$_charset}";
+				break;
+			default:
+				throw new Exception("Database type not supported");
+		}
+		return $dsn;
 
+	}
 	public function __debugInfo()
 	{
 		$reflectionClass = new ReflectionClass($this);
@@ -151,6 +181,7 @@ class Db
 				$sequence = $this->_get_sequence_field_for_table($table, $field);
 				$ret = $this->db->lastInsertId($sequence);
 				break;
+			case 'sqlsrv':
 			case 'mssqlnative':
 			case 'mssql':
 				$orig_fetchmode = $this->fetchmode;
@@ -395,6 +426,7 @@ class Db
 				$meta = $stmt->fetchAll(PDO::FETCH_ASSOC);
 				break;
 			case 'mssql':
+			case 'sqlsrv':
 			case 'mssqlnative':
 				$stmt = $this->db->prepare("
 					SELECT column_name, DATA_TYPE AS type, CHARACTER_MAXIMUM_LENGTH AS max_length, 
@@ -616,6 +648,7 @@ class Db
 
 				break;
 			case 'mssql':
+			case 'sqlsrv':
 			case 'mssqlnative':
 				$stmt = $this->db->prepare("SELECT name FROM sysobjects WHERE xtype='U'");
 				$stmt->execute();
@@ -751,7 +784,7 @@ class Db
 		 * CREATE OPERATOR ~@& (LEFTARG = jsonb, RIGHTARG = text[], PROCEDURE = jsonb_exists_all);
 		 */
 
-		if (in_array($this->config['db_type'], array('mssql', 'mssqlnative')))
+		if (in_array($this->config['db_type'], array('mssql', 'mssqlnative', 'sqlsrv')))
 		{
 			if (preg_match('/(^SELECT)/i', $sql) && !preg_match('/TOP 100 PERCENT/i', $sql))
 			{
@@ -948,6 +981,7 @@ class Db
 		switch ($this->config['db_type'])
 		{
 			case 'mssqlnative':
+			case 'sqlsrv':
 			case 'mssql':
 				$sql = str_replace('SELECT ', 'SELECT TOP ', $sql);
 				$sql = str_replace('SELECT TOP DISTINCT', 'SELECT DISTINCT TOP ', $sql);

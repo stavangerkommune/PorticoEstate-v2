@@ -67,7 +67,6 @@ class property_uimigrate extends phpgwapi_uicommon_jquery
 	/**
 	 * @var object $acl reference to global access control list manager
 	 */
-	private $acl;
 
 	/**
 	 * @var string $acl_location the access control location

@@ -32,6 +32,7 @@ class DatabaseServiceProvider
 				case 'mysql':
 					$dsn = "mysql:host={$config['db_host']};port={$config['db_port']};dbname={$config['db_name']}";
 					break;
+				case 'sqlsrv':
 				case 'mssqlnative':
 					$dsn = "sqlsrv:Server={$config['db_host']},{$config['db_port']};Database={$config['db_name']}";
 					break;

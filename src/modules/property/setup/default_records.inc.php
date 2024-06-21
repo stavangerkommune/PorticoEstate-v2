@@ -1073,6 +1073,7 @@ $db->query($sql, __LINE__, __FILE__);
 
 switch ($serverSettings['db_type'])
 {
+	case 'sqlsrv':
 	case 'mssqlnative':
 	case 'postgres':
 	case 'mysql':

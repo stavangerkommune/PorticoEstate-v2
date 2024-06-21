@@ -124,7 +124,7 @@
 			$extraSql = $this->extra_sql(array('query_type' => VFS_SQL_SELECT));
 			$sql = "SELECT directory, name, link_directory, link_name FROM phpgw_vfs WHERE ";
 
-			if(in_array($this->serverSettings['db_type'], array('mssql', 'mssqlnative', 'sybase'))) {
+			if(in_array($this->serverSettings['db_type'], array('mssql', 'mssqlnative', 'sqlsrv', 'sybase'))) {
 				$sql .= "(CONVERT(varchar,link_directory) != '' AND CONVERT(varchar,link_name) != '')";
 			} else {
 				$sql .= "(link_directory IS NOT NULL or link_directory != '') AND (link_name IS NOT NULL or link_name != '')";

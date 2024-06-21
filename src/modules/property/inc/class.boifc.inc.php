@@ -122,6 +122,7 @@ class boifc
 
 		switch ($serverSettings['db_type'])
 		{
+			case 'sqlsrv':
 			case 'mssqlnative':
 			case 'mssql':
 				$this->dateformat		 = "M d Y";

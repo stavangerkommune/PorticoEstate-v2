@@ -48,6 +48,7 @@
 				$this->m_oTranslator	= new \App\modules\phpgwapi\services\SchemaProc\SchemaProcSapdb();
 				break;
 
+				case 'sqlsrv':
 				case 'mssqlnative':
 				case 'mssql':
 				$this->m_oTranslator	= new \App\modules\phpgwapi\services\SchemaProc\SchemaProcMssql();

@@ -32,11 +32,13 @@
  */
 
 use App\Database\Db;
-
+use App\Database\Db2;
 use App\modules\phpgwapi\services\Cache;
 use App\modules\phpgwapi\services\SchemaProc\SchemaProc;
 
 use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\setup\Process;
+
 use App\modules\phpgwapi\controllers\Accounts\Accounts;
 use App\modules\phpgwapi\controllers\Locations;
 use App\modules\phpgwapi\security\Acl;
@@ -95,33 +97,20 @@ class property_bomigrate
 
 	public function migrate($values, $download_script = false)
 	{
-		//			$download_script = true;
-		//_debug_array($GLOBALS['phpgw_domain']);die();
-		//			_debug_array($values);
-
-		$serverSettings = Settings::getInstance()->get('server');
-		$oProc = new SchemaProc($serverSettings['db_type']);
-
-		$oProc->m_odb					 = Db::getInstance();
-		$oProc->m_odb->Halt_On_Error	 = 'yes';
-
-		$GLOBALS['phpgw_setup'] = CreateObject('phpgwapi.setup', false, false);
-		$GLOBALS['phpgw_setup']->oProc	 = $oProc;
 
 		$tables = Db::getInstance()->table_names();
-
-		$setup = createObject('phpgwapi.setup_process');
+		$process = new Process();
 
 		$table_def = array();
 		$foreign_keys = array();
 		//			$tables = array('bb_season_boundary');
 		foreach ($tables as $table)
 		{
-			$tableinfo = $setup->sql_to_array($table);
-			//				_debug_array($table);
-			//				_debug_array($tableinfo);
+			$tableinfo = $process->sql_to_array($table);
+//			_debug_array($table);
+//			_debug_array($tableinfo);
 
-			$fd_temp				 = '$fd = array(' . str_replace("\t", '', $tableinfo[0]) . ');';
+			$fd_temp	 = '$fd = array(' . str_replace("\t", '', $tableinfo[0]) . ');';
 			//evil..
 			try
 			{
@@ -139,11 +128,11 @@ class property_bomigrate
 			$table_def[$table]['fk'] = array(); //later...  $tableinfo[2];
 			$table_def[$table]['ix'] = $tableinfo[3];
 			$table_def[$table]['uc'] = $tableinfo[4];
-			//				_debug_array($table_def);
-			//				die();
+//			_debug_array($table_def);
+//			die();
 
 			/* prepare for updating with foreign keys
-				 */
+			 */
 			if ($tableinfo[2])
 			{
 				foreach ($tableinfo[2] as $ref_set => $ref_fields)
@@ -158,31 +147,40 @@ class property_bomigrate
 		}
 
 		set_time_limit(0);
+		$settings	  = require SRC_ROOT_PATH . '/../config/header.inc.php';
+		$phpgw_domain = $settings['phpgw_domain'];
+
 		foreach ($values as $domain)
 		{
-			$this->oProc = createObject('phpgwapi.schema_proc', $GLOBALS['phpgw_domain'][$domain]['db_type']);
+			$this->oProc =	new SchemaProc($phpgw_domain[$domain]['db_type']);
 			if (!$download_script)
 			{
-				$this->oProc->m_odb					 = CreateObject('phpgwapi.db'); //$GLOBALS['phpgw']->db;
-				$this->oProc->m_odb->Type			 = $GLOBALS['phpgw_domain'][$domain]['db_type'];
-				$this->oProc->m_odb->Host			 = $GLOBALS['phpgw_domain'][$domain]['db_host'];
-				$this->oProc->m_odb->Port			 = $GLOBALS['phpgw_domain'][$domain]['db_port'];
-				$this->oProc->m_odb->Database		 = $GLOBALS['phpgw_domain'][$domain]['db_name'];
-				$this->oProc->m_odb->User			 = $GLOBALS['phpgw_domain'][$domain]['db_user'];
-				$this->oProc->m_odb->Password		 = $GLOBALS['phpgw_domain'][$domain]['db_pass'];
+
+				$db_config = array(
+					'db_type' => $phpgw_domain[$domain]['db_type'],
+					'db_host' => $phpgw_domain[$domain]['db_host'],
+					'db_port' => $phpgw_domain[$domain]['db_port'],
+					'db_name' => $phpgw_domain[$domain]['db_name'],
+					'db_user' => $phpgw_domain[$domain]['db_user'],
+					'db_pass' => $phpgw_domain[$domain]['db_pass'],
+				);
+
+				$dsn = Db::CreateDsn($db_config);
+
+				$this->oProc->m_odb		 = new Db2($dsn, $db_config['db_user'], $db_config['db_pass']);
+				$this->oProc->m_odb->set_config($db_config);
 				$this->oProc->m_odb->Halt_On_Error	 = 'yes';
-				$this->oProc->m_odb->connect();
 
 				if ($this->oProc->m_odb->table_names())
 				{
-					//						throw new Exception("There is already tables in the database '{$this->oProc->m_odb->Database}'");
+//					throw new Exception("There is already tables in the database '{$this->oProc->m_odb->Database}'");
 				}
 			}
 
 			if ($download_script)
 			{
 				$script		 = $this->GenerateScripts($table_def, false, true);
-				$filename	 = $domain . '_' . $GLOBALS['phpgw_domain'][$domain]['db_name'] . '_' . $GLOBALS['phpgw_domain'][$domain]['db_type'] . '.sql';
+				$filename	 = $domain . '_' . $phpgw_domain[$domain]['db_name'] . '_' . $phpgw_domain[$domain]['db_type'] . '.sql';
 				$this->download_script($script, $filename);
 			}
 			else
@@ -293,7 +291,7 @@ class property_bomigrate
 			}
 
 			$identity_sequence = false;
-			if (in_array($this->oProc->m_odb->Type, array('mssql', 'mssqlnative')))
+			if (in_array($this->oProc->m_odb->Type, array('mssql', 'sqlsrv', 'mssqlnative')))
 			{
 				$this->oProc->m_odb->query("EXEC sp_columns '$table'", __LINE__, __FILE__);
 				while ($this->oProc->m_odb->next_record())
@@ -364,7 +362,7 @@ class property_bomigrate
 				$this->oProc->m_odb->query("INSERT INTO {$table} ({$insert_fields}) VALUES ({$insert_values})");
 			}
 
-			if ($identity_sequence && in_array($this->oProc->m_odb->Type, array('mssql', 'mssqlnative')))
+			if ($identity_sequence && in_array($this->oProc->m_odb->Type, array('mssql', 'sqlsrv', 'mssqlnative')))
 			{
 				$this->oProc->m_odb->query("SET identity_insert {$table} OFF", __LINE__, __FILE__);
 			}
