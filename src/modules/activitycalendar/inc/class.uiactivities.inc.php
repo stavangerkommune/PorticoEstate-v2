@@ -114,12 +114,12 @@
 		 */
 		public function add()
 		{
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.edit'));
+			phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.edit'));
 		}
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -254,14 +254,14 @@
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('view');
 			// Get the contract part id
-			$activity_id = (int)phpgw::get_var('id');
+			$activity_id = (int)Sanitizer::get_var('id');
 
 			$activity = $this->so_activity->get_single($activity_id);
 
 			if (empty($activity))
 			{
 				phpgwapi_cache::message_set(lang('Could not find specified activity.'), 'error');
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.index'));
 			}
 
 			if ($activity->get_group_id())
@@ -402,8 +402,8 @@
 			$data = array
 				(
 				'tabs' => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
-				'cancel_url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.index')),
-				'edit_url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.edit',
+				'cancel_url' => phpgw::link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.index')),
+				'edit_url' => phpgw::link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.edit',
 					'id' => $activity->get_id())),
 				'lang_edit' => lang('edit'),
 				'lang_cancel' => lang('cancel'),
@@ -433,7 +433,7 @@
 		{
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('edit');
 			// Get the contract part id
-			$activity_id = (int)phpgw::get_var('id');
+			$activity_id = (int)Sanitizer::get_var('id');
 
 			$categories = $this->so_activity->get_categories();
 			$targets = $this->so_activity->get_targets();
@@ -451,8 +451,8 @@
 			}
 
 			$new_group = $activity->get_new_group();
-			$g_id = phpgw::get_var('group_id');
-			$o_id = phpgw::get_var('organization_id');
+			$g_id = Sanitizer::get_var('group_id');
+			$o_id = Sanitizer::get_var('organization_id');
 			if ($new_group)
 			{
 				$persons = $this->so_group->get_contacts_local($activity->get_group_id());
@@ -504,7 +504,7 @@
 			if ($activity->get_new_org())
 			{
 				phpgwapi_cache::message_set(lang('org_not_transferred'), 'error');
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.view',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.view',
 					'id' => $activity->get_id()));
 			}
 
@@ -645,8 +645,8 @@
 			$data = array
 				(
 				'tabs' => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
-				'form_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.save')),
-				'cancel_url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.index')),
+				'form_action' => phpgw::link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.save')),
+				'cancel_url' => phpgw::link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.index')),
 				'lang_save' => lang('save'),
 				'lang_cancel' => lang('cancel'),
 				'activity_id' => $activity->get_id(),
@@ -663,14 +663,14 @@
 				'list_office_options' => array('options' => $office_options),
 				'list_organization_options' => array('options' => $organization_options),
 				'organization_selected' => ($current_organization_id ? 1 : 0),
-				'organization_url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uiorganization.show',
+				'organization_url' => phpgw::link('/index.php', array('menuaction' => 'booking.uiorganization.show',
 					'id' => $current_organization_id)),
 				'new_group' => ($new_group ? 1 : 0),
 				'local_group_name' => $local_group_name,
 				'local_group_id' => $local_group_id,
 				'group_selected' => ($activity->get_group_id() ? 1 : 0),
 				'group_selected_id' => $activity->get_group_id(),
-				'group_url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uigroup.show',
+				'group_url' => phpgw::link('/index.php', array('menuaction' => 'booking.uigroup.show',
 					'id' => $activity->get_group_id())),
 				'contact_person_1' => $contact_person_1,
 				'contact_person_2' => $contact_person_2,
@@ -691,7 +691,7 @@
 					JqueryPortico.autocompleteHelper(strURL, 'contact_person_2_address', '', 'contact_person_2_address_container');
 				});
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $_autocomplete);
+			phpgwapi_js::getInstance()->add_code('', $_autocomplete);
 
 			self::add_javascript('activitycalendar', 'activitycalendar', 'activities.edit.js');
 			self::render_template_xsl(array('activity'), array('edit' => $data));
@@ -699,36 +699,36 @@ JS;
 
 		public function query()
 		{
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
-			$start_index = phpgw::get_var('start', 'int', 'REQUEST', 0);
+			$start_index = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
 			$sort_field = ($columns[$order[0]['column']]['data']) ? $columns[$order[0]['column']]['data'] : 'id';
 			$sort_ascending = ($order[0]['dir'] == 'desc') ? false : true;
 			// Form variables
 			$search_for = $search['value'];
-			$search_type = phpgw::get_var('search_option', 'string', 'REQUEST', '');
+			$search_type = Sanitizer::get_var('search_option', 'string', 'REQUEST', '');
 
 			// Create an empty result set
 			$result_objects = array();
 			$result_count = 0;
 
-			$length = phpgw::get_var('length', 'int');
+			$length = Sanitizer::get_var('length', 'int');
 			$user_rows_per_page = $length > 0 ? $length : $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
 			$num_of_objects = $length == -1 ? 0 : $user_rows_per_page;
 
-			$export = phpgw::get_var('export', 'bool');
+			$export = Sanitizer::get_var('export', 'bool');
 			if ($export)
 			{
 				$num_of_objects = 0;
 			}
 
 			//Retrieve the type of query and perform type specific logic
-			$query_type = phpgw::get_var('type');
+			$query_type = Sanitizer::get_var('type');
 
-			$email_param = phpgw::get_var('email');
+			$email_param = Sanitizer::get_var('email');
 			$email = false;
 			if (isset($email_param))
 			{
@@ -741,17 +741,17 @@ JS;
 			switch ($query_type)
 			{
 				case 'new_activities':
-					$filters = array('new_activities' => 'yes', 'activity_state' => phpgw::get_var('activity_state'),
-						'activity_category' => phpgw::get_var('activity_category'), 'activity_district' => phpgw::get_var('activity_district'),
-						'user_id' => $uid, 'updated_date_hidden' => phpgw::get_var('date_change'));
+					$filters = array('new_activities' => 'yes', 'activity_state' => Sanitizer::get_var('activity_state'),
+						'activity_category' => Sanitizer::get_var('activity_category'), 'activity_district' => Sanitizer::get_var('activity_district'),
+						'user_id' => $uid, 'updated_date_hidden' => Sanitizer::get_var('date_change'));
 					$result_objects = activitycalendar_soactivity::get_instance()->get($start_index, $num_of_objects, $sort_field, $sort_ascending, $search_for, $search_type, $filters);
 					$result_count = activitycalendar_soactivity::get_instance()->get_count($search_for, $search_type, $filters);
 					break;
 				case 'all_activities':
 				default:
-					$filters = array('activity_state' => phpgw::get_var('activity_state'), 'activity_category' => phpgw::get_var('activity_category'),
-						'activity_district' => phpgw::get_var('activity_district'), 'user_id' => $uid,
-						'updated_date_hidden' => phpgw::get_var('date_change'));
+					$filters = array('activity_state' => Sanitizer::get_var('activity_state'), 'activity_category' => Sanitizer::get_var('activity_category'),
+						'activity_district' => Sanitizer::get_var('activity_district'), 'user_id' => $uid,
+						'updated_date_hidden' => Sanitizer::get_var('date_change'));
 					$result_objects = activitycalendar_soactivity::get_instance()->get($start_index, $num_of_objects, $sort_field, $sort_ascending, $search_for, $search_type, $filters);
 					$result_count = activitycalendar_soactivity::get_instance()->get_count($search_for, $search_type, $filters);
 					break;
@@ -803,7 +803,7 @@ JS;
 
 		public function save()
 		{
-			$activity_id = (int)phpgw::get_var('id');
+			$activity_id = (int)Sanitizer::get_var('id');
 			// Retrieve the activity object or create a new one
 			if (isset($activity_id) && $activity_id > 0)
 			{
@@ -815,8 +815,8 @@ JS;
 			}
 
 			$new_group = $activity->get_new_group();
-			$g_id = phpgw::get_var('group_id');
-			$o_id = phpgw::get_var('organization_id');
+			$g_id = Sanitizer::get_var('group_id');
+			$o_id = Sanitizer::get_var('organization_id');
 			if ($new_group)
 			{
 				$persons = $this->so_group->get_contacts_local($activity->get_group_id());
@@ -841,12 +841,12 @@ JS;
 			if (isset($activity)) // If an activity object is created
 			{
 				$old_state = $activity->get_state();
-				$new_state = phpgw::get_var('state');
+				$new_state = Sanitizer::get_var('state');
 				// ... set all parameters
-				$activity->set_title(phpgw::get_var('title'));
-				$activity->set_organization_id(phpgw::get_var('organization_id'));
-				$activity->set_group_id(phpgw::get_var('group_id'));
-				$internal_arena = phpgw::get_var('internal_arena_id');
+				$activity->set_title(Sanitizer::get_var('title'));
+				$activity->set_organization_id(Sanitizer::get_var('organization_id'));
+				$activity->set_group_id(Sanitizer::get_var('group_id'));
+				$internal_arena = Sanitizer::get_var('internal_arena_id');
 				if (isset($internal_arena) && $internal_arena > 0)
 				{
 					$activity->set_arena(0);
@@ -854,22 +854,22 @@ JS;
 				}
 				else
 				{
-					$activity->set_arena(phpgw::get_var('arena_id'));
+					$activity->set_arena(Sanitizer::get_var('arena_id'));
 					$activity->set_internal_arena(0);
 				}
-				$district_array = phpgw::get_var('district');
+				$district_array = Sanitizer::get_var('district');
 				$activity->set_district(implode(",", $district_array));
-				$activity->set_office(phpgw::get_var('office'));
+				$activity->set_office(Sanitizer::get_var('office'));
 				$activity->set_state($new_state);
-				$activity->set_category(phpgw::get_var('category'));
-				$target_array = phpgw::get_var('target');
+				$activity->set_category(Sanitizer::get_var('category'));
+				$target_array = Sanitizer::get_var('target');
 				$activity->set_target(implode(",", $target_array));
 				$activity->set_description($desc);
-				$activity->set_time(phpgw::get_var('time'));
+				$activity->set_time(Sanitizer::get_var('time'));
 				$activity->set_contact_persons($persons);
-				$activity->set_contact_person_2_address(phpgw::get_var('contact_person_2_address'));
-				$activity->set_contact_person_2_zip(phpgw::get_var('contact_person_2_zip'));
-				$activity->set_special_adaptation(phpgw::get_var('special_adaptation'));
+				$activity->set_contact_person_2_address(Sanitizer::get_var('contact_person_2_address'));
+				$activity->set_contact_person_2_zip(Sanitizer::get_var('contact_person_2_zip'));
+				$activity->set_special_adaptation(Sanitizer::get_var('special_adaptation'));
 
 				$target_ok = false;
 				$district_ok = false;
@@ -986,7 +986,7 @@ JS;
 							activitycalendar_uiactivities::send_mailnotification_to_organization($activity->get_contact_person_1(), $subject, $body);
 						}
 					}
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.view',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.view',
 						'id' => $activity->get_id()));
 				}
 				else
@@ -1004,7 +1004,7 @@ JS;
 				}
 			}
 
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.edit',
+			phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.edit',
 				'id' => $activity->get_id()));
 		}
 
@@ -1136,7 +1136,7 @@ JS;
 
 			if(!$skip_redirect)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.index',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.index',
 				'message' => 'E-post sendt'));
 			}
 		}
@@ -1148,10 +1148,10 @@ JS;
 			$config = $c->config_data;
 
 			$mailBaseURL = $c->config_data['mailBaseURL'];
-			$activity_id = (int)phpgw::get_var('activity_id');
+			$activity_id = (int)Sanitizer::get_var('activity_id');
 			$activity = activitycalendar_soactivity::get_instance()->get_single($activity_id);
 
-			$message_type = phpgw::get_var('message_type');
+			$message_type = Sanitizer::get_var('message_type');
 			if ($message_type)
 			{
 				//$subject = lang('mail_subject_update', $avtivity->get_id() . '-' . $activity->get_title(), $activity->get_link());
@@ -1212,13 +1212,13 @@ JS;
 				}
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				$message['message'][] = array('msg' => lang('E-post sendt'));
 				return $message;
 			}
 
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.index',
+			phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.index',
 				'message' => 'E-post sendt'));
 		}
 
@@ -1356,8 +1356,8 @@ JS;
 			$GLOBALS['phpgw_info']['flags']['nofooter'] = true;
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = false;
 
-			$org_id = phpgw::get_var('orgid');
-			$group_id = phpgw::get_var('groupid');
+			$org_id = Sanitizer::get_var('orgid');
+			$group_id = Sanitizer::get_var('groupid');
 			$returnHTML = "<option value='0'>Ingen gruppe valgt</option>";
 			if ($org_id)
 			{
@@ -1425,7 +1425,7 @@ JS;
 
 		public function remove_old_activities()
 		{
-			$activity_id = phpgw::get_var('act_id');
+			$activity_id = Sanitizer::get_var('act_id');
 			if ($activity_id && $activity_id > 0)
 			{
 				$activity_del = $this->so_activity->get_single($activity_id);

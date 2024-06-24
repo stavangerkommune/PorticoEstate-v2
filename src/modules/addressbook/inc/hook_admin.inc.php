@@ -17,13 +17,13 @@
 	$title = $appname;
 	$file = array
 	(
-		'Site Configuration'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiconfig.index', 'appname' => 'addressbook') ),
-		'Edit custom fields'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'addressbook.uifields.index') ),
-		'Global Categories'				=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uicategories.index', 'appname' => 'addressbook') ),
-		'Communication Types Manager'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'addressbook.uicatalog_contact_comm_type.view') ),
-		'Communication Descriptions Manager' =>  $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'addressbook.uicatalog_contact_comm_descr.view') ),
-		'Location Manager'				=>  $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'addressbook.uicatalog_contact_addr_type.view') ),
-		'Notes Types Manager'			=>  $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'addressbook.uicatalog_contact_note_type.view') )
+		'Site Configuration'			=> phpgw::link('/index.php', array('menuaction' => 'admin.uiconfig.index', 'appname' => 'addressbook') ),
+		'Edit custom fields'			=> phpgw::link('/index.php', array('menuaction' => 'addressbook.uifields.index') ),
+		'Global Categories'				=> phpgw::link('/index.php', array('menuaction' => 'admin.uicategories.index', 'appname' => 'addressbook') ),
+		'Communication Types Manager'	=> phpgw::link('/index.php', array('menuaction' => 'addressbook.uicatalog_contact_comm_type.view') ),
+		'Communication Descriptions Manager' =>  phpgw::link('/index.php', array('menuaction' => 'addressbook.uicatalog_contact_comm_descr.view') ),
+		'Location Manager'				=>  phpgw::link('/index.php', array('menuaction' => 'addressbook.uicatalog_contact_addr_type.view') ),
+		'Notes Types Manager'			=>  phpgw::link('/index.php', array('menuaction' => 'addressbook.uicatalog_contact_note_type.view') )
 	);
 	//Do not modify below this line
 	$GLOBALS['phpgw']->common->display_mainscreen($appname,$file);

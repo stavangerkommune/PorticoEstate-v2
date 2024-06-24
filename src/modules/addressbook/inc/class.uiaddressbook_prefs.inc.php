@@ -95,7 +95,7 @@ class uiaddressbook_prefs
 			$this->bo=CreateObject('addressbook.boaddressbook_prefs');
 			if($this->is_current_admin())
 			{
-				$temp=phpgw::get_var('adm_pref_type');
+				$temp=Sanitizer::get_var('adm_pref_type');
 				//print "<br /><B>Admin user var is".$temp."</B><br />";
 				//Changed preference type tav
 				if(isset($temp))
@@ -114,7 +114,7 @@ class uiaddressbook_prefs
 			$this->bo->read_preferences($this->map_tpl_to_real['adm_pref_type']);
 	//		print "<br /><B>current tab is".$this->map_tpl_to_real['adm_pref_type']."</B><br />";
 
-			$this->map_tpl_to_real['org_preferences_link']=$GLOBALS['phpgw']->link('/index.php',
+			$this->map_tpl_to_real['org_preferences_link']=phpgw::link('/index.php',
 					array(
 						'menuaction' => 'addressbook.uiaddressbook_prefs.index',
 						'org_or_person' => 'Organizations',
@@ -122,7 +122,7 @@ class uiaddressbook_prefs
 					     )
 					);
 
-			$this->map_tpl_to_real['person_preferences_link']=$GLOBALS['phpgw']->link('/index.php',
+			$this->map_tpl_to_real['person_preferences_link']=phpgw::link('/index.php',
 					array(
 						'menuaction' => 'addressbook.uiaddressbook_prefs.index',
 						'org_or_person' => 'Persons',
@@ -210,12 +210,12 @@ class uiaddressbook_prefs
 		}
 		function get_vars()
 		{
-			$temp=phpgw::get_var('org_or_person');
+			$temp=Sanitizer::get_var('org_or_person');
 			if($temp=='Organizations' || $temp == 'Persons')
 			{
 				$this->org_or_person=$temp;
 			}
-			$this->map_tpl_to_real['select_columns_form_action']=$GLOBALS['phpgw']->link
+			$this->map_tpl_to_real['select_columns_form_action']=phpgw::link
 						('/index.php',
 						array(
 							'menuaction' => "addressbook.uiaddressbook_prefs.columns_selected",
@@ -227,7 +227,7 @@ class uiaddressbook_prefs
 			$this->map_tpl_to_real['select_columns_selectbox_name']='selected_fields['.$this->org_or_person.'][]';
 			$this->map_tpl_to_real['select_columns_comtypes_name']='selected_fields['.$this->org_or_person.'][comm_types][]';
 			
-			$this->selected_fields=phpgw::get_var('selected_fields');
+			$this->selected_fields=Sanitizer::get_var('selected_fields');
 			/*
 			print "<p><b>Selected fields</b></p>";
 			print_r($this->selected_fields);*/
@@ -238,22 +238,22 @@ class uiaddressbook_prefs
 			}
 			//three kinds of submit
 			//They have hit the button to add selected fields
-			if(phpgw::get_var('select_fields'))
+			if(Sanitizer::get_var('select_fields'))
 			{
 				/* print '<br /><B>selectfields</B><br />'; */
 				$temp='select_fields';
 			}
-			elseif(phpgw::get_var('save'))
+			elseif(Sanitizer::get_var('save'))
 			{
 				$temp='save';
 			}
-			elseif(phpgw::get_var('cancel'))
+			elseif(Sanitizer::get_var('cancel'))
 			{
 				$temp='cancel';
 			}
 			else
 			{
-				$temp=phpgw::get_var('remove_me');
+				$temp=Sanitizer::get_var('remove_me');
 				/*print '<br /><B>remove type'.$temp.'</B><br />';*/
 				
 				if(isset($this->selected_fields[$this->org_or_person][$temp]) && $this->selected_fields[$this->org_or_person][$temp])
@@ -273,13 +273,13 @@ class uiaddressbook_prefs
 			print_r($this->selected_fields);
 			print '<br /><B>Submited</B>';
 			print $this->submit; */
-			$temp=phpgw::get_var('org_or_person');
+			$temp=Sanitizer::get_var('org_or_person');
 			if($temp=='Organizations' || $temp == 'Persons')
 			{
 				$this->org_or_person=$temp;
 			}
 
-			$temp=phpgw::get_var('cat_id');
+			$temp=Sanitizer::get_var('cat_id');
 	//		print $temp;
 			if($temp)
 			{
@@ -493,7 +493,7 @@ class uiaddressbook_prefs
 				case 'cancel':
 					{
 						$this->save_sessiondata(true);
-						$GLOBALS['phpgw']->redirect_link('/preferences/index.php');
+						phpgw::redirect_link('/preferences/index.php');
 						return;
 					}
 				case 'save':
@@ -529,7 +529,7 @@ class uiaddressbook_prefs
 
 					$this->bo->save_preferences($this->map_tpl_to_real['adm_pref_type']);
 				//	$this->save_sessiondata(true);
-				//	print $GLOBALS['phpgw']->redirect_link('/preferences/index.php');
+				//	print phpgw::redirect_link('/preferences/index.php');
 				//	return;
 					$GLOBALS['phpgw']->common->phpgw_header();
 					echo parse_navbar();
@@ -758,7 +758,7 @@ class uiaddressbook_prefs
 				}
 				else
 				{
-					$removelink=$GLOBALS['phpgw']->link
+					$removelink=phpgw::link
 								('/index.php',
 					array("menuaction"=>"addressbook.uiaddressbook_prefs.index",
 						"remove_me"=>$k,
@@ -802,7 +802,7 @@ class uiaddressbook_prefs
 				{
 					if($removelink)
 					{
-						$removelink=$GLOBALS['phpgw']->link
+						$removelink=phpgw::link
 							('/index.php',
 							 array("menuaction"=>"addressbook.uiaddressbook_prefs.index",
 								 "remove_me"=>$ok,
@@ -947,14 +947,14 @@ class uiaddressbook_prefs
 			{
 				$tabs[] = array(
 						'label' => lang('Your preferences'),
-						'link'  => $GLOBALS['phpgw']->link('/index.php',array(
+						'link'  => phpgw::link('/index.php',array(
 								"menuaction" => "addressbook.uiaddressbook_prefs.index",
 								 "adm_pref_type"=>"user"
 							 ))
 					       );
 				$tabs[] = array(
 						'label' => lang('Default preferences'),
-						'link'  => $GLOBALS['phpgw']->link('/index.php',array(
+						'link'  => phpgw::link('/index.php',array(
 								"menuaction" => "addressbook.uiaddressbook_prefs.index",
 								 "adm_pref_type"=>"default"
 								 ))
@@ -962,7 +962,7 @@ class uiaddressbook_prefs
 					       );
 				$tabs[] = array(
 						'label' => lang('Forced preferences'),
-						'link'  => $GLOBALS['phpgw']->link('/index.php',array(
+						'link'  => phpgw::link('/index.php',array(
 								"menuaction" => "addressbook.uiaddressbook_prefs.index",
 								 "adm_pref_type"=>"forced"
 								 ))

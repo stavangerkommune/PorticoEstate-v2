@@ -44,7 +44,7 @@
 
 		function view()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -114,9 +114,9 @@
 
 		public function query($relaxe_acl = false)
 		{
-			$draw = phpgw::get_var('draw', 'int');
-			$start = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$num_rows = phpgw::get_var('length', 'int', 'REQUEST', 10);
+			$draw = Sanitizer::get_var('draw', 'int');
+			$start = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$num_rows = Sanitizer::get_var('length', 'int', 'REQUEST', 10);
 			
 			$entries = $this->bo->select_catalog();
 			$values = array();
@@ -146,8 +146,8 @@
 		
 		private function _populate( $data = array() )
 		{
-			$values['id'] = phpgw::get_var('addr_type_id');
-			$values['description'] = array('addr_description' => phpgw::get_var('addr_description'));
+			$values['id'] = Sanitizer::get_var('addr_type_id');
+			$values['description'] = array('addr_description' => Sanitizer::get_var('addr_description'));
 
 			if (!$values['description'])
 			{
@@ -192,7 +192,7 @@
 
 		function delete()
 		{
-			$ids = phpgw::get_var('addr_type_id');
+			$ids = Sanitizer::get_var('addr_type_id');
 			
 			foreach($ids as $id)
 			{
@@ -204,7 +204,7 @@
 		
 		function edit()
 		{
-			$ids = phpgw::get_var('addr_type_id');
+			$ids = Sanitizer::get_var('addr_type_id');
 			$record = $this->bo->get_record($ids[0]);
 			
 			return array('id'=>$record[0]['addr_type_id'], 'description'=>$record[0]['addr_description']);

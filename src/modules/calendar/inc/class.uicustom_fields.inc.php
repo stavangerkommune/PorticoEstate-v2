@@ -74,7 +74,7 @@
 				'lang_order'   => lang('Order'),
 				'lang_title'   => lang('Title-row'),
 				'lang_disabled'=> lang('Disabled'),
-				'action_url'   => $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'calendar.uicustom_fields.submited')),
+				'action_url'   => phpgw::link('/index.php',array('menuaction'=>'calendar.uicustom_fields.submited')),
 				'save_button'  => $this->html->submit_button('save','Save'),
 				'cancel_button'=> $this->html->submit_button('cancel','Cancel'),
 			));
@@ -110,19 +110,19 @@
 
 		function submited()
 		{
-			if ( phpgw::get_var('cancel', 'bool', 'POST') )
+			if ( Sanitizer::get_var('cancel', 'bool', 'POST') )
 			{
-				$GLOBALS['phpgw']->redirect_link('/admin/');
+				phpgw::redirect_link('/admin/');
 			}
 			//echo "<pre>"; print_r($_POST); echo "</pre>";
 
-			$delete = phpgw::get_var('delete', 'bool', 'POST');
-			$names = phpgw::get_var('name', 'string', 'POST');
-			$length = phpgw::get_var('length', 'int', 'POST');
-			$shown = phpgw::get_var('shown', 'bool', 'POST');
-			$title = phpgw::get_var('title', 'bool', 'POST');
-			$disabled = phpgw::get_var('disabled', 'bool', 'POST');
-			$orders = phpgw::get_var('order', 'int', 'POST');
+			$delete = Sanitizer::get_var('delete', 'bool', 'POST');
+			$names = Sanitizer::get_var('name', 'string', 'POST');
+			$length = Sanitizer::get_var('length', 'int', 'POST');
+			$shown = Sanitizer::get_var('shown', 'bool', 'POST');
+			$title = Sanitizer::get_var('title', 'bool', 'POST');
+			$disabled = Sanitizer::get_var('disabled', 'bool', 'POST');
+			$orders = Sanitizer::get_var('order', 'int', 'POST');
 
 			foreach ( $orders as $field => $order)
 			{
@@ -149,7 +149,7 @@
 					$ordered[$order]['label'] = $this->fields[$field]['label'];
 				}
 			}
-			if ( phpgw::get_var('add', 'bool', 'POST') || strlen($names['***new***']))
+			if ( Sanitizer::get_var('add', 'bool', 'POST') || strlen($names['***new***']))
 			{
 				$name = $names['***new***'];
 
@@ -205,10 +205,10 @@
 				$this->fields[$field] = $data;
 			}
 			if ( (!isset($error) || !$error) 
-				&& phpgw::get_var('save', 'bool', 'POST') )
+				&& Sanitizer::get_var('save', 'bool', 'POST') )
 			{
 				$this->save();
-				$GLOBALS['phpgw']->redirect_link('/admin/');
+				phpgw::redirect_link('/admin/');
 			}
 			$this->index($error);
 		}

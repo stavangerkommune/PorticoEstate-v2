@@ -37,12 +37,12 @@
 	include_once('../header.inc.php');
 
 	// Make sure we're always logged in
-	if (!phpgw::get_var(session_name(), 'string', 'COOKIE') || !$GLOBALS['phpgw']->session->verify())
+	if (!Sanitizer::get_var(session_name(), 'string', 'COOKIE') || !$GLOBALS['phpgw']->session->verify())
 	{
 		$config = createobject('phpgwapi.config', 'eventplannerfrontend')->read();
 
 		$login		 = $config['anonymous_user'];
-		$logindomain = phpgw::get_var('domain', 'string', 'GET');
+		$logindomain = Sanitizer::get_var('domain', 'string', 'GET');
 		if ($logindomain && strstr($login, '#') === false)
 		{
 			$login .= "#{$logindomain}";
@@ -92,7 +92,7 @@ HTML;
 	/*	 * **********************************************************************\
 	 * Load the menuaction                                                    *
 	  \*********************************************************************** */
-	$GLOBALS['phpgw_info']['menuaction'] = phpgw::get_var('menuaction');
+	$GLOBALS['phpgw_info']['menuaction'] = Sanitizer::get_var('menuaction');
 	if (!$GLOBALS['phpgw_info']['menuaction'])
 	{
 		unset($GLOBALS['phpgw_info']['menuaction']);
@@ -135,7 +135,7 @@ HTML;
 	  \************************************************************************ */
 	if ($GLOBALS['phpgw_info']['flags']['currentapp'] != 'home' && $GLOBALS['phpgw_info']['flags']['currentapp'] != 'about')
 	{
-		if (!$GLOBALS['phpgw']->acl->check('run', PHPGW_ACL_READ, $GLOBALS['phpgw_info']['flags']['currentapp']))
+		if (!$GLOBALS['phpgw']->acl->check('run', ACL_READ, $GLOBALS['phpgw_info']['flags']['currentapp']))
 		{
 			$GLOBALS['phpgw']->common->phpgw_header(true);
 			$GLOBALS['phpgw']->log->write(array('text'	 => 'W-Permissions, Attempted to access %1 from %2',

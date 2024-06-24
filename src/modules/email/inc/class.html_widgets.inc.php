@@ -925,12 +925,12 @@
 			// this is optional
 			$this->clear_href_vars();
 			// Create Links for all the buttons
-			$folders_link = $GLOBALS['phpgw']->link('/index.php',array(
+			$folders_link = phpgw::link('/index.php',array(
 									'menuaction' => 'email.uifolder.folder',
 									// going to the folder list page, we only need log into the INBOX folder
 									'fldball[folder]' => 'INBOX',
 									'fldball[acctnum]' => $GLOBALS['phpgw']->msg->get_acctnum()));
-			$compose_link = $GLOBALS['phpgw']->link('/index.php',array(
+			$compose_link = phpgw::link('/index.php',array(
 									'menuaction' => 'email.uicompose.compose',
 									// this data tells us where to return to after sending a message
 									'fldball[folder]' => $GLOBALS['phpgw']->msg->prep_folder_out(),
@@ -938,20 +938,20 @@
 									'sort' => $GLOBALS['phpgw']->msg->get_arg_value('sort'),
 									'order' => $GLOBALS['phpgw']->msg->get_arg_value('order'),
 									'start' => $GLOBALS['phpgw']->msg->get_arg_value('start')));
-			$search_link = $GLOBALS['phpgw']->link('/index.php', array(
+			$search_link = phpgw::link('/index.php', array(
 									'menuaction' => 'email.uisearch.form',
 									// this data tells us what account we are operating in
 									'fldball[folder]' => $GLOBALS['phpgw']->msg->prep_folder_out(),
 									'fldball[acctnum]' => $GLOBALS['phpgw']->msg->get_acctnum()
 ));
 	
-			$filters_link = $GLOBALS['phpgw']->link('/index.php',array(
+			$filters_link = phpgw::link('/index.php',array(
 								'menuaction' => 'email.uifilters.filters_list',
 								// this data tells us what folder and account was last active
 								'fldball[folder]' => $GLOBALS['phpgw']->msg->prep_folder_out(),
 								'fldball[acctnum]' => $GLOBALS['phpgw']->msg->get_acctnum()));
-			$accounts_link = $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.uipreferences.ex_accounts_list'));
-			$email_prefs_link = $GLOBALS['phpgw']->link('/index.php',array(
+			$accounts_link = phpgw::link('/index.php',array('menuaction'=>'email.uipreferences.ex_accounts_list'));
+			$email_prefs_link = phpgw::link('/index.php',array(
 								'menuaction' => 'email.uipreferences.preferences',
 								'ex_acctnum' => $GLOBALS['phpgw']->msg->get_acctnum()));					
 			// Check to see if mailserver supports folders.
@@ -1121,7 +1121,7 @@
 			{
 				$this->new_form();
 				$this->set_form_name('folders_cbox');
-				$this->set_form_action($GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.uiindex.index')));
+				$this->set_form_action(phpgw::link('/index.php',array('menuaction'=>'email.uiindex.index')));
 				$this->set_form_method('post');
 				$this->tpl->set_var('form_folders_cbox_opentag', $this->get_form());
 				$this->tpl->set_var('folders_combobox', $this->all_folders_combobox());
@@ -1140,7 +1140,7 @@
 			// <form name="acctbox" action="/mail/index.php?menuaction=email.uiindex.index" method="post">
 			$this->new_form();
 			$this->set_form_name('accounts_cbox');
-			$this->set_form_action($GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.uiindex.index')));
+			$this->set_form_action(phpgw::link('/index.php',array('menuaction'=>'email.uiindex.index')));
 			$this->set_form_method('post');
 			$this->tpl->set_var('form_acctbox_opentag', $this->get_form());
 			$this->tpl->set_var('acctbox_combobox', $this->all_accounts_combobox());
@@ -1637,16 +1637,16 @@
 					if ((isset($GLOBALS['phpgw_info']['flags']['email_refresh_uri']))
 					&& ($GLOBALS['phpgw_info']['flags']['email_refresh_uri'] != ''))
 					{
-						$reload_me = $GLOBALS['phpgw']->link('/index.php',$GLOBALS['phpgw_info']['flags']['email_refresh_uri']);
+						$reload_me = phpgw::link('/index.php',$GLOBALS['phpgw_info']['flags']['email_refresh_uri']);
 					}
 					else
 					{
-						$reload_me = $GLOBALS['phpgw']->link('/email/index.php');
+						$reload_me = phpgw::link('/email/index.php');
 					}
 				}
 				elseif (eregi("^.*\/home\.php.*$",$GLOBALS['PHP_SELF']))
 				{
-					$reload_me = $GLOBALS['phpgw']->link('/home.php');			
+					$reload_me = phpgw::link('/home.php');			
 				}
 			}
 			*/
@@ -1667,7 +1667,7 @@
 			&& ($refresh_ms != ''))
 			{
 					
-				//$reload_me_full = $GLOBALS['phpgw']->link('/index.php',$reload_me);
+				//$reload_me_full = phpgw::link('/index.php',$reload_me);
 				// set refresh time in miliseconds  (1000 = 1 sec)  (180000 = 180 sec = 3 minutes)
 				//  ( 240000 = 240 sec = 4 min)   (300000 = 5 min)   (600000 = 10 min)
 				//$refresh_ms = '240000';
@@ -1729,7 +1729,7 @@
 		{
 			$this->F_error_report_text = lang('error text not provided');
 			$this->F_go_somewhere_link = '';
-			$go_home_url = $GLOBALS['phpgw']->link('/home.php');
+			$go_home_url = phpgw::link('/home.php');
 			$go_home_text = lang('click here to return to your home page.');
 			$this->F_go_home_link = '<a href="'.$go_home_url.'">'.$go_home_text.'</a>';
 		}

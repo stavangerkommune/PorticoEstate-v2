@@ -16,23 +16,23 @@
 	$title = $appname;
 	$mailPreferences = ExecMethod('felamimail.bopreferences.getPreferences');
 
-	$file['Preferences'] = $GLOBALS['phpgw']->link('/index.php','menuaction=preferences.uisettings.index&appname=' . $appname);
+	$file['Preferences'] = phpgw::link('/index.php','menuaction=preferences.uisettings.index&appname=' . $appname);
 
 	if($mailPreferences->userDefinedAccounts) {
 		$linkData = array
 		(
 			'menuaction' => 'felamimail.uipreferences.listAccountData',
 		);
-		$file['Manage eMail: Accounts / Identities'] = $GLOBALS['phpgw']->link('/index.php',$linkData);
+		$file['Manage eMail: Accounts / Identities'] = phpgw::link('/index.php',$linkData);
 	}
 
-	$file['Manage Folders'] = $GLOBALS['phpgw']->link('/index.php','menuaction=felamimail.uipreferences.listFolder');
+	$file['Manage Folders'] = phpgw::link('/index.php','menuaction=felamimail.uipreferences.listFolder');
 
 	$icServer = $mailPreferences->getIncomingServer(0);
 
 	if($icServer->enableSieve) {
-		$file['filter rules'] = $GLOBALS['phpgw']->link('/index.php', 'menuaction=felamimail.uisieve.listRules');
-		$file['vacation notice'] = $GLOBALS['phpgw']->link('/index.php','menuaction=felamimail.uisieve.editVacation');
+		$file['filter rules'] = phpgw::link('/index.php', 'menuaction=felamimail.uisieve.listRules');
+		$file['vacation notice'] = phpgw::link('/index.php','menuaction=felamimail.uisieve.editVacation');
 	}
 	
 	//Do not modify below this line

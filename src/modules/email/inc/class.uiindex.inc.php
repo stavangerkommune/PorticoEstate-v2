@@ -32,15 +32,15 @@
 
 		function __construct()
 		{
-			$GLOBALS['phpgw']->js->validate_file('core','base','phpgwapi');
+			phpgwapi_js::getInstance()->validate_file('core','base','phpgwapi');
 			
-			$folder = phpgw::get_var('folder');
+			$folder = Sanitizer::get_var('folder');
 			if($folder)
 			{
 				$_GET['fldball[folder]']=$folder;
 			}
 			
-			$acctnum = phpgw::get_var('acctnum');
+			$acctnum = Sanitizer::get_var('acctnum');
 			if($acctnum)
 			{
 				$_GET['fldball[acctnum]']=$folder;
@@ -61,7 +61,7 @@
 			if ( !isset($GLOBALS['phpgw_info']['user']['preferences']['email']) || !count($GLOBALS['phpgw_info']['user']['preferences']['email']) )
 			{
 				$GLOBALS['phpgw']->common->phpgw_header(true);
-				echo '<h1><a href="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'email.uipreferences.preferences')) . '">' . lang('Please set your preferences') . '</a></h1>';
+				echo '<h1><a href="' . phpgw::link('/index.php', array('menuaction' => 'email.uipreferences.preferences')) . '">' . lang('Please set your preferences') . '</a></h1>';
 				$GLOBALS['phpgw']->common->phpgw_exit(true);
 			}
 			
@@ -454,7 +454,7 @@
 		*/
 		function index_xslt_tpl()
 		{
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_data'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_data'));
 			
 			$this->bo->xi['my_layout'] = $GLOBALS['phpgw']->msg->get_pref_value('layout');
 			$this->bo->xi['my_browser'] = $GLOBALS['phpgw']->msg->browser;
@@ -512,8 +512,8 @@
 			
 			$GLOBALS['phpgw_info']['flags']['email']['app_header'] = lang('E-Mail') . ': ' . lang('list messages');
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('E-Mail') . ': ' . lang('list messages');
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('index' => $data));
-			$GLOBALS['phpgw']->xslttpl->pp();
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('index' => $data));
+			phpgwapi_xslttemplates::getInstance()->pp();
 			
 			// close down ALL mailserver streams
 			$GLOBALS['phpgw']->msg->end_request();

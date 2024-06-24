@@ -26,7 +26,7 @@
 		{
 			if(!$ssn)
 			{
-				$ssn = phpgw::get_var('ssn', 'GET');
+				$ssn = Sanitizer::get_var('ssn', 'GET');
 			}
 
 			return $this->so->get_applications($ssn);
@@ -36,7 +36,7 @@
 		{
 			if(!$ssn)
 			{
-				$ssn = phpgw::get_var('ssn', 'GET');
+				$ssn = Sanitizer::get_var('ssn', 'GET');
 			}
 			return $this->so->get_invoices($ssn);
 		}

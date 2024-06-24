@@ -41,7 +41,7 @@
 	protected function setUp()
 	{
 		$GLOBALS['phpgw_info']['user']['account_id'] = 7;
-		$this->db = & $GLOBALS['phpgw']->db;
+		$this->db = Db::getInstance();
 		$this->loadXmlVariables();
 	}
 

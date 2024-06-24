@@ -49,7 +49,7 @@
 			$this->sort				= $this->bo->sort;
 			$this->order				= $this->bo->order;
 			$this->allrows				= $this->bo->allrows;
-			$type						= phpgw::get_var('type');
+			$type						= Sanitizer::get_var('type');
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = "admin::hrm::$type";
 		}
 
@@ -68,10 +68,10 @@
 
 		function index()
 		{
-			$type	= phpgw::get_var('type');
-			$type_id	= phpgw::get_var('type_id', 'int');
+			$type	= Sanitizer::get_var('type');
+			$type_id	= Sanitizer::get_var('type_id', 'int');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('category','nextmatchs',
+			phpgwapi_xslttemplates::getInstance()->add_file(array('category','nextmatchs',
 										'search_field'));
 
 			$category_list = $this->bo->read($type,$type_id);
@@ -88,8 +88,8 @@
 					(
 						'id'				=> $category['id'],
 						'first'				=> $first,
-						'link_edit'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uicategory.edit', 'id'=> $category['id'], 'type'=> $type,  'type_id'=> $type_id)),
-						'link_delete'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uicategory.delete', 'id'=> $category['id'], 'type'=> $type,  'type_id'=> $type_id)),
+						'link_edit'			=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uicategory.edit', 'id'=> $category['id'], 'type'=> $type,  'type_id'=> $type_id)),
+						'link_delete'			=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uicategory.delete', 'id'=> $category['id'], 'type'=> $type,  'type_id'=> $type_id)),
 						'lang_view_categorytext'	=> lang('view the category'),
 						'lang_edit_categorytext'	=> lang('edit the category'),
 						'lang_delete_categorytext'	=> lang('delete the category'),
@@ -124,10 +124,10 @@
 			(
 				'lang_add'			=> lang('add'),
 				'lang_add_categorytext'		=> lang('add a category'),
-				'add_action'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uicategory.edit', 'type'=> $type, 'type_id'=> $type_id)),
+				'add_action'			=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uicategory.edit', 'type'=> $type, 'type_id'=> $type_id)),
 				'lang_done'			=> lang('done'),
 				'lang_done_categorytext'	=> lang('back to admin'),
-				'done_action'			=> $GLOBALS['phpgw']->link('/admin/index.php')
+				'done_action'			=> phpgw::link('/admin/index.php')
 			);
 
 			if(!$this->allrows)
@@ -148,7 +148,7 @@
 				'record_limit'					=> $record_limit,
 				'num_records'					=> count($category_list),
 				'all_records'					=> $this->bo->total_records,
-				'link_url'					=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uicategory.index', 'type'=> $type,  'type_id'=> $type_id)),
+				'link_url'					=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uicategory.index', 'type'=> $type,  'type_id'=> $type_id)),
 				'img_path'					=> $GLOBALS['phpgw']->common->get_image_path('phpgwapi','default'),
 				'lang_searchfield_categorytext'			=> lang('Enter the search string. To show all entries, empty this field and press the SUBMIT button again'),
 				'lang_searchbutton_categorytext'		=> lang('Submit the search string'),
@@ -163,20 +163,20 @@
 			$function_msg	= lang('list %1 category',$type);
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('list' => $data));
-		//	$GLOBALS['phpgw']->xslttpl->pp();
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('list' => $data));
+		//	phpgwapi_xslttemplates::getInstance()->pp();
 			$this->save_sessiondata();
 		}
 
 		function edit()
 		{
-			$type		= phpgw::get_var('type');
-			$type_id	= phpgw::get_var('type_id', 'int');
-			$id		= phpgw::get_var('id', 'int');
-			$values		= phpgw::get_var('values');
+			$type		= Sanitizer::get_var('type');
+			$type_id	= Sanitizer::get_var('type_id', 'int');
+			$id		= Sanitizer::get_var('id', 'int');
+			$values		= Sanitizer::get_var('values');
 
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('category'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('category'));
 
 			if ($values['save'])
 			{
@@ -229,8 +229,8 @@
 			$data = array
 			(
 				'msgbox_data'				=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'				=> $GLOBALS['phpgw']->link('/index.php',$link_data),
-				'done_action'				=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uicategory.index', 'type'=> $type, 'type_id'=> $type_id)),
+				'form_action'				=> phpgw::link('/index.php',$link_data),
+				'done_action'				=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uicategory.index', 'type'=> $type, 'type_id'=> $type_id)),
 				'lang_id'				=> lang('category ID'),
 				'lang_descr'				=> lang('Descr'),
 				'lang_save'				=> lang('save'),
@@ -247,16 +247,16 @@
 			$appname	= lang($type). ' ' . $type_id;
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('edit' => $data));
-		//	$GLOBALS['phpgw']->xslttpl->pp();
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('edit' => $data));
+		//	phpgwapi_xslttemplates::getInstance()->pp();
 		}
 
 		function delete()
 		{
-			$type		= phpgw::get_var('type');
-			$type_id	= phpgw::get_var('type_id', 'int');
-			$id		= phpgw::get_var('id', 'int');
-			$confirm	= phpgw::get_var('confirm', 'bool', 'POST');
+			$type		= Sanitizer::get_var('type');
+			$type_id	= Sanitizer::get_var('type_id', 'int');
+			$id		= Sanitizer::get_var('id', 'int');
+			$confirm	= Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 			(
@@ -265,18 +265,18 @@
 				'type_id'	=> $type_id
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete($id,$type,$type_id);
-				$GLOBALS['phpgw']->redirect_link('/index.php',$link_data);
+				phpgw::redirect_link('/index.php',$link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 			(
-				'done_action'			=> $GLOBALS['phpgw']->link('/index.php',$link_data),
-				'delete_action'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uicategory.delete', 'id'=> $id, 'type'=> $type, 'type_id'=> $type_id)),
+				'done_action'			=> phpgw::link('/index.php',$link_data),
+				'delete_action'			=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uicategory.delete', 'id'=> $id, 'type'=> $type, 'type_id'=> $type_id)),
 				'lang_confirm_msg'		=> lang('do you really want to delete this entry'),
 				'lang_yes'			=> lang('yes'),
 				'lang_yes_categorytext'		=> lang('Delete the entry'),
@@ -288,7 +288,7 @@
 			$function_msg	= lang('delete '.$type.' category');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('delete' => $data));
-		//	$GLOBALS['phpgw']->xslttpl->pp();
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('delete' => $data));
+		//	phpgwapi_xslttemplates::getInstance()->pp();
 		}
 	}

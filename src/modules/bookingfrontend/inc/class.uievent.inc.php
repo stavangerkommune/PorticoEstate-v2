@@ -57,11 +57,11 @@ class bookingfrontend_uievent extends booking_uievent
 
     public function edit()
     {
-        $id = phpgw::get_var('id', 'int');
+        $id = Sanitizer::get_var('id', 'int');
         if (!$id) {
             phpgw::no_access('booking', lang('missing id'));
         }
-        $from_org = phpgw::get_var('from_org', 'boolean', 'REQUEST', false);
+        $from_org = Sanitizer::get_var('from_org', 'boolean', 'REQUEST', false);
         $event = $this->bo->read_single($id);
         $building_info = $this->bo->so->get_building_info($id);
         $event['building_id'] = $building_info['id'];
@@ -71,7 +71,7 @@ class bookingfrontend_uievent extends booking_uievent
         $config->read();
         $errors = array();
         $customer = array();
-        array_set_default($event, 'resource_ids', phpgw::get_var('resource_ids'));
+        array_set_default($event, 'resource_ids', Sanitizer::get_var('resource_ids'));
 
         if ($event['customer_identifier_type']) {
             $customer['customer_identifier_type'] = $event['customer_identifier_type'];
@@ -306,7 +306,7 @@ class bookingfrontend_uievent extends booking_uievent
 
     public function cancel()
     {
-        $id = phpgw::get_var('id', 'int');
+        $id = Sanitizer::get_var('id', 'int');
         if (!$id) {
             phpgw::no_access('booking', lang('missing id'));
         }
@@ -321,12 +321,12 @@ class bookingfrontend_uievent extends booking_uievent
             self::redirect(array());
         }
 
-        $from_org = phpgw::get_var('from_org', 'boolean', 'REQUEST', false);
+        $from_org = Sanitizer::get_var('from_org', 'boolean', 'REQUEST', false);
         $bouser = CreateObject('bookingfrontend.bouser');
         $errors = array();
 
         date_default_timezone_set("Europe/Oslo");
-        $currdate = new DateTime(phpgw::get_var('date'));
+        $currdate = new DateTime(Sanitizer::get_var('date'));
         $cdate = $currdate->format('Y-m-d H:m:s');
         if ($config->config_data['user_can_delete_events'] != 'yes') {
             phpgwapi_cache::message_set('user can not delete events', 'error');
@@ -501,7 +501,7 @@ class bookingfrontend_uievent extends booking_uievent
 
     public function info()
     {
-        $id = phpgw::get_var('id', 'int');
+        $id = Sanitizer::get_var('id', 'int');
         if (!$id) {
             phpgw::no_access('booking', lang('missing id'));
         }
@@ -513,7 +513,7 @@ class bookingfrontend_uievent extends booking_uievent
             $user_can_delete_events = 1;
         }
         $event = $this->bo->read_single($id);
-        $from_org = phpgw::get_var('from_org', 'boolean', 'REQUEST', false);
+        $from_org = Sanitizer::get_var('from_org', 'boolean', 'REQUEST', false);
         unset($event['comments']);
         $resources = $this->resource_bo->so->read(array('filters' => array('id' => $event['resources']),
             'sort' => 'name'));
@@ -587,17 +587,17 @@ class bookingfrontend_uievent extends booking_uievent
 
         self::render_template_xsl('event_info', array('event' => $event, 'orginfo' => $orginfo,
             'user_can_delete_events' => $user_can_delete_events));
-        $GLOBALS['phpgw']->xslttpl->set_output('wml'); // Evil hack to disable page chrome
+        phpgwapi_xslttemplates::getInstance()->set_output('wml'); // Evil hack to disable page chrome
     }
 
     public function info_json()
     {
 
-        $ids = phpgw::get_var('ids', 'string');
+        $ids = Sanitizer::get_var('ids', 'string');
         if ($ids) {
             $ids = explode(',', $ids);
         } elseif (!$ids || !is_array($ids)) {
-            $ids = array(phpgw::get_var('id'));
+            $ids = array(Sanitizer::get_var('id'));
         }
         if (empty($ids)) {
             phpgw::no_access('booking', lang('missing id'));
@@ -724,7 +724,7 @@ class bookingfrontend_uievent extends booking_uievent
                 'menuaction' => 'bookingfrontend.uievent.edit',
                 'id' => $event['id'],
                 'resource_ids' => $event['resource_ids'],
-                'from_org' => phpgw::get_var('from_org', 'boolean', 'REQUEST', false)
+                'from_org' => Sanitizer::get_var('from_org', 'boolean', 'REQUEST', false)
             ]);
         }
         return null;
@@ -739,7 +739,7 @@ class bookingfrontend_uievent extends booking_uievent
                 'menuaction' => 'bookingfrontend.uievent.cancel',
                 'id' => $event['id'],
                 'resource_ids' => $event['resource_ids'],
-                'from_org' => phpgw::get_var('from_org', 'boolean', 'REQUEST', false)
+                'from_org' => Sanitizer::get_var('from_org', 'boolean', 'REQUEST', false)
             ]);
         }
         return null;
@@ -748,7 +748,7 @@ class bookingfrontend_uievent extends booking_uievent
 
     public function show()
     {
-        $id = phpgw::get_var('id', 'int');
+        $id = Sanitizer::get_var('id', 'int');
         if (!$id) {
             phpgw::no_access('booking', lang('missing id'));
         }
@@ -821,7 +821,7 @@ class bookingfrontend_uievent extends booking_uievent
         $event['encoded_qr'] = 'data:image/png;base64,' . base64_encode(file_get_contents($filename));
 //			_debug_array($event);
 
-        $get_participants_link = $GLOBALS['phpgw']->link('/index.php', array(
+        $get_participants_link = phpgw::link('/index.php', array(
             'menuaction' => 'booking.uiparticipant.index',
             'filter_reservation_id' => $event['id'],
             'filter_reservation_type' => 'event',
@@ -874,7 +874,7 @@ class bookingfrontend_uievent extends booking_uievent
 
     public function report_numbers()
     {
-        $id = phpgw::get_var('id', 'int');
+        $id = Sanitizer::get_var('id', 'int');
         if (!$id) {
             phpgw::no_access('booking', lang('missing id'));
         }
@@ -902,7 +902,7 @@ class bookingfrontend_uievent extends booking_uievent
 
         $event['when'] = $when;
 
-        if ($event['secret'] != phpgw::get_var('secret', 'string')) {
+        if ($event['secret'] != Sanitizer::get_var('secret', 'string')) {
             $step = -1; // indicates that an error message should be displayed in the template
             self::render_template_xsl('report_numbers', array('event_object' => $event, 'agegroups' => $agegroups,
                 'building' => $building, 'step' => $step));
@@ -915,7 +915,7 @@ class bookingfrontend_uievent extends booking_uievent
             $sexes = array('male', 'female');
             foreach ($sexes as $sex) {
                 $i = 0;
-                foreach (phpgw::get_var($sex) as $agegroup_id => $value) {
+                foreach (Sanitizer::get_var($sex) as $agegroup_id => $value) {
                     $temp_agegroup[$i]['agegroup_id'] = $agegroup_id;
                     $temp_agegroup[$i][$sex] = $value;
                     $i++;

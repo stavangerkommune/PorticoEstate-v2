@@ -67,12 +67,12 @@
 
 		public function index()
 		{
-			if (empty($this->permissions[PHPGW_ACL_READ]))
+			if (empty($this->permissions[ACL_READ]))
 			{
 				phpgw::no_access();
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -112,7 +112,7 @@
 				(
 				'my_name' => 'view',
 				'text' => lang('show'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uiemail_out.view'
 				)),
@@ -123,7 +123,7 @@
 				(
 				'my_name' => 'edit',
 				'text' => lang('edit'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uiemail_out.edit'
 				)),
@@ -145,9 +145,9 @@
 
 		public function edit( $values = array(), $mode = 'edit' )
 		{
-			$active_tab = !empty($values['active_tab']) ? $values['active_tab'] : phpgw::get_var('active_tab', 'string', 'REQUEST', 'first_tab');
+			$active_tab = !empty($values['active_tab']) ? $values['active_tab'] : Sanitizer::get_var('active_tab', 'string', 'REQUEST', 'first_tab');
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('edit');
-			if (empty($this->permissions[PHPGW_ACL_ADD]))
+			if (empty($this->permissions[ACL_ADD]))
 			{
 				phpgw::no_access();
 			}
@@ -158,7 +158,7 @@
 			}
 			else
 			{
-				$id = !empty($values['id']) ? $values['id'] : phpgw::get_var('id', 'int');
+				$id = !empty($values['id']) ? $values['id'] : Sanitizer::get_var('id', 'int');
 				$email_out = $this->bo->read_single($id);
 			}
 
@@ -328,8 +328,8 @@
 
 			$data = array(
 				'datatable_def' => $datatable_def,
-				'form_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'rental.uiemail_out.save')),
-				'cancel_url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'rental.uiemail_out.index',)),
+				'form_action' => phpgw::link('/index.php', array('menuaction' => 'rental.uiemail_out.save')),
+				'cancel_url' => phpgw::link('/index.php', array('menuaction' => 'rental.uiemail_out.index',)),
 				'email_out' => $email_out,
 				'mode' => $mode,
 				'tabs' => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
@@ -347,12 +347,12 @@
 
 		public function get( $id = 0 )
 		{
-			if (empty($this->permissions[PHPGW_ACL_ADD]))
+			if (empty($this->permissions[ACL_ADD]))
 			{
 				phpgw::no_access();
 			}
 
-			$id = !empty($id) ? $id : phpgw::get_var('id', 'int');
+			$id = !empty($id) ? $id : Sanitizer::get_var('id', 'int');
 
 			$email_out = $this->bo->read_single($id)->toArray();
 
@@ -368,12 +368,12 @@
 
 		public function get_candidates( )
 		{
-			if (empty($this->permissions[PHPGW_ACL_ADD]))
+			if (empty($this->permissions[ACL_ADD]))
 			{
 				phpgw::no_access();
 			}
-			$type =  phpgw::get_var('type', 'string');
-			$id =  phpgw::get_var('id', 'int');
+			$type =  Sanitizer::get_var('type', 'string');
+			$id =  Sanitizer::get_var('id', 'int');
 
 			switch ($type)
 			{
@@ -393,33 +393,33 @@
 
 		public function set_candidates()
 		{
-			if (empty($this->permissions[PHPGW_ACL_EDIT]))
+			if (empty($this->permissions[ACL_EDIT]))
 			{
 				phpgw::no_access();
 			}
-			$id =  phpgw::get_var('id', 'int');
-			$ids =  (array) phpgw::get_var('ids', 'int');
+			$id =  Sanitizer::get_var('id', 'int');
+			$ids =  (array) Sanitizer::get_var('ids', 'int');
 			$ret = $this->bo->set_candidates($id, $ids);
 		}
 
 		public function delete_recipients()
 		{
-			if (empty($this->permissions[PHPGW_ACL_EDIT]))
+			if (empty($this->permissions[ACL_EDIT]))
 			{
 				phpgw::no_access();
 			}
-			$id =  phpgw::get_var('id', 'int');
-			$ids =  (array) phpgw::get_var('ids', 'int');
+			$id =  Sanitizer::get_var('id', 'int');
+			$ids =  (array) Sanitizer::get_var('ids', 'int');
 			$ret = $this->bo->delete_recipients($id, $ids);
 		}
 
 		public function get_recipients()
 		{
-			if (empty($this->permissions[PHPGW_ACL_EDIT]))
+			if (empty($this->permissions[ACL_EDIT]))
 			{
 				phpgw::no_access();
 			}
-			$id =  phpgw::get_var('id', 'int');
+			$id =  Sanitizer::get_var('id', 'int');
 			$values = $this->bo->get_recipients($id);
 			array_walk($values, array($this, "_add_links"), "rental.uiparty.edit");
 			return $this->jquery_results(array('results' => $values));
@@ -428,27 +428,27 @@
 
 		public function send_email( )
 		{
-			if (empty($this->permissions[PHPGW_ACL_EDIT]))
+			if (empty($this->permissions[ACL_EDIT]))
 			{
 				phpgw::no_access();
 			}
-			$id =  phpgw::get_var('id', 'int');
-			$ids =  (array) phpgw::get_var('ids', 'int');
+			$id =  Sanitizer::get_var('id', 'int');
+			$ids =  (array) Sanitizer::get_var('ids', 'int');
 			$ret = $this->bo->send_email($id, $ids);
 		}
 
 		public function set_email( )
 		{
-			if (empty($this->permissions[PHPGW_ACL_EDIT]))
+			if (empty($this->permissions[ACL_EDIT]))
 			{
 				phpgw::no_access();
 			}
 
 			phpgw::import_class('rental.soparty');
 
-			$field_name = phpgw::get_var('field_name');
-			$email = phpgw::get_var('value');
-			$id = phpgw::get_var('id');
+			$field_name = Sanitizer::get_var('field_name');
+			$email = Sanitizer::get_var('value');
+			$id = Sanitizer::get_var('id');
 			$email_validator = CreateObject('phpgwapi.EmailAddressValidator');
 			$message = array();
 			if (!$email_validator->check_email_address($email) )

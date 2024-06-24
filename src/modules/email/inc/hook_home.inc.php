@@ -80,7 +80,7 @@
 			}
 			$data[] = array(
 				'text' => $subject,
-				'link' => $GLOBALS['phpgw']->link(
+				'link' => phpgw::link(
 						'/index.php',array(
 						'menuaction'=>'email.uimessage.message')
 						+$this_loop_msgball['uri']
@@ -89,7 +89,7 @@
 		}
 
 		// COMPOSE NEW email link
-		$compose_link = $GLOBALS['phpgw']->link(
+		$compose_link = phpgw::link(
 					'/index.php',array(
 					'menuaction'=>'email.uicompose.compose',
 					// this data tells us where to return to after sending a message
@@ -126,7 +126,7 @@
 			$switchbox_listbox = $GLOBALS['phpgw']->msg->all_folders_listbox($feed_args);
 			// make it another TR we can insert into the home page portal object
 			// and surround it in FORM tags so the submit will work
-			$switchbox_action = $GLOBALS['phpgw']->link(
+			$switchbox_action = phpgw::link(
 						'/index.php',
 						array('menuaction' => 'email.uiindex.index')
 			);
@@ -142,7 +142,7 @@
 			$my_widgets = CreateObject('email.html_widgets');
 			$my_widgets->new_form();
 			$my_widgets->set_form_name('switchbox');
-			$my_widgets->set_form_action($GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.uiindex.index')));
+			$my_widgets->set_form_action(phpgw::link('/index.php',array('menuaction'=>'email.uiindex.index')));
 			$my_widgets->set_form_method('post');
 			$form_folder_switch_opentag = $my_widgets->get_form();
 			$folder_switch_combobox = $my_widgets->all_folders_combobox('switchbox');

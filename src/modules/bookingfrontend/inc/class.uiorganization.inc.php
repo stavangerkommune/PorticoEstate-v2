@@ -57,7 +57,7 @@
 				}
 				unset($org);
 
-				$session_org_id = phpgw::get_var('session_org_id','string', 'GET');
+				$session_org_id = Sanitizer::get_var('session_org_id','string', 'GET');
 
 				if($session_org_id && in_array($session_org_id, array_keys($orgs_map)))
 				{
@@ -116,7 +116,7 @@
 
 				self::add_javascript('bookingfrontend', 'base', 'organization_add.js');
 				
-				$submitted_organization_number = phpgw::get_var('organization_number', 'string', 'POST');
+				$submitted_organization_number = Sanitizer::get_var('organization_number', 'string', 'POST');
 				if($submitted_organization_number)
 				{
 					if(!in_array($submitted_organization_number, $_new_org_list))
@@ -127,7 +127,7 @@
 						);
 					}
 				}
-				else if($this->personal_org && 'ssn' == phpgw::get_var('customer_identifier_type', 'string', 'POST'))
+				else if($this->personal_org && 'ssn' == Sanitizer::get_var('customer_identifier_type', 'string', 'POST'))
 				{
 					return array(
 						'status'	 => 'error',
@@ -140,7 +140,7 @@
 				/**
 				 * Refresh list
 				 */
-				if(phpgw::get_var('phpgw_return_as') == 'json' && $ret['status'] == 'saved')
+				if(Sanitizer::get_var('phpgw_return_as') == 'json' && $ret['status'] == 'saved')
 				{
 					$bouser->log_in();
 				}
@@ -157,8 +157,8 @@
 
 			$bouser = CreateObject('bookingfrontend.bouser', true);
 
-			$id = phpgw::get_var('id', 'int');
-			$session_org_id = phpgw::get_var('session_org_id', 'bool') ? phpgw::get_var('session_org_id') :  $bouser->orgnr;
+			$id = Sanitizer::get_var('id', 'int');
+			$session_org_id = Sanitizer::get_var('session_org_id', 'bool') ? Sanitizer::get_var('session_org_id') :  $bouser->orgnr;
 
 			if(!$id && $session_org_id)
 			{
@@ -183,9 +183,9 @@
 			$bouser = CreateObject('bookingfrontend.bouser', true);
 			$config = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
-			$session_org_id = phpgw::get_var('session_org_id', 'bool') ? phpgw::get_var('session_org_id') :  $bouser->orgnr;
+			$session_org_id = Sanitizer::get_var('session_org_id', 'bool') ? Sanitizer::get_var('session_org_id') :  $bouser->orgnr;
 
 			if(!$id && $session_org_id)
 			{
@@ -254,14 +254,14 @@
 
 			phpgwapi_jquery::load_widget("core");
 
-			$GLOBALS['phpgw']->js->add_external_file("phpgwapi/templates/bookingfrontend/js/build/aui/aui-min.js");
+			phpgwapi_js::getInstance()->add_external_file("phpgwapi/templates/bookingfrontend/js/build/aui/aui-min.js");
 			self::add_javascript('bookingfrontend', 'base', 'organization.js', true);
 //            _debug_array(array('organization' => $organization, 'config_data' => $config->config_data));die();
 			self::render_template_xsl('organization', array('organization' => $organization, 'config_data' => $config->config_data));
 		}
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -271,8 +271,8 @@
 
 		public function get_organization_list()
 		{
-			$page = phpgw::get_var('page', 'int');
-			$query = phpgw::get_var('query', 'string');
+			$page = Sanitizer::get_var('page', 'int');
+			$query = Sanitizer::get_var('query', 'string');
 			$length = $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
 			$start = ($page - 1) * $length;
 

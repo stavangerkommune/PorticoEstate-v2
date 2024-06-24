@@ -81,7 +81,7 @@
 				$msgball = $GLOBALS['phpgw']->msg->get_arg_value('msgball');
 				// generally, msgball arg exists when reply,replyall, or forward is being done
 				// if it exists, preserve (carry forward) its "folder" "action" and "acctnum" values
-				$send_btn_action = $GLOBALS['phpgw']->link(
+				$send_btn_action = phpgw::link(
 						'/index.php',array(
 						'menuaction'=>$menuaction_target,
 						//'action'=>'forward',
@@ -115,7 +115,7 @@
 				// on in the form of a fldball structure, which is more generic in nature in that
 				// it never holds a "msgnum" value.
 				$fldball = $GLOBALS['phpgw']->msg->get_arg_value('fldball');
-				$send_btn_action = $GLOBALS['phpgw']->link(
+				$send_btn_action = phpgw::link(
 						'/index.php',array(
 						'menuaction'=>$menuaction_target,
 						// this is used to preserve these values when we return to folder list after the send
@@ -135,7 +135,7 @@
 				// and "folder" data, so we will use currently prevailing values, but this
 				// is depreciated, fallback procedure that does not necessarily preserve and
 				// pass on precise acctnum and folder value data
-				$send_btn_action = $GLOBALS['phpgw']->link(
+				$send_btn_action = phpgw::link(
 						'/index.php',array(
 						'menuaction'=>$menuaction_target,
 						// this is used to preserve these values when we return to folder list after the send
@@ -596,7 +596,7 @@
 			// (1) the original addressbook "orig"
 			// NOTE: "bogusarg" is needed to fill the "extraparam" arg in the javascript
 			// or else this will fail if there is nothing to give as an "extraparam"
-	/*		$addylink_orig = $GLOBALS['phpgw']->link(
+	/*		$addylink_orig = phpgw::link(
 				'/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/addressbook.php',
 					array(
 						"bogusarg" => "0"
@@ -612,7 +612,7 @@
 			//echo '$addylink_orig: '.$addylink_orig .'<br />';
 
 			// (2) the new addressbook "lex"
-	/*		$addylink_lex = $GLOBALS['phpgw']->link(
+	/*		$addylink_lex = phpgw::link(
 				"/index.php",
 					array(
 						"menuaction"=>"phpgwapi.uijsaddressbook.show",
@@ -692,7 +692,7 @@
 			// Create Spell Object so we can check and see if we need a spell check button
 			// Set Variables for Attachment button
 			$this->attachfile_js_link = 
-				$GLOBALS['phpgw']->link('/index.php',
+				phpgw::link('/index.php',
 					array(
 						'menuaction' => 'email.uiattach_file.attach'
 					)
@@ -778,7 +778,7 @@
 			// Set Variables for Save button			
 			$this->xi['save_button'] = '<a href="javascript:'.$save_onclick.'">'.$save_image.'&nbsp;'.$save_text.'</a>';
 			
-			//$this->xi['attachfile_js_link'] = $GLOBALS['phpgw']->link(
+			//$this->xi['attachfile_js_link'] = phpgw::link(
 			//	'/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/attach_file.php');
 			$this->xi['body_box_name'] = 'body';
 			

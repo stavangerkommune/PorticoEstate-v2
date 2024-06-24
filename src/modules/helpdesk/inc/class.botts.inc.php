@@ -82,13 +82,13 @@
 				$this->read_sessiondata();
 				$this->use_session = True;
 			}
-			$this->start = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$this->query = phpgw::get_var('query');
-			$this->sort = phpgw::get_var('sort');
-			$this->order = phpgw::get_var('order');
-			$this->status_id = phpgw::get_var('status_id', 'string');
-			$user_id = phpgw::get_var('user_id', 'int');
-			$group_id = phpgw::get_var('group_id', 'int');
+			$this->start = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$this->query = Sanitizer::get_var('query');
+			$this->sort = Sanitizer::get_var('sort');
+			$this->order = Sanitizer::get_var('order');
+			$this->status_id = Sanitizer::get_var('status_id', 'string');
+			$user_id = Sanitizer::get_var('user_id', 'int');
+			$group_id = Sanitizer::get_var('group_id', 'int');
 
 			if(isset($_POST))
 			{
@@ -99,16 +99,16 @@
 				$this->group_id	= $group_id;
 			}
 
-			$this->reported_by = phpgw::get_var('reported_by', 'int');
-			$this->cat_id = phpgw::get_var('cat_id', 'int');
+			$this->reported_by = Sanitizer::get_var('reported_by', 'int');
+			$this->cat_id = Sanitizer::get_var('cat_id', 'int');
 			if(!$this->cat_id && !empty($_POST['values']['cat_id']))
 			{
 				$this->cat_id = (int)$_POST['values']['cat_id'];
 			}
-			$this->parent_cat_id = phpgw::get_var('parent_cat_id', 'int');
-			$this->allrows = phpgw::get_var('allrows', 'bool');
-			$this->start_date = phpgw::get_var('filter_start_date', 'string');
-			$this->end_date = phpgw::get_var('filter_end_date', 'string');
+			$this->parent_cat_id = Sanitizer::get_var('parent_cat_id', 'int');
+			$this->allrows = Sanitizer::get_var('allrows', 'bool');
+			$this->start_date = Sanitizer::get_var('filter_start_date', 'string');
+			$this->end_date = Sanitizer::get_var('filter_end_date', 'string');
 
 			$default_interface = isset($this->config->config_data['tts_default_interface']) ? $this->config->config_data['tts_default_interface'] : '';
 
@@ -327,10 +327,10 @@
 			switch($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('filter_select'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('filter_select'));
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('filter_filter'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('filter_filter'));
 					break;
 			}
 
@@ -493,7 +493,7 @@
 			{
 				if ($_REQUEST[$custom_filter]) //just testing..
 				{
-					$custom_filtermethod[$custom_filter] = phpgw::get_var($custom_filter, 'int');
+					$custom_filtermethod[$custom_filter] = Sanitizer::get_var($custom_filter, 'int');
 				}
 			}
 
@@ -1242,7 +1242,7 @@
 			}
 
 			//message when closed;
-			$link_to_ticket =  $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'helpdesk.uitts.view',
+			$link_to_ticket =  phpgw::link('/index.php', array('menuaction' => 'helpdesk.uitts.view',
 					'id' => $id), false, true);
 
 			preg_match_all("/\[[^\]\]]*\]\]/", $link_text, $matches);

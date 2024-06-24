@@ -52,7 +52,7 @@
 				'felamimail'	=> array
 				(
 					'text'	=> $GLOBALS['phpgw']->translation->translate('Felamimail', array(), true),
-					'url'	=> $GLOBALS['phpgw']->link('/felamimail/index.php'),
+					'url'	=> phpgw::link('/felamimail/index.php'),
 					'image'	=> array('felamimail', 'navbar'),
 					'order'	=> 6,
 					'group'	=> 'office'
@@ -64,7 +64,7 @@
 				array
 				(
 					'text'	=> $GLOBALS['phpgw']->translation->translate('New', array(), true),
-					'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'felamimail.uicompose.compose'))
+					'url'	=> phpgw::link('/index.php', array('menuaction' => 'felamimail.uicompose.compose'))
 				),
 			);
 
@@ -72,7 +72,7 @@
 /*
 	$file = array(
 		array(
-			'text' => '<a class="textSidebox" href="'. htmlspecialchars($GLOBALS['phpgw']->link('/index.php', $linkData)).'" target="_blank" onclick="egw_openWindowCentered(\''.$GLOBALS['phpgw']->link('/index.php', $linkData).'\',\''.lang('compose').'\',700,750); return false;">'.lang('compose'),
+			'text' => '<a class="textSidebox" href="'. htmlspecialchars(phpgw::link('/index.php', $linkData)).'" target="_blank" onclick="egw_openWindowCentered(\''.phpgw::link('/index.php', $linkData).'\',\''.lang('compose').'\',700,750); return false;">'.lang('compose'),
                         'no_lang' => true,
                     ),
 
@@ -86,7 +86,7 @@
 					array
 					(
 						'text'	=> $GLOBALS['phpgw']->translation->translate('Site Configuration', array(), true),
-						'url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'emailadmin.emailadmin_ui.listProfiles'))
+						'url'	=> phpgw::link('/index.php',array('menuaction'=>'emailadmin.emailadmin_ui.listProfiles'))
 					)
 				);
 			}
@@ -98,12 +98,12 @@
 					array
 					(
 						'text'	=> $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
-						'url'	=> $GLOBALS['phpgw']->link('/preferences/preferences.php', array('appname' => 'felamimail')),
+						'url'	=> phpgw::link('/preferences/preferences.php', array('appname' => 'felamimail')),
 					),
 					array
 					(
 						'text'	=>'Manage Folders',
-						'url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'felamimail.uipreferences.listFolder') )
+						'url'	=> phpgw::link('/index.php',array('menuaction'=>'felamimail.uipreferences.listFolder') )
 					)
 				);
 
@@ -113,7 +113,7 @@
 					$menus['preferences'][] = 	array
 					(
 						'text'	=> $GLOBALS['phpgw']->translation->translate('Manage eMail: Accounts / Identities', array(), true),
-						'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'felamimail.uipreferences.listAccountData')),
+						'url'	=> phpgw::link('/index.php', array('menuaction' => 'felamimail.uipreferences.listAccountData')),
 					);
 				}
 
@@ -122,7 +122,7 @@
 					$menus['preferences'][] = 	array
 					(
 						'text'	=> $GLOBALS['phpgw']->translation->translate('Manage Signatures', array(), true),
-						'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'felamimail.uipreferences.listSignatures')),
+						'url'	=> phpgw::link('/index.php', array('menuaction' => 'felamimail.uipreferences.listSignatures')),
 					);
 
 				}
@@ -130,13 +130,13 @@
 				$menus['toolbar'][] = array
 				(
 					'text'	=> $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
-					'url'	=> $GLOBALS['phpgw']->link('/preferences/preferences.php', array('appname'	=> 'felamimail')),
+					'url'	=> phpgw::link('/preferences/preferences.php', array('appname'	=> 'felamimail')),
 					'image'	=> array('felamimail', 'preferences')
 				);
 				$menus['toolbar'][] = array
 				(
 					'text'	=> $GLOBALS['phpgw']->translation->translate('Manage Folders', array(), true),
-					'url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'felamimail.uipreferences.listFolder') )
+					'url'	=> phpgw::link('/index.php',array('menuaction'=>'felamimail.uipreferences.listFolder') )
 				);
 			}
 
@@ -146,7 +146,7 @@
 				(
 					'text'	=> $GLOBALS['phpgw']->translation->translate('New', array(), true),
 					'url'	=> "javascript:openwindow('"
-					 			. $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'felamimail.uicompose.compose')) . "','700','600')"
+					 			. phpgw::link('/index.php', array('menuaction' => 'felamimail.uicompose.compose')) . "','700','600')"
 				)
 			);
 
@@ -162,7 +162,7 @@
 							array
 							(
 								'text'	=> $GLOBALS['phpgw']->translation->translate('filter rules', array(), true),
-								'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'felamimail.uisieve.listRules'))
+								'url'	=> phpgw::link('/index.php', array('menuaction' => 'felamimail.uisieve.listRules'))
 							)
 						);
 						$menus['navigation'][] = array
@@ -170,7 +170,7 @@
 							array
 							(
 								'text'	=> $GLOBALS['phpgw']->translation->translate('vacation notice', array(), true),
-								'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'felamimail.uisieve.editVacation'))
+								'url'	=> phpgw::link('/index.php', array('menuaction' => 'felamimail.uisieve.editVacation'))
 							)
 						);
 						$menus['navigation'][] = array
@@ -178,7 +178,7 @@
 							array
 							(
 								'text'	=> $GLOBALS['phpgw']->translation->translate('email notification', array(), true),
-								'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'felamimail.uisieve.editEmailNotification'))
+								'url'	=> phpgw::link('/index.php', array('menuaction' => 'felamimail.uisieve.editEmailNotification'))
 							)
 						);
 					}
@@ -194,7 +194,7 @@
 							array
 							(
 								'text'	=> $GLOBALS['phpgw']->translation->translate('Forwarding', array(), true),
-								'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'felamimail.uipreferences.editForwardingAddress'))
+								'url'	=> phpgw::link('/index.php', array('menuaction' => 'felamimail.uipreferences.editForwardingAddress'))
 							)
 						);
 					}

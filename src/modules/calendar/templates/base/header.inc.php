@@ -146,7 +146,7 @@
 			$tpl->parse('header_column','head_col',True);
 		}
 
-		if($this->bo->check_perms(PHPGW_ACL_PRIVATE))
+		if($this->bo->check_perms(ACL_PRIVATE))
 		{
 			$remainder -= 28;
 			$form_options = '<option value=" all "'.($this->bo->filter==' all '?' selected':'').'>'.lang('All').'</option>'."\n";

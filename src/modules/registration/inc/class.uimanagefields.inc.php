@@ -47,11 +47,11 @@
 
 			if (!isset($message))
 			{
-				$message = phpgw::get_var('message', 'string', 'GET');
+				$message = Sanitizer::get_var('message', 'string', 'GET');
 			}
 
 			$var = array(
-				'action_url'				 => $GLOBALS['phpgw']->link($this->base_url, array('menuaction' => 'registration.uimanagefields.submit')),
+				'action_url'				 => phpgw::link($this->base_url, array('menuaction' => 'registration.uimanagefields.submit')),
 				'message'					 => $message,
 				'lang_current_fields'		 => lang('Current fields:'),
 				'lang_name_and_shortdesc'	 => lang('Name (blank unless Text, Textarea, Dropdown, Checkbox; else alphanumeric only)'),
@@ -182,7 +182,7 @@
 
 			$this->bo->submit($post_vars);
 
-			$GLOBALS['phpgw']->redirect_link($this->base_url, array('menuaction' => 'registration.uimanagefields.admin',
+			phpgw::redirect_link($this->base_url, array('menuaction' => 'registration.uimanagefields.admin',
 				'message'	 => 'Updated'));
 		}
 	}

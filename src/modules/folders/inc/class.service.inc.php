@@ -64,7 +64,7 @@ class folders_service
 			
 			$return[$db->f('id')]['parent_id'] = $db->f('parent_id');
 			$return[$db->f('id')]['text']      = $db->f('text');
-			$return[$db->f('id')]['href']      = $GLOBALS['phpgw']->link('/'.$module.'/index.php', array( 'fcat_id' => $db->f('id') ) );
+			$return[$db->f('id')]['href']      = phpgw::link('/'.$module.'/index.php', array( 'fcat_id' => $db->f('id') ) );
 			$return[$db->f('id')]['title']     = $db->f('description');
 			$return[$db->f('id')]['icon']      = $module.'/templates/'.$tpl_set.'/images/folders.png';
 			$return[$db->f('id')]['target']    = '_parent';

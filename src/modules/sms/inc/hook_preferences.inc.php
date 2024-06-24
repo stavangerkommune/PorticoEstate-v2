@@ -12,9 +12,9 @@
 	 */
 	$title = $appname;
 	$file = Array(
-		'Preferences' => $GLOBALS['phpgw']->link('/preferences/preferences.php', array(
+		'Preferences' => phpgw::link('/preferences/preferences.php', array(
 			'appname' => $appname, 'type' => 'user')),
-		'Grant Access' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.aclprefs',
+		'Grant Access' => phpgw::link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.aclprefs',
 			'acl_app' => $appname))
 	);
 	display_section($appname, $file);

@@ -86,9 +86,9 @@
 		public function build_default_read_params()
 		{
 			$params = parent::build_default_read_params();
-			if (phpgw::get_var('composite_id'))
+			if (Sanitizer::get_var('composite_id'))
 			{
-				$params['filters']['composite_id'] = phpgw::get_var('composite_id');
+				$params['filters']['composite_id'] = Sanitizer::get_var('composite_id');
 			}
 
 			return $params;
@@ -100,9 +100,9 @@
 
 			foreach ($fields as $field	=> $field_info)
 			{
-				if(($field_info['action'] & PHPGW_ACL_ADD) ||  ($field_info['action'] & PHPGW_ACL_EDIT))
+				if(($field_info['action'] & ACL_ADD) ||  ($field_info['action'] & ACL_EDIT))
 				{
-					$application->set_field( $field, phpgw::get_var($field, $field_info['type'] ) );
+					$application->set_field( $field, Sanitizer::get_var($field, $field_info['type'] ) );
 				}
 			}
 			return $application;

@@ -54,7 +54,7 @@
 			$e_lock_integration = new booking_e_lock_integration();
 			$this->e_lock_integration = $e_lock_integration;
 
-			$db = & $GLOBALS['phpgw']->db;
+			$db = Db::getInstance();
 
 			$reservation_types = array
 				(

@@ -543,7 +543,7 @@
 			$GLOBALS['phpgw_info']['flags']['app_header'] = $GLOBALS['phpgw_info']['apps']['calendar']['title'].' - '.lang('View');
 			$this->header(false);
 
-			$cal_id = phpgw::get_var('cal_id', 'int', 'REQUEST', $vcal_id);
+			$cal_id = Sanitizer::get_var('cal_id', 'int', 'REQUEST', $vcal_id);
 
 			if ( $cal_date )
 			{
@@ -551,7 +551,7 @@
 			}
 			else
 			{
-				$date = phpgw::get_var('date', 'int', 'GET');
+				$date = Sanitizer::get_var('date', 'int', 'GET');
 			}
 
 			// First, make sure they have permission to this entry
@@ -561,7 +561,7 @@
 				$GLOBALS['phpgw']->common->phpgw_exit(True);
 			}
 
-			if(!$this->bo->check_perms(PHPGW_ACL_READ,$cal_id))
+			if(!$this->bo->check_perms(ACL_READ,$cal_id))
 			{
 				echo '<div class="err">'.lang('You do not have permission to read this record!') . "</div>\n";
 				$GLOBALS['phpgw']->common->phpgw_exit(True);
@@ -611,7 +611,7 @@
 
 			$button_left = $button_center = $button_right = '';
 
-			if($this->bo->check_perms(PHPGW_ACL_EDIT,$event))
+			if($this->bo->check_perms(ACL_EDIT,$event))
 			{
 				if($event['recur_type'] != MCAL_RECUR_NONE)
 				{
@@ -647,7 +647,7 @@
 				}
 
 				$var = array(
-					'action_url_button'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'calendar.uialarm.manager')),
+					'action_url_button'	=> phpgw::link('/index.php',array('menuaction'=>'calendar.uialarm.manager')),
 					'action_text_button'	=> lang('Alarm Management'),
 					'action_confirm_button'	=> '',
 					'action_extra_field'	=> '<input type="hidden" name="cal_id" value="'.$cal_id.'">'
@@ -656,7 +656,7 @@
 				$button_center .= '<td>'.$p->fp('button','form_button').'</td>';
 			}
 
-			if ($this->bo->check_perms(PHPGW_ACL_DELETE,$event))
+			if ($this->bo->check_perms(ACL_DELETE,$event))
 			{
 				if($event['recur_type'] != MCAL_RECUR_NONE)
 				{
@@ -716,7 +716,7 @@
 					if ($GLOBALS['phpgw_info']['user']['account_id'] == $user)
 					{
 						$var = array(
-							'action_url_button'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'calendar.uialarm.manager')),
+							'action_url_button'	=> phpgw::link('/index.php',array('menuaction'=>'calendar.uialarm.manager')),
 							'action_text_button'	=> lang('Alarm Management'),
 							'action_confirm_button'	=> '',
 							'action_extra_field'	=> '<input type="hidden" name="cal_id" value="'.$cal_id.'">'
@@ -740,7 +740,7 @@
 			if ($this->bo->return_to)
 			{
 				$var = array(
-					'action_url_button'	=> $GLOBALS['phpgw']->link('/index.php', $this->bo->return_to),
+					'action_url_button'	=> phpgw::link('/index.php', $this->bo->return_to),
 					'action_text_button'	=> lang('Done'),
 					'action_confirm_button'	=> '',
 					'action_extra_field'	=> ''
@@ -770,7 +770,7 @@
 				echo '<!-- params[cd] = '.$params['cd'].' -->'."\n";
 			}
 
-			$readsess = phpgw::get_var('readsess', 'bool', 'GET');
+			$readsess = Sanitizer::get_var('readsess', 'bool', 'GET');
 
 			if ( $readsess )
 			{
@@ -793,22 +793,22 @@
 					'cd' => $params['cd']
 				));
 			}
-			else if ( $cal_id = phpgw::get_var('cal_id', 'int', 'GET') )
+			else if ( $cal_id = Sanitizer::get_var('cal_id', 'int', 'GET') )
 			{
 				$event = $this->bo->read_entry($cal_id);
 
-				if(!$this->bo->check_perms(PHPGW_ACL_EDIT,$event))
+				if(!$this->bo->check_perms(ACL_EDIT,$event))
 				{
 					//FIXME
 					Header('Location: '.$this->page('view', array('cal_id' => $cal_id), true) );
 					$GLOBALS['phpgw']->common->phpgw_exit();
 				}
 
-				$edit_type = phpgw::get_var('edit_type', 'string', 'POST');
+				$edit_type = Sanitizer::get_var('edit_type', 'string', 'POST');
 				if ( $edit_type == 'single' )
 				{
 					$event['id'] = 0;
-					$this->bo->set_recur_date($event, phpgw::get_var('date', 'int', 'POST') );
+					$this->bo->set_recur_date($event, Sanitizer::get_var('date', 'int', 'POST') );
 					$event['recur_type'] = MCAL_RECUR_NONE;
 					$event['recur_interval'] = 0;
 					$event['recur_data'] = 0;
@@ -828,7 +828,7 @@
 
 		function export($vcal_id=0)
 		{
-			$cal_id = phpgw::get_var('cal_id', 'int', 'POST');
+			$cal_id = Sanitizer::get_var('cal_id', 'int', 'POST');
 			if( !$cal_id )
 			{
 				//FIXME
@@ -851,11 +851,11 @@
 
 		function reinstate_list($params='')
 		{
-			if(!$this->bo->check_perms(PHPGW_ACL_EDIT))
+			if(!$this->bo->check_perms(ACL_EDIT))
 			{
 			   $this->no_edit();
 			}
-			elseif(!$this->bo->check_perms(PHPGW_ACL_ADD))
+			elseif(!$this->bo->check_perms(ACL_ADD))
 			{
 				$this->index();
 			}
@@ -866,7 +866,7 @@
 			//$GLOBALS['phpgw']->common->phpgw_header();
 			$this->header();
 
-			$cal_id = phpgw::get_var('cal_id', 'int', 'GET', $params['cal_id']);
+			$cal_id = Sanitizer::get_var('cal_id', 'int', 'GET', $params['cal_id']);
 
 			if ($cal_id < 1)
 			{
@@ -874,7 +874,7 @@
 				$GLOBALS['phpgw']->common->phpgw_exit(True);
 			}
 
-			if(!$this->bo->check_perms(PHPGW_ACL_READ))
+			if(!$this->bo->check_perms(ACL_READ))
 			{
 				echo '<center>'.lang('You do not have permission to read this record!').'</center>'."\n";
 				$GLOBALS['phpgw']->common->phpgw_exit(True);
@@ -927,7 +927,7 @@
 			$button_left = '<td>'.$p->fp('out','form_button').'</td>';
 
 			$var = array(
-				'action_url_button'		=> $this->bo->return_to ? $GLOBALS['phpgw']->link('/index.php', $this->bo->return_to) : $this->page(''),
+				'action_url_button'		=> $this->bo->return_to ? phpgw::link('/index.php', $this->bo->return_to) : $this->page(''),
 				'action_text_button'	=> lang('Cancel'),
 				'action_confirm_button'	=> '',
 				'action_extra_field'	=> ''
@@ -941,11 +941,11 @@
 
 		function reinstate($params='')
 		{
-			if(!$this->bo->check_perms(PHPGW_ACL_EDIT))
+			if(!$this->bo->check_perms(ACL_EDIT))
 			{
 			   $this->no_edit();
 			}
-			elseif(!$this->bo->check_perms(PHPGW_ACL_ADD))
+			elseif(!$this->bo->check_perms(ACL_ADD))
 			{
 				$this->index();
 			}
@@ -956,7 +956,7 @@
 			}
 			else
 			{
-				$cal_id = phpgw::get_var('cal_id', 'int', 'GET');
+				$cal_id = Sanitizer::get_var('cal_id', 'int', 'GET');
 			}
 
 			$reinstate_index = 0;
@@ -964,7 +964,7 @@
 			{
 				$reinstate_index = (int) $params['reinstate_index'];
 			}
-			else if ( $ri = phpgw::get_var('reinstate_index', 'int', 'POST') )
+			else if ( $ri = Sanitizer::get_var('reinstate_index', 'int', 'POST') )
 			{
 				$reinstate_index = $ri;
 				unset($ri);
@@ -985,7 +985,7 @@
 			}
 			if ($this->bo->return_to)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', $this->bo->return_to);
+				phpgw::redirect_link('/index.php', $this->bo->return_to);
 			}			
 			else
 			{
@@ -997,7 +997,7 @@
 
 		function add($cd=0,$readsess=0)
 		{
-			if(!$this->bo->check_perms(PHPGW_ACL_ADD))
+			if(!$this->bo->check_perms(ACL_ADD))
 			{
 				$this->index();
 			}
@@ -1018,8 +1018,8 @@
 
 				$can_edit = True;
 
-				$starthour = phpgw::get_var('hour', 'int', 'GET', $this->bo->prefs['calendar']['workdaystarts']);
-				$startmin  = phpgw::get_var('minute', 'int', 'GET');
+				$starthour = Sanitizer::get_var('hour', 'int', 'GET', $this->bo->prefs['calendar']['workdaystarts']);
+				$startmin  = Sanitizer::get_var('minute', 'int', 'GET');
 				$endmin    = $startmin + intval($this->bo->prefs['calendar']['defaultlength']);
 	//			$endhour   = $starthour + $this->bo->normalizeminutes($endmin);
 				$end_time = $this->bo->normalizeminutes($endmin);
@@ -1054,20 +1054,20 @@
 
 		function delete()
 		{
-			if ( phpgw::get_var('cal_id', 'int', 'GET') )
+			if ( Sanitizer::get_var('cal_id', 'int', 'GET') )
 			{
 				//FIXME
 				Header('Location: '.$this->page('', array('date' => sprintf('%04d%02d%02d', $this->bo->year, $this->bo->month, $this->bo->day) ), true) );
 				$GLOBALS['phpgw']->common->phpgw_exit();
 			}
 			$date = sprintf('%04d%02d%02d', $this->bo->year, $this->bo->month, $this->bo->day);
-			$cal_id = phpgw::get_var('cal_id', 'int', 'GET');
-			if ( $this->bo->check_perms(PHPGW_ACL_DELETE, $cal_id) )
+			$cal_id = Sanitizer::get_var('cal_id', 'int', 'GET');
+			if ( $this->bo->check_perms(ACL_DELETE, $cal_id) )
 			{
-				$delete_type = phpgw::get_var('delete_type', 'string', 'POST');
+				$delete_type = Sanitizer::get_var('delete_type', 'string', 'POST');
 				if ( $delete_type == 'single' )
 				{
-					$date = phpgw::get_var('date', 'int', 'POST');
+					$date = Sanitizer::get_var('date', 'int', 'POST');
 					$cd = $this->bo->delete_single(array
 					(
 						'id'	=> $cal_id,
@@ -1089,7 +1089,7 @@
 			}
 			if ($this->bo->return_to)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', $this->bo->return_to );
+				phpgw::redirect_link('/index.php', $this->bo->return_to );
 			}
 			else
 			{
@@ -1167,7 +1167,7 @@
 			//$GLOBALS['phpgw']->common->phpgw_header();
 			$this->header(false);
 			
-			$cal_id = phpgw::get_var('cal_id', 'int', 'GET');
+			$cal_id = Sanitizer::get_var('cal_id', 'int', 'GET');
 			$event = $this->bo->read_entry($cal_id);
 
 			reset($event['participants']);
@@ -1178,7 +1178,7 @@
 				return;
 			}
 
-			if(!$this->bo->check_perms(PHPGW_ACL_EDIT))
+			if(!$this->bo->check_perms(ACL_EDIT))
 			{
 			   $this->no_edit();
 			   return;
@@ -1203,18 +1203,18 @@
 
 		function set_action()
 		{
-			if(!$this->bo->check_perms(PHPGW_ACL_EDIT))
+			if(!$this->bo->check_perms(ACL_EDIT))
 			{
 				$this->no_edit();
 				return;
 			}
-			$cal_id = phpgw::get_var('cal_id', 'int', 'GET');
-			$action = phpgw::get_var('action', 'int', 'GET');
+			$cal_id = Sanitizer::get_var('cal_id', 'int', 'GET');
+			$action = Sanitizer::get_var('action', 'int', 'GET');
 			$this->bo->set_status($cal_id, $action);
 
 			if ($this->bo->return_to)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', $this->bo->return_to);
+				phpgw::redirect_link('/index.php', $this->bo->return_to);
 			}
 			else
 			{
@@ -1255,7 +1255,7 @@
 			{
 				foreach ( $this->bo->g_owner as $id)
 				{
-					if ($this->bo->check_perms(PHPGW_ACL_READ,0,$id))
+					if ($this->bo->check_perms(ACL_READ,0,$id))
 					{
 						$this->planner_group_members[$this->bo->contacts->get_name_of_person_id($id)] = $id;
 					}
@@ -1350,14 +1350,14 @@
 				$hdr[0]['.'.$i] = 'classr="'.$cssclass.'" colspan="'.$cols.'" align ="center"';
 				$prev_month = sprintf('%04d%02d01',$y-($m==1),$m > 1?$m-1:12);
 				$next_month = sprintf('%04d%02d01',$y+($m==12),$m < 12?$m+1:1);
-				$prev_link = $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'calendar.uicalendar.planner','date'=>$prev_month));
-				$next_link = $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'calendar.uicalendar.planner','date'=>$next_month));
+				$prev_link = phpgw::link('/index.php',array('menuaction'=>'calendar.uicalendar.planner','date'=>$prev_month));
+				$next_link = phpgw::link('/index.php',array('menuaction'=>'calendar.uicalendar.planner','date'=>$next_month));
 				$hdr[0][$i] = "<b><a href=\"$prev_link\">&lt;&lt;</a> &nbsp $month &nbsp <a href=\"$next_link\">&gt;&gt;</a></b>";
 
 				$add_owner = array();	// if no add-rights on the showed cal use own cal
 				if ( (!isset($this->bo->save_owner) || !$this->bo->save_owner)
-					&& !$this->bo->check_perms(PHPGW_ACL_ADD) 
-					|| !$this->bo->check_perms(PHPGW_ACL_ADD,0,(isset($this->bo->save_owner)?$this->bo->save_owner:'')))
+					&& !$this->bo->check_perms(ACL_ADD) 
+					|| !$this->bo->check_perms(ACL_ADD,0,(isset($this->bo->save_owner)?$this->bo->save_owner:'')))
 				{
 					$add_owner = array('owner' => $this->bo->contacts->is_contact($GLOBALS['phpgw_info']['user']['account_id']));
 				}
@@ -1471,7 +1471,7 @@
 		{
 			$rows              = &$this->planner_rows;
 			$intervals_per_day = $this->bo->prefs['calendar']['planner_intervals_per_day'];
-			$is_private        = !$this->bo->check_perms(PHPGW_ACL_READ,$event);
+			$is_private        = !$this->bo->check_perms(ACL_READ,$event);
 
 			$view = $this->planner_html->link('/index.php',
 				array(
@@ -1936,7 +1936,7 @@
 				{
 					$groups .= "\t<option value=\"$user_id\">$user [g]</option>\n";
 				}
-				else if( $this->bo->check_perms(PHPGW_ACL_READ, 0, $user_id) )
+				else if( $this->bo->check_perms(ACL_READ, 0, $user_id) )
 				{
 					$usrs .= "\t<option value=\"$user_id\">$user</option>\n";
 				}
@@ -1955,7 +1955,7 @@
 
 			$vars = array(
 				'submit_button'		=> lang('View'),
-				'action_url_button'	=> $this->bo->return_to ? $GLOBALS['phpgw']->link('/index.php', $this->bo->return_to) : $this->page(''),
+				'action_url_button'	=> $this->bo->return_to ? phpgw::link('/index.php', $this->bo->return_to) : $this->page(''),
 				'action_text_button'	=> lang('Cancel'),
 				'action_confirm_button'	=> '',
 				'action_extra_field'	=> ''
@@ -1968,11 +1968,11 @@
 
 		function viewmatrix()
 		{
-			if ( phpgw::get_var('cancel', 'bool', 'POST') )
+			if ( Sanitizer::get_var('cancel', 'bool', 'POST') )
 			{
 				$this->index();
 			}
-			$participants = phpgw::get_var('participants', 'string', 'POST');
+			$participants = Sanitizer::get_var('participants', 'string', 'POST');
 
 			$parts = array();
 			$acct = CreateObject('phpgwapi.accounts',$this->bo->owner);
@@ -1989,7 +1989,7 @@
 								foreach($members as $member)
 								{
 									$person_id = $this->bo->contacts->is_contact($member['account_id']);
-									if ( $this->bo->check_perms(PHPGW_ACL_READ, 0, $person_id) )
+									if ( $this->bo->check_perms(ACL_READ, 0, $person_id) )
 									{
 										$parts[$person_id] = True;
 									}
@@ -1998,7 +1998,7 @@
 							
 							break;
 						default:
-							if($this->bo->check_perms(PHPGW_ACL_READ, 0, $this->bo->contacts->is_contact($participant) ) )
+							if($this->bo->check_perms(ACL_READ, 0, $this->bo->contacts->is_contact($participant) ) )
 							{
 								$parts[$participant] = True;
 							}
@@ -2010,7 +2010,7 @@
 
 			$participants = array_keys($parts);	// get id's as values and a numeric index
 
-			$date_select = phpgw::get_var('date_select', 'string', 'POST');
+			$date_select = Sanitizer::get_var('date_select', 'string', 'POST');
 			if ( $date_select )
 			{
 				$jscal = CreateObject('phpgwapi.jscalendar', false);
@@ -2030,7 +2030,7 @@
 			$this->header();
 
 //_debug_array($_POST);
-			$matrixtype = phpgw::get_var('matrixtype', 'string', 'POST');
+			$matrixtype = Sanitizer::get_var('matrixtype', 'string', 'POST');
 			switch( $matrixtype )
 			{
 				case 'free/busy':
@@ -2071,7 +2071,7 @@
 
 			$form_action = $this->page('viewmatrix');
 			$part_inputs = '';
- 			foreach ( phpgw::get_var('participants', 'int', 'POST') as $part)
+ 			foreach ( Sanitizer::get_var('participants', 'int', 'POST') as $part)
  			{
  				$part_inputs .= <<<HTML
 				<input type="hidden" name="participants[]" value="{$part}">
@@ -2145,17 +2145,17 @@ HTML;
 
 		function search()
 		{
-			$keywords = phpgw::get_var('keywords', 'string', 'POST');
+			$keywords = Sanitizer::get_var('keywords', 'string', 'POST');
 			if ( !$keywords )
 			{
 				// If we reach this, it is because they didn't search for anything,
 				// attempt to send them back to where they where.
-				$GLOBALS['phpgw']->redirect_link('/index.php',array
+				phpgw::redirect_link('/index.php',array
 				(
-					'menuaction' => phpgw::get_var('from', 'string', 'POST'),
-					'date' => phpgw::get_var('year', 'int', 'POST') 
-							. phpgw::get_var('monnth', 'int', 'POST') 
-							. phpgw::get_var('day', 'int', 'POST')
+					'menuaction' => Sanitizer::get_var('from', 'string', 'POST'),
+					'date' => Sanitizer::get_var('year', 'int', 'POST') 
+							. Sanitizer::get_var('monnth', 'int', 'POST') 
+							. Sanitizer::get_var('day', 'int', 'POST')
 				));
 				$GLOBALS['phpgw']->common->phpgw_exit();
 			}
@@ -2181,7 +2181,7 @@ HTML;
 			{
 				$event = $this->bo->read_entry($id);
 
-				if(!$this->bo->check_perms(PHPGW_ACL_READ,$event))
+				if(!$this->bo->check_perms(ACL_READ,$event))
 				{
 					continue;
 				}
@@ -2324,7 +2324,7 @@ HTML;
 			}
 //_debug_array($params);
 			$params['menuaction'] = "{$page_app}.ui{$page_app}.{$_page}";
-			return $GLOBALS['phpgw']->link('/index.php', $params, $redirect);
+			return phpgw::link('/index.php', $params, $redirect);
 		}
 
 		function header($local_header = true)
@@ -2339,7 +2339,7 @@ HTML;
 			echo parse_navbar();
 
 			$cols = 8;
-			if($this->bo->check_perms(PHPGW_ACL_PRIVATE) == True)
+			if($this->bo->check_perms(ACL_PRIVATE) == True)
 			{
 				$cols++;
 			}
@@ -2459,7 +2459,7 @@ HTML;
 				$str = '';
 				$date_str = '';
 
-				$date = phpgw::get_var('date', 'int', 'GET');
+				$date = Sanitizer::get_var('date', 'int', 'GET');
 				if ( $date ) 
 				{
 					$date_str .= '    <input type="hidden" name="date" value="'.$date . "\">\n";
@@ -2489,7 +2489,7 @@ HTML;
 
 			$var = array(
 				'submit_button'		=> lang('Submit'),
-				'action_url_button'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'calendar.uiicalendar.import')),
+				'action_url_button'	=> phpgw::link('/index.php',array('menuaction'=>'calendar.uiicalendar.import')),
 				'action_text_button'	=> lang('Import'),
 				'action_confirm_button'	=> '',
 				'action_extra_field'	=> ''
@@ -2522,12 +2522,12 @@ HTML;
 			$user_timezone = phpgwapi_datetime::user_timezone();
 			$str = '';
 			$is_private = '';
-			if(!$event['public']==1 || !$this->bo->check_perms(PHPGW_ACL_READ,$event))
+			if(!$event['public']==1 || !$this->bo->check_perms(ACL_READ,$event))
 			{
 				$is_private = true;
 			}
-		//	$is_private = !$event['public'] || !$this->bo->check_perms(PHPGW_ACL_READ,$event);
-			$editable = $this->bo->check_perms(PHPGW_ACL_READ,$event);
+		//	$is_private = !$event['public'] || !$this->bo->check_perms(ACL_READ,$event);
+			$editable = $this->bo->check_perms(ACL_READ,$event);
 
 			$starttime = $this->bo->maketime($event['start']) - $user_timezone;
 			$endtime = $this->bo->maketime($event['end']) - $user_timezone;
@@ -2861,7 +2861,7 @@ HTML;
 
 			$date = sprintf("%04d%02d%02d",$this->bo->year,$this->bo->month,$this->bo->mday);
 			$var = array(
-				'action_url_button'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'calendar.bocalendar.update', 'readsess' => 1)),
+				'action_url_button'		=> phpgw::link('/index.php', array('menuaction' => 'calendar.bocalendar.update', 'readsess' => 1)),
 				'action_text_button'	=> lang('Ignore Conflict'),
 				'action_confirm_button'	=> '',
 				'action_extra_field'	=> ''
@@ -2869,7 +2869,7 @@ HTML;
 			$this->output_template_array($p,'resubmit_button','form_button',$var);
 
 			$var = array(
-				'action_url_button'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'calendar.uicalendar.edit','readsess'=>1,'date'=>$date)),
+				'action_url_button'	=> phpgw::link('/index.php',array('menuaction'=>'calendar.uicalendar.edit','readsess'=>1,'date'=>$date)),
 				'action_text_button'	=> lang('Re-Edit Event'),
 				'action_confirm_button'	=> '',
 				'action_extra_field'	=> ''
@@ -3076,7 +3076,7 @@ HTML;
 						{
 							foreach($events as $event)
 							{
-								if ($this->bo->rejected_no_show($event) || !$this->bo->check_perms(PHPGW_ACL_READ))
+								if ($this->bo->rejected_no_show($event) || !$this->bo->check_perms(ACL_READ))
 								{
 									continue;	// user does not want to see rejected events
 								}
@@ -3243,7 +3243,7 @@ HTML;
 
 		function view_event($event,$alarms=False)
 		{
-			if(((!isset($event['participants'][$this->bo->owner]) || !$event['participants'][$this->bo->owner]) && !$this->bo->check_perms(PHPGW_ACL_READ,$event)))
+			if(((!isset($event['participants'][$this->bo->owner]) || !$event['participants'][$this->bo->owner]) && !$this->bo->check_perms(ACL_READ,$event)))
 			{
 				return False;
 			}
@@ -3264,7 +3264,7 @@ HTML;
 			$vars['title']['tr_color'] = $this->theme['th_bg'];
 			foreach($vars['participants']['data'] as $user => $str)
 			{
-				if ($this->bo->check_perms(PHPGW_ACL_EDIT,0,$user) && preg_match('/^(.*) \((.*)\)$/',$str,$parts))
+				if ($this->bo->check_perms(ACL_EDIT,0,$user) && preg_match('/^(.*) \((.*)\)$/',$str,$parts))
 				{
 					 $vars['participants']['data'][$user] = $parts[1].' (<a href="'.$this->page('edit_status',array('cal_id'=>$event['id'],'owner'=>$user)).'">'.$parts[2].'</a>)';
 				}
@@ -3384,8 +3384,8 @@ HTML;
 
 ## by tb: 	we don't want a user to be able to see a event if he has no permission to read it !!!
 ## 				this shoud be in class.bocalendar->get_cached_events() !!!
-					#echo '<br><b>check_perms: |'.$this->bo->check_perms(PHPGW_ACL_READ).'|</b><br>';
-					if(!$this->bo->check_perms(PHPGW_ACL_READ))
+					#echo '<br><b>check_perms: |'.$this->bo->check_perms(ACL_READ).'|</b><br>';
+					if(!$this->bo->check_perms(ACL_READ))
 					{
 						continue;
 ##						echo '<center>'.lang('You do not have permission to read this record!').'</center>'."\n";
@@ -3501,7 +3501,7 @@ HTML;
 ## by tb
 					$open_link = ($this->week_type != 'new') ? ' - ' : '';
 ## by tb
-					if ( $this->bo->check_perms(PHPGW_ACL_ADD) )
+					if ( $this->bo->check_perms(ACL_ADD) )
 					{
 						$open_link .= '<a href="'.$this->page('add',array('date'=>$date_to_eval,'hour'=>$hour,'minute'=>$min)).'">';
 						$close_link = '</a>';
@@ -3683,7 +3683,7 @@ HTML;
 			if ($this->bo->return_to)
 			{
 				$var = array(
-					'action_url_button'	=> $GLOBALS['phpgw']->link('/index.php', $this->bo->return_to),
+					'action_url_button'	=> phpgw::link('/index.php', $this->bo->return_to),
 					'action_text_button'	=> lang('cancel'),
 					'action_confirm_button'	=> '',
 					'action_extra_field'	=> ''
@@ -3702,13 +3702,13 @@ HTML;
 			$t =& $GLOBALS['phpgw']->template;
 			$t->set_unknowns('remove');
 
-			$lookup = trim(phpgw::get_var('lookup', 'string', 'GET'));
+			$lookup = trim(Sanitizer::get_var('lookup', 'string', 'GET'));
 
 			if ( strlen($lookup) > 2 || $lookup == '*' )
 			{
 				$lookup = preg_replace('/\*/', '/%/', $lookup);
 
-				$cat_id = phpgw::get_var('cat_id', 'int', 'GET');
+				$cat_id = Sanitizer::get_var('cat_id', 'int', 'GET');
 
 				if ( $cat_id == -1 ) //groups
 				{
@@ -3724,7 +3724,7 @@ HTML;
 				else
 				{
 					//FIXME define constants somewhere and use them skwashd Nov07
-					switch( phpgw::get_var('con_type', 'int', 'GET') )
+					switch( Sanitizer::get_var('con_type', 'int', 'GET') )
 					{
 						
 						case 2: //orgs
@@ -3795,7 +3795,7 @@ HTML;
 			$t->set_var(array
 			(
 				'webserver_url'		=> $GLOBALS['phpgw_info']['server']['webserver_url'],
-				'base_url'			=> $GLOBALS['phpgw']->link('/'),
+				'base_url'			=> phpgw::link('/'),
 				'lang_all'			=> lang('all'),
 				'lang_add'			=> lang('add'),
 				'lang_category'		=> lang('category'),
@@ -3858,7 +3858,7 @@ HTML;
 				$recur_exception = implode (",", $event['recur_exception']);
 			}
 	
-			$cal_id = phpgw::get_var('cal_id', 'int', 'GET');
+			$cal_id = Sanitizer::get_var('cal_id', 'int', 'GET');
 			//FIXME this is ugly and should use templates better
 
 			$common_hidden = <<<HTML
@@ -3892,8 +3892,8 @@ HTML;
 
 			$vars = array
 			(
-				'action_url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'calendar.bocalendar.update')),
-				'popup_url'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'calendar.uicalendar.participants_popup'), true),
+				'action_url'	=> phpgw::link('/index.php',array('menuaction'=>'calendar.bocalendar.update')),
+				'popup_url'		=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.participants_popup'), true),
 				'common_hidden'	=> $common_hidden,
 				'errormsg'		=> $param['cd'] ? $GLOBALS['phpgw']->common->check_code($param['cd']) : ''
 			);
@@ -4262,7 +4262,7 @@ HTML;
 			if ($this->bo->return_to)
 			{
 				$var = array(
-					'action_url_button'	=> $GLOBALS['phpgw']->link('/index.php', $this->bo->return_to),
+					'action_url_button'	=> phpgw::link('/index.php', $this->bo->return_to),
 					'action_text_button'	=> lang('Cancel'),
 					'action_confirm_button'	=> '',
 					'action_extra_field'	=> ''
@@ -4314,16 +4314,16 @@ HTML;
 
 			$p->set_var('text_add_name',$add_ext);
 
-			$part = phpgw::get_var('part', 'string', 'GET');
+			$part = Sanitizer::get_var('part', 'string', 'GET');
 			if ( $part )
 			{
 				$control_data['part'] = explode(',', $part);
 			}
 			else
 			{
-				$control_data['part'] = phpgw::get_var('participant', 'int', 'POST');
-				$control_data['action'] = phpgw::get_var('action', 'string', 'POST');
-				$control_data['delete'] = phpgw::get_var('delete', 'bool', 'POST');
+				$control_data['part'] = Sanitizer::get_var('participant', 'int', 'POST');
+				$control_data['action'] = Sanitizer::get_var('action', 'string', 'POST');
+				$control_data['delete'] = Sanitizer::get_var('delete', 'bool', 'POST');
 			}
 
 			
@@ -4349,7 +4349,7 @@ HTML;
 			
 			if ($control_data['action'] == lang('Add Contact'))
 			{
-				$id = phpgw::get_var('id_addr', 'int', 'POST');
+				$id = Sanitizer::get_var('id_addr', 'int', 'POST');
 				if ( $id )
 				{
 					list($contact) = $this->read_contact($id);
@@ -4396,7 +4396,7 @@ HTML;
 				$p->parse('V_delete_btn','B_delete_btn');
 			}
 
-			$form_action = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'calendar.uicalendar.modify'));
+			$form_action = phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.modify'));
 			
 			$charset = lang('charset');
 			$p->set_var('charset',$charset);
@@ -4428,7 +4428,7 @@ HTML;
 			);
 
 		  /*
-			if ($this->rights & PHPGW_ACL_READ)
+			if ($this->rights & ACL_READ)
 			{
 				return $this->contacts->read_single_entry($id,$fields);
 			}
@@ -4538,7 +4538,7 @@ HTML;
 					$day_image = ' background="'.$GLOBALS['phpgw']->common->image('calendar','mini_day_block').'"';
 				}
 
-				$new_event = $this->bo->check_perms(PHPGW_ACL_ADD);
+				$new_event = $this->bo->check_perms(ACL_ADD);
 				$holiday_name = array();
 				if($holidays)
 				{

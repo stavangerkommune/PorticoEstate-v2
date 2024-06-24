@@ -88,7 +88,7 @@
 			$this->location_code = $this->bo->location_code;
 
 			self::set_active_menu('controller::control::location_for_check_list');
-//			$GLOBALS['phpgw']->css->add_external_file('controller/templates/base/css/base.css');
+//			phpgwapi_css::getInstance()->add_external_file('controller/templates/base/css/base.css');
 			$GLOBALS['phpgw_info']['flags']['app_header'] =  lang('location_connections');
 		}
 
@@ -97,13 +97,13 @@
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 			$receipt = array();
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
 
 			$msgbox_data = array();
-			if (phpgw::get_var('phpgw_return_as') != 'json' && $receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
+			if (Sanitizer::get_var('phpgw_return_as') != 'json' && $receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
 			{
 				phpgwapi_cache::session_clear('phpgwapi', 'phpgw_messages');
 				$msgbox_data = $GLOBALS['phpgw']->common->msgbox_data($receipt);
@@ -162,7 +162,7 @@
 
 		public function get_location_category()
 		{
-			$type_id = phpgw::get_var('type_id');
+			$type_id = Sanitizer::get_var('type_id');
 			$category_types = $this->bocommon->select_category_list(array(
 				'format' => 'filter',
 				'selected' => 0,
@@ -180,7 +180,7 @@
 
 		public function get_district_part_of_town()
 		{
-			$district_id = phpgw::get_var('district_id');
+			$district_id = Sanitizer::get_var('district_id');
 			$part_of_town_list = $this->bocommon->select_part_of_town('filter', null, $district_id);
 			$default_value = array('id' => '', 'name' => lang('no part of town'));
 			array_unshift($part_of_town_list, $default_value);
@@ -194,7 +194,7 @@
 
 		public function get_category_by_entity()
 		{
-			$entity_id = phpgw::get_var('entity_id');
+			$entity_id = Sanitizer::get_var('entity_id');
 			$entity = CreateObject('property.soadmin_entity');
 
 			$category_list = $entity->read_category(array('allrows' => true, 'entity_id' => $entity_id));
@@ -204,7 +204,7 @@
 
 		public function get_location_type_category()
 		{
-			$location_type = phpgw::get_var('location_type', 'int');
+			$location_type = Sanitizer::get_var('location_type', 'int');
 
 			$values = $this->bocommon->select_category_list(array
 				(
@@ -222,7 +222,7 @@
 		public function get_entity_table_def()
 		{
 
-			$location_level = phpgw::get_var('location_level', 'int', 'REQUEST', 1);
+			$location_level = Sanitizer::get_var('location_level', 'int', 'REQUEST', 1);
 			$solocation = CreateObject('property.solocation');
 			$solocation->read(array('dry_run' => true, 'type_id' => $location_level));
 			$uicols = $solocation->uicols;
@@ -305,9 +305,9 @@ JS;
 
 		public function get_locations()
 		{
-			$location_code = phpgw::get_var('location_code');
-			$child_level = phpgw::get_var('child_level', 'int', 'REQUEST', 1);
-			$part_of_town_id = phpgw::get_var('part_of_town_id', 'int');
+			$location_code = Sanitizer::get_var('location_code');
+			$child_level = Sanitizer::get_var('child_level', 'int', 'REQUEST', 1);
+			$part_of_town_id = Sanitizer::get_var('part_of_town_id', 'int');
 
 			$criteria = array
 				(
@@ -324,26 +324,26 @@ JS;
 		public function query()
 		{
 
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
-			$control_id = phpgw::get_var('control_id', 'int');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
+			$control_id = Sanitizer::get_var('control_id', 'int');
 
 			$params = array(
-				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results' => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start' => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results' => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query' => $search['value'],
 				'order' => $columns[$order[0]['column']]['data'],
 				'sort' => $order[0]['dir'],
-				'allrows' => phpgw::get_var('length', 'int') == -1,
-				'control_registered' => phpgw::get_var('control_registered', 'bool'),
-				'district_id' => phpgw::get_var('district_id', 'int'),
-				'cat_id' => phpgw::get_var('cat_id', 'int'),
-				'status' => phpgw::get_var('status'),
-				'part_of_town_id' => phpgw::get_var('part_of_town_id', 'int'),
-				'location_code' => phpgw::get_var('location_code'),
-				'type_id' => phpgw::get_var('location_level', 'int', 'REQUEST', 1),
+				'allrows' => Sanitizer::get_var('length', 'int') == -1,
+				'control_registered' => Sanitizer::get_var('control_registered', 'bool'),
+				'district_id' => Sanitizer::get_var('district_id', 'int'),
+				'cat_id' => Sanitizer::get_var('cat_id', 'int'),
+				'status' => Sanitizer::get_var('status'),
+				'part_of_town_id' => Sanitizer::get_var('part_of_town_id', 'int'),
+				'location_code' => Sanitizer::get_var('location_code'),
+				'type_id' => Sanitizer::get_var('location_level', 'int', 'REQUEST', 1),
 				'control_id' => $control_id
 			);
 
@@ -369,7 +369,7 @@ JS;
 				(
 				'results' => $values,
 				'total_records' => $this->bo->total_records,
-				'draw' => phpgw::get_var('draw', 'int')
+				'draw' => Sanitizer::get_var('draw', 'int')
 			);
 
 			return $this->jquery_results($result_data);
@@ -377,9 +377,9 @@ JS;
 
 		public function edit_location()
 		{
-			if ($values = phpgw::get_var('values'))
+			if ($values = Sanitizer::get_var('values'))
 			{
-				if (!$GLOBALS['phpgw']->acl->check('.admin', PHPGW_ACL_EDIT, 'property'))
+				if (!$GLOBALS['phpgw']->acl->check('.admin', ACL_EDIT, 'property'))
 				{
 					$receipt['error'][] = true;
 					phpgwapi_cache::message_set(lang('you are not approved for this task'), 'error');
@@ -404,7 +404,7 @@ JS;
 				}
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				if ($receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
 				{
@@ -419,7 +419,7 @@ JS;
 			}
 			else
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uicontrol_register_to_location.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uicontrol_register_to_location.index'));
 			}
 		}
 	}

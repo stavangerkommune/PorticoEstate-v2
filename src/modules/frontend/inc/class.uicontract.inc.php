@@ -31,7 +31,7 @@
 			$contractdata = array(); // This is the main container for all contract data sent to XSLT template stuff
 			$msglog = array();   // Array of errors and other notifications displayed to us
 
-			$filter = phpgw::get_var('contract_filter');
+			$filter = Sanitizer::get_var('contract_filter');
 			// The user wants to change the contract status filter
 			if (isset($filter))
 			{
@@ -52,8 +52,8 @@
 
 			if (isset($_POST['send']))
 			{
-				$contract_id = phpgw::get_var('contract_id');
-				$contract_message = phpgw::get_var('contract_message');
+				$contract_id = Sanitizer::get_var('contract_id');
+				$contract_message = Sanitizer::get_var('contract_message');
 				$config = CreateObject('phpgwapi.config', 'rental');
 				$config->read();
 				$use_fellesdata = $config->config_data['use_fellesdata'];
@@ -97,7 +97,7 @@
 			// Request parameter: the user wants to view details about anther contract
 			// The current state of the contract view of this user's session
 			$this->contract_state = phpgwapi_cache::session_get('frontend', $this->contract_state_identifier);
-			$new_contract = phpgw::get_var('contract_id');
+			$new_contract = Sanitizer::get_var('contract_id');
 
 			$contracts_per_location = $this->get_contracts_per_location();
 

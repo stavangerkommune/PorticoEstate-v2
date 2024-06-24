@@ -29,36 +29,36 @@
 				$user_rows_per_page = 10;
 			}
 
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
-			$start_index = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$num_of_objects = (phpgw::get_var('length', 'int') <= 0) ? $user_rows_per_page : phpgw::get_var('length', 'int');
+			$start_index = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$num_of_objects = (Sanitizer::get_var('length', 'int') <= 0) ? $user_rows_per_page : Sanitizer::get_var('length', 'int');
 			$sort_field = ($columns[$order[0]['column']]['data']) ? $columns[$order[0]['column']]['data'] : 'date';
 			$sort_ascending = ($order[0]['dir'] == 'desc') ? false : true;
 			// Form variables
 			$search_for = $search['value'];
-			$search_type = phpgw::get_var('search_option', 'string', 'REQUEST', 'all');
+			$search_type = Sanitizer::get_var('search_option', 'string', 'REQUEST', 'all');
 
-			/* $start_index	= phpgw::get_var('startIndex', 'int');
-			  $num_of_objects	= phpgw::get_var('results', 'int', 'GET', 10);
-			  $sort_field		= phpgw::get_var('sort');
-			  $sort_ascending	= phpgw::get_var('dir') == 'desc' ? false : true;
+			/* $start_index	= Sanitizer::get_var('startIndex', 'int');
+			  $num_of_objects	= Sanitizer::get_var('results', 'int', 'GET', 10);
+			  $sort_field		= Sanitizer::get_var('sort');
+			  $sort_ascending	= Sanitizer::get_var('dir') == 'desc' ? false : true;
 			  // Form variables
-			  $search_for 	= phpgw::get_var('query');
-			  $search_type	= phpgw::get_var('search_option'); */
+			  $search_for 	= Sanitizer::get_var('query');
+			  $search_type	= Sanitizer::get_var('search_option'); */
 
 			// Create an empty result set
 			$result_objects = array();
 			$result_count = 0;
 
 			//Retrieve a contract identifier and load corresponding contract
-			$contract_id = phpgw::get_var('contract_id');
+			$contract_id = Sanitizer::get_var('contract_id');
 
 			//Retrieve the type of query and perform type specific logic
-			$query_type = phpgw::get_var('type');
+			$query_type = Sanitizer::get_var('type');
 			switch ($query_type)
 			{
 				case 'notifications':
@@ -146,12 +146,12 @@
 		 */
 		public function delete_notification()
 		{
-			$list_notification_id = phpgw::get_var('id');
-			$contract_id = (int)phpgw::get_var('contract_id');
+			$list_notification_id = Sanitizer::get_var('id');
+			$contract_id = (int)Sanitizer::get_var('contract_id');
 
 			$contract = rental_socontract::get_instance()->get_single($contract_id);
 			$message = array();
-			if ($contract->has_permission(PHPGW_ACL_EDIT))
+			if ($contract->has_permission(ACL_EDIT))
 			{
 				//rental_sonotification::get_instance()->delete_notification($notification_id);
 				//return true;
@@ -178,8 +178,8 @@
 		 */
 		public function dismiss_notification()
 		{
-			$list_notification_id = phpgw::get_var('id');
-			//$notification_id = (int)phpgw::get_var('id');
+			$list_notification_id = Sanitizer::get_var('id');
+			//$notification_id = (int)Sanitizer::get_var('id');
 			//$result = rental_soworkbench_notification::get_instance()->dismiss_notification($notification_id,strtotime('now'));
 			$message = array();
 			foreach ($list_notification_id as $notification_id)
@@ -208,14 +208,14 @@
 		public function dismiss_notification_for_all()
 		{
 			//the source notification
-			//$notification_id = (int)phpgw::get_var('id');
-			$list_notification_id = phpgw::get_var('id');
-			$list_contract_id = phpgw::get_var('contract_id');
-			//$contract_id = (int)phpgw::get_var('contract_id');
+			//$notification_id = (int)Sanitizer::get_var('id');
+			$list_notification_id = Sanitizer::get_var('id');
+			$list_contract_id = Sanitizer::get_var('contract_id');
+			//$contract_id = (int)Sanitizer::get_var('contract_id');
 			$contract = rental_socontract::get_instance()->get_single($list_contract_id[0]);
 
 			$message = array();
-			if ($contract->has_permission(PHPGW_ACL_EDIT))
+			if ($contract->has_permission(ACL_EDIT))
 			{
 				//$result = rental_soworkbench_notification::get_instance()->dismiss_notification_for_all($notification_id);
 				foreach ($list_notification_id as $notification_id)

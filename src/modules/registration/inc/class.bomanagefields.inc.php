@@ -253,7 +253,7 @@
 
 			if (!$admin)
 			{
-				Header('Location: ' . $GLOBALS['phpgw']->link('/index.php'));
+				Header('Location: ' . phpgw::link('/index.php'));
 			}
 		}
 	}

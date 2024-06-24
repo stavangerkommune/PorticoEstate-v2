@@ -44,4 +44,4 @@
 
 	$start_page = 'uicalendar_planner';
 
-	$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => "controller.{$start_page}.index"));
+	phpgw::redirect_link('/index.php', array('menuaction' => "controller.{$start_page}.index"));

@@ -75,10 +75,10 @@
 		{
 			parent::__construct();
 
-			$this->read	 = $GLOBALS['phpgw']->acl->check('.checklist', PHPGW_ACL_READ, 'controller'); //1
-			$this->add	 = $GLOBALS['phpgw']->acl->check('.checklist', PHPGW_ACL_ADD, 'controller'); //2
-			$this->edit	 = $GLOBALS['phpgw']->acl->check('.checklist', PHPGW_ACL_EDIT, 'controller'); //4
-			$this->delete	 = $GLOBALS['phpgw']->acl->check('.checklist', PHPGW_ACL_DELETE, 'controller'); //8
+			$this->read	 = $GLOBALS['phpgw']->acl->check('.checklist', ACL_READ, 'controller'); //1
+			$this->add	 = $GLOBALS['phpgw']->acl->check('.checklist', ACL_ADD, 'controller'); //2
+			$this->edit	 = $GLOBALS['phpgw']->acl->check('.checklist', ACL_EDIT, 'controller'); //4
+			$this->delete	 = $GLOBALS['phpgw']->acl->check('.checklist', ACL_DELETE, 'controller'); //8
 
 			$this->so = CreateObject('controller.socheck_list');
 			$this->so_control = CreateObject('controller.socontrol');
@@ -97,10 +97,10 @@
 				phpgw::no_access();
 			}
 
-			$control_area_id = phpgw::get_var('control_area_id', 'int');
+			$control_area_id = Sanitizer::get_var('control_area_id', 'int');
 
-			$control_id		 = phpgw::get_var('control_id', 'int');
-			$part_of_town_id = (array)phpgw::get_var('part_of_town_id', 'int');
+			$control_id		 = Sanitizer::get_var('control_id', 'int');
+			$part_of_town_id = (array)Sanitizer::get_var('part_of_town_id', 'int');
 
 
 			$user_id = $GLOBALS['phpgw_info']['user']['account_id'];
@@ -135,14 +135,14 @@
 				$part_of_town_id = (array)phpgwapi_cache::user_get('controller', "calendar_planner_part_of_town", $user_id);
 			}
 
-			$entity_group_id = phpgw::get_var('entity_group_id', 'int');
-			$current_year	 = phpgw::get_var('current_year', 'int', 'REQUEST', date('Y'));
+			$entity_group_id = Sanitizer::get_var('entity_group_id', 'int');
+			$current_year	 = Sanitizer::get_var('current_year', 'int', 'REQUEST', date('Y'));
 
-			if (phpgw::get_var('prev_year', 'bool'))
+			if (Sanitizer::get_var('prev_year', 'bool'))
 			{
 				$current_year --;
 			}
-			if (phpgw::get_var('next_year', 'bool'))
+			if (Sanitizer::get_var('next_year', 'bool'))
 			{
 				$current_year ++;
 			}
@@ -359,11 +359,11 @@
 								'check_list_id' => $item['schedule']['info']['check_list_id'],
 							);
 							$url_target = '_self';
-							$link = $GLOBALS['phpgw']->link('/index.php', $control_link_data);
+							$link = phpgw::link('/index.php', $control_link_data);
 						}
 						else
 						{
-							$link = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'controller.uicheck_list.add_check_list',
+							$link = phpgw::link('/index.php', array('menuaction' => 'controller.uicheck_list.add_check_list',
 									'deadline_ts'	 => $item['schedule']['info']['deadline_date_ts'],
 									'control_id'	 => $item['schedule']['info']['control_id'],
 									'serie_id'		 => $item['schedule']['info']['serie_id'],
@@ -447,12 +447,12 @@
 				phpgw::no_access();
 			}
 
-			$month	 = phpgw::get_var('month', 'int', 'REQUEST', date("m", time()));
-			$year	 = phpgw::get_var('year', 'int', 'REQUEST', date("Y", time()));
-			$part_of_town_id = phpgw::get_var('part_of_town_id', 'int');
-			$control_area_id = phpgw::get_var('control_area_id', 'int');
-			$control_id		 = phpgw::get_var('control_id', 'int');
-			$entity_group_id = phpgw::get_var('entity_group_id', 'int');
+			$month	 = Sanitizer::get_var('month', 'int', 'REQUEST', date("m", time()));
+			$year	 = Sanitizer::get_var('year', 'int', 'REQUEST', date("Y", time()));
+			$part_of_town_id = Sanitizer::get_var('part_of_town_id', 'int');
+			$control_area_id = Sanitizer::get_var('control_area_id', 'int');
+			$control_id		 = Sanitizer::get_var('control_id', 'int');
+			$entity_group_id = Sanitizer::get_var('entity_group_id', 'int');
 
 			$part_of_town = createObject('property.bogeneric')->get_single_name(array('type' => 'part_of_town',	'id' => $part_of_town_id));
 
@@ -781,12 +781,12 @@
 				phpgw::no_access();
 			}
 
-			$month	 = phpgw::get_var('month', 'int', 'REQUEST', date("m", time()));
-			$year	 = phpgw::get_var('year', 'int', 'REQUEST', date("Y", time()));
-			$part_of_town_id = phpgw::get_var('part_of_town_id', 'int');
-			$control_area_id = phpgw::get_var('control_area_id', 'int');
-			$control_id		 = phpgw::get_var('control_id', 'int');
-			$entity_group_id = phpgw::get_var('entity_group_id', 'int');
+			$month	 = Sanitizer::get_var('month', 'int', 'REQUEST', date("m", time()));
+			$year	 = Sanitizer::get_var('year', 'int', 'REQUEST', date("Y", time()));
+			$part_of_town_id = Sanitizer::get_var('part_of_town_id', 'int');
+			$control_area_id = Sanitizer::get_var('control_area_id', 'int');
+			$control_id		 = Sanitizer::get_var('control_id', 'int');
+			$entity_group_id = Sanitizer::get_var('entity_group_id', 'int');
 
 
 			$items = $this->get_items($year, $month, $control_id, $entity_group_id, $part_of_town_id);
@@ -869,10 +869,10 @@
 				phpgw::no_access();
 			}
 
-			$email = (array)phpgw::get_var('email');
-			$send_email = (array)phpgw::get_var('send_email');
-			$timestamp = (array)phpgw::get_var('timestamp');
-			$control_id		 = phpgw::get_var('control_id', 'int');
+			$email = (array)Sanitizer::get_var('email');
+			$send_email = (array)Sanitizer::get_var('send_email');
+			$timestamp = (array)Sanitizer::get_var('timestamp');
+			$control_id		 = Sanitizer::get_var('control_id', 'int');
 
 			$soentity = createObject('property.soentity');
 
@@ -962,21 +962,21 @@ HTML;
 				phpgw::no_access();
 			}
 
-			$location_id = phpgw::get_var('location_id', 'int');
-			$component_id = phpgw::get_var('component_id', 'int');
-			$target_date = phpgw::get_var('target_date');
-			$deadline_date_ts = phpgw::get_var('deadline_date_ts');
-			$serie_id = phpgw::get_var('serie_id', 'int');
-			$check_list_id = phpgw::get_var('check_list_id', 'int');
+			$location_id = Sanitizer::get_var('location_id', 'int');
+			$component_id = Sanitizer::get_var('component_id', 'int');
+			$target_date = Sanitizer::get_var('target_date');
+			$deadline_date_ts = Sanitizer::get_var('deadline_date_ts');
+			$serie_id = Sanitizer::get_var('serie_id', 'int');
+			$check_list_id = Sanitizer::get_var('check_list_id', 'int');
 
 
 			$submit_ok = true;
 
-			$control_id = phpgw::get_var('control_id', 'int');
+			$control_id = Sanitizer::get_var('control_id', 'int');
 			$status = 0;
-			$original_deadline_date_ts = phpgw::get_var('original_deadline_date', 'int');
-			$comment = phpgw::get_var('comment', 'string');
-			$assigned_to = phpgw::get_var('assigned_to', 'int');
+			$original_deadline_date_ts = Sanitizer::get_var('original_deadline_date', 'int');
+			$comment = Sanitizer::get_var('comment', 'string');
+			$assigned_to = Sanitizer::get_var('assigned_to', 'int');
 
 			$planned_date_ts = strtotime($target_date);
 
@@ -1114,7 +1114,7 @@ HTML;
 				}
 				else
 				{
-					if (phpgw::get_var('phpgw_return_as') == 'json')
+					if (Sanitizer::get_var('phpgw_return_as') == 'json')
 					{
 						return array('status' => 'error', 'message' => $error_message ? $error_message : lang('Error'));
 					}
@@ -1135,11 +1135,11 @@ HTML;
 			}
 
 			self::set_active_menu('controller::inspection_history');
-			$control_area_id = phpgw::get_var('control_area_id', 'int');
+			$control_area_id = Sanitizer::get_var('control_area_id', 'int');
 
-			$control_id		 = phpgw::get_var('control_id', 'int');
-			$part_of_town_id = (array)phpgw::get_var('part_of_town_id', 'int');
-			$selected_inspectors = (array)phpgw::get_var('inspector_id', 'int');
+			$control_id		 = Sanitizer::get_var('control_id', 'int');
+			$part_of_town_id = (array)Sanitizer::get_var('part_of_town_id', 'int');
+			$selected_inspectors = (array)Sanitizer::get_var('inspector_id', 'int');
 
 			$user_id = $GLOBALS['phpgw_info']['user']['account_id'];
 
@@ -1173,8 +1173,8 @@ HTML;
 				$part_of_town_id = (array)phpgwapi_cache::user_get('controller', "calendar_planner_part_of_town", $user_id);
 			}
 
-			$entity_group_id = phpgw::get_var('entity_group_id', 'int');
-			$limit_date = phpgw::get_var('limit_date', 'date');
+			$entity_group_id = Sanitizer::get_var('entity_group_id', 'int');
+			$limit_date = Sanitizer::get_var('limit_date', 'date');
 
 			$date = new DateTime();		
 			$date->modify('-3 month');
@@ -1243,12 +1243,12 @@ HTML;
 
 			array_unshift($control_area_list, array('id' => '', 'name' => lang('select')));
 
-			$query		= phpgw::get_var('query', 'string');
-			$start		= phpgw::get_var('start', 'int', 'GET', 0);
-			$order		= phpgw::get_var('order', 'string', 'GET', 'account_lid');
-			$sort		= phpgw::get_var('sort', 'string', 'GET', 'ASC');
-			$allrows	= phpgw::get_var('allrows', 'bool');
-			$deviation	= phpgw::get_var('deviation', 'bool');
+			$query		= Sanitizer::get_var('query', 'string');
+			$start		= Sanitizer::get_var('start', 'int', 'GET', 0);
+			$order		= Sanitizer::get_var('order', 'string', 'GET', 'account_lid');
+			$sort		= Sanitizer::get_var('sort', 'string', 'GET', 'ASC');
+			$allrows	= Sanitizer::get_var('allrows', 'bool');
+			$deviation	= Sanitizer::get_var('deviation', 'bool');
 
 			$history_content = $this->get_inspection_history($selected_part_of_town, $control_id, $start, $query,$deviation, $allrows, $limit_date, $selected_inspectors);
 			$total = $this->so->total_records;
@@ -1535,7 +1535,7 @@ HTML;
 							'check_list_id' => $item['schedule']['info']['check_list_id'],
 						);
 						$url_target = '_self';
-						$link_to_checklist = "<a href='" . $GLOBALS['phpgw']->link('/index.php', $control_link_data) . " target='{$url_target}'><kbd><i class='fas fa-link'></i></kbd></a>";
+						$link_to_checklist = "<a href='" . phpgw::link('/index.php', $control_link_data) . " target='{$url_target}'><kbd><i class='fas fa-link'></i></kbd></a>";
 					}
 					else
 					{
@@ -1664,12 +1664,12 @@ HTML;
 			}
 
 			self::set_active_menu('controller::start_inspection');
-			$month	 = phpgw::get_var('month', 'int', 'REQUEST', date("m", time()));
-			$year	 = phpgw::get_var('year', 'int', 'REQUEST', date("Y", time()));
-			$control_area_id = phpgw::get_var('control_area_id', 'int');
+			$month	 = Sanitizer::get_var('month', 'int', 'REQUEST', date("m", time()));
+			$year	 = Sanitizer::get_var('year', 'int', 'REQUEST', date("Y", time()));
+			$control_area_id = Sanitizer::get_var('control_area_id', 'int');
 
-			$control_id		 = phpgw::get_var('control_id', 'int');
-			$part_of_town_id = (array)phpgw::get_var('part_of_town_id', 'int');
+			$control_id		 = Sanitizer::get_var('control_id', 'int');
+			$part_of_town_id = (array)Sanitizer::get_var('part_of_town_id', 'int');
 
 
 			$user_id = $GLOBALS['phpgw_info']['user']['account_id'];
@@ -1704,21 +1704,21 @@ HTML;
 				$part_of_town_id = (array)phpgwapi_cache::user_get('controller', "calendar_planner_part_of_town", $user_id);
 			}
 
-			$entity_group_id = phpgw::get_var('entity_group_id', 'int');
-			$current_day_timestamp	 = phpgw::get_var('current_day_str', 'date', 'REQUEST', time());
+			$entity_group_id = Sanitizer::get_var('entity_group_id', 'int');
+			$current_day_timestamp	 = Sanitizer::get_var('current_day_str', 'date', 'REQUEST', time());
 			$current_day = new DateTime(date('Y-m-d', $current_day_timestamp));
 
 			$current_day_str = date('Y-m-d', $current_day_timestamp);
 //_debug_array($current_day_str);
 
 
-			if (phpgw::get_var('prev_day', 'bool'))
+			if (Sanitizer::get_var('prev_day', 'bool'))
 			{
 				$current_day->modify('-1 day');
 				$current_day_str = $current_day->format('Y-m-d');
 			}
 
-			if (phpgw::get_var('next_day', 'bool'))
+			if (Sanitizer::get_var('next_day', 'bool'))
 			{
 				$current_day->modify('+1 day');
 				$current_day_str = $current_day->format('Y-m-d');
@@ -1900,9 +1900,9 @@ HTML;
 			}
 
 			self::set_active_menu('controller::ad_hoc');
-			$month	 = phpgw::get_var('month', 'int', 'REQUEST', date("m", time()));
-			$year	 = phpgw::get_var('year', 'int', 'REQUEST', date("Y", time()));
-			$query		= phpgw::get_var('query', 'string');
+			$month	 = Sanitizer::get_var('month', 'int', 'REQUEST', date("m", time()));
+			$year	 = Sanitizer::get_var('year', 'int', 'REQUEST', date("Y", time()));
+			$query		= Sanitizer::get_var('query', 'string');
 
 			if (13 == $month)
 			{
@@ -1916,10 +1916,10 @@ HTML;
 				$year	 -= 1;
 			}
 
-			$control_area_id = phpgw::get_var('control_area_id', 'int');
+			$control_area_id = Sanitizer::get_var('control_area_id', 'int');
 
-			$control_id		 = phpgw::get_var('control_id', 'int');
-			$part_of_town_id = (array)phpgw::get_var('part_of_town_id', 'int');
+			$control_id		 = Sanitizer::get_var('control_id', 'int');
+			$part_of_town_id = (array)Sanitizer::get_var('part_of_town_id', 'int');
 
 
 			$user_id = $GLOBALS['phpgw_info']['user']['account_id'];
@@ -1954,7 +1954,7 @@ HTML;
 				$part_of_town_id = (array)phpgwapi_cache::user_get('controller', "calendar_planner_part_of_town", $user_id);
 			}
 
-			$entity_group_id = phpgw::get_var('entity_group_id', 'int');
+			$entity_group_id = Sanitizer::get_var('entity_group_id', 'int');
 
 			$control_types = $this->so_control->get_controls_by_control_area($control_area_id);
 

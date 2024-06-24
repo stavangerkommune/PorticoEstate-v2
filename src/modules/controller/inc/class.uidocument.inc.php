@@ -57,10 +57,10 @@
 			parent::__construct();
 			$this->so = controller_sodocument::get_instance();
 			$this->so_procedure = controller_soprocedure::get_instance();
-			$this->read = $GLOBALS['phpgw']->acl->check('.procedure', PHPGW_ACL_READ, 'controller');//1
-			$this->add = $GLOBALS['phpgw']->acl->check('.procedure', PHPGW_ACL_ADD, 'controller');//2
-			$this->edit = $GLOBALS['phpgw']->acl->check('.procedure', PHPGW_ACL_EDIT, 'controller');//4
-			$this->delete = $GLOBALS['phpgw']->acl->check('.procedure', PHPGW_ACL_DELETE, 'controller');//8
+			$this->read = $GLOBALS['phpgw']->acl->check('.procedure', ACL_READ, 'controller');//1
+			$this->add = $GLOBALS['phpgw']->acl->check('.procedure', ACL_ADD, 'controller');//2
+			$this->edit = $GLOBALS['phpgw']->acl->check('.procedure', ACL_EDIT, 'controller');//4
+			$this->delete = $GLOBALS['phpgw']->acl->check('.procedure', ACL_DELETE, 'controller');//8
 
 			self::set_active_menu('admin::controller::controller_document_types');
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= ': ' .lang('document types');
@@ -68,18 +68,18 @@
 
 		public function query()
 		{
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 			$params = array(
-				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results' => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start' => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results' => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query' => $search['value'],
 				'order' => $columns[$order[0]['column']]['data'],
 				'sort' => $order[0]['dir'],
-				'allrows' => phpgw::get_var('length', 'int') == -1,
+				'allrows' => Sanitizer::get_var('length', 'int') == -1,
 			);
 
 
@@ -89,7 +89,7 @@
 			$num_of_objects = $params['results'] > 0 ? $params['results'] : 0;
 			$sort_field = $params['order'];
 
-			$ctrl_area = phpgw::get_var('control_areas');
+			$ctrl_area = Sanitizer::get_var('control_areas');
 			if (isset($ctrl_area) && $ctrl_area > 0)
 			{
 				$filters['control_areas'] = $ctrl_area;
@@ -97,24 +97,24 @@
 			$sort_ascending = $params['sort'] == 'desc' ? false : true;
 
 
-			$search_type = phpgw::get_var('search_option');
+			$search_type = Sanitizer::get_var('search_option');
 			// Create an empty result set
 			$result_objects = array();
 			$result_count = 0;
 
 			//Retrieve a contract identifier and load corresponding contract
-			$procedure_id = phpgw::get_var('procedure_id');
+			$procedure_id = Sanitizer::get_var('procedure_id');
 			if (isset($procedure_id))
 			{
 				$procedure = $this->so_procedure->get_single($procedure_id);
 			}
 
-			$type = phpgw::get_var('type');
+			$type = Sanitizer::get_var('type');
 			switch ($type)
 			{
 				case 'documents_for_procedure':
 					$filters = array('procedure_id' => $procedure_id,
-						'document_type' => phpgw::get_var('document_type'));
+						'document_type' => Sanitizer::get_var('document_type'));
 					break;
 			}
 
@@ -131,11 +131,11 @@
 				}
 			}
 
-			$editable = phpgw::get_var('editable') == '1' ? true : false;
+			$editable = Sanitizer::get_var('editable') == '1' ? true : false;
 
 			//Add context menu columns (actions and labels)
 			array_walk($rows, array($this, 'add_actions'), array($type,
-				isset($procedure) ? $procedure->has_permission(PHPGW_ACL_EDIT) : false,
+				isset($procedure) ? $procedure->has_permission(ACL_EDIT) : false,
 				$this->type_of_user,
 				$editable));
 
@@ -156,10 +156,10 @@
 		{
 			$result_objects = $this->so->list_document_types();
 
-			$editable = phpgw::get_var('editable') == '1' ? true : false;
+			$editable = Sanitizer::get_var('editable') == '1' ? true : false;
 			$results = array('results' => $result_objects);
 			$results['total_records'] = count($result_objects);
-			$results['draw'] = phpgw::get_var('draw', 'int');
+			$results['draw'] = Sanitizer::get_var('draw', 'int');
 
 			//Add context menu columns (actions and labels)
 			array_walk(
@@ -223,7 +223,7 @@
 		public function add()
 		{
 			// Get target ids
-			$procedure_id = intval(phpgw::get_var('procedure_id'));
+			$procedure_id = intval(Sanitizer::get_var('procedure_id'));
 
 			$data = array();
 			// Check permissions if procedure id is set
@@ -246,18 +246,18 @@
 				if (!$this->add && !$this->edit)
 				{
 					phpgwapi_cache::message_set('No access', 'error');
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uidocument.show',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uidocument.show',
 						'procedure_id' => $procedure->get_id(),
 						'tab' => 'documents'));
 				}
 				//Create a document object
 				$document = new controller_document();
-				$document->set_title(phpgw::get_var('document_title'));
+				$document->set_title(Sanitizer::get_var('document_title'));
 
 				$file_name = @str_replace(' ', '_', $_FILES['file_path']['name']);
 				$document->set_name($file_name);
-				$document->set_type_id(phpgw::get_var('document_type'));
-				$desc = phpgw::get_var('document_description', 'html');
+				$document->set_type_id(Sanitizer::get_var('document_type'));
+				$desc = Sanitizer::get_var('document_description', 'html');
 				$desc = str_replace("&nbsp;", " ", $desc);
 				$document->set_description($desc);
 				$document->set_procedure_id($procedure_id);
@@ -277,7 +277,7 @@
 					{
 						if (isset($procedure))
 						{
-							$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uidocument.show',
+							phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uidocument.show',
 								'procedure_id' => $procedure->get_id(),
 								'tab' => 'documents'));
 						}
@@ -292,7 +292,7 @@
 				else
 				{
 					phpgwapi_cache::message_set('feil ved opplasting', 'error');
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uidocument.show',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uidocument.show',
 							'procedure_id' => $procedure->get_id(),
 							'tab' => 'documents'));
 					//Handle vfs failure to store document
@@ -309,7 +309,7 @@
 		 */
 		public function view()
 		{
-			$document_id = intval(phpgw::get_var('id'));
+			$document_id = intval(Sanitizer::get_var('id'));
 			$document = $this->so->get_single($document_id);
 			$document_properties = $this->get_type_and_id($document);
 
@@ -336,15 +336,15 @@
 		 */
 		public function delete()
 		{
-			$document_id = intval(phpgw::get_var('id'));
+			$document_id = intval(Sanitizer::get_var('id'));
 			$document = $this->so->get_single($document_id);
 
-			$procedure_id = intval(phpgw::get_var('procedure_id'));
+			$procedure_id = intval(Sanitizer::get_var('procedure_id'));
 
 			if (!$this->delete)
 			{
 				phpgwapi_cache::message_set('No access', 'error');
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uidocument.show',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uidocument.show',
 					'procedure_id' => $procedure_id,
 					'tab' => 'documents'));
 			}
@@ -371,7 +371,7 @@
 			{
 				phpgwapi_cache::message_set('Not deleted', 'error');
 			}
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uidocument.show',
+			phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uidocument.show',
 					'procedure_id' => $procedure->get_id(),
 					'tab' => 'documents'));
 		}
@@ -388,7 +388,7 @@
 		{
 			if ($document_properties['document_type'] == controller_sodocument::$PROCEDURE_DOCUMENTS)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.edit',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.edit',
 					'id' => $document_properties['id'],
 					'error' => $error,
 					'message' => $message));
@@ -410,7 +410,7 @@
 			if ($document_properties == controller_sodocument::$PROCEDURE_DOCUMENTS)
 			{
 				$procedure = $this->so_procedure->get_single($document_properties['id']);
-				if (!$procedure->has_permission(PHPGW_ACL_EDIT))
+				if (!$procedure->has_permission(ACL_EDIT))
 				{
 					return false;
 				}
@@ -452,11 +452,11 @@
 		public function show()
 		{
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('view');
-			$procedure_id = (int)phpgw::get_var('procedure_id');
-			$document_type = phpgw::get_var('type');
+			$procedure_id = (int)Sanitizer::get_var('procedure_id');
+			$document_type = Sanitizer::get_var('type');
 			if (isset($_POST['edit_procedure']))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array(
+				phpgw::redirect_link('/index.php', array(
 					'menuaction' => 'controller.uiprocedure.edit',
 					'id' => $procedure_id));
 			}
@@ -503,7 +503,7 @@
 				$tabs = array(
 					'procedure' => array(
 						'label' => lang('Procedure'),
-						'link' => $GLOBALS['phpgw']->link('/index.php', array(
+						'link' => phpgw::link('/index.php', array(
 							'menuaction' => 'controller.uiprocedure.view',
 							'id' => $procedure->get_id()))
 					),
@@ -531,7 +531,7 @@
 
 		public function document_types()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->get_document_types();
 			}

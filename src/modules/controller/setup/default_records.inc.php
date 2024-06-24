@@ -92,7 +92,7 @@ $acls = array
 	)
 );
 
-$aclobj =& $GLOBALS['phpgw']->acl;
+$aclobj =Acl::getInstance();
 
 if (!$GLOBALS['phpgw']->accounts->exists('controller_group') ) // no controller accounts already exists
 {

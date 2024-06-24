@@ -24,5 +24,5 @@
 		'menuaction'=> 'folders.uifolders.showFolders'
 	);
 
-	Header('Location: '.$GLOBALS['phpgw']->link('/index.php',$parms));
+	Header('Location: '.phpgw::link('/index.php',$parms));
 	$GLOBALS['phpgw']->common->phpgw_exit();

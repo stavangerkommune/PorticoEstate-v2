@@ -75,17 +75,17 @@
 		{
 			parent::__construct('controller');
 
-			$this->read = $GLOBALS['phpgw']->acl->check('.control', PHPGW_ACL_READ, 'controller');//1
-			$this->add = $GLOBALS['phpgw']->acl->check('.control', PHPGW_ACL_ADD, 'controller');//2
-			$this->edit = $GLOBALS['phpgw']->acl->check('.control', PHPGW_ACL_EDIT, 'controller');//4
-			$this->delete = $GLOBALS['phpgw']->acl->check('.control', PHPGW_ACL_DELETE, 'controller');//8
+			$this->read = $GLOBALS['phpgw']->acl->check('.control', ACL_READ, 'controller');//1
+			$this->add = $GLOBALS['phpgw']->acl->check('.control', ACL_ADD, 'controller');//2
+			$this->edit = $GLOBALS['phpgw']->acl->check('.control', ACL_EDIT, 'controller');//4
+			$this->delete = $GLOBALS['phpgw']->acl->check('.control', ACL_DELETE, 'controller');//8
 			$this->manage = $GLOBALS['phpgw']->acl->check('.control', 16, 'controller');//16
 
 			$this->config = CreateObject('phpgwapi.config', 'controller')->read();
 			$this->_category_acl = isset($this->config['acl_at_control_area']) && $this->config['acl_at_control_area'] == 1 ? true : false;
 
-			$location_id = phpgw::get_var('location_id', 'int');
-			$this->get_locations = phpgw::get_var('get_locations', 'bool');
+			$location_id = Sanitizer::get_var('location_id', 'int');
+			$this->get_locations = Sanitizer::get_var('get_locations', 'bool');
 			if ($location_id && $this->is_location($location_id))
 			{
 				$this->get_locations = true;
@@ -102,12 +102,12 @@
 
 			$this->account = $GLOBALS['phpgw_info']['user']['account_id'];
 
-			if (phpgw::get_var('noframework', 'bool'))
+			if (Sanitizer::get_var('noframework', 'bool'))
 			{
 				$GLOBALS['phpgw_info']['flags']['noframework'] = true;
 			}
 			$this->custom = createObject('phpgwapi.custom_fields');
-			$user_id = phpgw::get_var('user_id', 'string', 'REQUEST', -1);
+			$user_id = Sanitizer::get_var('user_id', 'string', 'REQUEST', -1);
 			$this->user_id = $user_id == 'all' ? 0 : (int) $user_id;
 
 			if ($user_id < 0)
@@ -124,7 +124,7 @@
 
 			$this->currentapp = $GLOBALS['phpgw_info']['flags']['currentapp'];
 			
-			if(phpgw::get_var('get_locations', 'bool'))
+			if(Sanitizer::get_var('get_locations', 'bool'))
 			{
 				$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('status locations');
 				
@@ -138,8 +138,8 @@
 
 		public function add_controll_from_master()
 		{
-			$master_component = phpgw::get_var('master_component', 'string');
-			$target = phpgw::get_var('target', 'string');//array of strings
+			$master_component = Sanitizer::get_var('master_component', 'string');
+			$target = Sanitizer::get_var('target', 'string');//array of strings
 			$result = array('status' => 'error', 'message' => '');
 
 			if ($this->manage)
@@ -180,8 +180,8 @@
 
 		private function get_location_filter($get_locations = false)
 		{
-			$entity_group_id = phpgw::get_var('entity_group_id', 'int');
-			$location_id = phpgw::get_var('location_id', 'int');
+			$entity_group_id = Sanitizer::get_var('entity_group_id', 'int');
+			$location_id = Sanitizer::get_var('location_id', 'int');
 
 //			if($entity_group_id)
 			{
@@ -274,7 +274,7 @@
 		 */
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -283,7 +283,7 @@
 
 			$filter_status_components = phpgwapi_cache::user_get('controller', 'filter_status_components', $this->account);
 
-			$users = $GLOBALS['phpgw']->acl->get_user_list_right(PHPGW_ACL_EDIT, '.checklist');
+			$users = $GLOBALS['phpgw']->acl->get_user_list_right(ACL_EDIT, '.checklist');
 			$user_list = array();
 			foreach ($users as $user)
 			{
@@ -306,7 +306,7 @@
 			);
 
 			/* Unselect user if filter on component */
-			if (phpgw::get_var('component_id', 'int'))
+			if (Sanitizer::get_var('component_id', 'int'))
 			{
 //				$default_value['selected'] = 0;
 			}
@@ -355,7 +355,7 @@
 
 			$year_list = array();
 
-			$year = phpgw::get_var('year', 'int');
+			$year = Sanitizer::get_var('year', 'int');
 			$year = $year ? $year : date('Y');
 			for ($_year = ($year - 2); $_year < ($year + 5); $_year++)
 			{
@@ -404,7 +404,7 @@
 				$status_entry['selected'] = isset($filter_status_components['filter_status']) && $status_entry['id'] == $filter_status_components['filter_status'] ? 1 : 0;
 			}
 
-			$filter_component = phpgw::get_var('filter_component');
+			$filter_component = Sanitizer::get_var('filter_component');
 
 			$control_types = createObject('controller.socontrol')->get(0, 0, 'title', true, '', '', array());
 
@@ -421,10 +421,10 @@
 	//		_debug_array($control_types_arr);
 			$data = array(
 				'required_actual_hours' => !empty($this->config['required_actual_hours']) ? true : false,
-				'datatable_name' =>  phpgw::get_var('get_locations', 'bool') ? lang('status locations') : lang('status components'),
+				'datatable_name' =>  Sanitizer::get_var('get_locations', 'bool') ? lang('status locations') : lang('status components'),
 				'form' => array(
 					'action' => self::link(array('menuaction' => 'controller.uicomponent.index',
-						'get_locations' => phpgw::get_var('get_locations', 'bool'),
+						'get_locations' => Sanitizer::get_var('get_locations', 'bool'),
 						)
 					),
 					'method' => 'POST',
@@ -448,12 +448,12 @@
 								'name' => 'entity_group_id',
 								'text' => lang('entity group'),
 								'list' => execMethod('property.bogeneric.get_list', array('type' => 'entity_group',
-									'selected' => phpgw::get_var('entity_group_id'), 'add_empty' => true)),
+									'selected' => Sanitizer::get_var('entity_group_id'), 'add_empty' => true)),
 								'onchange' => 'update_table();'
 							),
 							array('type' => 'hidden',
 								'name' => 'location_id',
-								'value' => phpgw::get_var('location_id', 'int')
+								'value' => Sanitizer::get_var('location_id', 'int')
 							),
 							array('type' => 'filter',
 								'name' => 'location_id',
@@ -465,7 +465,7 @@
 								'name' => 'org_unit_id',
 								'text' => lang('department'),
 								'list' => execMethod('property.bogeneric.get_list', array('type' => 'org_unit',
-									'selected' => phpgw::get_var('org_unit_id'), 'add_empty' => true)),
+									'selected' => Sanitizer::get_var('org_unit_id'), 'add_empty' => true)),
 								'onchange' => 'update_table();'
 							),
 							array('type' => 'filter',
@@ -813,14 +813,14 @@
 				{
 					if ($attrib['datatype'] == 'LB' || $attrib['datatype'] == 'R')
 					{
-						if ($_attrib_filter_value = phpgw::get_var("custom_{$location_id}_{$attrib['column_name']}", 'int'))
+						if ($_attrib_filter_value = Sanitizer::get_var("custom_{$location_id}_{$attrib['column_name']}", 'int'))
 						{
 							$attrib_filter[] = "json_representation->>'{$attrib['column_name']}' = '{$_attrib_filter_value}'";
 						}
 					}
 					else if ($attrib['datatype'] == 'CH')
 					{
-						if ($_attrib_filter_value = phpgw::get_var("custom_{$location_id}_{$attrib['column_name']}", 'int'))
+						if ($_attrib_filter_value = Sanitizer::get_var("custom_{$location_id}_{$attrib['column_name']}", 'int'))
 						{
 							$attrib_filter[] = "json_representation->>'{$attrib['column_name']}' {$GLOBALS['phpgw']->db->like} '%,{$_attrib_filter_value},%'";
 						}
@@ -834,33 +834,33 @@
 		public function query()
 		{
 			$get_locations = $this->get_locations;
-			$entity_group_id = phpgw::get_var('entity_group_id', 'int');
-			$filter_control_id = phpgw::get_var('control_id', 'int');
-			$location_id = phpgw::get_var('location_id', 'int');
-			$location_code = phpgw::get_var('location_code', 'string');
-			$location_name = phpgw::get_var('location_name', 'string');
+			$entity_group_id = Sanitizer::get_var('entity_group_id', 'int');
+			$filter_control_id = Sanitizer::get_var('control_id', 'int');
+			$location_id = Sanitizer::get_var('location_id', 'int');
+			$location_code = Sanitizer::get_var('location_code', 'string');
+			$location_name = Sanitizer::get_var('location_name', 'string');
 			if(!$location_name)
 			{
 				$location_code = '';
 			}
-			$control_area = phpgw::get_var('control_area', 'int');
+			$control_area = Sanitizer::get_var('control_area', 'int');
 			$user_id = $this->user_id;
-			$district_id = phpgw::get_var('district_id', 'int');
-			$part_of_town_id = phpgw::get_var('part_of_town_id', 'int');
-			$query = phpgw::get_var('query', 'string');
-			$year = phpgw::get_var('year', 'int');
-			$filter_month = phpgw::get_var('month', 'int');
-			$all_items = phpgw::get_var('all_items', 'bool');
-			$total_hours = phpgw::get_var('total_hours', 'bool');
-//			$user_only = phpgw::get_var('user_only', 'bool');
+			$district_id = Sanitizer::get_var('district_id', 'int');
+			$part_of_town_id = Sanitizer::get_var('part_of_town_id', 'int');
+			$query = Sanitizer::get_var('query', 'string');
+			$year = Sanitizer::get_var('year', 'int');
+			$filter_month = Sanitizer::get_var('month', 'int');
+			$all_items = Sanitizer::get_var('all_items', 'bool');
+			$total_hours = Sanitizer::get_var('total_hours', 'bool');
+//			$user_only = Sanitizer::get_var('user_only', 'bool');
 			$user_only = $total_hours ? false : true;
-			$filter_status = phpgw::get_var('status', 'string');
+			$filter_status = Sanitizer::get_var('status', 'string');
 
 			$filter_status_components = array(
 				'filter_control_id'		 => $filter_control_id,
 				'filter_month'			 => $filter_month,
 				'filter_status'			 => $filter_status,
-				'filter_user_id'		 => phpgw::get_var('user_id', 'string', 'REQUEST', -1),
+				'filter_user_id'		 => Sanitizer::get_var('user_id', 'string', 'REQUEST', -1),
 				'filter_district_id'	 => $district_id,
 				'filter_part_of_town_id' => $part_of_town_id
 			);
@@ -873,8 +873,8 @@
 				$filter_month =	null;
 			}
 
-			$report_type = phpgw::get_var('report_type', 'string');
-			if ($filter_component_str = phpgw::get_var('filter_component', 'string'))
+			$report_type = Sanitizer::get_var('report_type', 'string');
+			if ($filter_component_str = Sanitizer::get_var('filter_component', 'string'))
 			{
 				$filter_component_arr = explode('_', $filter_component_str);
 				$location_id = $filter_component_arr[0];
@@ -886,7 +886,7 @@
 				$filter_component = array();
 			}
 
-			if ($org_unit_id = phpgw::get_var('org_unit_id', 'int'))
+			if ($org_unit_id = Sanitizer::get_var('org_unit_id', 'int'))
 			{
 				$_subs = execMethod('property.sogeneric.read_tree', array('node_id' => $org_unit_id,
 					'type' => 'org_unit'));
@@ -1339,7 +1339,7 @@
 				}
 				else
 				{
-					$data['component_url'] = '<a href="' . $GLOBALS['phpgw']->link('/index.php', $item_link_data) . "\" target='{$url_target}'>{$item_id}{$entry[0]['component']['xml_short_desc']}</a>";
+					$data['component_url'] = '<a href="' . phpgw::link('/index.php', $item_link_data) . "\" target='{$url_target}'>{$item_id}{$entry[0]['component']['xml_short_desc']}</a>";
 				}
 				$data['component_id'] = $item_id;
 				$data['location_id'] = $location_id;
@@ -1494,7 +1494,7 @@
 
 					$data['control_id'] = 0;
 					$data['control_type'] = '';
-					$data['component_url'] = '<a href="' . $GLOBALS['phpgw']->link('/index.php', $item_link_data) . "\" target='{$url_target}'>{$item_id} {$location_type_name[$location_id]}</br>{$short_description}</a>";
+					$data['component_url'] = '<a href="' . phpgw::link('/index.php', $item_link_data) . "\" target='{$url_target}'>{$item_id} {$location_type_name[$location_id]}</br>{$short_description}</a>";
 					$data['component_id'] = $item_id;
 					$data['location_id'] = $location_id;
 					$data['location_code'] = $_location_code;
@@ -1833,7 +1833,7 @@
 					'menuaction' => 'controller.uicheck_list.edit_check_list',
 					'check_list_id' => $param['info']['check_list_id'],
 				);
-				$_href = $GLOBALS['phpgw']->link('/index.php', $control_link_data);
+				$_href = phpgw::link('/index.php', $control_link_data);
 				$link = "<a href='{$_href}' target='{$url_target}'>{$img}</a>";
 			}
 			else
@@ -1870,7 +1870,7 @@
 				}
 				else
 				{
-					$_href = $GLOBALS['phpgw']->link('/index.php', $control_link_data);
+					$_href = phpgw::link('/index.php', $control_link_data);
 					$link = "<a href='{$_href}' target='{$url_target}'>{$img}</a>";
 				}
 

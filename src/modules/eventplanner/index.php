@@ -37,4 +37,4 @@
 		$start_page = array('menuaction' => $currentapp . '.uiapplication.index');
 	}
 
-	$GLOBALS['phpgw']->redirect_link('/index.php', $start_page);
+	phpgw::redirect_link('/index.php', $start_page);

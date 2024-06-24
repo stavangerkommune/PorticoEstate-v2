@@ -68,7 +68,7 @@
 
 			$GLOBALS['phpgw']->acl->set_account_id($this->account);
 //			$this->grants		= $GLOBALS['phpgw']->acl->get_grants2('notes');
-//			$this->grants['accounts'][$this->account] = PHPGW_ACL_READ + PHPGW_ACL_ADD + PHPGW_ACL_EDIT + PHPGW_ACL_DELETE;
+//			$this->grants['accounts'][$this->account] = ACL_READ + ACL_ADD + ACL_EDIT + ACL_DELETE;
 			$this->bonotes		= CreateObject('notes.bonotes',true);
 
 			$this->start		= $this->bonotes->start;
@@ -120,15 +120,15 @@
 					'first'						=> $first,
 					'date'						=> $note['date'],
 					'owner'						=> $note['owner'],
-					'link_view'					=> $GLOBALS['phpgw']->link(
+					'link_view'					=> phpgw::link(
 						'/index.php', array(
 							'menuaction' => 'notes.uinotes.view',
 							'note_id'    => $note['note_id'])),
-					'link_edit'					=> $GLOBALS['phpgw']->link(
+					'link_edit'					=> phpgw::link(
 						'/index.php', array(
 							'menuaction' => 'notes.uinotes.edit',
 							'note_id'    => $note['note_id'])),
-					'link_delete'				=> $GLOBALS['phpgw']->link(
+					'link_delete'				=> phpgw::link(
 						'/index.php', array(
 							'menuaction' => 'notes.uinotes.delete',
 							'note_id'    => $note['note_id'])),
@@ -161,7 +161,7 @@
 
 			$table_add = array
 			(
-				'add_action'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'notes.uinotes.edit'))
+				'add_action'			=> phpgw::link('/index.php', array('menuaction' => 'notes.uinotes.edit'))
 			);
 
 			$nm = array
@@ -185,28 +185,28 @@
 			);
 
 			$this->save_sessiondata();
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('list' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('list' => $data));
 		}
 
 		public function edit()
 		{
-			$note_id	= phpgw::get_var('note_id', 'int');
-			$values		= phpgw::get_var('values', 'string', 'POST');
-			$save		= phpgw::get_var('save', 'bool', 'POST');
-			$cancel		= phpgw::get_var('cancel', 'bool', 'POST');
-			$apply		= phpgw::get_var('apply', 'bool', 'POST');
+			$note_id	= Sanitizer::get_var('note_id', 'int');
+			$values		= Sanitizer::get_var('values', 'string', 'POST');
+			$save		= Sanitizer::get_var('save', 'bool', 'POST');
+			$cancel		= Sanitizer::get_var('cancel', 'bool', 'POST');
+			$apply		= Sanitizer::get_var('apply', 'bool', 'POST');
 			$action		= '';
 
 			if ( $save || $cancel || $apply )
 			{
 				if ( $cancel )
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php',
+					phpgw::redirect_link('/index.php',
 							array('menuaction' => 'notes.uinotes.index'));
 				}
 
 				$values['note_id'] = $note_id;
-				$values['content'] = phpgw::get_var('note_content', 'html', 'POST');
+				$values['content'] = Sanitizer::get_var('note_content', 'html', 'POST');
 				if ( $values['cat_id'] )
 				{
 					$this->cat_id = (int) $values['cat_id'];
@@ -215,13 +215,13 @@
 
 				if ( $save )
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php',
+					phpgw::redirect_link('/index.php',
 							array('menuaction' => 'notes.uinotes.index'));
 				}
 
 				// Must be a reply request
 				$action	= 'apply';
-				$GLOBALS['phpgw']->redirect_link('/index.php', 
+				phpgw::redirect_link('/index.php', 
 							array('menuaction' => 'notes.uinotes.edit', 'note_id' => $note_id));
 			}
 
@@ -244,7 +244,7 @@
 
 			$note['content'] = phpgw::clean_html($note['content']);
 
-			$edit_url = $GLOBALS['phpgw']->link('/index.php', array
+			$edit_url = phpgw::link('/index.php', array
 			(
 				'menuaction'	=> 'notes.uinotes.edit',
 				'note_id'		=> $note_id
@@ -281,17 +281,17 @@
 			$GLOBALS['phpgw']->richtext->replace_element('note_content');
 			$GLOBALS['phpgw']->richtext->generate_script();
 
-			$GLOBALS['phpgw']->xslttpl->add_file('msgbox');
+			phpgwapi_xslttemplates::getInstance()->add_file('msgbox');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('notes') . ': ' . $lang_title;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('edit' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('edit' => $data));
 		}
 
 		public function delete()
 		{
-			$note_id	= phpgw::get_var('note_id', 'int');
-			$delete		= phpgw::get_var('delete', 'bool', 'POST');
-			$cancel		= phpgw::get_var('cancel', 'bool', 'POST');
+			$note_id	= Sanitizer::get_var('note_id', 'int');
+			$delete		= Sanitizer::get_var('delete', 'bool', 'POST');
+			$cancel		= Sanitizer::get_var('cancel', 'bool', 'POST');
 
 			$link_data = array
 			(
@@ -301,21 +301,21 @@
 			if ($delete)
 			{
 				$this->bonotes->delete($note_id);
-				$GLOBALS['phpgw']->redirect_link('/index.php',$link_data);
+				phpgw::redirect_link('/index.php',$link_data);
 			}
 
 			if ($cancel)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php',$link_data);
+				phpgw::redirect_link('/index.php',$link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file('delete');
+			phpgwapi_xslttemplates::getInstance()->add_file('delete');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('notes') . ': ' . lang('delete note');
 
 			$data = array
 			(
-				'delete_url'				=> $GLOBALS['phpgw']->link(
+				'delete_url'				=> phpgw::link(
 					'/index.php', array(
 						'menuaction' => 'notes.uinotes.delete',
 						'note_id'    => $note_id)),
@@ -326,13 +326,13 @@
 				'lang_cancel'				=> lang('cancel')
 			);
 
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('delete' => $data));
 		}
 
 		public function view()
 		{
-			$note_id	= phpgw::get_var('note_id', 'int', 'GET');
-			$action		= phpgw::get_var('action', 'string', 'GET');
+			$note_id	= Sanitizer::get_var('note_id', 'int', 'GET');
+			$action		= Sanitizer::get_var('action', 'string', 'GET');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('notes') . ': ' . lang('view note');
 
@@ -346,7 +346,7 @@
 			}
 
 			$date = $GLOBALS['phpgw']->common->show_date($note['date']);
-			$done = $GLOBALS['phpgw']->link('/index.php', 
+			$done = phpgw::link('/index.php', 
 						array('menuaction' => 'notes.uinotes.index'));
 
 			$data = array
@@ -358,6 +358,6 @@
 				'value_content'		=> $note['content']
 			);
 
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('view' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('view' => $data));
 		}
 	}

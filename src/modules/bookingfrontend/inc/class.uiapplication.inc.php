@@ -27,8 +27,8 @@
 
 		function show()
 		{
-			$id = phpgw::get_var('id', 'int');
-			$secret =  phpgw::get_var('secret', 'string');
+			$id = Sanitizer::get_var('id', 'int');
+			$secret =  Sanitizer::get_var('secret', 'string');
 			$config = CreateObject('phpgwapi.config', 'booking')->read();
 
 			/**
@@ -63,7 +63,7 @@
 				self::redirect(array('menuaction' => 'bookingfrontend.uisearch.index'));
 			}
 
-			$comment = phpgw::get_var('comment', 'html', 'POST');
+			$comment = Sanitizer::get_var('comment', 'html', 'POST');
 
 			if ($_SERVER['REQUEST_METHOD'] == 'POST' && $comment)
 			{

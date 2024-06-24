@@ -22,7 +22,7 @@
 			}
 
 			$this->asyncservice	 = $GLOBALS['phpgw']->asyncservice;
-			$this->acl_edit		 = $GLOBALS['phpgw']->acl->check('.admin', PHPGW_ACL_EDIT, 'helpdesk');
+			$this->acl_edit		 = $GLOBALS['phpgw']->acl->check('.admin', ACL_EDIT, 'helpdesk');
 
 			self::set_active_menu('admin::helpdesk::async_settings');
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('helpdesk') . "::" . lang('Asynchronous Tasks');
@@ -38,7 +38,7 @@
 
 			if ($_SERVER['REQUEST_METHOD'] == 'POST')
 			{
-				$settings['helpdesk_async_task_anonyminizer_enabled'] = phpgw::get_var('helpdesk_async_task_anonyminizer_enabled', 'bool', 'POST');
+				$settings['helpdesk_async_task_anonyminizer_enabled'] = Sanitizer::get_var('helpdesk_async_task_anonyminizer_enabled', 'bool', 'POST');
 				$this->update($settings);
 			}
 

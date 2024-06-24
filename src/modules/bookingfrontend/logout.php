@@ -17,7 +17,7 @@
 		$GLOBALS['phpgw']->sessions = createObject('phpgwapi.sessions');
 	}
 
-	$sessionid = phpgw::get_var('bookingfrontendsession');
+	$sessionid = Sanitizer::get_var('bookingfrontendsession');
 
 	$verified = $GLOBALS['phpgw']->session->verify();
 
@@ -66,7 +66,7 @@
 		$GLOBALS['phpgw']->session->destroy($sessionid);
 	}
 
-	$forward = phpgw::get_var('phpgw_forward', 'int');
+	$forward = Sanitizer::get_var('phpgw_forward', 'int');
 
 	if ($forward)
 	{
@@ -75,12 +75,12 @@
 		{
 			if (preg_match('/phpgw_/', $name))
 			{
-				$extra_vars[$name] = phpgw::clean_value($value);
+				$extra_vars[$name] = Sanitizer::clean_value($value);
 			}
 		}
 	}
 
-	$redirect = phpgw::get_var('redirect_menuaction', 'string');
+	$redirect = Sanitizer::get_var('redirect_menuaction', 'string');
 
 	if ($redirect)
 	{
@@ -90,7 +90,7 @@
 		{
 			if (preg_match('/^redirect_([\w\_\-]+)/', $name, $matches) && $matches[1] != 'menuaction')
 			{
-				$extra_vars[$matches[1]] = phpgw::clean_value($value);
+				$extra_vars[$matches[1]] = Sanitizer::clean_value($value);
 			}
 		}
 	}
@@ -102,7 +102,7 @@
 
 	if (!$external_logout)
 	{
-		$GLOBALS['phpgw']->redirect_link('/bookingfrontend/', $extra_vars);
+		phpgw::redirect_link('/bookingfrontend/', $extra_vars);
 	}
 	else
 	{
@@ -110,7 +110,7 @@
 		if (substr($external_logout, -1) == '=')
 		{
 			$external_logout = rtrim($external_logout, '=');
-			$result_redirect = $GLOBALS['phpgw']->link('/bookingfrontend/', $extra_vars, true);
+			$result_redirect = phpgw::link('/bookingfrontend/', $extra_vars, true);
 		}
 		$external_logout_url = "{$external_logout}{$bookingfrontend_host}{$result_redirect}";
 		Header("Location: {$external_logout_url}");

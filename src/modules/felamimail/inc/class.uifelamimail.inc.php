@@ -49,13 +49,13 @@
 		{
 			require_once(PHPGW_SERVER_ROOT.'/felamimail/inc/xajax.inc.php');
 
-			$xajax = new xajax($GLOBALS['phpgw']->link('/felamimail/xajax.php',false,true), 'xajax_', 'utf-8');
+			$xajax = new xajax(phpgw::link('/felamimail/xajax.php',false,true), 'xajax_', 'utf-8');
 			$xajax->waitCursorOff();
 			$xajax->registerFunction("doXMLHTTP");
 
 			$GLOBALS['phpgw_info']['flags']['java_script'] .= $xajax->getJavascript($GLOBALS['phpgw_info']['server']['webserver_url'] . '/felamimail/js/');
 
-			$GLOBALS['phpgw']->js->validate_file('jsapi', 'jsapi', 'felamimail');
+			phpgwapi_js::getInstance()->validate_file('jsapi', 'jsapi', 'felamimail');
 			$this->timeCounter = microtime(true);
 
 			$this->displayCharset	= 'utf-8';
@@ -75,7 +75,7 @@
 	#		$this->filter 		= $this->bofelamimail->sessionData['activeFilter'];
 
 			$this->t			= CreateObject('phpgwapi.template',PHPGW_APP_TPL);
-			#$this->grants[$this->account]	= PHPGW_ACL_READ + PHPGW_ACL_ADD + PHPGW_ACL_EDIT + PHPGW_ACL_DELETE;
+			#$this->grants[$this->account]	= ACL_READ + ACL_ADD + ACL_EDIT + ACL_DELETE;
 			// this need to fixed
 			// this does not belong to here
 
@@ -94,7 +94,7 @@
 			{
 				$GLOBALS['phpgw']->css = createObject('phpgwapi.css');
 			}
-			$GLOBALS['phpgw']->css->validate_file('app', 'felamimail');
+			phpgwapi_css::getInstance()->validate_file('app', 'felamimail');
 		}
 
 		function addVcard()
@@ -192,7 +192,7 @@
 			(
 				'menuaction'	=> 'felamimail.uifelamimail.viewMainScreen'
 			);
-			$refreshURL = $GLOBALS['phpgw']->link('/index.php',$linkData);
+			$refreshURL = phpgw::link('/index.php',$linkData);
 
 			print "<script type=\"text/javascript\">
 			opener.location.href = '" .$refreshURL. "';
@@ -201,10 +201,10 @@
 		
 		function display_app_header()
 		{
-			#$GLOBALS['phpgw']->js->validate_file('foldertree','foldertree');
-			$GLOBALS['phpgw']->js->validate_file('dhtmlxtree','js/dhtmlXCommon', 'felamimail');
-			$GLOBALS['phpgw']->js->validate_file('dhtmlxtree','js/dhtmlXTree', 'felamimail');
-			$GLOBALS['phpgw']->js->validate_file('jscode','viewMainScreen','felamimail');
+			#phpgwapi_js::getInstance()->validate_file('foldertree','foldertree');
+			phpgwapi_js::getInstance()->validate_file('dhtmlxtree','js/dhtmlXCommon', 'felamimail');
+			phpgwapi_js::getInstance()->validate_file('dhtmlxtree','js/dhtmlXTree', 'felamimail');
+			phpgwapi_js::getInstance()->validate_file('jscode','viewMainScreen','felamimail');
 			$GLOBALS['phpgw_info']['flags']['include_xajax'] = True;
 
 			$GLOBALS['phpgw']->common->phpgw_header();
@@ -292,15 +292,15 @@
 			(
 				'menuaction'	=> 'felamimail.uifelamimail.hookAdmin'
 			);
-			$this->t->set_var('action_url',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('action_url',phpgw::link('/index.php',$linkData));
 			
 			$linkData = array
 			(
 				'menuaction'	=> 'emailadmin.emailadmin_ui.listProfiles'
 			);
-			$this->t->set_var('lang_go_emailadmin', lang('use <a href="%1">EmailAdmin</a> to create profiles', $GLOBALS['phpgw']->link('/index.php',$linkData)));
+			$this->t->set_var('lang_go_emailadmin', lang('use <a href="%1">EmailAdmin</a> to create profiles', phpgw::link('/index.php',$linkData)));
 			
-			$this->t->set_var('back_url',$GLOBALS['phpgw']->link('/admin/index.php'));
+			$this->t->set_var('back_url',phpgw::link('/admin/index.php'));
 			
 			if(isset($profileList) && is_array($profileList))
 			{
@@ -365,7 +365,7 @@
 			(
 				'menuaction'    => 'felamimail.uifelamimail.viewMainScreen'
 			);
-			$refreshURL = $GLOBALS['phpgw']->link('/index.php',$linkData);
+			$refreshURL = phpgw::link('/index.php',$linkData);
 			$this->t->set_var('reloadView',$refreshURL);
 			// display a warning if vacation notice is active
 			if(is_a($imapServer,'defaultimap') && $imapServer->enableSieve) {
@@ -400,7 +400,7 @@
 			$linkData = array (
 				'menuaction'    => 'felamimail.uicompose.compose'
 			);
-			$urlCompose = "egw_openWindowCentered('".$GLOBALS['phpgw']->link('/index.php',$linkData)."','compose', 700, egw_getWindowOuterHeight());";
+			$urlCompose = "egw_openWindowCentered('".phpgw::link('/index.php',$linkData)."','compose', 700, egw_getWindowOuterHeight());";
 
 			$navbarImages = array(
 				'new'			=> array(
@@ -493,7 +493,7 @@
 			#(
 			#	'menuaction'	=> 'felamimail.uifelamimail.viewMainScreen'
 			#);
-			#$this->t->set_var('refresh_url',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			#$this->t->set_var('refresh_url',phpgw::link('/index.php',$linkData));
 			
 			// define the sort defaults
 			$dateSort	= '0';
@@ -663,7 +663,7 @@
 						'menuaction'	=> 'felamimail.uifelamimail.viewMainScreen'
 					);
 					$selectLink = sprintf("<a class=\"body_link\" href=\"%s\">%s</a>",
-								$GLOBALS['phpgw']->link('/index.php',$linkData),
+								phpgw::link('/index.php',$linkData),
 								lang("Unselect All"));
 					$this->t->set_var('change_folder_checked','');
 					$this->t->set_var('move_message_checked','checked');
@@ -675,7 +675,7 @@
 						'menuaction'	=> 'felamimail.uifelamimail.viewMainScreen'
 					);
 					$selectLink = sprintf("<a class=\"body_link\" href=\"%s\">%s</a>",
-								$GLOBALS['phpgw']->link('/index.php',$linkData),
+								phpgw::link('/index.php',$linkData),
 								lang("Select all"));
 					$this->t->set_var('change_folder_checked','checked');
 					$this->t->set_var('move_message_checked','');
@@ -689,7 +689,7 @@
 						'menuaction'	=> 'felamimail.uifelamimail.viewMainScreen',
 						'startMessage'	=> $this->startMessage - $maxMessages
 					);
-					$link = $GLOBALS['phpgw']->link('/index.php',$linkData);
+					$link = phpgw::link('/index.php',$linkData);
 					$this->t->set_var('link_previous',"<a class=\"body_link\" href=\"$link\">".lang("previous")."</a>");
 				} else {
 					$this->t->set_var('link_previous',lang("previous"));
@@ -700,7 +700,7 @@
 						'menuaction'	=> 'felamimail.uifelamimail.viewMainScreen',
 						'startMessage'	=> $this->startMessage + $maxMessages
 					);
-					$link = $GLOBALS['phpgw']->link('/index.php',$linkData);
+					$link = phpgw::link('/index.php',$linkData);
 					$this->t->set_var('link_next',"<a class=\"body_link\" href=\"$link\">".lang("next")."</a>");
 				} else {
 					$this->t->set_var('link_next',lang("next"));
@@ -736,26 +736,26 @@
 			(
 				'menuaction'    => 'felamimail.uicompose.compose'
 			);
-			$this->t->set_var('url_compose_empty',"egw_openWindowCentered('".$GLOBALS['phpgw']->link('/index.php',$linkData)."','test',700,egw_getWindowOuterHeight());");
+			$this->t->set_var('url_compose_empty',"egw_openWindowCentered('".phpgw::link('/index.php',$linkData)."','test',700,egw_getWindowOuterHeight());");
 
 
 			$linkData = array
 			(
 				'menuaction'    => 'felamimail.uifilter.mainScreen'
 			);
-			$this->t->set_var('url_filter',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('url_filter',phpgw::link('/index.php',$linkData));
 
 			$linkData = array
 			(
 				'menuaction'    => 'felamimail.uifelamimail.handleButtons'
 			);
-			$this->t->set_var('url_change_folder',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('url_change_folder',phpgw::link('/index.php',$linkData));
 
 			$linkData = array
 			(
 				'menuaction'    => 'felamimail.uifelamimail.changeFilter'
 			);
-			$this->t->set_var('url_search_settings',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('url_search_settings',phpgw::link('/index.php',$linkData));
 
 			$this->t->set_var('lang_mark_messages_as',lang('mark messages as'));
 			$this->t->set_var('lang_delete',lang('delete'));

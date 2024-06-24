@@ -23,7 +23,7 @@
 			function __construct()
 			{
 				parent::__construct();
-				$this->db = & $GLOBALS['phpgw']->db;
+				$this->db = Db::getInstance();
 				$this->join = & $this->db->join;
 				$this->left_join = & $this->db->left_join;
 				$this->like = & $this->db->like;
@@ -52,7 +52,7 @@
 
 				$subject = "LRSHD: Sak #{$id} er referert til fra ny sak";
 
-				$link_to_ticket =  $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'helpdesk.uitts.view',
+				$link_to_ticket =  phpgw::link('/index.php', array('menuaction' => 'helpdesk.uitts.view',
 					'id' => $id), false, true);
 
 				$body = "<p>Sak #{$id}er referert til fra ny sak, ";

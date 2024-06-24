@@ -69,23 +69,23 @@
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = "controller::procedure";
 
-			$this->read = $GLOBALS['phpgw']->acl->check('.control', PHPGW_ACL_READ, 'controller');//1
-			$this->add = $GLOBALS['phpgw']->acl->check('.control', PHPGW_ACL_ADD, 'controller');//2
-			$this->edit = $GLOBALS['phpgw']->acl->check('.control', PHPGW_ACL_EDIT, 'controller');//4
-			$this->delete = $GLOBALS['phpgw']->acl->check('.control', PHPGW_ACL_DELETE, 'controller');//8
+			$this->read = $GLOBALS['phpgw']->acl->check('.control', ACL_READ, 'controller');//1
+			$this->add = $GLOBALS['phpgw']->acl->check('.control', ACL_ADD, 'controller');//2
+			$this->edit = $GLOBALS['phpgw']->acl->check('.control', ACL_EDIT, 'controller');//4
+			$this->delete = $GLOBALS['phpgw']->acl->check('.control', ACL_DELETE, 'controller');//8
 
 			$config = CreateObject('phpgwapi.config', 'controller');
 			$config->read();
 			$this->_category_acl = isset($config->config_data['acl_at_control_area']) && $config->config_data['acl_at_control_area'] == 1 ? true : false;
 			$this->dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
-//			$GLOBALS['phpgw']->css->add_external_file('controller/templates/base/css/base.css');
+//			phpgwapi_css::getInstance()->add_external_file('controller/templates/base/css/base.css');
 			$function_msg	 = lang('procedure');
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('controller') . ': ' . $function_msg;
 		}
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -192,7 +192,7 @@
 				'my_name' => 'view',
 				'statustext' => lang('view'),
 				'text' => lang('view'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'controller.uiprocedure.view'
 				)),
@@ -204,7 +204,7 @@
 
 		public function edit()
 		{
-			$procedure_id = phpgw::get_var('id', 'int');
+			$procedure_id = Sanitizer::get_var('id', 'int');
 			if (isset($procedure_id) && $procedure_id > 0)
 			{
 				$procedure = $this->so->get_single($procedure_id);
@@ -217,11 +217,11 @@
 			if ($procedure->get_procedure_id())
 			{
 				phpgwapi_cache::message_set(lang('Do not edit archived version' ), 'error');
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.view',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.view',
 					'id' => $procedure_id));
 			}
 
-			$_edit_mode = phpgw::get_var('edit_mode');
+			$_edit_mode = Sanitizer::get_var('edit_mode');
 			$edit_mode = $_edit_mode ? $_edit_mode : 'edit_procedure';
 
 			$error = false;
@@ -231,11 +231,11 @@
 				if (!$this->add && !$this->edit)
 				{
 					phpgwapi_cache::message_set('No access', 'error');
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.view',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.view',
 						'id' => $procedure_id));
 				}
 
-				$start_date = phpgw::get_var('start_date', 'date');
+				$start_date = Sanitizer::get_var('start_date', 'date');
 				if (!$start_date)
 				{
 					phpgwapi_cache::message_set(lang('missing start date'), 'error');
@@ -244,24 +244,24 @@
 
 				if (isset($procedure)) // Edit procedure
 				{
-					$description_txt = phpgw::get_var('description', 'html');
+					$description_txt = Sanitizer::get_var('description', 'html');
 					$description_txt = str_replace("&nbsp;", " ", $description_txt);
-					$purpose_txt = phpgw::get_var('purpose', 'html');
+					$purpose_txt = Sanitizer::get_var('purpose', 'html');
 					$purpose_txt = str_replace("&nbsp;", " ", $purpose_txt);
-					$reference_txt = phpgw::get_var('reference', 'html');
+					$reference_txt = Sanitizer::get_var('reference', 'html');
 					$reference_txt = str_replace("&nbsp;", " ", $reference_txt);
-					$responsibility_txt = phpgw::get_var('responsibility', 'html');
+					$responsibility_txt = Sanitizer::get_var('responsibility', 'html');
 					$responsibility_txt = str_replace("&nbsp;", " ", $responsibility_txt);
-					$procedure->set_title(phpgw::get_var('title'));
+					$procedure->set_title(Sanitizer::get_var('title'));
 					$procedure->set_purpose($purpose_txt);
 					$procedure->set_responsibility($responsibility_txt);
 					$procedure->set_description($description_txt);
 					$procedure->set_reference($reference_txt);
-					$procedure->set_attachment(phpgw::get_var('attachment'));
+					$procedure->set_attachment(Sanitizer::get_var('attachment'));
 					$procedure->set_start_date($start_date);
-					$procedure->set_end_date(phpgw::get_var('end_date', 'date'));
-					$procedure->set_revision_date(phpgw::get_var('revision_date', 'date'));
-					$procedure->set_control_area_id(phpgw::get_var('control_area'));
+					$procedure->set_end_date(Sanitizer::get_var('end_date', 'date'));
+					$procedure->set_revision_date(Sanitizer::get_var('revision_date', 'date'));
+					$procedure->set_control_area_id(Sanitizer::get_var('control_area'));
 					$procedure->set_modified_date(time());
 					$procedure->set_modified_by($GLOBALS['phpgw_info']['user']['account_id']);
 
@@ -311,7 +311,7 @@
 							$error = lang('messages_form_error');
 						}
 					}
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.view',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.view',
 						'id' => $proc_id));
 				}
 			}
@@ -320,7 +320,7 @@
 				if (!$this->add && !$this->edit)
 				{
 					phpgwapi_cache::message_set('No access', 'error');
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.view',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.view',
 						'id' => $procedure_id));
 				}
 
@@ -329,11 +329,11 @@
 				if (isset($procedure)) // Edit procedure
 				{
 
-					$description_txt = phpgw::get_var('description', 'html');
+					$description_txt = Sanitizer::get_var('description', 'html');
 					$description_txt = str_replace("&nbsp;", " ", $description_txt);
-					$purpose_txt = phpgw::get_var('purpose', 'html');
+					$purpose_txt = Sanitizer::get_var('purpose', 'html');
 					$purpose_txt = str_replace("&nbsp;", " ", $purpose_txt);
-					$reference_txt = phpgw::get_var('reference', 'html');
+					$reference_txt = Sanitizer::get_var('reference', 'html');
 					$reference_txt = str_replace("&nbsp;", " ", $reference_txt);
 
 					$new_procedure = new controller_procedure();
@@ -347,24 +347,24 @@
 					{
 						$new_procedure->set_revision_no(2);
 					}
-					$new_procedure->set_title(phpgw::get_var('title'));
+					$new_procedure->set_title(Sanitizer::get_var('title'));
 					$new_procedure->set_purpose($purpose_txt);
-					$new_procedure->set_responsibility(phpgw::get_var('responsibility'));
+					$new_procedure->set_responsibility(Sanitizer::get_var('responsibility'));
 					$new_procedure->set_description($description_txt);
 					$new_procedure->set_reference($reference_txt);
-					$new_procedure->set_attachment(phpgw::get_var('attachment'));
+					$new_procedure->set_attachment(Sanitizer::get_var('attachment'));
 
-					$start_date = phpgw::get_var('start_date', 'date');
+					$start_date = Sanitizer::get_var('start_date', 'date');
 					$start_date = $start_date ? $start_date : time();
 					$new_procedure->set_start_date($start_date);
 
-					$new_procedure->set_end_date(phpgw::get_var('end_date', 'date'));
+					$new_procedure->set_end_date(Sanitizer::get_var('end_date', 'date'));
 
-					$revision_date = phpgw::get_var('revision_date', 'date');
+					$revision_date = Sanitizer::get_var('revision_date', 'date');
 					$revision_date = $revision_date ? $revision_date : time();
 					$new_procedure->set_revision_date($revision_date);
 
-					$new_procedure->set_control_area_id(phpgw::get_var('control_area'));
+					$new_procedure->set_control_area_id(Sanitizer::get_var('control_area'));
 					$new_procedure->set_modified_date(time());
 					$new_procedure->set_modified_by($GLOBALS['phpgw_info']['user']['account_id']);
 
@@ -400,7 +400,7 @@
 						$this->so->transaction_commit();
 					}
 
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.view',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.view',
 						'id' => $proc_id));
 				}
 			}
@@ -408,12 +408,12 @@
 			{
 				if (isset($procedure_id) && $procedure_id > 0)
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.view',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.view',
 						'id' => $procedure_id));
 				}
 				else
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.index'));
+					phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.index'));
 				}
 			}
 			else
@@ -542,7 +542,7 @@
 		// Returns check list info as JSON
 		public function get_procedures()
 		{
-			$control_area_id = phpgw::get_var('control_area_id');
+			$control_area_id = Sanitizer::get_var('control_area_id');
 
 			$procedures_array = $this->so->get_procedures_by_control_area($control_area_id);
 
@@ -561,7 +561,7 @@
 		 */
 		public function add()
 		{
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.edit'));
+			phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.edit'));
 		}
 
 		/**
@@ -571,16 +571,16 @@
 		public function view()
 		{
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('view');
-			$view_revision = phpgw::get_var('view_revision');
-			$procedure_id = (int)phpgw::get_var('id');
+			$view_revision = Sanitizer::get_var('view_revision');
+			$procedure_id = (int)Sanitizer::get_var('id');
 			if (isset($_POST['edit_procedure']))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.edit',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.edit',
 					'id' => $procedure_id, 'edit_mode' => 'edit_procedure' ));
 			}
 			else if (isset($_POST['new_revison']))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.edit',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.edit',
 					'id' => $procedure_id, 'edit_mode' => 'new_revison' ));
 			}
 			else
@@ -668,7 +668,7 @@
 					'procedure' => array('label' => lang('Procedure'), 'link' => '#procedure'),
 					'documents' => array(
 						'label' => lang('View_documents_for_procedure'),
-						'link' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'controller.uidocument.show',
+						'link' => phpgw::link('/index.php', array('menuaction' => 'controller.uidocument.show',
 							'procedure_id' => $procedure->get_id(), 'type' => 'procedure'))
 					)
 				);
@@ -703,9 +703,9 @@
 		public function view_procedures_for_control()
 		{
 
-			$check_list_id = phpgw::get_var('check_list_id', 'int');
-			$control_id = phpgw::get_var('control_id', 'int');
-			$location_code = phpgw::get_var('location_code', 'string');
+			$check_list_id = Sanitizer::get_var('check_list_id', 'int');
+			$control_id = Sanitizer::get_var('control_id', 'int');
+			$location_code = Sanitizer::get_var('location_code', 'string');
 
 			$control = $this->so_control->get_single($control_id);
 
@@ -740,10 +740,10 @@
 
 		public function print_procedure()
 		{
-			$procedure_id = phpgw::get_var('procedure_id');
-			$location_code = phpgw::get_var('location_code');
-			$control_id = phpgw::get_var('control_id');
-			$control_group_id = phpgw::get_var('control_group_id');
+			$procedure_id = Sanitizer::get_var('procedure_id');
+			$location_code = Sanitizer::get_var('location_code');
+			$control_id = Sanitizer::get_var('control_id');
+			$control_group_id = Sanitizer::get_var('control_group_id');
 
 			$control = $this->so_control->get_single($control_id);
 
@@ -769,25 +769,25 @@
 				$data['control_group'] = $control_group->toArray();
 			}
 
-			$GLOBALS['phpgw']->css->add_external_file('controller/templates/base/css/base.css');
+			phpgwapi_css::getInstance()->add_external_file('controller/templates/base/css/base.css');
 
 			self::render_template_xsl('procedure/print_procedure', $data);
 		}
 
 		public function query()
 		{
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 			$params = array(
-				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results' => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start' => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results' => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query' => $search['value'],
 				'order' => $columns[$order[0]['column']]['data'],
 				'sort' => $order[0]['dir'],
-				'allrows' => phpgw::get_var('length', 'int') == -1,
+				'allrows' => Sanitizer::get_var('length', 'int') == -1,
 			);
 
 
@@ -798,22 +798,22 @@
 			$sort_field = ($params['order']) ? $params['order'] : '';
 			$filters = array();
 
-			$ctrl_area = phpgw::get_var('control_areas');
+			$ctrl_area = Sanitizer::get_var('control_areas');
 			if (isset($ctrl_area) && $ctrl_area > 0)
 			{
 				$filters['control_areas'] = $ctrl_area;
 			}
 			$sort_ascending = $params['sort'] == 'desc' ? false : true;
 			// Form variables
-			$search_type = phpgw::get_var('search_option', 'string', 'REQUEST', '');
+			$search_type = Sanitizer::get_var('search_option', 'string', 'REQUEST', '');
 			// Create an empty result set
 			$result_objects = array();
 			$result_count = 0;
 
 			//Retrieve a contract identifier and load corresponding contract
-			$procedure_id = phpgw::get_var('procedure_id');
+			$procedure_id = Sanitizer::get_var('procedure_id');
 
-			$exp_param = phpgw::get_var('export');
+			$exp_param = Sanitizer::get_var('export');
 			$export = false;
 			if (isset($exp_param) && $exp_param)
 			{
@@ -822,7 +822,7 @@
 			}
 
 			//Retrieve the type of query and perform type specific logic
-			$query_type = phpgw::get_var('type');
+			$query_type = Sanitizer::get_var('type');
 			switch ($query_type)
 			{
 				default: // ... all composites, filters (active and vacant)

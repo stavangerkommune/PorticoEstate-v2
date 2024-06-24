@@ -62,18 +62,18 @@
 					'index' => array
 						(
 						'text' => lang('Configuration'),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiconfig.index',
+						'url' => phpgw::link('/index.php', array('menuaction' => 'admin.uiconfig.index',
 							'appname' => 'eventplannerfrontend'))
 					),
 					'metasettings' => array
 						(
 						'text' => lang('metasettings'),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'eventplannerfrontend.uimetasettings.index',
+						'url' => phpgw::link('/index.php', array('menuaction' => 'eventplannerfrontend.uimetasettings.index',
 							'appname' => 'eventplannerfrontend'))
 					),
 					'acl' => array(
 						'text' => $GLOBALS['phpgw']->translation->translate('Configure Access Permissions', array(), true),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.list_acl',
+						'url' => phpgw::link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.list_acl',
 							'acl_app' => 'eventplannerfrontend'))
 					),
 				);
@@ -85,7 +85,7 @@
 					(
 					array(
 						'text' => $GLOBALS['phpgw']->translation->translate('Grant Access', array(), true),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.aclprefs',
+						'url' => phpgw::link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.aclprefs',
 							'acl_app' => 'eventplanner'))
 					)
 				);
@@ -93,7 +93,7 @@
 				$menus['toolbar'][] = array
 					(
 					'text' => $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
-					'url' => $GLOBALS['phpgw']->link('/preferences/preferences.php', array('appname' => 'eventplanner')),
+					'url' => phpgw::link('/preferences/preferences.php', array('appname' => 'eventplanner')),
 					'image' => array('eventplanner', 'preferences')
 				);
 			}
@@ -131,12 +131,12 @@
 				),
 				'new_user' => array(
 					'text' => lang('new user'),
-					'url' => $GLOBALS['phpgw']->link('/registration/main.php', array()),
+					'url' => phpgw::link('/registration/main.php', array()),
 					'image' => array('user', 'navbar'),
 				)
 		);
 
-			if ($GLOBALS['phpgw']->acl->check('.booking', PHPGW_ACL_READ, 'eventplannerfrontend'))
+			if ($GLOBALS['phpgw']->acl->check('.booking', ACL_READ, 'eventplannerfrontend'))
 			{
 				$menus['navigation']['customer']['children'] = array(
 						'booking' => array(

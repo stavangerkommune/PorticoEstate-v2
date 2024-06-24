@@ -34,12 +34,12 @@
 
 		public function __construct($get_external_login_info = null)
 		{
-			$this->db = & $GLOBALS['phpgw']->db;
+			$this->db = Db::getInstance();
 			$this->set_module();
 			$this->orgnr = $this->get_user_orgnr_from_session();
 			$this->org_id = $this->get_user_org_id_from_session();
 			
-			$session_org_id = phpgw::get_var('session_org_id', 'int', 'GET');
+			$session_org_id = Sanitizer::get_var('session_org_id', 'int', 'GET');
 //			if($get_external_login_info && $this->is_logged_in())
 			if($session_org_id && $this->is_logged_in())
 			{
@@ -115,7 +115,7 @@
 		protected function get_organizations()
 		{
 			$results = array();
-			$this->db = & $GLOBALS['phpgw']->db;
+			$this->db = Db::getInstance();
 			$this->db->query("select organization_number from bb_organization ORDER by organization_number ASC", __LINE__, __FILE__);
 			while ($this->db->next_record())
 			{
@@ -416,7 +416,7 @@
 					return array();
 				}
 
-				if(phpgw::get_var('second_redirect', 'bool'))
+				if(Sanitizer::get_var('second_redirect', 'bool'))
 				{
 					phpgw::no_access($this->current_app(), 'Du må logge inn via ID-porten');
 				}
@@ -446,7 +446,7 @@
 				}
 				else
 				{
-					$GLOBALS['phpgw']->redirect_link('/bookingfrontend/login.php');
+					phpgw::redirect_link('/bookingfrontend/login.php');
 				}
 			}
 

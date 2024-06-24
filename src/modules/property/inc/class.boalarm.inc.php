@@ -317,7 +317,7 @@
 
 		function add_alarm( $alarm_type, &$event, $time, $owner )
 		{
-			/* 			if (!$this->check_perms(PHPGW_ACL_SETALARM,$owner) || !($cal_id = $event['id']))
+			/* 			if (!$this->check_perms(ACL_SETALARM,$owner) || !($cal_id = $event['id']))
 			  {
 			  return false;
 			  }
@@ -362,7 +362,7 @@
 				{
 					return 0; // alarm not found
 				}
-				/* 				if (!$this->check_perms(PHPGW_ACL_DELETEALARM,$alarm['owner']))
+				/* 				if (!$this->check_perms(ACL_DELETEALARM,$alarm['owner']))
 				  {
 				  return -1;
 				  }

@@ -71,7 +71,7 @@
 
 		protected function restore_export_filters()
 		{
-			if ($export_key = phpgw::get_var('export_key', 'string', 'REQUEST', null))
+			if ($export_key = Sanitizer::get_var('export_key', 'string', 'REQUEST', null))
 			{
 				if (is_array($export_filters = $this->ui_session_get(self::SESSION_EXPORT_FILTER_KEY . '_' . $export_key)))
 				{
@@ -118,12 +118,12 @@
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
 
-			if (phpgw::get_var('export'))
+			if (Sanitizer::get_var('export'))
 			{
 				return $this->export();
 			}
@@ -264,7 +264,7 @@
 				};
 JS;
 
-			$GLOBALS['phpgw']->js->add_code('', $FormatterCheck, true);
+			phpgwapi_js::getInstance()->add_code('', $FormatterCheck, true);
 
 			$data['filters'] = $this->export_filters;
 
@@ -296,12 +296,12 @@ JS;
 
 		public function query()
 		{
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$columns = Sanitizer::get_var('columns');
 
-			$start = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$results = phpgw::get_var('length', 'int', 'REQUEST', null);
+			$start = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$results = Sanitizer::get_var('length', 'int', 'REQUEST', null);
 			$query = $search['value'];
 			$sort = $columns[$order[0]['column']]['data'];
 			$dir = $order[0]['dir'];
@@ -350,14 +350,14 @@ JS;
 			$filters = array();
 			foreach ($this->bo->so->get_field_defs() as $field => $params)
 			{
-				if (phpgw::get_var("filter_$field"))
+				if (Sanitizer::get_var("filter_$field"))
 				{
-					$filters[$field] = phpgw::get_var("filter_$field");
+					$filters[$field] = Sanitizer::get_var("filter_$field");
 				}
 			}
 
-			$filter_to = phpgw::get_var('to', 'string', 'REQUEST', null);
-			$to_date = $filter_to ? $filter_to : phpgw::get_var('filter_to', 'string', 'REQUEST', null);
+			$filter_to = Sanitizer::get_var('to', 'string', 'REQUEST', null);
+			$to_date = $filter_to ? $filter_to : Sanitizer::get_var('filter_to', 'string', 'REQUEST', null);
 
 			if ($to_date)
 			{
@@ -447,7 +447,7 @@ JS;
 					$reservation['invoice_file_order_id'] = lang("Not Generated");
 				}
 
-				$this->db = & $GLOBALS['phpgw']->db;
+				$this->db = Db::getInstance();
 
 				if ($reservation['reservation_type']['label'] == 'Arrangement')
 				{
@@ -580,7 +580,7 @@ JS;
 
 		public function show()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -669,11 +669,11 @@ JS;
 			//TODO: Display hint to user about primary type of customer identifier
 
 			$building_role = $this->bo->accessable_buildings($GLOBALS['phpgw_info']['user']['id']);
-			$reservation = $this->bo->read_single(phpgw::get_var('id', 'int'));
+			$reservation = $this->bo->read_single(Sanitizer::get_var('id', 'int'));
 
 			if (!isset($GLOBALS['phpgw_info']['user']['apps']['admin']) && !in_array($reservation['building_id'], $building_role))
 			{
-				$this->redirect_to('show', array('id' => phpgw::get_var('id', 'int')));
+				$this->redirect_to('show', array('id' => Sanitizer::get_var('id', 'int')));
 			}
 
 			if (((int)$reservation['exported']) !== 0)
@@ -689,12 +689,12 @@ JS;
 			{
 				list($reservation, $errors) = $this->extract_and_validate($reservation);
 
-				if(empty(phpgw::get_var('organization_name', 'string', 'POST')))
+				if(empty(Sanitizer::get_var('organization_name', 'string', 'POST')))
 				{
 					$reservation['organization_id'] = null;
 				}
 
-				if(phpgw::get_var('customer_identifier_type', 'string', 'POST') == 'ssn')
+				if(Sanitizer::get_var('customer_identifier_type', 'string', 'POST') == 'ssn')
 				{
 					$reservation['organization_id'] = null;
 				}
@@ -716,7 +716,7 @@ JS;
 							'customer_id' => -1,
 							'lines' => array());
 
-						$selected_articles = (array)phpgw::get_var('selected_articles');
+						$selected_articles = (array)Sanitizer::get_var('selected_articles');
 
 						foreach ($selected_articles as $selected_article)
 						{
@@ -783,9 +783,9 @@ JS;
 			$config = CreateObject('phpgwapi.config', 'booking')->read();
 			if( !empty($config['activate_application_articles']))
 			{
-				$GLOBALS['phpgw']->js->validate_file('alertify', 'alertify.min', 'phpgwapi');
-				$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
-				$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
+				phpgwapi_js::getInstance()->validate_file('alertify', 'alertify.min', 'phpgwapi');
+				phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
+				phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
 				self::add_javascript('booking', 'base', 'purchase_order_edit.js');
 				self::add_javascript('phpgwapi', 'dateformatter', 'dateformatter.js');
 			}

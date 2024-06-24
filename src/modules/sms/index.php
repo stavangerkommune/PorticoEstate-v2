@@ -32,4 +32,4 @@
 		$start_page = $GLOBALS['phpgw_info']['user']['preferences']['sms']['default_start_page'];
 	}
 
-	$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => "sms.ui{$start_page}"));
+	phpgw::redirect_link('/index.php', array('menuaction' => "sms.ui{$start_page}"));

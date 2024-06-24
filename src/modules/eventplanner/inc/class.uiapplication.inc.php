@@ -130,19 +130,19 @@
 		public function index()
 		{
 			self::set_active_menu("{$this->currentapp}::vendor::application");
-			if (empty($this->permissions[PHPGW_ACL_READ]))
+			if (empty($this->permissions[ACL_READ]))
 			{
 
 				$message = '';
 				if($this->currentapp == 'eventplannerfrontend')
 				{
-					$GLOBALS['phpgw']->redirect_link('login.php', array('after' => 'eventplannerfrontend.uiapplication.index'));
+					phpgw::redirect_link('login.php', array('after' => 'eventplannerfrontend.uiapplication.index'));
 					$message = lang('you need to log in to access this page.');
 				}
 				phpgw::no_access(false, $message);
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -219,11 +219,11 @@
 		public function add()
 		{
 			self::set_active_menu("{$this->currentapp}::vendor::new_application");
-			if (empty($this->permissions[PHPGW_ACL_ADD]))
+			if (empty($this->permissions[ACL_ADD]))
 			{
 				if($this->currentapp == 'eventplannerfrontend')
 				{
-					$GLOBALS['phpgw']->redirect_link('login.php', array('after' => 'eventplannerfrontend.uiapplication.add'));
+					phpgw::redirect_link('login.php', array('after' => 'eventplannerfrontend.uiapplication.add'));
 				}
 			}
 
@@ -232,9 +232,9 @@
 
 		public function edit( $values = array(), $mode = 'edit' )
 		{
-			$active_tab = !empty($values['active_tab']) ? $values['active_tab'] : phpgw::get_var('active_tab', 'string', 'REQUEST', 'first_tab');
+			$active_tab = !empty($values['active_tab']) ? $values['active_tab'] : Sanitizer::get_var('active_tab', 'string', 'REQUEST', 'first_tab');
 		//	$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('edit');
-			if (empty($this->permissions[PHPGW_ACL_ADD]))
+			if (empty($this->permissions[ACL_ADD]))
 			{
 				phpgw::no_access();
 			}
@@ -245,12 +245,12 @@
 			}
 			else
 			{
-				$id = !empty($values['id']) ? $values['id'] : phpgw::get_var('id', 'int');
+				$id = !empty($values['id']) ? $values['id'] : Sanitizer::get_var('id', 'int');
 				$application = $this->bo->read_single($id);
 			}
 
 
-			$vendor_id = phpgw::get_var('vendor_id', 'int');
+			$vendor_id = Sanitizer::get_var('vendor_id', 'int');
 
 			if($vendor_id && !$application->vendor_id)
 			{
@@ -293,7 +293,7 @@
 
 			$bocommon = CreateObject('property.bocommon');
 
-			$accounts = $GLOBALS['phpgw']->acl->get_user_list_right(PHPGW_ACL_EDIT, '.application', 'eventplanner');
+			$accounts = $GLOBALS['phpgw']->acl->get_user_list_right(ACL_EDIT, '.application', 'eventplanner');
 			$case_officer_options[] = array('id' => '', 'name' => lang('select'), 'selected' => 0);
 			foreach ($accounts as $account)
 			{
@@ -553,10 +553,10 @@
 
 		function _get_files()
 		{
-			$id = phpgw::get_var('id', 'int');
-			$section = phpgw::get_var('section', 'string', 'REQUEST', 'documents');
+			$id = Sanitizer::get_var('id', 'int');
+			$section = Sanitizer::get_var('section', 'string', 'REQUEST', 'documents');
 
-			if (empty($this->permissions[PHPGW_ACL_READ]))
+			if (empty($this->permissions[ACL_READ]))
 			{
 				return array();
 			}
@@ -567,7 +567,7 @@
 			);
 
 
-			$link_view_file = $GLOBALS['phpgw']->link('/index.php', $link_file_data);
+			$link_view_file = phpgw::link('/index.php', $link_file_data);
 
 			$vfs = CreateObject('phpgwapi.vfs');
 			$vfs->override_acl = 1;
@@ -608,7 +608,7 @@
 				$z ++;
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 
 				$total_records = count($content_files);
@@ -616,7 +616,7 @@
 				return array
 					(
 					'data' => $content_files,
-					'draw' => phpgw::get_var('draw', 'int'),
+					'draw' => Sanitizer::get_var('draw', 'int'),
 					'recordsTotal' => $total_records,
 					'recordsFiltered' => $total_records
 				);
@@ -626,13 +626,13 @@
 
 		public function handle_multi_upload_file()
 		{
-			if (empty($this->permissions[PHPGW_ACL_ADD]))
+			if (empty($this->permissions[ACL_ADD]))
 			{
 				phpgw::no_access();
 			}
 
-			$section = phpgw::get_var('section', 'string', 'REQUEST', 'documents');
-			$id = phpgw::get_var('id', 'int', 'GET');
+			$section = Sanitizer::get_var('section', 'string', 'REQUEST', 'documents');
+			$id = Sanitizer::get_var('id', 'int', 'GET');
 
 			phpgw::import_class('property.multiuploader');
 
@@ -669,8 +669,8 @@
 		public function build_multi_upload_file()
 		{
 			phpgwapi_jquery::init_multi_upload_file();
-			$id = phpgw::get_var('id', 'int');
-			$section = phpgw::get_var('section', 'string', 'REQUEST', 'documents');
+			$id = Sanitizer::get_var('id', 'int');
+			$section = Sanitizer::get_var('section', 'string', 'REQUEST', 'documents');
 
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
@@ -683,8 +683,8 @@
 				'multi_upload_action' => $multi_upload_action
 			);
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('files', 'multi_upload_file'));
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('multi_upload' => $data));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('files', 'multi_upload_file'));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('multi_upload' => $data));
 		}
 
 

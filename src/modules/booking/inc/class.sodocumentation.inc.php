@@ -212,7 +212,7 @@
 			if ($this->db->next_record())
 			{
 				$id = $this->db->f('id', false);
-				return $GLOBALS['phpgw']->link('/bookingfrontend/index.php', array('menuaction' => 'bookingfrontend.uidocumentation.download', 'id'=> $id));
+				return phpgw::link('/bookingfrontend/index.php', array('menuaction' => 'bookingfrontend.uidocumentation.download', 'id'=> $id));
 			}
 			return null;
 		}
@@ -223,7 +223,7 @@
 			if ($this->db->next_record())
 			{
 				$id = $this->db->f('id', false);
-				return $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uidocumentation.download', 'id'=> $id));
+				return phpgw::link('/index.php', array('menuaction' => 'booking.uidocumentation.download', 'id'=> $id));
 			}
 			return null;
 		}

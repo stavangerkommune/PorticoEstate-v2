@@ -61,7 +61,7 @@
 		{
 
 			$cancel_link = self::link(array('menuaction' => 'rental.uicontract.index', 'populate_form' => 'yes'));
-			$adjustment_id = (int)phpgw::get_var('adjustment_id');
+			$adjustment_id = (int)Sanitizer::get_var('adjustment_id');
 			if ($adjustment_id)
 			{
 				$cancel_link = self::link(array('menuaction' => 'rental.uiadjustment.show_affected_contracts',
@@ -79,13 +79,13 @@
 				if ($contract)
 				{
 
-					if ($editable && !$contract->has_permission(PHPGW_ACL_EDIT))
+					if ($editable && !$contract->has_permission(ACL_EDIT))
 					{
 						$editable = false;
 						$error .= '<br/>' . lang('permission_denied_edit_contract');
 					}
 
-					if (!$editable && !$contract->has_permission(PHPGW_ACL_READ))
+					if (!$editable && !$contract->has_permission(ACL_READ))
 					{
 						phpgw::no_access($GLOBALS['phpgw_info']['flags']['currentapp'], lang('permission_denied_view_contract'));
 					}
@@ -137,8 +137,8 @@
 						'termin_price_items' => $termin_price_items,
 						'notification' => $notification,
 						'editable' => $editable,
-						'message' => isset($message) ? $message : phpgw::get_var('message'),
-						'error' => isset($error) ? $error : phpgw::get_var('error'),
+						'message' => isset($message) ? $message : Sanitizer::get_var('message'),
+						'error' => isset($error) ? $error : Sanitizer::get_var('error'),
 						'cancel_link' => $cancel_link,
 						'cancel_text' => $cancel_text
 					);
@@ -162,7 +162,7 @@
 		public function view()
 		{
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('view');
-			$contract_id = (int)phpgw::get_var('id');
+			$contract_id = (int)Sanitizer::get_var('id');
 			return $this->viewedit(false, $contract_id);
 		}
 
@@ -202,7 +202,7 @@
 			$snappy->setExecutable($wkhtmltopdf_executable); // or whatever else
 			$snappy->save($myFile, $pdf_file_name);
 
-			$contract_id = phpgw::get_var('id');
+			$contract_id = Sanitizer::get_var('id');
 
 			if (!is_file($pdf_file_name))
 			{
@@ -240,7 +240,7 @@
 			{
 				if (rental_sodocument::get_instance()->store($document))
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
 						'id' => $contract_id, 'tab' => 'documents'));
 				}
 				else
@@ -269,12 +269,12 @@
 		{
 			if ($document_properties['document_type'] == rental_sodocument::$CONTRACT_DOCUMENTS)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
 					'id' => $document_properties['id'], 'error' => $error, 'message' => $message));
 			}
 			else if ($document_properties['document_type'] == rental_sodocument::$PARTY_DOCUMENTS)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uiparty.edit',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uiparty.edit',
 					'id' => $document_properties['id'], 'error' => $error, 'message' => $message));
 			}
 		}

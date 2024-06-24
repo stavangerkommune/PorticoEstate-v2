@@ -62,7 +62,7 @@
 
 			$var = Array(
 				'title'	   	=>	lang('ToDo Preferences'),
-				'action_url'	=>	$GLOBALS['phpgw']->link('/index.php',Array('menuaction'=>'todo.bopreferences.preferences')),
+				'action_url'	=>	phpgw::link('/index.php',Array('menuaction'=>'todo.bopreferences.preferences')),
 				'bg_color   '	=>	$this->theme['th_bg'],
 				'submit_lang'	=>	lang('submit'),
 				'text'   		=> '&nbsp;'

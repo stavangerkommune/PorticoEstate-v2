@@ -42,7 +42,7 @@
 		{
 			$incoming_app = $GLOBALS['phpgw_info']['flags']['currentapp'];
 			$GLOBALS['phpgw_info']['flags']['currentapp'] = 'helpdesk';
-			$acl = & $GLOBALS['phpgw']->acl;
+			$acl = Acl::getInstance();
 			$menus = array();
 
 			$config = CreateObject('phpgwapi.config', 'helpdesk')->read();
@@ -60,7 +60,7 @@
 					'helpdesk' => array
 					(
 						'text'	=> $lang_app_name,
-						'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => "helpdesk.uitts.index") ),
+						'url'	=> phpgw::link('/index.php', array('menuaction' => "helpdesk.uitts.index") ),
 						'image'	=> array('helpdesk', 'navbar'),
 						'order'	=> 35,
 						'group'	=> 'facilities management'
@@ -79,14 +79,14 @@
 						'index'	=> array
 						(
 							'text'	=> lang('Configuration'),
-							'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiconfig.index', 'appname' => 'helpdesk') ),
+							'url'	=> phpgw::link('/index.php', array('menuaction' => 'admin.uiconfig.index', 'appname' => 'helpdesk') ),
 							'children' => array
 								(
 								'custom_config' => array
 									(
 									'text' => lang('custom config'),
 									'nav_location' => 'navbar#' . $GLOBALS['phpgw']->locations->get_id('helpdesk', '.admin'),
-									'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiconfig2.index',
+									'url' => phpgw::link('/index.php', array('menuaction' => 'admin.uiconfig2.index',
 										'location_id' => $GLOBALS['phpgw']->locations->get_id('helpdesk', '.admin')))
 								)
 							)
@@ -94,61 +94,61 @@
 						'ticket_attribs' => array
 							(
 							'text' => lang('ticket Attributes'),
-							'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.ui_custom.list_attribute',
+							'url' => phpgw::link('/index.php', array('menuaction' => 'admin.ui_custom.list_attribute',
 								'appname' => 'helpdesk', 'location' => '.ticket', 'menu_selection' => 'admin::helpdesk::ticket_attribs'))
 						),
 						'ticket_functions' => array
 							(
 							'text' => lang('custom functions'),
-							'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.ui_custom.list_custom_function',
+							'url' => phpgw::link('/index.php', array('menuaction' => 'admin.ui_custom.list_custom_function',
 								'appname' => 'helpdesk', 'location' => '.ticket', 'menu_selection' => 'admin::helpdesk::ticket_functions'))
 						),
 						'ticket_cats'	=> array
 						(
 							'text'	=> lang('Ticket Categories'),
-							'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uicategories.index', 'appname' => 'helpdesk', 'location' => '.ticket', 'global_cats' => 'true', 'menu_selection' => 'admin::helpdesk::ticket_cats') )
+							'url'	=> phpgw::link('/index.php', array('menuaction' => 'admin.uicategories.index', 'appname' => 'helpdesk', 'location' => '.ticket', 'global_cats' => 'true', 'menu_selection' => 'admin::helpdesk::ticket_cats') )
 						),
 						'cat_assignment'	=> array
 						(
 							'text'	=> lang('category assignment'),
-							'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'helpdesk.uicat_assignment.edit') )
+							'url'	=> phpgw::link('/index.php', array('menuaction' => 'helpdesk.uicat_assignment.edit') )
 						),
 						'cat_respond_messages'	=> array
 						(
 							'text'	=> lang('category respond messages'),
-							'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'helpdesk.uicat_respond_messages.edit') )
+							'url'	=> phpgw::link('/index.php', array('menuaction' => 'helpdesk.uicat_respond_messages.edit') )
 						),
 						'cat_anonyminizer'	=> array
 						(
 							'text'	=> lang('category anonyminizer'),
-							'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'helpdesk.uicat_anonyminizer.edit') )
+							'url'	=> phpgw::link('/index.php', array('menuaction' => 'helpdesk.uicat_anonyminizer.edit') )
 						),
 						'ticket_status'	=> array
 						(
 							'text'	=> lang('Ticket status'),
-							'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'helpdesk.uigeneric.index', 'type' => 'helpdesk_status') )
+							'url'	=> phpgw::link('/index.php', array('menuaction' => 'helpdesk.uigeneric.index', 'type' => 'helpdesk_status') )
 						),
 						'acl'	=> array
 						(
 							'text'	=> lang('Configure Access Permissions'),
-							'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.list_acl', 'acl_app' => 'helpdesk') )
+							'url'	=> phpgw::link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.list_acl', 'acl_app' => 'helpdesk') )
 						),
 						'external_com_type' => array
 							(
 							'text' => lang('external communication type'),
-							'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'helpdesk.uigeneric.index',
+							'url' => phpgw::link('/index.php', array('menuaction' => 'helpdesk.uigeneric.index',
 								'type' => 'external_com_type'))
 						),
 						'custom_menu_items' => array
 							(
 							'text' => lang('custom menu items'),
-							'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'helpdesk.uigeneric.index',
+							'url' => phpgw::link('/index.php', array('menuaction' => 'helpdesk.uigeneric.index',
 								'type' => 'custom_menu_items'))
 						),
 						'async_settings' => array
 							(
 							'text' => lang('Asynchronous Tasks'),
-							'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'helpdesk.uiasync_settings.index',
+							'url' => phpgw::link('/index.php', array('menuaction' => 'helpdesk.uiasync_settings.index',
 								'appname' => 'helpdesk'))
 						),
 					);
@@ -161,19 +161,19 @@
 						array
 						(
 							'text'	=> $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
-							'url'	=> $GLOBALS['phpgw']->link('/preferences/preferences.php', array('appname' => 'helpdesk', 'type'=> 'user') )
+							'url'	=> phpgw::link('/preferences/preferences.php', array('appname' => 'helpdesk', 'type'=> 'user') )
 						),
 						array
 						(
 							'text'	=> $GLOBALS['phpgw']->translation->translate('Grant Access', array(), true),
-							'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiadmin.aclprefs', 'acl_app'=> 'helpdesk'))
+							'url'	=> phpgw::link('/index.php', array('menuaction' => 'property.uiadmin.aclprefs', 'acl_app'=> 'helpdesk'))
 						)
 					);
 
 				$menus['toolbar'][] = array
 					(
 						'text'	=> $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
-						'url'	=> $GLOBALS['phpgw']->link('/preferences/preferences.php', array('appname'	=> 'helpdesk')),
+						'url'	=> phpgw::link('/preferences/preferences.php', array('appname'	=> 'helpdesk')),
 						'image'	=> array('helpdesk', 'preferences')
 					);
 			}
@@ -181,7 +181,7 @@
 			$menus['navigation'] = array();
 
 
-			if ( $acl->check('.ticket',PHPGW_ACL_READ, 'helpdesk') )
+			if ( $acl->check('.ticket',ACL_READ, 'helpdesk') )
 			{
 				$categories	= CreateObject('phpgwapi.categories', -1, 'helpdesk', '.ticket');
 				$categories->supress_info	= true;
@@ -192,7 +192,7 @@
 				$subs = false;
 				foreach ($_cats as $_cat)
 				{
-					if ($_cat['level'] == 0 && $_cat['active'] != 2 && $acl->check(".ticket.category.{$_cat['id']}",PHPGW_ACL_READ, 'helpdesk') )
+					if ($_cat['level'] == 0 && $_cat['active'] != 2 && $acl->check(".ticket.category.{$_cat['id']}",ACL_READ, 'helpdesk') )
 					{
 						$_categories[] = $_cat;
 					}
@@ -205,7 +205,7 @@
 				if($subs)
 				{
 
-					$menus['navbar']['helpdesk']['url'] = $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'helpdesk.uitts.index', 'parent_cat_id' => -1));
+					$menus['navbar']['helpdesk']['url'] = phpgw::link('/index.php',array('menuaction'=> 'helpdesk.uitts.index', 'parent_cat_id' => -1));
 
 					$default_interface = isset($config['tts_default_interface']) ? $config['tts_default_interface'] : '';
 
@@ -240,7 +240,7 @@
 					{
 						$menus['navigation']['helpdesk_-2'] = array
 							(
-								'url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'helpdesk.uitts.index', 'parent_cat_id' => -2)),
+								'url'	=> phpgw::link('/index.php',array('menuaction'=> 'helpdesk.uitts.index', 'parent_cat_id' => -2)),
 								'text'	=> lang('top level'),
 								'image'		=> array('helpdesk', 'helpdesk')
 							);
@@ -250,7 +250,7 @@
 					{
 						$menus['navigation']["helpdesk_{$_category['id']}"] = array
 							(
-								'url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'helpdesk.uitts.index', 'parent_cat_id' => $_category['id'])),
+								'url'	=> phpgw::link('/index.php',array('menuaction'=> 'helpdesk.uitts.index', 'parent_cat_id' => $_category['id'])),
 								'text'	=> $_category['name'],
 								'image'		=> array('helpdesk', 'helpdesk')
 							);
@@ -260,7 +260,7 @@
 				{
 					$menus['navigation']['helpdesk'] = array
 						(
-							'url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'helpdesk.uitts.index')),
+							'url'	=> phpgw::link('/index.php',array('menuaction'=> 'helpdesk.uitts.index')),
 							'text'	=> lang('inbox'),
 							'image'		=> array('helpdesk', 'helpdesk')
 						);
@@ -270,37 +270,37 @@
 
 
 
-			if ( $acl->check('.ticket.response_template',PHPGW_ACL_READ, 'helpdesk') ) //manage
+			if ( $acl->check('.ticket.response_template',ACL_READ, 'helpdesk') ) //manage
 			{
 				$menus['navigation']['response_template'] = array
 					(
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'helpdesk.uigeneric.index',
+					'url' => phpgw::link('/index.php', array('menuaction' => 'helpdesk.uigeneric.index',
 						'type' => 'response_template')),
 					'text' => lang('response template'),
 					'image' => array('helpdesk', 'helpdesk')
 				);
 			}
 
-			if ( $acl->check('.email_out',PHPGW_ACL_READ, 'helpdesk') ) //manage
+			if ( $acl->check('.email_out',ACL_READ, 'helpdesk') ) //manage
 			{
 				$menus['navigation']['email_out'] = array(
 					'text' => lang('email out'),
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'helpdesk.uiemail_out.index')),
+					'url' => phpgw::link('/index.php', array('menuaction' => 'helpdesk.uiemail_out.index')),
 					'image' => array('helpdesk', 'helpdesk'),
 					'children' => array(
 						'template' => array(
 							'text' => lang('email template'),
-							'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'helpdesk.uigeneric.index',
+							'url' => phpgw::link('/index.php', array('menuaction' => 'helpdesk.uigeneric.index',
 								'type' => 'email_template', 'admin' => true))
 						),
 						'recipient_set' => array(
 							'text' => lang('admin recipient set'),
-							'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'helpdesk.uigeneric.index',
+							'url' => phpgw::link('/index.php', array('menuaction' => 'helpdesk.uigeneric.index',
 								'type' => 'email_recipient_set', 'admin' => true))
 						),
 						'recipient_list' => array(
 							'text' => lang('recipient list'),
-							'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'helpdesk.uigeneric.index',
+							'url' => phpgw::link('/index.php', array('menuaction' => 'helpdesk.uigeneric.index',
 								'type' => 'email_recipient_list', 'admin' => true))
 						),
 					)
@@ -308,7 +308,7 @@
 
 			}
 
-			if ( $acl->check('.custom',PHPGW_ACL_READ, 'helpdesk') ) //manage
+			if ( $acl->check('.custom',ACL_READ, 'helpdesk') ) //manage
 			{
 				$custom_menu_items = CreateObject('helpdesk.sogeneric','custom_menu_items')->read_tree(array('type' => 'custom_menu_items',
 							'filter' => array('location' => '.ticket')));
@@ -317,7 +317,7 @@
 				{
 					$menus['navigation']['report'] = array
 						(
-							'url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'helpdesk.uicustom.index')),
+							'url'	=> phpgw::link('/index.php',array('menuaction'=> 'helpdesk.uicustom.index')),
 							'text' => lang('reports'),
 							'image' => array('helpdesk', 'helpdesk')
 					);

@@ -112,7 +112,7 @@
 
 			if($debug)
 			{
-				$url_outbox = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uisms.outbox'));
+				$url_outbox = phpgw::link('/index.php', array('menuaction' => 'sms.uisms.outbox'));
 
 				echo "<a href='{$url_outbox}'>Outbox</a>";
 				die();

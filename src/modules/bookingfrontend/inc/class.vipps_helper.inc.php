@@ -52,7 +52,7 @@
 
 		public function initiate()
 		{
-			$application_ids = phpgw::get_var('application_id');
+			$application_ids = Sanitizer::get_var('application_id');
 			return $this->initiate_payment($application_ids);
 		}
 
@@ -154,7 +154,7 @@
 
 			$session_id = $GLOBALS['phpgw']->session->get_session_id();
 
-			$fall_back_url = $GLOBALS['phpgw']->link('/bookingfrontend/',
+			$fall_back_url = phpgw::link('/bookingfrontend/',
 											array('menuaction' => 'bookingfrontend.uiapplication.add_contact', 'payment_order_id' => $remote_order_id, session_name() => $session_id),
 											false,
 											true
@@ -442,7 +442,7 @@
 			$soapplication = CreateObject('booking.soapplication');
 			if (!$remote_order_id)
 			{
-				$remote_order_id = phpgw::get_var('payment_order_id');
+				$remote_order_id = Sanitizer::get_var('payment_order_id');
 			}
 
 			static $attempts = 0;
@@ -604,7 +604,7 @@
 
 			if (!$remote_order_id)
 			{
-				$remote_order_id = phpgw::get_var('payment_order_id');
+				$remote_order_id = Sanitizer::get_var('payment_order_id');
 			}
 
 			$path	 = "/ecomm/v2/payments/{$remote_order_id}/details";

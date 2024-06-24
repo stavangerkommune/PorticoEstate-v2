@@ -38,7 +38,7 @@
 
 		public function __construct()
 		{
-			$this->db = & $GLOBALS['phpgw']->db;
+			$this->db = Db::getInstance();
 			$this->like = & $this->db->like;
 			$this->join = & $this->db->join;
 			$this->left_join = & $this->db->left_join;

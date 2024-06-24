@@ -269,7 +269,7 @@
 						$location_names = $GLOBALS['phpgw']->locations->get_name($location_id);
 						if ($location_names['appname'] == $GLOBALS['phpgw_info']['flags']['currentapp'])
 						{
-							$responsible_accounts = $GLOBALS['phpgw']->acl->get_user_list_right(PHPGW_ACL_EDIT, $location_names['location']);
+							$responsible_accounts = $GLOBALS['phpgw']->acl->get_user_list_right(ACL_EDIT, $location_names['location']);
 							foreach ($responsible_accounts as $ra)
 							{
 								$account_ids[] = $ra['account_id'];

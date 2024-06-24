@@ -68,34 +68,34 @@
 		{
 
 			$fields = array(
-				'id' => array('action'=> PHPGW_ACL_READ,
+				'id' => array('action'=> ACL_READ,
 					'type' => 'int',
 					'label' => 'id',
 					'sortable'=> true,
 					'formatter' => 'JqueryPortico.formatLink',
 				),
-				'subject_id' => array('action'=> PHPGW_ACL_ADD,
+				'subject_id' => array('action'=> ACL_ADD,
 					'type' => 'int',
 					'required' => true
 				),
-				'object_id' => array('action'=>  PHPGW_ACL_READ | PHPGW_ACL_ADD,
+				'object_id' => array('action'=>  ACL_READ | ACL_ADD,
 					'type' => 'int',
 					'label' => 'object id',
 					'required' => true
 				),
-				'object_type' => array('action'=>  PHPGW_ACL_READ | PHPGW_ACL_ADD,
+				'object_type' => array('action'=>  ACL_READ | ACL_ADD,
 					'type' => 'string',
 					'label' => 'object type',
 					'required' => true,
 					'query' => true,
 				),
-				'permission' => array('action'=>  PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'permission' => array('action'=>  ACL_READ | ACL_ADD | ACL_EDIT,
 					'type' => 'int',
 					'label' => 'permission',
 					'required' => true,
 					'query' => true,
 				),
-				'subject_name' => array('action'=>  PHPGW_ACL_READ,
+				'subject_name' => array('action'=>  ACL_READ,
 					'type' => 'string',
 					'query' => true,
 					'label' => 'user',
@@ -128,7 +128,7 @@
 		 */
 		protected function preValidate( &$entity )
 		{
-			$permission = (array) phpgw::get_var('permission', 'int');
+			$permission = (array) Sanitizer::get_var('permission', 'int');
 
 			$entity->permission = 0;//reset
 			foreach ($permission as $key => $value)

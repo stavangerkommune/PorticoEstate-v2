@@ -16,10 +16,10 @@
 	$title = $appname;
 	$file = array
 	(
-		'Site Configuration'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiconfig.index', 'appname' => 'calendar') ),
-		'Custom fields and sorting'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'calendar.uicustom_fields.index') ),
-		'Calendar Holiday Management'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'calendar.uiholiday.admin') ),
-		'Global Categories'				=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uicategories.index', 'appname' => 'calendar') )
+		'Site Configuration'			=> phpgw::link('/index.php', array('menuaction' => 'admin.uiconfig.index', 'appname' => 'calendar') ),
+		'Custom fields and sorting'		=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicustom_fields.index') ),
+		'Calendar Holiday Management'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uiholiday.admin') ),
+		'Global Categories'				=> phpgw::link('/index.php', array('menuaction' => 'admin.uicategories.index', 'appname' => 'calendar') )
 	);
 //Do not modify below this line
 	$GLOBALS['phpgw']->common->display_mainscreen($appname,$file);

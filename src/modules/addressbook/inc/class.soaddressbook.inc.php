@@ -84,7 +84,7 @@
 			{
 				$this->owner = $GLOBALS['phpgw_info']['user']['account_id'];
 				/* echo $this->owner; */
-				$this->rights = PHPGW_ACL_READ + PHPGW_ACL_ADD + PHPGW_ACL_EDIT + PHPGW_ACL_DELETE + 16;
+				$this->rights = ACL_READ + ACL_ADD + ACL_EDIT + ACL_DELETE + 16;
 				/* echo $rights; */
 			}
 			else
@@ -92,10 +92,10 @@
 				if($this->grants[$this->owner])
 				{
 					$this->rights = $this->grants[$this->owner];
-					if (!($this->rights & PHPGW_ACL_READ))
+					if (!($this->rights & ACL_READ))
 					{
 						$this->owner = $GLOBALS['phpgw_info']['user']['account_id'];
-						$this->rights = PHPGW_ACL_READ + PHPGW_ACL_ADD + PHPGW_ACL_EDIT + PHPGW_ACL_DELETE + 16;
+						$this->rights = ACL_READ + ACL_ADD + ACL_EDIT + ACL_DELETE + 16;
 					}
 				}
 			}

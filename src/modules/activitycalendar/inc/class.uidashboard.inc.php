@@ -189,13 +189,13 @@
 				$user_rows_per_page = 10;
 			}
 			// YUI variables for paging and sorting
-			$start_index = phpgw::get_var('startIndex', 'int');
-			$num_of_objects = phpgw::get_var('results', 'int', 'GET', $user_rows_per_page);
-			$sort_field = phpgw::get_var('sort', 'string', 'GET', 'identifier');
-			$sort_ascending = phpgw::get_var('dir') == 'desc' ? false : true;
+			$start_index = Sanitizer::get_var('startIndex', 'int');
+			$num_of_objects = Sanitizer::get_var('results', 'int', 'GET', $user_rows_per_page);
+			$sort_field = Sanitizer::get_var('sort', 'string', 'GET', 'identifier');
+			$sort_ascending = Sanitizer::get_var('dir') == 'desc' ? false : true;
 			// Form variables
-			$search_for = phpgw::get_var('query');
-			$search_type = phpgw::get_var('search_option');
+			$search_for = Sanitizer::get_var('query');
+			$search_type = Sanitizer::get_var('search_option');
 			// Create an empty result set
 			$result_objects = array();
 			$result_count = 0;
@@ -203,7 +203,7 @@
 			//Create an empty result set
 			$parties = array();
 
-			$exp_param = phpgw::get_var('export');
+			$exp_param = Sanitizer::get_var('export');
 			$export = false;
 			if (isset($exp_param))
 			{
@@ -212,7 +212,7 @@
 			}
 
 			//Retrieve the type of query and perform type specific logic
-			$type = phpgw::get_var('type');
+			$type = Sanitizer::get_var('type');
 			$changed_org = false;
 			$changed_group = false;
 			switch ($type)
@@ -226,7 +226,7 @@
 					$changed_group = true;
 					break;
 				default: // ... get all parties of a given type
-					//$filters = array('party_type' => phpgw::get_var('party_type'), 'active' => phpgw::get_var('active'));
+					//$filters = array('party_type' => Sanitizer::get_var('party_type'), 'active' => Sanitizer::get_var('active'));
 					break;
 			}
 			if ($changed_group)
@@ -269,7 +269,7 @@
 			// ... add result data
 			$organization_data = array('results' => $rows, 'total_records' => $result_count);
 
-			$editable = phpgw::get_var('editable') == 'true' ? true : false;
+			$editable = Sanitizer::get_var('editable') == 'true' ? true : false;
 
 			if (!$export)
 			{
@@ -290,8 +290,8 @@
 			$GLOBALS['phpgw_info']['flags']['nofooter'] = true;
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = false;
 
-			$org_id = phpgw::get_var('orgid');
-			$group_id = phpgw::get_var('groupid');
+			$org_id = Sanitizer::get_var('orgid');
+			$group_id = Sanitizer::get_var('groupid');
 			$returnHTML = "<option value='0'>Ingen gruppe valgt</option>";
 			if ($org_id)
 			{
@@ -331,7 +331,7 @@
 		{
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('view');
 			// Get the contract part id
-			$party_id = (int)phpgw::get_var('id');
+			$party_id = (int)Sanitizer::get_var('id');
 			if (isset($party_id) && $party_id > 0)
 			{
 				$party = rental_soparty::get_instance()->get_single($party_id);
@@ -342,7 +342,7 @@
 				return;
 			}
 
-			if (isset($party) && $party->has_permission(PHPGW_ACL_READ))
+			if (isset($party) && $party->has_permission(ACL_READ))
 			{
 				return $this->render(
 						'party.php', array(

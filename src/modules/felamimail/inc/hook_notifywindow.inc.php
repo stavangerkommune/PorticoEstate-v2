@@ -51,7 +51,7 @@
 			echo '	<!-- Activate Cloaking Device'."\n";
 			echo '	function CheckEmail()'."\n";
 			echo '	{'."\n";
-			echo '		window.opener.document.location.href="'.$GLOBALS['phpgw']->link('/index.php','menuaction=felamimail.uifelamimail.viewMainScreen').'";'."\n";
+			echo '		window.opener.document.location.href="'.phpgw::link('/index.php','menuaction=felamimail.uifelamimail.viewMainScreen').'";'."\n";
 			echo '		window.opener.focus()'."\r\n";
 			#echo '          window.resizeTo(1,1);'."\r\n";
 			echo '          window.blur();'."\r\n";

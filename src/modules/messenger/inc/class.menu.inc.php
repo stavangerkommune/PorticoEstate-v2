@@ -40,7 +40,7 @@
 		{
 			$incoming_app = $GLOBALS['phpgw_info']['flags']['currentapp'];
 			$GLOBALS['phpgw_info']['flags']['currentapp'] = 'messenger';
-			$acl = & $GLOBALS['phpgw']->acl;
+			$acl = Acl::getInstance();
 
 			$menus = array();
 
@@ -49,7 +49,7 @@
 				'messenger' => array
 					(
 					'text' => lang('messenger'),
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => "messenger.uimessenger.index")),
+					'url' => phpgw::link('/index.php', array('menuaction' => "messenger.uimessenger.index")),
 					'image' => array('messenger', 'navbar'),
 					'order' => 35,
 					'group' => 'office'
@@ -64,13 +64,13 @@
 					'index' => array
 						(
 						'text' => lang('Configuration'),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiconfig.index',
+						'url' => phpgw::link('/index.php', array('menuaction' => 'admin.uiconfig.index',
 							'appname' => 'messenger'))
 					),
 					'acl' => array
 						(
 						'text' => lang('Configure Access Permissions'),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.list_acl',
+						'url' => phpgw::link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.list_acl',
 							'acl_app' => 'messenger'))
 					)
 				);
@@ -83,13 +83,13 @@
 					array
 						(
 						'text' => $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
-						'url' => $GLOBALS['phpgw']->link('/preferences/preferences.php', array('appname' => 'messenger',
+						'url' => phpgw::link('/preferences/preferences.php', array('appname' => 'messenger',
 							'type' => 'user'))
 					),
 					array
 						(
 						'text' => $GLOBALS['phpgw']->translation->translate('Grant Access', array(), true),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.aclprefs',
+						'url' => phpgw::link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.aclprefs',
 							'acl_app' => 'messenger'))
 					)
 				);
@@ -97,7 +97,7 @@
 				$menus['toolbar'][] = array
 					(
 					'text' => $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
-					'url' => $GLOBALS['phpgw']->link('/preferences/preferences.php', array('appname' => 'messenger')),
+					'url' => phpgw::link('/preferences/preferences.php', array('appname' => 'messenger')),
 					'image' => array('messenger', 'preferences')
 				);
 			}
@@ -106,32 +106,32 @@
 				(
 				'inbox' => array
 					(
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'messenger.uimessenger.index')),
+					'url' => phpgw::link('/index.php', array('menuaction' => 'messenger.uimessenger.index')),
 					'text' => $GLOBALS['phpgw']->translation->translate('inbox', array(), false, 'messenger'),
 					'image' => array('messenger', 'navbar')
 				)
 			);
-			if ($GLOBALS['phpgw']->acl->check('.compose', PHPGW_ACL_ADD, 'messenger'))
+			if ($GLOBALS['phpgw']->acl->check('.compose', ACL_ADD, 'messenger'))
 			{
 				$menus['navigation']['compose'] = array
 					(
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'messenger.uimessenger.compose')),
+					'url' => phpgw::link('/index.php', array('menuaction' => 'messenger.uimessenger.compose')),
 					'text' => $GLOBALS['phpgw']->translation->translate('compose', array(), false, 'messenger'),
 				);
 			}
-			if ($GLOBALS['phpgw']->acl->check('.compose_groups', PHPGW_ACL_ADD, 'messenger'))
+			if ($GLOBALS['phpgw']->acl->check('.compose_groups', ACL_ADD, 'messenger'))
 			{
 				$menus['navigation']['compose_groups'] = array
 					(
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'messenger.uimessenger.compose_groups')),
+					'url' => phpgw::link('/index.php', array('menuaction' => 'messenger.uimessenger.compose_groups')),
 					'text' => $GLOBALS['phpgw']->translation->translate('compose groups', array(), false, 'messenger'),
 				);
 			}
-			if ($GLOBALS['phpgw']->acl->check('.compose_global', PHPGW_ACL_ADD, 'messenger'))
+			if ($GLOBALS['phpgw']->acl->check('.compose_global', ACL_ADD, 'messenger'))
 			{
 				$menus['navigation']['compose_global'] = array
 					(
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'messenger.uimessenger.compose_global')),
+					'url' => phpgw::link('/index.php', array('menuaction' => 'messenger.uimessenger.compose_global')),
 					'text' => $GLOBALS['phpgw']->translation->translate('compose global', array(), false, 'messenger'),
 				);
 			}

@@ -24,9 +24,9 @@ class calendar_html
 	{
 		//This should really be handled in API browser class - not the html class
 		//Sigurd: Does not look like this is used
-/*		if ( preg_match('/compatible; ([a-z_]+)[/ ]+([0-9.]+)/i', phpgw::get_var('HTTP_USER_AGENT', 'string', 'SERVER'), $parts))
+/*		if ( preg_match('/compatible; ([a-z_]+)[/ ]+([0-9.]+)/i', Sanitizer::get_var('HTTP_USER_AGENT', 'string', 'SERVER'), $parts))
 		{
-			preg_match('/^([a-z_]+)/([0-9.]+)/i', phpgw::get_var('HTTP_USER_AGENT', 'string', 'SERVER'), $parts);
+			preg_match('/^([a-z_]+)/([0-9.]+)/i', Sanitizer::get_var('HTTP_USER_AGENT', 'string', 'SERVER'), $parts);
 		}
 		list(,$this->user_agent,$this->ua_version) = $parts;
 		$this->user_agent = strtolower($this->user_agent);
@@ -205,7 +205,7 @@ class calendar_html
 	 * $vars array|string $vars query or array ('name' => 'value', ...) with query
 	 * link('/index.php?menuaction=infolog.uiinfolog.get_list',array('info_id' => 123))
 	 *  = 'http://domain/phpgw-path/index.php?menuaction=infolog.uiinfolog.get_list&info_id=123'
-	 * @return string absolute URI ( parsed by $GLOBALS['phpgw']->link )
+	 * @return string absolute URI ( parsed by phpgw::link )
 	 */
 	function link($uri, $vars='')
 	{
@@ -213,7 +213,7 @@ class calendar_html
 		{
 			$vars = explode('&',$vars);
 		}
-		return $GLOBALS['phpgw']->link($uri, $vars);
+		return phpgw::link($uri, $vars);
 	}
 
 	function checkbox($name,$value='')

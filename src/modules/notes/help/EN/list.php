@@ -54,4 +54,4 @@
 	);
 
 	$GLOBALS['phpgw']->help->xdraw($values);
-	$GLOBALS['phpgw']->xslttpl->set_var('phpgw',$GLOBALS['phpgw']->help->output);
+	phpgwapi_xslttemplates::getInstance()->set_var('phpgw',$GLOBALS['phpgw']->help->output);

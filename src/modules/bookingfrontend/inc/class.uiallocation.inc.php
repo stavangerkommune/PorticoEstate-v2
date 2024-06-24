@@ -76,14 +76,14 @@
 			$config = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
 
-			$from_org = phpgw::get_var('from_org', 'boolean', "REQUEST", false);
+			$from_org = Sanitizer::get_var('from_org', 'boolean', "REQUEST", false);
 
 			if ($config->config_data['user_can_delete_allocations'] != 'yes')
 			{
 
 				phpgwapi_cache::message_set('user can not delete allocations', 'error');
 
-				$allocation		 = $this->bo->read_single(intval(phpgw::get_var('allocation_id', 'int')));
+				$allocation		 = $this->bo->read_single(intval(Sanitizer::get_var('allocation_id', 'int')));
 				$original_from	 = $allocation['from_'];
 				$organization	 = $this->organization_bo->read_single($allocation['organization_id']);
 				$errors			 = array();
@@ -102,13 +102,13 @@
 					$maildata['field_interval']	 = $field_interval;
 
 					date_default_timezone_set("Europe/Oslo");
-					$date							 = new DateTime(phpgw::get_var('date'));
+					$date							 = new DateTime(Sanitizer::get_var('date'));
 					$system_message					 = array();
 					$system_message['building_id']	 = intval($allocation['building_id']);
 					$system_message['building_name'] = $this->bo->so->get_building($system_message['building_id']);
 					$system_message['created']		 = $date->format('Y-m-d  H:m');
 //					$system_message					 = array_merge($system_message, extract_values($_POST, array('message')));
-					$system_message['message']		 = phpgw::get_var('message', 'html');
+					$system_message['message']		 = Sanitizer::get_var('message', 'html');
 					$system_message['type']			 = 'cancelation';
 					$system_message['status']		 = 'NEW';
 					$system_message['name']			 = $allocation['organization_name'] . ' - ' . $organization['contacts'][0]['name'];
@@ -167,18 +167,18 @@
 			else
 			{
 
-				$id				 = phpgw::get_var('allocation_id', 'int');
-				$from_date		 = phpgw::get_var('from_', 'string');
-				$to_date		 = phpgw::get_var('to_', 'string');
-				$outseason		 = phpgw::get_var('outseason', 'string');
-				$recurring		 = phpgw::get_var('recurring', 'string');
-				$repeat_until	 = phpgw::get_var('repeat_until', 'string');
-				$field_interval	 = phpgw::get_var('field_interval', 'int');
+				$id				 = Sanitizer::get_var('allocation_id', 'int');
+				$from_date		 = Sanitizer::get_var('from_', 'string');
+				$to_date		 = Sanitizer::get_var('to_', 'string');
+				$outseason		 = Sanitizer::get_var('outseason', 'string');
+				$recurring		 = Sanitizer::get_var('recurring', 'string');
+				$repeat_until	 = Sanitizer::get_var('repeat_until', 'string');
+				$field_interval	 = Sanitizer::get_var('field_interval', 'int');
 				$allocation		 = $this->bo->read_single($id);
 				$original_from	 = $allocation['from_'];
 				$organization	 = $this->organization_bo->read_single($allocation['organization_id']);
 				$season			 = $this->season_bo->read_single($allocation['season_id']);
-				$step			 = phpgw::get_var('step', 'string', 'REQUEST', 1);
+				$step			 = Sanitizer::get_var('step', 'string', 'REQUEST', 1);
 				$errors			 = array();
 				$invalid_dates	 = array();
 				$valid_dates	 = array();
@@ -222,13 +222,13 @@
 						{
 							$res_names						 = '';
 							date_default_timezone_set("Europe/Oslo");
-							$date							 = new DateTime(phpgw::get_var('date'));
+							$date							 = new DateTime(Sanitizer::get_var('date'));
 							$system_message					 = array();
 							$system_message['building_id']	 = intval($allocation['building_id']);
 							$system_message['building_name'] = $this->bo->so->get_building($system_message['building_id']);
 							$system_message['created']		 = $date->format('Y-m-d  H:m');
 //							$system_message					 = array_merge($system_message, extract_values($_POST, array('message')));
-							$system_message['message']		 = phpgw::get_var('message', 'html');
+							$system_message['message']		 = Sanitizer::get_var('message', 'html');
 							$system_message['type']			 = 'cancelation';
 							$system_message['status']		 = 'NEW';
 							$system_message['name']			 = $allocation['organization_name'] . ' - ' . $organization['contacts'][0]['name'];
@@ -314,20 +314,20 @@
 						if ($step == 3)
 						{
 							$maildata					 = array();
-							$maildata['outseason']		 = phpgw::get_var('outseason', 'string');
-							$maildata['recurring']		 = phpgw::get_var('recurring', 'string');
-							$maildata['repeat_until']	 = phpgw::get_var('repeat_until', 'string');
+							$maildata['outseason']		 = Sanitizer::get_var('outseason', 'string');
+							$maildata['recurring']		 = Sanitizer::get_var('recurring', 'string');
+							$maildata['repeat_until']	 = Sanitizer::get_var('repeat_until', 'string');
 							$maildata['delete']			 = $valid_dates;
 
 							$res_names						 = '';
 							date_default_timezone_set("Europe/Oslo");
-							$date							 = new DateTime(phpgw::get_var('date'));
+							$date							 = new DateTime(Sanitizer::get_var('date'));
 							$system_message					 = array();
 							$system_message['building_id']	 = intval($allocation['building_id']);
 							$system_message['building_name'] = $this->bo->so->get_building($system_message['building_id']);
 							$system_message['created']		 = $date->format('Y-m-d  H:m');
 //							$system_message					 = array_merge($system_message, extract_values($_POST, array('message')));
-							$system_message['message']		 = phpgw::get_var('message', 'html');
+							$system_message['message']		 = Sanitizer::get_var('message', 'html');
 							$system_message['type']			 = 'cancelation';
 							$system_message['status']		 = 'NEW';
 							$system_message['name']			 = ' ';
@@ -417,11 +417,11 @@
             $user_can_delete_allocations = $config['user_can_delete_allocations'] === 'yes' ? 1 : ($config['user_can_delete_allocations'] === 'never' ? 2 : 0);
 
             // Retrieve multiple allocation IDs
-            $ids = phpgw::get_var('ids', 'string');
+            $ids = Sanitizer::get_var('ids', 'string');
             if ($ids) {
                 $ids = explode(',', $ids);
             } elseif (!$ids || !is_array($ids)) {
-                $ids = array(phpgw::get_var('id', 'int'));
+                $ids = array(Sanitizer::get_var('id', 'int'));
             }
             $allocations_info = [];
             foreach ($ids as $id) {
@@ -468,9 +468,9 @@
                     'allocation_id' => $allocation['id'],
                     'from_' => $allocation['from_'],
                     'to_' => $allocation['to_'],
-                    'resource' => phpgw::get_var('resource'),
+                    'resource' => Sanitizer::get_var('resource'),
                     'resource_ids' => $allocation['resource_ids'],
-                    'from_org' => phpgw::get_var('from_org', 'boolean', "GET", false)
+                    'from_org' => Sanitizer::get_var('from_org', 'boolean', "GET", false)
                 ]);
             }
             return null;
@@ -488,7 +488,7 @@
                     return self::link([
                         'menuaction' => 'bookingfrontend.uiallocation.cancel',
                         'allocation_id' => $allocation['id'],
-                        'from_org' => phpgw::get_var('from_org', 'boolean', "GET", false)
+                        'from_org' => Sanitizer::get_var('from_org', 'boolean', "GET", false)
                     ]);
                 }
             }
@@ -512,7 +512,7 @@
 
             // Combine conditions: user must have permission and the allocation must be in the future
             if ($canEdit && $isFutureAllocation) {
-                $from_org = phpgw::get_var('from_org', 'boolean', "GET", false);
+                $from_org = Sanitizer::get_var('from_org', 'boolean', "GET", false);
 
                 // Generate and return the edit link
                 return self::link([
@@ -578,7 +578,7 @@
 				$user_can_delete_allocations = 2;
 			}
 
-			$allocation				 = $this->bo->read_single(phpgw::get_var('id', 'int'));
+			$allocation				 = $this->bo->read_single(Sanitizer::get_var('id', 'int'));
 			$resources				 = $this->resource_bo->so->read(array('filters'	 => array('id' => $allocation['resources']),
 				'sort'		 => 'name'));
 			$allocation['resources'] = $resources['results'];
@@ -589,7 +589,7 @@
 				$res_names[] = $res['name'];
 				$res_ids[] = $res['id'];
 			}
-			$allocation['resource']		 = phpgw::get_var('resource');
+			$allocation['resource']		 = Sanitizer::get_var('resource');
 			$allocation['resource_ids']	 = $res_ids;
 			$allocation['resource_info'] = join(', ', $res_names);
 			$allocation['building_link'] = self::link(array('menuaction' => 'bookingfrontend.uibuilding.show',
@@ -598,7 +598,7 @@
 					'id'		 => $allocation['organization_id']));
 			$bouser						 = CreateObject('bookingfrontend.bouser');
 
-			$from_org = phpgw::get_var('from_org', 'boolean', "GET", false);
+			$from_org = Sanitizer::get_var('from_org', 'boolean', "GET", false);
 			if ($bouser->is_organization_admin($allocation['organization_id']))
 			{
 				$allocation['add_link']		 = self::link(array('menuaction'	 => 'bookingfrontend.uibooking.add',
@@ -661,12 +661,12 @@
 
 			self::render_template_xsl('allocation_info', array('allocation'	 => $allocation,
 				'user_can_delete_allocations'	 => $user_can_delete_allocations));
-			$GLOBALS['phpgw']->xslttpl->set_output('wml'); // Evil hack to disable page chrome
+			phpgwapi_xslttemplates::getInstance()->set_output('wml'); // Evil hack to disable page chrome
 		}
 
 		public function show()
 		{
-			$allocation				 = $this->bo->read_single(phpgw::get_var('id', 'int'));
+			$allocation				 = $this->bo->read_single(Sanitizer::get_var('id', 'int'));
 			$resources				 = $this->resource_bo->so->read(array('filters'	 => array('id' => $allocation['resources']),
 				'sort'		 => 'name'));
 			$allocation['resources'] = $resources['results'];
@@ -675,7 +675,7 @@
 			{
 				$res_names[] = $res['name'];
 			}
-			$allocation['resource']		 = phpgw::get_var('resource');
+			$allocation['resource']		 = Sanitizer::get_var('resource');
 			$allocation['resource_info'] = join(', ', $res_names);
 			$allocation['building_link'] = self::link(array('menuaction' => 'bookingfrontend.uibuilding.show',
 					'id'		 => $allocation['building_id']));
@@ -741,7 +741,7 @@
 			QRcode::png($code_text, $filename);
 			$allocation['encoded_qr']	 = 'data:image/png;base64,' . base64_encode(file_get_contents($filename));
 
-			$get_participants_link =  $GLOBALS['phpgw']->link('/index.php', array(
+			$get_participants_link =  phpgw::link('/index.php', array(
 				'menuaction'				 => 'booking.uiparticipant.index',
 				'filter_reservation_id'		 => $allocation['id'],
 				'filter_reservation_type'	 => 'allocation',
@@ -794,14 +794,14 @@
 			$config = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
 
-			$allocation = $this->bo->read_single(intval(phpgw::get_var('allocation_id', 'int')));
-			$from_org = phpgw::get_var('from_org', 'boolean', "REQUEST", false);
+			$allocation = $this->bo->read_single(intval(Sanitizer::get_var('allocation_id', 'int')));
+			$from_org = Sanitizer::get_var('from_org', 'boolean', "REQUEST", false);
 			$original_from = $allocation['from_'];
 			$organization = $this->organization_bo->read_single($allocation['organization_id']);
 			$application = $this->application_bo->read_single($allocation['application_id']);
 			if ($_SERVER['REQUEST_METHOD'] == 'POST')
 			{
-				$link =  $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uiallocation.show','id' => $allocation['id']), false, true, true);
+				$link =  phpgw::link('/index.php', array('menuaction' => 'booking.uiallocation.show','id' => $allocation['id']), false, true, true);
 				$outseason = $_POST['outseason'];
 				$recurring = $_POST['recurring'];
 				$repeat_until = $_POST['repeat_until'];

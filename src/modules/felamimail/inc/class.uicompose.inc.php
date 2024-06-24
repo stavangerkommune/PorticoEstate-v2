@@ -46,13 +46,13 @@
 			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
 			require_once(PHPGW_SERVER_ROOT.'/felamimail/inc/xajax.inc.php');
 
-			$xajax = new xajax($GLOBALS['phpgw']->link('/felamimail/xajax.php',false,true), 'xajax_', 'utf-8');
+			$xajax = new xajax(phpgw::link('/felamimail/xajax.php',false,true), 'xajax_', 'utf-8');
 			$xajax->waitCursorOff();
 			$xajax->registerFunction("doXMLHTTP");
 
 			$GLOBALS['phpgw_info']['flags']['java_script'] .= $xajax->getJavascript($GLOBALS['phpgw_info']['server']['webserver_url'] . '/felamimail/js/');
 
-			$GLOBALS['phpgw']->js->validate_file('jsapi', 'jsapi', 'felamimail');
+			phpgwapi_js::getInstance()->validate_file('jsapi', 'jsapi', 'felamimail');
 			$this->displayCharset	= 'utf-8';
 			if (!isset($_POST['composeid']) && !isset($_GET['composeid']))
 			{
@@ -82,7 +82,7 @@
 			{
 				$GLOBALS['phpgw']->css = createObject('phpgwapi.css');
 			}
-			$GLOBALS['phpgw']->css->validate_file('app', 'felamimail');
+			phpgwapi_css::getInstance()->validate_file('app', 'felamimail');
 
 		}
 
@@ -139,7 +139,7 @@
 				} 
 				$uidisplay   = CreateObject('felamimail.uidisplay');
 				$uidisplay->printMessage($messageUid, $formData['printit']);
-				//$GLOBALS['phpgw']->link('/index.php',array('menuaction' => 'felamimail.uidisplay.printMessage','uid'=>$messageUid));
+				//phpgw::link('/index.php',array('menuaction' => 'felamimail.uidisplay.printMessage','uid'=>$messageUid));
 				return;
 			}
 			if((bool)$_POST['saveAsDraft'] == true) {
@@ -211,11 +211,11 @@
 
 			$this->translate();
 
-	/*		$this->t->set_var("link_addressbook",$GLOBALS['phpgw']->link('/index.php',array(
+	/*		$this->t->set_var("link_addressbook",phpgw::link('/index.php',array(
 				'menuaction' => 'addressbook.addressbook_ui.emailpopup'
 			),true));
 */
-			$this->t->set_var("link_addressbook",$GLOBALS['phpgw']->link('/felamimail/addressbook.php',false,true));
+			$this->t->set_var("link_addressbook",phpgw::link('/felamimail/addressbook.php',false,true));
 
 	
 			$this->t->set_var("focusElement",$_focusElement);
@@ -224,21 +224,21 @@
 			(
 				'menuaction'	=> 'felamimail.uicompose.selectFolder',
 			);
-			$this->t->set_var('folder_select_url',$GLOBALS['phpgw']->link('/index.php',$linkData,true));
+			$this->t->set_var('folder_select_url',phpgw::link('/index.php',$linkData,true));
 
 			$linkData = array
 			(
 				'menuaction'	=> 'felamimail.uicompose.fileSelector',
 				'composeid'	=> $this->composeID
 			);
-			$this->t->set_var('file_selector_url',$GLOBALS['phpgw']->link('/index.php',$linkData,true));
+			$this->t->set_var('file_selector_url',phpgw::link('/index.php',$linkData,true));
 
 			$linkData = array
 			(
 				'menuaction'	=> 'felamimail.uicompose.action',
 				'composeid'	=> $this->composeID
 			);
-			$this->t->set_var("link_action",$GLOBALS['phpgw']->link('/index.php',$linkData,true));
+			$this->t->set_var("link_action",phpgw::link('/index.php',$linkData,true));
 			$this->t->set_var('folder_name',$this->bofelamimail->sessionData['mailbox']);
 			$this->t->set_var('compose_id',$this->composeID);
 
@@ -393,8 +393,8 @@
 
 		function display_app_header()
 		{
-			$GLOBALS['phpgw']->js->validate_file('jscode','composeMessage','felamimail');
-			$GLOBALS['phpgw']->js->set_onload('javascript:initAll();');
+			phpgwapi_js::getInstance()->validate_file('jscode','composeMessage','felamimail');
+			phpgwapi_js::getInstance()->set_onload('javascript:initAll();');
 			$GLOBALS['phpgw_info']['flags']['include_xajax'] = True;
 
 			$GLOBALS['phpgw']->common->phpgw_header();
@@ -421,9 +421,9 @@
 			{
 				$GLOBALS['phpgw']->js = CreateObject('phpgwapi.javascript');
 			}
-			$GLOBALS['phpgw']->js->validate_file('dhtmlxtree','js/dhtmlXCommon');
-			$GLOBALS['phpgw']->js->validate_file('dhtmlxtree','js/dhtmlXTree');
-			$GLOBALS['phpgw']->js->validate_file('jscode','composeMessage','felamimail');
+			phpgwapi_js::getInstance()->validate_file('dhtmlxtree','js/dhtmlXCommon');
+			phpgwapi_js::getInstance()->validate_file('dhtmlxtree','js/dhtmlXTree');
+			phpgwapi_js::getInstance()->validate_file('jscode','composeMessage','felamimail');
 			$GLOBALS['phpgw']->common->phpgw_header();
 
 			#$uiwidgets		= CreateObject('felamimail.uiwidgets');
@@ -438,7 +438,7 @@
 				'menuaction'	=> 'felamimail.uicompose.fileSelector',
 				'composeid'	=> $this->composeID
 			);
-			$this->t->set_var('file_selector_url', $GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('file_selector_url', phpgw::link('/index.php',$linkData));
 
 			$maxUploadSize = ini_get('upload_max_filesize');
 			$this->t->set_var('max_uploadsize', $maxUploadSize);
@@ -481,9 +481,9 @@
 
 		function selectFolder()
 		{
-			$GLOBALS['phpgw']->js->validate_file('dhtmlxtree','js/dhtmlXCommon');
-			$GLOBALS['phpgw']->js->validate_file('dhtmlxtree','js/dhtmlXTree');
-			$GLOBALS['phpgw']->js->validate_file('jscode','composeMessage','felamimail');
+			phpgwapi_js::getInstance()->validate_file('dhtmlxtree','js/dhtmlXCommon');
+			phpgwapi_js::getInstance()->validate_file('dhtmlxtree','js/dhtmlXTree');
+			phpgwapi_js::getInstance()->validate_file('jscode','composeMessage','felamimail');
 			$GLOBALS['phpgw']->common->phpgw_header();
 
 			$bofelamimail		= CreateObject('felamimail.bofelamimail',$this->displayCharset);

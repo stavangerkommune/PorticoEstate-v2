@@ -85,12 +85,12 @@
 			$this->location_code = $this->bo->location_code;
 
 			self::set_active_menu('controller::control::component_for_check_list');
-//			$GLOBALS['phpgw']->css->add_external_file('controller/templates/base/css/base.css');
+//			phpgwapi_css::getInstance()->add_external_file('controller/templates/base/css/base.css');
 		}
 
 		function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -107,7 +107,7 @@
 					'label' => lang('View_component_for_control')
 				), array(
 					'label' => lang('Add_component_for_control'),
-					'link' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'controller.uicheck_list_for_component.add_component_to_control'))
+					'link' => phpgw::link('/index.php', array('menuaction' => 'controller.uicheck_list_for_component.add_component_to_control'))
 			));
 
 			$data = array(
@@ -157,11 +157,11 @@
 
 		function add_component_to_control()
 		{
-			if (phpgw::get_var('save_component'))
+			if (Sanitizer::get_var('save_component'))
 			{
 				//add component to control using component item ID
 				$items_checked = array();
-				$items = phpgw::get_var('values_assign');
+				$items = Sanitizer::get_var('values_assign');
 				$item_arr = explode('|', $items);
 				foreach ($item_arr as $item)
 				{
@@ -169,7 +169,7 @@
 				}
 				//var_dump($items_checked);
 
-				$control_id = phpgw::get_var('control_id');
+				$control_id = Sanitizer::get_var('control_id');
 				//var_dump($control_id);
 				if ($control_id != null && is_numeric($control_id))
 				{
@@ -179,11 +179,11 @@
 						$this->so_control->add_component_to_control($control_id, $it[0]);
 					}
 				}
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uicheck_list_for_component.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uicheck_list_for_component.index'));
 			}
 			else
 			{
-				if (phpgw::get_var('phpgw_return_as') == 'json')
+				if (Sanitizer::get_var('phpgw_return_as') == 'json')
 				{
 					return $this->get_component();
 				}
@@ -194,7 +194,7 @@
 
 				$tabs = array(array(
 						'label' => lang('View_component_for_control'),
-						'link' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'controller.uicheck_list_for_component.index'))
+						'link' => phpgw::link('/index.php', array('menuaction' => 'controller.uicheck_list_for_component.index'))
 					), array(
 						'label' => lang('Add_component_for_control')
 				));
@@ -281,9 +281,9 @@
 		public function get_component()
 		{
 
-			$type_id = phpgw::get_var('bim_type_id');
+			$type_id = Sanitizer::get_var('bim_type_id');
 
-			$start = phpgw::get_var('startIndex');
+			$start = Sanitizer::get_var('startIndex');
 
 			$component_list = array();
 
@@ -332,7 +332,7 @@
 
 		public function get_component_types_by_category()
 		{
-			$category = phpgw::get_var('ifc');
+			$category = Sanitizer::get_var('ifc');
 			if ($ifc != null)
 			{
 				if ($ifc = 1)

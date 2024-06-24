@@ -10,5 +10,5 @@
 	);
 	$GLOBALS['phpgw_info']['flags']['session_name'] = 'eventplannerfrontendsession';
 	include_once('../header.inc.php');
-	$GLOBALS['phpgw']->redirect_link('/eventplannerfrontend/');
+	phpgw::redirect_link('/eventplannerfrontend/');
 	exit;

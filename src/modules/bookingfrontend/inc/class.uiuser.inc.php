@@ -26,7 +26,7 @@
 			$this->external_login_info = $bouser->validate_ssn_login(array(	'menuaction' => 'bookingfrontend.uiuser.show'));
 
 			$this->ssn = $this->external_login_info['ssn'];
-			$this->org_id = phpgw::get_var('session_org_id') ? phpgw::get_var('session_org_id') : $bouser->org_id;
+			$this->org_id = Sanitizer::get_var('session_org_id') ? Sanitizer::get_var('session_org_id') : $bouser->org_id;
 
 			if(!$bouser->is_logged_in())
 			{

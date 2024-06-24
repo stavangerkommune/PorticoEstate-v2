@@ -16,9 +16,9 @@
 
 	phpgw::import_class('phpgwapi.datetime');
 
-	define('PHPGW_ACL_DELETEALARM',PHPGW_ACL_DELETE);	// for now
-	define('PHPGW_ACL_SETALARM',PHPGW_ACL_ADD);
-	define('PHPGW_ACL_READALARM',PHPGW_ACL_READ);
+	define('ACL_DELETEALARM',ACL_DELETE);	// for now
+	define('ACL_SETALARM',ACL_ADD);
+	define('ACL_READALARM',ACL_READ);
 
 	class calendar_boalarm
 	{
@@ -39,7 +39,7 @@
 
 		public function __construct()
 		{
-			$cal_id = phpgw::get_var('cal_id', 'int', 'POST');
+			$cal_id = Sanitizer::get_var('cal_id', 'int', 'POST');
 			if($cal_id)
 			{
 				$this->cal_id = $cal_id;
@@ -88,7 +88,7 @@
 		*/
 		function add(&$event,$time,$owner)
 		{
-			if (!$this->check_perms(PHPGW_ACL_SETALARM,$owner) || !($cal_id = $event['id']))
+			if (!$this->check_perms(ACL_SETALARM,$owner) || !($cal_id = $event['id']))
 			{
 				return False;
 			}
@@ -109,7 +109,7 @@
 		@function check_perms
 		@abstract checks if user has a certain grant from the owner of an alarm or event
 		@syntax check_perms($grant,$owner)
-		@param $grant PHPGW_ACL_{SET|READ|DELETE}ALARM (defined at the top of this file)
+		@param $grant ACL_{SET|READ|DELETE}ALARM (defined at the top of this file)
 		*/
 		function check_perms($grant,$owner)
 		{
@@ -137,7 +137,7 @@
 			$participants = array();
 			foreach ($event['participants'] as $uid => $status)
 			{
-				if ($this->check_perms(PHPGW_ACL_SETALARM,$uid))
+				if ($this->check_perms(ACL_SETALARM,$uid))
 				{
 					$participants[$uid] = $fullnames ? $GLOBALS['phpgw']->common->grab_owner_name($uid) : True;
 				}
@@ -166,8 +166,8 @@
 				{
 					continue;	// nothing to do
 				}
-				if ($enable && !$this->check_perms(PHPGW_ACL_SETALARM,$alarm['owner']) ||
-					!$enable && !$this->check_perms(PHPGW_ACL_DELETEALARM,$alarm['owner']))
+				if ($enable && !$this->check_perms(ACL_SETALARM,$alarm['owner']) ||
+					!$enable && !$this->check_perms(ACL_DELETEALARM,$alarm['owner']))
 				{
 					return -1;
 				}
@@ -197,7 +197,7 @@
 				{
 					return 0;	// alarm not found
 				}
-				if (!$this->check_perms(PHPGW_ACL_DELETEALARM,$alarm['owner']))
+				if (!$this->check_perms(ACL_DELETEALARM,$alarm['owner']))
 				{
 					return -1;
 				}

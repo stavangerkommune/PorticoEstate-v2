@@ -27,8 +27,8 @@
 // Only Modify the $file and $title variables.....
 		$file = Array
 		(
-			'Grant Access'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'preferences.uiadmin_acl.aclprefs','acl_app'=>$appname)),
-			'Edit categories' => $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'preferences.uicategories.index','cats_app'=>'notes','cats_level'=>true,'global_cats'=>true))
+			'Grant Access'	=> phpgw::link('/index.php',array('menuaction'=>'preferences.uiadmin_acl.aclprefs','acl_app'=>$appname)),
+			'Edit categories' => phpgw::link('/index.php',array('menuaction'=>'preferences.uicategories.index','cats_app'=>'notes','cats_level'=>true,'global_cats'=>true))
 		);
 // Do not modify below this line
 		display_section($appname,$file);

@@ -66,7 +66,7 @@
 
 			function get_ressurs_name()
 			{
-				$ressursnr_id = phpgw::get_var('ressursnr_id', 'int');
+				$ressursnr_id = Sanitizer::get_var('ressursnr_id', 'int');
 
 				if(!$ressursnr_id)
 				{
@@ -100,7 +100,7 @@
 		}
 	}
 
-	$method = phpgw::get_var('method');
+	$method = Sanitizer::get_var('method');
 
 	if($method == 'get_ressurs_name')
 	{

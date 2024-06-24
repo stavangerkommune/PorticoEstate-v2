@@ -22,7 +22,7 @@
 	
 		protected function initDatabase()
 		{
-		$this->db = & $GLOBALS['phpgw']->db;
+		$this->db = Db::getInstance();
 	}
 	
 		protected function createDummyFile()

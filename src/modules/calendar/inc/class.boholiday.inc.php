@@ -48,13 +48,13 @@
 		public function __construct()
 		{
 			$this->so     = CreateObject('calendar.soholiday');
-			$this->start  = phpgw::get_var('start', 'int');
-			$this->query  = phpgw::get_var('query');
-			$this->sort   = phpgw::get_var('sort');
-			$this->order  = phpgw::get_var('order');
-			$this->id     = phpgw::get_var('id', 'int');
-			$this->year   = phpgw::get_var('year', 'int', 'REQUEST', date('Y'));
-			$this->locales= array( phpgw::get_var('locale') );
+			$this->start  = Sanitizer::get_var('start', 'int');
+			$this->query  = Sanitizer::get_var('query');
+			$this->sort   = Sanitizer::get_var('sort');
+			$this->order  = Sanitizer::get_var('order');
+			$this->id     = Sanitizer::get_var('id', 'int');
+			$this->year   = Sanitizer::get_var('year', 'int', 'REQUEST', date('Y'));
+			$this->locales= array( Sanitizer::get_var('locale') );
 			
 			if($this->debug)
 			{
@@ -129,20 +129,20 @@
 
 		function accept_holiday()
 		{
-			$send_back_to = str_replace('submitlocale','holiday_admin', phpgw::get_var('HTTP_REFERER', 'string', 'SERVER') );
+			$send_back_to = str_replace('submitlocale','holiday_admin', Sanitizer::get_var('HTTP_REFERER', 'string', 'SERVER') );
 			if ( isset($this->locales[0]) && strlen($this->locales[0]) == 2 )
 			{
 				$send_back_to = str_replace("&locale={$this->locales[0]}", '', $send_back_to);
 				$file = "./holidays.{$this->locales[0]}";
-				$names = phpgw::get_var('name', 'string', 'POST');
+				$names = Sanitizer::get_var('name', 'string', 'POST');
 				if ( !file_exists($file) && count($_POST['name']) )
 				{
 					$c_holidays = count($names);
-					$days = phpgw::get_var('day', 'int', 'POST');
-					$months = phpgw::get_var('month', 'int', 'POST');
-					$occurances = phpgw::get_var('occurance', 'int', 'POST');
-					$dow = phpgw::get_var('dow', 'int', 'POST');
-					$observances = phpgw::get_var('observance', 'int', 'POST');
+					$days = Sanitizer::get_var('day', 'int', 'POST');
+					$months = Sanitizer::get_var('month', 'int', 'POST');
+					$occurances = Sanitizer::get_var('occurance', 'int', 'POST');
+					$dow = Sanitizer::get_var('dow', 'int', 'POST');
+					$observances = Sanitizer::get_var('observance', 'int', 'POST');
 					$fp = fopen($file, 'w');
 					for($i=0;$i<$c_holidays;$i++)
 					{
@@ -290,7 +290,7 @@
 
 		function add()
 		{
-			if ( phpgw::get_var('submit', 'bool') )
+			if ( Sanitizer::get_var('submit', 'bool') )
 			{
 				$holiday = get_var('holiday');
 
@@ -419,7 +419,7 @@
 		{
 			if(!@$GLOBALS['phpgw_info']['user']['apps']['admin'])
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php');
+				phpgw::redirect_link('/index.php');
 			}
 		}
 		

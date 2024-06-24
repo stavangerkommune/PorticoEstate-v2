@@ -51,7 +51,7 @@
 			$GLOBALS['phpgw_info']['flags']['noheader'] = true;
 			$GLOBALS['phpgw_info']['flags']['nofooter'] = true;
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = false;
-			$district_id = phpgw::get_var('district_id');
+			$district_id = Sanitizer::get_var('district_id');
 
 			$district = $this->so_activity->get_district( $district_id );
 			print_r($district);
@@ -62,8 +62,8 @@
 		 */
 		public function add()
 		{
-			//$GLOBALS['phpgw']->redirect_link('/activitycalendarfrontend/index.php', array('menuaction' => 'activitycalendarfrontend.uiactivity.edit', 'action' => 'new_activity'));
-			$GLOBALS['phpgw']->js->validate_file('json', 'json', 'phpgwapi');
+			//phpgw::redirect_link('/activitycalendarfrontend/index.php', array('menuaction' => 'activitycalendarfrontend.uiactivity.edit', 'action' => 'new_activity'));
+			phpgwapi_js::getInstance()->validate_file('json', 'json', 'phpgwapi');
 			$c = createobject('phpgwapi.config', 'activitycalendarfrontend');
 			$c->read();
 			$config = $c->config_data;
@@ -81,8 +81,8 @@
 
 			$activity = new activitycalendar_activity();
 
-			$o_id = phpgw::get_var('organization_id');
-			$o_id_new = phpgw::get_var('organization_id_hidden');
+			$o_id = Sanitizer::get_var('organization_id');
+			$o_id_new = Sanitizer::get_var('organization_id_hidden');
 
 			$organization_options = Array();
 			foreach ($organizations as $o)
@@ -139,26 +139,26 @@
 				if ($o_id_new == "new_org")
 				{
 					//add new organization to internal activitycalendar organization register
-					$org_homepage = phpgw::get_var('homepage');
+					$org_homepage = Sanitizer::get_var('homepage');
 					if ($org_homepage == 'http://')
 					{
 						$org_homepage = "";
 					}
-					$org_info['name'] = phpgw::get_var('orgname');
-					$org_info['orgnr'] = phpgw::get_var('orgno');
+					$org_info['name'] = Sanitizer::get_var('orgname');
+					$org_info['orgnr'] = Sanitizer::get_var('orgno');
 					$org_info['homepage'] = $org_homepage;
-					$org_info['street'] = phpgw::get_var('address');
-					$org_info['streetnumber'] = phpgw::get_var('number');
-					$org_info['zip'] = phpgw::get_var('postzip');
-					$org_info['postaddress'] = phpgw::get_var('postaddress');
+					$org_info['street'] = Sanitizer::get_var('address');
+					$org_info['streetnumber'] = Sanitizer::get_var('number');
+					$org_info['zip'] = Sanitizer::get_var('postzip');
+					$org_info['postaddress'] = Sanitizer::get_var('postaddress');
 					$org_info['status'] = "new";
 					$o_id = $this->so_activity->add_organization_local($org_info);
 
 					//add contact persons
 					$contact1 = array();
-					$contact1['name'] = phpgw::get_var('org_contact1_name');
-					$contact1['phone'] = phpgw::get_var('org_contact1_phone');
-					$contact1['mail'] = phpgw::get_var('org_contact1_mail');
+					$contact1['name'] = Sanitizer::get_var('org_contact1_name');
+					$contact1['phone'] = Sanitizer::get_var('org_contact1_phone');
+					$contact1['mail'] = Sanitizer::get_var('org_contact1_mail');
 					$contact1['org_id'] = $o_id;
 					$contact1['group_id'] = 0;
 					$this->so_activity->add_contact_person_local($contact1);
@@ -170,7 +170,7 @@
 					}
 
 					$person_ids = $this->so_organization->get_contacts_local($o_id);
-					$desc = phpgw::get_var('org_description');
+					$desc = Sanitizer::get_var('org_description');
 					$organization = $this->so_organization->get_organization_local($o_id);
 					$new_org = true;
 
@@ -234,8 +234,8 @@
 						'districts' => $districts,
 						'offices' => $office_options,
 						'editable' => true,
-						'message' => isset($message) ? $message : phpgw::get_var('message'),
-						'error' => isset($error) ? $error : phpgw::get_var('error'),
+						'message' => isset($message) ? $message : Sanitizer::get_var('message'),
+						'error' => isset($error) ? $error : Sanitizer::get_var('error'),
 						'helpImg' => $helpImg,
 						'ajaxURL' => $ajaxUrl
 						)
@@ -245,7 +245,7 @@
 			{
 				$get_org_from_local = false;
 				$new_org_group = false;
-				$new_org = phpgw::get_var('new_organization', 'bool', 'POST', false);
+				$new_org = Sanitizer::get_var('new_organization', 'bool', 'POST', false);
 				if ($new_org != null && $new_org == 'yes')
 				{
 					$get_org_from_local = true;
@@ -265,17 +265,17 @@
 					$new_org = true;
 					//$new_org_group = true;
 					//Add new group for the activity
-					$group_info['name'] = phpgw::get_var('title');
+					$group_info['name'] = Sanitizer::get_var('title');
 					$group_info['organization_id'] = $o_id;
-					$group_info['description'] = phpgw::get_var('description');
+					$group_info['description'] = Sanitizer::get_var('description');
 					$group_info['status'] = "new";
 					$g_id = $this->so_activity->add_group_local($group_info);
 
 					//add contact persons
 					$contact1 = array();
-					$contact1['name'] = phpgw::get_var('contact_name');
-					$contact1['phone'] = phpgw::get_var('contact_phone');
-					$contact1['mail'] = phpgw::get_var('contact_mail');
+					$contact1['name'] = Sanitizer::get_var('contact_name');
+					$contact1['phone'] = Sanitizer::get_var('contact_phone');
+					$contact1['mail'] = Sanitizer::get_var('contact_mail');
 					$contact1['org_id'] = $o_id;
 					$contact1['group_id'] = $g_id;
 					$this->so_activity->add_contact_person_local($contact1);
@@ -285,24 +285,24 @@
 					{
 						$persons[] = $p;
 					}
-					$desc = phpgw::get_var('description');
+					$desc = Sanitizer::get_var('description');
 					$group = $this->so_group->get_group_local($g_id);
 					$person_ids = $this->so_group->get_contacts_local($g_id);
 					$new_group = true;
 				}
 				else if (is_numeric($o_id) && $o_id > 0)
 				{
-					$group_info['name'] = phpgw::get_var('title');
+					$group_info['name'] = Sanitizer::get_var('title');
 					$group_info['organization_id'] = $o_id;
-					$group_info['description'] = phpgw::get_var('description');
+					$group_info['description'] = Sanitizer::get_var('description');
 					$group_info['status'] = "new";
 					$g_id = $this->so_activity->add_group_local($group_info);
 
 					//add contact persons
 					$contact1 = array();
-					$contact1['name'] = phpgw::get_var('contact_name');
-					$contact1['phone'] = phpgw::get_var('contact_phone');
-					$contact1['mail'] = phpgw::get_var('contact_mail');
+					$contact1['name'] = Sanitizer::get_var('contact_name');
+					$contact1['phone'] = Sanitizer::get_var('contact_phone');
+					$contact1['mail'] = Sanitizer::get_var('contact_mail');
 					$contact1['org_id'] = 0;
 					$contact1['group_id'] = $g_id;
 					$this->so_activity->add_contact_person_local($contact1);
@@ -312,7 +312,7 @@
 					{
 						$persons[] = $p;
 					}
-					$desc = phpgw::get_var('description');
+					$desc = Sanitizer::get_var('description');
 					$group = $this->so_group->get_group_local($g_id);
 					$person_ids = $this->so_group->get_contacts_local($g_id);
 					$organization = $this->so_organization->get_single($o_id);
@@ -324,16 +324,16 @@
 					$desc = substr($desc, 0, 254);
 				}
 
-				$arena_id = phpgw::get_var('internal_arena_id');
-				$new_arena = phpgw::get_var('new_arena_hidden');
+				$arena_id = Sanitizer::get_var('internal_arena_id');
+				$new_arena = Sanitizer::get_var('new_arena_hidden');
 				if ($new_arena != null && $new_arena == 'new_arena')
 				{
 					$arena = new activitycalendar_arena();
-					$arena_name = phpgw::get_var('arena_name');
-					$arena_address = phpgw::get_var('arena_address');
-					$arena_addressnumber = phpgw::get_var('arena_number');
-					$arena_zip_code = phpgw::get_var('arena_zip_code');
-					$arena_city = phpgw::get_var('arena_city');
+					$arena_name = Sanitizer::get_var('arena_name');
+					$arena_address = Sanitizer::get_var('arena_address');
+					$arena_addressnumber = Sanitizer::get_var('arena_number');
+					$arena_zip_code = Sanitizer::get_var('arena_zip_code');
+					$arena_city = Sanitizer::get_var('arena_city');
 
 					$arena->set_arena_name($arena_name);
 					$arena->set_address($arena_address);
@@ -363,21 +363,21 @@
 				}
 
 				//... set all parameters
-				$activity->set_title(phpgw::get_var('title'));
+				$activity->set_title(Sanitizer::get_var('title'));
 				$activity->set_organization_id($o_id);
 				$activity->set_group_id($g_id);
-				$activity->set_district(phpgw::get_var('district'));
-				$activity->set_office(phpgw::get_var('office'));
+				$activity->set_district(Sanitizer::get_var('district'));
+				$activity->set_office(Sanitizer::get_var('office'));
 				$activity->set_state(1);
-				$activity->set_category(phpgw::get_var('category'));
-				$target_array = phpgw::get_var('target');
+				$activity->set_category(Sanitizer::get_var('category'));
+				$target_array = Sanitizer::get_var('target');
 				$activity->set_target(implode(",", $target_array));
 				$activity->set_description($desc);
-				$activity->set_time(phpgw::get_var('time'));
+				$activity->set_time(Sanitizer::get_var('time'));
 				$activity->set_contact_persons($persons);
-				$activity->set_special_adaptation(phpgw::get_var('special_adaptation'));
-				$activity->set_contact_person_2_address(phpgw::get_var('contact2_address') . ", " . phpgw::get_var('contact2_number'));
-				$activity->set_contact_person_2_zip(phpgw::get_var('contact2_postaddress'));
+				$activity->set_special_adaptation(Sanitizer::get_var('special_adaptation'));
+				$activity->set_contact_person_2_address(Sanitizer::get_var('contact2_address') . ", " . Sanitizer::get_var('contact2_number'));
+				$activity->set_contact_person_2_zip(Sanitizer::get_var('contact2_postaddress'));
 				$activity->set_frontend(true);
 				$activity->set_new_org($new_org);
 				$activity->set_new_group($new_group);
@@ -472,8 +472,8 @@
 							'targets' => $targets,
 							'districts' => $districts,
 							'offices' => $offices,
-							'message' => isset($message) ? $message : phpgw::get_var('message'),
-							'error' => isset($error) ? $error : phpgw::get_var('error'),
+							'message' => isset($message) ? $message : Sanitizer::get_var('message'),
+							'error' => isset($error) ? $error : Sanitizer::get_var('error'),
 							'ajaxURL' => $ajaxUrl
 							)
 					);
@@ -525,8 +525,8 @@
 							'offices' => $office_options,
 							'editable' => true,
 							'cancel_link' => $cancel_link,
-							'message' => isset($message) ? $message : phpgw::get_var('message'),
-							'error' => isset($error) ? $error : phpgw::get_var('error'),
+							'message' => isset($message) ? $message : Sanitizer::get_var('message'),
+							'error' => isset($error) ? $error : Sanitizer::get_var('error'),
 							'helpImg' => $helpImg,
 							'ajaxURL' => $ajaxUrl
 							)
@@ -551,7 +551,7 @@
 		{
 			$errorMsgs = array();
 			$infoMsgs = array();
-			$activity = $this->so_activity->get_single((int)phpgw::get_var('id'));
+			$activity = $this->so_activity->get_single((int)Sanitizer::get_var('id'));
 
 			if ($activity == null)
 			{ // Not found
@@ -628,7 +628,7 @@
 
 		function edit()
 		{
-			$GLOBALS['phpgw']->js->validate_file('json', 'json', 'phpgwapi');
+			phpgwapi_js::getInstance()->validate_file('json', 'json', 'phpgwapi');
 
 			$c = createobject('phpgwapi.config', 'activitycalendarfrontend');
 			$c->read();
@@ -637,7 +637,7 @@
 			$ajaxUrl = $c->config_data['AJAXURL'];
 			$helpImg = $GLOBALS['phpgw']->common->image('activitycalendarfrontend', 'hjelp.gif');
 
-			$id = intval(phpgw::get_var('id', 'GET'));
+			$id = intval(Sanitizer::get_var('id', 'GET'));
 
 			$categories = $this->so_activity->get_categories();
 			$targets = $this->so_activity->get_targets();
@@ -696,7 +696,7 @@
 
 			if (isset($_POST['step_1']))
 			{ //change_request
-				$activity_id = phpgw::get_var('activity_id', 'int');
+				$activity_id = Sanitizer::get_var('activity_id', 'int');
 				$activity = $this->so_activity->get_single($activity_id);
 				$org = $this->so_organization->get_single($activity->get_organization_id());
 
@@ -718,7 +718,7 @@
 			}
 			else
 			{
-				$secret_param = phpgw::get_var('secret', 'GET');
+				$secret_param = Sanitizer::get_var('secret', 'GET');
 				if (!isset($id) || $id == '')
 				{
 					//select activity to edit
@@ -781,7 +781,7 @@
 						);
 					}
 
-					if ($activity->get_secret() != phpgw::get_var('secret', 'GET'))
+					if ($activity->get_secret() != Sanitizer::get_var('secret', 'GET'))
 					{
 						//select activity to edit
 						$activities = $this->so_activity->get(0, 0, 'title', true, '', '', array(
@@ -892,13 +892,13 @@
 					{ // The user has pressed the save button
 						if (isset($activity))
 						{ // If an activity object is created
-							$act_description = phpgw::get_var('description');
+							$act_description = Sanitizer::get_var('description');
 							$old_state = $activity->get_state();
-							$new_state = phpgw::get_var('state');
+							$new_state = Sanitizer::get_var('state');
 							// ... set all parameters
 							$activity->set_state(2);
-							$activity->set_title(phpgw::get_var('title'));
-							$arena_id = phpgw::get_var('internal_arena_id');
+							$activity->set_title(Sanitizer::get_var('title'));
+							$arena_id = Sanitizer::get_var('internal_arena_id');
 							$arena_arr = explode("_", $arena_id);
 							if ($arena_arr[0] == 'i')
 							{
@@ -910,25 +910,25 @@
 								$activity->set_internal_arena(0);
 								$activity->set_arena($arena_arr[1]);
 							}
-							//$district_array = phpgw::get_var('district');
-							$activity->set_district(phpgw::get_var('district'));
-							$activity->set_office(phpgw::get_var('office'));
+							//$district_array = Sanitizer::get_var('district');
+							$activity->set_district(Sanitizer::get_var('district'));
+							$activity->set_office(Sanitizer::get_var('office'));
 							$activity->set_state(2);
-							$activity->set_category(phpgw::get_var('category'));
-							$target_array = phpgw::get_var('target');
+							$activity->set_category(Sanitizer::get_var('category'));
+							$target_array = Sanitizer::get_var('target');
 							$activity->set_target(implode(",", $target_array));
 							$activity->set_description($act_description);
-							$activity->set_time(phpgw::get_var('time'));
+							$activity->set_time(Sanitizer::get_var('time'));
 							$activity->set_contact_persons($persons);
-							$activity->set_special_adaptation(phpgw::get_var('special_adaptation'));
+							$activity->set_special_adaptation(Sanitizer::get_var('special_adaptation'));
 							$activity->set_frontend(true);
 
 							$contact_person = array();
 							$cp_tmp = $persons_array[0];
 							$contact_person['original_id'] = $cp_tmp->get_id();
-							$contact_person['name'] = phpgw::get_var('contact_name');
-							$contact_person['phone'] = phpgw::get_var('contact_phone');
-							$contact_person['mail'] = phpgw::get_var('contact_mail');
+							$contact_person['name'] = Sanitizer::get_var('contact_name');
+							$contact_person['phone'] = Sanitizer::get_var('contact_phone');
+							$contact_person['mail'] = Sanitizer::get_var('contact_mail');
 							$contact_person['group_id'] = $activity->get_group_id();
 
 
@@ -1045,8 +1045,8 @@
 										'targets' => $targets,
 										'districts' => $districts,
 										'offices' => $offices,
-										'message' => isset($message) ? $message : phpgw::get_var('message'),
-										'error' => isset($error) ? $error : phpgw::get_var('error'),
+										'message' => isset($message) ? $message : Sanitizer::get_var('message'),
+										'error' => isset($error) ? $error : Sanitizer::get_var('error'),
 										'helpImg' => $helpImg,
 										'ajaxURL' => $ajaxUrl
 										)
@@ -1080,8 +1080,8 @@
 										'offices' => $office_options,
 										'editable' => true,
 										'cancel_link' => $cancel_link,
-										'message' => isset($message) ? $message : phpgw::get_var('message'),
-										'error' => isset($error) ? $error : phpgw::get_var('error'),
+										'message' => isset($message) ? $message : Sanitizer::get_var('message'),
+										'error' => isset($error) ? $error : Sanitizer::get_var('error'),
 										'helpImg' => $helpImg,
 										'ajaxURL' => $ajaxUrl
 										)
@@ -1108,8 +1108,8 @@
 								'districts' => $district_options,
 								'offices' => $office_options,
 								'editable' => true,
-								'message' => isset($message) ? $message : phpgw::get_var('message'),
-								'error' => isset($error) ? $error : phpgw::get_var('error'),
+								'message' => isset($message) ? $message : Sanitizer::get_var('message'),
+								'error' => isset($error) ? $error : Sanitizer::get_var('error'),
 								'helpImg' => $helpImg,
 								'ajaxURL' => $ajaxUrl
 								)
@@ -1139,8 +1139,8 @@
 									'targets' => $targets,
 									'districts' => $districts,
 									'offices' => $offices,
-									'message' => isset($message) ? $message : phpgw::get_var('message'),
-									'error' => isset($error) ? $error : phpgw::get_var('error'),
+									'message' => isset($message) ? $message : Sanitizer::get_var('message'),
+									'error' => isset($error) ? $error : Sanitizer::get_var('error'),
 									'helpImg' => $helpImg,
 									'ajaxURL' => $ajaxUrl
 									)
@@ -1165,8 +1165,8 @@
 								'offices' => $offices,
 								'editable' => false,
 								'change_request' => true,
-								'message' => isset($message) ? $message : phpgw::get_var('message'),
-								'error' => isset($error) ? $error : phpgw::get_var('error'),
+								'message' => isset($message) ? $message : Sanitizer::get_var('message'),
+								'error' => isset($error) ? $error : Sanitizer::get_var('error'),
 								'helpImg' => $helpImg,
 								'ajaxURL' => $ajaxUrl
 								)
@@ -1178,7 +1178,7 @@
 
 		function index()
 		{
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'activitycalendarfrontend.uiactivity.add'));
+			phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendarfrontend.uiactivity.add'));
 		}
 
 		function get_organization_groups()
@@ -1187,8 +1187,8 @@
 			$GLOBALS['phpgw_info']['flags']['nofooter'] = true;
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = false;
 
-			$org_id = phpgw::get_var('orgid');
-			$group_id = phpgw::get_var('groupid');
+			$org_id = Sanitizer::get_var('orgid');
+			$group_id = Sanitizer::get_var('groupid');
 			$returnHTML = "<option value='0'>Ingen gruppe valgt</option>";
 			if ($org_id)
 			{
@@ -1226,14 +1226,14 @@
 		 */
 		function get_address_search()
 		{
-			$search_string = phpgw::get_var('search');
+			$search_string = Sanitizer::get_var('search');
 			//var_dump($search_string);
 			return activitycalendar_soarena::get_instance()->get_address($search_string);
 		}
 
 		function edit_organization_values()
 		{
-			$org_id = phpgw::get_var('organization_id');
+			$org_id = Sanitizer::get_var('organization_id');
 			if (isset($org_id))
 			{
 
@@ -1246,18 +1246,18 @@
 				{ //save updated organization info
 					$organization = $this->so_organization->get_single($org_id);
 
-					$org_homepage = phpgw::get_var('homepage');
+					$org_homepage = Sanitizer::get_var('homepage');
 					if ($org_homepage == 'http://')
 					{
 						$org_homepage = "";
 					}
-					$org_info['name'] = phpgw::get_var('orgname');
-					$org_info['orgnr'] = phpgw::get_var('orgno');
+					$org_info['name'] = Sanitizer::get_var('orgname');
+					$org_info['orgnr'] = Sanitizer::get_var('orgno');
 					$org_info['homepage'] = $org_homepage;
-					$org_info['street'] = phpgw::get_var('address');
-					$org_info['streetnumber'] = phpgw::get_var('number');
-					$org_info['zip'] = phpgw::get_var('postzip');
-					$org_info['postaddress'] = phpgw::get_var('postaddress');
+					$org_info['street'] = Sanitizer::get_var('address');
+					$org_info['streetnumber'] = Sanitizer::get_var('number');
+					$org_info['zip'] = Sanitizer::get_var('postzip');
+					$org_info['postaddress'] = Sanitizer::get_var('postaddress');
 					$org_info['district'] = $organization->get_district();
 					$org_info['status'] = "change";
 					$org_info['original_org_id'] = $org_id;
@@ -1265,9 +1265,9 @@
 
 					//add contact persons
 					$contact1 = array();
-					$contact1['name'] = phpgw::get_var('org_contact1_name');
-					$contact1['phone'] = phpgw::get_var('org_contact1_phone');
-					$contact1['mail'] = phpgw::get_var('org_contact1_mail');
+					$contact1['name'] = Sanitizer::get_var('org_contact1_name');
+					$contact1['phone'] = Sanitizer::get_var('org_contact1_phone');
+					$contact1['mail'] = Sanitizer::get_var('org_contact1_mail');
 					$contact1['org_id'] = $o_id;
 					$contact1['group_id'] = 0;
 					$this->so_activity->add_contact_person_local($contact1);
@@ -1276,8 +1276,8 @@
 
 					return self::render_template_xsl('organization_reciept', array
 							(
-							'message' => isset($message) ? $message : phpgw::get_var('message'),
-							'error' => isset($error) ? $error : phpgw::get_var('error'),
+							'message' => isset($message) ? $message : Sanitizer::get_var('message'),
+							'error' => isset($error) ? $error : Sanitizer::get_var('error'),
 							'helpImg' => $helpImg
 							)
 					);
@@ -1317,8 +1317,8 @@
 							'organization' => $organization_options,
 							'contact1' => $persons[0],
 							'editable' => true,
-							'message' => isset($message) ? $message : phpgw::get_var('message'),
-							'error' => isset($error) ? $error : phpgw::get_var('error'),
+							'message' => isset($message) ? $message : Sanitizer::get_var('message'),
+							'error' => isset($error) ? $error : Sanitizer::get_var('error'),
 							'helpImg' => $helpImg,
 							'ajaxURL' => $ajaxUrl
 							)
@@ -1329,33 +1329,33 @@
 
 		function edit_group_values()
 		{
-			$group_id = phpgw::get_var('group_id');
+			$group_id = Sanitizer::get_var('group_id');
 			if (isset($group_id))
 			{
 				if (isset($_POST['save_group']))
 				{ //save updated organization info
 					$group = $this->so_group->get_single($group_id);
 
-					$group_info['name'] = phpgw::get_var('groupname');
-					$group_info['organization_id'] = phpgw::get_var('orgid');
-					$group_info['description'] = phpgw::get_var('org_description');
+					$group_info['name'] = Sanitizer::get_var('groupname');
+					$group_info['organization_id'] = Sanitizer::get_var('orgid');
+					$group_info['description'] = Sanitizer::get_var('org_description');
 					$group_info['status'] = "change";
 					$group_info['original_group_id'] = $group_id;
 					$g_id = $this->so_activity->add_group_local($group_info);
 
 					//add contact persons
 					$contact1 = array();
-					$contact1['name'] = phpgw::get_var('group_contact1_name');
-					$contact1['phone'] = phpgw::get_var('group_contact1_phone');
-					$contact1['mail'] = phpgw::get_var('group_contact1_email');
+					$contact1['name'] = Sanitizer::get_var('group_contact1_name');
+					$contact1['phone'] = Sanitizer::get_var('group_contact1_phone');
+					$contact1['mail'] = Sanitizer::get_var('group_contact1_email');
 					$contact1['org_id'] = 0;
 					$contact1['group_id'] = $g_id;
 					$this->so_activity->add_contact_person_local($contact1);
 
 					$contact2 = array();
-					$contact2['name'] = phpgw::get_var('group_contact2_name');
-					$contact2['phone'] = phpgw::get_var('group_contact2_phone');
-					$contact2['mail'] = phpgw::get_var('group_contact2_email');
+					$contact2['name'] = Sanitizer::get_var('group_contact2_name');
+					$contact2['phone'] = Sanitizer::get_var('group_contact2_phone');
+					$contact2['mail'] = Sanitizer::get_var('group_contact2_email');
 					$contact2['org_id'] = 0;
 					$contact2['group_id'] = $g_id;
 					$this->so_activity->add_contact_person_local($contact2);
@@ -1364,8 +1364,8 @@
 
 					$this->render('group_reciept.php', array
 						(
-						'message' => isset($message) ? $message : phpgw::get_var('message'),
-						'error' => isset($error) ? $error : phpgw::get_var('error')
+						'message' => isset($message) ? $message : Sanitizer::get_var('message'),
+						'error' => isset($error) ? $error : Sanitizer::get_var('error')
 						)
 					);
 				}
@@ -1385,8 +1385,8 @@
 						'contact1' => $persons[0],
 						'contact2' => $persons[1],
 						'editable' => true,
-						'message' => isset($message) ? $message : phpgw::get_var('message'),
-						'error' => isset($error) ? $error : phpgw::get_var('error')
+						'message' => isset($message) ? $message : Sanitizer::get_var('message'),
+						'error' => isset($error) ? $error : Sanitizer::get_var('error')
 						)
 					);
 				}
@@ -1399,7 +1399,7 @@
 			$GLOBALS['phpgw_info']['flags']['nofooter'] = true;
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = false;
 
-			$org_id = phpgw::get_var('orgid');
+			$org_id = Sanitizer::get_var('orgid');
 			$activity_ret = array();
 			$activity_ret[] = array('id'=> 0, 'name' => 'Ingen aktivitet valgt');
 			if ($org_id)

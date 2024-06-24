@@ -36,7 +36,7 @@
 			$this->account = $GLOBALS['phpgw_info']['user']['account_id'];
 			$this->bocommon = CreateObject('sms.bocommon');
 			$this->sms = CreateObject('sms.sms');
-			$this->acl = & $GLOBALS['phpgw']->acl;
+			$this->acl = Acl::getInstance();
 			$this->acl_location = '.board';
 			$this->start = $this->bo->start;
 			$this->query = $this->bo->query;
@@ -52,7 +52,7 @@
 		function index()
 		{
 
-			if (!$this->acl->check($this->acl_location, PHPGW_ACL_READ, 'sms'))
+			if (!$this->acl->check($this->acl_location, ACL_READ, 'sms'))
 			{
 				$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 				$this->bocommon->no_access();
@@ -65,7 +65,7 @@
 
 			echo parse_navbar();
 
-			$err = phpgw::get_var('err');
+			$err = Sanitizer::get_var('err');
 
 			if ($err)
 			{
@@ -74,14 +74,14 @@
 
 
 			$add_data = array('menuaction' => 'sms.uiboard.add');
-			$add_url = $GLOBALS['phpgw']->link('/index.php', $add_data);
+			$add_url = phpgw::link('/index.php', $add_data);
 
 			$content .= "
 			    <p>
 			    <a href=\"$add_url\">[  Add SMS board ]</a>
 			    <p>
 			";
-			/* 			if (!$this->acl->check('run', PHPGW_ACL_READ,'admin'))
+			/* 			if (!$this->acl->check('run', ACL_READ,'admin'))
 			  {
 			  $query_user_only = "WHERE uid='" . $this->account ."'";
 			  }
@@ -91,11 +91,11 @@
 			while ($this->db->next_record())
 			{
 				$owner = $GLOBALS['phpgw']->accounts->id2name($this->db->f('uid'));
-				$content .= "[<a href=" . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uiboard.view',
+				$content .= "[<a href=" . phpgw::link('/index.php', array('menuaction' => 'sms.uiboard.view',
 						'board_id' => $this->db->f('board_id'))) . ">v</a>] ";
-				$content .= "[<a href=" . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uiboard.edit',
+				$content .= "[<a href=" . phpgw::link('/index.php', array('menuaction' => 'sms.uiboard.edit',
 						'board_id' => $this->db->f('board_id'))) . ">e</a>] ";
-				$content .= "[<a href=" . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uiboard.delete',
+				$content .= "[<a href=" . phpgw::link('/index.php', array('menuaction' => 'sms.uiboard.delete',
 						'board_id' => $this->db->f('board_id'))) . ">x</a>] ";
 				$content .= "<b>Code:</b> " . $this->db->f('board_code') . "&nbsp;&nbsp;<b>Forward:</b> " . $this->db->f('board_forward_email', true) . "&nbsp;&nbsp;<b>User:</b> $owner<br>";
 			}
@@ -109,7 +109,7 @@
 			$done_data = array(
 				'menuaction' => 'sms.uisms.index');
 
-			$done_url = $GLOBALS['phpgw']->link('/index.php', $done_data);
+			$done_url = phpgw::link('/index.php', $done_data);
 
 			$content .= "
 				    <p><li>
@@ -123,7 +123,7 @@
 		function view()
 		{
 
-			if (!$this->acl->check($this->acl_location, PHPGW_ACL_READ, 'sms'))
+			if (!$this->acl->check($this->acl_location, ACL_READ, 'sms'))
 			{
 				$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 				$this->bocommon->no_access();
@@ -136,11 +136,11 @@
 
 			echo parse_navbar();
 
-			$board_id = phpgw::get_var('board_id');
+			$board_id = Sanitizer::get_var('board_id');
 			$board_code = '';
 			if($board_id)
 			{
-				$board_id = urldecode(phpgw::get_var('board_id'));
+				$board_id = urldecode(Sanitizer::get_var('board_id'));
 				$sql = "SELECT board_code FROM phpgw_sms_featboard WHERE board_id='$board_id'";
 				$this->db->query($sql, __LINE__, __FILE__);
 				$this->db->next_record();
@@ -175,7 +175,7 @@
 			}
 
 			$done_data = array('menuaction' => 'sms.uiboard.index');
-			$done_url = $GLOBALS['phpgw']->link('/index.php', $done_data);
+			$done_url = phpgw::link('/index.php', $done_data);
 
 			$content = "
 			    <p>
@@ -189,7 +189,7 @@
 		function add()
 		{
 
-			if (!$this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'sms'))
+			if (!$this->acl->check($this->acl_location, ACL_ADD, 'sms'))
 			{
 				$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 				$this->bocommon->no_access();
@@ -202,10 +202,10 @@
 
 			echo parse_navbar();
 
-			$err = phpgw::get_var('err');
-			$board_code = phpgw::get_var('board_code');
-			$email = phpgw::get_var('email', 'email');
-			$template = phpgw::get_var('template');
+			$err = Sanitizer::get_var('err');
+			$board_code = Sanitizer::get_var('board_code');
+			$email = Sanitizer::get_var('email', 'email');
+			$template = Sanitizer::get_var('template');
 
 			if ($err)
 			{
@@ -217,7 +217,7 @@
 				'autoreply_id' => $autoreply_id
 			);
 
-			$add_url = $GLOBALS['phpgw']->link('/index.php', $add_data);
+			$add_url = phpgw::link('/index.php', $add_data);
 
 			$content .= "
 			    <p>
@@ -232,7 +232,7 @@
 			";
 
 			$done_data = array('menuaction' => 'sms.uiboard.index');
-			$done_url = $GLOBALS['phpgw']->link('/index.php', $done_data);
+			$done_url = phpgw::link('/index.php', $done_data);
 
 			$content .= "
 			    <p>
@@ -246,16 +246,16 @@
 		function add_yes()
 		{
 
-			if (!$this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'sms'))
+			if (!$this->acl->check($this->acl_location, ACL_ADD, 'sms'))
 			{
 				$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 				$this->bocommon->no_access();
 				return;
 			}
 
-			$board_code = strtoupper(phpgw::get_var('board_code'));
-			$email = phpgw::get_var('email', 'email');
-			$template = phpgw::get_var('template');
+			$board_code = strtoupper(Sanitizer::get_var('board_code'));
+			$email = Sanitizer::get_var('email', 'email');
+			$template = Sanitizer::get_var('template');
 
 			$uid = $this->account;
 			$target = 'add';
@@ -307,13 +307,13 @@
 				'err' => urlencode($error_string)
 			);
 
-			$GLOBALS['phpgw']->redirect_link('/index.php', $add_data);
+			phpgw::redirect_link('/index.php', $add_data);
 		}
 
 		function edit()
 		{
 
-			if (!$this->acl->check($this->acl_location, PHPGW_ACL_EDIT, 'sms'))
+			if (!$this->acl->check($this->acl_location, ACL_EDIT, 'sms'))
 			{
 				$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 				$this->bocommon->no_access();
@@ -325,8 +325,8 @@
 
 			echo parse_navbar();
 
-			$err = phpgw::get_var('err');
-			$board_id = phpgw::get_var('board_id');
+			$err = Sanitizer::get_var('err');
+			$board_id = Sanitizer::get_var('board_id');
 
 			if ($err)
 			{
@@ -347,7 +347,7 @@
 				'board_code' => $board_code,
 			);
 
-			$add_url = $GLOBALS['phpgw']->link('/index.php', $add_data);
+			$add_url = phpgw::link('/index.php', $add_data);
 
 			$board_url = $this->db->f('board_url', true);
 
@@ -362,7 +362,7 @@
 				</form>";
 
 			$done_data = array('menuaction' => 'sms.uiboard.index');
-			$done_url = $GLOBALS['phpgw']->link('/index.php', $done_data);
+			$done_url = phpgw::link('/index.php', $done_data);
 
 			$content .= "
 			    <p>
@@ -375,17 +375,17 @@
 
 		function edit_yes()
 		{
-			if (!$this->acl->check($this->acl_location, PHPGW_ACL_EDIT, 'sms'))
+			if (!$this->acl->check($this->acl_location, ACL_EDIT, 'sms'))
 			{
 				$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 				$this->bocommon->no_access();
 				return;
 			}
 
-			$board_id = phpgw::get_var('board_id');
-			$board_code = phpgw::get_var('board_code');
-			$email = phpgw::get_var('email', 'email');
-			$template = phpgw::get_var('template');
+			$board_id = Sanitizer::get_var('board_id');
+			$board_code = Sanitizer::get_var('board_code');
+			$email = Sanitizer::get_var('email', 'email');
+			$template = Sanitizer::get_var('template');
 
 
 			$uid = $this->account;
@@ -428,27 +428,27 @@
 				'err' => urlencode($error_string)
 			);
 
-			$GLOBALS['phpgw']->redirect_link('/index.php', $add_data);
+			phpgw::redirect_link('/index.php', $add_data);
 		}
 
 		function delete()
 		{
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
-			if (!$this->acl->check($this->acl_location, PHPGW_ACL_DELETE, 'sms'))
+			if (!$this->acl->check($this->acl_location, ACL_DELETE, 'sms'))
 			{
 				$this->bocommon->no_access();
 				return;
 			}
 
-			$board_id = phpgw::get_var('board_id');
-			$confirm = phpgw::get_var('confirm', 'bool', 'POST');
+			$board_id = Sanitizer::get_var('board_id');
+			$confirm = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 				(
 				'menuaction' => 'sms.uiboard.index'
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				//	$this->bo->delete_type($autoreply_id);
 
@@ -486,15 +486,15 @@
 
 				$link_data['err'] = urlencode($error_string);
 
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 				(
-				'done_action' => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uiboard.delete',
+				'done_action' => phpgw::link('/index.php', $link_data),
+				'delete_action' => phpgw::link('/index.php', array('menuaction' => 'sms.uiboard.delete',
 					'board_id' => $board_id)),
 				'lang_confirm_msg' => lang('do you really want to delete this entry'),
 				'lang_yes' => lang('yes'),
@@ -506,6 +506,6 @@
 			$function_msg = lang('delete SMS board code');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('sms') . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 	}

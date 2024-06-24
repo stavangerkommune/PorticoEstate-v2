@@ -35,7 +35,7 @@
 	/**
 	 * In case there is an extra session border to cross from outside a firewall
 	 */
-	if(phpgw::get_var('keep_alive', 'bool', 'GET')	&& phpgw::get_var('phpgw_return_as', 'string', 'GET') == 'json')
+	if(Sanitizer::get_var('keep_alive', 'bool', 'GET')	&& Sanitizer::get_var('phpgw_return_as', 'string', 'GET') == 'json')
 	{
 		$now = time();
 		$keep_alive_timestamp = phpgwapi_cache::session_get('mobilefrontend', 'keep_alive_timestamp');

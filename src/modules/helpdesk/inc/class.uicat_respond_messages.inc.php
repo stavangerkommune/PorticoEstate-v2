@@ -57,12 +57,12 @@
 
 			$this->bo			= CreateObject('helpdesk.bocat_respond_messages');
 			$this->cats			= $this->bo->cats;
-			$this->acl = & $GLOBALS['phpgw']->acl;
+			$this->acl = Acl::getInstance();
 			$this->acl_location = '.ticket';
-			$this->acl_read = $this->acl->check($this->acl_location, PHPGW_ACL_READ, $this->currentapp);
-			$this->acl_add = $this->acl->check($this->acl_location, PHPGW_ACL_ADD, $this->currentapp);
-			$this->acl_edit = $this->acl->check($this->acl_location, PHPGW_ACL_EDIT, $this->currentapp);
-			$this->acl_delete = $this->acl->check($this->acl_location, PHPGW_ACL_DELETE, $this->currentapp);
+			$this->acl_read = $this->acl->check($this->acl_location, ACL_READ, $this->currentapp);
+			$this->acl_add = $this->acl->check($this->acl_location, ACL_ADD, $this->currentapp);
+			$this->acl_edit = $this->acl->check($this->acl_location, ACL_EDIT, $this->currentapp);
+			$this->acl_delete = $this->acl->check($this->acl_location, ACL_DELETE, $this->currentapp);
 
 		}
 
@@ -86,7 +86,7 @@
 			/**
 			 * Do not allow save / send here
 			 */
-			if(phpgw::get_var('save', 'bool') || phpgw::get_var('send', 'bool') || phpgw::get_var('init_preview', 'bool'))
+			if(Sanitizer::get_var('save', 'bool') || Sanitizer::get_var('send', 'bool') || Sanitizer::get_var('init_preview', 'bool'))
 			{
 				phpgw::no_access();
 			}
@@ -102,7 +102,7 @@
 			}
 
 
-			if(!$error && (phpgw::get_var('save', 'bool') || phpgw::get_var('send', 'bool')))
+			if(!$error && (Sanitizer::get_var('save', 'bool') || Sanitizer::get_var('send', 'bool')))
 			{
 				$this->save();
 			}
@@ -123,7 +123,7 @@
 			foreach ($categories as $cat)
 			{
 				$level		= $cat['level'];
-				$cat_name	= $GLOBALS['phpgw']->strip_html($cat['name']);
+				$cat_name	= phpgw::strip_html($cat['name']);
 
 				$main = 'yes';
 				if ($level > 0)
@@ -162,7 +162,7 @@
 			(
 				'lang_add'				=> lang('add'),
 				'lang_add_statustext'	=> lang('add a category'),
-				'action_url'			=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'action_url'			=> phpgw::link('/index.php',$link_data),
 				'lang_done'				=> lang('done'),
 				'lang_done_statustext'	=> lang('return to admin mainscreen')
 			);
@@ -184,7 +184,7 @@
 
 		public function save($ajax = null )
 		{
-			$values = phpgw::get_var('values', 'html');
+			$values = Sanitizer::get_var('values', 'html');
 			
 			try
 			{

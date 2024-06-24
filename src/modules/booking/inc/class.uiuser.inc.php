@@ -52,12 +52,12 @@
 
 		public function building_users()
 		{
-			if (!phpgw::get_var('phpgw_return_as') == 'json')
+			if (!Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return;
 			}
 
-			if (($building_id = phpgw::get_var('building_id', 'int', 'REQUEST', null)))
+			if (($building_id = Sanitizer::get_var('building_id', 'int', 'REQUEST', null)))
 			{
 				$users = $this->bo->find_building_users($building_id);
 				array_walk($users["results"], array($this, "_add_links"), "bookingfrontend.uiuser.show");
@@ -77,7 +77,7 @@
 				phpgw::no_access();
 			}
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$receipt			 = $this->bo->update_user_address();
 				$lang_confirm_msg	 = lang('update user address');
@@ -88,15 +88,15 @@
 				$lang_confirm_msg	 = lang('update user address');
 				$lang_yes			 = lang('yes');
 			}
-			$GLOBALS['phpgw']->xslttpl->add_file(array('confirm'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('confirm'));
 
 			$msgbox_data = createObject('property.bocommon')->msgbox_data($receipt);
 
 			$data = array
 				(
 				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uiuser.index')),
-				'update_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uiuser.update_user_address')),
+				'done_action'			 => phpgw::link('/index.php', array('menuaction' => 'booking.uiuser.index')),
+				'update_action'			 => phpgw::link('/index.php', array('menuaction' => 'booking.uiuser.update_user_address')),
 				'message'				 => $receipt['message'],
 				'lang_confirm_msg'		 => $lang_confirm_msg,
 				'lang_yes'				 => $lang_yes,
@@ -107,7 +107,7 @@
 
 			$function_msg									 = lang('users');
 			$GLOBALS['phpgw_info']['flags']['app_header']	 = lang('booking') . ':: ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('confirm' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('confirm' => $data));
 
 		}
 
@@ -120,7 +120,7 @@
 				phpgw::no_access();
 			}
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$GLOBALS['phpgw_info']['flags']['xslt_app'] = false;
 
@@ -155,15 +155,15 @@
 				$lang_confirm_msg	 = lang('export customer');
 				$lang_yes			 = lang('yes');
 			}
-			$GLOBALS['phpgw']->xslttpl->add_file(array('confirm'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('confirm'));
 
 			$msgbox_data = createObject('property.bocommon')->msgbox_data($receipt);
 
 			$data = array
 				(
 				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uiuser.index')),
-				'update_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uiuser.export_customer')),
+				'done_action'			 => phpgw::link('/index.php', array('menuaction' => 'booking.uiuser.index')),
+				'update_action'			 => phpgw::link('/index.php', array('menuaction' => 'booking.uiuser.export_customer')),
 				'message'				 => $receipt['message'],
 				'lang_confirm_msg'		 => $lang_confirm_msg,
 				'lang_yes'				 => $lang_yes,
@@ -174,7 +174,7 @@
 
 			$function_msg									 = lang('export customer');
 			$GLOBALS['phpgw_info']['flags']['app_header']	 = lang('booking') . ':: ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('confirm' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('confirm' => $data));
 
 		}
 		public function collect_users()
@@ -185,9 +185,9 @@
 			{
 				phpgw::no_access();
 			}
-			$confirm = phpgw::get_var('confirm', 'bool', 'POST');
+			$confirm = Sanitizer::get_var('confirm', 'bool', 'POST');
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$receipt			 = $this->bo->collect_users();
 				$lang_confirm_msg	 = lang('Do you really want to collect users again');
@@ -198,15 +198,15 @@
 				$lang_confirm_msg	 = lang('Do you really want to collect users');
 				$lang_yes			 = lang('yes');
 			}
-			$GLOBALS['phpgw']->xslttpl->add_file(array('confirm'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('confirm'));
 
 			$msgbox_data = createObject('property.bocommon')->msgbox_data($receipt);
 
 			$data = array
 				(
 				'msgbox_data'			 => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'done_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uiuser.index')),
-				'update_action'			 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uiuser.collect_users')),
+				'done_action'			 => phpgw::link('/index.php', array('menuaction' => 'booking.uiuser.index')),
+				'update_action'			 => phpgw::link('/index.php', array('menuaction' => 'booking.uiuser.collect_users')),
 				'message'				 => $receipt['message'],
 				'lang_confirm_msg'		 => $lang_confirm_msg,
 				'lang_yes'				 => $lang_yes,
@@ -217,13 +217,13 @@
 
 			$function_msg									 = lang('collect users');
 			$GLOBALS['phpgw_info']['flags']['app_header']	 = lang('booking') . ':: ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('confirm' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('confirm' => $data));
 
 		}
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -349,7 +349,7 @@
 
 		public function edit()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -418,7 +418,7 @@
 
 		public function show()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -449,7 +449,7 @@
 
 		public function delete()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
 			$this->bo->delete($id);
 

@@ -86,9 +86,9 @@
 		{
 			//if ($this->debug > 0) { echo 'ENTERING email.boaction.delmov'.'<br />'; }
 			
-			if( $GLOBALS['phpgw']->session->is_repost() ) //stop double deletion
+			if( phpgw::is_repost() ) //stop double deletion
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'mail.uiindex.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'mail.uiindex.index'));
 			}
 			
 			// make sure we have msg object and a server stream
@@ -112,7 +112,7 @@
 			}
 			
 			// make an error report URL
-			$this->redirect_if_error = $GLOBALS['phpgw']->link('/index.php',$GLOBALS['phpgw']->msg->get_arg_value('index_menuaction'));
+			$this->redirect_if_error = phpgw::link('/index.php',$GLOBALS['phpgw']->msg->get_arg_value('index_menuaction'));
 			
 			$folder_info = array();
 			$folder_info = $GLOBALS['phpgw']->msg->get_folder_status_info();
@@ -279,7 +279,7 @@
 					//echo 'boaction: $return_to_fldball[folder] ['.$return_to_fldball['folder'].'] <br />';
 					$return_to_fldball['acctnum'] = $delmov_list[0]['acctnum'];
 					
-					$this->redirect_to = $GLOBALS['phpgw']->link(
+					$this->redirect_to = phpgw::link(
 									'/index.php',array(
 									 'menuaction'=>'email.uiindex.index',
 									'fldball[folder]'=>$return_to_fldball['folder'],
@@ -358,7 +358,7 @@
 
 				$totaldeleted = $i;
 				//$GLOBALS['phpgw']->msg->phpgw_expunge();
-				$this->redirect_to = $GLOBALS['phpgw']->link(
+				$this->redirect_to = phpgw::link(
 								'/index.php',array(
 								 'menuaction'=>'email.uiindex.index',
 								'fldball[folder]'=>$GLOBALS['phpgw']->msg->prep_folder_out($was_in_folder),
@@ -460,7 +460,7 @@
 						$nav_data_uri = array();
 					}
 					
-					$this->redirect_to = $GLOBALS['phpgw']->link(
+					$this->redirect_to = phpgw::link(
 						'/index.php',array(
 						'menuaction'=>'email.uimessage.message',
 						'sort'=>$GLOBALS['phpgw']->msg->get_arg_value('sort'),
@@ -475,7 +475,7 @@
 					// LEX: I changed this cause i think its nicer behaviour
 					// to move to the nex message instead of going to index....this way we save clicks
 					// if anyone has an issue with this, ill make a preference for it
-					$this->redirect_to = $GLOBALS['phpgw']->link(
+					$this->redirect_to = phpgw::link(
 							'/index.php',array(
 							'menuaction'=>'email.uiindex.index',
 							'fldball[folder]'=>$GLOBALS['phpgw']->msg->prep_folder_out(),
@@ -651,7 +651,7 @@
 			$GLOBALS['phpgw']->msg->event_begin_big_end('bo_action::empty_trash');
 
 			$folder = 'INBOX.' . $GLOBALS['phpgw']->msg->get_pref_value('trash_folder_name', $acctnum);
-			$GLOBALS['phpgw']->redirect_link('/index.php',
+			phpgw::redirect_link('/index.php',
 							array(
 								'menuaction'		=> 'email.uiindex.index',
 								'fldball[folder]'	=> $folder,

@@ -227,7 +227,7 @@
 			$this->template->set_var('title',$GLOBALS['phpgw_info']['site_title']);
 			$this->template->set_var('bg_color',$GLOBALS['phpgw_info']['theme']['bg_color']);
 			//Dont forget to include oour main javascript file
-			$this->template->set_var('include_link',$GLOBALS['phpgw']->link("/email/inc/selectboxes.js"));
+			$this->template->set_var('include_link',phpgw::link("/email/inc/selectboxes.js"));
 			$this->template->set_var('font',$GLOBALS['phpgw_info']['theme']['font']);
 			//Get the hider values where needed
 			$this->hideto  = $_POST['hideto'] ? $_POST['hideto'] : $_GET['hideto'];
@@ -238,7 +238,7 @@
 			//asd soon as this frameset is server to the browser it will go GET
 			//the given url which is a call to the public function show_mainframe
 			//declared and defined bellow....see what i mean?
-			$this->template->set_var('mainframe_link', $GLOBALS['phpgw']->link(
+			$this->template->set_var('mainframe_link', phpgw::link(
 													"/index.php",
 													array(
 													"menuaction"=>"email.uijsaddressbook.show_mainframe",
@@ -259,7 +259,7 @@
 			//will set it to window.parent.userdata_got, so thats the function that will get called in the parent.
 			//That function, in turn, calls the event_userdata_got in the mainframe which actually updates
 			//the contents of the userdata textarea as well as its size. Cool huh?
-			$this->template->set_var('get_user_data_link', $GLOBALS['phpgw']->link(
+			$this->template->set_var('get_user_data_link', phpgw::link(
 													"/index.php",
 													array(
 													"menuaction"=>"email.uijsaddressbook.show_userdata",
@@ -275,7 +275,7 @@
 			//bo->set_destboxes) and outputs the emails of those users being set.
 			//It does this in three javascripts array per destination box....lets not get into
 			//that (look for documentation in selectboxes.js), but it works okay.
-			$this->template->set_var('set_destboxes_link', $GLOBALS['phpgw']->link(
+			$this->template->set_var('set_destboxes_link', phpgw::link(
 													"/index.php",
 													array(
 													"menuaction"=>"email.uijsaddressbook.set_destboxes",
@@ -290,7 +290,7 @@
 							    );
 			//This is another event that makes this class call bo->forget_all and makes us forget about our own data too
 			//which are only catlist
-			$this->template->set_var('forget_all_link', $GLOBALS['phpgw']->link(
+			$this->template->set_var('forget_all_link', phpgw::link(
 													"/index.php",
 													array(
 													"menuaction"=>"email.uijsaddressbook.forget_all"
@@ -555,12 +555,12 @@
 			$this->template->set_var('selected_cat_name',$this->selected_cat_name);
 			$this->template->set_var('selected_cat_value',($this->cat_id=="")?-2:$this->cat_id);
 			//End Label setting--------------
-			$this->template->set_var('search_action',$GLOBALS['phpgw']->link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/addressbook-js.php',"sort=$this->sort&order=$this->order&filter=$this->filter&start=$this->start&cat_id=$this->cat_id"));
+			$this->template->set_var('search_action',phpgw::link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/addressbook-js.php',"sort=$this->sort&order=$this->order&filter=$this->filter&start=$this->start&cat_id=$this->cat_id"));
          		$this->template->set_var('query',$query);
 	         	$this->template->set_var('order',$order);
 	         	$this->template->set_var('searchbox_value',$this->searchbox);
 	         	$this->template->set_var('viewmore_checked',($this->viewmore ? "checked" :""));
-			$this->template->set_var('include_link',$GLOBALS['phpgw']->link("/email/inc/selectboxes.js"));
+			$this->template->set_var('include_link',phpgw::link("/email/inc/selectboxes.js"));
 //			//Try and get the <option> string for the categories form cache
 //			$this->catlist=$GLOBALS['phpgw']->session->appsession('jsuibook_catlist','email');
 //			//We dont have none
@@ -580,7 +580,7 @@
 
 			$this->template->set_var('lang_select',lang('Select'));
 			$this->template->set_var('main_form_action',
-					$GLOBALS['phpgw']->link(
+					phpgw::link(
 						'/index.php',
 						array(
 							'menuaction'	=> "email.uijsaddressbook.show_mainframe",

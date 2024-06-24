@@ -36,7 +36,7 @@
 					}
 				}
 
-				$config->config_data['differentiate_org_payer'] = phpgw::get_var('differentiate_org_payer', 'int','POST');
+				$config->config_data['differentiate_org_payer'] = Sanitizer::get_var('differentiate_org_payer', 'int','POST');
 
 				$config->save_repository();
 			}

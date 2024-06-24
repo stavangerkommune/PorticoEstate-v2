@@ -27,19 +27,19 @@ class bookingfrontend_uibuilding extends booking_uibuilding
 
     public function information_screen()
     {
-        $today = new DateTime(phpgw::get_var('date', 'string', 'GET'), new DateTimeZone('Europe/Oslo'));
+        $today = new DateTime(Sanitizer::get_var('date', 'string', 'GET'), new DateTimeZone('Europe/Oslo'));
         $date = $today;
         $currentday = $today;//Sigurd: Needed?
 
-        $building_id = phpgw::get_var('id', 'int', 'GET');
+        $building_id = Sanitizer::get_var('id', 'int', 'GET');
         $building = $this->bo->read_single($building_id);
-        $start = phpgw::get_var('start', 'int', 'GET');
-        $end = phpgw::get_var('end', 'int', 'GET');
-        $res = phpgw::get_var('res', 'int', 'GET');
-        $resource_id = phpgw::get_var('resource_id', 'int', 'GET');
-        $color = phpgw::get_var('color', 'string', 'GET');
-        $fontsize = phpgw::get_var('fontsize', 'int', 'GET');
-        $weekend = phpgw::get_var('weekend', 'int', 'GET');
+        $start = Sanitizer::get_var('start', 'int', 'GET');
+        $end = Sanitizer::get_var('end', 'int', 'GET');
+        $res = Sanitizer::get_var('res', 'int', 'GET');
+        $resource_id = Sanitizer::get_var('resource_id', 'int', 'GET');
+        $color = Sanitizer::get_var('color', 'string', 'GET');
+        $fontsize = Sanitizer::get_var('fontsize', 'int', 'GET');
+        $weekend = Sanitizer::get_var('weekend', 'int', 'GET');
 
 
         if ($start) {
@@ -69,7 +69,7 @@ class bookingfrontend_uibuilding extends booking_uibuilding
 
         $bookings = $this->booking_bo->building_infoscreen_schedule($building_id, $date, $res, $resource_id);
 
-        if (phpgw::get_var('phpgw_return_as') == 'json') {
+        if (Sanitizer::get_var('phpgw_return_as') == 'json') {
             return $bookings;
         }
         $from = clone $date;
@@ -261,8 +261,8 @@ class bookingfrontend_uibuilding extends booking_uibuilding
 
     public function schedule()
     {
-        $backend = phpgw::get_var('backend', 'bool', 'GET');
-        $building = $this->bo->get_schedule(phpgw::get_var('id', 'int', 'GET'), 'bookingfrontend.uibuilding');
+        $backend = Sanitizer::get_var('backend', 'bool', 'GET');
+        $building = $this->bo->get_schedule(Sanitizer::get_var('id', 'int', 'GET'), 'bookingfrontend.uibuilding');
         if ($building['deactivate_application'] == 0) {
             $building['application_link'] = self::link(array(
                 'menuaction' => 'bookingfrontend.uiapplication.add',
@@ -287,7 +287,7 @@ class bookingfrontend_uibuilding extends booking_uibuilding
         // the schedule can also be used from backend
         // if so we want to change default date shown in the calendar
         if ($backend) {
-            $building['date'] = phpgw::get_var('date', 'string', 'GET');
+            $building['date'] = Sanitizer::get_var('date', 'string', 'GET');
         }
 
         self::add_javascript('bookingfrontend', 'base', 'schedule.js');
@@ -301,8 +301,8 @@ class bookingfrontend_uibuilding extends booking_uibuilding
 
     public function extraschedule()
     {
-        $backend = phpgw::get_var('backend', 'bool', 'GET');
-        $building = $this->bo->get_schedule(phpgw::get_var('id', 'int', 'GET'), 'bookingfrontend.uibuilding');
+        $backend = Sanitizer::get_var('backend', 'bool', 'GET');
+        $building = $this->bo->get_schedule(Sanitizer::get_var('id', 'int', 'GET'), 'bookingfrontend.uibuilding');
         $building['application_link'] = self::link(array('menuaction' => 'bookingfrontend.uibuilding.extraschedule',
             'id' => $building['id']));
         $building['datasource_url'] = self::link(array(
@@ -314,7 +314,7 @@ class bookingfrontend_uibuilding extends booking_uibuilding
         // the schedule can also be used from backend
         // if so we want to change default date shown in the calendar
         if ($backend) {
-            $building['date'] = phpgw::get_var('date', 'string', 'GET');
+            $building['date'] = Sanitizer::get_var('date', 'string', 'GET');
         }
         $building['deactivate_application'] = 1;
         self::add_javascript('bookingfrontend', 'base', 'schedule.js');
@@ -330,7 +330,7 @@ class bookingfrontend_uibuilding extends booking_uibuilding
         $config = CreateObject('phpgwapi.config', 'booking');
         $config->read();
         $this->check_active('booking.uibuilding.show');
-        $building = $this->bo->read_single(phpgw::get_var('id', 'int', 'GET'));
+        $building = $this->bo->read_single(Sanitizer::get_var('id', 'int', 'GET'));
 
         $building['contact_info'] = "";
         $contactdata = array();
@@ -374,10 +374,10 @@ class bookingfrontend_uibuilding extends booking_uibuilding
             phpgwapi_jquery::load_widget("datetimepicker");
 
             self::add_javascript('bookingfrontend', 'bookingfrontend_2', 'components/light-box.js', true);
-            $GLOBALS['phpgw']->css->add_external_file("bookingfrontend/js/bookingfrontend_2/components/light-box.css");
+            phpgwapi_css::getInstance()->add_external_file("bookingfrontend/js/bookingfrontend_2/components/light-box.css");
 
         } else {
-            $GLOBALS['phpgw']->js->add_external_file("phpgwapi/templates/bookingfrontend/js/build/aui/aui-min.js");
+            phpgwapi_js::getInstance()->add_external_file("phpgwapi/templates/bookingfrontend/js/build/aui/aui-min.js");
         }
 
 

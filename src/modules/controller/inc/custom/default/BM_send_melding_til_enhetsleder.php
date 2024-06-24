@@ -17,7 +17,7 @@
 			function __construct($message_title = '')
 			{
 				$this->account	= (int)$GLOBALS['phpgw_info']['user']['account_id'];
-				$this->db = & $GLOBALS['phpgw']->db;
+				$this->db = Db::getInstance();
 				$this->message_title = $message_title;
 			}
 
@@ -33,7 +33,7 @@
 					$enforce_ssl = $GLOBALS['phpgw_info']['server']['enforce_ssl'];
 					$GLOBALS['phpgw_info']['server']['enforce_ssl'] = true;
 
-					$report_link = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'controller.uicheck_list.get_report','check_list_id' => $check_list->get_id()), false, true, true);
+					$report_link = phpgw::link('/index.php', array('menuaction' => 'controller.uicheck_list.get_report','check_list_id' => $check_list->get_id()), false, true, true);
 
 					$GLOBALS['phpgw_info']['server']['enforce_ssl'] = $enforce_ssl;
 

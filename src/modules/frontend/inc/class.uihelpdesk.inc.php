@@ -140,7 +140,7 @@
 				(
 				'my_name' => 'view',
 				'text' => lang('view'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'frontend.uihelpdesk.view',
 					'location_id' => $this->location_id,
@@ -180,7 +180,7 @@
 				)
 			);
 
-			/* $link =	$GLOBALS['phpgw']->link(
+			/* $link =	phpgw::link(
 			  '/index.php',
 			  array('menuaction'	=> 'frontend.uihelpdesk.view'));
 			  $datatable['exchange_values'] = "document.location = '{$link}&id=' + data.getData().id;"; */
@@ -212,19 +212,19 @@
 
 			$bo = CreateObject('property.botts');
 
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
-			$status_id = phpgw::get_var('status_id', 'string', 'REQUEST', 'all');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
+			$status_id = Sanitizer::get_var('status_id', 'string', 'REQUEST', 'all');
 
 			$params = array(
-				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results' => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start' => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results' => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query' => $search['value'],
 				'order' => ($columns[$order[0]['column']]['data'] == 'subject') ? 'entry_date' : $columns[$order[0]['column']]['data'],
 				'sort' => $order[0]['dir'],
-				'allrows' => phpgw::get_var('length', 'int') == -1,
+				'allrows' => Sanitizer::get_var('length', 'int') == -1,
 				'status_id' => $status_id
 			);
 
@@ -302,7 +302,7 @@
 		{
 			$GLOBALS['phpgw']->translation->add_app('property');
 			$bo = CreateObject('property.botts');
-			$ticketid = phpgw::get_var('id');
+			$ticketid = Sanitizer::get_var('id');
 			$ticket = $bo->read_single($ticketid);
 
 			$assignedto = $ticket['assignedto'];
@@ -384,7 +384,7 @@
 			$data = array(
 				'header' => $this->header_state,
 				'section' => array(
-					'helpdesklist' => $GLOBALS['phpgw']->link('/index.php', array
+					'helpdesklist' => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'frontend.uihelpdesk.index',
 						'location_id' => $this->location_id
@@ -403,11 +403,11 @@
 
 		public function add_ticket()
 		{
-			$values = phpgw::get_var('values');
-			$p_entity_id = phpgw::get_var('p_entity_id', 'int');
-			$p_cat_id = phpgw::get_var('p_cat_id', 'int');
-			$p_num = phpgw::get_var('p_num');
-			$origin = phpgw::get_var('origin');
+			$values = Sanitizer::get_var('values');
+			$p_entity_id = Sanitizer::get_var('p_entity_id', 'int');
+			$p_cat_id = Sanitizer::get_var('p_cat_id', 'int');
+			$p_num = Sanitizer::get_var('p_num');
+			$origin = Sanitizer::get_var('origin');
 
 			if ($p_entity_id && $p_cat_id && $p_num)
 			{
@@ -447,7 +447,7 @@
 					}
 				}
 
-				if (!$missingfields && !phpgw::get_var('added'))
+				if (!$missingfields && !Sanitizer::get_var('added'))
 				{
 					$location = array();
 					$_location_arr = explode('-', $this->location_code);
@@ -570,10 +570,10 @@
 
 
 			$data = array(
-				'redirect' => isset($redirect) ? $GLOBALS['phpgw']->link('/index.php', array(
+				'redirect' => isset($redirect) ? phpgw::link('/index.php', array(
 						'menuaction' => 'frontend.uihelpdesk.index')) : null,
 				'msgbox_data' => $GLOBALS['phpgw']->common->msgbox($GLOBALS['phpgw']->common->msgbox_data($msglog)),
-				'form_action' => $GLOBALS['phpgw']->link('/index.php', $form_action_data),
+				'form_action' => phpgw::link('/index.php', $form_action_data),
 				'title' => $values['title'],
 				'locationdesc' => $values['locationdesc'],
 				'description' => $values['description'],
@@ -583,8 +583,8 @@
 				'template_set' => $GLOBALS['phpgw_info']['user']['preferences']['common']['template_set']
 			);
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('frontend', 'helpdesk_add_ticket', 'attributes_view'));
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('add_ticket' => $data));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('frontend', 'helpdesk_add_ticket', 'attributes_view'));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('add_ticket' => $data));
 
 			/*
 			 * Note: not working for when you want a spesific target other than 'data'

@@ -46,7 +46,7 @@
 				'todo' => array
 				(
 					'text'	=> $GLOBALS['phpgw']->translation->translate('todo', array(), true),
-					'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'todo.uitodo.show_list') ),
+					'url'	=> phpgw::link('/index.php', array('menuaction'=> 'todo.uitodo.show_list') ),
 					'image'	=> array('todo', 'navbar'),
 					'order'	=> 10,
 					'group'	=> 'office'
@@ -58,7 +58,7 @@
 				array
 				(
 					'text'	=> $GLOBALS['phpgw']->translation->translate('New', array(), true),
-					'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'todo.uitodo.add') ),
+					'url'	=> phpgw::link('/index.php', array('menuaction'=> 'todo.uitodo.add') ),
 				)
 			);
 
@@ -69,7 +69,7 @@
 					array
 					(
 						'text'	=> $GLOBALS['phpgw']->translation->translate('Global Categories', array(), true),
-						'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uicategories.index', 'appname' => 'todo', 'global_cats' => 1) )
+						'url'	=> phpgw::link('/index.php', array('menuaction' => 'admin.uicategories.index', 'appname' => 'todo', 'global_cats' => 1) )
 					)
 				);
 			}
@@ -81,24 +81,24 @@
 					array
 					(
 						'text'	=> $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
-						'url'	=> $GLOBALS['phpgw']->link('/preferences/preferences.php', array('appname'	=> 'todo')),
+						'url'	=> phpgw::link('/preferences/preferences.php', array('appname'	=> 'todo')),
 					),
 					array
 					(
 						'text'	=> $GLOBALS['phpgw']->translation->translate('Grant Access', array(), true),
-						'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.aclprefs', 'acl_app' => 'todo'))
+						'url'	=> phpgw::link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.aclprefs', 'acl_app' => 'todo'))
 					),
 					array
 					(
 						'text'	=> $GLOBALS['phpgw']->translation->translate('Edit categories', array(), true),
-						'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'preferences.uicategories.index', 'cats_app' => 'todo', 'cats_level' => 1, 'global_cats'=> 1))
+						'url'	=> phpgw::link('/index.php', array('menuaction' => 'preferences.uicategories.index', 'cats_app' => 'todo', 'cats_level' => 1, 'global_cats'=> 1))
 					)
 				);
 
 				$menus['toolbar'][] = array
 				(
 					'text'	=> $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
-					'url'	=> $GLOBALS['phpgw']->link('/preferences/preferences.php', array('appname'	=> 'todo')),
+					'url'	=> phpgw::link('/preferences/preferences.php', array('appname'	=> 'todo')),
 					'image'	=> array('todo', 'preferences')
 				);
 			}
@@ -108,7 +108,7 @@
 				array
 				(
 					'text'	=> $GLOBALS['phpgw']->translation->translate('New', array(), true),
-					'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'todo.uitodo.add') ),
+					'url'	=> phpgw::link('/index.php', array('menuaction'=> 'todo.uitodo.add') ),
 				)
 			);
 

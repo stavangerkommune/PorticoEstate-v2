@@ -26,7 +26,7 @@
 
 		function __construct()
 		{
-			$this->db = & $GLOBALS['phpgw']->db;
+			$this->db = Db::getInstance();
 			$c = createobject('phpgwapi.config', 'registration');
 			$c->read();
 			$this->config = $c->config_data;
@@ -83,7 +83,7 @@
 			if ($this->config['activate_account'] == 'pending_approval')
 			{
 
-				$url = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'registration.uipending.index',
+				$url = phpgw::link('/index.php', array('menuaction' => 'registration.uipending.index',
 					'domain' => $_REQUEST['logindomain']), false, true);
 				$body = <<<HTML
 
@@ -119,7 +119,7 @@ HTML;
 				}
 				else
 				{
-					$url = $GLOBALS['phpgw']->link('/login.php', array('logindomain' => $GLOBALS['phpgw_info']['user']['domain']), false, true);
+					$url = phpgw::link('/login.php', array('logindomain' => $GLOBALS['phpgw_info']['user']['domain']), false, true);
 				}
 
 				$body = <<<HTML
@@ -158,7 +158,7 @@ HTML;
 				}
 
 
-				$url = $GLOBALS['phpgw']->link('/registration/main.php', array('menuaction' => 'registration.boreg.step4',
+				$url = phpgw::link('/registration/main.php', array('menuaction' => 'registration.boreg.step4',
 					'reg_id' => $this->reg_id, 'logindomain' => $_REQUEST['logindomain']), false, true);
 				$GLOBALS['phpgw']->template->set_var('activate_url', "</br><a href='$url'>Link.</a></br>");
 
@@ -259,7 +259,7 @@ HTML;
 					'message' => 'lostpw_email.tpl'
 				));
 
-				$url = $GLOBALS['phpgw']->link('/registration/main.php', array('menuaction' => 'registration.boreg.lostpw2',
+				$url = phpgw::link('/registration/main.php', array('menuaction' => 'registration.boreg.lostpw2',
 					'reg_id' => $reg_id, 'logindomain' => $_REQUEST['logindomain']), false, true);
 				$GLOBALS['phpgw']->template->set_var('firstname', $info['firstname']);
 				$GLOBALS['phpgw']->template->set_var('lastname', $info['lastname']);

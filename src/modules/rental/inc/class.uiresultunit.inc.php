@@ -36,18 +36,18 @@
 				$user_rows_per_page = 10;
 			}
 
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
-			$start_index = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$num_of_objects = (phpgw::get_var('length', 'int') <= 0) ? $user_rows_per_page : phpgw::get_var('length', 'int');
+			$start_index = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$num_of_objects = (Sanitizer::get_var('length', 'int') <= 0) ? $user_rows_per_page : Sanitizer::get_var('length', 'int');
 			$sort_field = ($columns[$order[0]['column']]['data']) ? $columns[$order[0]['column']]['data'] : 'ORG_UNIT_ID';
 			$sort_ascending = ($order[0]['dir'] == 'desc') ? false : true;
 			// Form variables
 			$search_for = $search['value'];
-			$search_type = phpgw::get_var('search_option', 'string', 'REQUEST', 'unit_name');
+			$search_type = Sanitizer::get_var('search_option', 'string', 'REQUEST', 'unit_name');
 
 			// Create an empty result set
 			$result_count = 0;
@@ -75,7 +75,7 @@
 		 */
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -164,7 +164,7 @@
 				(
 				'my_name' => 'edit',
 				'text' => lang('edit'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uiresultunit.edit'
 				)),
@@ -191,8 +191,8 @@
 			$config->read();
 			$use_fellesdata = $config->config_data['use_fellesdata'];
 
-			$unit_id = (int)phpgw::get_var('id');
-			$unit_level = (int)phpgw::get_var('level');
+			$unit_id = (int)Sanitizer::get_var('id');
+			$unit_level = (int)Sanitizer::get_var('level');
 
 			$datatable_def = array();
 
@@ -250,7 +250,7 @@
 			$data = array
 				(
 				'datatable_def' => $datatable_def,
-				'cancel_url' => $GLOBALS['phpgw']->link('/index.php', $link_index),
+				'cancel_url' => phpgw::link('/index.php', $link_index),
 				'lang_search' => lang('search'),
 				'lang_add' => lang('add'),
 				'lang_cancel' => lang('cancel'),
@@ -269,7 +269,7 @@
 
 		public function search_user()
 		{
-			$username = phpgw::get_var('username');
+			$username = Sanitizer::get_var('username');
 			$result = array();
 			if (!isset($username))
 			{
@@ -305,9 +305,9 @@
 
 		public function add()
 		{
-			$unit_id = (int)phpgw::get_var('id');
-			$unit_level = (int)phpgw::get_var('level');
-			$account_id = phpgw::get_var('account_id');
+			$unit_id = (int)Sanitizer::get_var('id');
+			$unit_level = (int)Sanitizer::get_var('level');
+			$account_id = Sanitizer::get_var('account_id');
 
 			$bofelles = rental_bofellesdata::get_instance();
 			$unit = $bofelles->get_result_unit($unit_id, $unit_level);
@@ -345,9 +345,9 @@
 			if (!isset($account_id) || $account_id == '' && $use_fellesdata)
 			{
 				//User is only registered in Fellesdata
-				$username = phpgw::get_var('username');
-				$firstname = phpgw::get_var('firstname');
-				$lastname = phpgw::get_var('lastname');
+				$username = Sanitizer::get_var('username');
+				$firstname = Sanitizer::get_var('firstname');
+				$lastname = Sanitizer::get_var('lastname');
 				$password = 'TEst1234';
 
 				$account_id = frontend_bofrontend::create_delegate_account($username, $firstname, $lastname, $password);
@@ -396,8 +396,8 @@
 
 		public function remove_delegate()
 		{
-			$unit_id = phpgw::get_var('id');
-			$list_account_id = phpgw::get_var('account_id');
+			$unit_id = Sanitizer::get_var('id');
+			$list_account_id = Sanitizer::get_var('account_id');
 
 			$message = array();
 			foreach ($list_account_id as $account_id)

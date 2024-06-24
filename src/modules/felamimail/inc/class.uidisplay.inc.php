@@ -62,7 +62,7 @@
 		function __construct()
 		{
 			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
-			$GLOBALS['phpgw']->js->validate_file('jsapi', 'jsapi', 'felamimail');
+			phpgwapi_js::getInstance()->validate_file('jsapi', 'jsapi', 'felamimail');
 			/* Having this defined in just one spot could help when changes need
 			 * to be made to the pattern
 			 * Make sure that the expression is evaluated case insensitively
@@ -123,7 +123,7 @@
 			{
 				$GLOBALS['phpgw']->css = createObject('phpgwapi.css');
 			}
-			$GLOBALS['phpgw']->css->validate_file('app', 'felamimail');
+			phpgwapi_css::getInstance()->validate_file('app', 'felamimail');
 		}
 
 		/**
@@ -168,7 +168,7 @@
 			(
 				'menuaction'    => 'felamimail.uicompose.compose'
 			);
-			$link = $GLOBALS['phpgw']->link('/index.php',$linkData);
+			$link = phpgw::link('/index.php',$linkData);
 			return '<a href="'.$link.'&send_to='.base64_encode($email).'" target="_top"><font color="blue">'.$text.'</font></a>';
 		}
 
@@ -319,7 +319,7 @@
 			if($partID != '') {
 				$linkData['part_id'] = $partID;
 			}
-			$asnewURL = $GLOBALS['phpgw']->link('/index.php',$linkData);
+			$asnewURL = phpgw::link('/index.php',$linkData);
 
 			// reply url
 			$linkData = array (
@@ -331,7 +331,7 @@
 			if($partID != '') {
 				$linkData['part_id'] = $partID;
 			}
-			$replyURL = $GLOBALS['phpgw']->link('/index.php',$linkData);
+			$replyURL = phpgw::link('/index.php',$linkData);
 
 			// reply all url
 			$linkData = array (
@@ -343,7 +343,7 @@
 			if($partID != '') {
 				$linkData['part_id'] = $partID;
 			}
-			$replyAllURL = $GLOBALS['phpgw']->link('/index.php',$linkData);
+			$replyAllURL = phpgw::link('/index.php',$linkData);
 
 			// forward url
 			$linkData = array (
@@ -354,7 +354,7 @@
 			if($partID != '') {
 				$linkData['part_id'] = $partID;
 			}
-			$forwardURL = $GLOBALS['phpgw']->link('/index.php',$linkData);
+			$forwardURL = phpgw::link('/index.php',$linkData);
 
 			//delete url
 			$linkData = array (
@@ -363,7 +363,7 @@
 				'folder'	=> base64_encode($this->mailbox),
 				'message'	=> $this->uid,
 			);
-			$deleteURL = $GLOBALS['phpgw']->link('/index.php',$linkData);
+			$deleteURL = phpgw::link('/index.php',$linkData);
 
 			$navbarImages = array(
 				'new'	=> array(
@@ -401,7 +401,7 @@
 			if($partID != '') {
 				$linkData['part'] = $partID;
 			}
-			$printURL = $GLOBALS['phpgw']->link('/index.php',$linkData);
+			$printURL = phpgw::link('/index.php',$linkData);
 
 			// infolog URL
 			$linkData = array(
@@ -412,7 +412,7 @@
 			if($partID != '') {
 				$linkData['part'] = $partID;
 			}
-			$to_infologURL = $GLOBALS['phpgw']->link('/index.php',$linkData);
+			$to_infologURL = phpgw::link('/index.php',$linkData);
 
 			// viewheader url
 			$linkData = array (
@@ -423,7 +423,7 @@
 			if($partID != '') {
 				$linkData['part'] = $partID;
 			}
-			$viewHeaderURL = $GLOBALS['phpgw']->link('/index.php',$linkData);
+			$viewHeaderURL = phpgw::link('/index.php',$linkData);
 
 			$navbarImages = array();
 
@@ -436,7 +436,7 @@
 			if($partID != '') {
 				$linkData['part'] = $partID;
 			}
-			$saveMessageURL = $GLOBALS['phpgw']->link('/index.php',$linkData);
+			$saveMessageURL = phpgw::link('/index.php',$linkData);
 
 			$navbarImages = array();
 
@@ -480,7 +480,7 @@
 					'uid'		=> $nextMessage['previous'],
 					'mailbox'	=> base64_encode($this->mailbox)
 				);
-				$previousURL = $GLOBALS['phpgw']->link('/index.php',$linkData);
+				$previousURL = phpgw::link('/index.php',$linkData);
 				$previousURL = "window.location.href = '$previousURL'";
 				$navbarImages['up.button']	= array(
 					'action'	=> $previousURL,
@@ -497,7 +497,7 @@
 					'uid'		=> $nextMessage['next'],
 					'mailbox'	=> base64_encode($this->mailbox)
 				);
-				$nextURL = $GLOBALS['phpgw']->link('/index.php',$linkData);
+				$nextURL = phpgw::link('/index.php',$linkData);
 				$nextURL = "window.location.href = '$nextURL'";
 				$navbarImages['down.button']	= array(
 					'action'	=> $nextURL,
@@ -572,7 +572,7 @@
 					'part'		=> $partID,
 					'mailbox'	=>  base64_encode($this->mailbox) 
 				);
-			$this->t->set_var('url_displayBody', $GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('url_displayBody', phpgw::link('/index.php',$linkData));
 
 			// attachments
 			if(is_array($attachments) && count($attachments) > 0) {
@@ -616,7 +616,7 @@
 								'is_winmail'    => $value['is_winmail']
 							);
 							$windowName = 'displayMessage_'. $this->uid;
-							$linkView = "egw_openWindowCentered('".$GLOBALS['phpgw']->link('/index.php',$linkData)."','$windowName',700,egw_getWindowOuterHeight());";
+							$linkView = "egw_openWindowCentered('".phpgw::link('/index.php',$linkData)."','$windowName',700,egw_getWindowOuterHeight());";
 							break;
 						case 'IMAGE/JPEG':
 						case 'IMAGE/PNG':
@@ -631,7 +631,7 @@
 								'mailbox'   => base64_encode($this->mailbox),
 							);
 							$windowName = 'displayAttachment_'. $this->uid;
-							$linkView = "egw_openWindowCentered('".$GLOBALS['phpgw']->link('/index.php',$linkData)."','$windowName',800,600);";
+							$linkView = "egw_openWindowCentered('".phpgw::link('/index.php',$linkData)."','$windowName',800,600);";
 							break;
 						default:
 							$linkData = array
@@ -642,7 +642,7 @@
 								'is_winmail'    => $value['is_winmail'],
 								'mailbox'   => base64_encode($this->mailbox),
 							);
-							$linkView = "window.location.href = '".$GLOBALS['phpgw']->link('/index.php',$linkData)."';";
+							$linkView = "window.location.href = '".phpgw::link('/index.php',$linkData)."';";
 							break;
 					}
 					$this->t->set_var("link_view",$linkView);
@@ -657,7 +657,7 @@
 						'is_winmail'    => $value['is_winmail'],
 						'mailbox'   => base64_encode($this->mailbox),
 					);
-					$this->t->set_var("link_save",$GLOBALS['phpgw']->link('/index.php',$linkData));
+					$this->t->set_var("link_save",phpgw::link('/index.php',$linkData));
 
 					$this->t->parse('attachment_rows','message_attachement_row',True);
 				}
@@ -796,13 +796,13 @@
 		{
 			if($_GET['menuaction'] != 'felamimail.uidisplay.printMessage' &&
 				$_GET['menuaction'] != 'felamimail.uidisplay.displayBody') {
-				$GLOBALS['phpgw']->js->validate_file('tabs','tabs');
-				$GLOBALS['phpgw']->js->validate_file('jscode','view_message','felamimail');
-				$GLOBALS['phpgw']->js->set_onload('javascript:initAll();');
+				phpgwapi_js::getInstance()->validate_file('tabs','tabs');
+				phpgwapi_js::getInstance()->validate_file('jscode','view_message','felamimail');
+				phpgwapi_js::getInstance()->set_onload('javascript:initAll();');
 			}
 			
 			if(($_GET['menuaction'] == 'felamimail.uidisplay.printMessage') || (!empty($printing) && $printing == 1)) {
-				$GLOBALS['phpgw']->js->set_onload('javascript:window.print()');
+				phpgwapi_js::getInstance()->set_onload('javascript:window.print()');
 			}
 
 			if($_GET['menuaction'] == 'felamimail.uidisplay.printMessage' || (!empty($printing) && $printing == 1) ||
@@ -855,7 +855,7 @@
 							'menuaction'	=> 'felamimail.uicompose.compose',
 							'send_to'	=> base64_encode($newSenderAddress)
 						);
-						$link = $GLOBALS['phpgw']->link('/index.php',$linkData);
+						$link = phpgw::link('/index.php',$linkData);
 						$senderAddress .= sprintf('<a href="%s" title="%s">%s</a>',
 									$link,
 									@htmlentities($newSenderAddress,ENT_QUOTES,$this->displayCharset),
@@ -877,7 +877,7 @@
 							$linkData['presets[n_fn]']	= $decodedPersonalName;
 						}
 						if ($showAddToAdrdessbookLink) {
-							$urlAddToAddressbook = $GLOBALS['phpgw']->link('/index.php',$linkData);
+							$urlAddToAddressbook = phpgw::link('/index.php',$linkData);
 							$onClick = "window.open(this,this.target,'dependent=yes,width=850,height=440,location=no,menubar=no,toolbar=no,scrollbars=yes,status=yes'); return false;";
 							$image = $GLOBALS['phpgw']->common->image('felamimail','sm_envelope');
 							$senderAddress .= sprintf('<a href="%s" onClick="%s">
@@ -895,7 +895,7 @@
 							'menuaction'	=> 'felamimail.uicompose.compose',
 							'send_to'	=> base64_encode($addressData['EMAIL'])
 						);
-						$link = $GLOBALS['phpgw']->link('/index.php',$linkData);
+						$link = phpgw::link('/index.php',$linkData);
 						$senderAddress .= sprintf('<a href="%s">%s</a>',
 									$link,@htmlentities($addressData['EMAIL'], ENT_QUOTES, $this->displayCharset));
 						//TODO: This uses old addressbook code, which should be removed in Version 1.4
@@ -909,7 +909,7 @@
 						);
 
 						if ($showAddToAdrdessbookLink) {
-							$urlAddToAddressbook = $GLOBALS['phpgw']->link('/index.php',$linkData);
+							$urlAddToAddressbook = phpgw::link('/index.php',$linkData);
 							$onClick = "window.open(this,this.target,'dependent=yes,width=850,height=440,location=no,menubar=no,toolbar=no,scrollbars=yes,status=yes'); return false;";
 							$image = $GLOBALS['phpgw']->common->image('felamimail','sm_envelope');
 							$senderAddress .= sprintf('<a href="%s" onClick="%s">
@@ -1043,7 +1043,7 @@
 						'uid'		=> $this->uid,
 						'mailbox'	=> base64_encode($this->mailbox)
 					);
-					$imageURL = $GLOBALS['phpgw']->link('/index.php', $linkData);
+					$imageURL = phpgw::link('/index.php', $linkData);
 					$newBody = preg_replace("/(\"|\')cid:(.*)(\"|\')/iUe",
 						"'\"$imageURL&cid='.base64_encode('$2').'&partID='.urlencode($this->partID).'\"'", $newBody);
 
@@ -1052,7 +1052,7 @@
 					(
 						'menuaction'    => 'felamimail.uicompose.compose'
 					);
-					$link = $GLOBALS['phpgw']->link('/index.php',$linkData);
+					$link = phpgw::link('/index.php',$linkData);
 					$newBody = preg_replace("/href=(\"|\')mailto:([\w,\-,\/,\?,\=,\.,&amp;,!\n,\%,@,\*,#,:,~,\+]+)(\"|\')/ie",
 						"'href=\"$link&send_to='.base64_encode('$2').'\"'", $newBody);
 					#print "<pre>".htmlentities($newBody)."</pre><hr>";
@@ -1197,7 +1197,7 @@
 				$linkData['folder'] = base64_encode($folder);
 			}
 			$_readInNewWindow = $this->mailPreferences->preferences['message_newwindow'];
-			$this->t->set_var('url_read_message', $GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('url_read_message', phpgw::link('/index.php',$linkData));
 
 			$target = 'displayMessage';
 			$windowName = ($_readInNewWindow == 1 ? $target : $target.'_'.$this->uid);
@@ -1241,7 +1241,7 @@
 								'mailbox'   => base64_encode($folder),
 							);
 							$windowName = 'displayMessage_'.$this->uid;
-							$linkView = "egw_openWindowCentered('".$GLOBALS['phpgw']->link('/index.php',$linkData)."','$windowName',700,egw_getWindowOuterHeight());";
+							$linkView = "egw_openWindowCentered('".phpgw::link('/index.php',$linkData)."','$windowName',700,egw_getWindowOuterHeight());";
 							break;
 						case 'image/jpeg':
 						case 'image/png':
@@ -1255,7 +1255,7 @@
 								'mailbox'   => base64_encode($folder),
 							);
 							$windowName = 'displayAttachment_'.$this->uid;
-							$linkView = "egw_openWindowCentered('".$GLOBALS['phpgw']->link('/index.php',$linkData)."','$windowName',800,600);";
+							$linkView = "egw_openWindowCentered('".phpgw::link('/index.php',$linkData)."','$windowName',800,600);";
 							break;
 						default:
 							$linkData = array
@@ -1265,7 +1265,7 @@
 								'part'		=> $value['partID'],
 								'mailbox'   => base64_encode($folder),
 							);
-							$linkView = "window.location.href = '".$GLOBALS['phpgw']->link('/index.php',$linkData)."';";
+							$linkView = "window.location.href = '".phpgw::link('/index.php',$linkData)."';";
 							break;
 					}
 					$this->t->set_var("link_view",$linkView);
@@ -1279,7 +1279,7 @@
 						'part'		=> $value['partID'],
 						'mailbox'   => base64_encode($folder),
 					);
-					$this->t->set_var("link_save",$GLOBALS['phpgw']->link('/index.php',$linkData));
+					$this->t->set_var("link_save",phpgw::link('/index.php',$linkData));
 
 					$this->t->parse('attachment_rows','message_attachement_row',True);
 				}

@@ -68,7 +68,7 @@
 
 		function index()
 		{
-			$GLOBALS['phpgw']->xslttpl->add_file(array('place','nextmatchs','menu',
+			phpgwapi_xslttemplates::getInstance()->add_file(array('place','nextmatchs','menu',
 										'search_field'));
 
 			$place_info = $this->bo->read();
@@ -82,9 +82,9 @@
 					$content[] = array
 					(
 						'name'					=> $entry['name'],
-						'link_edit'				=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uiplace.edit', 'place_id'=> $entry['id'])),
-						'link_delete'				=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uiplace.delete', 'place_id'=> $entry['id'])),
-						'link_view'				=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uiplace.view', 'place_id'=> $entry['id'])),
+						'link_edit'				=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uiplace.edit', 'place_id'=> $entry['id'])),
+						'link_delete'				=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uiplace.delete', 'place_id'=> $entry['id'])),
+						'link_view'				=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uiplace.view', 'place_id'=> $entry['id'])),
 						'lang_view_place_text'			=> lang('view the place'),
 						'lang_edit_place_text'			=> lang('edit the place'),
 						'text_view'				=> lang('view'),
@@ -139,7 +139,7 @@
 			(
 				'lang_add'		=> lang('add'),
 				'lang_add_statustext'	=> lang('add a place'),
-				'add_action'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uiplace.edit')),
+				'add_action'		=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uiplace.edit')),
 			);
 
 			$msgbox_data = $this->bocommon->msgbox_data($receipt);
@@ -154,7 +154,7 @@
 				'record_limit'					=> $record_limit,
 				'num_records'					=> count($place_info),
 				'all_records'					=> $this->bo->total_records,
-				'link_url'					=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'link_url'					=> phpgw::link('/index.php',$link_data),
 				'img_path'					=> $GLOBALS['phpgw']->common->get_image_path('phpgwapi','default'),
 				'lang_searchfield_statustext'			=> lang('Enter the search string. To show all entries, empty this field and press the SUBMIT button again'),
 				'lang_searchbutton_statustext'			=> lang('Submit the search string'),
@@ -169,17 +169,17 @@
 			$function_msg= lang('list place');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('list' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('list' => $data));
 			$this->save_sessiondata();
 		}
 
 
 		function edit()
 		{
-			$place_id	= phpgw::get_var('place_id', 'int');
-			$values		= phpgw::get_var('values');
+			$place_id	= Sanitizer::get_var('place_id', 'int');
+			$values		= Sanitizer::get_var('values');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('place'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('place'));
 
 			if (is_array($values))
 			{
@@ -217,13 +217,13 @@
 						if ($values['save'])
 						{
 							$GLOBALS['phpgw']->session->appsession('session_data','hrm_training_receipt',$receipt);
-							$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'=> 'hrm.uiplace.index', 'place_id'=> $place_id));
+							phpgw::redirect_link('/index.php', array('menuaction'=> 'hrm.uiplace.index', 'place_id'=> $place_id));
 						}
 					}
 				}
 				else
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'=> 'hrm.uiplace.index', 'place_id'=> $place_id));
+					phpgw::redirect_link('/index.php', array('menuaction'=> 'hrm.uiplace.index', 'place_id'=> $place_id));
 				}
 			}
 
@@ -270,7 +270,7 @@
 				'lang_remark'			=> lang('remark'),
 
 				'msgbox_data'			=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'			=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'form_action'			=> phpgw::link('/index.php',$link_data),
 				'lang_id'			=> lang('training ID'),
 				'lang_save'			=> lang('save'),
 				'lang_cancel'			=> lang('cancel'),
@@ -284,15 +284,15 @@
 			$appname					= lang('Place');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('edit' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('edit' => $data));
 		}
 
 		function view()
 		{
-			$place_id	= phpgw::get_var('place_id', 'int');
-			$values		= phpgw::get_var('values');
+			$place_id	= Sanitizer::get_var('place_id', 'int');
+			$values		= Sanitizer::get_var('values');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('place'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('place'));
 
 			if ($place_id)
 			{
@@ -322,7 +322,7 @@
 				'lang_town'			=> lang('town'),
 				'lang_remark'			=> lang('remark'),
 
-				'form_action'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uiplace.index')),
+				'form_action'			=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uiplace.index')),
 				'lang_cancel'			=> lang('cancel'),
 				'value_id'			=> $place_id,
 			);
@@ -330,31 +330,31 @@
 			$appname	= lang('Place');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('view' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('view' => $data));
 		}
 
 		function delete()
 		{
-			$place_id	= phpgw::get_var('place_id', 'int');
-			$confirm	= phpgw::get_var('confirm', 'bool', 'POST');
+			$place_id	= Sanitizer::get_var('place_id', 'int');
+			$confirm	= Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 			(
 				'menuaction' => 'hrm.uiplace.index'
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete($place_id);
-				$GLOBALS['phpgw']->redirect_link('/index.php',$link_data);
+				phpgw::redirect_link('/index.php',$link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 			(
-				'done_action'			=> $GLOBALS['phpgw']->link('/index.php',$link_data),
-				'delete_action'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uiplace.delete', 'place_id'=> $place_id)),
+				'done_action'			=> phpgw::link('/index.php',$link_data),
+				'delete_action'			=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uiplace.delete', 'place_id'=> $place_id)),
 				'lang_confirm_msg'		=> lang('do you really want to delete this entry'),
 				'lang_yes'			=> lang('yes'),
 				'lang_yes_statustext'		=> lang('Delete the entry'),
@@ -366,7 +366,7 @@
 			$function_msg	= lang('delete');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('delete' => $data));
 		}
 
 	}

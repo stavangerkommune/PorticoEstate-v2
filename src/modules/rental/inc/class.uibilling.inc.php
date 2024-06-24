@@ -74,7 +74,7 @@
 
 		public function add()
 		{
-			$contract_type = phpgw::get_var('contract_type');
+			$contract_type = Sanitizer::get_var('contract_type');
 			// No messages so far
 			$errorMsgs = array();
 			$warningMsgs = array();
@@ -91,26 +91,26 @@
 			$active_tab = 'details';
 
 			// Step 'simulation' of the billing job
-			if (phpgw::get_var('step') == 2  && phpgw::get_var('next') != null) // User clicked next on step 2
+			if (Sanitizer::get_var('step') == 2  && Sanitizer::get_var('next') != null) // User clicked next on step 2
 			{
 				$names = $this->locations->get_name($contract_type);
 				if ($names['appname'] == $GLOBALS['phpgw_info']['flags']['currentapp'])
 				{
-					if (!$this->hasPermissionOn($names['location'], PHPGW_ACL_ADD))
+					if (!$this->hasPermissionOn($names['location'], ACL_ADD))
 					{
 						phpgw::no_access();
 					}
 				}
 
-				$use_existing = phpgw::get_var('use_existing');
-				$existing_billing = phpgw::get_var('existing_billing');
+				$use_existing = Sanitizer::get_var('use_existing');
+				$existing_billing = Sanitizer::get_var('existing_billing');
 				if ($use_existing < 1)
 				{
 					$existing_billing = 0;
 				}
-				$contract_ids = phpgw::get_var('contract'); // Ids of the contracts to bill
-				$contract_ids_override = phpgw::get_var('override_start_date'); //Ids of the contracts that should override billing start date with first day in period
-				$contract_bill_only_one_time = phpgw::get_var('bill_only_one_time');
+				$contract_ids = Sanitizer::get_var('contract'); // Ids of the contracts to bill
+				$contract_ids_override = Sanitizer::get_var('override_start_date'); //Ids of the contracts that should override billing start date with first day in period
+				$contract_bill_only_one_time = Sanitizer::get_var('bill_only_one_time');
 				if(is_array($contract_ids))
 				{
 					$contract_ids = array_unique($contract_ids);
@@ -121,22 +121,22 @@
 				}
 				if (($contract_ids != null && is_array($contract_ids) && count($contract_ids) > 0) || (is_array($contract_bill_only_one_time) && count($contract_bill_only_one_time) > 0)) // User submitted contracts to bill
 				{
-					$missing_billing_info = rental_sobilling::get_instance()->get_missing_billing_info(phpgw::get_var('billing_term'), phpgw::get_var('year'), phpgw::get_var('month'), $contract_ids, (array)$contract_ids_override, phpgw::get_var('export_format'));
+					$missing_billing_info = rental_sobilling::get_instance()->get_missing_billing_info(Sanitizer::get_var('billing_term'), Sanitizer::get_var('year'), Sanitizer::get_var('month'), $contract_ids, (array)$contract_ids_override, Sanitizer::get_var('export_format'));
 
 					if ($missing_billing_info == null || count($missing_billing_info) == 0)
 					{
 						$_decimal_place = isset($GLOBALS['phpgw_info']['user']['preferences']['rental']['currency_decimal_places']) ? isset($GLOBALS['phpgw_info']['user']['preferences']['rental']['currency_decimal_places']) : 2;
 						$invoices = rental_sobilling::get_instance()->create_billing(
 							$_decimal_place,
-							phpgw::get_var('contract_type'),
-							phpgw::get_var('billing_term'),
-							phpgw::get_var('year'),
-							phpgw::get_var('month'),
-							phpgw::get_var('title'),
+							Sanitizer::get_var('contract_type'),
+							Sanitizer::get_var('billing_term'),
+							Sanitizer::get_var('year'),
+							Sanitizer::get_var('month'),
+							Sanitizer::get_var('title'),
 							$GLOBALS['phpgw_info']['user']['account_id'],
 							$contract_ids,
 							(array) $contract_ids_override,
-							phpgw::get_var('export_format'),
+							Sanitizer::get_var('export_format'),
 							$existing_billing,
 							(array) $contract_bill_only_one_time,
 							$_dry_run = true
@@ -185,10 +185,10 @@
 						$template = 'simulation';
 
 						//Get year
-						$year = phpgw::get_var('year');
+						$year = Sanitizer::get_var('year');
 
 						//Get term and month
-						$billing_term_tmp = phpgw::get_var('billing_term_selection');
+						$billing_term_tmp = Sanitizer::get_var('billing_term_selection');
 						$billing_term_selection = $billing_term_tmp;
 						$billing_term = substr($billing_term_tmp, 0, 1);
 						$billing_month = substr($billing_term_tmp, 2);
@@ -259,14 +259,14 @@
 
 						//Use existing billing?
 						$use_existing = false;
-						$existing_billing = phpgw::get_var('existing_billing');
+						$existing_billing = Sanitizer::get_var('existing_billing');
 						if ($existing_billing != 'new_billing')
 						{
 							$use_existing = true;
 						}
 
 						//Determine title
-						$title = phpgw::get_var('title');
+						$title = Sanitizer::get_var('title');
 						if (!isset($title) || $title == '')
 						{
 							$fields = rental_socontract::get_instance()->get_fields_of_responsibility();
@@ -320,8 +320,8 @@
 						$data = array
 							(
 							'datatable_def' => $datatable_def,
-							'form_action' => $GLOBALS['phpgw']->link('/index.php', $link_add),
-							'cancel_url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'rental.uibilling.index')),
+							'form_action' => phpgw::link('/index.php', $link_add),
+							'cancel_url' => phpgw::link('/index.php', array('menuaction' => 'rental.uibilling.index')),
 							'contract_type' => $contract_type,
 							'billing_start' => $billing_start,
 							'billing_term' => $billing_term,
@@ -335,10 +335,10 @@
 							'sum' => number_format($_total_sum, $this->decimalPlaces, $this->decimalSeparator, $this->thousandsSeparator) . ' ' . $this->currency_suffix,
 							'use_existing' => $use_existing,
 							'existing_billing' => $existing_billing,
-							'export_format' => phpgw::get_var('export_format'),
-							'contract_ids' => $contract_ids, //phpgw::get_var('contract'); // Ids of the contracts to bill
-							'contract_ids_override' => $contract_ids_override, //phpgw::get_var('override_start_date'); //Ids of the contracts that should override billing start date with first day in period
-							'contract_bill_only_one_time' => $contract_bill_only_one_time,// phpgw::get_var('bill_only_one_time');
+							'export_format' => Sanitizer::get_var('export_format'),
+							'contract_ids' => $contract_ids, //Sanitizer::get_var('contract'); // Ids of the contracts to bill
+							'contract_ids_override' => $contract_ids_override, //Sanitizer::get_var('override_start_date'); //Ids of the contracts that should override billing start date with first day in period
+							'contract_bill_only_one_time' => $contract_bill_only_one_time,// Sanitizer::get_var('bill_only_one_time');
 							'errorMsgs' => $errorMsgs,
 							'warningMsgs' => $warningMsgs,
 							'infoMsgs' => $infoMsgs,
@@ -351,7 +351,7 @@
 						var currency_suffix = '{$this->currency_suffix}';
 						var area_suffix = '{$this->area_suffix}';
 JS;
-						$GLOBALS['phpgw']->js->add_code('', $code);
+						phpgwapi_js::getInstance()->add_code('', $code);
 						self::add_javascript('rental', 'base', 'billing.add.js');
 						phpgwapi_jquery::load_widget('numberformat');
 						self::render_template_xsl(array('billing', 'datatable_inline'), array($template => $data));
@@ -382,9 +382,9 @@ JS;
 				}
 			}
 			// Step 3 - the billing job
-			if (phpgw::get_var('step') == 'simulation' && phpgw::get_var('next') != null) // User clicked next on step 2
+			if (Sanitizer::get_var('step') == 'simulation' && Sanitizer::get_var('next') != null) // User clicked next on step 2
 			{
-				if ($GLOBALS['phpgw']->session->is_repost())
+				if (phpgw::is_repost())
 				{
 					phpgwapi_cache::message_set(lang('Hmm... looks like a repost!'), 'error');
 					self::redirect(array(
@@ -393,16 +393,16 @@ JS;
 					);
 				}
 
-				$use_existing = phpgw::get_var('use_existing');
-				$existing_billing = phpgw::get_var('existing_billing');
+				$use_existing = Sanitizer::get_var('use_existing');
+				$existing_billing = Sanitizer::get_var('existing_billing');
 				if ($use_existing < 1)
 				{
 					$existing_billing = 0;
 				}
-				$contract_ids = phpgw::get_var('contract'); // Ids of the contracts to bill
+				$contract_ids = Sanitizer::get_var('contract'); // Ids of the contracts to bill
 
-				$contract_ids_override = phpgw::get_var('override_start_date'); //Ids of the contracts that should override billing start date with first day in period
-				$contract_bill_only_one_time = phpgw::get_var('bill_only_one_time');
+				$contract_ids_override = Sanitizer::get_var('override_start_date'); //Ids of the contracts that should override billing start date with first day in period
+				$contract_bill_only_one_time = Sanitizer::get_var('bill_only_one_time');
 				if(is_array($contract_ids))
 				{
 					$contract_ids = array_unique($contract_ids);
@@ -413,26 +413,26 @@ JS;
 				}
 				if (($contract_ids != null && is_array($contract_ids) && count($contract_ids) > 0) || (is_array($contract_bill_only_one_time) && count($contract_bill_only_one_time) > 0)) // User submitted contracts to bill
 				{
-					$missing_billing_info = rental_sobilling::get_instance()->get_missing_billing_info(phpgw::get_var('billing_term'), phpgw::get_var('year'), phpgw::get_var('month'), $contract_ids, $contract_ids_override, phpgw::get_var('export_format'));
+					$missing_billing_info = rental_sobilling::get_instance()->get_missing_billing_info(Sanitizer::get_var('billing_term'), Sanitizer::get_var('year'), Sanitizer::get_var('month'), $contract_ids, $contract_ids_override, Sanitizer::get_var('export_format'));
 
 					if ($missing_billing_info == null || count($missing_billing_info) == 0)
 					{
 						$billing_job = rental_sobilling::get_instance()->create_billing(
 							isset($GLOBALS['phpgw_info']['user']['preferences']['rental']['currency_decimal_places']) ? isset($GLOBALS['phpgw_info']['user']['preferences']['rental']['currency_decimal_places']) : 2,
-							phpgw::get_var('contract_type'),
-							phpgw::get_var('billing_term'),
-							phpgw::get_var('year'),
-							phpgw::get_var('month'),
-							phpgw::get_var('title'),
+							Sanitizer::get_var('contract_type'),
+							Sanitizer::get_var('billing_term'),
+							Sanitizer::get_var('year'),
+							Sanitizer::get_var('month'),
+							Sanitizer::get_var('title'),
 							$GLOBALS['phpgw_info']['user']['account_id'],
 							$contract_ids,
 							$contract_ids_override,
-							phpgw::get_var('export_format'),
+							Sanitizer::get_var('export_format'),
 							$existing_billing,
 							$contract_bill_only_one_time,
 							$_dry_run = false
 						);
-						$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uibilling.view',
+						phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uibilling.view',
 							'id' => $billing_job->get_id()));
 						return;
 					}
@@ -459,31 +459,31 @@ JS;
 				}
 			}
 			// Step 2 - list of contracts that should be billed
-			if ($step == 2 || (phpgw::get_var('step') == '1' && phpgw::get_var('next') != null) || phpgw::get_var('step') == 'simulation' && phpgw::get_var('previous') != null) // User clicked next on step 1 or previous on step simulation
+			if ($step == 2 || (Sanitizer::get_var('step') == '1' && Sanitizer::get_var('next') != null) || Sanitizer::get_var('step') == 'simulation' && Sanitizer::get_var('previous') != null) // User clicked next on step 1 or previous on step simulation
 			{
 				//Responsibility area
-				//$contract_type = phpgw::get_var('contract_type');
+				//$contract_type = Sanitizer::get_var('contract_type');
 				//Check permission
 				$names = $this->locations->get_name($contract_type);
 				if ($names['appname'] == $GLOBALS['phpgw_info']['flags']['currentapp'])
 				{
-					if (!$this->hasPermissionOn($names['location'], PHPGW_ACL_ADD))
+					if (!$this->hasPermissionOn($names['location'], ACL_ADD))
 					{
 						phpgw::no_access();
 					}
 				}
 
 				//Get year
-				$year = phpgw::get_var('year');
+				$year = Sanitizer::get_var('year');
 
 				//Get term and month
-				if ($step == 2 || phpgw::get_var('step') == 'simulation')
+				if ($step == 2 || Sanitizer::get_var('step') == 'simulation')
 				{
-					$billing_term_tmp = phpgw::get_var('billing_term_selection');
+					$billing_term_tmp = Sanitizer::get_var('billing_term_selection');
 				}
 				else
 				{
-					$billing_term_tmp = phpgw::get_var('billing_term');
+					$billing_term_tmp = Sanitizer::get_var('billing_term');
 				}
 				$billing_term_selection = $billing_term_tmp;
 				$billing_term = substr($billing_term_tmp, 0, 1);
@@ -555,14 +555,14 @@ JS;
 
 				//Use existing billing?
 				$use_existing = false;
-				$existing_billing = phpgw::get_var('existing_billing');
+				$existing_billing = Sanitizer::get_var('existing_billing');
 				if ($existing_billing != 'new_billing')
 				{
 					$use_existing = true;
 				}
 
 				//Determine title
-				$title = phpgw::get_var('title');
+				$title = Sanitizer::get_var('title');
 				if (!isset($title) || $title == '')
 				{
 					$fields = rental_socontract::get_instance()->get_fields_of_responsibility();
@@ -893,8 +893,8 @@ JS;
 				$data = array
 					(
 					'datatable_def' => $datatable_def,
-					'form_action' => $GLOBALS['phpgw']->link('/index.php', $link_add),
-					'cancel_url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'rental.uibilling.index')),
+					'form_action' => phpgw::link('/index.php', $link_add),
+					'cancel_url' => phpgw::link('/index.php', array('menuaction' => 'rental.uibilling.index')),
 					'contract_type' => $contract_type,
 					'irregular_contracts' => $irregular_contracts,
 					'contracts_with_one_time' => $contracts_with_one_time,
@@ -912,7 +912,7 @@ JS;
 					'title' => $title,
 					'use_existing' => $use_existing,
 					'existing_billing' => $existing_billing,
-					'export_format' => phpgw::get_var('export_format'),
+					'export_format' => Sanitizer::get_var('export_format'),
 					'errorMsgs' => $errorMsgs,
 					'warningMsgs' => $warningMsgs,
 					'infoMsgs' => $infoMsgs,
@@ -920,11 +920,11 @@ JS;
 				);
 				$template = 'step2';
 			}
-			else if ($step == null || (phpgw::get_var('next') != null) || phpgw::get_var('step') == '2' && phpgw::get_var('previous') != null) // User clicked next on step 0 or previous on step 2
+			else if ($step == null || (Sanitizer::get_var('next') != null) || Sanitizer::get_var('step') == '2' && Sanitizer::get_var('previous') != null) // User clicked next on step 0 or previous on step 2
 			{
-				//$contract_type = phpgw::get_var('contract_type');
+				//$contract_type = Sanitizer::get_var('contract_type');
 				$export_format = rental_sobilling::get_instance()->get_agresso_export_format($contract_type);
-				$existing_billing = phpgw::get_var('existing_billing');
+				$existing_billing = Sanitizer::get_var('existing_billing');
 
 				$fields = rental_socontract::get_instance()->get_fields_of_responsibility();
 				foreach ($fields as $id => $label)
@@ -948,7 +948,7 @@ JS;
 					}
 				}
 
-				$this_year = phpgw::get_var('year');
+				$this_year = Sanitizer::get_var('year');
 				if (empty($this_year))
 				{
 					$this_year = date('Y');
@@ -961,7 +961,7 @@ JS;
 					$year_options[] = array('id' => $year, 'name' => $year, 'selected' => $selected);
 				}
 
-				$billing_term_selection = phpgw::get_var('billing_term_selection');
+				$billing_term_selection = Sanitizer::get_var('billing_term_selection');
 				$current = 0;
 				$billing_term_group_options = array();
 				foreach (rental_sobilling::get_instance()->get_billing_terms() as $term_id => $term_title)
@@ -1003,13 +1003,13 @@ JS;
 
 				$data = array
 					(
-					'form_action' => $GLOBALS['phpgw']->link('/index.php', $link_add),
-					'cancel_url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'rental.uibilling.index')),
+					'form_action' => phpgw::link('/index.php', $link_add),
+					'cancel_url' => phpgw::link('/index.php', array('menuaction' => 'rental.uibilling.index')),
 					'lang_next' => lang('next'),
 					'lang_cancel' => lang('cancel'),
 					'contract_type' => $contract_type,
-					'billing_term' => phpgw::get_var('billing_term'),
-					'title' => phpgw::get_var('title'),
+					'billing_term' => Sanitizer::get_var('billing_term'),
+					'title' => Sanitizer::get_var('title'),
 					'existing_billing' => $existing_billing,
 					'fields_of_responsibility_label' => $fields_of_responsibility_label,
 					'list_existing_billing' => array('options' => $existing_billing_options),
@@ -1031,7 +1031,7 @@ JS;
 			var currency_suffix = '{$this->currency_suffix}';
 			var area_suffix = '{$this->area_suffix}';
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $code);
+			phpgwapi_js::getInstance()->add_code('', $code);
 
 			self::add_javascript('rental', 'base', 'billing.add.js');
 			phpgwapi_jquery::load_widget('numberformat');
@@ -1040,7 +1040,7 @@ JS;
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -1052,7 +1052,7 @@ JS;
 				$names = $this->locations->get_name($id);
 				if ($names['appname'] == $GLOBALS['phpgw_info']['flags']['currentapp'])
 				{
-					if ($this->hasPermissionOn($names['location'], PHPGW_ACL_ADD))
+					if ($this->hasPermissionOn($names['location'], ACL_ADD))
 					{
 						$field_of_responsibility_options[] = array('id' => $id, 'name' => lang($label));
 					}
@@ -1175,7 +1175,7 @@ JS;
 				(
 				'my_name' => 'show',
 				'text' => lang('show'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uibilling.view'
 				)),
@@ -1189,7 +1189,7 @@ JS;
 			var currency_suffix = '{$this->currency_suffix}';
 			var area_suffix = '{$this->area_suffix}';
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $code);
+			phpgwapi_js::getInstance()->add_code('', $code);
 
 			self::add_javascript('rental', 'base', 'billing.index.js');
 			phpgwapi_jquery::load_widget('numberformat');
@@ -1208,17 +1208,17 @@ JS;
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('invoice_run');
 
-			$billing_job = rental_sobilling::get_instance()->get_single((int)phpgw::get_var('id'));
+			$billing_job = rental_sobilling::get_instance()->get_single((int)Sanitizer::get_var('id'));
 			$billing_info_array = rental_sobilling_info::get_instance()->get(0, 0, '', false, '', '', array(
-				'billing_id' => phpgw::get_var('id')));
+				'billing_id' => Sanitizer::get_var('id')));
 
 			if ($billing_job == null) // Not found
 			{
 				//$errorMsgs[] = lang('Could not find specified billing job.');
 				phpgwapi_cache::message_set(lang('Could not find specified billing job.'), 'error');
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uibilling.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uibilling.index'));
 			}
-			else if (phpgw::get_var('generate_export') != null) // User wants to generate export
+			else if (Sanitizer::get_var('generate_export') != null) // User wants to generate export
 			{
 				$open_and_exported = rental_soinvoice::get_instance()->number_of_open_and_exported_rental_billings($billing_job->get_location_id());
 
@@ -1256,7 +1256,7 @@ JS;
 					phpgwapi_cache::message_set(lang('open_and_exported_exist'), 'error');
 				}
 			}
-			else if (phpgw::get_var('commit') != null) // User wants to commit/close billing so that it cannot be deleted
+			else if (Sanitizer::get_var('commit') != null) // User wants to commit/close billing so that it cannot be deleted
 			{
 				$billing_job->set_timestamp_commit(time());
 				rental_sobilling::get_instance()->store($billing_job);
@@ -1395,7 +1395,7 @@ JS;
 			$data = array
 				(
 				'datatable_def' => $datatable_def,
-				'cancel_url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'rental.uibilling.index')),
+				'cancel_url' => phpgw::link('/index.php', array('menuaction' => 'rental.uibilling.index')),
 				'lang_cancel' => lang('cancel'),
 				'contract_type' => $contract_type,
 				'billing_terms' => $billing_terms,
@@ -1426,7 +1426,7 @@ JS;
 				return amount;
 			}
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $code);
+			phpgwapi_js::getInstance()->add_code('', $code);
 
 			phpgwapi_jquery::load_widget('numberformat');
 			self::render_template_xsl(array('billing', 'datatable_inline'), array('view' => $data));
@@ -1441,15 +1441,15 @@ JS;
 			{
 				phpgw::no_access();
 			}
-			$billing_id = phpgw::get_var('id');
+			$billing_id = Sanitizer::get_var('id');
 			rental_sobilling::get_instance()->transaction_begin();
-			$billing_job = rental_sobilling::get_instance()->get_single((int)phpgw::get_var('id'));
+			$billing_job = rental_sobilling::get_instance()->get_single((int)Sanitizer::get_var('id'));
 			$billing_job->set_deleted(true);
 			$result = rental_sobilling::get_instance()->store($billing_job);
 
 			//set deleted=true on billing_info
 			$billing_infos = rental_sobilling_info::get_instance()->get(0, 0, '', false, '', '', array(
-				'billing_id' => phpgw::get_var('id')));
+				'billing_id' => Sanitizer::get_var('id')));
 			foreach ($billing_infos as $billing_info)
 			{
 				$billing_info->set_deleted(true);
@@ -1458,7 +1458,7 @@ JS;
 
 			//set is_billed on invoice price items to false
 			$billing_job_invoices = rental_soinvoice::get_instance()->get(0, 0, '', false, '', '', array(
-				'billing_id' => phpgw::get_var('id')));
+				'billing_id' => Sanitizer::get_var('id')));
 			foreach ($billing_job_invoices as $invoice)
 			{
 				$price_items = rental_socontract_price_item::get_instance()->get(0, 0, '', false, '', '', array(
@@ -1478,7 +1478,7 @@ JS;
 			}
 			rental_sobilling::get_instance()->transaction_commit();
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				/* if ($result) {
 				  $message['message'][] = array('msg'=>$billing_job->get_title().' '.lang('has been removed'));
@@ -1501,7 +1501,7 @@ JS;
 				phpgw::no_access();
 			}
 
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
 			rental_sobilling::get_instance()->transaction_begin();
 
@@ -1526,7 +1526,7 @@ JS;
 				rental_sobilling::get_instance()->transaction_abort();
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				if($result)
 				{
@@ -1737,27 +1737,27 @@ JS;
 				$user_rows_per_page = 10;
 			}
 
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
-			$start_index = (int)phpgw::get_var('start', 'int' );
-			$num_of_objects = (phpgw::get_var('length', 'int') <= 0) ? $user_rows_per_page : phpgw::get_var('length', 'int');
+			$start_index = (int)Sanitizer::get_var('start', 'int' );
+			$num_of_objects = (Sanitizer::get_var('length', 'int') <= 0) ? $user_rows_per_page : Sanitizer::get_var('length', 'int');
 			$sort_field = ($columns[$order[0]['column']]['data']) ? $columns[$order[0]['column']]['data'] : 'id';
 			$sort_ascending = ($order[0]['dir'] == 'desc') ? false : true;
 			// Form variables
 			$search_for = (string)$search['value'];
-			$search_type = phpgw::get_var('search_option', 'string', 'REQUEST', 'all');
-			$contract_type = phpgw::get_var('contract_type');
+			$search_type = Sanitizer::get_var('search_option', 'string', 'REQUEST', 'all');
+			$contract_type = Sanitizer::get_var('contract_type');
 
 			// Create an empty result set
 			$result_objects = array();
 			$object_count = 0;
 			//Retrieve the type of query and perform type specific logic
-			$query_type = phpgw::get_var('type');
+			$query_type = Sanitizer::get_var('type');
 
-			$export = phpgw::get_var('export', 'bool');
+			$export = Sanitizer::get_var('export', 'bool');
 			if ($export)
 			{
 				$num_of_objects = 0;
@@ -1784,7 +1784,7 @@ JS;
 					{
 						$sort_field = 'term_id';
 					}
-					$filters = array('billing_id' => phpgw::get_var('billing_id'));
+					$filters = array('billing_id' => Sanitizer::get_var('billing_id'));
 					$result_objects = rental_soinvoice::get_instance()->get($start_index, $num_of_objects, $sort_field, $sort_ascending, $search_for, $search_type, $filters);
 					$object_count = rental_soinvoice::get_instance()->get_count($search_for, $search_type, $filters);
 					break;
@@ -1796,7 +1796,7 @@ JS;
 			{
 				if (isset($result))
 				{
-					if ($result->has_permission(PHPGW_ACL_READ))
+					if ($result->has_permission(ACL_READ))
 					{
 						// ... add a serialized result
 						$rows[] = $result->serialize();
@@ -1862,22 +1862,22 @@ JS;
 			//$browser = CreateObject('phpgwapi.browser');
 			//$browser->content_header('export.txt','text/plain');
 
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 			$billing_job = rental_sobilling::get_instance()->get_single($id);
 
 			$config = CreateObject('phpgwapi.config', 'rental');
 			$config->read();
 			$organization = empty($config->config_data['organization']) ? 'bergen' : $config->config_data['organization'];
 
-			$stop = phpgw::get_var('date');
+			$stop = Sanitizer::get_var('date');
 
-			$cs15 = phpgw::get_var('generate_cs15');
-			$toExcel = phpgw::get_var('toExcel');
+			$cs15 = Sanitizer::get_var('generate_cs15');
+			$toExcel = Sanitizer::get_var('toExcel');
 			if ($cs15 == null)
 			{
 				if ($toExcel == null)
 				{
-					$export_format = explode('_', phpgw::get_var('export_format'));
+					$export_format = explode('_', Sanitizer::get_var('export_format'));
 					$file_ending = $export_format[1];
 					if ($file_ending == 'gl07')
 					{
@@ -1927,8 +1927,8 @@ JS;
 				else
 				{
 					$billing_info_array = rental_sobilling_info::get_instance()->get(0, 0, '', false, '', '', array(
-						'billing_id' => phpgw::get_var('id')));
-					$type = phpgw::get_var('type', 'string', 'GET', 'bk');
+						'billing_id' => Sanitizer::get_var('id')));
+					$type = Sanitizer::get_var('type', 'string', 'GET', 'bk');
 					if ($billing_job == null) // Not found
 					{
 						$errorMsgs[] = lang('Could not find specified billing job.');
@@ -2009,7 +2009,7 @@ JS;
 				$date = date('Ymd', $stop);
 				header('Content-type: text/plain');
 				header("Content-Disposition: attachment; filename=PE_{$type}_{$date}.{$file_ending}");
-				print rental_sobilling::get_instance()->generate_customer_export((int)phpgw::get_var('id'));
+				print rental_sobilling::get_instance()->generate_customer_export((int)Sanitizer::get_var('id'));
 			}
 		}
 	}

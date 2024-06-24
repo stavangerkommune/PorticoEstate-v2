@@ -1185,7 +1185,7 @@
 						$this->db->query("INSERT INTO controller_control_serie_history (serie_id, assigned_to, assigned_date)"
 							. " VALUES ({$serie_id}, {$assigned_to}, {$assigned_date})  ");
 
-						$ret = PHPGW_ACL_ADD; // Bit - add
+						$ret = ACL_ADD; // Bit - add
 					}
 				}
 			}
@@ -1207,7 +1207,7 @@
 					$sql = "DELETE FROM controller_control_component_list WHERE control_id = {$control_id} AND location_id = {$location_id} AND component_id = {$component_id}";
 					$this->db->query($sql);
 				}
-				$ret += PHPGW_ACL_DELETE; //bit - delete
+				$ret += ACL_DELETE; //bit - delete
 			}
 
 			if (!$this->global_lock)
@@ -1605,7 +1605,7 @@
 					. " {$this->join} fm_part_of_town ON fm_location1.part_of_town_id = fm_part_of_town.id"
 					. " WHERE district_id =" . (int)$filters['district_id'];
 
-				$db = & $GLOBALS['phpgw']->db;
+				$db = Db::getInstance();
 				$db->query($sql, __LINE__, __FILE__);
 
 				$control_at_district = array();
@@ -1912,7 +1912,7 @@
 							$this->db->query("DELETE FROM controller_control_serie_history WHERE serie_id = {$serie_id}", __LINE__, __FILE__);
 							$this->db->query("DELETE FROM controller_control_serie WHERE id = {$serie_id}", __LINE__, __FILE__);
 							$this->db->query("DELETE FROM controller_control_component_list WHERE id = {$control_relation_id}", __LINE__, __FILE__);
-							$ret = PHPGW_ACL_DELETE;
+							$ret = ACL_DELETE;
 						}
 					}
 					break;
@@ -1947,7 +1947,7 @@
 					}
 				}
 
-				$ret =  $ret | PHPGW_ACL_EDIT; // Bit - edit
+				$ret =  $ret | ACL_EDIT; // Bit - edit
 			}
 
 			return $ret;

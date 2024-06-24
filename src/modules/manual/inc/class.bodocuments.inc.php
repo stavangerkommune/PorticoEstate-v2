@@ -60,11 +60,11 @@
 			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
 			$GLOBALS['phpgw_info']['flags']['nofooter'] = true;
 
-			$acl = & $GLOBALS['phpgw']->acl;
-			$acl_add = $acl->check($this->acl_location, PHPGW_ACL_ADD, 'manual');
-			$acl_edit = $acl->check($this->acl_location, PHPGW_ACL_EDIT, 'manual');
-			$cat_id = phpgw::get_var('id', 'int');
-			$check = phpgw::get_var('check', 'bool');
+			$acl = Acl::getInstance();
+			$acl_add = $acl->check($this->acl_location, ACL_ADD, 'manual');
+			$acl_edit = $acl->check($this->acl_location, ACL_EDIT, 'manual');
+			$cat_id = Sanitizer::get_var('id', 'int');
+			$check = Sanitizer::get_var('check', 'bool');
 			$fileuploader = CreateObject('property.fileuploader');
 
 			if (!$acl_add && !$acl_edit)

@@ -114,7 +114,7 @@
 		 * @param $permission
 		 * @return true if current user has permission, false otherwise
 		 */
-		public function has_permission( $permission = PHPGW_ACL_PRIVATE )
+		public function has_permission( $permission = ACL_PRIVATE )
 		{
 			return $GLOBALS['phpgw']->acl->check($this->get_field_of_responsibility_name(), $permission, 'rental');
 		}
@@ -138,11 +138,11 @@
 		{
 			$location_name = $this->get_field_of_responsibility_name();
 			return array(
-				PHPGW_ACL_READ => $GLOBALS['phpgw']->acl->check($location_name, PHPGW_ACL_READ, 'rental'),
-				PHPGW_ACL_ADD => $GLOBALS['phpgw']->acl->check($location_name, PHPGW_ACL_ADD, 'rental'),
-				PHPGW_ACL_EDIT => $GLOBALS['phpgw']->acl->check($location_name, PHPGW_ACL_EDIT, 'rental'),
-				PHPGW_ACL_DELETE => $GLOBALS['phpgw']->acl->check($location_name, PHPGW_ACL_DELETE, 'rental'),
-				PHPGW_ACL_PRIVATE => $GLOBALS['phpgw']->acl->check($location_name, PHPGW_ACL_PRIVATE, 'rental')
+				ACL_READ => $GLOBALS['phpgw']->acl->check($location_name, ACL_READ, 'rental'),
+				ACL_ADD => $GLOBALS['phpgw']->acl->check($location_name, ACL_ADD, 'rental'),
+				ACL_EDIT => $GLOBALS['phpgw']->acl->check($location_name, ACL_EDIT, 'rental'),
+				ACL_DELETE => $GLOBALS['phpgw']->acl->check($location_name, ACL_DELETE, 'rental'),
+				ACL_PRIVATE => $GLOBALS['phpgw']->acl->check($location_name, ACL_PRIVATE, 'rental')
 			);
 		}
 

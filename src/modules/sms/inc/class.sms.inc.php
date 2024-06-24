@@ -881,8 +881,8 @@
 				$sms_datetime = $this->datetime_now();
 			}
 
-			$target_code	 = phpgw::clean_value($target_code);
-			$message		 = phpgw::clean_value($message);
+			$target_code	 = Sanitizer::clean_value($target_code);
+			$message		 = Sanitizer::clean_value($message);
 
 			$ok = false;
 			switch ($target_code)

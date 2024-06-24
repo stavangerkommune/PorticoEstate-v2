@@ -60,22 +60,22 @@
 			$this->so = CreateObject('logistic.soresource_type_requirement');
 			$this->so_project = CreateObject('logistic.soproject');
 
-			$this->acl_read = $GLOBALS['phpgw']->acl->check('.project', PHPGW_ACL_READ, 'logistic');//1
-			$this->acl_add = $GLOBALS['phpgw']->acl->check('.project', PHPGW_ACL_ADD, 'logistic');//2
-			$this->acl_edit = $GLOBALS['phpgw']->acl->check('.project', PHPGW_ACL_EDIT, 'logistic');//4
-			$this->acl_delete = $GLOBALS['phpgw']->acl->check('.project', PHPGW_ACL_DELETE, 'logistic');//8
+			$this->acl_read = $GLOBALS['phpgw']->acl->check('.project', ACL_READ, 'logistic');//1
+			$this->acl_add = $GLOBALS['phpgw']->acl->check('.project', ACL_ADD, 'logistic');//2
+			$this->acl_edit = $GLOBALS['phpgw']->acl->check('.project', ACL_EDIT, 'logistic');//4
+			$this->acl_delete = $GLOBALS['phpgw']->acl->check('.project', ACL_DELETE, 'logistic');//8
 			$this->acl_manage = $GLOBALS['phpgw']->acl->check('.project', 16, 'logistic');//16
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = "admin::logistic::resource_type_requirement";
-			$GLOBALS['phpgw']->css->add_external_file('logistic/templates/base/css/base.css');
+			phpgwapi_css::getInstance()->add_external_file('logistic/templates/base/css/base.css');
 		}
 
 		public function query()
 		{
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 			if ($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] > 0)
 			{
@@ -87,12 +87,12 @@
 			}
 
 			$params = array(
-				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results' => phpgw::get_var('length', 'int', 'REQUEST', $user_rows_per_page),
+				'start' => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results' => Sanitizer::get_var('length', 'int', 'REQUEST', $user_rows_per_page),
 				'query' => !empty($search['value']) ? $search['value'] : '',
 				'order' => !empty($columns[$order[0]['column']]['data']) ? $columns[$order[0]['column']]['data'] : '',
 				'sort' => $order[0]['dir'],
-				'allrows' => phpgw::get_var('length', 'int') == -1,
+				'allrows' => Sanitizer::get_var('length', 'int') == -1,
 			);
 
 			$start_index = $params['start'];
@@ -102,17 +102,17 @@
 			// Form variables
 			$search_for = $params['query'];
 
-			$activity_id = phpgw::get_var('activity_id');
+			$activity_id = Sanitizer::get_var('activity_id');
 
-			$search_type = phpgw::get_var('search_option', 'string', 'REQUEST', '');
+			$search_type = Sanitizer::get_var('search_option', 'string', 'REQUEST', '');
 
 			// Form variables
-			$search_type = phpgw::get_var('search_option');
+			$search_type = Sanitizer::get_var('search_option');
 			// Create an empty result set
 			$result_objects = array();
 			$result_count = 0;
 
-			$exp_param = phpgw::get_var('export');
+			$exp_param = Sanitizer::get_var('export');
 			$export = false;
 			if (isset($exp_param))
 			{
@@ -121,7 +121,7 @@
 			}
 
 			//Retrieve the type of query and perform type specific logic
-			$query_type = phpgw::get_var('type');
+			$query_type = Sanitizer::get_var('type');
 			//var_dump($query_type);
 			switch ($query_type)
 			{
@@ -158,7 +158,7 @@
 			$result_data['dir'] = $params['dir'];
 			$result_data['draw'] = $draw;
 
-			$editable = phpgw::get_var('editable') == 'true' ? true : false;
+			$editable = Sanitizer::get_var('editable') == 'true' ? true : false;
 
 			if (!$export)
 			{
@@ -170,7 +170,7 @@
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -247,7 +247,7 @@
 						'my_name' => 'view',
 						'statustext' => lang('view'),
 						'text' => lang('view'),
-						'action' => $GLOBALS['phpgw']->link('/index.php', array(
+						'action' => phpgw::link('/index.php', array(
 							'menuaction' => 'logistic.uiresource_type_requirement.view'
 						)),
 						'parameters' => json_encode($parameters)
@@ -259,15 +259,15 @@
 
 		public function add()
 		{
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uiresource_type_requirement.edit'));
+			phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uiresource_type_requirement.edit'));
 		}
 
 		public function edit()
 		{
 			$entity_so = CreateObject('property.soadmin_entity');
 			$custom = createObject('phpgwapi.custom_fields');
-			$location_id = phpgw::get_var('location_id');
-			$project_type_id = phpgw::get_var('project_type_id');
+			$location_id = Sanitizer::get_var('location_id');
+			$project_type_id = Sanitizer::get_var('project_type_id');
 			if ($location_id)
 			{
 				$req_types = $this->so->get(0,0,'',false,'','', array('location_id' => $location_id,
@@ -285,12 +285,12 @@
 
 			if (isset($_POST['save']))
 			{
-				$entity_id = phpgw::get_var('entity_id');
-				$category_id = phpgw::get_var('category_id');
+				$entity_id = Sanitizer::get_var('entity_id');
+				$category_id = Sanitizer::get_var('category_id');
 				$location_id = $GLOBALS['phpgw']->locations->get_id('property', ".entity.{$entity_id}.{$category_id}");
 				$req_type->set_location_id($location_id);
-				$req_type->set_project_type_id(phpgw::get_var('project_type_id'));
-				$cust_attr_ids = phpgw::get_var('attributes');
+				$req_type->set_project_type_id(Sanitizer::get_var('project_type_id'));
+				$cust_attr_ids = Sanitizer::get_var('attributes');
 				$selected_attributes[] = array();
 
 				$req_type_array = $this->so->get(0,0,'',false,'','', array('location_id' => $location_id,
@@ -313,7 +313,7 @@
 						{
 							$req_type_new = new logistic_resource_type_requirement();
 							$req_type_new->set_location_id($location_id);
-							$req_type_new->set_project_type_id(phpgw::get_var('project_type_id'));
+							$req_type_new->set_project_type_id(Sanitizer::get_var('project_type_id'));
 							$req_type_new->set_cust_attribute_id($attr);
 							$req_type_new_id = $this->so->store($req_type_new);
 						}
@@ -333,12 +333,12 @@
 					}
 				}
 
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uiresource_type_requirement.view',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uiresource_type_requirement.view',
 					'location_id' => $location_id, 'project_type_id' => $req_type->get_project_type_id()));
 			}
 			else if (isset($_POST['cancel']))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uiresource_type_requirement.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uiresource_type_requirement.index'));
 			}
 			else
 			{
@@ -402,7 +402,7 @@
 
 		public function get_bim_level1()
 		{
-			$entity_id = phpgw::get_var('entity_id');
+			$entity_id = Sanitizer::get_var('entity_id');
 			$entity = CreateObject('property.soadmin_entity');
 
 			$category_list = $entity->read_category(array('allrows' => true, 'entity_id' => $entity_id));
@@ -413,8 +413,8 @@
 		public function get_bim_level2()
 		{
 			$custom = createObject('phpgwapi.custom_fields');
-			$entity_id = phpgw::get_var('entity_id');
-			$cat_id = phpgw::get_var('cat_id');
+			$entity_id = Sanitizer::get_var('entity_id');
+			$cat_id = Sanitizer::get_var('cat_id');
 
 			$attrib_data = $custom->find('property', ".entity.{$entity_id}.{$cat_id}", 0, '', '', '', true, true);
 
@@ -425,7 +425,7 @@
 		{
 			$entity_so = CreateObject('property.soadmin_entity');
 			$custom = createObject('phpgwapi.custom_fields');
-			$id_fields = phpgw::get_var('id');
+			$id_fields = Sanitizer::get_var('id');
 			if ($id_fields && $id_fields != '')
 			{
 				$id_array = explode('-', $id_fields);
@@ -434,13 +434,13 @@
 			}
 			else
 			{
-				$location_id = phpgw::get_var('location_id');
-				$project_type_id = phpgw::get_var('project_type_id');
+				$location_id = Sanitizer::get_var('location_id');
+				$project_type_id = Sanitizer::get_var('project_type_id');
 			}
 
 			if (isset($_POST['edit']))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uiresource_type_requirement.edit',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uiresource_type_requirement.edit',
 					'location_id' => $location_id, 'project_type_id' => $project_type_id));
 			}
 

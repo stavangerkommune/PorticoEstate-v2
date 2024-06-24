@@ -72,7 +72,7 @@
 			}
 			else
 			{
-				$GLOBALS['phpgw']->xslttpl->add_file(array('app_data'));
+				phpgwapi_xslttemplates::getInstance()->add_file(array('app_data'));
 			}
 			
 			// ---- BEGIN UIMESSAGE
@@ -423,9 +423,9 @@
 				//{
 				//	$data['debugdata'] = $GLOBALS['phpgw']->msg->dbug->get_debugdata_stack();
 				//}
-				//$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('uimessage' => $data));
-				$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('generic_out' => $data));
-				$GLOBALS['phpgw']->xslttpl->pp();
+				//phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('uimessage' => $data));
+				phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('generic_out' => $data));
+				phpgwapi_xslttemplates::getInstance()->pp();
 			}
 			
 			// ralfbecker patch dated 021124
@@ -492,7 +492,7 @@
 				
 				//$GLOBALS['phpgw_info']['navbar'] = '';
 				
-				//$GLOBALS['phpgw']->xslttpl->add_file(array('app_data'));
+				//phpgwapi_xslttemplates::getInstance()->add_file(array('app_data'));
 				
 				// FIXME how to get rid of other template stuff here for XSLT?
 				$GLOBALS['phpgw_info']['flags']['noheader'] = True;
@@ -638,7 +638,7 @@
 				//$data['appname'] = lang('E-Mail');
 				//$data['function_msg'] = lang('show message');
 				//$data['email_page'] = $this->tpl->parse('out','T_message_printable');
-				//$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('generic_out' => $data));
+				//phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('generic_out' => $data));
 			}
 			
 			if (is_object($GLOBALS['phpgw']->msg))

@@ -85,7 +85,7 @@
 
 	if ($app == 'home' && !$api_requested)
 	{
-		$GLOBALS['phpgw']->redirect_link('/home.php');
+		phpgw::redirect_link('/home.php');
 	}
 
 	if ($api_requested)
@@ -120,9 +120,9 @@
 		 */
 		phpgwapi_cache::session_clear('mobilefrontend', 'keep_alive_timestamp');
 
-		if (phpgw::get_var('X-Requested-With', 'string', 'SERVER') == 'XMLHttpRequest'
+		if (Sanitizer::get_var('X-Requested-With', 'string', 'SERVER') == 'XMLHttpRequest'
 			// deprecated
-			|| phpgw::get_var('phpgw_return_as', 'string', 'GET') == 'json')
+			|| Sanitizer::get_var('phpgw_return_as', 'string', 'GET') == 'json')
 		{
 			// comply with RFC 4627
 			header('Content-Type: application/json');
@@ -175,6 +175,6 @@
 		}
 		$GLOBALS['phpgw']->log->commit();
 
-		$GLOBALS['phpgw']->redirect_link('mobilefrontend/home.php');
+		phpgw::redirect_link('mobilefrontend/home.php');
 	}
 	$GLOBALS['phpgw']->common->phpgw_footer();

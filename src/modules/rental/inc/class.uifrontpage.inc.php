@@ -500,7 +500,7 @@
 				var currency_suffix = '$this->currency_suffix';
 				var area_suffix = '$this->area_suffix';
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $code);
+			phpgwapi_js::getInstance()->add_code('', $code);
 
 			self::add_javascript('rental', 'base', 'frontpage.index.js');
 			phpgwapi_jquery::load_widget('numberformat');

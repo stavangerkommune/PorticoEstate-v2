@@ -32,7 +32,7 @@
 
 	$file = array(
 		array(
-			'text' => '<a class="textSidebox" href="'. htmlspecialchars($GLOBALS['phpgw']->link('/index.php', $linkData)).'" target="_blank" onclick="egw_openWindowCentered(\''.$GLOBALS['phpgw']->link('/index.php', $linkData).'\',\''.lang('compose').'\',700,750); return false;">'.lang('compose'),
+			'text' => '<a class="textSidebox" href="'. htmlspecialchars(phpgw::link('/index.php', $linkData)).'" target="_blank" onclick="egw_openWindowCentered(\''.phpgw::link('/index.php', $linkData).'\',\''.lang('compose').'\',700,750); return false;">'.lang('compose'),
                         'no_lang' => true,
                     ),
 
@@ -61,24 +61,24 @@
 		#$mailPreferences = ExecMethod('felamimail.bopreferences.getPreferences');
 		$menu_title = lang('Preferences');
 		$file = array(
-			'Preferences'		=> $GLOBALS['phpgw']->link('/index.php','menuaction=preferences.uisettings.index&appname=felamimail'),
+			'Preferences'		=> phpgw::link('/index.php','menuaction=preferences.uisettings.index&appname=felamimail'),
 		);
 
 		if($preferences->userDefinedAccounts || $preferences->userDefinedIdentities) {
 			$linkData = array (
 				'menuaction' => 'felamimail.uipreferences.listAccountData',
 			);
-			$file['Manage eMail: Accounts / Identities'] = $GLOBALS['phpgw']->link('/index.php',$linkData);
+			$file['Manage eMail: Accounts / Identities'] = phpgw::link('/index.php',$linkData);
 		}
 
 		if($preferences->ea_user_defined_signatures) {
 			$linkData = array (
 				'menuaction' => 'felamimail.uipreferences.listSignatures',
 			);
-			$file['Manage Signatures'] = $GLOBALS['phpgw']->link('/index.php',$linkData);
+			$file['Manage Signatures'] = phpgw::link('/index.php',$linkData);
 		}
 		
-		$file['Manage Folders']	= $GLOBALS['phpgw']->link('/index.php','menuaction=felamimail.uipreferences.listFolder');
+		$file['Manage Folders']	= phpgw::link('/index.php','menuaction=felamimail.uipreferences.listFolder');
 		
 		$icServer = $preferences->getIncomingServer(0);
 		if(is_a($icServer, 'defaultimap')) {
@@ -88,14 +88,14 @@
 				(
 					'menuaction'	=> 'felamimail.uisieve.listRules',
 				);
-				$file['filter rules']	= $GLOBALS['phpgw']->link('/index.php',$linkData);
+				$file['filter rules']	= phpgw::link('/index.php',$linkData);
 
 				$linkData = array
 				(
 					'menuaction'	=> 'felamimail.uisieve.editVacation',
 				);
-				$file['vacation notice']	= $GLOBALS['phpgw']->link('/index.php',$linkData);
-				$file['email notification'] = $GLOBALS['phpgw']->link('/index.php','menuaction=felamimail.uisieve.editEmailNotification'); //Added email notifications
+				$file['vacation notice']	= phpgw::link('/index.php',$linkData);
+				$file['email notification'] = phpgw::link('/index.php','menuaction=felamimail.uisieve.editEmailNotification'); //Added email notifications
 			}
 		}
 
@@ -107,7 +107,7 @@
 				(
 					'menuaction'	=> 'felamimail.uipreferences.editForwardingAddress',
 				);
-				$file['Forwarding']	= $GLOBALS['phpgw']->link('/index.php',$linkData);
+				$file['Forwarding']	= phpgw::link('/index.php',$linkData);
 			}
 		}
 
@@ -118,7 +118,7 @@
 	{
 		$menu_title = lang('Administration');
 		$file = Array(
-			'Configuration' => $GLOBALS['phpgw']->link('/index.php','menuaction=felamimail.uifelamimail.hookAdmin')
+			'Configuration' => phpgw::link('/index.php','menuaction=felamimail.uifelamimail.hookAdmin')
 		);
 		display_sidebox($appname,$menu_title,$file);
 	} */

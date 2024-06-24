@@ -56,23 +56,23 @@
 
 			$this->so = CreateObject('logistic.soproject');
 
-			$this->acl_read = $GLOBALS['phpgw']->acl->check('.project', PHPGW_ACL_READ, 'logistic');//1
-			$this->acl_add = $GLOBALS['phpgw']->acl->check('.project', PHPGW_ACL_ADD, 'logistic');//2
-			$this->acl_edit = $GLOBALS['phpgw']->acl->check('.project', PHPGW_ACL_EDIT, 'logistic');//4
-			$this->acl_delete = $GLOBALS['phpgw']->acl->check('.project', PHPGW_ACL_DELETE, 'logistic');//8
+			$this->acl_read = $GLOBALS['phpgw']->acl->check('.project', ACL_READ, 'logistic');//1
+			$this->acl_add = $GLOBALS['phpgw']->acl->check('.project', ACL_ADD, 'logistic');//2
+			$this->acl_edit = $GLOBALS['phpgw']->acl->check('.project', ACL_EDIT, 'logistic');//4
+			$this->acl_delete = $GLOBALS['phpgw']->acl->check('.project', ACL_DELETE, 'logistic');//8
 			$this->acl_manage = $GLOBALS['phpgw']->acl->check('.project', 16, 'logistic');//16
 
-			$GLOBALS['phpgw']->css->add_external_file('logistic/templates/base/css/base.css');
+			phpgwapi_css::getInstance()->add_external_file('logistic/templates/base/css/base.css');
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = "logistic::project";
 		}
 
 		public function query()
 		{
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 			if ($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] > 0)
 			{
@@ -84,12 +84,12 @@
 			}
 
 			$params = array(
-				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results' => phpgw::get_var('length', 'int', 'REQUEST', $user_rows_per_page),
+				'start' => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results' => Sanitizer::get_var('length', 'int', 'REQUEST', $user_rows_per_page),
 				'query' => !empty($search['value']) ? $search['value'] : '',
 				'order' => !empty($columns[$order[0]['column']]['data']) ? $columns[$order[0]['column']]['data'] : '',
 				'sort' => $order[0]['dir'],
-				'allrows' => phpgw::get_var('length', 'int') == -1,
+				'allrows' => Sanitizer::get_var('length', 'int') == -1,
 			);
 
 			$start_index = $params['start'];
@@ -98,15 +98,15 @@
 			$sort_ascending = $params['sort'] == 'desc' ? false : true;
 			// Form variables
 			$search_for = $params['query'];
-			$search_type = phpgw::get_var('search_option', 'string', 'REQUEST', '');
+			$search_type = Sanitizer::get_var('search_option', 'string', 'REQUEST', '');
 			// Create an empty result set
 			$result_objects = array();
 			$result_count = 0;
 
 			//Retrieve a project identifier and load corresponding project
-			$project_id = phpgw::get_var('project_id');
+			$project_id = Sanitizer::get_var('project_id');
 
-			$exp_param = phpgw::get_var('export');
+			$exp_param = Sanitizer::get_var('export');
 			$export = false;
 			if (isset($exp_param))
 			{
@@ -115,7 +115,7 @@
 			}
 
 			//Retrieve the type of query and perform type specific logic
-			$query_type = phpgw::get_var('type');
+			$query_type = Sanitizer::get_var('type');
 			$filters = array();
 			//var_dump($query_type);
 			switch ($query_type)
@@ -128,7 +128,7 @@
 					break;
 				default: // ... all composites, filters (active and vacant)
 					phpgwapi_cache::session_set('logistic', 'project_query', $search_for);
-					$filters = array('project_type' => phpgw::get_var('project_type'));
+					$filters = array('project_type' => Sanitizer::get_var('project_type'));
 					$result_objects = $this->so->get($start_index, $num_of_objects, $sort_field, $sort_ascending, $search_for, $search_type, $filters, $params['allrows']);
 					$object_count = $this->so->get_count($search_for, $search_type, $filters);
 					break;
@@ -158,7 +158,7 @@
 			$result_data['dir'] = $params['dir'];
 			$result_data['draw'] = $draw;
 
-			$editable = phpgw::get_var('editable') == 'true' ? true : false;
+			$editable = Sanitizer::get_var('editable') == 'true' ? true : false;
 
 			if (!$export)
 			{
@@ -179,7 +179,7 @@
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -271,7 +271,7 @@
 				(
 				'my_name' => 'new_activity',
 				'text' => lang('t_new_activity'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'logistic.uiactivity.edit'
 				)),
@@ -284,18 +284,18 @@
 		public function project_types()
 		{
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = "admin::logistic::project_types";
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
 
-			$project_type_id = phpgw::get_var('id');
-			$new_type = phpgw::get_var('new_type');
-			$edit_type = phpgw::get_var('edit_type');
+			$project_type_id = Sanitizer::get_var('id');
+			$new_type = Sanitizer::get_var('new_type');
+			$edit_type = Sanitizer::get_var('edit_type');
 
 			if ($new_type || $edit_type)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uiproject.edit_project_type'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uiproject.edit_project_type'));
 			}
 			else
 			{
@@ -351,7 +351,7 @@
 						'my_name' => 'view',
 						'statustext' => lang('view'),
 						'text' => lang('view'),
-						'action' => $GLOBALS['phpgw']->link('/index.php', array(
+						'action' => phpgw::link('/index.php', array(
 							'menuaction' => 'logistic.uiproject.edit_project_type'
 						)),
 						'parameters' => json_encode($parameters)
@@ -364,15 +364,15 @@
 
 		public function view()
 		{
-			$project_id = phpgw::get_var('id');
+			$project_id = Sanitizer::get_var('id');
 			if (isset($_POST['edit_project']))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uiproject.edit',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uiproject.edit',
 					'id' => $project_id));
 			}
 			else if (isset($_POST['new_activity']))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uiactivity.edit',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uiactivity.edit',
 					'project_id' => $project_id));
 			}
 			else
@@ -396,15 +396,15 @@
 		public function view_project_type()
 		{
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = "admin::logistic::project_types";
-			$project_type_id = phpgw::get_var('id');
+			$project_type_id = Sanitizer::get_var('id');
 			if (isset($_POST['edit_project_type']))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uiproject.edit_project_type',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uiproject.edit_project_type',
 					'id' => $project_type_id));
 			}
 			else if (isset($_POST['cancel_project_type']))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uiproject.project_types'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uiproject.project_types'));
 			}
 			else
 			{
@@ -430,7 +430,7 @@
 		public function edit_project_type()
 		{
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = "admin::logistic::project_types";
-			$project_type_id = phpgw::get_var('id');
+			$project_type_id = Sanitizer::get_var('id');
 			if ($project_type_id && is_numeric($project_type_id))
 			{
 				$objects = $this->so->get(0,0,'',false,'', 'project_type', array(
@@ -447,7 +447,7 @@
 			}
 			if (isset($_POST['save_project_type']))
 			{
-				$project_type_name = phpgw::get_var('title');
+				$project_type_name = Sanitizer::get_var('title');
 				if (!$project_type_id || is_null($project_type_id))
 				{
 					$project_type_id = $this->so->add_project_type($project_type_name);
@@ -456,12 +456,12 @@
 				{
 					$this->so->update_project_type($project_type_id, $project_type_name);
 				}
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uiproject.view_project_type',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uiproject.view_project_type',
 					'id' => $project_type_id));
 			}
 			else if (isset($_POST['cancel_project_type']))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uiproject.project_types'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uiproject.project_types'));
 			}
 			else
 			{
@@ -477,8 +477,8 @@
 
 		public function edit_project_type_name()
 		{
-			$project_type_id = phpgw::get_var('id');
-			$field_name = phpgw::get_var('field_name', 'string');
+			$project_type_id = Sanitizer::get_var('id');
+			$field_name = Sanitizer::get_var('field_name', 'string');
 
 			if (!$this->acl_edit)
 			{
@@ -500,7 +500,7 @@
 				return "Ugyldig operasjon";
 			}
 
-			$project_type_name = phpgw::get_var('value');
+			$project_type_name = Sanitizer::get_var('value');
 			$this->so->update_project_type($project_type_id, $project_type_name);
 
 			return lang('Project type name updated');
@@ -508,12 +508,12 @@
 
 		public function add()
 		{
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uiproject.edit'));
+			phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uiproject.edit'));
 		}
 
 		public function edit( $project = null )
 		{
-			$project_id = phpgw::get_var('id');
+			$project_id = Sanitizer::get_var('id');
 			$activities = array();
 			if ($project_id && is_numeric($project_id))
 			{
@@ -573,7 +573,7 @@
 
 		public function save()
 		{
-			$project_id = phpgw::get_var('id');
+			$project_id = Sanitizer::get_var('id');
 
 			if ($project_id && is_numeric($project_id))
 			{
@@ -589,12 +589,12 @@
 			if ($project->validate())
 			{
 				$project_id = $this->so->store($project);
-				$copy_from_project_id = phpgw::get_var('copy_project_activities', 'int');
+				$copy_from_project_id = Sanitizer::get_var('copy_project_activities', 'int');
 				if($copy_from_project_id)
 				{
 					$this->so->copy_project_activities($copy_from_project_id,$project_id, $project->get_start_date());
 				}
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uiproject.view',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uiproject.view',
 					'id' => $project_id));
 			}
 			else

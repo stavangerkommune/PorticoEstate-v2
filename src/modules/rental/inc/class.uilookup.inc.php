@@ -74,21 +74,21 @@
 
 		function email_template()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				$search = phpgw::get_var('search');
-				$order = phpgw::get_var('order');
-				$draw = phpgw::get_var('draw', 'int');
-				$columns = phpgw::get_var('columns');
+				$search = Sanitizer::get_var('search');
+				$order = Sanitizer::get_var('order');
+				$draw = Sanitizer::get_var('draw', 'int');
+				$columns = Sanitizer::get_var('columns');
 
 				$params = array(
-					'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-					'results' => phpgw::get_var('length', 'int', 'REQUEST', 0),
+					'start' => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+					'results' => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 					'query' => $search['value'],
 					'order' => $columns[$order[0]['column']]['data'],
 					'sort' => $order[0]['dir'],
 					'dir' => $order[0]['dir'],
-					'allrows' => phpgw::get_var('length', 'int') == -1,
+					'allrows' => Sanitizer::get_var('length', 'int') == -1,
 					'filter' => ''
 				);
 

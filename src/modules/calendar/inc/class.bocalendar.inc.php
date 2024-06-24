@@ -177,7 +177,7 @@
 			$this->prefs['calendar']    = $GLOBALS['phpgw_info']['user']['preferences']['calendar'];
 			$this->check_set_default_prefs();
 
-			$owner = phpgw::get_var('owner', 'int');
+			$owner = Sanitizer::get_var('owner', 'int');
 			if ( !$owner )
 			{	
 				$owner = $this->contacts->is_contact($GLOBALS['phpgw_info']['user']['account_id']);
@@ -206,7 +206,7 @@
 			{
 				// leaving planner with an unchanged user/owner ==> setting owner back to save_owner
 				//
-				$owner = phpgw::get_var('owner', 'int', 'GET', $this->save_owner);
+				$owner = Sanitizer::get_var('owner', 'int', 'GET', $this->save_owner);
 				unset($this->save_owner);
 			}
 			elseif (!empty($owner) && $owner != $this->owner && $from == 'calendar.uicalendar.planner')
@@ -240,11 +240,11 @@
 				$this->users_timeformat = 'H:i';
 			}
 
-			$friendly = phpgw::get_var('friendly', 'bool', 'REQUEST'); 
+			$friendly = Sanitizer::get_var('friendly', 'bool', 'REQUEST'); 
 
-			$this->filter = phpgw::get_var('filter', 'string', 'POST', " {$this->prefs['calendar']['defaultfilter']} ");
-			$this->sortby = phpgw::get_var('sortby', 'string', 'POST', $this->prefs['calendar']['defaultcalendar'] == 'planner_user' ? 'user' : 'category');
-			$this->cat_id = phpgw::get_var('cat_id', 'int', 'POST');
+			$this->filter = Sanitizer::get_var('filter', 'string', 'POST', " {$this->prefs['calendar']['defaultfilter']} ");
+			$this->sortby = Sanitizer::get_var('sortby', 'string', 'POST', $this->prefs['calendar']['defaultcalendar'] == 'planner_user' ? 'user' : 'category');
+			$this->cat_id = Sanitizer::get_var('cat_id', 'int', 'POST');
 
 			if(isset($this->g_owner) && $this->g_owner)
 			{
@@ -292,15 +292,15 @@
 			
 			$localtime = phpgwapi_datetime::user_localtime();
 
-			$date = phpgw::get_var('date', 'int');
+			$date = Sanitizer::get_var('date', 'int');
 
-			$year = phpgw::get_var('year', 'int');
+			$year = Sanitizer::get_var('year', 'int');
 
-			$month = phpgw::get_var('month', 'int');
+			$month = Sanitizer::get_var('month', 'int');
 
-			$day = phpgw::get_var('day', 'int');
+			$day = Sanitizer::get_var('day', 'int');
 
-			$num_months = phpgw::get_var('num_months', 'int');
+			$num_months = Sanitizer::get_var('num_months', 'int');
 
 			if ( $date )
 			{
@@ -536,10 +536,10 @@
 			$id = (int) $id;
 			if ( !$id )
 			{
-				$id = phpgw::get_var('id', 'int', 'GET');
+				$id = Sanitizer::get_var('id', 'int', 'GET');
 			}
 
-			if($this->check_perms(PHPGW_ACL_READ,$id))
+			if($this->check_perms(ACL_READ,$id))
 			{
 				$event = $this->so->read_entry($id);
 				
@@ -555,7 +555,7 @@
 
 		function delete_single($param)
 		{
-			if($this->check_perms(PHPGW_ACL_DELETE,intval($param['id'])))
+			if($this->check_perms(ACL_DELETE,intval($param['id'])))
 			{
 				$temp_event = $this->get_cached_event();
 				$event = $this->read_entry(intval($param['id']));
@@ -582,7 +582,7 @@
 
 		function delete_entry($id)
 		{
-			if($this->check_perms(PHPGW_ACL_DELETE,$id))
+			if($this->check_perms(ACL_DELETE,$id))
 			{
 //				$temp_event = $this->read_entry($id);
 //				if($this->owner == $temp_event['owner'])
@@ -600,7 +600,7 @@
 
 		function reinstate($params='')
 		{
-			if($this->check_perms(PHPGW_ACL_EDIT,$params['cal_id']) && isset($params['reinstate_index']))
+			if($this->check_perms(ACL_EDIT,$params['cal_id']) && isset($params['reinstate_index']))
 			{
 				$event = $this->so->read_entry($params['cal_id']);
 				@reset($params['reinstate_index']);
@@ -662,7 +662,7 @@
                             foreach($this->so->cal->deleted_events as $i => $event_id)
 			{
 				$event = $this->so->read_entry($event_id);
-				if($this->check_perms(PHPGW_ACL_DELETE,$event))
+				if($this->check_perms(ACL_DELETE,$event))
 				{
 					$this->send_update(MSG_DELETED,$event['participants'],$event);
 				}
@@ -693,7 +693,7 @@
 			}
 			foreach($members as $n => $uid)
 			{
-				if (!($this->grants[$uid] & PHPGW_ACL_READ))
+				if (!($this->grants[$uid] & ACL_READ))
 				{
 					unset($members[$n]);
 				}
@@ -703,13 +703,13 @@
 
 		function update($params = '')
 		{
-			$l_cal = isset($params['cal']) && $params['cal'] ? $params['cal'] : phpgw::get_var('cal', 'string', 'POST');
-			$l_participants = isset($params['participants']) ? $params['participants'] : phpgw::get_var('participants', 'string', 'POST');
-			$l_categories = isset($params['categories']) ? $params['categories'] : phpgw::get_var('categories', 'string', 'POST');
-			$l_start = isset($params['start']) && $params['start'] ? $params['start'] : phpgw::get_var('start', 'string', 'POST');
-			$l_end = isset($params['end']) && $params['end'] ? $params['end'] : phpgw::get_var('end', 'string', 'POST');
-			$l_recur_enddate = isset($params['recur_enddate']) && $params['recur_enddate'] ? $params['recur_enddate'] : phpgw::get_var('recur_enddate', 'string', 'POST'); // probbaly can be bool
-			$l_recur_exception = explode(',', phpgw::get_var('recur_exception', 'string', 'POST') );
+			$l_cal = isset($params['cal']) && $params['cal'] ? $params['cal'] : Sanitizer::get_var('cal', 'string', 'POST');
+			$l_participants = isset($params['participants']) ? $params['participants'] : Sanitizer::get_var('participants', 'string', 'POST');
+			$l_categories = isset($params['categories']) ? $params['categories'] : Sanitizer::get_var('categories', 'string', 'POST');
+			$l_start = isset($params['start']) && $params['start'] ? $params['start'] : Sanitizer::get_var('start', 'string', 'POST');
+			$l_end = isset($params['end']) && $params['end'] ? $params['end'] : Sanitizer::get_var('end', 'string', 'POST');
+			$l_recur_enddate = isset($params['recur_enddate']) && $params['recur_enddate'] ? $params['recur_enddate'] : Sanitizer::get_var('recur_enddate', 'string', 'POST'); // probbaly can be bool
+			$l_recur_exception = explode(',', Sanitizer::get_var('recur_exception', 'string', 'POST') );
 
 			$send_to_ui = true;
 			if($this->debug)
@@ -726,7 +726,7 @@
 			
 			print_debug('ID',$l_cal['id']);
 
-			if( phpgw::get_var('readsess', 'bool', 'GET') )
+			if( Sanitizer::get_var('readsess', 'bool', 'GET') )
 			{
 				$event = $this->restore_from_appsession();
 				$event['title'] = stripslashes($event['title']);
@@ -746,7 +746,7 @@
 			}
 			else
 			{
-				if((!$l_cal['id'] && !$this->check_perms(PHPGW_ACL_ADD)) || ($l_cal['id'] && !$this->check_perms(PHPGW_ACL_EDIT,$l_cal['id'])))
+				if((!$l_cal['id'] && !$this->check_perms(ACL_ADD)) || ($l_cal['id'] && !$this->check_perms(ACL_EDIT,$l_cal['id'])))
 				{
 					ExecMethod('calendar.uicalendar.index');
 					$GLOBALS['phpgw']->common->phpgw_exit();
@@ -886,7 +886,7 @@
 					}
 				}
 				
-				$preserved = unserialize(phpgw::get_var('preserved', 'raw', 'POST'));
+				$preserved = unserialize(Sanitizer::get_var('preserved', 'raw', 'POST'));
 				if ( is_array($preserved) )
 				{
 					foreach($preserved as $name => $value)
@@ -897,7 +897,7 @@
 								$this->so->add_attribute('participants', (int) $value, $l_cal['owner']);
 								break;
 							default:
-								$this->so->add_attribute($name, phpgw::clean_value($value, 'string') );
+								$this->so->add_attribute($name, Sanitizer::clean_value($value, 'string') );
 						}
 					}
 				}
@@ -994,7 +994,7 @@
 					$this->read_sessiondata();
 					if ($this->return_to)
 					{
-						$GLOBALS['phpgw']->redirect_link('/index.php', $this->return_to);
+						phpgw::redirect_link('/index.php', $this->return_to);
 						$GLOBALS['phpgw']->common->phpgw_exit();
 					}
 					Execmethod('calendar.uicalendar.index');
@@ -1419,7 +1419,7 @@
 		 * @author ralfbecker
 		 * @author skwashd
 		 * The check is performed on an event or general on the cal of an other user
-		 * @param $needed necessary ACL right: PHPGW_ACL_{READ|EDIT|DELETE}
+		 * @param $needed necessary ACL right: ACL_{READ|EDIT|DELETE}
 		 * @param $event event as array or the event-id or 0 for general check
 		 * @param $other uid to check (if event==0) or 0 to check against $this->owner
 		 * Participating in an event is considered as haveing read-access on that event, \
@@ -1459,7 +1459,7 @@
 				return True;
 			}
 			
-			if (is_array($event) && is_array($event['participants']) && ($needed == PHPGW_ACL_READ))
+			if (is_array($event) && is_array($event['participants']) && ($needed == ACL_READ))
 			{
 				// Check if the $user is one of the participants or has a read-grant from one of them
 				//
@@ -1468,10 +1468,10 @@
 				foreach($event['participants'] as $contact_id => $accept)
 				{
 					if (isset($this->grants[$GLOBALS['phpgw']->accounts->search_person($contact_id)])
-						&& ($this->grants[$GLOBALS['phpgw']->accounts->search_person($contact_id)] & PHPGW_ACL_READ) 
+						&& ($this->grants[$GLOBALS['phpgw']->accounts->search_person($contact_id)] & ACL_READ) 
 						|| $GLOBALS['phpgw']->accounts->search_person($contact_id) == $user)
 					{
-						$grants |= PHPGW_ACL_READ;
+						$grants |= ACL_READ;
 						break;
 					}
 				}
@@ -1481,22 +1481,22 @@
 				foreach($event['participants'] as $contact_id => $accept)
 				{
 					if (isset($this->grants[$contact_id])
-						&& ($this->grants[$contact_id] & PHPGW_ACL_READ) 
+						&& ($this->grants[$contact_id] & ACL_READ) 
 						|| $contact_id == $user)
 					{
-						$grants |= PHPGW_ACL_READ;
+						$grants |= ACL_READ;
 						break;
 					}
 				}
 			}
 
-			if ( $this->is_group && $needed == PHPGW_ACL_ADD)
+			if ( $this->is_group && $needed == ACL_ADD)
 			{
 				$access = False;	// a group can't be the owner of an event
 			}
 			else
 			{
-				$access = $user == $owner || $grants & $needed && ((!isset($private) || !$private) || $grants & PHPGW_ACL_PRIVATE);
+				$access = $user == $owner || $grants & $needed && ((!isset($private) || !$private) || $grants & ACL_PRIVATE);
 			}
 			//echo "<p>bo_calendar::check_perms for user $user and needed_acl $needed: event=$event[title]: owner=$owner, privat=$private, grants=$grants ==> access=$access is_group: {$this->is_group}</p>\n";
 
@@ -1524,7 +1524,7 @@
 			$can_read = array();
 			foreach ( $this->grants as $acct_id => $rights )
 			{
-				if ( $rights & PHPGW_ACL_READ )
+				if ( $rights & ACL_READ )
 				{
 					$person_id = $this->contacts->is_contact($acct_id);
 					if ( $person_id ) 
@@ -1563,7 +1563,7 @@
 			{
 				$owner = $this->owner;
 			}
-			if ( $event['public'] == 1 || ($this->check_perms(PHPGW_ACL_PRIVATE, $event) && $event['public'] == 0) || $event['owner'] == $GLOBALS['phpgw_info']['user']['person_id'] )
+			if ( $event['public'] == 1 || ($this->check_perms(ACL_PRIVATE, $event) && $event['public'] == 0) || $event['owner'] == $GLOBALS['phpgw_info']['user']['person_id'] )
 			{
 				return False;
 			}
@@ -2632,7 +2632,7 @@
 						echo '<p><b>bocalendar::send_update</b>: '.lang("Failed sending message to '%1' #%2 subject='%3', sender='%4' !!!",$to,$userid,htmlspecialchars($subject), $sender)."<br />\n";
 						echo '<i>'.$send->err['desc']."</i><br />\n";
 						echo lang('This is mostly caused by a not or wrongly configured SMTP server. Notify your administrator.')."</p>\n";
-						echo '<p>'.lang('Click %1here%2 to return to the calendar.','<a href="'.$GLOBALS['phpgw']->link('/calendar/').'">','</a>')."</p>\n";
+						echo '<p>'.lang('Click %1here%2 to return to the calendar.','<a href="'.phpgw::link('/calendar/').'">','</a>')."</p>\n";
 					}
 				}
 			}
@@ -2665,7 +2665,7 @@
 			{
 				$to_notify = $event['participants'];
 			}
-			elseif ($this->check_perms(PHPGW_ACL_READ,$event))	// checks agains $this->owner set to $alarm[owner]
+			elseif ($this->check_perms(ACL_READ,$event))	// checks agains $this->owner set to $alarm[owner]
 			{
 				$to_notify[$alarm['owner']] = 'A';
 			}
@@ -2877,7 +2877,7 @@
 					//Now group membership doesn't automatically grant rights
 					//$this->list_cals_add($group_info['account_id'],$users,$groups);
 
-					if ($account_perms = $GLOBALS['phpgw']->acl->get_ids_for_location($group_info['account_id'],PHPGW_ACL_READ,'calendar'))
+					if ($account_perms = $GLOBALS['phpgw']->acl->get_ids_for_location($group_info['account_id'],ACL_READ,'calendar'))
 					{
 						foreach($account_perms as $id)
 						{
@@ -3226,7 +3226,7 @@
 
 			if ( $cat_id )
 			{
-				$criteria[] = phpgwapi_sql_criteria::_equal('cat_id', phpgw::get_var('cat_id', 'int', 'bool') );
+				$criteria[] = phpgwapi_sql_criteria::_equal('cat_id', Sanitizer::get_var('cat_id', 'int', 'bool') );
 			}
 
 			$criteria_token = phpgwapi_sql_criteria::_append_and($criteria);
@@ -3243,7 +3243,7 @@
 		*/
 		function get_per_contacts($lookup, $cat_id)
 		{
-			$access = phpgw::get_var('access');
+			$access = Sanitizer::get_var('access');
 			switch ($access)
 			{
 				case 'yours':
@@ -3287,7 +3287,7 @@
 //
 //			if ( $cat_id )
 //			{
-//				$criteria[] = phpgwapi_sql_criteria::_equal('cat_id', phpgw::get_var('cat_id', 'int', 'bool') );
+//				$criteria[] = phpgwapi_sql_criteria::_equal('cat_id', Sanitizer::get_var('cat_id', 'int', 'bool') );
 //			}
 //
 //			$criteria_token = phpgwapi_sql_criteria::_append_and($criteria);

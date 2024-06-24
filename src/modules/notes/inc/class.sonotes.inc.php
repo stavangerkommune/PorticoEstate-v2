@@ -38,7 +38,7 @@
 
 		function __construct()
 		{
-			$this->db		= &$GLOBALS['phpgw']->db;
+			$this->db		= Db::getInstance();
 			$this->account	= $GLOBALS['phpgw_info']['user']['account_id'];
 			$GLOBALS['phpgw']->acl->set_account_id($this->account);
 			$this->grants	= $GLOBALS['phpgw']->acl->get_grants2('notes');

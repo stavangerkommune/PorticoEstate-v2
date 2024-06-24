@@ -1979,7 +1979,7 @@
 			  ."<br>\n"
 			  .lang('if there is no obvious error, check your username and password first.')."<br>\n</div>\n";
 			// HOW we were called determines HOW we display the error 
-			if ( preg_match('/menuaction=email/', phpgw::get_var('REQUEST_URI', 'string', 'SERVER') ) ) 
+			if ( preg_match('/menuaction=email/', Sanitizer::get_var('REQUEST_URI', 'string', 'SERVER') ) ) 
 			{
 				$GLOBALS['phpgw']->common->phpgw_header(true);
 				// we were called from within the email app itself
@@ -1991,13 +1991,13 @@
 				
 				if ( $acctnum == 0 )
 				{
-					$go_somewhere_url = $GLOBALS['phpgw']->link('/index.php',array(
+					$go_somewhere_url = phpgw::link('/index.php',array(
 															'menuaction' => 'email.uipreferences.preferences',
 															'show_help'  => '1'));
 				}
 				else
 				{
-					$go_somewhere_url = $GLOBALS['phpgw']->link('/index.php',array(
+					$go_somewhere_url = phpgw::link('/index.php',array(
 															'menuaction' => 'email.uipreferences.ex_accounts_edit',
 															'ex_acctnum' => $acctnum,
 															'show_help'  => '1'));

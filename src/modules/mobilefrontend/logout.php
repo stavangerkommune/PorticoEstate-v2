@@ -66,4 +66,4 @@
 		$GLOBALS['phpgw']->session->phpgw_setcookie('domain');
 	}
 
-	$GLOBALS['phpgw']->redirect_link('mobilefrontend/login.php', array('cd' => 1, 'logout' => true));
+	phpgw::redirect_link('mobilefrontend/login.php', array('cd' => 1, 'logout' => true));

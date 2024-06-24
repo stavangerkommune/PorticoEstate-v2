@@ -32,7 +32,7 @@
 		 */
 		public function add()
 		{
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiarena.edit'));
+			phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiarena.edit'));
 		}
 
 		/**
@@ -40,14 +40,14 @@
 		 */
 		public function get_address_search()
 		{
-			$search_string = phpgw::get_var('query');
+			$search_string = Sanitizer::get_var('query');
 			//var_dump($search_string);
 			return activitycalendar_soarena::get_instance()->get_address($search_string);
 		}
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -137,14 +137,14 @@
 		{
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('view');
 			// Get the contract part id
-			$arena_id = (int)phpgw::get_var('id');
+			$arena_id = (int)Sanitizer::get_var('id');
 
 			$arena = activitycalendar_soarena::get_instance()->get_single($arena_id);
 
 			if (empty($arena))
 			{
 				phpgwapi_cache::message_set(lang('Could not find specified arena.'), 'error');
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiarena.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiarena.index'));
 			}
 
 			$tabs = array();
@@ -154,9 +154,9 @@
 			$data = array
 				(
 				'tabs' => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
-				'edit_url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'activitycalendar.uiarena.edit',
+				'edit_url' => phpgw::link('/index.php', array('menuaction' => 'activitycalendar.uiarena.edit',
 					'id' => $arena->get_id())),
-				'cancel_url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'activitycalendar.uiarena.index')),
+				'cancel_url' => phpgw::link('/index.php', array('menuaction' => 'activitycalendar.uiarena.index')),
 				'lang_edit' => lang('edit'),
 				'lang_cancel' => lang('cancel'),
 				'arena_name' => $arena->get_arena_name(),
@@ -172,7 +172,7 @@
 		{
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('edit');
 			// Get the contract part id
-			$arena_id = (int)phpgw::get_var('id');
+			$arena_id = (int)Sanitizer::get_var('id');
 
 			if (isset($arena_id) && $arena_id > 0)
 			{
@@ -197,8 +197,8 @@
 			$data = array
 				(
 				'tabs' => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
-				'form_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'activitycalendar.uiarena.save')),
-				'cancel_url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'activitycalendar.uiarena.index')),
+				'form_action' => phpgw::link('/index.php', array('menuaction' => 'activitycalendar.uiarena.save')),
+				'cancel_url' => phpgw::link('/index.php', array('menuaction' => 'activitycalendar.uiarena.index')),
 				'lang_save' => lang('save'),
 				'lang_cancel' => lang('cancel'),
 				'arena_id' => $arena->get_id(),
@@ -221,36 +221,36 @@
 					JqueryPortico.autocompleteHelper(strURL, 'address', '', 'address_container');
 				});
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $_autocomplete);
+			phpgwapi_js::getInstance()->add_code('', $_autocomplete);
 
 			self::render_template_xsl(array('arena'), array('edit' => $data));
 		}
 
 		public function query()
 		{
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
-			$start_index = phpgw::get_var('start', 'int', 'REQUEST', 0);
+			$start_index = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
 			$sort_field = ($columns[$order[0]['column']]['data']) ? $columns[$order[0]['column']]['data'] : 'id';
 			$sort_ascending = ($order[0]['dir'] == 'desc') ? false : true;
 			// Form variables
 			$search_for = $search['value'];
-			$search_type = phpgw::get_var('search_option', 'string', 'REQUEST', '');
+			$search_type = Sanitizer::get_var('search_option', 'string', 'REQUEST', '');
 
 			// Create an empty result set
 			$result_objects = array();
 			$result_count = 0;
 			//Retrieve the type of query and perform type specific logic
-			$query_type = phpgw::get_var('type');
+			$query_type = Sanitizer::get_var('type');
 
-			$length = phpgw::get_var('length', 'int');
+			$length = Sanitizer::get_var('length', 'int');
 			$user_rows_per_page = $length > 0 ? $length : $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
 			$num_of_objects = $length == -1 ? null : $user_rows_per_page;
 
-			$export = phpgw::get_var('export', 'bool');
+			$export = Sanitizer::get_var('export', 'bool');
 			if ($export)
 			{
 				$num_of_objects = null;
@@ -259,7 +259,7 @@ JS;
 			switch ($query_type)
 			{
 				case 'all_arenas':
-					$filters = array('arena_type' => phpgw::get_var('arena_type'), 'active' => phpgw::get_var('active'));
+					$filters = array('arena_type' => Sanitizer::get_var('arena_type'), 'active' => Sanitizer::get_var('active'));
 					$result_objects = activitycalendar_soarena::get_instance()->get($start_index, $num_of_objects, $sort_field, $sort_ascending, $search_for, $search_type, $filters);
 					$result_count = activitycalendar_soarena::get_instance()->get_count($search_for, $search_type, $filters);
 					break;
@@ -290,7 +290,7 @@ JS;
 
 		public function save()
 		{
-			$arena_id = (int)phpgw::get_var('id');
+			$arena_id = (int)Sanitizer::get_var('id');
 			// Retrieve the activity object or create a new one
 			if (isset($arena_id) && $arena_id > 0)
 			{
@@ -301,13 +301,13 @@ JS;
 				$arena = new activitycalendar_arena();
 			}
 
-			$arena->set_internal_arena_id(phpgw::get_var('internal_arena_id'));
-			$arena->set_arena_name(phpgw::get_var('arena_name'));
-			$arena->set_address(phpgw::get_var('address'));
-			$arena->set_addressnumber(phpgw::get_var('address_no'));
-			$arena->set_zip_code(phpgw::get_var('zip_code'));
-			$arena->set_city(phpgw::get_var('city'));
-			$arena->set_active(phpgw::get_var('arena_active') == 'yes' ? true : false);
+			$arena->set_internal_arena_id(Sanitizer::get_var('internal_arena_id'));
+			$arena->set_arena_name(Sanitizer::get_var('arena_name'));
+			$arena->set_address(Sanitizer::get_var('address'));
+			$arena->set_addressnumber(Sanitizer::get_var('address_no'));
+			$arena->set_zip_code(Sanitizer::get_var('zip_code'));
+			$arena->set_city(Sanitizer::get_var('city'));
+			$arena->set_active(Sanitizer::get_var('arena_active') == 'yes' ? true : false);
 
 			if (activitycalendar_soarena::get_instance()->store($arena)) // ... and then try to store the object
 			{
@@ -318,7 +318,7 @@ JS;
 				phpgwapi_cache::message_set(lang('messages_form_error'), 'error');
 			}
 
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiarena.view',
+			phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiarena.view',
 				'id' => $arena->get_id()));
 		}
 
@@ -332,12 +332,12 @@ JS;
 			//$browser = CreateObject('phpgwapi.browser');
 			//$browser->content_header('export.txt','text/plain');
 
-			$stop = phpgw::get_var('date');
+			$stop = Sanitizer::get_var('date');
 
-			$cs15 = phpgw::get_var('generate_cs15');
+			$cs15 = Sanitizer::get_var('generate_cs15');
 			if ($cs15 == null)
 			{
-				$export_format = explode('_', phpgw::get_var('export_format'));
+				$export_format = explode('_', Sanitizer::get_var('export_format'));
 				$file_ending = $export_format[1];
 				if ($file_ending == 'gl07')
 				{
@@ -351,7 +351,7 @@ JS;
 				header('Content-type: text/plain');
 				header("Content-Disposition: attachment; filename=PE_{$type}_{$date}.{$file_ending}");
 
-				$id = phpgw::get_var('id');
+				$id = Sanitizer::get_var('id');
 				$path = "/rental/billings/{$id}";
 
 				$vfs = CreateObject('phpgwapi.vfs');
@@ -366,7 +366,7 @@ JS;
 						)
 				);
 
-				//print rental_sobilling::get_instance()->get_export_data((int)phpgw::get_var('id'));
+				//print rental_sobilling::get_instance()->get_export_data((int)Sanitizer::get_var('id'));
 			}
 			else
 			{
@@ -375,7 +375,7 @@ JS;
 				$date = date('Ymd', $stop);
 				header('Content-type: text/plain');
 				header("Content-Disposition: attachment; filename=PE_{$type}_{$date}.{$file_ending}");
-				print rental_sobilling::get_instance()->generate_customer_export((int)phpgw::get_var('id'));
+				print rental_sobilling::get_instance()->generate_customer_export((int)Sanitizer::get_var('id'));
 			}
 		}
 	}

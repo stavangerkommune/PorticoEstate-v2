@@ -26,25 +26,25 @@
 	$menu_title = lang($appname) . ' '. lang('Menu');
 	$file = Array(
 			array('text'  => 'New Entry',
-				'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'calendar.uicalendar.add'))),
+				'url' => phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.add'))),
 			array('text'  => '_NewLine_'),
 			array('text'  => 'Today',
-				'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'calendar.uicalendar.day'))),
+				'url' => phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.day'))),
 			array('text'  => 'This week',
-				'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'calendar.uicalendar.week'))),
+				'url' => phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.week'))),
 			array('text'  => 'This week (detailed)',
-				'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'calendar.uicalendar.week_new'))),
+				'url' => phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.week_new'))),
 			array('text'  => 'This month',
-				'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'calendar.uicalendar.month'))),
+				'url' => phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.month'))),
 			array('text'  => 'This year',
-				'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'calendar.uicalendar.year'))),
+				'url' => phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.year'))),
 			array('text'  => '_NewLine_'), // give a newline
 			array('text'  => 'Group Planner',
-				'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'calendar.uicalendar.planner'))),
+				'url' => phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.planner'))),
 			array('text'  => 'Daily Matrix View',
-				'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'calendar.uicalendar.matrixselect'))),
+				'url' => phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.matrixselect'))),
 			array('text'  => 'Import',
-				'url' =>$GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'calendar.uiicalendar.import'))),
+				'url' =>phpgw::link('/index.php', array('menuaction' => 'calendar.uiicalendar.import'))),
 	);
 	display_sidebox($appname,$menu_title,$file);
 
@@ -53,15 +53,15 @@
 		$menu_title = lang('Preferences');
 		$file = Array(
 				array('text'  => 'Calendar preferences',
-					'url' =>$GLOBALS['phpgw']->link('/preferences/preferences.php', array('appname' => 'calendar'))),
+					'url' =>phpgw::link('/preferences/preferences.php', array('appname' => 'calendar'))),
 				array('text'  => 'Grant Access',
-					'url' =>$GLOBALS['phpgw']->link('/index.php',array
+					'url' =>phpgw::link('/index.php',array
 										(
 											'menuaction' => 'preferences.uiaclprefs.index', 
 											'acl_app' => 'calendar'
 										))),
 				array('text'  => 'Edit Categories',
-					'url' =>$GLOBALS['phpgw']->link('/index.php', 
+					'url' =>phpgw::link('/index.php', 
 										array
 										(
 											'menuaction'	=> 'preferences.uicategories.index',
@@ -78,13 +78,13 @@
 		$menu_title = lang('Administration');
 		$file = Array(
 				array('text'  => 'Configuration',
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiconfig.index','appname'=>'calendar'))),
+					'url' => phpgw::link('/index.php', array('menuaction' => 'admin.uiconfig.index','appname'=>'calendar'))),
 				array('text'  => 'Custom Fields',
-					'url' =>$GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'calendar.uicustom_fields.index'))),
+					'url' =>phpgw::link('/index.php', array('menuaction' => 'calendar.uicustom_fields.index'))),
 				array('text'  => 'Holiday Management',
-					'url' =>$GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'calendar.uiholiday.admin'))),
+					'url' =>phpgw::link('/index.php', array('menuaction' => 'calendar.uiholiday.admin'))),
 				array('text'  => 'Global Categories',
-					'url' =>$GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uicategories.index', 'appname' => 'calendar'))),
+					'url' =>phpgw::link('/index.php', array('menuaction' => 'admin.uicategories.index', 'appname' => 'calendar'))),
 		);
 		display_sidebox($appname,$menu_title,$file);
 	}

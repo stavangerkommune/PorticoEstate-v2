@@ -90,7 +90,7 @@
 	$config = $c->config_data;
 
 	// Make sure we're always logged in
-	if (!phpgw::get_var(session_name(), 'string', 'COOKIE') || !$GLOBALS['phpgw']->session->verify())
+	if (!Sanitizer::get_var(session_name(), 'string', 'COOKIE') || !$GLOBALS['phpgw']->session->verify())
 	{
 
 //_debug_array($config);die();
@@ -137,7 +137,7 @@ HTML;
 	/*	 * **********************************************************************\
 	 * Load the menuaction                                                    *
 	  \*********************************************************************** */
-	$GLOBALS['phpgw_info']['menuaction'] = phpgw::get_var('menuaction');
+	$GLOBALS['phpgw_info']['menuaction'] = Sanitizer::get_var('menuaction');
 	if (!$GLOBALS['phpgw_info']['menuaction'])
 	{
 		unset($GLOBALS['phpgw_info']['menuaction']);
@@ -180,7 +180,7 @@ HTML;
 	  \************************************************************************ */
 	if ($GLOBALS['phpgw_info']['flags']['currentapp'] != 'home' && $GLOBALS['phpgw_info']['flags']['currentapp'] != 'about')
 	{
-		if (!$GLOBALS['phpgw']->acl->check('run', PHPGW_ACL_READ, $GLOBALS['phpgw_info']['flags']['currentapp']))
+		if (!$GLOBALS['phpgw']->acl->check('run', ACL_READ, $GLOBALS['phpgw_info']['flags']['currentapp']))
 		{
 			$GLOBALS['phpgw']->common->phpgw_header(true);
 			$GLOBALS['phpgw']->log->write(array('text' => 'W-Permissions, Attempted to access %1 from %2',
@@ -267,9 +267,9 @@ HTML;
 
 	if (!$invalid_data && is_object($GLOBALS[$class]) && isset($GLOBALS[$class]->public_functions) && is_array($GLOBALS[$class]->public_functions) && isset($GLOBALS[$class]->public_functions[$method]) && $GLOBALS[$class]->public_functions[$method])
 	{
-		if (phpgw::get_var('X-Requested-With', 'string', 'SERVER') == 'XMLHttpRequest'
+		if (Sanitizer::get_var('X-Requested-With', 'string', 'SERVER') == 'XMLHttpRequest'
 			// deprecated
-			|| phpgw::get_var('phpgw_return_as', 'string', 'GET') == 'json')
+			|| Sanitizer::get_var('phpgw_return_as', 'string', 'GET') == 'json')
 		{
 			// comply with RFC 4627
 			header('Content-Type: application/json');

@@ -60,7 +60,7 @@
 			
 			if ( !$this->bo->cal_id || !is_array($this->event) )
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array
+				phpgw::redirect_link('/index.php', array
 									(
 										'menuaction'	=> 'calendar.uicalendar.view',
 										'cal_id'	=> $this->bo->cal_id
@@ -101,9 +101,9 @@
 
 		function manager()
 		{
-			$alarm = phpgw::get_var('alarm', 'int', 'POST');
+			$alarm = Sanitizer::get_var('alarm', 'int', 'POST');
 
-			if ( phpgw::get_var('delete', 'bool', 'POST')  
+			if ( Sanitizer::get_var('delete', 'bool', 'POST')  
 				&& is_array($alarm) && count($alarm) )
 			{
 				if ($this->bo->delete($alarm) < 0)
@@ -113,8 +113,8 @@
 				}
 			}
 
-			$enable = phpgw::get_var('enable', 'bool', 'POST');
-			$disable = phpgw::get_var('disable', 'bool', 'POST');
+			$enable = Sanitizer::get_var('enable', 'bool', 'POST');
+			$disable = Sanitizer::get_var('disable', 'bool', 'POST');
 			if ( ($enable || $disable) && count($alarm) ) 
 			{
 				if ($this->bo->enable($alarm, $enable) < 0)
@@ -125,14 +125,14 @@
 			}
 			$this->prep_page();
 
-			if ( phpgw::get_var('add', 'bool', 'POST') )
+			if ( Sanitizer::get_var('add', 'bool', 'POST') )
 			{
-				$post_time = phpgw::get_var('time', 'int', 'POST');
+				$post_time = Sanitizer::get_var('time', 'int', 'POST');
 				$time = ($post_time['days'] * phpgwapi_datetime::SECONDS_IN_DAY)
 					+ ($post_time['hours'] * phpgwapi_datetime::SECONDS_IN_HOUR)
 					+ ($post_time['minutes'] * 60 );
 
-				if ($time > 0 && !$this->bo->add($this->event, $time, phpgw::get_var('owner', 'int', 'POST') ) )
+				if ($time > 0 && !$this->bo->add($this->event, $time, Sanitizer::get_var('owner', 'int', 'POST') ) )
 				{
 					echo '<div class="err">'.lang('You do not have permission to add alarms to this event !!!').'</div';
 					$GLOBALS['phpgw']->common->phpgw_exit(True);
@@ -150,7 +150,7 @@
 			$GLOBALS['phpgw']->template->pfp('phpgw_body','view_event');
 
 			$var = Array(
-				'action_url'	=> $GLOBALS['phpgw']->link('/index.php',Array('menuaction'=>'calendar.uialarm.manager')),
+				'action_url'	=> phpgw::link('/index.php',Array('menuaction'=>'calendar.uialarm.manager')),
 				'hidden_vars'	=> $this->html->input_hidden('cal_id',$this->bo->cal_id),
 				'lang_select'	=> lang('Select'),
 				'lang_time'	=> lang('Time'),
@@ -168,7 +168,7 @@
 				$to_delete = '';
 				foreach($this->event['alarm'] as $key => $alarm)
 				{
-					if (!$this->bo->check_perms(PHPGW_ACL_READALARM, $alarm['owner']))
+					if (!$this->bo->check_perms(ACL_READALARM, $alarm['owner']))
 					{
 						continue;
 					}
@@ -181,7 +181,7 @@
 							'<img src="'.$GLOBALS['phpgw']->common->image('calendar','disabled.png').'" width="13" height="13" title="'.lang('disabled').'">'),
 						'select'   => '<input type="checkbox" name="alarm['.$alarm['id'].']">'
 					);
-					if ($this->bo->check_perms(PHPGW_ACL_DELETEALARM,$alarm['owner']))
+					if ($this->bo->check_perms(ACL_DELETEALARM,$alarm['owner']))
 					{
 						++$to_delete;
 					}
@@ -197,7 +197,7 @@
 			}
 			if (isset($this->event['participants'][intval($GLOBALS['phpgw_info']['user']['person_id'])]))
 			{
-				$time = phpgw::get_var('time', 'int', 'POST');
+				$time = Sanitizer::get_var('time', 'int', 'POST');
 				$this->template->set_var(Array(
 					'hidden_vars'   => $this->html->input_hidden('cal_id',$this->bo->cal_id),
 					'input_text'    => lang('Email reminder'),

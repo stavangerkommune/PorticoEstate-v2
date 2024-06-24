@@ -140,7 +140,7 @@
 				$account->lastname = 'Delegates';
 				$frontend_delegates = $GLOBALS['phpgw']->accounts->create($account, array(), array(), $modules);
 
-				$aclobj = & $GLOBALS['phpgw']->acl;
+				$aclobj = Acl::getInstance();
 				$aclobj->set_account_id($frontend_delegates, true);
 				$aclobj->add('frontend', '.', 1);
 				$aclobj->add('frontend', 'run', 1);

@@ -14,12 +14,12 @@
 		{
 			$file = array
 			(
-				'Global Categories'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uicategories.index', 'appname' => 'hrm')),
-				'training category'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'hrm.uicategory.index', 'type' => 'training')),
-				'skill level'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'hrm.uicategory.index', 'type' => 'skill_level')),
-				'experience category'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'hrm.uicategory.index', 'type' => 'experience')),
-				'qualification category'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'hrm.uicategory.index', 'type' => 'qualification')),
-				'Configure Access Permissions'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.list_acl', 'acl_app' => $appname)),
+				'Global Categories'		=> phpgw::link('/index.php', array('menuaction' => 'admin.uicategories.index', 'appname' => 'hrm')),
+				'training category'		=> phpgw::link('/index.php', array('menuaction' => 'hrm.uicategory.index', 'type' => 'training')),
+				'skill level'			=> phpgw::link('/index.php', array('menuaction' => 'hrm.uicategory.index', 'type' => 'skill_level')),
+				'experience category'		=> phpgw::link('/index.php', array('menuaction' => 'hrm.uicategory.index', 'type' => 'experience')),
+				'qualification category'	=> phpgw::link('/index.php', array('menuaction' => 'hrm.uicategory.index', 'type' => 'qualification')),
+				'Configure Access Permissions'	=> phpgw::link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.list_acl', 'acl_app' => $appname)),
 			);
 			$GLOBALS['phpgw']->common->display_mainscreen($appname,$file);
 		}

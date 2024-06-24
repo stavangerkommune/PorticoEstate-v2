@@ -43,7 +43,7 @@
 
 		function view()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -129,9 +129,9 @@
 
 		public function query($relaxe_acl = false)
 		{
-			$draw = phpgw::get_var('draw', 'int');
-			$start = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$num_rows = phpgw::get_var('length', 'int', 'REQUEST', 10);
+			$draw = Sanitizer::get_var('draw', 'int');
+			$start = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$num_rows = Sanitizer::get_var('length', 'int', 'REQUEST', 10);
 			
 			$entries = $this->bo->select_catalog();
 
@@ -176,8 +176,8 @@
 
 		private function _populate( $data = array() )
 		{
-			$values['id'] = phpgw::get_var('comm_descr_id');
-			$values['description'] = array('comm_type' => phpgw::get_var('comm_type_id'), 'comm_description' => phpgw::get_var('comm_descr'));
+			$values['id'] = Sanitizer::get_var('comm_descr_id');
+			$values['description'] = array('comm_type' => Sanitizer::get_var('comm_type_id'), 'comm_description' => Sanitizer::get_var('comm_descr'));
 			
 			if (!$values['description'])
 			{
@@ -222,7 +222,7 @@
 		
 		function delete()
 		{
-			$ids = phpgw::get_var('comm_descr_id');
+			$ids = Sanitizer::get_var('comm_descr_id');
 			
 			foreach($ids as $id)
 			{
@@ -234,7 +234,7 @@
 		
 		function edit()
 		{
-			$ids = phpgw::get_var('comm_descr_id');
+			$ids = Sanitizer::get_var('comm_descr_id');
 			$record = $this->bo->get_record($ids[0]);
 
 			return array('comm_type_id'=>$record[0]['comm_type'], 'comm_descr_id'=>$ids[0], 'comm_descr'=>$record[0]['comm_description']);

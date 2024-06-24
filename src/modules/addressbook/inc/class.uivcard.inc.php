@@ -61,9 +61,9 @@
 
 		function out()
 		{
-			$ab_id   = phpgw::get_var('ab_id');
-			$nolname = phpgw::get_var('nolname');
-			$nofname = phpgw::get_var('nofname');
+			$ab_id   = Sanitizer::get_var('ab_id');
+			$nolname = Sanitizer::get_var('nolname');
+			$nofname = Sanitizer::get_var('nofname');
 
 			if($nolname || $nofname)
 			{
@@ -73,12 +73,12 @@
 
 			if(!$ab_id)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'addressbook.uiaddressbook_persons.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'addressbook.uiaddressbook_persons.index'));
 			}
 
 			if(!$this->contacts->check_edit($ab_id))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'addressbook.uiaddressbook_persons.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'addressbook.uiaddressbook_persons.index'));
 			}
 
 			// First, make sure they have permission to this entry
@@ -183,11 +183,11 @@
 				if($lastname == '')
 				{
 					/* Run away here. */
-					$GLOBALS['phpgw']->redirect_link('/index.php',array('menuaction' => 'addressbook.uivcard.out', 'nolname' => 1, 'ab_id' => $ab_id));
+					phpgw::redirect_link('/index.php',array('menuaction' => 'addressbook.uivcard.out', 'nolname' => 1, 'ab_id' => $ab_id));
 				}
 				if($firstname == '')
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php',array('menuaction' => 'addressbook.uivcard.out', 'nofname' => 1, 'ab_id' =>$ab_id));
+					phpgw::redirect_link('/index.php',array('menuaction' => 'addressbook.uivcard.out', 'nofname' => 1, 'ab_id' =>$ab_id));
 				}
 
 				if ($email)
@@ -237,7 +237,7 @@
 				echo '<br /><br /><center>';
 				echo lang("This person's first name was not in the address book.") .'<br />';
 				echo lang('Vcards require a first name entry.') . '<br /><br />';
-				echo '<a href="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'addressbook.uiaddressbook_persons.index')) . '">' . lang('OK') . '</a>';
+				echo '<a href="' . phpgw::link('/index.php', array('menuaction' => 'addressbook.uiaddressbook_persons.index')) . '">' . lang('OK') . '</a>';
 				echo '</center>';
 			}
 
@@ -246,7 +246,7 @@
 				echo '<br /><br /><center>';
 				echo lang("This person's last name was not in the address book.") . '<br />';
 				echo lang('Vcards require a last name entry.') . '<br /><br />';
-				echo '<a href="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'addressbook.uiaddressbook_persons.index')) . '">' . lang('OK') . '</a>';
+				echo '<a href="' . phpgw::link('/index.php', array('menuaction' => 'addressbook.uiaddressbook_persons.index')) . '">' . lang('OK') . '</a>';
 				echo '</center>';
 			}
 

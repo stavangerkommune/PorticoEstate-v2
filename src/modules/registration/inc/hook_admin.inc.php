@@ -15,8 +15,8 @@
 
 	$file = array
 		(
-		'Site Configuration' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiconfig.index',
+		'Site Configuration' => phpgw::link('/index.php', array('menuaction' => 'admin.uiconfig.index',
 			'appname'	 => 'registration')),
-		'Manage Fields'		 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'registration.uimanagefields.admin'))
+		'Manage Fields'		 => phpgw::link('/index.php', array('menuaction' => 'registration.uimanagefields.admin'))
 	);
 	$GLOBALS['phpgw']->common->display_mainscreen($appname, $file);

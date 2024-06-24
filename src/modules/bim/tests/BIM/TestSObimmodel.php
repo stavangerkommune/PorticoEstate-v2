@@ -59,7 +59,7 @@
 	{
 		$GLOBALS['phpgw_info']['user']['account_id'] = 7;
 		//$GLOBALS['phpgw']->acl->set_account_id(7); // not sure why this is needed...
-		$this->db = & $GLOBALS['phpgw']->db;
+		$this->db = Db::getInstance();
 	}
 
 	/**

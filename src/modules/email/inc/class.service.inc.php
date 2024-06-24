@@ -37,7 +37,7 @@ class email_service
 			'email'	=> array
 			(
 				'text'	=> lang('Email'),
-				'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'email.uiindex.index') ),
+				'url'	=> phpgw::link('/index.php', array('menuaction'=> 'email.uiindex.index') ),
 				'image'	=> array('email', 'navbar'),
 				'order'	=> 6,
 				'group'	=> 'office'
@@ -51,7 +51,7 @@ class email_service
 			$menu['admin'][] = array
 			(
 				'text'	=> lang('Site Configuration'),
-				'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiconfig.index', 'appname' => 'email') )
+				'url'	=> phpgw::link('/index.php', array('menuaction' => 'admin.uiconfig.index', 'appname' => 'email') )
 			);
 		}
 
@@ -60,19 +60,19 @@ class email_service
 			array
 			(
 				// this is a bit of a hack, but it means that we can degrade gracefully
-				'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'email.uicompose.compose')) . '" onclick="window.open(\'' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'email.uicompose.compose')) . '\'); return false;"',
+				'url'	=> phpgw::link('/index.php', array('menuaction' => 'email.uicompose.compose')) . '" onclick="window.open(\'' . phpgw::link('/index.php', array('menuaction' => 'email.uicompose.compose')) . '\'); return false;"',
 				'text'	=> lang('New'),
 				'image'	=> array('email', 'new')
 			),
 			array
 			(
-				'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'email.uisearch.form')),
+				'url'	=> phpgw::link('/index.php', array('menuaction' => 'email.uisearch.form')),
 				'text'	=> lang('Search'),
 				'image'	=> array('email', 'search')
 			),
 			array
 			(
-				'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'email.uifilters.filters_list') ),
+				'url'	=> phpgw::link('/index.php', array('menuaction' => 'email.uifilters.filters_list') ),
 				'text'	=> lang('Filters'),
 				'image'	=> array('email', 'filters')
 			)
@@ -85,30 +85,30 @@ class email_service
 				array
 				(
 					'text'	=> lang('EMail Preferences'),
-					'url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'email.uipreferences.preferences'))
+					'url'	=> phpgw::link('/index.php',array('menuaction'=> 'email.uipreferences.preferences'))
 				),
 				array
 				(
 					'text'	=> lang('Extra EMail Accounts'),
-					'url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'email.uipreferences.ex_accounts_list'))
+					'url'	=> phpgw::link('/index.php',array('menuaction'=> 'email.uipreferences.ex_accounts_list'))
 				),
 				array
 				(
 					'text'	=> lang('EMail Filters'),
-					'url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'email.uifilters.filters_list'))
+					'url'	=> phpgw::link('/index.php',array('menuaction'=> 'email.uifilters.filters_list'))
 				)
 			);
 
 			$menu['toolbar'][] = array
 			(
 				'text'	=> lang('Preferences'),
-				'url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'email.uipreferences.preferences'))
+				'url'	=> phpgw::link('/index.php',array('menuaction'=> 'email.uipreferences.preferences'))
 			);
 
 			$menu['toolbar'][] = array
 			(
 				'text'	=> lang('Accounts'),
-				'url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'email.uipreferences.ex_accounts_list'))
+				'url'	=> phpgw::link('/index.php',array('menuaction'=> 'email.uipreferences.ex_accounts_list'))
 			);
 		}
 
@@ -137,7 +137,7 @@ class email_service
 					$folders = array( array
 					(
 						'text'	=> lang('inbox'),
-						'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'email.uiindex.index', 'fldball[folder]' => 'INBOX', 'fldball[acctnum]' => $id)),
+						'url'	=> phpgw::link('/index.php', array('menuaction' => 'email.uiindex.index', 'fldball[folder]' => 'INBOX', 'fldball[acctnum]' => $id)),
 						'image'	=> array('email', 'folder')
 					));
 				}
@@ -187,7 +187,7 @@ class email_service
 					$ref['children'][$part] = array
 					(
 						'text'		=> $part,
-						'url'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'email.uiindex.index', 'fldball[folder]' => $info['folder_long'], 'fldball[acctnum]' => $acct)),
+						'url'		=> phpgw::link('/index.php', array('menuaction' => 'email.uiindex.index', 'fldball[folder]' => $info['folder_long'], 'fldball[acctnum]' => $acct)),
 						'children'	=> array(),
 						'image'		=> array('email', 'folder')
 					);

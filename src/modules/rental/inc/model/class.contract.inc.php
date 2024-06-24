@@ -751,8 +751,8 @@
 			 * 2.3.1
 			 */
 
-			$date_start = phpgw::get_var('date_start');
-			$date_end = phpgw::get_var('date_end');
+			$date_start = Sanitizer::get_var('date_start');
+			$date_end = Sanitizer::get_var('date_end');
 
 			if (isset($date_start))
 			{

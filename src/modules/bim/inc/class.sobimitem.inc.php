@@ -40,7 +40,7 @@
 
 		public function __construct(& $db)
 		{
-		// $this->db = & $GLOBALS['phpgw']->db;
+		// $this->db = Db::getInstance();
 		$this->db = $db;
 		$db->Halt_On_Error = 'no';
 		$db->Exception_On_Error = true;

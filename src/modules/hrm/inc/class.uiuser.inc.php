@@ -70,7 +70,7 @@
 
 		function index()
 		{
-			$GLOBALS['phpgw']->xslttpl->add_file(array('user','nextmatchs',
+			phpgwapi_xslttemplates::getInstance()->add_file(array('user','nextmatchs',
 										'search_field'));
 
 			$account_info = $this->bo->read();
@@ -78,9 +78,9 @@
 			$content = array();
 			foreach ( $account_info as $entry )
 			{
-				if($this->bocommon->check_perms2($entry['account_id'], $this->grants, PHPGW_ACL_READ))
+				if($this->bocommon->check_perms2($entry['account_id'], $this->grants, ACL_READ))
 				{
-					$link_training				= $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uiuser.training', 'user_id'=> $entry['account_id']));
+					$link_training				= phpgw::link('/index.php', array('menuaction'=> 'hrm.uiuser.training', 'user_id'=> $entry['account_id']));
 					$text_training				= lang('training');
 					$lang_training_user_text	= lang('Training profile');
 				}
@@ -95,9 +95,9 @@
 				(
 					'first_name'				=> $entry['account_firstname'],
 					'last_name'					=> $entry['account_lastname'],
-//					'link_edit'					=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uiuser.training', 'user_id'=> $entry['account_id'])),
+//					'link_edit'					=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uiuser.training', 'user_id'=> $entry['account_id'])),
 					'link_training'				=> $link_training,
-					'link_view'					=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uiuser.view' ,' user_id'=> $entry['account_id'])),
+					'link_view'					=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uiuser.view' ,' user_id'=> $entry['account_id'])),
 					'lang_view_user_text'		=> lang('view the user'),
 					'lang_training_user_text'	=> $lang_training_user_text,
 					'lang_edit_user_text'		=> lang('edit the user'),
@@ -162,7 +162,7 @@
 				'record_limit'						=> $record_limit,
 				'num_records'						=> count($account_info),
 				'all_records'						=> $this->bo->total_records,
-				'link_url'							=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'link_url'							=> phpgw::link('/index.php',$link_data),
 				'img_path'							=> $GLOBALS['phpgw']->common->get_image_path('phpgwapi','default'),
 				'lang_searchfield_categorytext'		=> lang('Enter the search string. To show all entries, empty this field and press the SUBMIT button again'),
 				'lang_searchbutton_categorytext'	=> lang('Submit the search string'),
@@ -176,15 +176,15 @@
 			$function_msg	= lang('list user');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('list' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('list' => $data));
 			$this->save_sessiondata();
 		}
 
 		function training()
 		{
-			$user_id	= phpgw::get_var('user_id', 'int');
+			$user_id	= Sanitizer::get_var('user_id', 'int');
 
-			if (!$this->bocommon->check_perms2($user_id, $this->grants, PHPGW_ACL_READ))
+			if (!$this->bocommon->check_perms2($user_id, $this->grants, ACL_READ))
 			{
 				phpgw::no_access();
 				return;
@@ -194,7 +194,7 @@
 
 			$GLOBALS['phpgw']->session->appsession('session_data','hrm_training_receipt','');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('user'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('user'));
 
 
 			if ($user_id)
@@ -218,15 +218,15 @@
 					$entry['end_date']	= $GLOBALS['phpgw']->common->show_date($entry['end_date'],$dateformat);
 				}
 
-				if($this->bocommon->check_perms2($user_id, $this->grants, PHPGW_ACL_EDIT))
+				if($this->bocommon->check_perms2($user_id, $this->grants, ACL_EDIT))
 				{
-					$link_edit	= $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uiuser.edit', 'user_id'=> $user_id, 'training_id'=> $entry['training_id']));
+					$link_edit	= phpgw::link('/index.php', array('menuaction'=> 'hrm.uiuser.edit', 'user_id'=> $user_id, 'training_id'=> $entry['training_id']));
 					$text_edit	= lang('edit');
 					$lang_edit_text	= lang('edit training item');
 				}
-				if($this->bocommon->check_perms2($user_id,$this->grants, PHPGW_ACL_DELETE))
+				if($this->bocommon->check_perms2($user_id,$this->grants, ACL_DELETE))
 				{
-					$link_delete		= $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uiuser.delete', 'user_id'=> $user_id, 'training_id'=> $entry['training_id']));
+					$link_delete		= phpgw::link('/index.php', array('menuaction'=> 'hrm.uiuser.delete', 'user_id'=> $user_id, 'training_id'=> $entry['training_id']));
 					$text_delete		= lang('delete');
 					$lang_delete_text	= lang('delete training item');
 				}
@@ -240,7 +240,7 @@
 					'end_date'		=> $entry['end_date'],
 					'category'		=> $entry['category'],
 					'link_edit'		=> $link_edit,
-					'link_view'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uiuser.view', 'user_id'=> $user_id, 'training_id'=> $entry['training_id'])),
+					'link_view'		=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uiuser.view', 'user_id'=> $user_id, 'training_id'=> $entry['training_id'])),
 					'link_delete'		=> $link_delete,
 					'lang_view_text'	=> lang('view training item'),
 					'lang_edit_text'	=> $lang_edit_text,
@@ -322,9 +322,9 @@
 				'user_id'	=> $user_id
 			);
 
-			if($this->bocommon->check_perms2($user_id, $this->grants, PHPGW_ACL_ADD))
+			if($this->bocommon->check_perms2($user_id, $this->grants, ACL_ADD))
 			{
-				$add_action	= $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uiuser.edit', 'user_id'=> $user_id));
+				$add_action	= phpgw::link('/index.php', array('menuaction'=> 'hrm.uiuser.edit', 'user_id'=> $user_id));
 				$lang_add	= lang('add');
 			}
 
@@ -335,7 +335,7 @@
 				'add_action'				=> $add_action,
 				'lang_done'					=> lang('done'),
 				'lang_done_training_text'	=> lang('back to user list'),
-				'done_action'				=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uiuser.index'))
+				'done_action'				=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uiuser.index'))
 			);
 
 			$msgbox_data = $this->bocommon->msgbox_data($receipt);
@@ -351,7 +351,7 @@
 
 			$data = array
 			(
-				'link_cv'					=> $GLOBALS['phpgw']->link('/index.php',$link_cv_data),
+				'link_cv'					=> phpgw::link('/index.php',$link_cv_data),
 				'lang_cv_statustext'		=> lang('A printout version of the CV'),
 				'text_cv'					=> 'CV',
 				'table_header_training'		=> $table_header,
@@ -359,8 +359,8 @@
 				'table_add'					=> $table_add,
 				'user_values'				=> $user_values,
 				'msgbox_data'				=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'				=> $GLOBALS['phpgw']->link('/index.php',$link_data),
-				'done_action'				=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uiuser.index')),
+				'form_action'				=> phpgw::link('/index.php',$link_data),
+				'done_action'				=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uiuser.index')),
 				'lang_id'					=> lang('training ID'),
 				'lang_descr'				=> lang('Descr'),
 				'lang_save'					=> lang('save'),
@@ -379,18 +379,18 @@
 			$appname					= lang('Training');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('training' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('training' => $data));
 		}
 
 		function edit()
 		{
-			$training_id	= phpgw::get_var('training_id', 'int');
-			$user_id	= phpgw::get_var('user_id', 'int');
-			$values		= phpgw::get_var('values');
+			$training_id	= Sanitizer::get_var('training_id', 'int');
+			$user_id	= Sanitizer::get_var('user_id', 'int');
+			$values		= Sanitizer::get_var('values');
 
 			if(!$training_id)
 			{
-				if(!$this->bocommon->check_perms2($user_id, $this->grants, PHPGW_ACL_ADD))
+				if(!$this->bocommon->check_perms2($user_id, $this->grants, ACL_ADD))
 				{
 					phpgw::no_access();
 					return;
@@ -398,19 +398,19 @@
 			}
 			else
 			{
-				if(!$this->bocommon->check_perms2($user_id, $this->grants, PHPGW_ACL_EDIT))
+				if(!$this->bocommon->check_perms2($user_id, $this->grants, ACL_EDIT))
 				{
 					phpgw::no_access();
 					return;
 				}
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('user'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('user'));
 
 			$receipt = array();
 			if (is_array($values))
 			{
-				$values['place_id']= phpgw::get_var('place_id', 'int', 'POST');
+				$values['place_id']= Sanitizer::get_var('place_id', 'int', 'POST');
 				$values['user_id']= $user_id;
 
 				if ((isset($values['save']) && $values['save']) || (isset($values['apply']) && $values['apply']))
@@ -459,13 +459,13 @@
 						if ($values['save'])
 						{
 							$GLOBALS['phpgw']->session->appsession('session_data','hrm_training_receipt',$receipt);
-							$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'=> 'hrm.uiuser.training', 'user_id'=> $user_id));
+							phpgw::redirect_link('/index.php', array('menuaction'=> 'hrm.uiuser.training', 'user_id'=> $user_id));
 						}
 					}
 				}
 				else
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'=> 'hrm.uiuser.training', 'user_id'=> $user_id));
+					phpgw::redirect_link('/index.php', array('menuaction'=> 'hrm.uiuser.training', 'user_id'=> $user_id));
 				}
 			}
 
@@ -575,7 +575,7 @@
 				'lang_new_place_remark'			=> lang('remark'),
 
 				'msgbox_data'					=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'					=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'form_action'					=> phpgw::link('/index.php',$link_data),
 				'lang_id'						=> lang('training ID'),
 				'lang_descr'					=> lang('Descr'),
 				'lang_save'						=> lang('save'),
@@ -599,20 +599,20 @@
 			$appname					= lang('Training');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('edit' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('edit' => $data));
 		}
 
 		function view()
 		{
-			$training_id		= phpgw::get_var('training_id', 'int');
-			$user_id	= phpgw::get_var('user_id', 'int');
+			$training_id		= Sanitizer::get_var('training_id', 'int');
+			$user_id	= Sanitizer::get_var('user_id', 'int');
 
-			if(!$this->bocommon->check_perms2($user_id, $this->grants, PHPGW_ACL_READ))
+			if(!$this->bocommon->check_perms2($user_id, $this->grants, ACL_READ))
 			{
 				phpgw::no_access();
 				return;
 			}
-			$GLOBALS['phpgw']->xslttpl->add_file(array('user'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('user'));
 
 			if ($training_id)
 			{
@@ -660,7 +660,7 @@
 				'lang_new_place_status_text'		=> lang('Enter a new place'),
 				'lang_no_place'				=> lang('select a place'),
 
-				'form_action'				=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uiuser.training', 'user_id'=> $user_id)),
+				'form_action'				=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uiuser.training', 'user_id'=> $user_id)),
 				'lang_id'				=> lang('training ID'),
 				'lang_descr'				=> lang('Descr'),
 				'lang_save'				=> lang('save'),
@@ -685,20 +685,20 @@
 			$appname	= lang('Training');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('view' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('view' => $data));
 		}
 
 		function delete()
 		{
-			$training_id		= phpgw::get_var('training_id', 'int');
-			$user_id	= phpgw::get_var('user_id', 'int');
+			$training_id		= Sanitizer::get_var('training_id', 'int');
+			$user_id	= Sanitizer::get_var('user_id', 'int');
 
-			if(!$this->bocommon->check_perms2($user_id, $this->grants, PHPGW_ACL_DELETE))
+			if(!$this->bocommon->check_perms2($user_id, $this->grants, ACL_DELETE))
 			{
 				phpgw::no_access();
 				return;
 			}
-			$confirm = phpgw::get_var('confirm', 'bool', 'POST');
+			$confirm = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 			(
@@ -706,18 +706,18 @@
 				'user_id' => $user_id
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete_training($user_id,$training_id);
-				$GLOBALS['phpgw']->redirect_link('/index.php',$link_data);
+				phpgw::redirect_link('/index.php',$link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 			(
-				'done_action'			=> $GLOBALS['phpgw']->link('/index.php',$link_data),
-				'delete_action'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uiuser.delete', 'user_id'=> $user_id, 'training_id'=> $training_id)),
+				'done_action'			=> phpgw::link('/index.php',$link_data),
+				'delete_action'			=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uiuser.delete', 'user_id'=> $user_id, 'training_id'=> $training_id)),
 				'lang_confirm_msg'		=> lang('do you really want to delete this entry'),
 				'lang_yes'			=> lang('yes'),
 				'lang_yes_categorytext'		=> lang('Delete the entry'),
@@ -729,14 +729,14 @@
 			$function_msg	= lang('delete');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('delete' => $data));
 		}
 
 		function view_cv()
 		{
-			$user_id	= phpgw::get_var('user_id', 'int');
+			$user_id	= Sanitizer::get_var('user_id', 'int');
 
-			if(!$this->bocommon->check_perms2($user_id, $this->grants, PHPGW_ACL_READ))
+			if(!$this->bocommon->check_perms2($user_id, $this->grants, ACL_READ))
 			{
 				phpgw::no_access();
 				return;

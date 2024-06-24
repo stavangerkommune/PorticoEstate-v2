@@ -25,7 +25,7 @@
 
 	}
 
-	if (!phpgw::get_var(session_name(), 'string', 'COOKIE') || !$GLOBALS['phpgw']->session->verify())
+	if (!Sanitizer::get_var(session_name(), 'string', 'COOKIE') || !$GLOBALS['phpgw']->session->verify())
 	{
 
 		if(!empty($config['debug_local_login']))
@@ -34,7 +34,7 @@
 		}
 
 		$login = $config['anonymous_user'];
-		$logindomain = phpgw::get_var('domain', 'string', 'GET');
+		$logindomain = Sanitizer::get_var('domain', 'string', 'GET');
 		if (strstr($login, '#') === false && $logindomain)
 		{
 			$login .= "#{$logindomain}";
@@ -69,26 +69,26 @@
 		$redirect_data = array();
 		foreach ($redirect as $key => $value)
 		{
-			$redirect_data[$key] = phpgw::clean_value($value);
+			$redirect_data[$key] = Sanitizer::clean_value($value);
 		}
 
 		$redirect_data['second_redirect'] = true;
 
-		$sessid = phpgw::get_var('sessionid', 'string', 'GET');
+		$sessid = Sanitizer::get_var('sessionid', 'string', 'GET');
 		if ($sessid)
 		{
 			$redirect_data['sessionid'] = $sessid;
-			$redirect_data['kp3'] = phpgw::get_var('kp3', 'string', 'GET');
+			$redirect_data['kp3'] = Sanitizer::get_var('kp3', 'string', 'GET');
 		}
 
 		phpgwapi_cache::session_clear('bookingfrontend', 'redirect');
-		$GLOBALS['phpgw']->redirect_link('/bookingfrontend/', $redirect_data);
+		phpgw::redirect_link('/bookingfrontend/', $redirect_data);
 	}
 
-	$after = str_replace('&amp;', '&', urldecode(phpgw::get_var('after', 'raw')));
+	$after = str_replace('&amp;', '&', urldecode(Sanitizer::get_var('after', 'raw')));
 	if (!$after)
 	{
 		$after = array();
 	}
-	$GLOBALS['phpgw']->redirect_link('/bookingfrontend/', $after);
+	phpgw::redirect_link('/bookingfrontend/', $after);
 	exit;

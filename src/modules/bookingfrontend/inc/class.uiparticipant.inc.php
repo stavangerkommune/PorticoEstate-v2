@@ -30,8 +30,8 @@
 
 			$config = CreateObject('phpgwapi.config', 'booking')->read();
 
-			$reservation_type	 = phpgw::get_var('reservation_type');
-			$reservation_id		 = phpgw::get_var('reservation_id', 'int');
+			$reservation_type	 = Sanitizer::get_var('reservation_type');
+			$reservation_id		 = Sanitizer::get_var('reservation_id', 'int');
 
 			$reservation = createObject("booking.bo{$reservation_type}")->read_single($reservation_id);
 			$resource_participant_limit_gross = CreateObject('booking.soresource')->get_participant_limit($reservation['resources'], true);
@@ -129,9 +129,9 @@ ICAL;
 		{
 			$config = CreateObject('phpgwapi.config', 'booking')->read();
 
-			$reservation_type	 = phpgw::get_var('reservation_type');
-			$reservation_id		 = phpgw::get_var('reservation_id', 'int');
-			$register_type		 = phpgw::get_var('register_type');
+			$reservation_type	 = Sanitizer::get_var('reservation_type');
+			$reservation_id		 = Sanitizer::get_var('reservation_id', 'int');
+			$register_type		 = Sanitizer::get_var('register_type');
 
 			$participant					 = array();
 			$participant['email']			 = null;
@@ -260,17 +260,17 @@ ICAL;
 				}
 				else
 				{
-					$phone = phpgw::get_var('phone', 'string');
+					$phone = Sanitizer::get_var('phone', 'string');
 					$participant = $this->bo->get_previous_registration($reservation_type, $reservation_id, $phone, $register_type);
 					$participant['register_type']	 = $register_type;
 					$participant['phone']			 = $phone;
-					$participant['email']			 = phpgw::get_var('email', 'email');
+					$participant['email']			 = Sanitizer::get_var('email', 'email');
 
-					if($register_type == 'register_in' && phpgw::get_var('quantity', 'int') < $participant['quantity'])
+					if($register_type == 'register_in' && Sanitizer::get_var('quantity', 'int') < $participant['quantity'])
 					{
-						$participant['quantity'] = phpgw::get_var('quantity', 'int');
+						$participant['quantity'] = Sanitizer::get_var('quantity', 'int');
 					}
-					$participant['quantity']		 = $participant['quantity'] ? $participant['quantity'] : phpgw::get_var('quantity', 'int');
+					$participant['quantity']		 = $participant['quantity'] ? $participant['quantity'] : Sanitizer::get_var('quantity', 'int');
 					$participant['reservation_type'] = $reservation_type;
 					$participant['reservation_id']	 = $reservation_id;
 
@@ -520,7 +520,7 @@ ICAL;
 
 			if(CreateObject('bookingfrontend.bouser')->is_logged_in())
 			{
-				$_REQUEST['filter_reservation_id'] = phpgw::get_var('filter_reservation_id', 'int', 'REQUEST', -1);
+				$_REQUEST['filter_reservation_id'] = Sanitizer::get_var('filter_reservation_id', 'int', 'REQUEST', -1);
 				$participants = $this->bo->read();
 
 				$data = array('results' => array(), 'total_records' => 0, 'start' => 0, 'sort' => $participants['sort'], 'dir' => $participants['dir']);

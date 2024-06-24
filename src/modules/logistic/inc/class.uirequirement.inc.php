@@ -87,7 +87,7 @@
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = "logistic::project::requirement";
 
 			/*
-			  if( $this->nonavbar	= phpgw::get_var('nonavbar', 'bool'))
+			  if( $this->nonavbar	= Sanitizer::get_var('nonavbar', 'bool'))
 			  {
 			  $GLOBALS['phpgw_info']['flags']['nonavbar'] = $this->nonavbar;
 			  $GLOBALS['phpgw_info']['flags']['noheader_xsl'] = true;
@@ -99,21 +99,21 @@
 			$GLOBALS['phpgw_info']['flags']['nofooter'] = true;
 
 
-			$this->read = $GLOBALS['phpgw']->acl->check('.activity', PHPGW_ACL_READ, 'logistic');//1
-			$this->add = $GLOBALS['phpgw']->acl->check('.activity', PHPGW_ACL_ADD, 'logistic');//2
-			$this->edit = $GLOBALS['phpgw']->acl->check('.activity', PHPGW_ACL_EDIT, 'logistic');//4
-			$this->delete = $GLOBALS['phpgw']->acl->check('.activity', PHPGW_ACL_DELETE, 'logistic');//8
+			$this->read = $GLOBALS['phpgw']->acl->check('.activity', ACL_READ, 'logistic');//1
+			$this->add = $GLOBALS['phpgw']->acl->check('.activity', ACL_ADD, 'logistic');//2
+			$this->edit = $GLOBALS['phpgw']->acl->check('.activity', ACL_EDIT, 'logistic');//4
+			$this->delete = $GLOBALS['phpgw']->acl->check('.activity', ACL_DELETE, 'logistic');//8
 			$this->manage = $GLOBALS['phpgw']->acl->check('.activity', 16, 'logistic');//16
 
-			$GLOBALS['phpgw']->css->add_external_file('logistic/templates/base/css/base.css');
+			phpgwapi_css::getInstance()->add_external_file('logistic/templates/base/css/base.css');
 		}
 
 		public function query()
 		{
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 			if ($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] > 0)
 			{
@@ -125,12 +125,12 @@
 			}
 
 			$params = array(
-				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results' => phpgw::get_var('length', 'int', 'REQUEST', $user_rows_per_page),
+				'start' => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results' => Sanitizer::get_var('length', 'int', 'REQUEST', $user_rows_per_page),
 				'query' => !empty($search['value']) ? $search['value'] : '',
 				'order' => !empty($columns[$order[0]['column']]['data']) ? $columns[$order[0]['column']]['data'] : '',
 				'sort' => $order[0]['dir'],
-				'allrows' => phpgw::get_var('length', 'int') == -1,
+				'allrows' => Sanitizer::get_var('length', 'int') == -1,
 			);
 
 			$start_index = $params['start'];
@@ -140,17 +140,17 @@
 			// Form variables
 			$search_for = $params['query'];
 
-			$activity_id = phpgw::get_var('activity_id');
+			$activity_id = Sanitizer::get_var('activity_id');
 
-			$search_type = phpgw::get_var('search_option', 'string', 'REQUEST', '');
+			$search_type = Sanitizer::get_var('search_option', 'string', 'REQUEST', '');
 			// Create an empty result set
 			$result_objects = array();
 			$result_count = 0;
 
 			//Retrieve a contract identifier and load corresponding contract
-			$project_id = phpgw::get_var('project_id');
+			$project_id = Sanitizer::get_var('project_id');
 
-			$exp_param = phpgw::get_var('export');
+			$exp_param = Sanitizer::get_var('export');
 			$export = false;
 			if (isset($exp_param))
 			{
@@ -159,7 +159,7 @@
 			}
 
 			//Retrieve the type of query and perform type specific logic
-			$query_type = phpgw::get_var('type');
+			$query_type = Sanitizer::get_var('type');
 
 			switch ($query_type)
 			{
@@ -277,7 +277,7 @@
 			$result_data['dir'] = $params['dir'];
 			$result_data['draw'] = $draw;
 
-			$editable = phpgw::get_var('editable') == 'true' ? true : false;
+			$editable = Sanitizer::get_var('editable') == 'true' ? true : false;
 
 			if (!$export)
 			{
@@ -289,12 +289,12 @@
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
 
-			$activity_id = phpgw::get_var('activity_id');
+			$activity_id = Sanitizer::get_var('activity_id');
 
 			$activity = $this->so_activity->get_single($activity_id);
 
@@ -382,18 +382,18 @@
 
 		public function view()
 		{
-			if ($this->nonavbar = phpgw::get_var('nonavbar', 'bool'))
+			if ($this->nonavbar = Sanitizer::get_var('nonavbar', 'bool'))
 			{
 				$GLOBALS['phpgw_info']['flags']['nonavbar'] = $this->nonavbar;
 				$GLOBALS['phpgw_info']['flags']['noheader_xsl'] = true;
 				$GLOBALS['phpgw_info']['flags']['nofooter'] = true;
 			}
 
-			$requirement_id = phpgw::get_var('id');
+			$requirement_id = Sanitizer::get_var('id');
 
 			if (isset($_POST['edit_requirement']))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement.edit',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement.edit',
 					'id' => $requirement_id));
 			}
 			else
@@ -426,20 +426,20 @@
 
 		public function add()
 		{
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement.edit'));
+			phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement.edit'));
 		}
 
 		public function edit( $requirement = null )
 		{
-			if ($this->nonavbar = phpgw::get_var('nonavbar', 'bool'))
+			if ($this->nonavbar = Sanitizer::get_var('nonavbar', 'bool'))
 			{
 				$GLOBALS['phpgw_info']['flags']['nonavbar'] = $this->nonavbar;
 				$GLOBALS['phpgw_info']['flags']['noheader_xsl'] = true;
 				$GLOBALS['phpgw_info']['flags']['nofooter'] = true;
 			}
 
-			$requirement_id = phpgw::get_var('id');
-			$activity_id = phpgw::get_var('activity_id');
+			$requirement_id = Sanitizer::get_var('id');
+			$activity_id = Sanitizer::get_var('activity_id');
 
 			if (($requirement == null) && ($requirement_id) && (is_numeric($requirement_id)))
 			{
@@ -464,7 +464,7 @@
 				}
 			}
 
-			$accounts = $GLOBALS['phpgw']->acl->get_user_list_right(PHPGW_ACL_READ, 'run', 'logistic');
+			$accounts = $GLOBALS['phpgw']->acl->get_user_list_right(ACL_READ, 'run', 'logistic');
 
 			$entity_list = execMethod('property.soadmin_entity.read', array('allrows' => true));
 
@@ -534,10 +534,10 @@
 
 		public function save()
 		{
-			$requirement_id = phpgw::get_var('id', 'int');
-			$new_location_id = phpgw::get_var('location_id');
+			$requirement_id = Sanitizer::get_var('id', 'int');
+			$new_location_id = Sanitizer::get_var('location_id');
 
-			if ($this->nonavbar = phpgw::get_var('nonavbar', 'bool'))
+			if ($this->nonavbar = Sanitizer::get_var('nonavbar', 'bool'))
 			{
 				$GLOBALS['phpgw_info']['flags']['nonavbar'] = $this->nonavbar;
 				$GLOBALS['phpgw_info']['flags']['noheader_xsl'] = true;
@@ -546,7 +546,7 @@
 
 			if (!$this->read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement.view',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement.view',
 					'id' => $requirement_id, 'nonavbar' => $this->nonavbar));
 				return false; // in case redirect fail;
 			}
@@ -588,7 +588,7 @@
 //					$db_requirement->transaction_abort();
 				}
 
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement.view',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement.view',
 					'id' => $requirement_id, 'nonavbar' => $this->nonavbar));
 			}
 			else
@@ -604,7 +604,7 @@
 				return false;
 			}
 
-			$requirement_id = phpgw::get_var('id', 'int');
+			$requirement_id = Sanitizer::get_var('id', 'int');
 			$GLOBALS['phpgw']->db->transaction_begin();
 			try
 			{
@@ -634,14 +634,14 @@
 
 		public function add_requirement_values()
 		{
-			if ($this->nonavbar = phpgw::get_var('nonavbar', 'bool'))
+			if ($this->nonavbar = Sanitizer::get_var('nonavbar', 'bool'))
 			{
 				$GLOBALS['phpgw_info']['flags']['nonavbar'] = $this->nonavbar;
 				$GLOBALS['phpgw_info']['flags']['noheader_xsl'] = true;
 				$GLOBALS['phpgw_info']['flags']['nofooter'] = true;
 			}
 
-			$requirement_id = phpgw::get_var('requirement_id');
+			$requirement_id = Sanitizer::get_var('requirement_id');
 
 			if ($requirement_id && is_numeric($requirement_id))
 			{
@@ -649,7 +649,7 @@
 			}
 			else
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement.edit'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement.edit'));
 			}
 
 			$location_id = $requirement->get_location_id();
@@ -751,14 +751,14 @@
 
 		public function view_requirement_values()
 		{
-			if ($this->nonavbar = phpgw::get_var('nonavbar', 'bool'))
+			if ($this->nonavbar = Sanitizer::get_var('nonavbar', 'bool'))
 			{
 				$GLOBALS['phpgw_info']['flags']['nonavbar'] = $this->nonavbar;
 				$GLOBALS['phpgw_info']['flags']['noheader_xsl'] = true;
 				$GLOBALS['phpgw_info']['flags']['nofooter'] = true;
 			}
 
-			$requirement_id = phpgw::get_var('requirement_id');
+			$requirement_id = Sanitizer::get_var('requirement_id');
 
 			if ($requirement_id && is_numeric($requirement_id))
 			{
@@ -766,12 +766,12 @@
 			}
 			else
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement.edit'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement.edit'));
 			}
 
 			if (isset($_POST['edit_requirement_values']))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement.add_requirement_values',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement.add_requirement_values',
 					'requirement_id' => $requirement_id));
 			}
 
@@ -845,11 +845,11 @@
 
 		public function save_requirement_values()
 		{
-			$this->nonavbar = phpgw::get_var('nonavbar', 'bool');
+			$this->nonavbar = Sanitizer::get_var('nonavbar', 'bool');
 
-			$requirement_id = phpgw::get_var('requirement_id');
+			$requirement_id = Sanitizer::get_var('requirement_id');
 			$attributes_array = array();
-			$attributes_array = phpgw::get_var('cust_attributes');
+			$attributes_array = Sanitizer::get_var('cust_attributes');
 
 			$this->so_requirement_value->delete_values($requirement_id);
 
@@ -871,7 +871,7 @@
 				$this->so_requirement_value->store($requirement_value);
 			}
 
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement.view_requirement_values',
+			phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement.view_requirement_values',
 				'requirement_id' => $requirement_id, 'nonavbar' => $this->nonavbar));
 		}
 
@@ -879,12 +879,12 @@
 		{
 			if ($location_id == "")
 			{
-				$location_id = phpgw::get_var('location_id');
+				$location_id = Sanitizer::get_var('location_id');
 			}
 
 			if ($activity_id == "")
 			{
-				$activity_id = phpgw::get_var('activity_id');
+				$activity_id = Sanitizer::get_var('activity_id');
 			}
 
 			$activity = $this->so_activity->get_single($activity_id);
@@ -919,7 +919,7 @@
 
 		public function assign_job()
 		{
-			$assign_requirement_json = str_replace('&quot;', '"', phpgw::get_var('assign_requirement'));
+			$assign_requirement_json = str_replace('&quot;', '"', Sanitizer::get_var('assign_requirement'));
 
 			$assign_requirement = json_decode($assign_requirement_json);
 //_debug_array($assign_requirement);die();
@@ -1095,7 +1095,7 @@
 				phpgwapi_cache::message_set('No access', 'error');
 			}
 
-			$assign_requirement_json = str_replace('&quot;', '"', phpgw::get_var('assign_requirement'));
+			$assign_requirement_json = str_replace('&quot;', '"', Sanitizer::get_var('assign_requirement'));
 
 			$assign_requirement = json_decode($assign_requirement_json);
 
@@ -1128,10 +1128,10 @@
 				'origin_id' => $location_id,
 				'origin_item_id' => $requirement->get_activity_id(),
 				'location_code' => $location_code,
-				'cat_id' => phpgw::get_var('message_cat_id', 'int'),
-				'priority' => phpgw::get_var('priority', 'int'),
-				'title' => phpgw::get_var('message_title', 'string'),
-				'details' => phpgw::get_var('message', 'string'),
+				'cat_id' => Sanitizer::get_var('message_cat_id', 'int'),
+				'priority' => Sanitizer::get_var('priority', 'int'),
+				'title' => Sanitizer::get_var('message_title', 'string'),
+				'details' => Sanitizer::get_var('message', 'string'),
 				'file_input_name' => 'file' // navn på felt som inneholder fil
 			);
 
@@ -1195,14 +1195,14 @@
 					'details' => array
 						(
 						'label' => "1: " . lang('Requirement details'),
-						'link' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'logistic.uirequirement.view',
+						'link' => phpgw::link('/index.php', array('menuaction' => 'logistic.uirequirement.view',
 							'id' => $requirement->get_id(),
 							'nonavbar' => $this->nonavbar))
 					),
 					'constraints' => array
 						(
 						'label' => "2: " . lang('Add constraints'),
-						'link' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'logistic.uirequirement.view_requirement_values',
+						'link' => phpgw::link('/index.php', array('menuaction' => 'logistic.uirequirement.view_requirement_values',
 							'requirement_id' => $requirement->get_id(),
 							'nonavbar' => $this->nonavbar))
 				));

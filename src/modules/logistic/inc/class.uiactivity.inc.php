@@ -70,18 +70,18 @@
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = "logistic::project::activity";
 
-			$this->acl_read = $GLOBALS['phpgw']->acl->check('.activity', PHPGW_ACL_READ, 'logistic');//1
-			$this->acl_add = $GLOBALS['phpgw']->acl->check('.activity', PHPGW_ACL_ADD, 'logistic');//2
-			$this->acl_edit = $GLOBALS['phpgw']->acl->check('.activity', PHPGW_ACL_EDIT, 'logistic');//4
-			$this->acl_delete = $GLOBALS['phpgw']->acl->check('.activity', PHPGW_ACL_DELETE, 'logistic');//8
+			$this->acl_read = $GLOBALS['phpgw']->acl->check('.activity', ACL_READ, 'logistic');//1
+			$this->acl_add = $GLOBALS['phpgw']->acl->check('.activity', ACL_ADD, 'logistic');//2
+			$this->acl_edit = $GLOBALS['phpgw']->acl->check('.activity', ACL_EDIT, 'logistic');//4
+			$this->acl_delete = $GLOBALS['phpgw']->acl->check('.activity', ACL_DELETE, 'logistic');//8
 			$this->acl_manage = $GLOBALS['phpgw']->acl->check('.activity', 16, 'logistic');//16
 
-			$GLOBALS['phpgw']->css->add_external_file('logistic/templates/base/css/base.css');
+			phpgwapi_css::getInstance()->add_external_file('logistic/templates/base/css/base.css');
 		}
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -109,7 +109,7 @@
 				),
 				'datatable' => array(
 					'source' => self::link(array('menuaction' => 'logistic.uiactivity.index', 'phpgw_return_as' => 'json',
-						'filter' => phpgw::get_var('filter', 'int'))),
+						'filter' => Sanitizer::get_var('filter', 'int'))),
 					'allrows' => true,
 					'new_item' => self::link(array('menuaction' => 'logistic.uiactivity.add')),
 					'field' => array(
@@ -198,7 +198,7 @@
 				(
 				'my_name' => 'new',
 				'text' => lang('add sub activity'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'logistic.uiactivity.edit'
 				)),
@@ -209,7 +209,7 @@
 				(
 				'my_name' => 'new_requirement',
 				'text' => lang('t_new_requirement'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'logistic.uirequirement.edit',
 					'nonavbar' => true
@@ -221,7 +221,7 @@
 				(
 				'my_name' => 'view_requirements',
 				'text' => lang('t_view_requirements'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'logistic.uiactivity.view_resource_allocation'
 				)),
@@ -232,7 +232,7 @@
 				(
 				'my_name' => 'add_favorite',
 				'text' => lang('toggle as favorite'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'logistic.uiactivity.edit_favorite'
 				)),
@@ -245,10 +245,10 @@
 
 		public function query()
 		{
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 			if ($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] > 0)
 			{
@@ -260,12 +260,12 @@
 			}
 
 			$params = array(
-				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results' => phpgw::get_var('length', 'int', 'REQUEST', $user_rows_per_page),
+				'start' => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results' => Sanitizer::get_var('length', 'int', 'REQUEST', $user_rows_per_page),
 				'query' => !empty($search['value']) ? $search['value'] : '',
 				'order' => !empty($columns[$order[0]['column']]['data']) ? $columns[$order[0]['column']]['data'] : '',
 				'sort' => $order[0]['dir'],
-				'allrows' => phpgw::get_var('length', 'int') == -1,
+				'allrows' => Sanitizer::get_var('length', 'int') == -1,
 			);
 
 			$start_index = $params['start'];
@@ -274,14 +274,14 @@
 			$sort_ascending = $params['sort'] == 'desc' ? false : true;
 			// Form variables
 			$search_for = $params['query'];
-			$search_type = phpgw::get_var('search_option', 'string', 'REQUEST', '');
+			$search_type = Sanitizer::get_var('search_option', 'string', 'REQUEST', '');
 
 			// Create an empty result set
 			$result_objects = array();
 			$result_count = 0;
 
 			//Retrieve a contract identifier and load corresponding contract
-			$exp_param = phpgw::get_var('export');
+			$exp_param = Sanitizer::get_var('export');
 			$export = false;
 			if (isset($exp_param))
 			{
@@ -290,12 +290,12 @@
 			}
 
 			//Retrieve the type of query and perform type specific logic
-			$query_type = phpgw::get_var('type');
+			$query_type = Sanitizer::get_var('type');
 
 			switch ($query_type)
 			{
 				case 'children':
-					$activity_id = phpgw::get_var('activity_id');
+					$activity_id = Sanitizer::get_var('activity_id');
 					$filters = array('id' => $activity_id);
 					$result_objects = $this->so->get($start_index, $num_of_objects, $sort_field, $sort_ascending, $search_for, $search_type, $filters, $params['allrows']);
 					$object_count = $this->so->get_count('', '', array());
@@ -306,15 +306,15 @@
 					}
 					break;
 				case 'activity_id':
-					$activity_id = phpgw::get_var('activity_id');
+					$activity_id = Sanitizer::get_var('activity_id');
 					$filters = array('id' => $activity_id);
 					$result_objects = $this->so->get($start_index, $num_of_objects, $sort_field, $sort_ascending, $search_for, $search_type, $filters, $params['allrows']);
 					$object_count = $this->so->get_count($search_for, $search_type, $filters);
 					break;
 				default: // ... all activities, filters (active and vacant)
 					phpgwapi_cache::session_set('logistic', 'activity_query', $search_for);
-					$filters = array('project' => phpgw::get_var('project'), 'user' => phpgw::get_var('user'),
-						'activity' => phpgw::get_var('filter', 'int'));
+					$filters = array('project' => Sanitizer::get_var('project'), 'user' => Sanitizer::get_var('user'),
+						'activity' => Sanitizer::get_var('filter', 'int'));
 					$result_objects = $this->so->get($start_index, $num_of_objects, $sort_field, $sort_ascending, $search_for, $search_type, $filters, $params['allrows']);
 					$object_count = $this->so->total_records;
 					break;
@@ -382,7 +382,7 @@
 			$result_data['dir'] = $params['dir'];
 			$result_data['draw'] = $draw;
 
-			$editable = phpgw::get_var('editable') == 'true' ? true : false;
+			$editable = Sanitizer::get_var('editable') == 'true' ? true : false;
 
 			if (!$export)
 			{
@@ -395,14 +395,14 @@
 
 		public function add()
 		{
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uiactivity.edit'));
+			phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uiactivity.edit'));
 		}
 
 		public function edit( $activity = null )
 		{
-			$activity_id = phpgw::get_var('id');
-			$parent_activity_id = phpgw::get_var('parent_id', 'int');
-			$project_id = phpgw::get_var('project_id', 'int');
+			$activity_id = Sanitizer::get_var('id');
+			$parent_activity_id = Sanitizer::get_var('parent_id', 'int');
+			$project_id = Sanitizer::get_var('project_id', 'int');
 
 			if ($activity == null)
 			{
@@ -433,7 +433,7 @@
 				}
 			}
 
-			$accounts = $GLOBALS['phpgw']->acl->get_user_list_right(PHPGW_ACL_READ, 'run', 'logistic');
+			$accounts = $GLOBALS['phpgw']->acl->get_user_list_right(ACL_READ, 'run', 'logistic');
 
 			$activities = $this->so->get(0, 0, 'name', true, '', '', array('project' => $project_id), true);
 
@@ -498,7 +498,7 @@
 
 		public function view()
 		{
-			$activity_id = phpgw::get_var('id', 'int');
+			$activity_id = Sanitizer::get_var('id', 'int');
 
 			if ($activity_id && is_numeric($activity_id))
 			{
@@ -555,7 +555,7 @@
 
 		public function save()
 		{
-			$activity_id = phpgw::get_var('id');
+			$activity_id = Sanitizer::get_var('id');
 
 			if ($activity_id && is_numeric($activity_id))
 			{
@@ -572,7 +572,7 @@
 			if ($activity->validate())
 			{
 				$activity_id = $this->so->store($activity);
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uiactivity.view',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uiactivity.view',
 					'id' => $activity_id, 'project_id' => $activity->get_project_id()));
 			}
 			else
@@ -583,7 +583,7 @@
 
 		public function edit_favorite()
 		{
-			if ($activity_id = phpgw::get_var('id'))
+			if ($activity_id = Sanitizer::get_var('id'))
 			{
 				$activity = $this->so->get_single($activity_id);
 
@@ -611,12 +611,12 @@
 				$GLOBALS['phpgw']->preferences->save_repository();
 				execMethod('phpgwapi.menu.clear');
 			}
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uiactivity.index'));
+			phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uiactivity.index'));
 		}
 
 		public function view_resource_allocation()
 		{
-			$activity_id = phpgw::get_var('activity_id');
+			$activity_id = Sanitizer::get_var('activity_id');
 			$activity = $this->so->get_single($activity_id);
 
 
@@ -720,7 +720,7 @@
 
 			self::add_javascript('logistic', 'logistic', 'requirement.js', false, array('combine' => true ));
 			self::add_javascript('phpgwapi', 'tinybox2', 'packed.js', false, array('combine' => true ));
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/tinybox2/style.css');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/tinybox2/style.css');
 
 			self::render_template_xsl(array('activity/view_activity_item', 'requirement/requirement_overview',
 				'activity/activity_tabs', 'datatable_inline'), $data);
@@ -756,13 +756,13 @@
 					'details' => array
 						(
 						'label' => "1: " . lang('Activity details'),
-						'link' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'logistic.uiactivity.view',
+						'link' => phpgw::link('/index.php', array('menuaction' => 'logistic.uiactivity.view',
 							'id' => $activity->get_id()))
 					),
 					'allocation' => array
 						(
 						'label' => "2: " . lang('Requirement allocation'),
-						'link' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'logistic.uiactivity.view_resource_allocation',
+						'link' => phpgw::link('/index.php', array('menuaction' => 'logistic.uiactivity.view_resource_allocation',
 							'activity_id' => $activity->get_id()))
 					)
 				);

@@ -113,7 +113,7 @@
 				if($this->currentapp == 'eventplannerfrontend')
 				{
 					$where = $clause ? 'OR' : 'AND';
-					$org_id = phpgw::get_var('org_id','string' , 'SESSION', -1);
+					$org_id = Sanitizer::get_var('org_id','string' , 'SESSION', -1);
 					$clause .= " {$where} eventplanner_vendor.organization_number = '{$org_id}'";
 				}
 
@@ -160,7 +160,7 @@
 			{
 				$new_value = $object->$field;
 				$old_value = $original[$field];
-				if (!empty($params['history']) && ($new_value != $old_value) && ($params['action'] & PHPGW_ACL_EDIT))
+				if (!empty($params['history']) && ($new_value != $old_value) && ($params['action'] & ACL_EDIT))
 				{
 					$label = !empty($params['label']) ? lang($params['label']) : $field;
 					switch ($field)

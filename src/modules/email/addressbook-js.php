@@ -150,7 +150,7 @@
 	$GLOBALS['phpgw']->template->set_var('title',$GLOBALS['phpgw_info']['site_title']);
 	$GLOBALS['phpgw']->template->set_var('bg_color',$GLOBALS['phpgw_info']['theme']['bg_color']);
 	$GLOBALS['phpgw']->template->set_var('lang_addressbook_action',lang('Address book'));
-	$GLOBALS['phpgw']->template->set_var('include_link',$GLOBALS['phpgw']->link("/email/inc/selectboxes.js"));
+	$GLOBALS['phpgw']->template->set_var('include_link',phpgw::link("/email/inc/selectboxes.js"));
 	$GLOBALS['phpgw']->template->set_var('font',$GLOBALS['phpgw_info']['theme']['font']);
 	$GLOBALS['phpgw']->template->set_var('main_form_name',"mainform");
 	$GLOBALS['phpgw']->template->set_var('lang_search',lang('Search'));
@@ -163,7 +163,7 @@
 	$cat_id  = $_POST['cat_id'] ? $_POST['cat_id'] : $_GET['cat_id'];
 	$cat_id = ($cat_id == -2)?"":$cat_id;
 	$order  = $_POST['order'] ? $_POST['order'] : $_GET['order'];
-	$GLOBALS['phpgw']->template->set_var('search_action',$GLOBALS['phpgw']->link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/addressbook-js.php',"sort=$sort&order=$order&filter=$filter&start=$start&cat_id=$cat_id"));
+	$GLOBALS['phpgw']->template->set_var('search_action',phpgw::link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/addressbook-js.php',"sort=$sort&order=$order&filter=$filter&start=$start&cat_id=$cat_id"));
 	$GLOBALS['phpgw']->template->set_var('query',$query);
 	$GLOBALS['phpgw']->template->set_var('order',$order);
 
@@ -282,13 +282,13 @@ if(!$catlist)
 //	$GLOBALS['phpgw']->template->set_var('cats_list',$c->formated_list('select','all',$cat_id,'True'));
 	$GLOBALS['phpgw']->template->set_var('lang_select',lang('Select'));
 	$GLOBALS['phpgw']->template->set_var('cats_action',
-		$GLOBALS['phpgw']->link(
+		phpgw::link(
 			'/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/addressbook-js.php',
 				"sort=$sort&order=$order&filter=$filter&start=$start&query=$query&cat_id=$cat_id".($viewmore ? "&viewmore=1" :"")
 		)
 	);
 	$GLOBALS['phpgw']->template->set_var('main_form_action',
-		$GLOBALS['phpgw']->link(
+		phpgw::link(
 			'/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/addressbook-js.php',
 				array(
 					'sort'		=> $sort,

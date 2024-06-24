@@ -30,7 +30,7 @@
 				$array_key = $options['prefix'] . $write_key . $options['suffix'];
 				if (isset($array[$array_key]))
 				{
-					$result[($options['preserve_prefix'] ? $options['prefix'] : '') . $write_key . ($options['preserve_suffix'] ? $options['suffix'] : '')] = phpgw::clean_value($array[$array_key]);
+					$result[($options['preserve_prefix'] ? $options['prefix'] : '') . $write_key . ($options['preserve_suffix'] ? $options['suffix'] : '')] = Sanitizer::clean_value($array[$array_key]);
 				}
 			}
 		}
@@ -87,7 +87,7 @@
 				$array_key = $options['prefix'] . $write_key . $options['suffix'];
 				if (isset($array[$array_key]))
 				{
-					$result[($options['preserve_prefix'] ? $options['prefix'] : '') . $write_key . ($options['preserve_suffix'] ? $options['suffix'] : '')] = phpgw::clean_value($array[$array_key], $_type);
+					$result[($options['preserve_prefix'] ? $options['prefix'] : '') . $write_key . ($options['preserve_suffix'] ? $options['suffix'] : '')] = Sanitizer::clean_value($array[$array_key], $_type);
 				}
 			}
 		}
@@ -246,11 +246,11 @@
 
 			if ($GLOBALS['phpgw_info']['flags']['currentapp'] == 'bookingfrontend')
 			{
-				$GLOBALS['phpgw']->redirect_link('/bookingfrontend/', $link_data);
+				phpgw::redirect_link('/bookingfrontend/', $link_data);
 			}
 			else
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 		}
 
@@ -703,18 +703,18 @@
 				$theme = 'ui-lightness';
 			}
 			$theme = 'redmond';
-			$GLOBALS['phpgw']->css->add_external_file("phpgwapi/js/jquery/css/{$theme}/jquery-ui.min.css");
+			phpgwapi_css::getInstance()->add_external_file("phpgwapi/js/jquery/css/{$theme}/jquery-ui.min.css");
 
 			switch ($type)
 			{
 				case 'datetime':
-					$GLOBALS['phpgw']->css->add_external_file("phpgwapi/js/jquery/css/jquery-ui-timepicker-addon.css");
-					$GLOBALS['phpgw']->js->validate_file('jquery', 'js/jquery-ui-timepicker-addon.min');
+					phpgwapi_css::getInstance()->add_external_file("phpgwapi/js/jquery/css/jquery-ui-timepicker-addon.css");
+					phpgwapi_js::getInstance()->validate_file('jquery', 'js/jquery-ui-timepicker-addon.min');
 					$_type = 'datetime';
 					break;
 				case 'time':
-					$GLOBALS['phpgw']->css->add_external_file("phpgwapi/js/jquery/css/jquery-ui-timepicker-addon.css");
-					$GLOBALS['phpgw']->js->validate_file('jquery', 'js/jquery-ui-timepicker-addon.min');
+					phpgwapi_css::getInstance()->add_external_file("phpgwapi/js/jquery/css/jquery-ui-timepicker-addon.css");
+					phpgwapi_js::getInstance()->validate_file('jquery', 'js/jquery-ui-timepicker-addon.min');
 					$_type = 'time';
 					break;
 				default:
@@ -818,7 +818,7 @@
 			}
 
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $js);
+			phpgwapi_js::getInstance()->add_code('', $js);
 		}
 
 		public function adddatetimepicker( $type = 'datetime' )
@@ -967,6 +967,6 @@ JS;
 			}
 
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $js);
+			phpgwapi_js::getInstance()->add_code('', $js);
 		}
 	}

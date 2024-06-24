@@ -52,7 +52,7 @@
 
 		function no_access( $message = '' )
 		{
-			$GLOBALS['phpgw']->xslttpl->add_file(array('no_access'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('no_access'));
 
 			$receipt['error'][] = array('msg' => lang('NO ACCESS'));
 			if ($message)
@@ -71,6 +71,6 @@
 			$appname = lang('No access');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('sms') . ' - ' . $appname;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('no_access' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('no_access' => $data));
 		}
 	}

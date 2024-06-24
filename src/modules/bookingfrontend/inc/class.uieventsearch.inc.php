@@ -42,7 +42,7 @@ class bookingfrontend_uieventsearch extends booking_uicommon
 
 	public function get_facility_types()
 	{
-		$query = phpgw::get_var('query', 'string', 'REQUEST', null);
+		$query = Sanitizer::get_var('query', 'string', 'REQUEST', null);
 
 		$ret =  $this->bobuilding->get_facility_types($query);
 		//keep 15 of the first...
@@ -65,7 +65,7 @@ class bookingfrontend_uieventsearch extends booking_uicommon
 		$config->read();
 		phpgwapi_jquery::load_widget("core");
 		phpgwapi_jquery::load_widget('daterangepicker');
-		$GLOBALS['phpgw']->css->add_external_file("phpgwapi/templates/base/css/rubik-font.css");
+		phpgwapi_css::getInstance()->add_external_file("phpgwapi/templates/base/css/rubik-font.css");
 
 		self::add_javascript('bookingfrontend', 'base', 'event_search.js', true);
 		self::add_javascript('bookingfrontend', 'base', 'util.js', true);
@@ -88,14 +88,14 @@ class bookingfrontend_uieventsearch extends booking_uicommon
 	 */
 	public function upcoming_events()
 	{
-		$org_id = phpgw::get_var('orgID', 'string', 'REQUEST', null);
-		$from_date = phpgw::get_var('fromDate', 'string', 'REQUEST', null);
-		$to_date = phpgw::get_var('toDate', 'string', 'REQUEST', null);
-		$building_id = phpgw::get_var('buildingID', 'string', 'REQUEST', null);
-		$facility_type_id = phpgw::get_var('facilityTypeID', 'string', 'REQUEST', null);
-		$logged_in_orgs = phpgw::get_var('loggedInOrgs', 'bool');
-		$start = phpgw::get_var('start', 'int', 'REQUEST', 0);;
-		$end = phpgw::get_var('end', 'int', 'REQUEST', 50);;
+		$org_id = Sanitizer::get_var('orgID', 'string', 'REQUEST', null);
+		$from_date = Sanitizer::get_var('fromDate', 'string', 'REQUEST', null);
+		$to_date = Sanitizer::get_var('toDate', 'string', 'REQUEST', null);
+		$building_id = Sanitizer::get_var('buildingID', 'string', 'REQUEST', null);
+		$facility_type_id = Sanitizer::get_var('facilityTypeID', 'string', 'REQUEST', null);
+		$logged_in_orgs = Sanitizer::get_var('loggedInOrgs', 'bool');
+		$start = Sanitizer::get_var('start', 'int', 'REQUEST', 0);;
+		$end = Sanitizer::get_var('end', 'int', 'REQUEST', 50);;
 
 
 		$logged_in_as = $this->get_orgs_if_logged_in();
@@ -150,7 +150,7 @@ class bookingfrontend_uieventsearch extends booking_uicommon
 	{
 		phpgwapi_jquery::load_widget('autocomplete');
 
-		if (phpgw::get_var('phpgw_return_as') == 'json')
+		if (Sanitizer::get_var('phpgw_return_as') == 'json')
 		{
 			return $this->query();
 		}

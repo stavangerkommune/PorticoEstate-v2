@@ -49,7 +49,7 @@
 
 			$this->contract_state_identifier_doc = "contract_state_in";
 			$this->contracts_per_location_identifier_doc = "contracts_in_per_location";
-			$this->form_url_doc = $GLOBALS['phpgw']->link('/', array('menuaction' => 'frontend.uicontract_documents.index',
+			$this->form_url_doc = phpgw::link('/', array('menuaction' => 'frontend.uicontract_documents.index',
 				'location_id' => $this->location_id));
 			phpgwapi_cache::session_set('frontend', 'tab', $GLOBALS['phpgw']->locations->get_id('frontend', '.document.contracts'));
 
@@ -63,7 +63,7 @@
 			$contractdata = array(); // This is the main container for all contract data sent to XSLT template stuff
 			$msglog = array();   // Array of errors and other notifications displayed to us
 
-			$filter = phpgw::get_var('contract_filter');
+			$filter = Sanitizer::get_var('contract_filter');
 			// The user wants to change the contract status filter
 			if (isset($filter))
 			{
@@ -86,7 +86,7 @@
 			// Request parameter: the user wants to view details about anther contract
 			// The current state of the contract view of this user's session
 			$this->contract_state_doc = phpgwapi_cache::session_get('frontend', $this->contract_state_identifier_doc);
-			$new_contract = phpgw::get_var('contract_id');
+			$new_contract = Sanitizer::get_var('contract_id');
 			$contracts_per_location_all = phpgwapi_cache::session_get('frontend', $this->contracts_per_location_identifier_doc);
 			$contracts_for_selection = array();
 			$number_of_valid_contracts = 0;
@@ -167,7 +167,7 @@
 						(
 						'document_id' => $entry->get_id(),
 						'document_name' => $entry->get_name(),
-						'link' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'rental.uidocument.view',
+						'link' => phpgw::link('/index.php', array('menuaction' => 'rental.uidocument.view',
 							'id' => $entry->get_id())),
 						'title' => $entry->get_title(),
 						'description' => $entry->get_description(),

@@ -32,13 +32,13 @@
 				$user_rows_per_page = 10;
 			}
 
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
-			$start_index = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$num_of_objects = (phpgw::get_var('length', 'int') <= 0) ? $user_rows_per_page : phpgw::get_var('length', 'int');
+			$start_index = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$num_of_objects = (Sanitizer::get_var('length', 'int') <= 0) ? $user_rows_per_page : Sanitizer::get_var('length', 'int');
 			$sort_field = 'id';
 			switch ($columns[$order[0]['column']]['data'])
 			{
@@ -51,35 +51,35 @@
 			$sort_ascending = ($order[0]['dir'] == 'desc') ? false : true;
 			// Form variables
 			$search_for = $search['value'];
-			$search_type = phpgw::get_var('search_option', 'string', 'REQUEST', 'all');
+			$search_type = Sanitizer::get_var('search_option', 'string', 'REQUEST', 'all');
 
 			// YUI variables for paging and sorting
-			/* $start_index	= phpgw::get_var('startIndex', 'int');
-			  $num_of_objects	= phpgw::get_var('results', 'int', 'GET', 10);
-			  $sort_field		= phpgw::get_var('sort');
-			  $sort_ascending	= phpgw::get_var('dir') == 'desc' ? false : true;
+			/* $start_index	= Sanitizer::get_var('startIndex', 'int');
+			  $num_of_objects	= Sanitizer::get_var('results', 'int', 'GET', 10);
+			  $sort_field		= Sanitizer::get_var('sort');
+			  $sort_ascending	= Sanitizer::get_var('dir') == 'desc' ? false : true;
 			  // Form variables
-			  $search_for 	= phpgw::get_var('query');
-			  $search_type	= phpgw::get_var('search_option'); */
+			  $search_for 	= Sanitizer::get_var('query');
+			  $search_type	= Sanitizer::get_var('search_option'); */
 			// Create an empty result set
 			$result_objects = array();
 			$result_count = 0;
 
 			//Retrieve a contract identifier and load corresponding contract
-			$contract_id = phpgw::get_var('contract_id');
+			$contract_id = Sanitizer::get_var('contract_id');
 			if (isset($contract_id))
 			{
 				$contract = rental_socontract::get_instance()->get_single($contract_id);
 			}
 
-			$type = phpgw::get_var('type');
+			$type = Sanitizer::get_var('type');
 			switch ($type)
 			{
 				case 'documents_for_contract':
-					$filters = array('contract_id' => $contract_id, 'document_type' => phpgw::get_var('document_type'));
+					$filters = array('contract_id' => $contract_id, 'document_type' => Sanitizer::get_var('document_type'));
 					break;
 				case 'documents_for_party':
-					$filters = array('party_id' => phpgw::get_var('party_id'), 'document_type' => phpgw::get_var('document_type'));
+					$filters = array('party_id' => Sanitizer::get_var('party_id'), 'document_type' => Sanitizer::get_var('document_type'));
 					break;
 			}
 
@@ -162,8 +162,8 @@
 		public function add()
 		{
 			// Get target ids
-			$contract_id = intval(phpgw::get_var('contract_id'));
-			$party_id = intval(phpgw::get_var('party_id'));
+			$contract_id = intval(Sanitizer::get_var('contract_id'));
+			$party_id = intval(Sanitizer::get_var('party_id'));
 
 			$message = array();
 
@@ -172,7 +172,7 @@
 			{
 				//Load contract
 				$contract = rental_socontract::get_instance()->get_single($contract_id);
-				if (!$contract->has_permission(PHPGW_ACL_EDIT))
+				if (!$contract->has_permission(ACL_EDIT))
 				{
 					$message['error'][] = array('msg' => lang('permission_denied_add_document'));
 					return $message;
@@ -202,10 +202,10 @@
 			{
 				//Create a document object
 				$document = new rental_document();
-				$document->set_title(phpgw::get_var('document_title'));
+				$document->set_title(Sanitizer::get_var('document_title'));
 				$file_name = str_replace(array('"', "'", ' ', ','), '_', $_FILES["file_path"]["name"]);
 				$document->set_name($file_name);
-				$document->set_type_id(phpgw::get_var('document_type'));
+				$document->set_type_id(Sanitizer::get_var('document_type'));
 				$document->set_contract_id($contract_id);
 				$document->set_party_id($party_id);
 
@@ -247,9 +247,9 @@
 		 */
 		public function view()
 		{
-			$document_id = intval(phpgw::get_var('id'));
+			$document_id = intval(Sanitizer::get_var('id'));
 			$document = rental_sodocument::get_instance()->get_single($document_id);
-			if ($document->has_permission(PHPGW_ACL_READ))
+			if ($document->has_permission(ACL_READ))
 			{
 				$document_properties = $this->get_type_and_id($document);
 				$mime_magic	 = createObject('phpgwapi.mime_magic');
@@ -281,7 +281,7 @@
 		 */
 		/* public function delete()
 		  {
-		  $document_id = intval(phpgw::get_var('id'));
+		  $document_id = intval(Sanitizer::get_var('id'));
 		  $document = rental_sodocument::get_instance()->get_single($document_id);
 		  $document_properties = $this->get_type_and_id($document);
 
@@ -307,7 +307,7 @@
 
 		public function delete()
 		{
-			$list_document_id = phpgw::get_var('id');
+			$list_document_id = Sanitizer::get_var('id');
 			$message = array();
 
 			foreach ($list_document_id as $document_id)
@@ -358,12 +358,12 @@
 		{
 			if ($document_properties['document_type'] == rental_sodocument::$CONTRACT_DOCUMENTS)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
 					'id' => $document_properties['id'], 'error' => $error, 'message' => $message));
 			}
 			else if ($document_properties['document_type'] == rental_sodocument::$PARTY_DOCUMENTS)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uiparty.edit',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uiparty.edit',
 					'id' => $document_properties['id'], 'error' => $error, 'message' => $message));
 			}
 		}
@@ -383,7 +383,7 @@
 			if ($document_properties == rental_sodocument::$CONTRACT_DOCUMENTS)
 			{
 				$contract = rental_socontract::get_instance()->get_single($document_properties['id']);
-				if (!$contract->has_permission(PHPGW_ACL_EDIT))
+				if (!$contract->has_permission(ACL_EDIT))
 				{
 					return false;
 				}

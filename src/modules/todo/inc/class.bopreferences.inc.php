@@ -51,7 +51,7 @@
 
 				$GLOBALS['phpgw']->preferences->save_repository(True);
 
-				Header('Location: '.$GLOBALS['phpgw']->link('/preferences/index.php'));
+				Header('Location: '.phpgw::link('/preferences/index.php'));
 				$GLOBALS['phpgw_info']['flags']['nodisplay'] = True;
 				exit;
 			}

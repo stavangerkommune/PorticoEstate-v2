@@ -26,7 +26,7 @@
 		$this->bocommon = CreateObject('property.bocommon');
 
 		$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
-		$this->db = & $GLOBALS['phpgw']->db;
+		$this->db = Db::getInstance();
 	}
 
 	public $public_functions = array
@@ -37,25 +37,25 @@
 	
 		function query()
 	{
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 			$params = array
 				(
-				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results' => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start' => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results' => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query' => $search['value'],
 				'order' => $columns[$order[0]['column']]['data'],
 				'sort' => $order[0]['dir'],
 				'filter' => $this->filter,
-				'allrows' => phpgw::get_var('length', 'int') == -1,
-				'status_id' => phpgw::get_var('status_id')
+				'allrows' => Sanitizer::get_var('length', 'int') == -1,
+				'status_id' => Sanitizer::get_var('status_id')
 			);
 
 
-		$modelId = phpgw::get_var("modelId");
+		$modelId = Sanitizer::get_var("modelId");
 		if(empty($modelId))
 		{
 				$bimItems = array();
@@ -96,7 +96,7 @@
 
 		public function showItems()
 		{
-			if(phpgw::get_var('phpgw_return_as') == 'json')
+			if(Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 		}
@@ -117,7 +117,7 @@
 				  ), */
 				),
 				'datatable' => array(
-					'source' => self::link(array('menuaction' => 'bim.uibimitem.showItems', 'modelId' => phpgw::get_var("modelId"),
+					'source' => self::link(array('menuaction' => 'bim.uibimitem.showItems', 'modelId' => Sanitizer::get_var("modelId"),
 						'phpgw_return_as' => 'json')),
 					'ungroup_buttons' => true,
 					'allrows' => true,
@@ -161,7 +161,7 @@
 				(
 				'my_name' => 'view',
 				'text' => lang('view'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'bim.uibimitem.showBimItem'
 				)),
@@ -173,18 +173,18 @@
 
 	public function showBimItem()
 	{
-		$modelGuid = phpgw::get_var("modelGuid");
+		$modelGuid = Sanitizer::get_var("modelGuid");
 		if(empty($modelGuid))
 		{
 			echo "No guid!";
 		}
 		else
 		{
-			$GLOBALS['phpgw']->xslttpl->add_file(array('bim_showSingleItem'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('bim_showSingleItem'));
 			$sobimitem = new sobimitem_impl($this->db);
 			/* @var $bimItem BimItem */
 			$bimItem = $sobimitem->getBimItem($modelGuid);			
-    		$GLOBALS['phpgw']->xslttpl->set_xml_data($bimItem->getXml());
+    		phpgwapi_xslttemplates::getInstance()->set_xml_data($bimItem->getXml());
 			$this->setupBimCss();
 		}
 	}
@@ -213,6 +213,6 @@
 			{
             $GLOBALS['phpgw']->css = createObject('phpgwapi.css');
         }
-        $GLOBALS['phpgw']->css->add_external_file('bim/templates/base/css/bim.css');
+        phpgwapi_css::getInstance()->add_external_file('bim/templates/base/css/bim.css');
     }
 	}

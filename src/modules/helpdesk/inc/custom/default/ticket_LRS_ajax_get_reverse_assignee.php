@@ -67,13 +67,13 @@
 
 			function set_notify()
 			{
-				if (!$GLOBALS['phpgw']->acl->check('.ticket', PHPGW_ACL_EDIT, 'helpdesk'))
+				if (!$GLOBALS['phpgw']->acl->check('.ticket', ACL_EDIT, 'helpdesk'))
 				{
 					return;
 				}
 
-				$account_lid = phpgw::get_var('account_lid');
-				$location_item_id = (int)phpgw::get_var('ticket_id', 'int');
+				$account_lid = Sanitizer::get_var('account_lid');
+				$location_item_id = (int)Sanitizer::get_var('ticket_id', 'int');
 				if($account_lid)
 				{
 					$helpdesk_account = new helpdesk_account();
@@ -137,7 +137,7 @@
 					return;
 				}
 
-				$account_lid = phpgw::get_var('account_lid');
+				$account_lid = Sanitizer::get_var('account_lid');
 
 				if((int)$account_lid)
 				{
@@ -173,8 +173,8 @@
 
 			function get_on_behalf_of()
 			{
-				$query = phpgw::get_var('query');
-				$search_options = phpgw::get_var('search_options');
+				$query = Sanitizer::get_var('query');
+				$search_options = Sanitizer::get_var('search_options');
 
 				if (!$db = $this->get_db())
 				{
@@ -235,7 +235,7 @@
 						$org_units[] = $db->f('ORG_ENHET_ID');
 					}
 
-					$ticket_id = (int)phpgw::get_var('ticket_id');
+					$ticket_id = (int)Sanitizer::get_var('ticket_id');
 
 					$GLOBALS['phpgw']->db->query("SELECT user_id FROM phpgw_helpdesk_tickets WHERE id = {$ticket_id}", __LINE__, __FILE__);
 					$GLOBALS['phpgw']->db->next_record();
@@ -416,7 +416,7 @@
 			 */
 			function get_reverse_assignee()
 			{
-				$on_behalf_of_lid = phpgw::get_var('on_behalf_of_lid', 'string');
+				$on_behalf_of_lid = Sanitizer::get_var('on_behalf_of_lid', 'string');
 
 
 				if (!$on_behalf_of_lid)
@@ -580,7 +580,7 @@
 
 
 
-	$method = phpgw::get_var('method');
+	$method = Sanitizer::get_var('method');
 
 	if ($method == 'get_reverse_assignee')
 	{

@@ -40,4 +40,4 @@
 
 	include_once('../header.inc.php');
 
-	$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'bim.uibim.showModels'));
+	phpgw::redirect_link('/index.php', array('menuaction' => 'bim.uibim.showModels'));

@@ -43,12 +43,12 @@
 	include_once('../header.inc.php');
 
 	// Make sure we're always logged in
-	if (!phpgw::get_var(session_name(), 'string', 'COOKIE') || !$GLOBALS['phpgw']->session->verify())
+	if (!Sanitizer::get_var(session_name(), 'string', 'COOKIE') || !$GLOBALS['phpgw']->session->verify())
 	{
 		$config = createobject('phpgwapi.config', 'bookingfrontend')->read();
 
 		$login		 = $config['anonymous_user'];
-		$logindomain = phpgw::get_var('domain', 'string', 'GET');
+		$logindomain = Sanitizer::get_var('domain', 'string', 'GET');
 		if ($logindomain && strstr($login, '#') === false)
 		{
 			$login .= "#{$logindomain}";
@@ -118,28 +118,28 @@ HTML;
 		}
 	}
 
-	$redirect_input = phpgw::get_var('redirect', 'raw', 'COOKIE');
-	$redirect = $redirect_input ? json_decode(phpgw::get_var('redirect', 'raw', 'COOKIE'), true) : null;
+	$redirect_input = Sanitizer::get_var('redirect', 'raw', 'COOKIE');
+	$redirect = $redirect_input ? json_decode(Sanitizer::get_var('redirect', 'raw', 'COOKIE'), true) : null;
 
 	if (is_array($redirect) && count($redirect))
 	{
 		$redirect_data = array();
 		foreach ($redirect as $key => $value)
 		{
-			$redirect_data[$key] = phpgw::clean_value($value);
+			$redirect_data[$key] = Sanitizer::clean_value($value);
 		}
 
 		$redirect_data['second_redirect'] = true;
 
-		$sessid = phpgw::get_var('sessionid', 'string', 'GET');
+		$sessid = Sanitizer::get_var('sessionid', 'string', 'GET');
 		if ($sessid)
 		{
 			$redirect_data['sessionid']	 = $sessid;
-			$redirect_data['kp3']		 = phpgw::get_var('kp3', 'string', 'GET');
+			$redirect_data['kp3']		 = Sanitizer::get_var('kp3', 'string', 'GET');
 		}
 
 		$GLOBALS['phpgw']->session->phpgw_setcookie('redirect', false, 0);
-		$GLOBALS['phpgw']->redirect_link('/bookingfrontend/', $redirect_data);
+		phpgw::redirect_link('/bookingfrontend/', $redirect_data);
 		unset($redirect);
 		unset($redirect_data);
 		unset($sessid);
@@ -151,11 +151,11 @@ HTML;
 // BEGIN Stuff copied from functions.inc.php
 /////////////////////////////////////////////////////////////////////////////
 
-	$selected_lang = phpgw::get_var('selected_lang', 'string', 'COOKIE');
+	$selected_lang = Sanitizer::get_var('selected_lang', 'string', 'COOKIE');
 
-	if (phpgw::get_var('lang', 'bool', 'GET'))
+	if (Sanitizer::get_var('lang', 'bool', 'GET'))
 	{
-		$selected_lang = phpgw::get_var('lang', 'string', 'GET');
+		$selected_lang = Sanitizer::get_var('lang', 'string', 'GET');
 		$GLOBALS['phpgw']->session->phpgw_setcookie('selected_lang', $selected_lang, (time() + (60 * 60 * 24 * 14)));
 	}
 
@@ -163,7 +163,7 @@ HTML;
 
 	$GLOBALS['phpgw']->translation->set_userlang($userlang, true);
 
-	$template_set = phpgw::get_var('template_set', 'string', 'COOKIE');
+	$template_set = Sanitizer::get_var('template_set', 'string', 'COOKIE');
 
     /**
      *  converted menuactions
@@ -208,7 +208,7 @@ HTML;
 	/*	 * **********************************************************************\
 	 * Load the menuaction                                                    *
 	  \*********************************************************************** */
-	$GLOBALS['phpgw_info']['menuaction'] = phpgw::get_var('menuaction');
+	$GLOBALS['phpgw_info']['menuaction'] = Sanitizer::get_var('menuaction');
 	if (!$GLOBALS['phpgw_info']['menuaction'])
 	{
 		unset($GLOBALS['phpgw_info']['menuaction']);
@@ -253,7 +253,7 @@ HTML;
 
 	if ($GLOBALS['phpgw_info']['flags']['currentapp'] != 'home' && $GLOBALS['phpgw_info']['flags']['currentapp'] != 'about')
 	{
-		if (!$GLOBALS['phpgw']->acl->check('run', PHPGW_ACL_READ, $GLOBALS['phpgw_info']['flags']['currentapp']))
+		if (!$GLOBALS['phpgw']->acl->check('run', ACL_READ, $GLOBALS['phpgw_info']['flags']['currentapp']))
 		{
 			$invalid_data = true;
 			$GLOBALS['phpgw']->common->phpgw_header(true);
@@ -334,9 +334,9 @@ HTML;
 
 	if (!$invalid_data && is_object($GLOBALS[$class]) && isset($GLOBALS[$class]->public_functions) && is_array($GLOBALS[$class]->public_functions) && isset($GLOBALS[$class]->public_functions[$method]) && $GLOBALS[$class]->public_functions[$method])
 	{
-		if (phpgw::get_var('X-Requested-With', 'string', 'SERVER') == 'XMLHttpRequest'
+		if (Sanitizer::get_var('X-Requested-With', 'string', 'SERVER') == 'XMLHttpRequest'
 			// deprecated
-			|| phpgw::get_var('phpgw_return_as', 'string', 'GET') == 'json')
+			|| Sanitizer::get_var('phpgw_return_as', 'string', 'GET') == 'json')
 		{
 			// comply with RFC 4627
 			header('Content-Type: application/json');

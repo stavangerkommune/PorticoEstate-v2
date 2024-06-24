@@ -75,7 +75,7 @@
 				unset($params['filters']['active']);
 			}
 
-			$organization_number = phpgw::get_var('organization_number', 'bool');
+			$organization_number = Sanitizer::get_var('organization_number', 'bool');
 			$values =  eventplanner_sovendor::get_instance()->read($params);
 	//		$status_text = eventplanner_vendor::get_status_list();
 			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];

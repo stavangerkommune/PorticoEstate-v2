@@ -39,13 +39,13 @@
 		{
 			require_once(PHPGW_SERVER_ROOT.'/felamimail/inc/xajax.inc.php');
 
-			$xajax = new xajax($GLOBALS['phpgw']->link('/felamimail/xajax.php',false,true), 'xajax_', 'utf-8');
+			$xajax = new xajax(phpgw::link('/felamimail/xajax.php',false,true), 'xajax_', 'utf-8');
 			$xajax->waitCursorOff();
 			$xajax->registerFunction("doXMLHTTP");
 
 			$GLOBALS['phpgw_info']['flags']['java_script'] .= $xajax->getJavascript($GLOBALS['phpgw_info']['server']['webserver_url'] . '/felamimail/js/');
 
-			$GLOBALS['phpgw']->js->validate_file('jsapi', 'jsapi', 'felamimail');
+			phpgwapi_js::getInstance()->validate_file('jsapi', 'jsapi', 'felamimail');
 
 			$this->t = & $GLOBALS['phpgw']->template;
 			$this->charset = 'utf-8';
@@ -62,7 +62,7 @@
 			{
 				$GLOBALS['phpgw']->css = createObject('phpgwapi.css');
 			}
-			$GLOBALS['phpgw']->css->validate_file('app', 'felamimail');
+			phpgwapi_css::getInstance()->validate_file('app', 'felamimail');
 		}
 		
 		function addACL()
@@ -86,27 +86,27 @@
 			switch($_GET['menuaction'])
 			{
 				case 'felamimail.uipreferences.editSignature':
-					$GLOBALS['phpgw']->js->validate_file('jscode','listSignatures','felamimail');
-					#$GLOBALS['phpgw']->js->set_onload('fm_initEditLayout();');
+					phpgwapi_js::getInstance()->validate_file('jscode','listSignatures','felamimail');
+					#phpgwapi_js::getInstance()->set_onload('fm_initEditLayout();');
 					break;
 				case 'felamimail.uipreferences.listAccountData':
 				case 'felamimail.uipreferences.editAccountData':
-					$GLOBALS['phpgw']->js->validate_file('jscode','editAccountData','felamimail');
-					$GLOBALS['phpgw']->js->set_onload('javascript:initEditAccountData();');
+					phpgwapi_js::getInstance()->validate_file('jscode','editAccountData','felamimail');
+					phpgwapi_js::getInstance()->set_onload('javascript:initEditAccountData();');
 					break;
 
 				case 'felamimail.uipreferences.listSignatures':
-					$GLOBALS['phpgw']->js->validate_file('jscode','listSignatures','felamimail');
-					#$GLOBALS['phpgw']->js->set_onload('javascript:initEditAccountData();');
+					phpgwapi_js::getInstance()->validate_file('jscode','listSignatures','felamimail');
+					#phpgwapi_js::getInstance()->set_onload('javascript:initEditAccountData();');
 					break;
 
 				case 'felamimail.uipreferences.listFolder':
 				case 'felamimail.uipreferences.addACL':
-					$GLOBALS['phpgw']->js->validate_file('tabs','tabs','felamimail');
-					$GLOBALS['phpgw']->js->validate_file('dhtmlxtree','js/dhtmlXCommon','felamimail');
-					$GLOBALS['phpgw']->js->validate_file('dhtmlxtree','js/dhtmlXTree','felamimail');
-					$GLOBALS['phpgw']->js->validate_file('jscode','listFolder','felamimail');
-					$GLOBALS['phpgw']->js->set_onload('javascript:initAll();');
+					phpgwapi_js::getInstance()->validate_file('tabs','tabs','felamimail');
+					phpgwapi_js::getInstance()->validate_file('dhtmlxtree','js/dhtmlXCommon','felamimail');
+					phpgwapi_js::getInstance()->validate_file('dhtmlxtree','js/dhtmlXTree','felamimail');
+					phpgwapi_js::getInstance()->validate_file('jscode','listFolder','felamimail');
+					phpgwapi_js::getInstance()->set_onload('javascript:initAll();');
 					break;
 			}
 			
@@ -148,7 +148,7 @@
 			$linkData = array (
 				'menuaction'    => 'felamimail.uipreferences.editForwardingAddress'
 			);
-			$this->t->set_var('form_action',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('form_action',phpgw::link('/index.php',$linkData));
 			$this->t->set_var('forwarding_address',$userData['mailForwardingAddress'][0]);
 			
 			#deliveryMode checked_keep_local_copy
@@ -181,7 +181,7 @@
 			$linkData = array (
 				'menuaction'    => 'felamimail.uipreferences.editSignature'
 			);
-			$this->t->set_var('form_action', $GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('form_action', phpgw::link('/index.php',$linkData));
 
 			if(isset($_GET['signatureID'])) {
 
@@ -383,7 +383,7 @@
 			(
 				'menuaction'    => 'felamimail.uipreferences.editAccountData'
 			);
-			$this->t->set_var('form_action',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('form_action',phpgw::link('/index.php',$linkData));
 
 			$this->t->parse("out","main");
 			print $this->t->get('out','main');
@@ -479,13 +479,13 @@
 			(
 				'menuaction'    => 'felamimail.uipreferences.listFolder'
 			);
-			$this->t->set_var('form_action',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('form_action',phpgw::link('/index.php',$linkData));
 
 			$linkData = array
 			(
 				'menuaction'    => 'felamimail.uipreferences.addACL'
 			);
-			$this->t->set_var('url_addACL',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('url_addACL',phpgw::link('/index.php',$linkData));
 			
 			// create the link to show folder settings
 			#$linkData = array
@@ -493,7 +493,7 @@
 			#	'menuaction'    => 'felamimail.uipreferences.listFolder',
 			#	'display'	=> 'settings'
 			#);
-			#$this->t->set_var('settings_url',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			#$this->t->set_var('settings_url',phpgw::link('/index.php',$linkData));
 			
 			// create the link to show folder acl
 			#$linkData = array
@@ -501,7 +501,7 @@
 			#	'menuaction'    => 'felamimail.uipreferences.listFolder',
 			#	'display'	=> 'acl'
 			#);
-			#$this->t->set_var('acl_url',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			#$this->t->set_var('acl_url',phpgw::link('/index.php',$linkData));
 			
 			// folder select box
 			$icServer = $mailPrefs->getIncomingServer(0);
@@ -600,13 +600,13 @@
 			(
 				'menuaction'    => 'felamimail.uipreferences.listFolder'
 			);
-			$this->t->set_var('form_action', $GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('form_action', phpgw::link('/index.php',$linkData));
 
 			$linkData = array
 			(
 				'menuaction'    => 'felamimail.uipreferences.editSignature'
 			);
-			$this->t->set_var('url_addSignature', $GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('url_addSignature', phpgw::link('/index.php',$linkData));
 			
 			$this->t->set_var('url_image_add',$GLOBALS['phpgw']->common->image('phpgwapi','new'));
 			$this->t->set_var('url_image_delete',$GLOBALS['phpgw']->common->image('phpgwapi','delete'));
@@ -657,14 +657,14 @@
 			#(
 			#	'menuaction'    => 'felamimail.uipreferences.listFolder'
 			#);
-			#$this->t->set_var('form_action', $GLOBALS['phpgw']->link('/index.php',$linkData));
+			#$this->t->set_var('form_action', phpgw::link('/index.php',$linkData));
 
 			$linkData = array
 			(
 				'menuaction'    => 'felamimail.uipreferences.editAccountData',
 				'accountID'		=> 'new'
 			);
-			$this->t->set_var('url_addAccount', $GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('url_addAccount', phpgw::link('/index.php',$linkData));
 			
 			$this->t->set_var('url_image_add',$GLOBALS['phpgw']->common->image('phpgwapi','new'));
 			$this->t->set_var('url_image_delete',$GLOBALS['phpgw']->common->image('phpgwapi','delete'));

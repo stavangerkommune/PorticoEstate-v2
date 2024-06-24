@@ -37,7 +37,7 @@
 			parent::__construct();
 			$GLOBALS['phpgw_info']['flags']['nonavbar'] = true;
 			//FIXME
-		//	$GLOBALS['phpgw']->css->add_external_file('controller/templates/mobilefrontend/css/base.css');
+		//	phpgwapi_css::getInstance()->add_external_file('controller/templates/mobilefrontend/css/base.css');
 		}
 		/**
 		 * Public function for displaying the edit check list form
@@ -49,7 +49,7 @@
 		  function edit_check_list( $check_list = null ){
 		  if($check_list == null)
 		  {
-		  $check_list_id = phpgw::get_var('check_list_id');
+		  $check_list_id = Sanitizer::get_var('check_list_id');
 		  $check_list = $this->so->get_single($check_list_id);
 		  }
 

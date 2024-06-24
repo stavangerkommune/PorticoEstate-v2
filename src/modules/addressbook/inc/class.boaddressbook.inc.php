@@ -667,7 +667,7 @@
 			{
 				phpgwapi_cache::message_set('You must select a vcard. (*.vcf)', 'error');
 				
-				$GLOBALS['phpgw']->redirect_link('/index.php',array('menuaction' => 'addressbook.uivcard.in'));
+				phpgw::redirect_link('/index.php',array('menuaction' => 'addressbook.uivcard.in'));
 			}
 			else
 			{
@@ -701,7 +701,7 @@
 				
 				phpgwapi_cache::message_set('vcard has been added', 'message');
 				
-				$GLOBALS['phpgw']->redirect_link('/index.php',array('menuaction' => 'addressbook.uiaddressbook_persons.view', 'ab_id' => $ab_id, 'vcard' => 1));
+				phpgw::redirect_link('/index.php',array('menuaction' => 'addressbook.uiaddressbook_persons.view', 'ab_id' => $ab_id, 'vcard' => 1));
 			}
 		}
 
@@ -764,7 +764,7 @@
 
 			$GLOBALS['phpgw']->preferences->save_repository(True);
 			/* _debug_array($prefs);exit; */
-			$GLOBALS['phpgw']->redirect_link('/preferences/index.php');
+			phpgw::redirect_link('/preferences/index.php');
 		}
 
 		//used
@@ -874,7 +874,7 @@
 		//used
 		function can_delete($contact_id, $owner='')
 		{
-			if ($this->so->contacts->check_perms($this->grants[$owner],PHPGW_ACL_DELETE) || 
+			if ($this->so->contacts->check_perms($this->grants[$owner],ACL_DELETE) || 
 			    $owner == $GLOBALS['phpgw_info']['user']['account_id'])
 			{
 				return True;

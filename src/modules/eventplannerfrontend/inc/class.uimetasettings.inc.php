@@ -71,12 +71,12 @@
 
 		public function index()
 		{
-			if (empty($this->permissions[PHPGW_ACL_READ]))
+			if (empty($this->permissions[ACL_READ]))
 			{
 				phpgw::no_access();
 			}
 
-			$appname = phpgw::get_var('appname');
+			$appname = Sanitizer::get_var('appname');
 			$appname = $appname ? $appname : $this->currentapp;
 			$config = CreateObject('phpgwapi.config', $appname);
 			$config->read();
@@ -93,7 +93,7 @@
 
 				foreach ($this->fields as $field	=> $field_info)
 				{
-					if(($field_info['action'] & PHPGW_ACL_ADD) ||  ($field_info['action'] & PHPGW_ACL_EDIT))
+					if(($field_info['action'] & ACL_ADD) ||  ($field_info['action'] & ACL_EDIT))
 					{
 						$value = $metasettings->$field;
 						if (strlen(trim($value)) > 0)
@@ -130,9 +130,9 @@
 		{
 			foreach ($this->fields as $field	=> $field_info)
 			{
-				if(($field_info['action'] & PHPGW_ACL_ADD) ||  ($field_info['action'] & PHPGW_ACL_EDIT))
+				if(($field_info['action'] & ACL_ADD) ||  ($field_info['action'] & ACL_EDIT))
 				{
-						$object->set_field( $field, phpgw::get_var($field, $field_info['type'] ) );
+						$object->set_field( $field, Sanitizer::get_var($field, $field_info['type'] ) );
 				}
 			}
 		}

@@ -638,7 +638,7 @@
 			//$this->msg->dbug->out('<br /><br />');
 			$this->msg->dbug->out('email.bopreferences.debug_dump_prefs: std_prefs var DUMP:', $this->std_prefs);
 			$this->msg->dbug->out('email.bopreferences.debug_dump_prefs: cust_prefs var DUMP:', $this->cust_prefs);
-			//Header('Location: ' . $GLOBALS['phpgw']->link('/preferences/index.php'));
+			//Header('Location: ' . phpgw::link('/preferences/index.php'));
 			//return;
 			// DEBUG end
 		}
@@ -1013,7 +1013,7 @@
 						// all other data needs no special processing before going into the repository
 						$processed_pref = $submitted_pref;
 					}
-					if ($this->debug_set_prefs > 1) { $this->msg->dbug->out('email: bopreferences: process_submitted_prefs: about to assign pref ["'.$this_pref['id'].'"] this value, post processing (if any):', $GLOBALS['phpgw']->strip_html($processed_pref)); }
+					if ($this->debug_set_prefs > 1) { $this->msg->dbug->out('email: bopreferences: process_submitted_prefs: about to assign pref ["'.$this_pref['id'].'"] this value, post processing (if any):', phpgw::strip_html($processed_pref)); }
 					
 					// a) as always, delete the pref before we assign a value
 					$GLOBALS['phpgw']->preferences->delete('email',$this_pref['id']);
@@ -1089,7 +1089,7 @@
 				$GLOBALS['phpgw']->msg->end_request();
 				
 				// redirect user back to main preferences page
-				$take_me_to_url = $GLOBALS['phpgw']->link(
+				$take_me_to_url = phpgw::link(
 											'/preferences/index.php');
 			
 				if ($this->debug_set_prefs > 0) { $this->msg->dbug->out('email.bopreferences.preferences(): almost LEAVING, about to issue a redirect to:<br />'.$take_me_to_url.'<br />'); }
@@ -1253,7 +1253,7 @@
 			}
 			else
 			{
-				Header('Location: ' . $GLOBALS['phpgw']->link('/preferences/index.php'));
+				Header('Location: ' . phpgw::link('/preferences/index.php'));
 			}
 			*/
 		}
@@ -1393,7 +1393,7 @@
 						// all other data needs no special processing before going into the repository
 						$processed_pref = $submitted_pref;
 					}
-					if ($this->debug_set_prefs > 1) { $this->msg->dbug->out('email: bopreferences: process_ex_accounts_submitted_prefs: about to assign pref ["'.$this_pref['id'].'"] this value, post processing (if any):', $GLOBALS['phpgw']->strip_html($processed_pref)); }
+					if ($this->debug_set_prefs > 1) { $this->msg->dbug->out('email: bopreferences: process_ex_accounts_submitted_prefs: about to assign pref ["'.$this_pref['id'].'"] this value, post processing (if any):', phpgw::strip_html($processed_pref)); }
 					
 					// a) as always, delete the pref before we assign a value
 					$pref_struct_str = '["ex_accounts"]['.$this->acctnum.']["'.$this_pref['id'].'"]';
@@ -1485,7 +1485,7 @@
 			}
 			else
 			{
-				$take_me_to_url = $GLOBALS['phpgw']->link(
+				$take_me_to_url = phpgw::link(
 											'/index.php',
 											'menuaction=email.uipreferences.ex_accounts_list');
 				
@@ -1611,7 +1611,7 @@
 			}
 			
 			// redirect user back to main preferences page
-			$take_me_to_url = $GLOBALS['phpgw']->link(
+			$take_me_to_url = phpgw::link(
 										'/index.php',
 										'menuaction=email.uipreferences.ex_accounts_list');
 			
@@ -1712,7 +1712,7 @@
 							$accountname = 'unknown accountname on ('.__LINE__.')';
 						}
 						
-						$return_list[$next_pos]['go_there_url'] = $GLOBALS['phpgw']->link('/index.php', array
+						$return_list[$next_pos]['go_there_url'] = phpgw::link('/index.php', array
 															(
 															'menuaction' => 'email.uiindex.index',
 															'fldball[folder]' => 'INBOX',
@@ -1731,14 +1731,14 @@
 					$return_list[$next_pos]['display_string'] = '['.$this_acctnum.'] '.$accountname;
 					
 					// NEXT: control action links
-					$return_list[$next_pos]['edit_url'] = $GLOBALS['phpgw']->link('/index.php', array
+					$return_list[$next_pos]['edit_url'] = phpgw::link('/index.php', array
 														(
 														 	'menuaction' => 'email.uipreferences.ex_accounts_edit',
 															'ex_acctnum' => $this_acctnum
 														));
 					$return_list[$next_pos]['edit_href'] = '<a href="'.$return_list[$next_pos]['edit_url'].'">'.lang('Edit').'</a>';
 
-					$return_list[$next_pos]['delete_url'] = $GLOBALS['phpgw']->link('/index.php', array
+					$return_list[$next_pos]['delete_url'] = phpgw::link('/index.php', array
 														 (
 														 	'menuaction' => 'email.bopreferences.ex_accounts_delete',
 															'ex_acctnum' => $this_acctnum

@@ -46,8 +46,8 @@
 
 		function step1()
 		{
-			$r_reg	 = phpgw::get_var('r_reg');
-			$o_reg	 = phpgw::get_var('o_reg');
+			$r_reg	 = Sanitizer::get_var('r_reg');
+			$o_reg	 = Sanitizer::get_var('o_reg');
 
 			$so = createobject('registration.soreg');
 
@@ -84,11 +84,11 @@
 		function step2()
 		{
 			$ui		 = createobject('registration.uireg');
-			if (!$r_reg	 = phpgw::get_var('r_reg'))
+			if (!$r_reg	 = Sanitizer::get_var('r_reg'))
 			{
 				$r_reg = array();
 			}
-			if (!$o_reg = phpgw::get_var('o_reg'))
+			if (!$o_reg = Sanitizer::get_var('o_reg'))
 			{
 				$o_reg = array();
 			}
@@ -139,7 +139,7 @@
 			if ($this->config['password_is'] == 'http')
 			{
 				// remove entities to stop mangling
-				$r_reg['passwd']		 = $r_reg['passwd_confirm'] = html_entity_decode(phpgw::clean_value($_SERVER['PHP_AUTH_PW']));
+				$r_reg['passwd']		 = $r_reg['passwd_confirm'] = html_entity_decode(Sanitizer::clean_value($_SERVER['PHP_AUTH_PW']));
 			}
 
 			if (($this->config['display_tos']) && !$r_reg['tos_agree'])
@@ -300,14 +300,14 @@
 			{
 				$GLOBALS['phpgw']->session->appsession('loginid', 'registration', '');
 				// Redirect them so they don't hit refresh and make a mess
-				$GLOBALS['phpgw']->redirect_link('/registration/main.php', array('menuaction'	 => 'registration.uireg.ready_to_activate',
+				phpgw::redirect_link('/registration/main.php', array('menuaction'	 => 'registration.uireg.ready_to_activate',
 					'reg_id'		 => $reg_id, 'logindomain'	 => $_REQUEST['logindomain']));
 			}
 		}
 
 		function step4()
 		{
-			$reg_id		 = phpgw::get_var('reg_id');
+			$reg_id		 = Sanitizer::get_var('reg_id');
 			$so			 = createobject('registration.soreg');
 			$ui			 = createobject('registration.uireg');
 			$reg_info	 = $so->valid_reg($reg_id);
@@ -346,7 +346,7 @@
 		//
 		function lostpw1()
 		{
-			$r_reg	 = phpgw::get_var('r_reg');
+			$r_reg	 = Sanitizer::get_var('r_reg');
 			$so		 = createobject('registration.soreg');
 			$errors	 = array();
 
@@ -386,7 +386,7 @@
 			else
 			{
 				// Redirect them so they don't hit refresh and make a mess
-				$GLOBALS['phpgw']->redirect_link('/registration/main.php', array('menuaction'	 => 'registration.uireg.email_sent_lostpw',
+				phpgw::redirect_link('/registration/main.php', array('menuaction'	 => 'registration.uireg.email_sent_lostpw',
 					'logindomain'	 => $_REQUEST['logindomain']));
 			}
 		}
@@ -396,7 +396,7 @@
 		//
 		function lostpw2()
 		{
-			$reg_id = phpgw::get_var('reg_id');
+			$reg_id = Sanitizer::get_var('reg_id');
 
 			$so			 = createobject('registration.soreg');
 			$ui			 = createobject('registration.uireg');
@@ -420,7 +420,7 @@
 		//
 		function lostpw3()
 		{
-			$r_reg = phpgw::get_var('r_reg', 'string', 'POST');
+			$r_reg = Sanitizer::get_var('r_reg', 'string', 'POST');
 
 			$passwd		 = html_entity_decode($r_reg['passwd']);
 			$passwd_2	 = html_entity_decode($r_reg['passwd_2']);
@@ -487,7 +487,7 @@
 				}
 				else
 				{
-					$GLOBALS['phpgw']->redirect_link('/registration/main.php', array('menuaction'	 => 'registration.boreg.step1',
+					phpgw::redirect_link('/registration/main.php', array('menuaction'	 => 'registration.boreg.step1',
 						'r_reg[loginid]' => $_SERVER['PHP_AUTH_USER'], 'logindomain'	 => $_REQUEST['logindomain']));
 				}
 			}
@@ -522,8 +522,8 @@
 
 		function get_locations()
 		{
-			$location_code	 = phpgw::get_var('location_code');
-			$field			 = phpgw::get_var('field');
+			$location_code	 = Sanitizer::get_var('location_code');
+			$field			 = Sanitizer::get_var('field');
 			if ($field)
 			{
 				$field_info_arr = explode('::', $this->fields[$field]['field_values']);

@@ -10,5 +10,5 @@
 	);
 	$GLOBALS['phpgw_info']['flags']['session_name'] = 'bookingfrontendsession';
 	include_once('../header.inc.php');
-	$GLOBALS['phpgw']->redirect_link('/bookingfrontend/');
+	phpgw::redirect_link('/bookingfrontend/');
 	exit;

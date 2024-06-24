@@ -44,7 +44,7 @@
 
 		public function run( $options = array() )
 		{
-			$db = & $GLOBALS['phpgw']->db;
+			$db = Db::getInstance();
 
 			$reservation_types = array(
 //				'booking',

@@ -237,7 +237,7 @@ lang_warn_style_sheet = lang of "warn_style_sheet"
 					'on_change'		=> 'document.acctbox.submit()'
 				);
 				$this->xi['acctbox_listbox'] = $GLOBALS['phpgw']->msg->all_ex_accounts_listbox($feed_args);
-				$this->xi['accounts_link'] = $GLOBALS['phpgw']->link(
+				$this->xi['accounts_link'] = phpgw::link(
 								'/index.php',array(
 								 'menuaction'=>'email.uipreferences.ex_accounts_list'));
 //				$this->xi['accounts_img'] = $GLOBALS['phpgw']->msg->img_maketag($GLOBALS['phpgw']->msg->_image_on($this->icon_theme.'/accounts-24','_on'),$this->xi['folders_txt1'],'','','0');
@@ -251,7 +251,7 @@ lang_warn_style_sheet = lang of "warn_style_sheet"
 			}
 			$this->xi['acctbox_frm_name'] = 'acctbox';
 			// switchbox will itself contain "fake_uri" embedded data which includes the applicable account number for the folder
-			$this->xi['acctbox_action'] = $GLOBALS['phpgw']->link(
+			$this->xi['acctbox_action'] = phpgw::link(
 								'/index.php',array(
 								 'menuaction'=>'email.uiindex.index'));
 			
@@ -269,7 +269,7 @@ lang_warn_style_sheet = lang of "warn_style_sheet"
 			//$this->xi['move_postmove_goto_value'] = '';
 			
 			$this->xi['mlist_checkbox_name'] = 'delmov_list[]';
-			$this->xi['frm_delmov_action'] = $GLOBALS['phpgw']->link(
+			$this->xi['frm_delmov_action'] = phpgw::link(
 								'/index.php',array(
 								'menuaction'=>'email.boaction.delmov')+$this->no_fmt);
 			$this->xi['frm_delmov_name'] = 'delmov';
@@ -411,7 +411,7 @@ $msg_headers->udate = $new_time;
 			
 			// addressbook needs to know what to return to, give it ALL VARS we can possibly want preserved
 			// so addybook can send us back to this exact place when done
-			$get_back_here_url = $GLOBALS['phpgw']->link(
+			$get_back_here_url = phpgw::link(
 				'/index.php',array(
 				  'menuaction'=>'email.uimessage.message',
 				'sort'=>$GLOBALS['phpgw']->msg->get_arg_value('sort'),
@@ -468,7 +468,7 @@ $msg_headers->udate = $new_time;
 			// ----  What Folder To Return To  -----
 			//$lnk_goback_folder = $GLOBALS['phpgw']->msg->href_maketag(
 			$lnk_goback_folder = $GLOBALS['phpgw']->msg->href_maketag_class(
-				$GLOBALS['phpgw']->link(
+				phpgw::link(
 					 '/index.php',array(
 					'menuaction'=>'email.uiindex.index',	
 					'fldball[folder]'=>$msgball['folder'],
@@ -494,7 +494,7 @@ $msg_headers->udate = $new_time;
 			{
 				$nav_uri  = (isset($nav_data['prev_msg']['msgball']['uri'])?$nav_data['prev_msg']['msgball']['uri']:array());
 				
-				$prev_msg_link = $GLOBALS['phpgw']->link(
+				$prev_msg_link = phpgw::link(
 					'/index.php',array(
 					 'menuaction'=>'email.uimessage.message',
 					'sort'=>$GLOBALS['phpgw']->msg->get_arg_value('sort'),
@@ -523,7 +523,7 @@ $msg_headers->udate = $new_time;
 			{
 				$nav_uri  = (isset($nav_data['next_msg']['msgball']['uri'])?$nav_data['next_msg']['msgball']['uri']:array());
 				
-				$next_msg_link = $GLOBALS['phpgw']->link(
+				$next_msg_link = phpgw::link(
 					'/index.php',array(
 					 'menuaction'=>'email.uimessage.message',
 					'sort'=>$GLOBALS['phpgw']->msg->get_arg_value('sort'),
@@ -569,7 +569,7 @@ $msg_headers->udate = $new_time;
 			else
 			{
 				// folder is probably empty, probably no more messages to show, so goto uiindex page *for this same folder*
-				$this->xi['move_postmove_goto_value'] = $GLOBALS['phpgw']->link(
+				$this->xi['move_postmove_goto_value'] = phpgw::link(
 						'/index.php',array(
 						 'menuaction'=>'email.uiindex.index',
 						'fldball[folder]'=>$GLOBALS['phpgw']->msg->prep_folder_out(),
@@ -636,7 +636,7 @@ $msg_headers->udate = $new_time;
 				
 				// first text in the "from" table data, AND click on it to compose a new, blank email to this email address
 				$from_and_compose_link = 
-					$GLOBALS['phpgw']->msg->href_maketag($GLOBALS['phpgw']->link(
+					$GLOBALS['phpgw']->msg->href_maketag(phpgw::link(
 						'/index.php',array(
 						 'menuaction'=>'email.uicompose.compose',
 						 // DO NOT USE msgball[] - bosend will interpret this incorrectly as a reply or forward
@@ -653,7 +653,7 @@ $msg_headers->udate = $new_time;
 				// click on the little envelope image to add this person/address to your address book
 				$from_addybook_add = 
 					$GLOBALS['phpgw']->msg->href_maketag(
-						$GLOBALS['phpgw']->link
+						phpgw::link
 							(
 								'/index.php',
 								array
@@ -716,7 +716,7 @@ $msg_headers->udate = $new_time;
 					}
 
 					$to_real_name = $GLOBALS['phpgw']->msg->href_maketag(
-						$GLOBALS['phpgw']->link(
+						phpgw::link(
 							'/index.php',array(
 							 'menuaction'=>'email.uicompose.compose',
 							// DO NOT USE msgball[] - bosend will interpret this incorrectly as a reply or forward
@@ -735,7 +735,7 @@ $msg_headers->udate = $new_time;
 					// Skeeter
 					
 					$to_addybook_add = $GLOBALS['phpgw']->msg->href_maketag(
-						$GLOBALS['phpgw']->link(
+						phpgw::link(
 							 '/index.php',array(
 							 'menuaction'=>'addressbook.uiaddressbook_persons.add_email',
 							'add_email'=>urlencode($to_plain),
@@ -790,7 +790,7 @@ $msg_headers->udate = $new_time;
 					{
 						$cc_extra_info = ' ';
 					}
-					$cc_real_name = $GLOBALS['phpgw']->msg->href_maketag($GLOBALS['phpgw']->link(
+					$cc_real_name = $GLOBALS['phpgw']->msg->href_maketag(phpgw::link(
 							'/index.php',array(
 							 'menuaction'=>'email.uicompose.compose',
 							// DO NOT USE msgball - bosend will interpret this the wrong way
@@ -806,7 +806,7 @@ $msg_headers->udate = $new_time;
 						$cc_personal);
 					
 					$cc_addybook_add = $GLOBALS['phpgw']->msg->href_maketag(
-						$GLOBALS['phpgw']->link(
+						phpgw::link(
 							 '/index.php',array(
 							 'menuaction'=>'addressbook.uiaddressbook_persons.add_email',
 							'add_email'=>urlencode($cc_plain),
@@ -917,7 +917,7 @@ $msg_headers->udate = $new_time;
 			
 			// ----  Images and Hrefs For Reply, ReplyAll, Forward, and Delete  -----
 			$reply_img = $GLOBALS['phpgw']->msg->img_maketag($GLOBALS['phpgw']->msg->_image_on('email',$this->icon_theme.'/reply','_on'),$this->xi['lang_reply'],'','','0');
-			$reply_url = $GLOBALS['phpgw']->link(
+			$reply_url = phpgw::link(
 					'/index.php',array(
 					'menuaction'=>'email.uicompose.compose',
 					'action'=>'reply',
@@ -931,7 +931,7 @@ $msg_headers->udate = $new_time;
 			$ilnk_reply = $GLOBALS['phpgw']->msg->href_maketag($reply_url, $reply_img);
 			
 			$replyall_img = $GLOBALS['phpgw']->msg->img_maketag($GLOBALS['phpgw']->msg->_image_on('email',$this->icon_theme.'/reply-all','_on'),$this->xi['lang_reply_all'],'','','0');
-			$replyall_url = $GLOBALS['phpgw']->link(
+			$replyall_url = phpgw::link(
 					'/index.php',array(
 					'menuaction'=>'email.uicompose.compose',
 					'action'=>'replyall',
@@ -945,7 +945,7 @@ $msg_headers->udate = $new_time;
 			$ilnk_replyall = $GLOBALS['phpgw']->msg->href_maketag($replyall_url, $replyall_img);
 			
 			$forward_img = $GLOBALS['phpgw']->msg->img_maketag($GLOBALS['phpgw']->msg->_image_on('email',$this->icon_theme.'/forward','_on'),$this->xi['lang_forward'],'','','0');
-			$forward_url =  $GLOBALS['phpgw']->link(
+			$forward_url =  phpgw::link(
 					'/index.php',array(
 					 'menuaction'=>'email.uicompose.compose',
 					'action'=>'forward',
@@ -960,7 +960,7 @@ $msg_headers->udate = $new_time;
 			$ilnk_forward = $GLOBALS['phpgw']->msg->href_maketag($forward_url, $forward_img);
 			
 			$delete_img = $GLOBALS['phpgw']->msg->img_maketag($GLOBALS['phpgw']->msg->_image_on('email',$this->icon_theme.'/delete-message','_on'),$this->xi['lang_delete'],'','','0');
-			$delete_url = $GLOBALS['phpgw']->link(
+			$delete_url = phpgw::link(
 					 '/index.php',array(
 					'menuaction'=>'email.boaction.delmov',
 					'what'=>'delete_single_msg',
@@ -975,7 +975,7 @@ $msg_headers->udate = $new_time;
 			$ilnk_delete = $GLOBALS['phpgw']->msg->href_maketag($delete_url, $delete_img);
 
 			$edit_img = $GLOBALS['phpgw']->msg->img_maketag($GLOBALS['phpgw']->msg->_image_on('email',$this->icon_theme.'/compose-message-'.$this->icon_size,'_on'),$this->xi['lang_edit'],'','','0');
-			$edit_url =  $GLOBALS['phpgw']->link(
+			$edit_url =  phpgw::link(
 					'/index.php',array(
 					 'menuaction'=>'email.uicompose.compose',
 					'action'=>'edit',
@@ -1155,7 +1155,7 @@ $msg_headers->udate = $new_time;
 			// base URLs for the "view unformatted" or "view formatted" option
 			// if "vew_unformatted" if the url, then "&no_fmt=1" will be added below
 			// other wise, this URL will be used unchanged
-			$view_option_url = $GLOBALS['phpgw']->link(
+			$view_option_url = phpgw::link(
 				'/index.php',array(
 				 'menuaction'=>'email.uimessage.message',
 				// preserve these things for when we return to the message list after the send
@@ -1170,7 +1170,7 @@ $msg_headers->udate = $new_time;
 			$view_headers_img = $GLOBALS['phpgw']->msg->img_maketag($GLOBALS['phpgw']->msg->_image_on('email','view_headers-'.$this->icon_size,'_on'),$this->xi['lang_view_headers'],'','','0');
 			$this_msgball = $msgball;
 			$this_msgball['part_no'] = 0;
-			$view_headers_url = $GLOBALS['phpgw']->link(
+			$view_headers_url = phpgw::link(
 				 '/index.php',array(
 				'menuaction'=>'email.boaction.get_attach',
 				'msgball[part_no]'=>$this_msgball['part_no'],
@@ -1189,7 +1189,7 @@ $msg_headers->udate = $new_time;
 			$view_raw_message_img = $GLOBALS['phpgw']->msg->img_maketag($GLOBALS['phpgw']->msg->_image_on('email','view_raw-'.$this->icon_size,'_on'),$this->xi['lang_view_raw_message'],'','','0');
 			$this_msgball = $msgball;
 			$this_msgball['part_no'] = 'raw_message';
-			$view_raw_message_url = $GLOBALS['phpgw']->link(
+			$view_raw_message_url = phpgw::link(
 				 '/index.php',array(
 				'menuaction'=>'email.boaction.get_attach',
 				'msgball[part_no]'=>$this_msgball['part_no'],
@@ -1206,7 +1206,7 @@ $msg_headers->udate = $new_time;
 			
 			// (4) view printer friendly version
 			$view_printable_img = $GLOBALS['phpgw']->msg->img_maketag($GLOBALS['phpgw']->msg->_image_on('email','view_printable-'.$this->icon_size,'_on'),$this->xi['lang_view_printable'],'','','0');
-			$view_printable_url = $GLOBALS['phpgw']->link(
+			$view_printable_url = phpgw::link(
 				'/index.php',array(
 				 'menuaction'=>'email.uimessage.printable')
 				+$msgball['uri']
@@ -1507,7 +1507,7 @@ $msg_headers->udate = $new_time;
 							$this->part_nice[$i]['d_threat_level'] .= $this->xi['lang_warn_style_sheet'].' ';
 						}
 						
-						//$view_html_form_action = $GLOBALS['phpgw']->link(
+						//$view_html_form_action = phpgw::link(
 						//	'/index.php',
 						//	'menuaction=email.boaction.view_html'
 						//	.'&'.$msgball['uri']
@@ -1523,7 +1523,7 @@ $msg_headers->udate = $new_time;
 						{
 							// -- View As HTML Button With Special HTML RELATED handling
 							
-							$view_html_form_action = $GLOBALS['phpgw']->link(
+							$view_html_form_action = phpgw::link(
 								'/index.php',array(
 								'menuaction'=>'email.boaction.view_html')
 								+$msgball['uri']
@@ -1566,7 +1566,7 @@ $msg_headers->udate = $new_time;
 							{
 								$part_encoding = '';
 							}
-							$view_html_form_action = $GLOBALS['phpgw']->link(
+							$view_html_form_action = phpgw::link(
 									 '/index.php',array(
 									'menuaction'=>'email.boaction.get_attach',
 									'msgball[part_no]'=>$this->part_nice[$i]['m_part_num_mime'],

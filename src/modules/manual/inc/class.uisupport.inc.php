@@ -44,13 +44,13 @@
 
 		public function send()
 		{
-			$values		 = phpgw::get_var('values');
-			$form_type	 = phpgw::get_var('form_type', 'string', 'GET', 'aligned');
+			$values		 = Sanitizer::get_var('values');
+			$form_type	 = Sanitizer::get_var('form_type', 'string', 'GET', 'aligned');
 
 			$receipt = array();
 			if (isset($values['save']))
 			{
-				if ($GLOBALS['phpgw']->session->is_repost())
+				if (phpgw::is_repost())
 				{
 					$receipt['error'][] = array('msg' => lang('repost'));
 				}
@@ -108,7 +108,7 @@
 			}
 
 			//optional support address per app
-			$app = phpgw::get_var('app');
+			$app = Sanitizer::get_var('app');
 			$config = CreateObject('phpgwapi.config', $app);
 			$config->read();
 			$support_address = isset($config->config_data['support_address']) && $config->config_data['support_address'] ? $config->config_data['support_address'] : $GLOBALS['phpgw_info']['server']['support_address'];
@@ -117,12 +117,12 @@
 				'msgbox_data'		 => $GLOBALS['phpgw']->common->msgbox($GLOBALS['phpgw']->common->msgbox_data($receipt)),
 				'from_name'			 => $GLOBALS['phpgw_info']['user']['fullname'],
 				'from_address'		 => $GLOBALS['phpgw_info']['user']['preferences']['common']['email'],
-				'form_action'		 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'manual.uisupport.send', 'form_type' => $form_type)),
+				'form_action'		 => phpgw::link('/index.php', array('menuaction' => 'manual.uisupport.send', 'form_type' => $form_type)),
 				'support_address'	 => $support_address,
 				'form_type'			 => $form_type
 			);
 
-			$GLOBALS['phpgw']->xslttpl->add_file('support');
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('send' => $data));
+			phpgwapi_xslttemplates::getInstance()->add_file('support');
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('send' => $data));
 		}
 	}

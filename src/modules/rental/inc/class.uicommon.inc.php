@@ -41,7 +41,7 @@
 
 			//$dateFormat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
 
-			$this->acl = & $GLOBALS['phpgw']->acl;
+			$this->acl = Acl::getInstance();
 			$this->locations = & $GLOBALS['phpgw']->locations;
 
 			$this->type_of_user = array(
@@ -111,7 +111,7 @@
 		 * @param $permission
 		 * @return true if check is ok, false othewise
 		 */
-		protected function hasPermissionOn( $location = rental_uicommon::LOCATION_ROOT, $permission = PHPGW_ACL_PRIVATE )
+		protected function hasPermissionOn( $location = rental_uicommon::LOCATION_ROOT, $permission = ACL_PRIVATE )
 		{
 			return $this->acl->check($location, $permission, 'rental');
 		}
@@ -123,7 +123,7 @@
 		 */
 		protected function isAdministrator()
 		{
-			return $this->acl->check(rental_uicommon::LOCATION_ROOT, PHPGW_ACL_PRIVATE, 'rental');
+			return $this->acl->check(rental_uicommon::LOCATION_ROOT, ACL_PRIVATE, 'rental');
 		}
 
 		/**
@@ -134,9 +134,9 @@
 		protected function isExecutiveOfficer()
 		{
 			return (
-				$this->acl->check(rental_uicommon::LOCATION_IN, PHPGW_ACL_ADD, 'rental') ||
-				$this->acl->check(rental_uicommon::LOCATION_OUT, PHPGW_ACL_ADD, 'rental') ||
-				$this->acl->check(rental_uicommon::LOCATION_INTERNAL, PHPGW_ACL_ADD, 'rental')
+				$this->acl->check(rental_uicommon::LOCATION_IN, ACL_ADD, 'rental') ||
+				$this->acl->check(rental_uicommon::LOCATION_OUT, ACL_ADD, 'rental') ||
+				$this->acl->check(rental_uicommon::LOCATION_INTERNAL, ACL_ADD, 'rental')
 				);
 		}
 

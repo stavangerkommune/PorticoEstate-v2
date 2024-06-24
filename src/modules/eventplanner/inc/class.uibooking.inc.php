@@ -63,12 +63,12 @@
 
 		public function index()
 		{
-			if (empty($this->permissions[PHPGW_ACL_READ]))
+			if (empty($this->permissions[ACL_READ]))
 			{
 				phpgw::no_access();
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -139,9 +139,9 @@
 
 		public function edit( $values = array(), $mode = 'edit' )
 		{
-			$active_tab = !empty($values['active_tab']) ? $values['active_tab'] : phpgw::get_var('active_tab', 'string', 'REQUEST', 'first_tab');
+			$active_tab = !empty($values['active_tab']) ? $values['active_tab'] : Sanitizer::get_var('active_tab', 'string', 'REQUEST', 'first_tab');
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('edit');
-			if (empty($this->permissions[PHPGW_ACL_ADD]))
+			if (empty($this->permissions[ACL_ADD]))
 			{
 				$message = '';
 				if($this->currentapp == 'eventplannerfrontend')
@@ -157,8 +157,8 @@
 			}
 			else
 			{
-				$id = !empty($values['id']) ? $values['id'] : phpgw::get_var('id', 'int');
-				$calendar_id = phpgw::get_var('calendar_id', 'int');
+				$id = !empty($values['id']) ? $values['id'] : Sanitizer::get_var('id', 'int');
+				$calendar_id = Sanitizer::get_var('calendar_id', 'int');
 				if(!$id && $calendar_id)
 				{
 					$id = $this->bo->get_booking_id_from_calendar($calendar_id);

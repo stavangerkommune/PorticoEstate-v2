@@ -45,19 +45,19 @@
 			self::add_javascript('bookingfrontend', 'base', 'util.js', true);
 
 
-			$GLOBALS['phpgw']->js->add_external_file("phpgwapi/templates/bookingfrontend/js/build/aui/aui-min.js");
-			$GLOBALS['phpgw']->css->add_external_file("phpgwapi/templates/base/css/rubik-font.css");
+			phpgwapi_js::getInstance()->add_external_file("phpgwapi/templates/bookingfrontend/js/build/aui/aui-min.js");
+			phpgwapi_css::getInstance()->add_external_file("phpgwapi/templates/base/css/rubik-font.css");
 			$config = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
-			$searchterm = trim(phpgw::get_var('searchterm', 'string', 'REQUEST', ''));
-			$type = phpgw::get_var('type', 'string', 'REQUEST', null);
-			$activity_top_level = phpgw::get_var('activity_top_level', 'int', 'REQUEST', null);
-			$building_id = phpgw::get_var('building_id', 'int', 'REQUEST', null);
-			$filter_part_of_town = explode(',', phpgw::get_var('filter_part_of_town', 'string', 'REQUEST', ''));
+			$searchterm = trim(Sanitizer::get_var('searchterm', 'string', 'REQUEST', ''));
+			$type = Sanitizer::get_var('type', 'string', 'REQUEST', null);
+			$activity_top_level = Sanitizer::get_var('activity_top_level', 'int', 'REQUEST', null);
+			$building_id = Sanitizer::get_var('building_id', 'int', 'REQUEST', null);
+			$filter_part_of_town = explode(',', Sanitizer::get_var('filter_part_of_town', 'string', 'REQUEST', ''));
 			$imploded_filter_part_of_town = implode(',', $filter_part_of_town);
 			$search = null;
 
-			$criteria = phpgw::get_var('criteria');
+			$criteria = Sanitizer::get_var('criteria');
 //			_debug_array($config->config_data['landing_sections']);die();
 
 
@@ -198,11 +198,11 @@
 
 		function query()
 		{
-			$length = phpgw::get_var('length', 'int', 'REQUEST', null);
-			$searchterm = trim(phpgw::get_var('searchterm', 'string', 'REQUEST', null));
-			$activity_top_level = phpgw::get_var('activity_top_level', 'int', 'REQUEST', null);
-			$building_id = phpgw::get_var('building_id', 'int', 'REQUEST', null);
-			$_filter_part_of_town = explode(',', phpgw::get_var('filter_part_of_town', 'string'));
+			$length = Sanitizer::get_var('length', 'int', 'REQUEST', null);
+			$searchterm = trim(Sanitizer::get_var('searchterm', 'string', 'REQUEST', null));
+			$activity_top_level = Sanitizer::get_var('activity_top_level', 'int', 'REQUEST', null);
+			$building_id = Sanitizer::get_var('building_id', 'int', 'REQUEST', null);
+			$_filter_part_of_town = explode(',', Sanitizer::get_var('filter_part_of_town', 'string'));
 
 			$filter_part_of_town = array();
 			foreach ($_filter_part_of_town as $key => $value)
@@ -213,7 +213,7 @@
 				}
 			}
 			unset($value);
-			$_filter_top_level = explode(',', phpgw::get_var('filter_top_level', 'string'));
+			$_filter_top_level = explode(',', Sanitizer::get_var('filter_top_level', 'string'));
 
 			$filter_top_level = array();
 			foreach ($_filter_top_level as $key => $value)
@@ -234,7 +234,7 @@
 				}
 			}
 
-			$criteria = phpgw::get_var('criteria', 'string', 'REQUEST', array());
+			$criteria = Sanitizer::get_var('criteria', 'string', 'REQUEST', array());
 			$activity_criteria = array();
 			foreach ($criteria as $entry)
 			{
@@ -258,14 +258,14 @@
 				}
 			}
 
-			if ($searchterm || $building_id || $activity_criteria || $filter_part_of_town || phpgw::get_var('filter_top_level', 'string') || (phpgw::get_var('filter_search_type') && $searchterm))
+			if ($searchterm || $building_id || $activity_criteria || $filter_part_of_town || Sanitizer::get_var('filter_top_level', 'string') || (Sanitizer::get_var('filter_search_type') && $searchterm))
 			{
 				$data = array(
 					'results' => $this->bo->search($searchterm, $building_id, $filter_part_of_town, $filter_top_level, $activity_criteria, $length)
 				);
 			}
 
-			if (phpgw::get_var('phpgw_return_as', 'string', 'GET') == 'json' )
+			if (Sanitizer::get_var('phpgw_return_as', 'string', 'GET') == 'json' )
 			{
 				return $data;
 			}
@@ -278,13 +278,13 @@
 
 		function resquery()
 		{
-			$length = phpgw::get_var('length', 'int', 'REQUEST', null);
-			$rescategory_id = phpgw::get_var('rescategory_id', 'int', 'REQUEST', null);
+			$length = Sanitizer::get_var('length', 'int', 'REQUEST', null);
+			$rescategory_id = Sanitizer::get_var('rescategory_id', 'int', 'REQUEST', null);
 			$fields_multiids = array('facility_id', 'part_of_town_id', 'activity_id');
 			$multiids = array();
 			foreach ($fields_multiids as $field)
 			{
-				$_ids = explode(',', phpgw::get_var($field, 'string', 'REQUEST', null));
+				$_ids = explode(',', Sanitizer::get_var($field, 'string', 'REQUEST', null));
 				$ids = array();
 				foreach ($_ids as $id)
 				{
@@ -301,15 +301,15 @@
 
 		function query_available_resources()
 		{
-			$length = phpgw::get_var('length', 'int', 'REQUEST', null);
-			$searchterm = trim(phpgw::get_var('searchterm', 'string', 'REQUEST', null));
-			$activity_top_level = phpgw::get_var('activity_top_level', 'int', 'REQUEST', null);
-			$building_id = phpgw::get_var('building_id', 'int', 'REQUEST', null);
-			$_filter_part_of_town = explode(',', phpgw::get_var('part_of_town_id', 'string'));
-			$from_date = phpgw::get_var('from_date', 'string', 'REQUEST', '');
-			$to_date = phpgw::get_var('to_date', 'string', 'REQUEST', '');
-			$from_time = phpgw::get_var('from_time', 'string', 'REQUEST', '');
-			$to_time = phpgw::get_var('to_time', 'string', 'REQUEST', '');
+			$length = Sanitizer::get_var('length', 'int', 'REQUEST', null);
+			$searchterm = trim(Sanitizer::get_var('searchterm', 'string', 'REQUEST', null));
+			$activity_top_level = Sanitizer::get_var('activity_top_level', 'int', 'REQUEST', null);
+			$building_id = Sanitizer::get_var('building_id', 'int', 'REQUEST', null);
+			$_filter_part_of_town = explode(',', Sanitizer::get_var('part_of_town_id', 'string'));
+			$from_date = Sanitizer::get_var('from_date', 'string', 'REQUEST', '');
+			$to_date = Sanitizer::get_var('to_date', 'string', 'REQUEST', '');
+			$from_time = Sanitizer::get_var('from_time', 'string', 'REQUEST', '');
+			$to_time = Sanitizer::get_var('to_time', 'string', 'REQUEST', '');
 
 			$filter_part_of_town = array();
 			foreach ($_filter_part_of_town as $key => $value)
@@ -320,7 +320,7 @@
 				}
 			}
 			unset($value);
-			$_filter_top_level = explode(',', phpgw::get_var('filter_top_level', 'string'));
+			$_filter_top_level = explode(',', Sanitizer::get_var('filter_top_level', 'string'));
 
 			$filter_top_level = array();
 			foreach ($_filter_top_level as $key => $value)
@@ -341,7 +341,7 @@
 				}
 			}
 
-			$criteria = phpgw::get_var('criteria', 'string', 'REQUEST', array());
+			$criteria = Sanitizer::get_var('criteria', 'string', 'REQUEST', array());
 			$activity_criteria = array();
 			foreach ($criteria as $entry)
 			{
@@ -372,17 +372,17 @@
 
 		function resquery_available_resources()
 		{
-			$length = phpgw::get_var('length', 'int', 'REQUEST', null);
-			$rescategory_id = phpgw::get_var('rescategory_id', 'int', 'REQUEST', null);
-			$from_date = phpgw::get_var('from_date', 'string', 'REQUEST', '');
-			$to_date = phpgw::get_var('to_date', 'string', 'REQUEST', '');
-			$from_time = phpgw::get_var('from_time', 'string', 'REQUEST', '');
-			$to_time = phpgw::get_var('to_time', 'string', 'REQUEST', '');
+			$length = Sanitizer::get_var('length', 'int', 'REQUEST', null);
+			$rescategory_id = Sanitizer::get_var('rescategory_id', 'int', 'REQUEST', null);
+			$from_date = Sanitizer::get_var('from_date', 'string', 'REQUEST', '');
+			$to_date = Sanitizer::get_var('to_date', 'string', 'REQUEST', '');
+			$from_time = Sanitizer::get_var('from_time', 'string', 'REQUEST', '');
+			$to_time = Sanitizer::get_var('to_time', 'string', 'REQUEST', '');
 			$fields_multiids = array('part_of_town_id');
 			$multiids = array();
 			foreach ($fields_multiids as $field)
 			{
-				$_ids = explode(',', phpgw::get_var($field, 'string', 'REQUEST', null));
+				$_ids = explode(',', Sanitizer::get_var($field, 'string', 'REQUEST', null));
 				$ids = array();
 				foreach ($_ids as $id)
 				{
@@ -400,14 +400,14 @@
 
 		function search_available_resources()
 		{
-			$_ids = explode(',', phpgw::get_var('resource_ids', 'string', 'REQUEST', ''));
+			$_ids = explode(',', Sanitizer::get_var('resource_ids', 'string', 'REQUEST', ''));
 			$ids = array();
 			foreach ($_ids as $id)
 			{
 				$ids[] = (int)$id;
 			}
-			$from_date = DateTime::createFromFormat('d.m.Y H:i:s', phpgw::get_var('from_date', 'string', 'REQUEST', ''));
-			$to_date = DateTime::createFromFormat('d.m.Y H:i:s', phpgw::get_var('to_date', 'string', 'REQUEST', ''));
+			$from_date = DateTime::createFromFormat('d.m.Y H:i:s', Sanitizer::get_var('from_date', 'string', 'REQUEST', ''));
+			$to_date = DateTime::createFromFormat('d.m.Y H:i:s', Sanitizer::get_var('to_date', 'string', 'REQUEST', ''));
 			return $this->bo->get_all_allocations_and_events_for_resource($ids, $from_date, $to_date);
 //			return $this->bo->available_resources($ids, array('from_date' => $from_date, 'to_date' => $to_date));
 		}

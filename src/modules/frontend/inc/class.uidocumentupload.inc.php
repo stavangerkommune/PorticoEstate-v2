@@ -26,7 +26,7 @@
 		{
 			if (isset($_POST['file_upload']))
 			{
-				//$filename = phpgw::get_var('help_filename');
+				//$filename = Sanitizer::get_var('help_filename');
 				$test2 = "testing litt";
 				if ($_FILES["file"]["error"] > 0)
 				{
@@ -40,7 +40,7 @@
 				}
 			}
 
-			$form_action = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'frontend.uidocumentupload.index'));
+			$form_action = phpgw::link('/index.php', array('menuaction' => 'frontend.uidocumentupload.index'));
 			$data = array(
 				'header' => $this->header_state,
 				'section' => array(

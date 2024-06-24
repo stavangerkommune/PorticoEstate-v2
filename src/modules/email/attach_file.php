@@ -276,7 +276,7 @@
 		$GLOBALS['phpgw']->template->set_var('V_alert_msg','');
 	}
 	$GLOBALS['phpgw']->template->set_var('form_method','POST');
-	$GLOBALS['phpgw']->template->set_var('form_action',$GLOBALS['phpgw']->link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/attach_file.php'));
+	$GLOBALS['phpgw']->template->set_var('form_action',phpgw::link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/attach_file.php'));
 	$GLOBALS['phpgw']->template->set_var('text_attachfile',lang('Attach file'));
 	$GLOBALS['phpgw']->template->set_var('text_currattached',lang('Current attachments (%1)',$totalfiles));
 	$GLOBALS['phpgw']->template->set_var('txtbox_upload_desc',lang('File'));

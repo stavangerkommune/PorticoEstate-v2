@@ -75,18 +75,18 @@
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = "controller::control_item";
 
-			$this->read = $GLOBALS['phpgw']->acl->check('.control', PHPGW_ACL_READ, 'controller');//1
-			$this->add = $GLOBALS['phpgw']->acl->check('.control', PHPGW_ACL_ADD, 'controller');//2
-			$this->edit = $GLOBALS['phpgw']->acl->check('.control', PHPGW_ACL_EDIT, 'controller');//4
-			$this->delete = $GLOBALS['phpgw']->acl->check('.control', PHPGW_ACL_DELETE, 'controller');//8
-//			$GLOBALS['phpgw']->css->add_external_file('controller/templates/base/css/base.css');
+			$this->read = $GLOBALS['phpgw']->acl->check('.control', ACL_READ, 'controller');//1
+			$this->add = $GLOBALS['phpgw']->acl->check('.control', ACL_ADD, 'controller');//2
+			$this->edit = $GLOBALS['phpgw']->acl->check('.control', ACL_EDIT, 'controller');//4
+			$this->delete = $GLOBALS['phpgw']->acl->check('.control', ACL_DELETE, 'controller');//8
+//			phpgwapi_css::getInstance()->add_external_file('controller/templates/base/css/base.css');
 			$function_msg	 = lang('Control_item');
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('controller') . ': ' . $function_msg;
 		}
 
 		public function index()
 		{
-			$dir = phpgw::get_var('dir');
+			$dir = Sanitizer::get_var('dir');
 			if ($dir)
 			{
 				$query_array = array('menuaction' => 'controller.uicontrol_item.index', 'phpgw_return_as' => 'json',
@@ -96,7 +96,7 @@
 			{
 				$query_array = array('menuaction' => 'controller.uicontrol_item.index', 'phpgw_return_as' => 'json');
 			}
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -190,7 +190,7 @@
 				'my_name' => 'view',
 				'statustext' => lang('view'),
 				'text' => lang('view'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'controller.uicontrol_item.view'
 				)),
@@ -206,13 +206,13 @@
 		 */
 		public function add()
 		{
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uicontrol_item.edit'));
+			phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uicontrol_item.edit'));
 		}
 
 		public function delete_item_list()
 		{
-			$control_id = phpgw::get_var('control_id');
-			$control_item_id = phpgw::get_var('control_item_id');
+			$control_id = Sanitizer::get_var('control_id');
+			$control_item_id = Sanitizer::get_var('control_item_id');
 
 			$status = $this->so_control_item_list->delete($control_id, $control_item_id);
 
@@ -226,8 +226,8 @@
 				phpgw::no_access();
 			}
 
-			$control_item_id = phpgw::get_var('control_item_id', 'int');
-			$regulation_value = phpgw::get_var('regulation_value');
+			$control_item_id = Sanitizer::get_var('control_item_id', 'int');
+			$regulation_value = Sanitizer::get_var('regulation_value');
 
 			$status = $this->so->delete_regulation_reference($control_item_id, $regulation_value);
 
@@ -240,7 +240,7 @@
 			// NO REDIRECT
 			if ($control_item == null)
 			{
-				$control_item_id = phpgw::get_var('id');
+				$control_item_id = Sanitizer::get_var('id');
 
 				// Edit control item
 				if ($control_item_id > 0)
@@ -291,18 +291,18 @@
 		{
 			if (!$this->add && !$this->edit)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uicontrol_item.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uicontrol_item.index'));
 			}
 
-			$control_item_id = phpgw::get_var('id');
-			$title = phpgw::get_var('title');
-			$required = phpgw::get_var('required', 'bool');
-			$type = phpgw::get_var('control_item_type');
-			$control_group_id = phpgw::get_var('control_group');
-			$control_area_id = phpgw::get_var('control_area');
-			$what_to_do_txt = phpgw::get_var('what_to_do', 'html');
+			$control_item_id = Sanitizer::get_var('id');
+			$title = Sanitizer::get_var('title');
+			$required = Sanitizer::get_var('required', 'bool');
+			$type = Sanitizer::get_var('control_item_type');
+			$control_group_id = Sanitizer::get_var('control_group');
+			$control_area_id = Sanitizer::get_var('control_area');
+			$what_to_do_txt = Sanitizer::get_var('what_to_do', 'html');
 			$what_to_do_txt = str_replace("&nbsp;", " ", $what_to_do_txt);
-			$how_to_do_txt = phpgw::get_var('how_to_do', 'html');
+			$how_to_do_txt = Sanitizer::get_var('how_to_do', 'html');
 			$how_to_do_txt = str_replace("&nbsp;", " ", $how_to_do_txt);
 
 			if ($control_item_id > 0)
@@ -316,10 +316,10 @@
 
 			$control_item->set_title($title);
 			$control_item->set_required($required);
-			$control_item->set_include_counter_measure(phpgw::get_var('include_counter_measure', 'bool'));
-			$control_item->set_report_summary(phpgw::get_var('report_summary', 'bool'));
-			$control_item->set_include_regulation_reference(phpgw::get_var('include_regulation_reference', 'bool'));
-			$control_item->set_include_condition_degree(phpgw::get_var('include_condition_degree', 'bool'));
+			$control_item->set_include_counter_measure(Sanitizer::get_var('include_counter_measure', 'bool'));
+			$control_item->set_report_summary(Sanitizer::get_var('report_summary', 'bool'));
+			$control_item->set_include_regulation_reference(Sanitizer::get_var('include_regulation_reference', 'bool'));
+			$control_item->set_include_condition_degree(Sanitizer::get_var('include_condition_degree', 'bool'));
 			$control_item->set_control_group_id($control_group_id);
 			$control_item->set_control_area_id($control_area_id);
 			$control_item->set_type($type);
@@ -358,7 +358,7 @@
 				}
 
 				$option_values = array();
-				$option_values = phpgw::get_var('option_values');
+				$option_values = Sanitizer::get_var('option_values');
 
 				$option_values_array = array();
 				foreach ($option_values as $option_value)
@@ -380,7 +380,7 @@
 					}
 				}
 
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uicontrol_item.view',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uicontrol_item.view',
 					'id' => $saved_control_item_id));
 			}
 			else
@@ -396,7 +396,7 @@
 		public function view()
 		{
 			//Retrieve the control_item object
-			$control_item_id = (int)phpgw::get_var('id');
+			$control_item_id = (int)Sanitizer::get_var('id');
 
 			if (isset($control_item_id) && $control_item_id > 0)
 			{
@@ -429,18 +429,18 @@
 
 		public function query()
 		{
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 			$params = array(
-				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results' => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start' => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results' => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query' => $search['value'],
 				'order' => $columns[$order[0]['column']]['data'],
 				'sort' => $order[0]['dir'],
-				'allrows' => phpgw::get_var('length', 'int') == -1,
+				'allrows' => Sanitizer::get_var('length', 'int') == -1,
 			);
 
 
@@ -452,13 +452,13 @@
 
 			$search_type = '';
 			$filters = array();
-			$ctrl_area = phpgw::get_var('control_areas');
+			$ctrl_area = Sanitizer::get_var('control_areas');
 			if (isset($ctrl_area) && $ctrl_area > 0)
 			{
 				$filters['control_areas'] = $ctrl_area;
 			}
 
-			$ctrl_group = phpgw::get_var('control_groups');
+			$ctrl_group = Sanitizer::get_var('control_groups');
 			if (isset($ctrl_group) && $ctrl_group > 0)
 			{
 				$filters['control_groups'] = $ctrl_group;
@@ -472,7 +472,7 @@
 			$sort_ascending = $params['sort'] == 'desc' ? false : true;
 
 			//Retrieve a contract identifier and load corresponding contract
-			$control_item_id = phpgw::get_var('control_item_id');
+			$control_item_id = Sanitizer::get_var('control_item_id');
 			if (isset($control_item_id) && $control_item_id)
 			{
 				$control_item = $this->so->get_single($control_item_id);

@@ -182,7 +182,7 @@
 
 			echo '<body bgcolor="' . (isset($GLOBALS['phpgw_info']['theme']['bg_color'])?$GLOBALS['phpgw_info']['theme']['bg_color']:'') . '">';
 
-			if ( strtoupper( phpgw::get_var('action', 'string', 'GET') ) == 'GETFILE')
+			if ( strtoupper( Sanitizer::get_var('action', 'string', 'GET') ) == 'GETFILE')
 			{
 				echo '<b><center>' . lang('You must select a [iv]Cal. (*.[iv]cs)') . '</b></center><br /><br />';
 			}
@@ -196,7 +196,7 @@
 			$var = Array(
 				'vcal_header'	=> '<p>',
 				'ical_lang'		=> lang('(i/v)Cal'),
-				'action_url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'calendar.boicalendar.import')),
+				'action_url'	=> phpgw::link('/index.php',array('menuaction'=>'calendar.boicalendar.import')),
 				'lang_access'	=> lang('Access'),
 				'lang_groups'	=> lang('Which groups'),
 				'access_option'=> (isset($access_option)?$access_option:''),

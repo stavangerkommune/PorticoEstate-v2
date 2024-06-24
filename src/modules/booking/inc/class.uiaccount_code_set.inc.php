@@ -62,7 +62,7 @@
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -183,7 +183,7 @@
 
 		public function show()
 		{
-			$account_code_set = $this->bo->read_single(phpgw::get_var('id', 'int'));
+			$account_code_set = $this->bo->read_single(Sanitizer::get_var('id', 'int'));
 			$config = CreateObject('phpgwapi.config', 'booking')->read();
 			//$this->add_default_display_data($account_code_set);
 			$account_code_set['edit_link'] = self::link(array('menuaction' => 'booking.uiaccount_code_set.edit',
@@ -202,7 +202,7 @@
 
 		public function edit()
 		{
-			$account_code_set = $this->bo->read_single(phpgw::get_var('id', 'int'));
+			$account_code_set = $this->bo->read_single(Sanitizer::get_var('id', 'int'));
 			$config = CreateObject('phpgwapi.config', 'booking')->read();
 
 			$errors = array();

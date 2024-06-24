@@ -82,23 +82,23 @@
 		public static function get_fields( $debug = true )
 		{
 			$fields = array(
-				'id' => array('action' => PHPGW_ACL_READ,
+				'id' => array('action' => ACL_READ,
 					'type' => 'int',
 					'label' => 'id',
 					'sortable' => true,
 					'formatter' => 'JqueryPortico.formatLink',
 				),
-				'owner_id' => array('action'=> PHPGW_ACL_ADD,
+				'owner_id' => array('action'=> ACL_ADD,
 					'type' => 'int',
 					'required' => false
 					),
-				'booking_id' => array('action' => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'booking_id' => array('action' => ACL_ADD | ACL_EDIT,
 					'type' => 'int',
 					'label' => 'booking',
 					'sortable' => true,
 					'required' => true,
 				),
-				'booking_location' => array('action' => PHPGW_ACL_READ,
+				'booking_location' => array('action' => ACL_READ,
 					'type' => 'string',
 					'query' => true,
 					'label' => 'location',
@@ -109,12 +109,12 @@
 						'column' => 'location'
 					)
 				),
-				'created' => array('action' => PHPGW_ACL_READ | PHPGW_ACL_ADD,
+				'created' => array('action' => ACL_READ | ACL_ADD,
 					'type' => 'date',
 					'label' => 'created',
 					'sortable' => true,
 				),
-				'json_representation' => array('action' => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'json_representation' => array('action' => ACL_ADD | ACL_EDIT,
 					'type' => 'json',
 					'sortable' => false,
 				),

@@ -79,7 +79,7 @@
 	$passwd = (isset($_GET['pass']) ? $_GET['pass'] : $_SERVER['PHP_AUTH_PW']);
 
 
-	$logindomain = phpgw::get_var('domain', 'string', 'GET');
+	$logindomain = Sanitizer::get_var('domain', 'string', 'GET');
 	if (strstr($login, '#') === false && $logindomain)
 	{
 		$login .= "#{$logindomain}";

@@ -138,7 +138,7 @@
 			}
 			else
 			{
-				$GLOBALS['phpgw']->xslttpl->add_file(array('app_data'));
+				phpgwapi_xslttemplates::getInstance()->add_file(array('app_data'));
 			}
 			
 			$this->tpl->set_file(array(
@@ -152,107 +152,107 @@
 			
 			// make a list of available debub calls
 			// Enviornment data
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'phpinfo')));
+			$this->widgets->set_href_link(phpgw::link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'phpinfo')));
 			//$this->widgets->set_href_target('new');
 			$this->widgets->set_href_clickme('phpinfo page');
 			$this->tpl->set_var('func_E1', $this->widgets->get_href());
 			
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'get_defined_constants')));
+			$this->widgets->set_href_link(phpgw::link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'get_defined_constants')));
 			$this->widgets->set_href_target('new');
 			$this->widgets->set_href_clickme('get_defined_constants DUMP');
 			$this->tpl->set_var('func_E2', $this->widgets->get_href());
 			
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'globals_dump')));
+			$this->widgets->set_href_link(phpgw::link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'globals_dump')));
 			$this->widgets->set_href_target('new');
 			$this->widgets->set_href_clickme('dump the entire globals[] array');
 			$this->tpl->set_var('func_E3', $this->widgets->get_href());
 			
 			// DUMP functions
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'common.debug_list_core_functions')));
+			$this->widgets->set_href_link(phpgw::link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'common.debug_list_core_functions')));
 			$this->widgets->set_href_clickme('common.debug_list_core_functions');
 			$this->tpl->set_var('func_D1', $this->widgets->get_href());
 			
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'globals_phpgw_dump')));
+			$this->widgets->set_href_link(phpgw::link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'globals_phpgw_dump')));
 			$this->widgets->set_href_clickme('dump the entire globals[phpgw] structure');
 			$this->tpl->set_var('func_D2', $this->widgets->get_href());
 			
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'globals_phpgw_info_dump')));
+			$this->widgets->set_href_link(phpgw::link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'globals_phpgw_info_dump')));
 			$this->widgets->set_href_clickme('dump the entire globals[phpgw_info] structure');
 			$this->tpl->set_var('func_D3', $this->widgets->get_href());
 			
-			//$this->widgets->set_href_link($GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'globals_phpgw_session_dump')));
+			//$this->widgets->set_href_link(phpgw::link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'globals_phpgw_session_dump')));
 			//$this->widgets->set_href_clickme('dump the entire globals[phpgw_session] structure');
 			//$this->tpl->set_var('func_D4', $this->widgets->get_href());
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'ref_session_dump')));
+			$this->widgets->set_href_link(phpgw::link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'ref_session_dump')));
 			$this->widgets->set_href_clickme('dump the entire msg->ref_SESSION structure');
 			$this->tpl->set_var('func_D4', $this->widgets->get_href());
 			
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'msg_object_dump')));
+			$this->widgets->set_href_link(phpgw::link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'msg_object_dump')));
 			$this->widgets->set_href_clickme('dump the entire globals[phpgw]->msg object');
 			$this->tpl->set_var('func_D5', $this->widgets->get_href());
 			
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'preferences_object_dump')));
+			$this->widgets->set_href_link(phpgw::link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'preferences_object_dump')));
 			$this->widgets->set_href_clickme('dump the entire $GLOBALS[phpgw]->preferences object');
 			$this->tpl->set_var('func_D6', $this->widgets->get_href());
 			
 			// inline docs
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/doc/inlinedocparser.php?app=phpgwapi'));
+			$this->widgets->set_href_link(phpgw::link('/doc/inlinedocparser.php?app=phpgwapi'));
 			$this->widgets->set_href_target('new');
 			$this->widgets->set_href_clickme('inlinedocparser for phpgwapi');			
 			$this->tpl->set_var('func_I1', $this->widgets->get_href());
 			
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/doc/inlinedocparser.php?app=phpwebhosting'));
+			$this->widgets->set_href_link(phpgw::link('/doc/inlinedocparser.php?app=phpwebhosting'));
 			$this->widgets->set_href_target('new');
 			$this->widgets->set_href_clickme('inlinedocparser for phpwebhosing VFS');
 			$this->tpl->set_var('func_I2', $this->widgets->get_href());
 			
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/doc/inlinedocparser.php?app=email'));
+			$this->widgets->set_href_link(phpgw::link('/doc/inlinedocparser.php?app=email'));
 			$this->widgets->set_href_target('new');
 			$this->widgets->set_href_clickme('inlinedocparser for email');
 			$this->tpl->set_var('func_I3', $this->widgets->get_href());
 			
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/doc/inlinedocparser.php?app=email&fn=class.mail_msg_base.inc.php'));
+			$this->widgets->set_href_link(phpgw::link('/doc/inlinedocparser.php?app=email&fn=class.mail_msg_base.inc.php'));
 			$this->widgets->set_href_target('new');
 			$this->widgets->set_href_clickme('inlinedocparser for email, file "class.mail_msg_base.inc.php"');
 			$this->tpl->set_var('func_I4', $this->widgets->get_href());
 			
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/doc/inlinedocparser.php?app=email&fn=class.mail_msg_display.inc.php'));
+			$this->widgets->set_href_link(phpgw::link('/doc/inlinedocparser.php?app=email&fn=class.mail_msg_display.inc.php'));
 			$this->widgets->set_href_target('new');
 			$this->widgets->set_href_clickme('inlinedocparser for email, file "class.mail_msg_display.inc.php"');
 			$this->tpl->set_var('func_I5', $this->widgets->get_href());
 			
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/doc/inlinedocparser.php?app=email&fn=class.mail_msg_wrappers.inc.php'));
+			$this->widgets->set_href_link(phpgw::link('/doc/inlinedocparser.php?app=email&fn=class.mail_msg_wrappers.inc.php'));
 			$this->widgets->set_href_target('new');
 			$this->widgets->set_href_clickme('inlinedocparser for email, file "class.mail_msg_wrappers.inc.php"');
 			$this->tpl->set_var('func_I6', $this->widgets->get_href());
 			
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/doc/inlinedocparser.php?app=email&fn=class.mail_dcom_imap_sock.inc.php'));
+			$this->widgets->set_href_link(phpgw::link('/doc/inlinedocparser.php?app=email&fn=class.mail_dcom_imap_sock.inc.php'));
 			$this->widgets->set_href_target('new');
 			$this->widgets->set_href_clickme('inlinedocparser for email, file "class.mail_dcom_imap_sock.inc.php"');
 			$this->tpl->set_var('func_I7', $this->widgets->get_href());
 			
 			// other stuff
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'copyinteresting')));
+			$this->widgets->set_href_link(phpgw::link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'copyinteresting')));
 			$this->widgets->set_href_clickme('copy emails in BOB interesting to Local folder (no workie)');
 			$this->tpl->set_var('func_O1', $this->widgets->get_href());
 			
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'env_test')));
+			$this->widgets->set_href_link(phpgw::link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'env_test')));
 			$this->widgets->set_href_clickme('utility for testing env code parts');
 			$this->tpl->set_var('func_O2', $this->widgets->get_href());
 			
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'db_admin_make_table')));
+			$this->widgets->set_href_link(phpgw::link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'db_admin_make_table')));
 			$this->widgets->set_href_clickme('Create the email DB table');
 			$this->tpl->set_var('func_O3', $this->widgets->get_href());
 			
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'db_admin_rm_table')));
+			$this->widgets->set_href_link(phpgw::link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'db_admin_rm_table')));
 			$this->widgets->set_href_clickme('Delete the email DB table');
 			$this->tpl->set_var('func_O4', $this->widgets->get_href());
 			
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'db_admin_clear_entire_table')));
+			$this->widgets->set_href_link(phpgw::link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'db_admin_clear_entire_table')));
 			$this->widgets->set_href_clickme('Wipe the email DB table');
 			$this->tpl->set_var('func_O5', $this->widgets->get_href());
 			
-			$this->widgets->set_href_link($GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'db_am_table_exists')));
+			$this->widgets->set_href_link(phpgw::link('/index.php',array('menuaction'=>'email.ui_mail_debug.index','dfunc'=>'db_am_table_exists')));
 			$this->widgets->set_href_clickme('Check if email DB table exists');
 			$this->tpl->set_var('func_O6', $this->widgets->get_href());
 			
@@ -282,8 +282,8 @@
 				// new way to handle debug data, if there is debug data, this will put it in the template source data vars
 				$this->tpl->set_var('debugdata', $GLOBALS['phpgw']->msg->dbug->notice_pagedone());
 				$data['email_page'] = $this->tpl->parse('out','T_debug_main');
-				$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('generic_out' => $data));
-				$GLOBALS['phpgw']->xslttpl->pp();
+				phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('generic_out' => $data));
+				phpgwapi_xslttemplates::getInstance()->pp();
 			}
 			
 			if ($this->debug > 0) { echo 'EXITing...: email.ui_mail_debug.index'.'<br />'; }

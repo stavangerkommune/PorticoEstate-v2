@@ -106,14 +106,14 @@
 
 			$this->acl_location = '.checklist';
 
-			$this->read = $GLOBALS['phpgw']->acl->check('.checklist', PHPGW_ACL_READ, 'controller');//1
-			$this->add = $GLOBALS['phpgw']->acl->check('.checklist', PHPGW_ACL_ADD, 'controller');//2
-			$this->edit = $GLOBALS['phpgw']->acl->check('.checklist', PHPGW_ACL_EDIT, 'controller');//4
-			$this->delete = $GLOBALS['phpgw']->acl->check('.checklist', PHPGW_ACL_DELETE, 'controller');//8
+			$this->read = $GLOBALS['phpgw']->acl->check('.checklist', ACL_READ, 'controller');//1
+			$this->add = $GLOBALS['phpgw']->acl->check('.checklist', ACL_ADD, 'controller');//2
+			$this->edit = $GLOBALS['phpgw']->acl->check('.checklist', ACL_EDIT, 'controller');//4
+			$this->delete = $GLOBALS['phpgw']->acl->check('.checklist', ACL_DELETE, 'controller');//8
 
 			self::set_active_menu('controller::control::check_list');
 
-			if (phpgw::get_var('noframework', 'bool'))
+			if (Sanitizer::get_var('noframework', 'bool'))
 			{
 				$GLOBALS['phpgw_info']['flags']['noframework'] = true;
 				phpgwapi_cache::session_set('controller', 'noframework', true);
@@ -125,10 +125,10 @@
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('Check_list');
 
-//			$GLOBALS['phpgw']->css->add_external_file('controller/templates/base/css/base.css');
-			$GLOBALS['phpgw']->js->validate_file('alertify', 'alertify.min', 'phpgwapi');
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
+//			phpgwapi_css::getInstance()->add_external_file('controller/templates/base/css/base.css');
+			phpgwapi_js::getInstance()->validate_file('alertify', 'alertify.min', 'phpgwapi');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
 
 		}
 
@@ -140,7 +140,7 @@
 		 */
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -240,13 +240,13 @@
 		{
 			if ($check_list == null)
 			{
-				$type = phpgw::get_var('type');
-				$control_id = phpgw::get_var('control_id');
-				$deadline_ts = phpgw::get_var('deadline_ts');
-				$original_deadline_date_ts = phpgw::get_var('deadline_ts');
-				$deadline_current = phpgw::get_var('deadline_current', 'bool');
-				$serie_id = phpgw::get_var('serie_id', 'int');
-				$check_list_error_array = phpgw::get_var('check_list_errors');
+				$type = Sanitizer::get_var('type');
+				$control_id = Sanitizer::get_var('control_id');
+				$deadline_ts = Sanitizer::get_var('deadline_ts');
+				$original_deadline_date_ts = Sanitizer::get_var('deadline_ts');
+				$deadline_current = Sanitizer::get_var('deadline_current', 'bool');
+				$serie_id = Sanitizer::get_var('serie_id', 'int');
+				$check_list_error_array = Sanitizer::get_var('check_list_errors');
 
 				if ($deadline_current)
 				{
@@ -288,7 +288,7 @@
 
 			if (!$location_code = $check_list->get_location_code())
 			{
-				$location_code = phpgw::get_var('location_code');
+				$location_code = Sanitizer::get_var('location_code');
 				$check_list->set_location_code($location_code);
 				$location_array = execMethod('property.bolocation.read_single', array('location_code' => $check_list->get_location_code()));
 				$level = $this->location_finder->get_location_level($location_code);
@@ -300,9 +300,9 @@
 			{
 				if ($check_list != null)
 				{
-					$location_id = phpgw::get_var('location_id');
+					$location_id = Sanitizer::get_var('location_id');
 					$check_list->set_location_id($location_id);
-					$component_id = phpgw::get_var('component_id');
+					$component_id = Sanitizer::get_var('component_id');
 					$check_list->set_component_id($component_id);
 				}
 
@@ -383,7 +383,7 @@
 				$control->set_title($repeat_descr);
 			}
 
-			if (!$responsible_user_id = phpgw::get_var('assigned_to', 'int'))
+			if (!$responsible_user_id = Sanitizer::get_var('assigned_to', 'int'))
 			{
 				$responsible_user_id = execMethod('property.soresponsible.get_responsible_user_id', array
 					(
@@ -408,7 +408,7 @@
 				$buildings_on_property = null;
 			}
 
-			$users = $GLOBALS['phpgw']->acl->get_user_list_right(PHPGW_ACL_ADD, $this->acl_location);
+			$users = $GLOBALS['phpgw']->acl->get_user_list_right(ACL_ADD, $this->acl_location);
 
 			$user_list_options = array();
 			foreach ($users as $user)
@@ -473,9 +473,9 @@
 
 		function set_completed_item()
 		{
-			$check_list_id = phpgw::get_var('check_list_id');
-			$item_string = phpgw::get_var('item_string');
-			$location_code = phpgw::get_var('location_code');
+			$check_list_id = Sanitizer::get_var('check_list_id');
+			$item_string = Sanitizer::get_var('item_string');
+			$location_code = Sanitizer::get_var('location_code');
 
 			if(!$item_string && $location_code)
 			{
@@ -507,7 +507,7 @@
 
 		function undo_completed_item()
 		{
-			$completed_id = phpgw::get_var('completed_id', 'int');
+			$completed_id = Sanitizer::get_var('completed_id', 'int');
 			if($this->edit)
 			{
 				$ok = $this->so->undo_completed_item($completed_id);
@@ -520,9 +520,9 @@
 
 		function set_inspector()
 		{
-			$check_list_id = phpgw::get_var('check_list_id', 'int');
-			$checked = phpgw::get_var('checked', 'bool');
-			$user_id = phpgw::get_var('user_id', 'int');
+			$check_list_id = Sanitizer::get_var('check_list_id', 'int');
+			$checked = Sanitizer::get_var('checked', 'bool');
+			$user_id = Sanitizer::get_var('user_id', 'int');
 
 			if($this->edit)
 			{
@@ -537,8 +537,8 @@
 
 		function set_category()
 		{
-			$check_list_id = phpgw::get_var('check_list_id', 'int');
-			$cat_id = phpgw::get_var('cat_id', 'int');
+			$check_list_id = Sanitizer::get_var('check_list_id', 'int');
+			$cat_id = Sanitizer::get_var('cat_id', 'int');
 
 			if($this->edit)
 			{
@@ -560,14 +560,14 @@
 			//add javascript
 			self::add_javascript('phpgwapi', 'openlayers', 'js/ol.js', false, array('combine' => true ));
 			//add css
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/openlayers/css/ol.css');
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/openlayers/css/popup.css');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/openlayers/css/ol.css');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/openlayers/css/popup.css');
 
 
 			
 			if ($check_list == null)
 			{
-				$check_list_id = phpgw::get_var('check_list_id');
+				$check_list_id = Sanitizer::get_var('check_list_id');
 				$check_list = $this->so->get_single($check_list_id);
 			}
 			else
@@ -738,7 +738,7 @@
 				$buildings_on_property = $this->location_finder->get_buildings_on_property( $location_code);
 			}
 
-			$users = $GLOBALS['phpgw']->acl->get_user_list_right(PHPGW_ACL_ADD, $this->acl_location);
+			$users = $GLOBALS['phpgw']->acl->get_user_list_right(ACL_ADD, $this->acl_location);
 
 			$responsible_user_id = $check_list->get_assigned_to();
 
@@ -868,8 +868,8 @@
 				phpgw::no_access();
 			}
 
-			$thumb = phpgw::get_var('thumb', 'bool');
-			$file_id = phpgw::get_var('file_id', 'int');
+			$thumb = Sanitizer::get_var('thumb', 'bool');
+			$file_id = Sanitizer::get_var('file_id', 'int');
 
 			$bofiles = CreateObject('property.bofiles');
 
@@ -880,7 +880,7 @@
 			}
 			else
 			{
-				$file = urldecode(phpgw::get_var('file'));
+				$file = urldecode(Sanitizer::get_var('file'));
 			}
 
 			$source = "{$bofiles->rootdir}{$file}";
@@ -919,7 +919,7 @@
 
 		function get_files3()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
 			if (empty($this->read))
 			{
@@ -932,7 +932,7 @@
 			);
 
 
-			$link_view_file = $GLOBALS['phpgw']->link('/index.php', $link_file_data);
+			$link_view_file = phpgw::link('/index.php', $link_file_data);
 
 			$vfs = CreateObject('phpgwapi.vfs');
 			$vfs->override_acl = 1;
@@ -973,7 +973,7 @@
 				$z ++;
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 
 				$total_records = count($content_files);
@@ -981,7 +981,7 @@
 				return array
 					(
 					'data' => $content_files,
-					'draw' => phpgw::get_var('draw', 'int'),
+					'draw' => Sanitizer::get_var('draw', 'int'),
 					'recordsTotal' => $total_records,
 					'recordsFiltered' => $total_records
 				);
@@ -995,7 +995,7 @@
 				phpgw::no_access();
 			}
 
-			$id = phpgw::get_var('id', 'int', 'GET');
+			$id = Sanitizer::get_var('id', 'int', 'GET');
 
 			phpgw::import_class('property.multiuploader');
 
@@ -1039,7 +1039,7 @@
 		public function build_multi_upload_file()
 		{
 			phpgwapi_jquery::init_multi_upload_file();
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
@@ -1052,8 +1052,8 @@
 				'multi_upload_action' => $multi_upload_action
 			);
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('files', 'multi_upload_file'));
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('multi_upload' => $data));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('files', 'multi_upload_file'));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('multi_upload' => $data));
 		}
 
 		/**
@@ -1196,7 +1196,7 @@
 		 */
 		function save_check_list()
 		{
-			$check_list_id = phpgw::get_var('check_list_id');
+			$check_list_id = Sanitizer::get_var('check_list_id');
 			if (!$this->add && !$this->edit)
 			{
 				phpgwapi_cache::message_set('No access', 'error');
@@ -1204,26 +1204,26 @@
 					'check_list_id' => $check_list_id));
 			}
 
-			$submit_deviation = phpgw::get_var('submit_deviation', 'bool');
-			$submit_ok = phpgw::get_var('submit_ok', 'bool');
-			$save_check_list = phpgw::get_var('save_check_list', 'bool');
+			$submit_deviation = Sanitizer::get_var('submit_deviation', 'bool');
+			$submit_ok = Sanitizer::get_var('submit_ok', 'bool');
+			$save_check_list = Sanitizer::get_var('save_check_list', 'bool');
 
-			$control_id = phpgw::get_var('control_id', 'int');
-			$serie_id = phpgw::get_var('serie_id', 'int');
-			$status = phpgw::get_var('status', 'int');
-			$type = phpgw::get_var('type');
-			$deadline_date = phpgw::get_var('deadline_date', 'string');
-			$original_deadline_date_ts = phpgw::get_var('original_deadline_date', 'int');
-			$planned_date = phpgw::get_var('planned_date', 'string');
-			$planned_month = phpgw::get_var('planned_month', 'int');
-			$completed_date = phpgw::get_var('completed_date', 'string');
-			$comment = phpgw::get_var('comment', 'string');
-			$assigned_to = phpgw::get_var('assigned_to', 'int');
-			$billable_hours = phpgw::get_var('billable_hours', 'float');
+			$control_id = Sanitizer::get_var('control_id', 'int');
+			$serie_id = Sanitizer::get_var('serie_id', 'int');
+			$status = Sanitizer::get_var('status', 'int');
+			$type = Sanitizer::get_var('type');
+			$deadline_date = Sanitizer::get_var('deadline_date', 'string');
+			$original_deadline_date_ts = Sanitizer::get_var('original_deadline_date', 'int');
+			$planned_date = Sanitizer::get_var('planned_date', 'string');
+			$planned_month = Sanitizer::get_var('planned_month', 'int');
+			$completed_date = Sanitizer::get_var('completed_date', 'string');
+			$comment = Sanitizer::get_var('comment', 'string');
+			$assigned_to = Sanitizer::get_var('assigned_to', 'int');
+			$billable_hours = Sanitizer::get_var('billable_hours', 'float');
 
 
 			//From direct url
-			$deadline_ts = phpgw::get_var('deadline_ts', 'int');
+			$deadline_ts = Sanitizer::get_var('deadline_ts', 'int');
 
 			//From datefield in edit form
 			$deadline_date_ts = date_converter::date_to_timestamp($deadline_date);
@@ -1329,15 +1329,15 @@
 
 				$check_list = new controller_check_list();
 				$check_list->set_control_id($control_id);
-				$location_code = phpgw::get_var('location_code');
+				$location_code = Sanitizer::get_var('location_code');
 				$check_list->set_location_code($location_code);
 				$check_list->set_serie_id($serie_id);
 
 
 				if ($type == "component")
 				{
-					$location_id = phpgw::get_var('location_id');
-					$component_id = phpgw::get_var('component_id');
+					$location_id = Sanitizer::get_var('location_id');
+					$component_id = Sanitizer::get_var('component_id');
 					$check_list->set_location_id($location_id);
 					$check_list->set_component_id($component_id);
 				}
@@ -1372,7 +1372,7 @@
 			if ($status == controller_check_list::STATUS_DONE && $required_actual_hours && $check_list->get_billable_hours() == 0 && !$billable_hours)
 			{
 				$error_message = lang("Please enter billable hours");
-				if (phpgw::get_var('phpgw_return_as') != 'json')
+				if (Sanitizer::get_var('phpgw_return_as') != 'json')
 				{
 					phpgwapi_cache::message_set($error_message, 'error');
 				}
@@ -1408,7 +1408,7 @@
 				 * Add an iCal-event if there is a serie - and the checklist is visited the first time - or assigned is changed
 				 */
 				if (!$submit_deviation &&
-					(($check_list_id && $serie && !phpgw::get_var('check_list_id')) || ($serie && $orig_assigned_to != $assigned_to))
+					(($check_list_id && $serie && !Sanitizer::get_var('check_list_id')) || ($serie && $orig_assigned_to != $assigned_to))
 				)
 				{
 					$bocommon = CreateObject('property.bocommon');
@@ -1466,7 +1466,7 @@
 					$subject = "{$repeat_type_array[$serie['repeat_type']]}/{$serie['repeat_interval']}";
 					$subject .= "::{$serie['title']}::{$short_desc}";
 
-					$link_backend = $GLOBALS['phpgw']->link('/index.php', array(
+					$link_backend = phpgw::link('/index.php', array(
 						'menuaction' => 'controller.uicheck_list.add_check_list',
 						'control_id' => $check_list->get_control_id(),
 						'location_id' => $check_list->get_location_id(),
@@ -1477,7 +1477,7 @@
 						'deadline_current' => true
 						), false, true, true);
 
-					$link_mobilefrontend = $GLOBALS['phpgw']->link('/mobilefrontend/index.php', array(
+					$link_mobilefrontend = phpgw::link('/mobilefrontend/index.php', array(
 						'menuaction' => 'controller.uicheck_list.add_check_list',
 						'control_id' => $check_list->get_control_id(),
 						'location_id' => $check_list->get_location_id(),
@@ -1521,7 +1521,7 @@
 						$ret = $this->notify_supervisor($check_list);
 					}
 
-					if (phpgw::get_var('phpgw_return_as') == 'json')
+					if (Sanitizer::get_var('phpgw_return_as') == 'json')
 					{
 						if(!empty($ret['message']))
 						{
@@ -1545,7 +1545,7 @@
 				}
 				else
 				{
-					if (phpgw::get_var('phpgw_return_as') == 'json')
+					if (Sanitizer::get_var('phpgw_return_as') == 'json')
 					{
 						return array('status' => 'error', 'message' => $error_message ? $error_message : lang('Error'));
 					}
@@ -1554,7 +1554,7 @@
 			}
 			else
 			{
-				if (phpgw::get_var('phpgw_return_as') == 'json')
+				if (Sanitizer::get_var('phpgw_return_as') == 'json')
 				{
 					return array('status' => 'error', 'message' => $error_message ? $error_message : lang('Error'));
 				}
@@ -1629,7 +1629,7 @@
 					(
 					'document_id' => $entry['document_id'],
 					'file_name' => $entry['document_name'],
-					'file_name' => '<a href="' . $GLOBALS['phpgw']->link('/index.php', $link_file_data) . "\" target='_blank' title='{$lang_view}'>{$entry['document_name']}</a>",
+					'file_name' => '<a href="' . phpgw::link('/index.php', $link_file_data) . "\" target='_blank' title='{$lang_view}'>{$entry['document_name']}</a>",
 					'link' => $entry['link'],
 					'title' => $entry['title'],
 					'doc_type' => $entry['doc_type'],
@@ -1663,7 +1663,7 @@
 					(
 					'document_id' => $entry['id'],
 					'file_name' => $entry['name'],
-					'file_name' => '<a href="' . $GLOBALS['phpgw']->link('/index.php', $link_file_data) . "\" target='_blank' title='{$lang_view}'>{$entry['name']}</a>"
+					'file_name' => '<a href="' . phpgw::link('/index.php', $link_file_data) . "\" target='_blank' title='{$lang_view}'>{$entry['name']}</a>"
 				);
 			}
 
@@ -1723,7 +1723,7 @@
 
 			foreach ($values as &$_entry)
 			{
-				$_entry['file_name'] = '<a href="' . $GLOBALS['phpgw']->link('/index.php', $link_file_data) . '&amp;file_name=' . urlencode($_entry['name']) . '" target="_blank" title="' . lang('click to view file') . '">' . $_entry['name'] . '</a>';
+				$_entry['file_name'] = '<a href="' . phpgw::link('/index.php', $link_file_data) . '&amp;file_name=' . urlencode($_entry['name']) . '" target="_blank" title="' . lang('click to view file') . '">' . $_entry['name'] . '</a>';
 			}
 
 			return $values;
@@ -1731,7 +1731,7 @@
 
 		function view_control_info()
 		{
-			$check_list_id = phpgw::get_var('check_list_id');
+			$check_list_id = Sanitizer::get_var('check_list_id');
 
 			$check_list = $this->so->get_single($check_list_id);
 			$control = $this->so_control->get_single($check_list->get_control_id());
@@ -1825,11 +1825,11 @@
 
 		function view_control_details()
 		{
-			$control_id = phpgw::get_var('control_id');
+			$control_id = Sanitizer::get_var('control_id');
 
 			$control = $this->so_control->get_single($control_id);
 
-			$check_list_id = phpgw::get_var('check_list_id', 'int');
+			$check_list_id = Sanitizer::get_var('check_list_id', 'int');
 
 			$check_list = $this->so->get_single($check_list_id);
 
@@ -1855,7 +1855,7 @@
 
 		function view_control_items()
 		{
-			$check_list_id = phpgw::get_var('check_list_id');
+			$check_list_id = Sanitizer::get_var('check_list_id');
 			$check_list = $this->so->get_single($check_list_id);
 
 			$control = $this->so_control->get_single($check_list->get_control_id());
@@ -1883,7 +1883,7 @@
 
 		public function print_check_list()
 		{
-			$check_list_id = phpgw::get_var('check_list_id');
+			$check_list_id = Sanitizer::get_var('check_list_id');
 			$check_list = $this->so->get_single($check_list_id);
 
 			$control = $this->so_control->get_single($check_list->get_control_id());
@@ -1922,7 +1922,7 @@
 		// Returns check list info as JSON
 		public function get_check_list_info()
 		{
-			$check_list_id = phpgw::get_var('check_list_id');
+			$check_list_id = Sanitizer::get_var('check_list_id');
 			$check_list = $this->so->get_single_with_check_items($check_list_id);
 
 			return $check_list;
@@ -1931,7 +1931,7 @@
 		// Returns open cases for a check list as JSON
 		public function get_cases_for_check_list()
 		{
-			$check_list_id = phpgw::get_var('check_list_id');
+			$check_list_id = Sanitizer::get_var('check_list_id');
 
 			$check_items_with_cases = $this->so_check_item->get_check_items_with_cases($check_list_id, null, "open", null);
 
@@ -1951,8 +1951,8 @@
 					'error'	=> 'no_access'
 					));
 			}
-			$check_list_id = phpgw::get_var('check_list_id');
-			$billable_hours = phpgw::get_var('billable_hours', 'float');
+			$check_list_id = Sanitizer::get_var('check_list_id');
+			$billable_hours = Sanitizer::get_var('billable_hours', 'float');
 			$check_list = $this->so->get_single($check_list_id);
 			$check_list->set_delta_billable_hours($billable_hours);
 
@@ -1984,8 +1984,8 @@
 					));
 			}
 
-			$check_list_id = phpgw::get_var('check_list_id');
-			$check_list_status = phpgw::get_var('status');
+			$check_list_id = Sanitizer::get_var('check_list_id');
+			$check_list_status = Sanitizer::get_var('status');
 			$check_list = $this->so->get_single($check_list_id);
 
 //
@@ -2409,7 +2409,7 @@ HTML;
 
 			$check_list_id = $check_list->get_id();
 			$control_item_id = $control_item['id'];
-			$case_descr = phpgw::get_var('case_descr');
+			$case_descr = Sanitizer::get_var('case_descr');
 			$type = $control_item['type'];
 			$status = controller_check_list::STATUS_DONE;
 			$location_code = $check_list->get_location_code();
@@ -2787,8 +2787,8 @@ HTML;
 			$config = createObject('phpgwapi.config', 'property')->read();
 
 
-			$check_list_id = phpgw::get_var('check_list_id');
-			$case_location_code = phpgw::get_var('location_code');
+			$check_list_id = Sanitizer::get_var('check_list_id');
+			$case_location_code = Sanitizer::get_var('location_code');
 
 			$GLOBALS['phpgw_info']['flags']['noheader'] = true;
 			$GLOBALS['phpgw_info']['flags']['nofooter'] = true;
@@ -3513,7 +3513,7 @@ HTML;
 
 		function send_report()
 		{
-			$check_list_id = phpgw::get_var('check_list_id');
+			$check_list_id = Sanitizer::get_var('check_list_id');
 			$report_file_path = $this->get_report($check_list_id, true);
 
 			if(!is_file($report_file_path))
@@ -3613,15 +3613,15 @@ HTML;
 
 		function get_report($check_list_id = null, $return_as_file = null)
 		{
-			$inline_images = phpgw::get_var('inline_images', 'bool') || $return_as_file ? true : false;
+			$inline_images = Sanitizer::get_var('inline_images', 'bool') || $return_as_file ? true : false;
 
 			$config = createObject('phpgwapi.config', 'controller')->read();
 
 			if(!$check_list_id)
 			{
-				$check_list_id = phpgw::get_var('check_list_id');
+				$check_list_id = Sanitizer::get_var('check_list_id');
 			}
-			$case_location_code = phpgw::get_var('location_code');
+			$case_location_code = Sanitizer::get_var('location_code');
 
 			$GLOBALS['phpgw_info']['flags']['noheader'] = true;
 			$GLOBALS['phpgw_info']['flags']['nofooter'] = true;
@@ -3670,7 +3670,7 @@ HTML;
 
 			$report_data['stylesheets'] = $stylesheets;
 			$report_data['javascripts'] = $javascripts;
-			$report_data['str_base_url'] = $GLOBALS['phpgw']->link('/', array(), true);
+			$report_data['str_base_url'] = phpgw::link('/', array(), true);
 			$report_data['inline_images'] = $inline_images;
 			$report_data['control_area_name'] = $report_info['control']->get_control_area_name();
 			$report_data['title'] = $report_info['control']->get_title();
@@ -4175,7 +4175,7 @@ HTML;
 			$report_data['inspectors'] = array_unique($selected_inspectors);
 			$report_data['report_email'] = !empty($config['report_email']) ? $config['report_email'] : '';
 			$report_data['return_as_pdf'] = !empty($config['report_as_pdf']) ? true : false;
-			$report_data['return_as_pdf'] = $report_data['return_as_pdf'] ? $report_data['return_as_pdf'] : phpgw::get_var('return_as_pdf', 'bool');
+			$report_data['return_as_pdf'] = $report_data['return_as_pdf'] ? $report_data['return_as_pdf'] : Sanitizer::get_var('return_as_pdf', 'bool');
 			$report_data['return_as_file'] = $return_as_file;
 
 			return $this->render_report($report_data, $return_as_file);
@@ -4292,7 +4292,7 @@ HTML;
 				phpgw::no_access();
 			}
 
-			$img_id = phpgw::get_var('img_id', 'int');
+			$img_id = Sanitizer::get_var('img_id', 'int');
 
 			$bofiles = CreateObject('property.bofiles');
 

@@ -51,7 +51,7 @@
 		$eventplannerguest = $GLOBALS['phpgw']->accounts->name2id('eventplannerguest');
 	}
 
-	$aclobj = & $GLOBALS['phpgw']->acl;
+	$aclobj = Acl::getInstance();
 	$aclobj->set_account_id($eventplannerguest, true);
 	$aclobj->add('phpgwapi', 'anonymous', 1);
 	$aclobj->add('eventplannerfrontend', 'run', 1);

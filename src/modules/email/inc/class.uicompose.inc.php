@@ -81,7 +81,7 @@
 			}
 			else
 			{
-				$GLOBALS['phpgw']->xslttpl->add_file(array('app_data'));
+				phpgwapi_xslttemplates::getInstance()->add_file(array('app_data'));
 			}
 			
 			$this->tpl->set_file(
@@ -188,8 +188,8 @@
 				//$data['appname'] = lang('E-Mail');
 				//$data['function_msg'] = lang('compose message');
 				$data['email_page'] = $this->tpl->parse('out','T_compose_out');
-				$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('generic_out' => $data));
-				$GLOBALS['phpgw']->xslttpl->pp();
+				phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('generic_out' => $data));
+				phpgwapi_xslttemplates::getInstance()->pp();
 			}
 			
 			$GLOBALS['phpgw']->msg->end_request();

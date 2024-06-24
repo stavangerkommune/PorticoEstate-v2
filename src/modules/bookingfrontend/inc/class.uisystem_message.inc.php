@@ -30,10 +30,10 @@
 		public function edit()
 		{
 			date_default_timezone_set("Europe/Oslo");
-			$date = new DateTime(phpgw::get_var('date'));
+			$date = new DateTime(Sanitizer::get_var('date'));
 			$system_message = array();
-			$system_message['building_id'] = phpgw::get_var('building_id', 'int');
-			$system_message['building_name'] = phpgw::get_var('building_name', 'string');
+			$system_message['building_id'] = Sanitizer::get_var('building_id', 'int');
+			$system_message['building_name'] = Sanitizer::get_var('building_name', 'string');
 			$system_message['cancel_link'] = self::link(array('menuaction' => $this->module . '.uisearch.index'));
 			$system_message['created'] = $date->format('Y-m-d  H:m');
 
@@ -82,7 +82,7 @@
 		}
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}

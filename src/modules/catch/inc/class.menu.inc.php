@@ -42,7 +42,7 @@
 		{
 			$incoming_app = $GLOBALS['phpgw_info']['flags']['currentapp'];
 			$GLOBALS['phpgw_info']['flags']['currentapp'] = 'catch';
-			$acl = & $GLOBALS['phpgw']->acl;
+			$acl = Acl::getInstance();
 			$start_page = 'catch';
 			if ( isset($GLOBALS['phpgw_info']['user']['preferences']['catch']['default_start_page'])
 					&& $GLOBALS['phpgw_info']['user']['preferences']['catch']['default_start_page'] )
@@ -57,7 +57,7 @@
 				'catch' => array
 				(
 					'text'	=> lang('catch'),
-					'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => "catch.ui{$start_page}.index") ),
+					'url'	=> phpgw::link('/index.php', array('menuaction' => "catch.ui{$start_page}.index") ),
 					'image'	=> array('catch', 'navbar'),
 					'order'	=> 35,
 					'group'	=> 'office'
@@ -76,7 +76,7 @@
 					{
 						$admin_children_entity["entity_{$entry['id']}"] = array
 						(
-							'url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'property.uiadmin_entity.category', 'entity_id'=> $entry['id'], 'type' => 'catch')),
+							'url'	=> phpgw::link('/index.php',array('menuaction'=> 'property.uiadmin_entity.category', 'entity_id'=> $entry['id'], 'type' => 'catch')),
 							'text'	=> $entry['name'],
 							'image'		=> array( 'catch', 'entity_' . $entry['id'] )
 						);
@@ -87,7 +87,7 @@
 						{
 							$admin_children_entity["entity_{$entry['id']}"]['children']["entity_{$entry['id']}_{$category['id']}"]	= array
 							(
-								'url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'property.uiadmin_entity.list_attribute', 'entity_id'=> $entry['id'] , 'cat_id'=> $category['id'], 'type' => 'catch')),
+								'url'	=> phpgw::link('/index.php',array('menuaction'=> 'property.uiadmin_entity.list_attribute', 'entity_id'=> $entry['id'] , 'cat_id'=> $category['id'], 'type' => 'catch')),
 								'text'	=> $category['name']
 							);
 						}
@@ -100,33 +100,33 @@
 					'entity'	=> array
 					(
 						'text'	=> lang('Admin entity'),
-						'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uiadmin_entity.index', 'type' => 'catch') ),
+						'url'	=> phpgw::link('/index.php', array('menuaction' => 'property.uiadmin_entity.index', 'type' => 'catch') ),
 						'children' => $admin_children_entity
 					),
 					'config'	=> array
 					(
 						'text'	=> lang('config'),
-						'url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'catch.uiconfig.index'))
+						'url'	=> phpgw::link('/index.php',array('menuaction'=> 'catch.uiconfig.index'))
 					),
 					'categories'	=> array
 					(
 						'text'	=> $GLOBALS['phpgw']->translation->translate('Global Categories', array(), true),
-						'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uicategories.index', 'appname' => 'catch'))
+						'url'	=> phpgw::link('/index.php', array('menuaction' => 'admin.uicategories.index', 'appname' => 'catch'))
 					),
 					'acl'	=> array
 					(
 						'text'	=> $GLOBALS['phpgw']->translation->translate('Configure Access Permissions', array(), true),
-						'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.list_acl', 'acl_app' => 'catch'))
+						'url'	=> phpgw::link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.list_acl', 'acl_app' => 'catch'))
 					),
 					'list_atrribs'	=> array
 					(
 						'text'	=> $GLOBALS['phpgw']->translation->translate('custom fields', array(), true),
-						'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.ui_custom.list_attribute', 'appname' => 'catch'))
+						'url'	=> phpgw::link('/index.php', array('menuaction' => 'admin.ui_custom.list_attribute', 'appname' => 'catch'))
 					),
 					'list_functions'	=> array
 					(
 						'text'	=> $GLOBALS['phpgw']->translation->translate('custom functions', array(), true),
-						'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.ui_custom.list_custom_function', 'appname' =>  'catch'))
+						'url'	=> phpgw::link('/index.php', array('menuaction' => 'admin.ui_custom.list_custom_function', 'appname' =>  'catch'))
 					)
 				);
 			}
@@ -138,19 +138,19 @@
 					array
 					(
 						'text'	=> $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
-						'url'	=> $GLOBALS['phpgw']->link('/preferences/preferences.php', array('appname' => 'catch', 'type'=> 'user') )
+						'url'	=> phpgw::link('/preferences/preferences.php', array('appname' => 'catch', 'type'=> 'user') )
 					),
 					array
 					(
 						'text'	=> $GLOBALS['phpgw']->translation->translate('Grant Access', array(), true),
-						'url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'preferences.uiadmin_acl.aclprefs', 'acl_app'=> 'catch') )
+						'url'	=> phpgw::link('/index.php',array('menuaction'=> 'preferences.uiadmin_acl.aclprefs', 'acl_app'=> 'catch') )
 					)
 				);
 
 				$menus['toolbar'][] = array
 				(
 					'text'	=> $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
-					'url'	=> $GLOBALS['phpgw']->link('/preferences/preferences.php', array('appname'	=> 'catch')),
+					'url'	=> phpgw::link('/preferences/preferences.php', array('appname'	=> 'catch')),
 					'image'	=> array('catch', 'preferences')
 				);
 			}
@@ -160,11 +160,11 @@
 			{
 				foreach($entity_list as $entry)
 				{
-					if ( $acl->check(".catch.{$entry['id']}", PHPGW_ACL_READ, 'catch') )
+					if ( $acl->check(".catch.{$entry['id']}", ACL_READ, 'catch') )
 					{
 						$menus['navigation']["entity_{$entry['id']}"] = array
 						(
-							'url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'property.uientity.index', 'entity_id'=> $entry['id'], 'type' => 'catch')),
+							'url'	=> phpgw::link('/index.php',array('menuaction'=> 'property.uientity.index', 'entity_id'=> $entry['id'], 'type' => 'catch')),
 							'text'	=> $entry['name'],
 							'image'		=> array( 'catch', 'entity_' . $entry['id'] )
 						);
@@ -174,11 +174,11 @@
 
 					foreach($cat_list as $category)
 					{
-						if ( $acl->check(".catch.{$entry['id']}.{$category['id']}", PHPGW_ACL_READ, 'catch') )
+						if ( $acl->check(".catch.{$entry['id']}.{$category['id']}", ACL_READ, 'catch') )
 						{
 							$menus['navigation']["entity_{$entry['id']}"]['children']["entity_{$entry['id']}_{$category['id']}"]	= array
 							(
-								'url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'property.uientity.index', 'entity_id'=> $entry['id'] , 'cat_id'=> $category['id'], 'type' => 'catch')),
+								'url'	=> phpgw::link('/index.php',array('menuaction'=> 'property.uientity.index', 'entity_id'=> $entry['id'] , 'cat_id'=> $category['id'], 'type' => 'catch')),
 								'text'	=> $category['name']
 							);
 						}

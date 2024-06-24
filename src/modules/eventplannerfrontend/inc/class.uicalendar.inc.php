@@ -26,7 +26,7 @@
 			$params['relaxe_acl'] = true;
 			$params['filters']['status'] = eventplanner_application::STATUS_APPROVED;
 			$values = $this->bo->read($params);
-			$redirect = phpgw::get_var('redirect');
+			$redirect = Sanitizer::get_var('redirect');
 			if($redirect == 'booking')
 			{
 				array_walk($values["results"], array($this, "_add_links2"), "{$this->currentapp}.uibooking.edit");

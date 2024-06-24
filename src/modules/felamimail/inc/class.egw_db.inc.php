@@ -207,7 +207,7 @@ class egw_db
 		$this->User = $GLOBALS['phpgw_info']['server']['db_user']; 
 		$this->Password = $GLOBALS['phpgw_info']['server']['db_pass']; 
 */
-		$phpgw_db           = & $GLOBALS['phpgw']->db;
+		$phpgw_db           = Db::getInstance();
 		$this->Database		= & $phpgw_db->Database;
 		$this->Host			= & $phpgw_db->Host;
 		$this->Port			= & $phpgw_db->Port;

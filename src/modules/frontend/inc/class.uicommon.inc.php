@@ -68,7 +68,7 @@
 			/* Get the tabs and check to see whether the user has specified a tab or has a selected tab on session */
 			$tabs = $this->get_tabs();
 			//print_r($tabs); die;
-			$location_id = phpgw::get_var('location_id', 'int', 'REQUEST');
+			$location_id = Sanitizer::get_var('location_id', 'int', 'REQUEST');
 			$tab = isset($location_id) ? $location_id : phpgwapi_cache::session_get('frontend', 'tab');
 			$selected = isset($tab) && $tab ? $tab : array_shift(array_keys($tabs));
 
@@ -110,11 +110,11 @@
 			$this->header_state['tabs_data'] = array_chunk($this->tabs_data, ceil(count($this->tabs_data) / $columns));
 
 			// Get navigation parameters
-			$param_selected_location = phpgw::get_var('location'); // New location selected from locations list
-			$param_selected_org_unit = phpgw::get_var('org_unit_id');  // New organisational unit selected from organisational units list
-			$param_only_org_unit = phpgw::get_var('org_enhet_id');   // Frontend access from rental module regarding specific organisational unit
+			$param_selected_location = Sanitizer::get_var('location'); // New location selected from locations list
+			$param_selected_org_unit = Sanitizer::get_var('org_unit_id');  // New organisational unit selected from organisational units list
+			$param_only_org_unit = Sanitizer::get_var('org_enhet_id');   // Frontend access from rental module regarding specific organisational unit
 			//Refresh organisation list
-			$refresh = phpgw::get_var('refresh', 'bool');
+			$refresh = Sanitizer::get_var('refresh', 'bool');
 
 			$property_locations_update = false;
 
@@ -309,10 +309,10 @@
 
 			phpgwapi_cache::session_set('frontend', 'header_state', $this->header_state);
 
-			$GLOBALS['phpgw']->css->add_external_file("frontend/templates/{$GLOBALS['phpgw_info']['user']['preferences']['common']['template_set']}/css/base.css");
+			phpgwapi_css::getInstance()->add_external_file("frontend/templates/{$GLOBALS['phpgw_info']['user']['preferences']['common']['template_set']}/css/base.css");
 			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
 
-			$GLOBALS['phpgw']->js->validate_file('jquery', 'menu', 'frontend');
+			phpgwapi_js::getInstance()->validate_file('jquery', 'menu', 'frontend');
 		}
 
 		function get_tabs()
@@ -326,12 +326,12 @@
 				$name = $entry['name'];
 				$location = $entry['location'];
 
-				if ($GLOBALS['phpgw']->acl->check($location, PHPGW_ACL_READ, 'frontend'))
+				if ($GLOBALS['phpgw']->acl->check($location, ACL_READ, 'frontend'))
 				{
 					$location_id = $GLOBALS['phpgw']->locations->get_id('frontend', $location);
 					$tabs[$location_id] = array(
 						'label' => lang($name),
-						'link' => $GLOBALS['phpgw']->link('/', array('menuaction' => "frontend.ui{$name}.index",
+						'link' => phpgw::link('/', array('menuaction' => "frontend.ui{$name}.index",
 							'location_id' => $location_id, 'noframework' => $noframework))
 					);
 				}
@@ -348,7 +348,7 @@
 
 			foreach ($entity_frontend as $location)
 			{
-				if ($GLOBALS['phpgw']->acl->check($location, PHPGW_ACL_READ, 'property'))
+				if ($GLOBALS['phpgw']->acl->check($location, ACL_READ, 'property'))
 				{
 					$location_id = $GLOBALS['phpgw']->locations->get_id('property', $location);
 					$location_arr = explode('.', $location);
@@ -356,7 +356,7 @@
 					$category = $entity->read_single_category($location_arr[2], $location_arr[3]);
 					$tabs[$location_id] = array(
 						'label' => $category['name'],
-						'link' => $GLOBALS['phpgw']->link('/', array('menuaction' => "frontend.uientity.index",
+						'link' => phpgw::link('/', array('menuaction' => "frontend.uientity.index",
 							'location_id' => $location_id, 'noframework' => $noframework))
 					);
 				}
@@ -487,7 +487,7 @@ HTML;
 			if ($help_in_vfs)
 			{
 				$help_url = "javascript:openwindow('"
-					. $GLOBALS['phpgw']->link('/index.php', array
+					. phpgw::link('/index.php', array
 						(
 						'menuaction' => 'frontend.uidocumentupload.read_helpfile_from_vfs',
 						'app' => 'frontend'
@@ -496,17 +496,17 @@ HTML;
 			else
 			{
 				$help_url = "javascript:openwindow('"
-					. $GLOBALS['phpgw']->link('/index.php', array
+					. phpgw::link('/index.php', array
 						(
 						'menuaction' => 'manual.uimanual.help',
 						'app' => $GLOBALS['phpgw_info']['flags']['currentapp'],
 						'section' => isset($GLOBALS['phpgw_info']['apps']['manual']['section']) ? $GLOBALS['phpgw_info']['apps']['manual']['section'] : '',
-						'referer' => phpgw::get_var('menuaction')
+						'referer' => Sanitizer::get_var('menuaction')
 					)) . "','700','600')";
 			}
 
 			$contact_url = "javascript:openwindow('"
-				. $GLOBALS['phpgw']->link('/index.php', array
+				. phpgw::link('/index.php', array
 					(
 					'menuaction' => 'manual.uimanual.help',
 					'app' => $GLOBALS['phpgw_info']['flags']['currentapp'],
@@ -514,7 +514,7 @@ HTML;
 				)) . "','700','600')";
 
 			$folder_url = "javascript:openwindow('"
-				. $GLOBALS['phpgw']->link('/index.php', array
+				. phpgw::link('/index.php', array
 					(
 					'menuaction' => 'manual.uimanual.help',
 					'app' => $GLOBALS['phpgw_info']['flags']['currentapp'],
@@ -525,11 +525,11 @@ HTML;
 
 			if (count($GLOBALS['phpgw_info']['user']['apps']) > 1)
 			{
-				$home_url = $GLOBALS['phpgw']->link('/home.php');
+				$home_url = phpgw::link('/home.php');
 			}
 			else
 			{
-				$home_url = $GLOBALS['phpgw']->link('/index.php', array
+				$home_url = phpgw::link('/index.php', array
 					(
 					'menuaction' => 'frontend.uifrontend.index'
 				));
@@ -592,7 +592,7 @@ HTML;
 		{
 			//Forward to helpdesk
 			$location_id = $GLOBALS['phpgw']->locations->get_id('frontend', '.ticket');
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'frontend.uihelpdesk.index',
+			phpgw::redirect_link('/index.php', array('menuaction' => 'frontend.uihelpdesk.index',
 				'location_id' => $location_id));
 		}
 
@@ -605,7 +605,7 @@ HTML;
 			$doc_type = $this->config->config_data['picture_building_cat'] ? $this->config->config_data['picture_building_cat'] : 'profilbilder';
 
 			// Get object id from params or use 'dummy'
-			$location_code = phpgw::get_var('loc_code') ? phpgw::get_var('loc_code') : 'dummy';
+			$location_code = Sanitizer::get_var('loc_code') ? Sanitizer::get_var('loc_code') : 'dummy';
 
 			$directory = "/property/document/{$location_code}/{$doc_type}";
 
@@ -625,7 +625,7 @@ HTML;
 
 			if(empty($file['file_id']))
 			{
-				$GLOBALS['phpgw']->redirect_link('templates/base/images/missing_picture.png');
+				phpgw::redirect_link('templates/base/images/missing_picture.png');
 			}
 
 			$mime_type = 'image/jpeg';

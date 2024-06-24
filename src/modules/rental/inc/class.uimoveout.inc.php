@@ -66,12 +66,12 @@
 		{
 			$function_msg = lang('moveout');
 
-			if (empty($this->permissions[PHPGW_ACL_READ]))
+			if (empty($this->permissions[ACL_READ]))
 			{
 				phpgw::no_access($function_msg);
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -111,7 +111,7 @@
 				(
 				'my_name' => 'view',
 				'text' => lang('show'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uimoveout.view'
 				)),
@@ -122,7 +122,7 @@
 				(
 				'my_name' => 'edit',
 				'text' => lang('edit'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uimoveout.edit'
 				)),
@@ -137,9 +137,9 @@
 
 		public function edit( $values = array(), $mode = 'edit' )
 		{
-			$active_tab = !empty($values['active_tab']) ? $values['active_tab'] : phpgw::get_var('active_tab', 'string', 'REQUEST', 'first_tab');
+			$active_tab = !empty($values['active_tab']) ? $values['active_tab'] : Sanitizer::get_var('active_tab', 'string', 'REQUEST', 'first_tab');
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('edit');
-			if (empty($this->permissions[PHPGW_ACL_ADD]))
+			if (empty($this->permissions[ACL_ADD]))
 			{
 				phpgw::no_access();
 			}
@@ -150,11 +150,11 @@
 			}
 			else
 			{
-				$id = !empty($values['id']) ? $values['id'] : phpgw::get_var('id', 'int');
+				$id = !empty($values['id']) ? $values['id'] : Sanitizer::get_var('id', 'int');
 				$moveout = $this->bo->read_single($id);
 			}
 
-			$contract_id = $moveout->contract_id ? $moveout->contract_id : phpgw::get_var('contract_id', 'int');
+			$contract_id = $moveout->contract_id ? $moveout->contract_id : Sanitizer::get_var('contract_id', 'int');
 
 			$tabs = array();
 			$tabs['first_tab'] = array(
@@ -237,8 +237,8 @@
 
 			$data = array(
 				'datatable_def' => $datatable_def,
-				'form_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'rental.uimoveout.save')),
-				'cancel_url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'rental.uimoveout.index',)),
+				'form_action' => phpgw::link('/index.php', array('menuaction' => 'rental.uimoveout.save')),
+				'cancel_url' => phpgw::link('/index.php', array('menuaction' => 'rental.uimoveout.index',)),
 				'moveout' => $moveout,
 				'contract'	=> createObject('rental.uicontract')->get($contract_id),
 				'mode' => $mode,
@@ -249,7 +249,7 @@
 			phpgwapi_jquery::formvalidator_generate(array());
 			phpgwapi_jquery::load_widget('autocomplete');
 //			self::add_javascript('phpgwapi', 'signature_pad', 'signature_pad.min.js');
-//			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/signature_pad/signature-pad.css');
+//			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/signature_pad/signature-pad.css');
 			$attributes_xsl = $mode == 'edit' ? 'attributes_form' : 'attributes_view';
 			self::add_javascript('rental', 'base', 'moveout.edit.js');
 			self::render_template_xsl(array('moveout', 'contract_info', 'datatable_inline', $attributes_xsl), array($mode => $data));
@@ -261,12 +261,12 @@
 
 		public function get( $id = 0 )
 		{
-			if (empty($this->permissions[PHPGW_ACL_ADD]))
+			if (empty($this->permissions[ACL_ADD]))
 			{
 				phpgw::no_access();
 			}
 
-			$id = !empty($id) ? $id : phpgw::get_var('id', 'int');
+			$id = !empty($id) ? $id : Sanitizer::get_var('id', 'int');
 
 			$moveout = $this->bo->read_single($id)->toArray();
 
@@ -300,12 +300,12 @@
 
 		public function _get_files()
 		{
-			if (empty($this->permissions[PHPGW_ACL_READ]))
+			if (empty($this->permissions[ACL_READ]))
 			{
 				phpgw::no_access();
 			}
 
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 			return parent::get_files('rental', 'moveout', 'rental.uimoveout.view_file', $id);
 		}
 		/**

@@ -19,7 +19,7 @@
 		}
 		public function regulations()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -29,7 +29,7 @@
 
 		public function download()
 		{
-			if ($id = phpgw::get_var('id', 'string'))
+			if ($id = Sanitizer::get_var('id', 'string'))
 			{
 				list($type, $id_value) = explode('::', urldecode($id), 2);
 

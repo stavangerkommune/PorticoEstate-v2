@@ -173,11 +173,11 @@
 
 		public function populate()
 		{
-			$this->set_id(phpgw::get_var('id'));
-			$this->set_activity_id(phpgw::get_var('activity_id'));
-			$this->set_no_of_items(phpgw::get_var('no_of_items'));
-			$this->set_location_id(phpgw::get_var('location_id'));
-			$this->set_create_user(phpgw::get_var('create_user'));
+			$this->set_id(Sanitizer::get_var('id'));
+			$this->set_activity_id(Sanitizer::get_var('activity_id'));
+			$this->set_no_of_items(Sanitizer::get_var('no_of_items'));
+			$this->set_location_id(Sanitizer::get_var('location_id'));
+			$this->set_create_user(Sanitizer::get_var('create_user'));
 
 			if ($this->get_id() == '' | $this->get_id() == 0)
 			{
@@ -185,15 +185,15 @@
 				$this->set_create_user($user_id);
 			}
 
-			if (phpgw::get_var('start_date', 'string') != '')
+			if (Sanitizer::get_var('start_date', 'string') != '')
 			{
-				$start_date_ts = phpgwapi_datetime::date_to_timestamp(phpgw::get_var('start_date', 'string'));
+				$start_date_ts = phpgwapi_datetime::date_to_timestamp(Sanitizer::get_var('start_date', 'string'));
 				$this->set_start_date($start_date_ts);
 			}
 
-			if (phpgw::get_var('end_date', 'string') != '')
+			if (Sanitizer::get_var('end_date', 'string') != '')
 			{
-				$end_date_ts = phpgwapi_datetime::date_to_timestamp(phpgw::get_var('end_date', 'string'));
+				$end_date_ts = phpgwapi_datetime::date_to_timestamp(Sanitizer::get_var('end_date', 'string'));
 				$this->set_end_date($end_date_ts);
 			}
 		}

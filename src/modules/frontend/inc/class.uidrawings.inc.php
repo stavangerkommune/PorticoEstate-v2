@@ -91,7 +91,7 @@
 						(
 						'document_name' => $entry['document_name'],
 						'document_id' => $entry['document_id'],
-						'link' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'property.uidocument.view_file',
+						'link' => phpgw::link('/index.php', array('menuaction' => 'property.uidocument.view_file',
 							'id' => $entry['document_id'])),
 						'title' => $entry['title'],
 						'doc_type' => $entry['doc_type'],

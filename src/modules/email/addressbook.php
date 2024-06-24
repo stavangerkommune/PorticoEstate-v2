@@ -65,7 +65,7 @@
 	}
 
 	$GLOBALS['phpgw']->template->set_var('lang_search',lang('Search'));
-	$GLOBALS['phpgw']->template->set_var('search_action',$GLOBALS['phpgw']->link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/addressbook.php'));
+	$GLOBALS['phpgw']->template->set_var('search_action',phpgw::link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/addressbook.php'));
 	$GLOBALS['phpgw']->template->set_var('lang_select_cats',lang('Select category'));
 
 	$cat_id = get_var('cat_id',array('get','post'));
@@ -166,9 +166,9 @@
 	$GLOBALS['phpgw']->template->set_var('cats_list',$c->formated_list('select','all',$cat_id,'True'));
 	$GLOBALS['phpgw']->template->set_var('lang_select',lang('Select'));
 	
-	//$GLOBALS['phpgw']->template->set_var('cats_action',$GLOBALS['phpgw']->link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/addressbook.php',"sort=$sort&order=$order&filter=$filter&start=$start&query=$query&cat_id=$cat_id"));
+	//$GLOBALS['phpgw']->template->set_var('cats_action',phpgw::link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/addressbook.php',"sort=$sort&order=$order&filter=$filter&start=$start&query=$query&cat_id=$cat_id"));
 	// thanks to  dave.hall@mbox.com.au for fixing drop down list filtering by categories
-	$GLOBALS['phpgw']->template->set_var('cats_action',$GLOBALS['phpgw']->link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/addressbook.php',array('sort'=>$sort,'order'=>$order,'filter'=>$filter,'start'=>$start,'query'=>$query)));
+	$GLOBALS['phpgw']->template->set_var('cats_action',phpgw::link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/addressbook.php',array('sort'=>$sort,'order'=>$order,'filter'=>$filter,'start'=>$start,'query'=>$query)));
 
 	// --------------------------- end header declaration ----------------------------------
 	$tr_class = 'row_off';

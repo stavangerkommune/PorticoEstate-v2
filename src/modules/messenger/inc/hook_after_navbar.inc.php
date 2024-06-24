@@ -24,7 +24,7 @@
 
 		if ($GLOBALS['phpgw']->db->next_record() && $GLOBALS['phpgw']->db->f('msg_cnt'))
 		{
-			echo '<div class="msg"><a href="' . $GLOBALS['phpgw']->link('/index.php', array(
+			echo '<div class="msg"><a href="' . phpgw::link('/index.php', array(
 				'menuaction' => 'messenger.uimessenger.inbox'))
 			. '">' . lang('You have %1 new message' . ($GLOBALS['phpgw']->db->f('msg_cnt') > 1 ? 's' : '' ), $GLOBALS['phpgw']->db->f('msg_cnt')) . '</a>'
 			. '</div>';

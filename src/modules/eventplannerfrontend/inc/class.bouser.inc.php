@@ -31,7 +31,7 @@
 
 		protected function get_orgname_from_db( $orgnr )
 		{
-			$this->db = & $GLOBALS['phpgw']->db;
+			$this->db = Db::getInstance();
 			$this->db->limit_query("SELECT name FROM bb_organization WHERE organization_number ='" . $orgnr . "'", 0, __LINE__, __FILE__, 1);
 			if (!$this->db->next_record())
 			{
@@ -43,7 +43,7 @@
 		protected function get_organizations()
 		{
 			$results = array();
-			$this->db = & $GLOBALS['phpgw']->db;
+			$this->db = Db::getInstance();
 			$this->db->query("SELECT organization_number FROM bb_organization ORDER by organization_number ASC", __LINE__, __FILE__);
 			while ($this->db->next_record())
 			{
@@ -245,7 +245,7 @@
 		{
 			$sql = "SELECT DISTINCT orgnr FROM breg.personcurrent WHERE fodselsnr ='" . $fodselsnr . "'";
 			$results = array();
-			$db = & $GLOBALS['phpgw']->db;
+			$db = Db::getInstance();
 			$db->query($sql, __LINE__, __FILE__);
 			while ($db->next_record())
 			{

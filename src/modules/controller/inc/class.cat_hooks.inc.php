@@ -39,7 +39,7 @@
 
 		function __construct()
 		{
-			$this->_db = & $GLOBALS['phpgw']->db;
+			$this->_db = Db::getInstance();
 			$this->soresponsible = CreateObject('property.soresponsible');
 			$this->soresponsible->appname = 'controller';
 		}

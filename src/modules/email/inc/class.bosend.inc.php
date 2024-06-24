@@ -71,7 +71,7 @@
 		*/
 		function get_originating_ip()
 		{
-			$got_ip = phpgw::get_var('HTTP_X_FORWARDED_FOR', 'ip', 'SERVER', phpgw::get_var('REMOTE_ADDR', 'ip', 'SERVER'));
+			$got_ip = Sanitizer::get_var('HTTP_X_FORWARDED_FOR', 'ip', 'SERVER', Sanitizer::get_var('REMOTE_ADDR', 'ip', 'SERVER'));
 		/*
 			if (is_object($GLOBALS['phpgw']->session))
 			{
@@ -378,7 +378,7 @@
 					$this->smtp->ErrorInfo;
 					echo '</pre>'."\r\n";
 					echo '<p>&nbsp;<br /></p>'."\r\n";
-					echo '<p>To go back to the msg list, click <a href="'. $GLOBALS['phpgw']->link('/index.php',$return_to_folder_href).'">here</a></p><br />';
+					echo '<p>To go back to the msg list, click <a href="'. phpgw::link('/index.php',$return_to_folder_href).'">here</a></p><br />';
 					echo '</body></html>';
 					$this->send_message_cleanup();
 				}
@@ -388,7 +388,7 @@
 					$this->send_message_cleanup();
 					// redirect the browser to the index page for the appropriate folder
 					//header('Location: '.$return_to_folder_href);
-					$GLOBALS['phpgw']->redirect_link('/index.php',$return_to_folder_href);
+					phpgw::redirect_link('/index.php',$return_to_folder_href);
 					// kill the rest of this script
 					if (is_object($GLOBALS['phpgw']->msg))
 					{
@@ -852,7 +852,7 @@
 				$fldball_candidate['folder'] = $GLOBALS['phpgw']->msg->prep_folder_out('INBOX');
 				$fldball_candidate['acctnum'] = (int)$GLOBALS['phpgw']->msg->get_acctnum();
 			}
-/*			return $GLOBALS['phpgw']->link(
+/*			return phpgw::link(
 						'/index.php',array(
 						'menuaction'=>'email.uiindex.index',
 						'fldball[folder]'=>$fldball_candidate['folder'],
@@ -881,6 +881,6 @@
 			$this->save_message($this->smtp->getHeader() . "\n" . $this->smtp->getBody() . "\r\n", 
 					'INBOX.Drafts', "\\Draft");
 			
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'email.uiindex.index'));
+			phpgw::redirect_link('/index.php', array('menuaction' => 'email.uiindex.index'));
 		}
 	}

@@ -168,7 +168,7 @@ HTML;
 					$location_name	 .= "::{$short_descr}";
 				}
 
-				$link						 = $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'controller.uicase.add_case',
+				$link						 = phpgw::link('/index.php', array('menuaction'	 => 'controller.uicase.add_case',
 					'check_list_id'	 => $check_list_id));
 				$my_planned_controls_HTML	 .= "<td><a href='$link' role='button' class='pure-button pure-button-primary'>Start</a></td>";
 				$my_planned_controls_HTML	 .= "<td>{$planned_formatted}</td>";
@@ -394,7 +394,7 @@ HTML;
 
 								);
 
-								$link = $GLOBALS['phpgw']->link('/index.php', $control_link_data);
+								$link = phpgw::link('/index.php', $control_link_data);
 
 								$month = date('m', $deadline_ts);
 								$control_link = json_encode($control_link_data);
@@ -435,7 +435,7 @@ HTML;
 									'serie_id'		 => $my_control['serie_id'],
 								);
 
-								$link = $GLOBALS['phpgw']->link('/index.php', $control_link_data);
+								$link = phpgw::link('/index.php', $control_link_data);
 
 								$month = date('m', $deadline_ts);
 								$control_link = json_encode($control_link_data);
@@ -459,7 +459,7 @@ HTML;
 							$location_name = $this->get_location_name($location_code);
 
 							$link	 = "";
-							$link	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'controller.uicheck_list.edit_check_list',
+							$link	 = phpgw::link('/index.php', array('menuaction'	 => 'controller.uicheck_list.edit_check_list',
 								'check_list_id'	 => $check_list_id));
 
 							$my_assigned_controls_HTML .= ""
@@ -890,7 +890,7 @@ HTML;
 							if (count($controls_on_date) > 1)
 							{
 								$link	 = "";
-								$link	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'controller.uicheck_list.add_check_list',
+								$link	 = phpgw::link('/index.php', array('menuaction'	 => 'controller.uicheck_list.add_check_list',
 									'type'			 => "location", 'control_id'	 => $my_control['id'], 'location_code'	 => $location_code,
 									'deadline_ts'	 => $deadline_ts));
 
@@ -899,7 +899,7 @@ HTML;
 							else
 							{
 								$link	 = "";
-								$link	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'controller.uicheck_list.add_check_list',
+								$link	 = phpgw::link('/index.php', array('menuaction'	 => 'controller.uicheck_list.add_check_list',
 									'type'			 => "location", 'control_id'	 => $my_control['id'], 'location_code'	 => $location_code,
 									'deadline_ts'	 => $deadline_ts));
 
@@ -915,7 +915,7 @@ HTML;
 							if (count($controls_on_date) > 1)
 							{
 								$link	 = "";
-								$link	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'controller.uicheck_list.add_check_list',
+								$link	 = phpgw::link('/index.php', array('menuaction'	 => 'controller.uicheck_list.add_check_list',
 									'type'			 => "component", 'control_id'	 => $my_control['id'], 'location_id'	 => $location_id,
 									'component_id'	 => $component_id, 'deadline_ts'	 => $deadline_ts));
 
@@ -924,7 +924,7 @@ HTML;
 							else
 							{
 								$link	 = "";
-								$link	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'controller.uicheck_list.add_check_list',
+								$link	 = phpgw::link('/index.php', array('menuaction'	 => 'controller.uicheck_list.add_check_list',
 									'type'			 => "component", 'control_id'	 => $my_control['id'], 'location_id'	 => $location_id,
 									'component_id'	 => $component_id, 'deadline_ts'	 => $deadline_ts));
 
@@ -953,7 +953,7 @@ HTML;
 						if (count($controls_on_date) > 1)
 						{
 							$link	 = "";
-							$link	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'controller.uicheck_list.edit_check_list',
+							$link	 = phpgw::link('/index.php', array('menuaction'	 => 'controller.uicheck_list.edit_check_list',
 								'check_list_id'	 => $check_list_id));
 
 							$my_undone_controls_HTML .= "<li><a href='{$link}' title = '{$date_str_planned}'><div class='date'>{$date_str}</div><div class='control'>{$my_control['title']}</div><div class='title'>{$location_name}</div><div class='control-area'>{$control_area_name}</div></a></li>";
@@ -961,7 +961,7 @@ HTML;
 						else
 						{
 							$link	 = "";
-							$link	 = $GLOBALS['phpgw']->link('/index.php', array('menuaction'	 => 'controller.uicheck_list.edit_check_list',
+							$link	 = phpgw::link('/index.php', array('menuaction'	 => 'controller.uicheck_list.edit_check_list',
 								'check_list_id'	 => $check_list_id));
 
 							$my_undone_controls_HTML .= "<li><a href='$link' title = '{$date_str_planned}'><div class='date'>{$date_str}</div><div class='control'>{$my_control['title']}</div><div class='title'>{$location_name}</div><div class='control-area'>{$control_area_name}</div></a></li>";

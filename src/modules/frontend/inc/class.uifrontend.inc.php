@@ -42,7 +42,7 @@
 		{
 			//Forward to helpdesk
 			$location_id = $GLOBALS['phpgw']->locations->get_id('frontend', '.ticket');
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'frontend.uihelpdesk.index',
+			phpgw::redirect_link('/index.php', array('menuaction' => 'frontend.uihelpdesk.index',
 				'location_id' => $location_id));
 		}
 
@@ -53,7 +53,7 @@
 
 		public function save_profile()
 		{
-			$values = phpgw::get_var('values');
+			$values = Sanitizer::get_var('values');
 			
 			if ($values)
 			{

@@ -77,12 +77,12 @@
 
 		public function index()
 		{
-			if (empty($this->permissions[PHPGW_ACL_READ]))
+			if (empty($this->permissions[ACL_READ]))
 			{
 				phpgw::no_access();
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -137,7 +137,7 @@
 				'parameters' => json_encode($parameters)
 			);
 
-			if (!empty($this->permissions[PHPGW_ACL_ADD]))
+			if (!empty($this->permissions[ACL_ADD]))
 			{
 				$data['datatable']['actions'][] = array
 					(
@@ -145,7 +145,7 @@
 					'statustext' => lang('delete entry'),
 					'text' => lang('delete'),
 					'confirm_msg' => lang('do you really want to delete this entry'),
-					'action' => $GLOBALS['phpgw']->link('/index.php', array
+					'action' => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'eventplanner.uipermission.delete'
 					)),
@@ -162,12 +162,12 @@
 
 		function delete()
 		{
-			if (empty($this->permissions[PHPGW_ACL_DELETE]))
+			if (empty($this->permissions[ACL_DELETE]))
 			{
 				phpgw::no_access();
 			}
 
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 			if ($this->bo->delete($id))
 			{
 				return lang('entry %1 has been deleted', $id);
@@ -183,9 +183,9 @@
 
 		public function edit( $values = array(), $mode = 'edit' )
 		{
-			$active_tab = !empty($values['active_tab']) ? $values['active_tab'] : phpgw::get_var('active_tab', 'string', 'REQUEST', 'first_tab');
+			$active_tab = !empty($values['active_tab']) ? $values['active_tab'] : Sanitizer::get_var('active_tab', 'string', 'REQUEST', 'first_tab');
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('edit');
-			if (empty($this->permissions[PHPGW_ACL_ADD]))
+			if (empty($this->permissions[ACL_ADD]))
 			{
 				phpgw::no_access();
 			}
@@ -196,7 +196,7 @@
 			}
 			else
 			{
-				$id = !empty($values['id']) ? $values['id'] : phpgw::get_var('id', 'int');
+				$id = !empty($values['id']) ? $values['id'] : Sanitizer::get_var('id', 'int');
 				$permission = $this->bo->read_single($id);
 			}
 
@@ -227,7 +227,7 @@
 		
 		public function object()
 		{
-			$object_type = phpgw::get_var('object_type');
+			$object_type = Sanitizer::get_var('object_type');
 
 			switch ($object_type)
 			{
@@ -244,8 +244,8 @@
 
 		public function get_subjet($selected = 0)
 		{
-			$users_frontend = (array)$GLOBALS['phpgw']->acl->get_user_list_right(PHPGW_ACL_READ, 'run', 'eventplannerfrontend');
-			$users_backend = (array)$GLOBALS['phpgw']->acl->get_user_list_right(PHPGW_ACL_READ, 'run', 'eventplanner');
+			$users_frontend = (array)$GLOBALS['phpgw']->acl->get_user_list_right(ACL_READ, 'run', 'eventplannerfrontend');
+			$users_backend = (array)$GLOBALS['phpgw']->acl->get_user_list_right(ACL_READ, 'run', 'eventplanner');
 
 			$users = array();
 			foreach ($users_frontend as $user)

@@ -54,14 +54,14 @@
 			$currentapp = $GLOBALS['phpgw_info']['flags']['currentapp'];
 
 			$fields = array(
-				'id' => array('action'=> PHPGW_ACL_READ,
+				'id' => array('action'=> ACL_READ,
 					'type' => 'int',
 					'label' => 'id',
 					'sortable'=> true,
 					'formatter' => 'JqueryPortico.formatLink',
 					'public' => true,
 					),
-			 	'title' => array('action'=> PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+			 	'title' => array('action'=> ACL_READ | ACL_ADD | ACL_EDIT,
 					'type' => 'string',
 					'label' => 'title',
 					'sortable' => false,
@@ -69,7 +69,7 @@
 					'public' => true,
 					),
 				'contact_email' => array(
-					'action'=> PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+					'action'=> ACL_READ | ACL_ADD | ACL_EDIT,
 					'type' => 'string',
 					'required' => true,
 					'query' => true,
@@ -77,7 +77,7 @@
 					'label' => 'contact email',
 					'history' => true,
 					),
-				'vendor_name' => array('action'=>  PHPGW_ACL_READ,
+				'vendor_name' => array('action'=>  ACL_READ,
 					'type' => 'string',
 					'query' => true,
 					'label' => 'vendor',
@@ -88,18 +88,18 @@
 						'column' => 'name'
 						)
 					),
-				'date_start' => array('action'=> PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'date_start' => array('action'=> ACL_READ | ACL_ADD | ACL_EDIT,
 					'type' => 'date',
 					'label'	=> 'date start',
 					'sortable' => true,
 					'history' => true
 					),
-				'date_end' => array('action'=> PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'date_end' => array('action'=> ACL_READ | ACL_ADD | ACL_EDIT,
 					'type' => 'date',
 					'label'	=> 'date end',
 					'history' => true
 					),
-				'number_of_units' => array('action'=> PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'number_of_units' => array('action'=> ACL_READ | ACL_ADD | ACL_EDIT,
 					'type' => 'int',
 					'label'	=> 'number of units',
 					'required' => true,

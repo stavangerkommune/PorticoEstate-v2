@@ -452,7 +452,7 @@
 			if (!$this->open_port($server,$port,15))
 			{
 				echo '<p><center><b>' .lang('There was an error trying to connect to your IMAP server.<br />Please contact your admin to check the servername, username or password.') .'</b></center>';
-				echo('<CENTER><A HREF="'.$GLOBALS['phpgw']->link('/home.php').'">'.lang('Click here to continue').'...</A></CENTER>'); //cbsman
+				echo('<CENTER><A HREF="'.phpgw::link('/home.php').'">'.lang('Click here to continue').'...</A></CENTER>'); //cbsman
 				$GLOBALS['phpgw']->common->phpgw_exit();
 			}
 			else

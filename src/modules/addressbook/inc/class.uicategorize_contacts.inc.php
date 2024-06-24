@@ -44,9 +44,9 @@
 		
 		private function _populate( $data = array() )
 		{
-			$cat_id = phpgw::get_var('all_cats');
+			$cat_id = Sanitizer::get_var('all_cats');
 
-			$new_persons = phpgw::get_var('current_persons');
+			$new_persons = Sanitizer::get_var('current_persons');
 			
 			$persons = $this->get_persons($cat_id);
 			$current_persons = array();
@@ -171,7 +171,7 @@
 		
 		function get_persons_by_cat()
 		{
-			$cat_id = phpgw::get_var('cat_id');
+			$cat_id = Sanitizer::get_var('cat_id');
 			
 			$persons = $this->get_persons();
 			$all_persons = array();

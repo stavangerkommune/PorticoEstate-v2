@@ -96,13 +96,13 @@
 			$this->bo					= CreateObject('helpdesk.botts',true);
 			$this->bocommon 			= & $this->bo->bocommon;
 			$this->cats					= & $this->bo->cats;
-			$this->acl 					= & $GLOBALS['phpgw']->acl;
+			$this->acl 					= Acl::getInstance();
 			$this->acl_location			= $this->bo->acl_location;
-			$this->acl_read 			= $this->acl->check($this->acl_location, PHPGW_ACL_READ, 'helpdesk');
-			$this->acl_add 				= $this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'helpdesk');
-			$this->acl_edit 			= $this->acl->check($this->acl_location, PHPGW_ACL_EDIT, 'helpdesk');
-			$this->acl_delete 			= $this->acl->check($this->acl_location, PHPGW_ACL_DELETE, 'helpdesk');
-			$this->acl_manage 			= $this->acl->check($this->acl_location, PHPGW_ACL_PRIVATE, 'helpdesk'); // manage
+			$this->acl_read 			= $this->acl->check($this->acl_location, ACL_READ, 'helpdesk');
+			$this->acl_add 				= $this->acl->check($this->acl_location, ACL_ADD, 'helpdesk');
+			$this->acl_edit 			= $this->acl->check($this->acl_location, ACL_EDIT, 'helpdesk');
+			$this->acl_delete 			= $this->acl->check($this->acl_location, ACL_DELETE, 'helpdesk');
+			$this->acl_manage 			= $this->acl->check($this->acl_location, ACL_PRIVATE, 'helpdesk'); // manage
 			$this->bo->acl_location		= $this->acl_location;
 
 			$this->start				= $this->bo->start;
@@ -162,9 +162,9 @@
 
 				}
 			}
-			if((int)$this->parent_cat_id > 0 && !phpgw::get_var('id', 'int', 'GET'))
+			if((int)$this->parent_cat_id > 0 && !Sanitizer::get_var('id', 'int', 'GET'))
 			{
-				if(!$this->acl->check(".ticket.category.{$this->parent_cat_id}",PHPGW_ACL_ADD, 'helpdesk'))
+				if(!$this->acl->check(".ticket.category.{$this->parent_cat_id}",ACL_ADD, 'helpdesk'))
 				{
 //					phpgw::no_access();
 				}
@@ -174,8 +174,8 @@
 
 		protected function save_sessiondata()
 		{
-			$user_id = phpgw::get_var('user_id', 'int');
-			$group_id = phpgw::get_var('group_id', 'int');
+			$user_id = Sanitizer::get_var('user_id', 'int');
+			$group_id = Sanitizer::get_var('group_id', 'int');
 
 			$data = array
 			(
@@ -195,7 +195,7 @@
 		 */
 		public function get_on_behalf_of()
 		{
-			$custom_method = phpgw::get_var('custom_method', 'bool');
+			$custom_method = Sanitizer::get_var('custom_method', 'bool');
 			if($custom_method)
 			{
 				$result = $this->custom_ajax();
@@ -205,7 +205,7 @@
 				}
 			}
 
-			$query = phpgw::get_var('query');
+			$query = Sanitizer::get_var('query');
 
 			$filter = array('active' => 1);
 
@@ -225,21 +225,21 @@
 
 		function get_params()
 		{
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
-			$export = phpgw::get_var('export', 'bool');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
+			$export = Sanitizer::get_var('export', 'bool');
 
 			$params = array(
-				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results' => $export ? -1 : phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start' => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results' => $export ? -1 : Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query' => $search['value'],
 				'order' => $columns[$order[0]['column']]['data'],
 				'sort' => $order[0]['dir'],
 				'dir' => $order[0]['dir'],
-				'cat_id' => phpgw::get_var('cat_id', 'int', 'REQUEST', 0),
-				'allrows' => phpgw::get_var('length', 'int') == -1 || $export,
+				'cat_id' => Sanitizer::get_var('cat_id', 'int', 'REQUEST', 0),
+				'allrows' => Sanitizer::get_var('length', 'int') == -1 || $export,
 				'status_id' => $this->bo->status_id,
 				'user_id' => $this->bo->user_id,
 				'group_id' => $this->bo->group_id,
@@ -255,9 +255,9 @@
 				'building_part' => $this->bo->building_part,
 				'b_account' => $this->bo->b_account,
 				'ecodimb' => $this->bo->ecodimb,
-				'branch_id' => phpgw::get_var('branch_id'),
-				'order_dim1' => phpgw::get_var('order_dim1'),
-				'check_date_type' => phpgw::get_var('check_date_type', 'int'),
+				'branch_id' => Sanitizer::get_var('branch_id'),
+				'order_dim1' => Sanitizer::get_var('order_dim1'),
+				'check_date_type' => Sanitizer::get_var('check_date_type', 'int'),
 				'parent_cat_id'	=> $this->_simple ? null : $this->parent_cat_id
 			);
 
@@ -305,7 +305,7 @@
 			$result_data['sum_budget'] = $this->bo->sum_budget;
 			$result_data['sum_actual_cost'] = $this->bo->sum_actual_cost;
 			$result_data['sum_difference'] = $this->bo->sum_difference;
-			$result_data['draw'] = phpgw::get_var('draw', 'int');
+			$result_data['draw'] = Sanitizer::get_var('draw', 'int');
 
 			$link_data = array
 				(
@@ -321,14 +321,14 @@
 		{
 			if (!$this->acl_read)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uilocation.stop',
 					'perm' => 1, 'acl_location' => $this->acl_location));
 			}
 
 			$GLOBALS['phpgw_info']['flags']['noheader'] = true;
 			$GLOBALS['phpgw_info']['flags']['nofooter'] = true;
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = false;
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
 			$ticket_html = $this->bo->mail_ticket($id, $fields_updated = true, $receipt = array(), $get_message = true);
 
@@ -626,7 +626,7 @@ HTML;
 				return lang('sorry - insufficient rights');
 			}
 
-			$id 		= phpgw::get_var('id', 'int');
+			$id 		= Sanitizer::get_var('id', 'int');
 			$receipt 	= $this->bo->take_over($id);
 			return lang('assignment has been changed for %1', $id);
 		}
@@ -641,9 +641,9 @@ HTML;
 			}
 
 			$new_status = 'X';
-			$new_note = phpgw::get_var('note', 'string', 'POST');
+			$new_note = Sanitizer::get_var('note', 'string', 'POST');
 
-			$id		 = phpgw::get_var('id', 'int');
+			$id		 = Sanitizer::get_var('id', 'int');
 
 			if(is_array($id))
 			{
@@ -682,8 +682,8 @@ HTML;
 			}
 
 
-			$new_status = phpgw::get_var('new_status', 'string', 'GET');
-			$id 		= phpgw::get_var('id', 'int');
+			$new_status = Sanitizer::get_var('new_status', 'string', 'GET');
+			$id 		= Sanitizer::get_var('id', 'int');
 			$receipt 	= $this->bo->update_status(array('status'=>$new_status),$id);
 
 			$custom_status = $this->bo->get_custom_status();
@@ -713,8 +713,8 @@ HTML;
 				return lang('sorry - insufficient rights');
 			}
 
-			$new_priority = phpgw::get_var('new_priority', 'int');
-			$id = phpgw::get_var('id', 'int');
+			$new_priority = Sanitizer::get_var('new_priority', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
 			$receipt = $this->bo->update_priority(array('priority' => $new_priority), $id);
 			if ((isset($this->bo->config->config_data['mailnotification']) && $this->bo->config->config_data['mailnotification']) || (isset($GLOBALS['phpgw_info']['user']['preferences']['helpdesk']['tts_notify_me']) && $GLOBALS['phpgw_info']['user']['preferences']['helpdesk']['tts_notify_me'] == 1 && $this->bo->fields_updated
@@ -733,7 +733,7 @@ HTML;
 				return lang('sorry - insufficient rights');
 			}
 
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 			if( $this->bo->delete($id) )
 			{
 				return lang('ticket %1 has been deleted', $id);
@@ -746,7 +746,7 @@ HTML;
 
 		public function handle_multi_upload_file()
 		{
-			$id = phpgw::get_var('id', 'int', 'GET');
+			$id = Sanitizer::get_var('id', 'int', 'GET');
 
 			phpgw::import_class('property.multiuploader');
 
@@ -812,31 +812,31 @@ HTML;
 		public function build_multi_upload_file()
 		{
 			phpgwapi_jquery::init_multi_upload_file();
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
 			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
 			$GLOBALS['phpgw_info']['flags']['nofooter'] = true;
 
-			$multi_upload_action = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'helpdesk.uitts.handle_multi_upload_file', 'id' => $id));
+			$multi_upload_action = phpgw::link('/index.php', array('menuaction' => 'helpdesk.uitts.handle_multi_upload_file', 'id' => $id));
 
 			$data = array
 				(
 				'multi_upload_action' => $multi_upload_action
 			);
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('files', 'multi_upload_file'));
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('multi_upload' => $data));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('files', 'multi_upload_file'));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('multi_upload' => $data));
 		}
 
 		function columns()
 		{
 			$receipt = array();
-			$GLOBALS['phpgw']->xslttpl->add_file(array('columns'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('columns'));
 
 			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
 			$GLOBALS['phpgw_info']['flags']['nofooter'] = true;
 
-			$values 		= phpgw::get_var('values');
+			$values 		= Sanitizer::get_var('values');
 
 			$GLOBALS['phpgw']->preferences->set_account_id($this->account, true);
 
@@ -862,14 +862,14 @@ HTML;
 					'msgbox_data'		=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
 					'column_list'		=> $this->bo->column_list($selected , $this->type_id, $allrows=true),
 					'function_msg'		=> $function_msg,
-					'form_action'		=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+					'form_action'		=> phpgw::link('/index.php',$link_data),
 					'lang_columns'		=> lang('columns'),
 					'lang_none'			=> lang('None'),
 					'lang_save'			=> lang('save'),
 				);
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('columns' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('columns' => $data));
 		}
 
 
@@ -1023,7 +1023,7 @@ HTML;
 					{
 						if ($_cat['active'] != 2)
 						{
-							$_cat['name'] =  str_repeat(' . ' , (int)($_cat['level'] -1) ) . $GLOBALS['phpgw']->strip_html($_cat['name']);
+							$_cat['name'] =  str_repeat(' . ' , (int)($_cat['level'] -1) ) . phpgw::strip_html($_cat['name']);
 							$_categories[] = $_cat;
 						}
 					}
@@ -1160,7 +1160,7 @@ HTML;
 							'name' => lang('select') . " {$attrib['input_text']}"
 						);
 
-						$_selected = phpgw::get_var($attrib['column_name']);
+						$_selected = Sanitizer::get_var($attrib['column_name']);
 						foreach ($attrib['choice'] as $choice)
 						{
 							$_filter_data[] = array
@@ -1188,7 +1188,7 @@ HTML;
 		{
 			if((int)$this->parent_cat_id > 0)
 			{
-				if(!$this->acl->check(".ticket.category.{$this->parent_cat_id}",PHPGW_ACL_READ, 'helpdesk'))
+				if(!$this->acl->check(".ticket.category.{$this->parent_cat_id}",ACL_READ, 'helpdesk'))
 				{
 					phpgw::no_access();
 				}
@@ -1200,7 +1200,7 @@ HTML;
 				return;
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -1215,7 +1215,7 @@ HTML;
 				{
 					$subs = true;
 				}
-				else if ($_cat['level'] == 0 && $_cat['active'] != 2 && $this->acl->check(".ticket.category.{$_cat['id']}",PHPGW_ACL_READ, 'helpdesk') )
+				else if ($_cat['level'] == 0 && $_cat['active'] != 2 && $this->acl->check(".ticket.category.{$_cat['id']}",ACL_READ, 'helpdesk') )
 				{
 					$_categories[] = $_cat;
 				}
@@ -1230,14 +1230,14 @@ HTML;
 				{
 					$sub_menu[] = array
 					(
-						'url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'helpdesk.uitts.index', 'parent_cat_id' => $_category['id'])),
+						'url'	=> phpgw::link('/index.php',array('menuaction'=> 'helpdesk.uitts.index', 'parent_cat_id' => $_category['id'])),
 						'text'	=> $_category['name'],
 						'icon'	=> $_category['icon'],
 					);
 				}
 
-				$GLOBALS['phpgw']->xslttpl->add_file(array('tts'));
-				$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('navigate' => array('sub_menu' => $sub_menu)));
+				phpgwapi_xslttemplates::getInstance()->add_file(array('tts'));
+				phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('navigate' => array('sub_menu' => $sub_menu)));
 				return;
 			}
 
@@ -1299,7 +1299,7 @@ HTML;
 					'responsive_show_details' => true,
 					'editor_action' => '',
 					'field' => $this->_get_fields(),
-					'query' => phpgw::get_var('query'),
+					'query' => Sanitizer::get_var('query'),
 					'group_buttons' => false,
 				)
 			);
@@ -1327,7 +1327,7 @@ JS;
 
 			if($js)
 			{
-				$GLOBALS['phpgw']->js->add_code('', $js, true);
+				phpgwapi_js::getInstance()->add_code('', $js, true);
 			}
 
 			$parameters = array(
@@ -1343,7 +1343,7 @@ JS;
 				(
 				'my_name' => 'view_survey',
 				'text' => lang('view'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'helpdesk.uitts.view',
 					'parent_cat_id' => $this->parent_cat_id
@@ -1356,7 +1356,7 @@ JS;
 				'my_name' => 'print',
 				'statustext' => lang('print the ticket'),
 				'text' => lang('print view'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'helpdesk.uitts._print',
 					'parent_cat_id' => $this->parent_cat_id
@@ -1375,7 +1375,7 @@ JS;
 						(
 						'my_name' => 'edit',
 						'text' => lang('open JasperReport %1 in new window', $report['title']),
-						'action' => $GLOBALS['phpgw']->link('/index.php', array
+						'action' => phpgw::link('/index.php', array
 							(
 							'menuaction' => 'helpdesk.uijasper.view',
 							'parent_cat_id' => $this->parent_cat_id,
@@ -1394,7 +1394,7 @@ JS;
 						'statustext' => lang('delete the ticket'),
 						'text' => lang('delete'),
 						'confirm_msg' => lang('do you really want to delete this ticket'),
-						'action' => $GLOBALS['phpgw']->link('/index.php', array
+						'action' => phpgw::link('/index.php', array
 							(
 							'menuaction' => 'helpdesk.uitts.delete'
 						)),
@@ -1431,7 +1431,7 @@ JS;
 							'statustext' => $status_info['status'],
 							'text' => lang('change to') . ' status:  ' . $status_info['status'],
 							'confirm_msg' => lang('do you really want to change the status to %1', $status_info['status']),
-							'action' => $GLOBALS['phpgw']->link('/index.php', array
+							'action' => phpgw::link('/index.php', array
 								(
 								'menuaction' => 'helpdesk.uitts.edit_status',
 								'edit_status' => true,
@@ -1461,7 +1461,7 @@ JS;
 							'statustext' => $_priority_info['name'],
 							'text' => lang('change to') . ' ' . lang('priority') . ':  ' . $_priority_info['name'],
 							'confirm_msg' => lang('do you really want to change the priority to %1', $_priority_info['name']),
-							'action' => $GLOBALS['phpgw']->link('/index.php', array
+							'action' => phpgw::link('/index.php', array
 								(
 								'menuaction' => 'helpdesk.uitts.edit_priority',
 								'edit_status' => true,
@@ -1488,7 +1488,7 @@ JS;
 					'statustext' => lang('take over'),
 					'text' => lang('take over'),
 					'confirm_msg' => lang('do you really want to take over the assignment'),
-					'action' => $GLOBALS['phpgw']->link('/index.php', array
+					'action' => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'helpdesk.uitts.take_over',
 						'second_display' => true,
@@ -1522,9 +1522,9 @@ JS;
 			{
 				$data['datatable']['group_buttons'] = false;
 			}
-			$GLOBALS['phpgw']->js->validate_file('alertify', 'alertify.min', 'phpgwapi');
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
+			phpgwapi_js::getInstance()->validate_file('alertify', 'alertify.min', 'phpgwapi');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
 
 //			$GLOBALS['phpgw_info']['flags']['app_header'] = $this->parent_category_name ? $this->parent_category_name : $this->lang_app_name;
 			$GLOBALS['phpgw_info']['flags']['app_header'] =  $this->lang_app_name;
@@ -1535,7 +1535,7 @@ JS;
 
 		function upload_clip()
 		{
-			$id = phpgw::get_var('id', 'POST', 'int');
+			$id = Sanitizer::get_var('id', 'POST', 'int');
 			$ret = array(
 				'status' => 'error',
 				'message'=> lang('No data')
@@ -1586,35 +1586,35 @@ JS;
 
 			$GLOBALS['phpgw_info']['flags']['breadcrumb_selection'] = $GLOBALS['phpgw_info']['flags']['menu_selection'] . "::add";
 
-			if($this->parent_cat_id && !$this->acl->check(".ticket.category.{$this->parent_cat_id}",PHPGW_ACL_READ, 'helpdesk'))
+			if($this->parent_cat_id && !$this->acl->check(".ticket.category.{$this->parent_cat_id}",ACL_READ, 'helpdesk'))
 			{
 				$this->parent_cat_id = 0;
 			}
 
-			$values = phpgw::get_var('values');
-			$values['details'] = phpgw::get_var('details', 'html');
-			$values['contact_id'] = phpgw::get_var('contact', 'int', 'POST');
+			$values = Sanitizer::get_var('values');
+			$values['details'] = Sanitizer::get_var('details', 'html');
+			$values['contact_id'] = Sanitizer::get_var('contact', 'int', 'POST');
 			if ((isset($values['cancel']) && $values['cancel']))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'helpdesk.uitts.index','parent_cat_id' => $this->parent_cat_id));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'helpdesk.uitts.index','parent_cat_id' => $this->parent_cat_id));
 			}
 
-			$values_attribute = phpgw::get_var('values_attribute');
+			$values_attribute = Sanitizer::get_var('values_attribute');
 
 			//------------------- start ticket from other location
-			$bypass = phpgw::get_var('bypass', 'bool');
+			$bypass = Sanitizer::get_var('bypass', 'bool');
 //			if(isset($_POST) && $_POST && isset($bypass) && $bypass)
 			if ($bypass)
 			{
-				$values['descr'] = phpgw::get_var('descr');
-				$p_entity_id = phpgw::get_var('p_entity_id', 'int');
-				$p_cat_id = phpgw::get_var('p_cat_id', 'int');
+				$values['descr'] = Sanitizer::get_var('descr');
+				$p_entity_id = Sanitizer::get_var('p_entity_id', 'int');
+				$p_cat_id = Sanitizer::get_var('p_cat_id', 'int');
 				$values['p'][$p_entity_id]['p_entity_id'] = $p_entity_id;
 				$values['p'][$p_entity_id]['p_cat_id'] = $p_cat_id;
-				$values['p'][$p_entity_id]['p_num'] = phpgw::get_var('p_num');
+				$values['p'][$p_entity_id]['p_num'] = Sanitizer::get_var('p_num');
 			}
 
-			$origin_id = phpgw::get_var('origin_id', 'int');
+			$origin_id = Sanitizer::get_var('origin_id', 'int');
 
 			if (!empty($values['origin_id']))
 			{
@@ -1629,15 +1629,15 @@ JS;
 				$values['origin_data'][0]['data'][] = array
 				(
 					'id' => $origin_id,
-					'link' =>  $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'helpdesk.uitts.view', 'id' => $origin_id)),
+					'link' =>  phpgw::link('/index.php', array('menuaction' => 'helpdesk.uitts.view', 'id' => $origin_id)),
 				);
 			}
 			//_debug_array($insert_record);
 			if ((isset($values['save']) && $values['save']) || (isset($values['apply']) && $values['apply']))
 			{
-				if ($GLOBALS['phpgw']->session->is_repost())
+				if (phpgw::is_repost())
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'helpdesk.uitts.index', 'parent_cat_id' => $this->parent_cat_id));
+					phpgw::redirect_link('/index.php', array('menuaction' => 'helpdesk.uitts.index', 'parent_cat_id' => $this->parent_cat_id));
 				}
 
 				$insert_record = $GLOBALS['phpgw']->session->appsession('insert_record', 'helpdesk');
@@ -1809,7 +1809,7 @@ JS;
 					//	$GLOBALS['phpgw']->session->appsession('session_data','fm_tts','');
 
 
-					if (phpgw::get_var('phpgw_return_as') == 'json')
+					if (Sanitizer::get_var('phpgw_return_as') == 'json')
 					{
 						return array(
 							'status' => 'saved',
@@ -1821,16 +1821,16 @@ JS;
 
 					if ((isset($values['save']) && $values['save']))
 					{
-						$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'helpdesk.uitts.index', 'parent_cat_id' => $this->parent_cat_id));
+						phpgw::redirect_link('/index.php', array('menuaction' => 'helpdesk.uitts.index', 'parent_cat_id' => $this->parent_cat_id));
 					}
 					else
 					{
-						$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'helpdesk.uitts.view', 'parent_cat_id' => $this->parent_cat_id,
+						phpgw::redirect_link('/index.php', array('menuaction' => 'helpdesk.uitts.view', 'parent_cat_id' => $this->parent_cat_id,
 							'id' => $receipt['id'], 'tab' => 'general'));
 					}
 				}
 
-				if (phpgw::get_var('phpgw_return_as') == 'json')
+				if (Sanitizer::get_var('phpgw_return_as') == 'json')
 				{
 					phpgwapi_cache::session_clear('phpgwapi', 'history');
 					return array(
@@ -1865,7 +1865,7 @@ JS;
 							'edit' => true
 						);
 
-						$attribute['link_history'] = $GLOBALS['phpgw']->link('/index.php', $link_history_data);
+						$attribute['link_history'] = phpgw::link('/index.php', $link_history_data);
 					}
 				}
 			}
@@ -1961,9 +1961,9 @@ JS;
 						}
 						else
 						{
-							$cat_name	= str_repeat(' . ' , (int)($_cat['level'] -1) ) . $GLOBALS['phpgw']->strip_html($_cat['name']);
+							$cat_name	= str_repeat(' . ' , (int)($_cat['level'] -1) ) . phpgw::strip_html($_cat['name']);
 						}
-//						$cat_name	= str_repeat(' . ' , (int)($_cat['level'] -1) ) . $GLOBALS['phpgw']->strip_html($_cat['name']);
+//						$cat_name	= str_repeat(' . ' , (int)($_cat['level'] -1) ) . phpgw::strip_html($_cat['name']);
 						$cat_select['cat_list'][] = array
 						(
 							'cat_id'	=> $_cat['id'],
@@ -2000,7 +2000,7 @@ JS;
 				'select_priority_name' => 'values[priority]',
 				'priority_list' => array('options' => $this->bo->get_priority_list((isset($values['priority']) ? $values['priority'] : ''))),
 				'status_list' => array('options' => $this->bo->get_status_list('O')),
-				'form_action' => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'form_action' => phpgw::link('/index.php', $link_data),
 				'lang_details' => lang('Details'),
 				'lang_category' => lang('category'),
 				'lang_save' => lang('save'),
@@ -2021,7 +2021,7 @@ JS;
 				'tabs' => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
 				'parent_cat_id'	=> $this->parent_cat_id,
 				'account_lid'	=> $GLOBALS['phpgw_info']['user']['account_lid'],
-				'multi_upload_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'helpdesk.uitts.handle_multi_upload_file')),
+				'multi_upload_action' => phpgw::link('/index.php', array('menuaction' => 'helpdesk.uitts.handle_multi_upload_file')),
 				'html_editor'	=> $GLOBALS['phpgw_info']['user']['preferences']['common']['rteditor']
 			);
 
@@ -2044,13 +2044,13 @@ JS;
 
 			$this->_insert_custom_js();
 			$GLOBALS['phpgw_info']['flags']['app_header'] = $function_msg;
-			$GLOBALS['phpgw']->xslttpl->add_file(array('tts', 'files', 'attributes_form'));
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('add' => $data));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('tts', 'files', 'attributes_form'));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('add' => $data));
 		}
 
 		function update_data()
 		{
-			$action = phpgw::get_var('action', 'string', 'GET');
+			$action = Sanitizer::get_var('action', 'string', 'GET');
 			switch ($action)
 			{
 				case 'get_vendor':
@@ -2074,8 +2074,8 @@ JS;
 				$GLOBALS['phpgw']->common->phpgw_exit();
 			}
 
-			$thumb = phpgw::get_var('thumb', 'bool');
-			$img_id = phpgw::get_var('img_id', 'int');
+			$thumb = Sanitizer::get_var('thumb', 'bool');
+			$img_id = Sanitizer::get_var('img_id', 'int');
 
 			$bofiles = CreateObject('property.bofiles');
 
@@ -2086,7 +2086,7 @@ JS;
 			}
 			else
 			{
-				$file = urldecode(phpgw::get_var('file'));
+				$file = urldecode(Sanitizer::get_var('file'));
 			}
 
 			$source = "{$bofiles->rootdir}{$file}";
@@ -2125,7 +2125,7 @@ JS;
 
 		function get_files()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
 			if (!$this->acl_read)
 			{
@@ -2138,7 +2138,7 @@ JS;
 			);
 
 
-			$link_view_file = $GLOBALS['phpgw']->link('/index.php', $link_file_data);
+			$link_view_file = phpgw::link('/index.php', $link_file_data);
 			$values = $this->bo->read_single($id);
 
 			$content_files = array();
@@ -2174,7 +2174,7 @@ JS;
 				$z ++;
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 
 				$total_records = count($content_files);
@@ -2182,7 +2182,7 @@ JS;
 				return array
 					(
 					'data' => $content_files,
-					'draw' => phpgw::get_var('draw', 'int'),
+					'draw' => Sanitizer::get_var('draw', 'int'),
 					'recordsTotal' => $total_records,
 					'recordsFiltered' => $total_records
 				);
@@ -2197,11 +2197,11 @@ JS;
 				phpgw::no_access();
 			}
 
-			$id = phpgw::get_var('id', 'int', 'GET');
+			$id = Sanitizer::get_var('id', 'int', 'GET');
 
 			$GLOBALS['phpgw_info']['flags']['breadcrumb_selection'] = $GLOBALS['phpgw_info']['flags']['menu_selection'] . "::view::{$id}";
 
-			$add_external_communication = phpgw::get_var('external_communication', 'int');
+			$add_external_communication = Sanitizer::get_var('external_communication', 'int');
 
 			if ($add_external_communication)
 			{
@@ -2209,12 +2209,12 @@ JS;
 					'type_id' => $add_external_communication ));
 			}
 
-			$values = phpgw::get_var('values');
-			$values['note'] = phpgw::get_var('note', 'html');
-			$values['contact_id'] = phpgw::get_var('contact', 'int', 'POST');
-			$values['vendor_id'] = phpgw::get_var('vendor_id', 'int', 'POST');
-			$values['vendor_name'] = phpgw::get_var('vendor_name', 'string', 'POST');
-			$values_attribute = phpgw::get_var('values_attribute');
+			$values = Sanitizer::get_var('values');
+			$values['note'] = Sanitizer::get_var('note', 'html');
+			$values['contact_id'] = Sanitizer::get_var('contact', 'int', 'POST');
+			$values['vendor_id'] = Sanitizer::get_var('vendor_id', 'int', 'POST');
+			$values['vendor_name'] = Sanitizer::get_var('vendor_name', 'string', 'POST');
+			$values_attribute = Sanitizer::get_var('values_attribute');
 
 			$receipt = $GLOBALS['phpgw']->session->appsession('receipt', 'helpdesk');
 			$GLOBALS['phpgw']->session->appsession('receipt', 'helpdesk', '');
@@ -2223,14 +2223,14 @@ JS;
 				$receipt = array();
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('tts', 'files', 'attributes_form',
+			phpgwapi_xslttemplates::getInstance()->add_file(array('tts', 'files', 'attributes_form',
 				'datatable_inline', 'multi_upload_file_inline'));
 
 			$historylog	= & $this->bo->historylog;
 
 			if (isset($values['save']))
 			{
-				$change_category = explode('_', phpgw::get_var('change_category', 'string', 'POST'));
+				$change_category = explode('_', Sanitizer::get_var('change_category', 'string', 'POST'));
 
 				if(!empty($change_category[1]))
 				{
@@ -2248,12 +2248,12 @@ JS;
 				if(!$this->acl_edit)
 				{
 					phpgwapi_cache::message_set(lang('no access'), 'error');
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'helpdesk.uitts.index', 'parent_cat_id' => $this->parent_cat_id));
+					phpgw::redirect_link('/index.php', array('menuaction' => 'helpdesk.uitts.index', 'parent_cat_id' => $this->parent_cat_id));
 					phpgw::no_access();
 				}
-				if ($GLOBALS['phpgw']->session->is_repost())
+				if (phpgw::is_repost())
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'helpdesk.uitts.index', 'parent_cat_id' => $this->parent_cat_id));
+					phpgw::redirect_link('/index.php', array('menuaction' => 'helpdesk.uitts.index', 'parent_cat_id' => $this->parent_cat_id));
 				}
 
 				$location_id = $GLOBALS['phpgw']->locations->get_id('helpdesk', '.ticket');
@@ -2343,7 +2343,7 @@ JS;
 				$receipt = $this->bo->update_ticket($values, $id, $receipt, $values_attribute, $this->_simple);
 
 				if (!empty($values['send_mail'])
-					|| phpgw::get_var('set_notify_lid', 'bool')
+					|| Sanitizer::get_var('set_notify_lid', 'bool')
 					|| (!empty($this->bo->config->config_data['mailnotification']) && $this->bo->fields_updated)
 					|| (isset($GLOBALS['phpgw_info']['user']['preferences']['helpdesk']['tts_notify_me']) && $GLOBALS['phpgw_info']['user']['preferences']['helpdesk']['tts_notify_me'] == 1 && $this->bo->fields_updated)
 				)
@@ -2401,9 +2401,9 @@ JS;
 				}
 
 				//---------end files
-				if (phpgw::get_var('notify_client_by_sms', 'bool') && isset($values['response_text']) && $values['response_text'] && phpgw::get_var('to_sms_phone'))
+				if (Sanitizer::get_var('notify_client_by_sms', 'bool') && isset($values['response_text']) && $values['response_text'] && Sanitizer::get_var('to_sms_phone'))
 				{
-					$to_sms_phone = phpgw::get_var('to_sms_phone');
+					$to_sms_phone = Sanitizer::get_var('to_sms_phone');
 					//			$ticket['contact_phone'] = $to_sms_phone;
 
 					$sms = CreateObject('sms.sms');
@@ -2474,7 +2474,7 @@ JS;
 			}
 			if(!$ticket)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'helpdesk.uitts.index', 'parent_cat_id' => $this->parent_cat_id));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'helpdesk.uitts.index', 'parent_cat_id' => $this->parent_cat_id));
 			}
 			if (isset($ticket['attributes']) && is_array($ticket['attributes']))
 			{
@@ -2490,7 +2490,7 @@ JS;
 							'edit' => true
 						);
 
-						$attribute['link_history'] = $GLOBALS['phpgw']->link('/index.php', $link_history_data);
+						$attribute['link_history'] = phpgw::link('/index.php', $link_history_data);
 					}
 				}
 			}
@@ -2653,7 +2653,7 @@ JS;
 
 			$link_file_data = array('menuaction' => 'helpdesk.uitts.view_file');
 
-			$link_view_file = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'helpdesk.uitts.view_file'));
+			$link_view_file = phpgw::link('/index.php', array('menuaction' => 'helpdesk.uitts.view_file'));
 
 			$img_types = array(
 				'image/jpeg',
@@ -2845,9 +2845,9 @@ JS;
 						}
 						else
 						{
-							$cat_name	= str_repeat(' . ' , (int)($_cat['level'] -1) ) . $GLOBALS['phpgw']->strip_html($_cat['name']);
+							$cat_name	= str_repeat(' . ' , (int)($_cat['level'] -1) ) . phpgw::strip_html($_cat['name']);
 						}
-//						$cat_name	= str_repeat(' . ' , (int)($_cat['level'] -1) ) . $GLOBALS['phpgw']->strip_html($_cat['name']);
+//						$cat_name	= str_repeat(' . ' , (int)($_cat['level'] -1) ) . phpgw::strip_html($_cat['name']);
 						$cat_select['cat_list'][] = array
 						(
 							'cat_id'	=> $_cat['id'],
@@ -2906,7 +2906,7 @@ JS;
 						$cat_opt_group_id = $_cat['id'];
 						$cat_change_list[$cat_opt_group_id] = array
 						(
-							'label' => $GLOBALS['phpgw']->strip_html($_cat['name'])
+							'label' => phpgw::strip_html($_cat['name'])
 						);
 					}
 					else if($_cat['level'] > 0)
@@ -2952,7 +2952,7 @@ JS;
 			$tabs['history'] = array('label' => lang('History'), 'link' => '#history');
 			$active_tab = 'general';
 
-			if(!$this->acl->check(".ticket.category.{$this->parent_cat_id}",PHPGW_ACL_READ, 'helpdesk'))
+			if(!$this->acl->check(".ticket.category.{$this->parent_cat_id}",ACL_READ, 'helpdesk'))
 			{
 				$done_parent_cat_id = 0;
 			}
@@ -3002,8 +3002,8 @@ JS;
 				'value_cat_id' => $this->cat_id,
 				'cat_select' => $cat_select,
 				'value_category_name' => $ticket['category_name'],
-				'form_action' => $GLOBALS['phpgw']->link('/index.php', $form_link),
-				'done_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'helpdesk.uitts.index','parent_cat_id' => $done_parent_cat_id)),
+				'form_action' => phpgw::link('/index.php', $form_link),
+				'done_action' => phpgw::link('/index.php', array('menuaction' => 'helpdesk.uitts.index','parent_cat_id' => $done_parent_cat_id)),
 				'value_subject' => $ticket['subject'],
 				'value_id' => '[ #' . $id . ' ] - ',
 				'id'		=> $id,
@@ -3045,7 +3045,7 @@ JS;
 				'reverse_assigned' => $ticket['user_id'] != $ticket['reverse_id'] ? true : false,
 				'parent_cat_id' => $this->parent_cat_id,
 				'cat_change_list' => $cat_change_list,
-				'multi_upload_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'helpdesk.uitts.handle_multi_upload_file', 'id' => $id)),
+				'multi_upload_action' => phpgw::link('/index.php', array('menuaction' => 'helpdesk.uitts.handle_multi_upload_file', 'id' => $id)),
 				'content_files'	=> $content_files,
 				'acl_edit' => $this->acl_edit
 			);
@@ -3073,7 +3073,7 @@ JS;
 
 			$function_msg .= lang('view ticket detail');
 			$GLOBALS['phpgw_info']['flags']['app_header'] = $function_msg . "#{$id}";
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('view' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('view' => $data));
 		}
 
 		function view_file()
@@ -3083,12 +3083,12 @@ JS;
 				phpgw::no_access();
 			}
 
-			ExecMethod('property.bofiles.get_file', phpgw::get_var('file_id', 'int'));
+			ExecMethod('property.bofiles.get_file', Sanitizer::get_var('file_id', 'int'));
 		}
 
 		protected function _generate_tabs( $history = '' )
 		{
-			if (!$tab = phpgw::get_var('tab'))
+			if (!$tab = Sanitizer::get_var('tab'))
 			{
 				$tab = 'general';
 			}
@@ -3113,7 +3113,7 @@ JS;
 				phpgw::no_access();
 			}
 
-			$acl_location = phpgw::get_var('acl_location');
+			$acl_location = Sanitizer::get_var('acl_location');
 
 			if (!$acl_location)
 			{
@@ -3158,7 +3158,7 @@ JS;
 			{
 				try
 				{
-					$method = phpgw::get_var('method');
+					$method = Sanitizer::get_var('method');
 
 					switch ($method)
 					{
@@ -3185,7 +3185,7 @@ JS;
 		 */
 		private function get_reverse_assignee($type = 'lid')
 		{
-			$query = phpgw::get_var('on_behalf_of_lid');
+			$query = Sanitizer::get_var('on_behalf_of_lid');
 
 			$filter = array('active' => 1);
 
@@ -3251,7 +3251,7 @@ JS;
 
 				if ($entry['active'] && $entry['client_side'] && is_file($file))
 				{
-					$GLOBALS['phpgw']->js->add_external_file("helpdesk/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}/{$entry['file_name']}", true);
+					phpgwapi_js::getInstance()->add_external_file("helpdesk/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}/{$entry['file_name']}", true);
 					$js_found = true;
 				}
 			}
@@ -3267,7 +3267,7 @@ JS;
 		{
 			$xsl_rootdir = PHPGW_SERVER_ROOT . "/property/templates/{$GLOBALS['phpgw_info']['server']['template_set']}";
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('user_id_select'), $xsl_rootdir);
+			phpgwapi_xslttemplates::getInstance()->add_file(array('user_id_select'), $xsl_rootdir);
 
 			if(!$acl_location && $this->parent_cat_id)
 			{
@@ -3304,7 +3304,7 @@ JS;
 				$_selected = array();
 			}
 
-			$users = $GLOBALS['phpgw']->acl->get_user_list_right(PHPGW_ACL_EDIT, $acl_location, 'helpdesk', $_group_candidates);
+			$users = $GLOBALS['phpgw']->acl->get_user_list_right(ACL_EDIT, $acl_location, 'helpdesk', $_group_candidates);
 			$user_list = array();
 			$selected_found = false;
 			foreach ($users as $user)

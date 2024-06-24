@@ -141,10 +141,10 @@
 		$GLOBALS['phpgw_info']['user']['account_id'] = $admins[0];
 
 		//used in vfs
-		define('PHPGW_ACL_READ', 1);
-		define('PHPGW_ACL_ADD', 2);
-		define('PHPGW_ACL_EDIT', 4);
-		define('PHPGW_ACL_DELETE', 8);
+		define('ACL_READ', 1);
+		define('ACL_ADD', 2);
+		define('ACL_EDIT', 4);
+		define('ACL_DELETE', 8);
 
 		$GLOBALS['phpgw']->session = createObject('phpgwapi.sessions');
 

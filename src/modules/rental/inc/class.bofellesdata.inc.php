@@ -307,7 +307,7 @@
 				return;
 			}
 
-			$query = mb_strtoupper(phpgw::get_var('query'), 'UTF-8');
+			$query = mb_strtoupper(Sanitizer::get_var('query'), 'UTF-8');
 
 			$columns = "V_ORG_ENHET.ORG_ENHET_ID , V_ORG_ENHET.ORG_NAVN, V_ORG_ENHET.RESULTATENHET,  V_ORG_ENHET.ORG_NIVAA";
 			$tables = "V_ORG_ENHET";
@@ -860,7 +860,7 @@
 
 		function get_org_unit_ids_from_top_fallback( $org_unit_id )
 		{
-			$db	= & $GLOBALS['phpgw']->db;
+			$db	= Db::getInstance();
 
 			if (!$org_unit_id)
 			{

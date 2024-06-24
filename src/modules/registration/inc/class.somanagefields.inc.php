@@ -22,7 +22,7 @@
 
 		function __construct()
 		{
-			$this->db = & $GLOBALS['phpgw']->db;
+			$this->db = Db::getInstance();
 
 			$this->db_fields = array('field_name', 'field_text', 'field_type', 'field_values',
 				'field_required', 'field_order');

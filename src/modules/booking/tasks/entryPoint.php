@@ -75,7 +75,7 @@
 		{
 			phpgw::import_class('booking.bocommon_authorized');
 			booking_bocommon_authorized::disable_authorization();
-			$this->db = &$GLOBALS['phpgw']->db;
+			$this->db = Db::getInstance();
 		}
 
 		public function getDb()

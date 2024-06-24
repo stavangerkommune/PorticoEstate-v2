@@ -91,7 +91,7 @@
 			catch (Exception $e)
 			{
 				phpgwapi_cache::message_set('Could not connect to backend-server ' . $config->config_data['external_db_host'], 'error');
-				$GLOBALS['phpgw']->redirect_link('/home.php');
+				phpgw::redirect_link('/home.php');
 			}
 			$this->db = $db;
 			return $db;

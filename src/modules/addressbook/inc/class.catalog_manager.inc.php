@@ -63,7 +63,7 @@
 			$vars = array
 			(
 				'principal_tabs_inc'	=> '',
-				'action'				=> $GLOBALS['phpgw']->link('/index.php', $this->form_action),
+				'action'				=> phpgw::link('/index.php', $this->form_action),
 				'tab'					=> '',
 				'current_tab_body'		=> $this->current_body($catalog_name, $entry, $title),
 				'control_buttons'		=> ''
@@ -285,7 +285,7 @@
 						echo '$properties[extra] should be a part of the link</br>';
 						_debug_array($properties['extra']);
 					}
-					$link = $GLOBALS['phpgw']->link('/index.php', array_merge($this->form_action,
+					$link = phpgw::link('/index.php', array_merge($this->form_action,
 								array($properties['action'] => $this->array_value[$properties['key']])));
 					$column_data = '<a href="'.$link.'">'.$properties['mode'].'</a>';
 					break;
@@ -299,26 +299,26 @@
 
 		function get_vars()
 		{
-			$this->entry = phpgw::get_var('entry');
+			$this->entry = Sanitizer::get_var('entry');
 
-			if ( phpgw::get_var($this->catalog_name.'_add_row') )
+			if ( Sanitizer::get_var($this->catalog_name.'_add_row') )
 			{
 				$this->action = 'insert';
 			}
-			else if ( phpgw::get_var($this->catalog_name.'_update_row') )
+			else if ( Sanitizer::get_var($this->catalog_name.'_update_row') )
 			{
 				$this->action = 'update';
-				$this->key = phpgw::get_var($this->key_edit_name);
+				$this->key = Sanitizer::get_var($this->key_edit_name);
 			}
-			else if ( phpgw::get_var($this->catalog_name.'_del_row') )
+			else if ( Sanitizer::get_var($this->catalog_name.'_del_row') )
 			{
 				$this->action = 'delete';
-				$this->key = phpgw::get_var($this->catalog_name.'_del_row');
+				$this->key = Sanitizer::get_var($this->catalog_name.'_del_row');
 			}
-			else if ( phpgw::get_var($this->catalog_name.'_edit_row') )
+			else if ( Sanitizer::get_var($this->catalog_name.'_edit_row') )
 			{
 				$this->action = 'edit';
-				$this->key = phpgw::get_var($this->catalog_name.'_edit_row');
+				$this->key = Sanitizer::get_var($this->catalog_name.'_edit_row');
 			}
 		}
 

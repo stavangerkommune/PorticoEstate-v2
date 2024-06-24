@@ -15,7 +15,7 @@
 
 		public function set()
 		{
-			$template_set = phpgw::get_var('template_set', 'string', 'POST');
+			$template_set = Sanitizer::get_var('template_set', 'string', 'POST');
 
 			if ($template_set)
 			{
@@ -30,9 +30,9 @@
 				}
 			}
 
-			if (phpgw::get_var('lang', 'bool', 'POST'))
+			if (Sanitizer::get_var('lang', 'bool', 'POST'))
 			{
-				$selected_lang = phpgw::get_var('lang', 'string', 'POST');
+				$selected_lang = Sanitizer::get_var('lang', 'string', 'POST');
 				$GLOBALS['phpgw']->session->phpgw_setcookie('selected_lang', $selected_lang, (time() + (60 * 60 * 24 * 14)));
 			}
 		}

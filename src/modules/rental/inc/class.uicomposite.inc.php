@@ -43,12 +43,12 @@
 
 			$this->config = CreateObject('phpgwapi.config', 'rental');
 			$this->config->read();
-			$this->acl = & $GLOBALS['phpgw']->acl;
+			$this->acl = Acl::getInstance();
 			$this->acl_location = '.contract'; //for now
-			$this->acl_read = $this->acl->check($this->acl_location, PHPGW_ACL_READ, 'rental');
-			$this->acl_add = $this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'rental');
-			$this->acl_edit = $this->acl->check($this->acl_location, PHPGW_ACL_EDIT, 'rental');
-			$this->acl_delete = $this->acl->check($this->acl_location, PHPGW_ACL_DELETE, 'rental');
+			$this->acl_read = $this->acl->check($this->acl_location, ACL_READ, 'rental');
+			$this->acl_add = $this->acl->check($this->acl_location, ACL_ADD, 'rental');
+			$this->acl_edit = $this->acl->check($this->acl_location, ACL_EDIT, 'rental');
+			$this->acl_delete = $this->acl->check($this->acl_location, ACL_DELETE, 'rental');
 		}
 
 		private function get_status_options( $selected = 0 )
@@ -78,7 +78,7 @@
 				array('id' => 'address', 'name' => lang('address')),
 				array('id' => 'location_code', 'name' => lang('object_number'))
 			);
-			$search_type = phpgw::get_var('search_type');
+			$search_type = Sanitizer::get_var('search_type');
 			foreach ($search_option as &$entry)
 			{
 				$entry['selected'] = $entry['id'] == $search_type ? 1 : 0;
@@ -175,17 +175,17 @@
 
 		public function query()
 		{
-			$length = phpgw::get_var('length', 'int');
+			$length = Sanitizer::get_var('length', 'int');
 
 			$user_rows_per_page = $length > 0 ? $length : $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
 
-			$search = phpgw::get_var('search');
-			$query = phpgw::get_var('query');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int', 'REQUEST', 1);
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$query = Sanitizer::get_var('query');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int', 'REQUEST', 1);
+			$columns = Sanitizer::get_var('columns');
 
-			$start_index = phpgw::get_var('start', 'int', 'REQUEST', 0);
+			$start_index = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
 			$num_of_objects = $length == -1 ? 0 : $user_rows_per_page;
 			$sort_field = ($columns[$order[0]['column']]['data']) ? $columns[$order[0]['column']]['data'] : 'id';
 			$sort_ascending = ($order[0]['dir'] == 'desc') ? false : true;
@@ -193,21 +193,21 @@
 			$search_for = $search_for ? $search_for : '';
 			$search_for = $query ? $query : $search_for; //from autocomplete
 
-			$search_type = phpgw::get_var('search_option', 'string', 'REQUEST', 'all');
+			$search_type = Sanitizer::get_var('search_option', 'string', 'REQUEST', 'all');
 
-			$export = phpgw::get_var('export', 'bool');
-			$editable = phpgw::get_var('editable', 'bool');
+			$export = Sanitizer::get_var('export', 'bool');
+			$editable = Sanitizer::get_var('editable', 'bool');
 
 			// Create an empty result set
 			$result_objects = array();
 			$object_count = 0;
-			$district_id = phpgw::get_var('district_id', 'int');
-			$status_id = phpgw::get_var('status_id', 'int');
+			$district_id = Sanitizer::get_var('district_id', 'int');
+			$status_id = Sanitizer::get_var('status_id', 'int');
 
 			//Retrieve a contract identifier and load corresponding contract
-			$contract_id = phpgw::get_var('contract_id');
+			$contract_id = Sanitizer::get_var('contract_id');
 			
-			$application_id = (phpgw::get_var('application_id')) ? phpgw::get_var('application_id') : 0;
+			$application_id = (Sanitizer::get_var('application_id')) ? Sanitizer::get_var('application_id') : 0;
 
 			if ($export)
 			{
@@ -215,7 +215,7 @@
 			}
 
 			//Retrieve the type of query and perform type specific logic
-			$query_type = phpgw::get_var('type');
+			$query_type = Sanitizer::get_var('type');
 
 			switch ($query_type)
 			{
@@ -230,32 +230,32 @@
 					$object_count = rental_socomposite::get_instance()->get_count($search_for, $search_type, $filters);
 					break;
 				case 'not_included_composites': // ... get all vacant and active composites not in contract
-					$filters = array('is_active' => phpgw::get_var('is_active'),
+					$filters = array('is_active' => Sanitizer::get_var('is_active'),
 						'district_id' => $status_id,
-						'is_vacant' => phpgw::get_var('occupancy'),//is_vacant seems to be unused
-						'not_in_contract' => phpgw::get_var('contract_id'),
-						'has_contract' => phpgw::get_var('has_contract'),
-						'furnished_status' => phpgw::get_var('furnished_status'));
+						'is_vacant' => Sanitizer::get_var('occupancy'),//is_vacant seems to be unused
+						'not_in_contract' => Sanitizer::get_var('contract_id'),
+						'has_contract' => Sanitizer::get_var('has_contract'),
+						'furnished_status' => Sanitizer::get_var('furnished_status'));
 					$result_objects = rental_socomposite::get_instance()->get($start_index, $num_of_objects, $sort_field, $sort_ascending, $search_for, $search_type, $filters);
 					$object_count = rental_socomposite::get_instance()->get_count($search_for, $search_type, $filters);
 					break;
 				case 'all_composites': // ... all composites, filters (active and vacant)
 					phpgwapi_cache::session_set('rental', 'composite_query', $search_for);
 					phpgwapi_cache::session_set('rental', 'composite_search_type', $search_type);
-					phpgwapi_cache::session_set('rental', 'composite_status', phpgw::get_var('is_active'));
-					phpgwapi_cache::session_set('rental', 'composite_status_id', phpgw::get_var('status_id'));
-					phpgwapi_cache::session_set('rental', 'composite_status_contract', phpgw::get_var('has_contract'));
-					phpgwapi_cache::session_set('rental', 'composite_furnished_status', phpgw::get_var('furnished_status'));
+					phpgwapi_cache::session_set('rental', 'composite_status', Sanitizer::get_var('is_active'));
+					phpgwapi_cache::session_set('rental', 'composite_status_id', Sanitizer::get_var('status_id'));
+					phpgwapi_cache::session_set('rental', 'composite_status_contract', Sanitizer::get_var('has_contract'));
+					phpgwapi_cache::session_set('rental', 'composite_furnished_status', Sanitizer::get_var('furnished_status'));
 					$filters = array(
-						'furnished_status' => phpgw::get_var('furnished_status'),
-						'is_active' => phpgw::get_var('is_active'),
-						'is_vacant' => phpgw::get_var('occupancy'),
-						'has_contract' => phpgw::get_var('has_contract'),
-						'availability_date_from' => phpgw::get_var('availability_date_from'),
-						'availability_date_to' => phpgw::get_var('availability_date_to'),
+						'furnished_status' => Sanitizer::get_var('furnished_status'),
+						'is_active' => Sanitizer::get_var('is_active'),
+						'is_vacant' => Sanitizer::get_var('occupancy'),
+						'has_contract' => Sanitizer::get_var('has_contract'),
+						'availability_date_from' => Sanitizer::get_var('availability_date_from'),
+						'availability_date_to' => Sanitizer::get_var('availability_date_to'),
 						'district_id' => $district_id,
 						'status_id' => $status_id,
-						'composite_type_id'	=> phpgw::get_var('composite_type_id', 'int'),
+						'composite_type_id'	=> Sanitizer::get_var('composite_type_id', 'int'),
 						);
 					if ($application_id > 0)
 					{
@@ -265,12 +265,12 @@
 					$object_count = rental_socomposite::get_instance()->get_count($search_for, $search_type, $filters);
 					break;
 				case 'included_areas': // Returns areas/units added to a specified composite
-					$filters = array('included_areas' => phpgw::get_var('composite_id')); // Composite id
+					$filters = array('included_areas' => Sanitizer::get_var('composite_id')); // Composite id
 					$result_objects = rental_sounit::get_instance()->get($start_index, $num_of_objects, $sort_field, $sort_ascending, $search_for, $search_type, $filters);
 					$object_count = rental_sounit::get_instance()->get_count($search_for, $search_type, $filters);
 					break;
 				case 'available_areas': // Returns areas/units available for a specified composite
-					$filters = array('available_areas' => phpgw::get_var('id')); // Composite id
+					$filters = array('available_areas' => Sanitizer::get_var('id')); // Composite id
 					$result_objects = rental_sounit::get_instance()->get($start_index, $num_of_objects, $sort_field, $sort_ascending, $search_for, $search_type, $filters);
 					$object_count = rental_sounit::get_instance()->get_count($search_for, $search_type, $filters);
 					break;
@@ -306,7 +306,7 @@
 
 			// ... add result data
 			//$result_data = array('results' => $rows, 'total_records' => $object_count);
-			//$editable = phpgw::get_var('editable') == 'true' ? true : false;
+			//$editable = Sanitizer::get_var('editable') == 'true' ? true : false;
 
 			/* $contract_types = rental_socontract::get_instance()->get_fields_of_responsibility();
 
@@ -335,7 +335,7 @@
 			  $names = $this->locations->get_name($id);
 			  if($names['appname'] == $GLOBALS['phpgw_info']['flags']['currentapp'])
 			  {
-			  if($this->hasPermissionOn($names['location'],PHPGW_ACL_ADD))
+			  if($this->hasPermissionOn($names['location'],ACL_ADD))
 			  {
 			  // adding allowed contract_types for context menu creation
 			  $create_types[] = array($id, $label);
@@ -487,12 +487,12 @@
 		 */
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
 
-			$editable = phpgw::get_var('editable', 'bool');
+			$editable = Sanitizer::get_var('editable', 'bool');
 			$user_is = $this->type_of_user;
 
 			$appname = lang('rc');
@@ -540,7 +540,7 @@
 					'new_item' => self::link(array('menuaction' => 'rental.uicomposite.add')),
 					'editor_action' => '',
 					'field' => array(),
-					'query' => phpgw::get_var('search_for')
+					'query' => Sanitizer::get_var('search_for')
 				)
 			);
 
@@ -597,7 +597,7 @@
 				(
 				'my_name' => 'view',
 				'text' => lang('show'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uicomposite.view'
 				)),
@@ -608,7 +608,7 @@
 				(
 				'my_name' => 'edit',
 				'text' => lang('edit'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uicomposite.edit'
 				)),
@@ -641,7 +641,7 @@
 				$names = $this->locations->get_name($id);
 				if ($names['appname'] == $GLOBALS['phpgw_info']['flags']['currentapp'])
 				{
-					if ($this->hasPermissionOn($names['location'], PHPGW_ACL_ADD))
+					if ($this->hasPermissionOn($names['location'], ACL_ADD))
 					{
 						// adding allowed contract_types for context menu creation
 						$create_types[] = array($id, $label);
@@ -655,7 +655,7 @@
 					(
 					'my_name' => $create_type[1],
 					'text' => lang('create_contract_' . $create_type[1]),
-					'action' => $GLOBALS['phpgw']->link('/index.php', array
+					'action' => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'rental.uicontract.add_from_composite',
 						'responsibility_id' => $create_type[0]
@@ -674,7 +674,7 @@
 		 */
 		public function add()
 		{
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uicomposite.edit'));
+			phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uicomposite.edit'));
 		}
 
 		/**
@@ -683,7 +683,7 @@
 		 */
 		public function view()
 		{
-			$composite_id = (int)phpgw::get_var('id');
+			$composite_id = (int)Sanitizer::get_var('id');
 
 			if (isset($composite_id) && $composite_id > 0)
 			{
@@ -694,7 +694,7 @@
 				phpgw::no_access($GLOBALS['phpgw_info']['flags']['currentapp'], lang('invalid_request'));
 			}
 
-			if (isset($composite) && $composite->has_permission(PHPGW_ACL_READ))
+			if (isset($composite) && $composite->has_permission(ACL_READ))
 			{
 				$this->edit(array(), $mode = 'view');
 			}
@@ -712,7 +712,7 @@
 		{
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang($mode);
 
-			$composite_id = (int)phpgw::get_var('id');
+			$composite_id = (int)Sanitizer::get_var('id');
 
 			if ($mode == 'edit')
 			{
@@ -984,7 +984,7 @@
 					(
 					'my_name' => 'edit',
 					'text' => lang('edit'),
-					'action' => $GLOBALS['phpgw']->link('/index.php', array
+					'action' => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'rental.uiapplication.edit'
 					)),
@@ -1108,7 +1108,7 @@
 				var currency_suffix = '$this->currency_suffix';
 				var area_suffix = '$this->area_suffix';
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $code);
+			phpgwapi_js::getInstance()->add_code('', $code);
 
 			$current_price_type_id = $composite->get_price_type_id();
 			$price_type_options = array();
@@ -1124,8 +1124,8 @@ JS;
 				(
 				'datatable_def' => $datatable_def,
 				'tabs' => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
-				'form_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'rental.uicomposite.save')),
-				'cancel_url' => $GLOBALS['phpgw']->link('/index.php', $link_index),
+				'form_action' => phpgw::link('/index.php', array('menuaction' => 'rental.uicomposite.save')),
+				'cancel_url' => phpgw::link('/index.php', $link_index),
 				'lang_save' => lang('save'),
 				'lang_cancel' => lang('cancel'),
 				'value_name' => $composite->get_name(),
@@ -1169,7 +1169,7 @@ JS;
 				'multiple_uploader' => true,
 				'fileupload'	=> !!$composite_id,
 				'multi_upload_parans' => "{menuaction:'rental.uicomposite.build_multi_upload_file', id:'{$composite_id}'}",
-				'multi_upload_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'rental.uicomposite.handle_multi_upload_file', 'id' => $composite_id))				
+				'multi_upload_action' => phpgw::link('/index.php', array('menuaction' => 'rental.uicomposite.handle_multi_upload_file', 'id' => $composite_id))				
 			);
 
 			self::add_javascript('rental', 'base', 'composite.' . $mode . '.js');
@@ -1186,7 +1186,7 @@ JS;
 				phpgw::no_access($GLOBALS['phpgw_info']['flags']['currentapp'], lang('permission_denied_edit'));
 			}
 
-			$composite_id = (int)phpgw::get_var('id');
+			$composite_id = (int)Sanitizer::get_var('id');
 
 			if ($composite_id)
 			{
@@ -1199,23 +1199,23 @@ JS;
 
 			if (isset($composite))
 			{
-				$composite->set_name(phpgw::get_var('name'));
-				$composite->set_custom_address_1(phpgw::get_var('address_1'));
-				$composite->set_has_custom_address(phpgw::get_var('has_custom_address') == 'on' ? true : false);
-				$composite->set_custom_house_number(phpgw::get_var('house_number'));
-				$composite->set_custom_address_2(phpgw::get_var('address_2'));
-				$composite->set_custom_postcode(phpgw::get_var('postcode'));
-				$composite->set_custom_place(phpgw::get_var('place'));
-				$composite->set_is_active(phpgw::get_var('is_active') == 'on' ? true : false);
-				$composite->set_description(phpgw::get_var('description'));
-				$composite->set_furnish_type_id(phpgw::get_var('furnish_type_id'));
-				$composite->set_standard_id(phpgw::get_var('composite_standard_id', 'int'));
-				$composite->set_composite_type_id(phpgw::get_var('composite_type_id', 'int'));
-				$composite->set_part_of_town_id(phpgw::get_var('part_of_town_id', 'int'));
-				$composite->set_custom_price_factor(phpgw::get_var('custom_price_factor', 'float'));
-				$composite->set_custom_price(phpgw::get_var('custom_price', 'float'));
-				$composite->set_price_type_id(phpgw::get_var('price_type_id', 'int'));
-				$composite->set_status_id(phpgw::get_var('status_id', 'int'));
+				$composite->set_name(Sanitizer::get_var('name'));
+				$composite->set_custom_address_1(Sanitizer::get_var('address_1'));
+				$composite->set_has_custom_address(Sanitizer::get_var('has_custom_address') == 'on' ? true : false);
+				$composite->set_custom_house_number(Sanitizer::get_var('house_number'));
+				$composite->set_custom_address_2(Sanitizer::get_var('address_2'));
+				$composite->set_custom_postcode(Sanitizer::get_var('postcode'));
+				$composite->set_custom_place(Sanitizer::get_var('place'));
+				$composite->set_is_active(Sanitizer::get_var('is_active') == 'on' ? true : false);
+				$composite->set_description(Sanitizer::get_var('description'));
+				$composite->set_furnish_type_id(Sanitizer::get_var('furnish_type_id'));
+				$composite->set_standard_id(Sanitizer::get_var('composite_standard_id', 'int'));
+				$composite->set_composite_type_id(Sanitizer::get_var('composite_type_id', 'int'));
+				$composite->set_part_of_town_id(Sanitizer::get_var('part_of_town_id', 'int'));
+				$composite->set_custom_price_factor(Sanitizer::get_var('custom_price_factor', 'float'));
+				$composite->set_custom_price(Sanitizer::get_var('custom_price', 'float'));
+				$composite->set_price_type_id(Sanitizer::get_var('price_type_id', 'int'));
+				$composite->set_status_id(Sanitizer::get_var('status_id', 'int'));
 
 				if (rental_socomposite::get_instance()->store($composite))
 				{
@@ -1229,7 +1229,7 @@ JS;
 				}
 			}
 
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uicomposite.edit',
+			phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uicomposite.edit',
 				'id' => $composite_id));
 		}
 
@@ -1280,9 +1280,9 @@ JS;
 				phpgw::no_access($GLOBALS['phpgw_info']['flags']['currentapp'], lang('permission_denied'));
 			}
 
-			$composite_id = (int)phpgw::get_var('composite_id');
-			$location_code = phpgw::get_var('location_code');
-			$level = (int)phpgw::get_var('level');
+			$composite_id = (int)Sanitizer::get_var('composite_id');
+			$location_code = Sanitizer::get_var('location_code');
+			$level = (int)Sanitizer::get_var('level');
 
 			$result = array();
 			if (isset($composite_id) && $composite_id > 0)
@@ -1316,7 +1316,7 @@ JS;
 			{
 				phpgw::no_access($GLOBALS['phpgw_info']['flags']['currentapp'], lang('permission_denied'));
 			}
-			$unit_ids = phpgw::get_var('ids');
+			$unit_ids = Sanitizer::get_var('ids');
 
 			$result = array();
 			if (count($unit_ids) > 0)
@@ -1345,7 +1345,7 @@ JS;
 		 */
 		function columns()
 		{
-			$values = phpgw::get_var('values');
+			$values = Sanitizer::get_var('values');
 			if (isset($values['save']) && $values['save'])
 			{
 				$GLOBALS['phpgw']->preferences->account_id = $GLOBALS['phpgw_info']['user']['account_id'];
@@ -1358,15 +1358,15 @@ JS;
 		public function schedule ()
 		{
 			self::set_active_menu('rental::schedule');
-			$composite_id = (int)phpgw::get_var('id');
+			$composite_id = (int)Sanitizer::get_var('id');
 
-			$date_input = phpgw::get_var('date');
+			$date_input = Sanitizer::get_var('date');
 			$date = new DateTime($date_input ? $date_input : 'now');
 			if ($date->format('w') != 1) {
 				$date->modify('last monday');
 			}
 
-			$editable = phpgw::get_var('editable', 'bool');
+			$editable = Sanitizer::get_var('editable', 'bool');
 			$type = 'all_composites';
 
 			$filters = $this->get_filters();
@@ -1416,7 +1416,7 @@ JS;
 			$toolbar[] = array(
 				'name' => 'edit',
 				'text' => lang('edit'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uicomposite.edit'
 				)),
@@ -1426,7 +1426,7 @@ JS;
 			$toolbar[] = array(
 				'name' => 'view',
 				'text' => lang('show'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uicomposite.view'
 				)),
@@ -1458,7 +1458,7 @@ JS;
 				$names = $this->locations->get_name($id);
 				if ($names['appname'] == $GLOBALS['phpgw_info']['flags']['currentapp'])
 				{
-					if ($this->hasPermissionOn($names['location'], PHPGW_ACL_ADD))
+					if ($this->hasPermissionOn($names['location'], ACL_ADD))
 					{
 						$create_types[] = array($id, $label);
 					}
@@ -1471,7 +1471,7 @@ JS;
 					(
 					'name' => $create_type[1],
 					'text' => lang('create_contract_' . $create_type[1]),
-					'action' => $GLOBALS['phpgw']->link('/index.php', array
+					'action' => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'rental.uicontract.add_from_composite',
 						'responsibility_id' => $create_type[0]
@@ -1497,7 +1497,7 @@ JS;
 
 		public function get_schedule ()
 		{
-			$date = new DateTime(phpgw::get_var('date'));
+			$date = new DateTime(Sanitizer::get_var('date'));
 
 			if ($date->format('w') != 1)
 			{
@@ -1543,7 +1543,7 @@ JS;
 
 		public function handle_multi_upload_file()
 		{
-			$id = phpgw::get_var('id', 'int', 'GET');
+			$id = Sanitizer::get_var('id', 'int', 'GET');
 
 			phpgw::import_class('property.multiuploader');
 
@@ -1580,32 +1580,32 @@ JS;
 		public function build_multi_upload_file()
 		{
 			phpgwapi_jquery::init_multi_upload_file();
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
 			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
 			$GLOBALS['phpgw_info']['flags']['nofooter'] = true;
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 
-			$multi_upload_action = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'rental.uicomposite.handle_multi_upload_file', 'id' => $id));
+			$multi_upload_action = phpgw::link('/index.php', array('menuaction' => 'rental.uicomposite.handle_multi_upload_file', 'id' => $id));
 
 			$data = array
 				(
 				'multi_upload_action' => $multi_upload_action
 			);
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('files', 'multi_upload_file'));
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('multi_upload' => $data));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('files', 'multi_upload_file'));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('multi_upload' => $data));
 		}
 
 		function get_files()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
 			if (!($this->isExecutiveOfficer() || $this->isAdministrator()))
 			{
 				return array(
 					'data' => array(),
-					'draw' => phpgw::get_var('draw', 'int'),
+					'draw' => Sanitizer::get_var('draw', 'int'),
 					'recordsTotal' => 0,
 					'recordsFiltered' => 0
 				);
@@ -1617,7 +1617,7 @@ JS;
 			);
 
 
-			$link_view_file = $GLOBALS['phpgw']->link('/index.php', $link_file_data);
+			$link_view_file = phpgw::link('/index.php', $link_file_data);
 
 			$vfs = CreateObject('phpgwapi.vfs');
 			$vfs->override_acl = 1;
@@ -1639,7 +1639,7 @@ JS;
 				);
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 
 				$total_records = count($content_files);
@@ -1647,7 +1647,7 @@ JS;
 				return array
 					(
 					'data' => $content_files,
-					'draw' => phpgw::get_var('draw', 'int'),
+					'draw' => Sanitizer::get_var('draw', 'int'),
 					'recordsTotal' => $total_records,
 					'recordsFiltered' => $total_records
 				);
@@ -1662,7 +1662,7 @@ JS;
 				phpgw::no_access();
 			}
 
-			ExecMethod('property.bofiles.get_file', phpgw::get_var('file_id', 'int'));
+			ExecMethod('property.bofiles.get_file', Sanitizer::get_var('file_id', 'int'));
 		}
 
 	}

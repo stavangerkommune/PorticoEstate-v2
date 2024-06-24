@@ -9,7 +9,7 @@
 //	'preferences'
 	);
 
-	$aclobj = & $GLOBALS['phpgw']->acl;
+	$aclobj = Acl::getInstance();
 	/*
 if (!$GLOBALS['phpgw']->accounts->exists('bookingguest') ) // no guest account already exists
 {

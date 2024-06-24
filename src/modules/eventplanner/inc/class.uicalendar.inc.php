@@ -65,12 +65,12 @@
 
 		public function index()
 		{
-			if (empty($this->permissions[PHPGW_ACL_READ]))
+			if (empty($this->permissions[ACL_READ]))
 			{
 				phpgw::no_access();
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -158,9 +158,9 @@
 
 		public function edit( $values = array(), $mode = 'edit' )
 		{
-			$active_tab = !empty($values['active_tab']) ? $values['active_tab'] : phpgw::get_var('active_tab', 'string', 'REQUEST', 'first_tab');
+			$active_tab = !empty($values['active_tab']) ? $values['active_tab'] : Sanitizer::get_var('active_tab', 'string', 'REQUEST', 'first_tab');
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('edit');
-			if (empty($this->permissions[PHPGW_ACL_ADD]))
+			if (empty($this->permissions[ACL_ADD]))
 			{
 				phpgw::no_access();
 			}
@@ -171,7 +171,7 @@
 			}
 			else
 			{
-				$id = !empty($values['id']) ? $values['id'] : phpgw::get_var('id', 'int');
+				$id = !empty($values['id']) ? $values['id'] : Sanitizer::get_var('id', 'int');
 				$calendar = $this->bo->read_single($id);
 			}
 
@@ -345,8 +345,8 @@
 
 		public function update_active_status()
 		{
-			$ids = phpgw::get_var('ids', 'int');
-			$action = phpgw::get_var('action', 'string');
+			$ids = Sanitizer::get_var('ids', 'int');
+			$action = Sanitizer::get_var('action', 'string');
 
 			if ($this->bo->update_active_status($ids, $action))
 			{
@@ -369,8 +369,8 @@
 
 		public function update_schedule( )
 		{
-			$id = phpgw::get_var('id', 'int');
-			$from_ = phpgw::get_var('from_', 'date');
+			$id = Sanitizer::get_var('id', 'int');
+			$from_ = Sanitizer::get_var('from_', 'date');
 			if ($this->bo->update_schedule($id, $from_))
 			{
 				return array(
@@ -396,7 +396,7 @@
 		{
 			$params = $this->bo->build_default_read_params();
 			$values = $this->bo->read($params);
-			$redirect = phpgw::get_var('redirect');
+			$redirect = Sanitizer::get_var('redirect');
 			if($redirect == 'booking')
 			{
 				array_walk($values["results"], array($this, "_add_links2"), "{$this->currentapp}.uibooking.edit");

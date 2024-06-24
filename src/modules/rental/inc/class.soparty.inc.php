@@ -520,7 +520,7 @@
 		 */
 		protected function isAdministrator()
 		{
-			return $GLOBALS['phpgw']->acl->check(self::LOCATION_ROOT, PHPGW_ACL_PRIVATE, 'rental');
+			return $GLOBALS['phpgw']->acl->check(self::LOCATION_ROOT, ACL_PRIVATE, 'rental');
 		}
 
 		/**
@@ -531,9 +531,9 @@
 		protected function isExecutiveOfficer()
 		{
 			return (
-				$GLOBALS['phpgw']->acl->check(self::LOCATION_IN, PHPGW_ACL_ADD, 'rental') ||
-				$GLOBALS['phpgw']->acl->check(self::LOCATION_OUT, PHPGW_ACL_ADD, 'rental') ||
-				$GLOBALS['phpgw']->acl->check(self::LOCATION_INTERNAL, PHPGW_ACL_ADD, 'rental')
+				$GLOBALS['phpgw']->acl->check(self::LOCATION_IN, ACL_ADD, 'rental') ||
+				$GLOBALS['phpgw']->acl->check(self::LOCATION_OUT, ACL_ADD, 'rental') ||
+				$GLOBALS['phpgw']->acl->check(self::LOCATION_INTERNAL, ACL_ADD, 'rental')
 				);
 		}
 

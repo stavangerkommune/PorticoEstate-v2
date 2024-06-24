@@ -44,7 +44,7 @@
 				$names = $this->locations->get_name($id);
 				if ($names['appname'] == $GLOBALS['phpgw_info']['flags']['currentapp'])
 				{
-					if ($this->hasPermissionOn($names['location'], PHPGW_ACL_ADD))
+					if ($this->hasPermissionOn($names['location'], ACL_ADD))
 					{
 						$types_options[] = array(
 							'id' => $id,
@@ -63,7 +63,7 @@
 				phpgw::no_access();
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -192,7 +192,7 @@
 				(
 				'my_name' => 'view',
 				'text' => lang('show'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uiprice_item.view'
 				)),
@@ -203,7 +203,7 @@
 				(
 				'my_name' => 'edit',
 				'text' => lang('edit'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uiprice_item.edit'
 				)),
@@ -217,7 +217,7 @@
 				var currency_suffix = '$this->currency_suffix';
 JS;
 
-			$GLOBALS['phpgw']->js->add_code('', $code);
+			phpgwapi_js::getInstance()->add_code('', $code);
 
 			self::add_javascript('rental', 'base', 'price_item.index.js');
 			phpgwapi_jquery::load_widget('numberformat');
@@ -251,8 +251,8 @@ JS;
 				phpgw::no_access();
 			}
 
-			$responsibility_id = phpgw::get_var('responsibility_id');
-			$price_item_id = phpgw::get_var('id', 'int');
+			$responsibility_id = Sanitizer::get_var('responsibility_id');
+			$price_item_id = Sanitizer::get_var('id', 'int');
 
 			if (!empty($values['price_item_id']))
 			{
@@ -265,7 +265,7 @@ JS;
 			}
 			else
 			{
-				$title = phpgw::get_var('price_item_title');
+				$title = Sanitizer::get_var('price_item_title');
 
 				$price_item = new rental_price_item();
 				$price_item->set_title($title);
@@ -300,8 +300,8 @@ JS;
 			}
 
 			$data = array(
-				'form_action'					 => $GLOBALS['phpgw']->link('/index.php', $link_save),
-				'cancel_url'					 => $GLOBALS['phpgw']->link('/index.php', $link_index),
+				'form_action'					 => phpgw::link('/index.php', $link_save),
+				'cancel_url'					 => phpgw::link('/index.php', $link_index),
 				'lang_save'						 => lang('save'),
 				'lang_cancel'					 => lang('cancel'),
 				'lang_current_price_type'		 => lang($price_item->get_price_type_title()),
@@ -347,7 +347,7 @@ JS;
 
 		public function save()
 		{
-			$price_item_id = phpgw::get_var('id', 'int');
+			$price_item_id = Sanitizer::get_var('id', 'int');
 
 			if (!empty($price_item_id))
 			{
@@ -355,20 +355,20 @@ JS;
 			}
 			else
 			{
-				$title = phpgw::get_var('price_item_title');
+				$title = Sanitizer::get_var('price_item_title');
 				$price_item = new rental_price_item();
 				$price_item->set_title($title);
 				$price_item->set_price_type_id(1); // defaults to year
 			}
-			$price_item->set_responsibility_id(phpgw::get_var('responsibility_id'));
-			$price_item->set_title(phpgw::get_var('title'));
-			$price_item->set_agresso_id(phpgw::get_var('agresso_id'));
-			$price_item->set_is_area(phpgw::get_var('is_area') == 'true' ? true : false);
-			$price_item->set_is_inactive(phpgw::get_var('is_inactive') == 'on' ? true : false);
-			$price_item->set_is_adjustable(phpgw::get_var('is_adjustable') == 'on' ? true : false);
-			$price_item->set_standard(phpgw::get_var('is_standard') == 'on' ? true : false);
-			$price_item->set_price(phpgw::get_var('price'));
-			$price_item->set_price_type_id(phpgw::get_var('price_type_id', 'int'));
+			$price_item->set_responsibility_id(Sanitizer::get_var('responsibility_id'));
+			$price_item->set_title(Sanitizer::get_var('title'));
+			$price_item->set_agresso_id(Sanitizer::get_var('agresso_id'));
+			$price_item->set_is_area(Sanitizer::get_var('is_area') == 'true' ? true : false);
+			$price_item->set_is_inactive(Sanitizer::get_var('is_inactive') == 'on' ? true : false);
+			$price_item->set_is_adjustable(Sanitizer::get_var('is_adjustable') == 'on' ? true : false);
+			$price_item->set_standard(Sanitizer::get_var('is_standard') == 'on' ? true : false);
+			$price_item->set_price(Sanitizer::get_var('price'));
+			$price_item->set_price_type_id(Sanitizer::get_var('price_type_id', 'int'));
 			if ($price_item->get_agresso_id() == null)
 			{
 				phpgwapi_cache::message_set(lang('missing_agresso_id'), 'error');
@@ -395,9 +395,9 @@ JS;
 				return;
 			}
 
-			$field_name = phpgw::get_var('field_name');
-			$value = phpgw::get_var('value');
-			$id = phpgw::get_var('id');
+			$field_name = Sanitizer::get_var('field_name');
+			$value = Sanitizer::get_var('value');
+			$id = Sanitizer::get_var('id');
 
 			switch ($field_name)
 			{
@@ -409,10 +409,10 @@ JS;
 					break;
 				case 'date_start':
 				case 'date_end':
-					$value = phpgwapi_datetime::date_to_timestamp(phpgw::get_var('value'));
+					$value = phpgwapi_datetime::date_to_timestamp(Sanitizer::get_var('value'));
 					break;
 				default:
-					$value = phpgw::get_var('value');
+					$value = Sanitizer::get_var('value');
 					break;
 			}
 
@@ -439,18 +439,18 @@ JS;
 		 */
 		public function query()
 		{
-			$length = phpgw::get_var('length', 'int');
+			$length = Sanitizer::get_var('length', 'int');
 			$user_rows_per_page = $length > 0 ? $length : $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
 			$num_of_objects = $length == -1 ? 0 : $user_rows_per_page;
 
 
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 			
-			$responsibility_id = phpgw::get_var('responsibility_id');
+			$responsibility_id = Sanitizer::get_var('responsibility_id');
 
-			$start_index = phpgw::get_var('start', 'int', 'REQUEST', 0);
+			$start_index = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
 			$sort_field = ($columns[$order[0]['column']]['data']) ? $columns[$order[0]['column']]['data'] : 'agresso_id';
 			$sort_ascending = ($order[0]['dir'] == 'desc') ? false : true;
 
@@ -458,14 +458,14 @@ JS;
 			$search_type = '';
 
 			//Retrieve a contract identifier and load corresponding contract
-			$contract_id = phpgw::get_var('contract_id');
+			$contract_id = Sanitizer::get_var('contract_id');
 			if (isset($contract_id))
 			{
 				$contract = rental_socontract::get_instance()->get_single($contract_id);
 			}
 
 			//Retrieve the type of query and perform type specific logic
-			$type = phpgw::get_var('type');
+			$type = Sanitizer::get_var('type');
 			switch ($type)
 			{
 				case 'included_price_items':
@@ -477,7 +477,7 @@ JS;
 					}
 					break;
 				case 'not_included_price_items': // We want to show price items in the source list even after they've been added to a contract
-					$filters = array('price_item_status' => 'active', 'responsibility_id' => phpgw::get_var('responsibility_id'));
+					$filters = array('price_item_status' => 'active', 'responsibility_id' => Sanitizer::get_var('responsibility_id'));
 					$result_objects = rental_soprice_item::get_instance()->get($start_index, $num_of_objects, $sort_field, $sort_ascending, $search_for, $search_type, $filters);
 					$object_count = rental_soprice_item::get_instance()->get_count($search_for, $search_type, $filters);
 					break;
@@ -487,7 +487,7 @@ JS;
 					$object_count = rental_soprice_item::get_instance()->get_count($search_for, $search_type, $filters);
 					break;
 				default:
-					//$filters = array('price_item_status' => 'active','responsibility_id' => phpgw::get_var('responsibility_id'));
+					//$filters = array('price_item_status' => 'active','responsibility_id' => Sanitizer::get_var('responsibility_id'));
 					$filters = $responsibility_id ? array('responsibility_id' => $responsibility_id) : array();
 					$result_objects = rental_soprice_item::get_instance()->get($start_index, $num_of_objects, $sort_field, $sort_ascending, $search_for, $search_type, $filters);
 					$object_count = rental_soprice_item::get_instance()->get_count($search_for, $search_type, $filters);
@@ -505,7 +505,7 @@ JS;
 				}
 			}
 
-			/* $editable = phpgw::get_var('editable') == 'true' ? true : false;
+			/* $editable = Sanitizer::get_var('editable') == 'true' ? true : false;
 
 			  array_walk(
 			  $rows,
@@ -746,8 +746,8 @@ JS;
 				phpgw::no_access();
 			}
 
-			$id = (int)phpgw::get_var('price_item_id');
-			$new_price = str_replace(',', '.', phpgw::get_var('new_price'));
+			$id = (int)Sanitizer::get_var('price_item_id');
+			$new_price = str_replace(',', '.', Sanitizer::get_var('new_price'));
 			$receipt = array();
 
 			if ($new_price != null && is_numeric($new_price))

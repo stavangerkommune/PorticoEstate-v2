@@ -393,17 +393,17 @@
 
 		public function populate()
 		{
-			$this->set_title(phpgw::get_var('title', 'string'));
-			$this->set_description(phpgw::get_var('description', 'html'));
-			$this->set_report_intro(phpgw::get_var('report_intro', 'html'));
-			$this->set_send_notification_subject(phpgw::get_var('send_notification_subject', 'string'));
-			$this->set_send_notification_content(phpgw::get_var('send_notification_content', 'html'));
-			$this->set_responsible_organization(phpgw::get_var('responsible_organization', 'string'));
-			$this->set_responsible_logo(phpgw::get_var('responsible_logo', 'string'));
+			$this->set_title(Sanitizer::get_var('title', 'string'));
+			$this->set_description(Sanitizer::get_var('description', 'html'));
+			$this->set_report_intro(Sanitizer::get_var('report_intro', 'html'));
+			$this->set_send_notification_subject(Sanitizer::get_var('send_notification_subject', 'string'));
+			$this->set_send_notification_content(Sanitizer::get_var('send_notification_content', 'html'));
+			$this->set_responsible_organization(Sanitizer::get_var('responsible_organization', 'string'));
+			$this->set_responsible_logo(Sanitizer::get_var('responsible_logo', 'string'));
 
-			if (phpgw::get_var('start_date', 'string') != '')
+			if (Sanitizer::get_var('start_date', 'string') != '')
 			{
-				$start_date_ts = phpgwapi_datetime::date_to_timestamp(phpgw::get_var('start_date', 'string'));
+				$start_date_ts = phpgwapi_datetime::date_to_timestamp(Sanitizer::get_var('start_date', 'string'));
 				$this->set_start_date($start_date_ts);
 			}
 			else
@@ -411,9 +411,9 @@
 				$this->set_start_date(0);
 			}
 
-			if (phpgw::get_var('end_date', 'string') != '')
+			if (Sanitizer::get_var('end_date', 'string') != '')
 			{
-				$end_date_ts = phpgwapi_datetime::date_to_timestamp(phpgw::get_var('end_date', 'string'));
+				$end_date_ts = phpgwapi_datetime::date_to_timestamp(Sanitizer::get_var('end_date', 'string'));
 				$this->set_end_date($end_date_ts);
 			}
 			else
@@ -421,12 +421,12 @@
 				$this->set_end_date(0);
 			}
 
-			$this->set_repeat_type(phpgw::get_var('repeat_type', 'string'));
-			$this->set_repeat_interval(phpgw::get_var('repeat_interval', 'string'));
-			$this->set_procedure_id(phpgw::get_var('procedure_id', 'int'));
-			$this->set_control_area_id(phpgw::get_var('control_area_id', 'int'));
-			$this->set_responsibility_id(phpgw::get_var('responsibility_id', 'int'));
-			$this->set_ticket_cat_id(phpgw::get_var('ticket_cat_id', 'int'));
+			$this->set_repeat_type(Sanitizer::get_var('repeat_type', 'string'));
+			$this->set_repeat_interval(Sanitizer::get_var('repeat_interval', 'string'));
+			$this->set_procedure_id(Sanitizer::get_var('procedure_id', 'int'));
+			$this->set_control_area_id(Sanitizer::get_var('control_area_id', 'int'));
+			$this->set_responsibility_id(Sanitizer::get_var('responsibility_id', 'int'));
+			$this->set_ticket_cat_id(Sanitizer::get_var('ticket_cat_id', 'int'));
 		}
 
 		public function serialize()

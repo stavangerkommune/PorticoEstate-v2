@@ -69,13 +69,13 @@
 				$this->use_session = true;
 			}
 
-			$this->start	= phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$this->query	= phpgw::get_var('query');
-			$this->sort		= phpgw::get_var('sort');
-			$this->order	= phpgw::get_var('order');
-			$this->filter	= phpgw::get_var('filter', 'int');
-			$this->cat_id	= phpgw::get_var('cat_id', 'int');
-			$this->allrows	= phpgw::get_var('allrows', 'bool');
+			$this->start	= Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$this->query	= Sanitizer::get_var('query');
+			$this->sort		= Sanitizer::get_var('sort');
+			$this->order	= Sanitizer::get_var('order');
+			$this->filter	= Sanitizer::get_var('filter', 'int');
+			$this->cat_id	= Sanitizer::get_var('cat_id', 'int');
+			$this->allrows	= Sanitizer::get_var('allrows', 'bool');
 		}
 
 
@@ -180,10 +180,10 @@
 			switch($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('cat_select'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('cat_select'));
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('cat_filter'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('cat_filter'));
 					break;
 			}
 
@@ -284,7 +284,7 @@
 			if(!$account_info->person_id)
 			{
 				$sfields = rawurlencode(serialize($fields[0]));
-				$contact_link   = $GLOBALS['phpgw']->link('/index.php',
+				$contact_link   = phpgw::link('/index.php',
 					array
 					(
 						'menuaction'	=> 'addressbook.uiaddressbook_persons.add',
@@ -294,7 +294,7 @@
 			}
 			else
 			{
-				$contact_link   = $GLOBALS['phpgw']->link('/index.php',
+				$contact_link   = phpgw::link('/index.php',
 					array
 					(
 						'menuaction'	=> 'addressbook.uiaddressbook_persons.view',

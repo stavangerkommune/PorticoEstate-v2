@@ -18,18 +18,18 @@
 					'index'			=> array
 						(
 						'text' => lang('Configuration'),
-						'url'  => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiconfig.index',
+						'url'  => phpgw::link('/index.php', array('menuaction' => 'admin.uiconfig.index',
 							'appname'	 => 'bookingfrontend'))
 					),
 					'metasettings'	=> array
 						(
 						'text' => lang('Metadata'),
-						'url'  => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uimetasettings.index',
+						'url'  => phpgw::link('/index.php', array('menuaction' => 'booking.uimetasettings.index',
 							'appname'	 => 'booking'))
 					),
 					'multi_domain' => array(
 						'text' => $GLOBALS['phpgw']->translation->translate('multi domain', array(), false, 'booking'),
-						'url'  => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uigeneric.index',
+						'url'  => phpgw::link('/index.php', array('menuaction' => 'booking.uigeneric.index',
 							'type'		 => 'multi_domain')),
 					),
 				);

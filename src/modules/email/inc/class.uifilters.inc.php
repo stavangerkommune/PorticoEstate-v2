@@ -88,7 +88,7 @@
 			}
 			else
 			{
-				$GLOBALS['phpgw']->xslttpl->add_file(array('app_data'));
+				phpgwapi_xslttemplates::getInstance()->add_file(array('app_data'));
 			}
 			
 			$this->tpl->set_file(
@@ -168,23 +168,23 @@
 			if ($this->debug > 2) { echo 'uifilters.filters: $this->bo->obtain_filer_num(): ['.$this->bo->obtain_filer_num().'] ; $this->bo->all_filters DUMP<pre>'; print_r($this->bo->all_filters); echo '</pre>'."\r\n"; }
 			
 			// setup some form vars
-			//$form_edit_filter_action = $GLOBALS['phpgw']->link(
+			//$form_edit_filter_action = phpgw::link(
 			//					'/index.php',
 			//					'menuaction=email.uifilters.filters_edit');
-			$form_edit_filter_action = $GLOBALS['phpgw']->link(
+			$form_edit_filter_action = phpgw::link(
 								'/index.php',
 								array('menuaction'=>'email.bofilters.process_submitted_data'));
 			
-			$form_cancel_action = $GLOBALS['phpgw']->link(
+			$form_cancel_action = phpgw::link(
 								'/index.php',
 								array('menuaction'=>'email.uifilters.filters_list'));
 			
-			$apply_this_filter_url = $GLOBALS['phpgw']->link(
+			$apply_this_filter_url = phpgw::link(
 								'/index.php',array('menuaction'=>'email.bofilters.do_filter',
 								'filter_num'=>$filter_num));
 			$apply_this_filter_href = '<a href="'.$apply_this_filter_url.'">'.lang('<b>*apply*</b> this filter').'</a>';
 			
-			$test_this_filter_url = $GLOBALS['phpgw']->link(
+			$test_this_filter_url = phpgw::link(
 								'/index.php',array('menuaction'=>'email.bofilters.do_filter',
 								'filter_num'=>$filter_num,
 								'filter_test'=>1));
@@ -565,8 +565,8 @@
 				//$data['function_msg'] = lang('Edit Filters');
 				$GLOBALS['phpgw_info']['flags']['email']['app_header'] = lang('E-Mail') . ': ' . lang('Edit Filters');
 				$data['email_page'] = $this->tpl->parse('out','T_filters_out');
-				$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('generic_out' => $data));
-				$GLOBALS['phpgw']->xslttpl->pp();
+				phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('generic_out' => $data));
+				phpgwapi_xslttemplates::getInstance()->pp();
 			}
 			
 			// tell the msg object we are done with it
@@ -668,7 +668,7 @@
 			}
 			else
 			{
-				$GLOBALS['phpgw']->xslttpl->add_file(array('app_data'));
+				phpgwapi_xslttemplates::getInstance()->add_file(array('app_data'));
 			}
 			
 			$this->tpl->set_file(
@@ -740,7 +740,7 @@
 										// Don't move up the first filter (Sam Przyswa)
 					if ($i != 0)
 					{
-						$filters_list[$i]['move_up_url'] = $GLOBALS['phpgw']->link(
+						$filters_list[$i]['move_up_url'] = phpgw::link(
 										'/index.php',array(
 										'menuaction'=>'email.bofilters.move_up',
 										'filter_num'=>$i));
@@ -748,7 +748,7 @@
 					}
 					else
 					{
-						$filters_list[$i]['move_up_url'] = $GLOBALS['phpgw']->link(
+						$filters_list[$i]['move_up_url'] = phpgw::link(
 										'/index.php',array(
 										'menuaction'=>'email.bofilters.move_up',
 										'filter_num'=>$i));
@@ -758,7 +758,7 @@
 					// Don't move down the last filter (Sam Przyswa)
 					if ($i != $loops-1)
 					{
-						$filters_list[$i]['move_down_url'] = $GLOBALS['phpgw']->link(
+						$filters_list[$i]['move_down_url'] = phpgw::link(
 										'/index.php',array(
 										 'menuaction'=>'email.bofilters.move_down',
 										'filter_num'=>$i));
@@ -766,7 +766,7 @@
 					}
 					else
 					{
-						$filters_list[$i]['move_down_url'] = $GLOBALS['phpgw']->link(
+						$filters_list[$i]['move_down_url'] = phpgw::link(
 										'/index.php',array(
 										 'menuaction'=>'email.bofilters.move_down',
 										'filter_num'=>$i));
@@ -774,13 +774,13 @@
 					}
 					// end of changes (Sam Przyswa)
 					
-					$filters_list[$i]['edit_url'] = $GLOBALS['phpgw']->link(
+					$filters_list[$i]['edit_url'] = phpgw::link(
 									'/index.php',array(
 									 'menuaction'=>'email.uifilters.filters_edit',
 									'filter_num'=>$i));
 					$filters_list[$i]['edit_href'] = '<a href="'.$filters_list[$i]['edit_url'].'">'.lang('Edit').'</a>';
 					
-					$filters_list[$i]['delete_url'] = $GLOBALS['phpgw']->link(
+					$filters_list[$i]['delete_url'] = phpgw::link(
 									'/index.php',array(
 									 'menuaction'=>'email.bofilters.delete_filter',
 									'filter_num'=>$i));
@@ -808,26 +808,26 @@
 					$this->tpl->set_var('V_filter_list_row',$V_filter_list_row);
 			}
 
-			$add_new_filter_url = $GLOBALS['phpgw']->link(
+			$add_new_filter_url = phpgw::link(
 									'/index.php',array(
 									 'menuaction'=>'email.uifilters.filters_edit',
 									'filter_num'=>$this->bo->add_new_filter_token));
 			$add_new_filter_href = '<a href="'.$add_new_filter_url.'">'.lang('New Filter').'</a>';
 			$this->tpl->set_var('add_new_filter_href',$add_new_filter_href);
 			
-			$done_url = $GLOBALS['phpgw']->link(
+			$done_url = phpgw::link(
 									'/preferences/index.php');
 			$done_href = '<a href="'.$done_url.'">'.lang('Done').'</a>';
 			$this->tpl->set_var('done_href',$done_href);
 			
 			// TEST AND APPLY LINKS
-			$run_all_filters_url = $GLOBALS['phpgw']->link(
+			$run_all_filters_url = phpgw::link(
 									'/index.php',array(
 									 'menuaction'=>'email.bofilters.do_filter'));
 			$run_all_filters_href = '<a href="'.$run_all_filters_url.'">'.lang('<b>APPLY ALL</b> Filters').'</a>';
 			$this->tpl->set_var('run_all_filters_href',$run_all_filters_href);
 			
-			$test_all_filters_url = $GLOBALS['phpgw']->link(
+			$test_all_filters_url = phpgw::link(
 									'/index.php',array(
 									 'menuaction'=>'email.bofilters.do_filter',
 									 'filter_test'=>1));
@@ -853,9 +853,9 @@
 				//$data['function_msg'] = lang('Filters List');
 				$GLOBALS['phpgw_info']['flags']['email']['app_header'] = lang('E-Mail') . ': ' . lang('Filters List');
 				$data['email_page'] = $this->tpl->parse('out','T_filters_list');
-				//$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('uimessage' => $data));
-				$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('generic_out' => $data));
-				$GLOBALS['phpgw']->xslttpl->pp();
+				//phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('uimessage' => $data));
+				phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('generic_out' => $data));
+				phpgwapi_xslttemplates::getInstance()->pp();
 			}
 				
 			// tell the msg object we are done with it

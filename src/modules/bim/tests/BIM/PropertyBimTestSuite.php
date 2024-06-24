@@ -112,7 +112,7 @@
         phpgw::import_class('bim.uibim');
         phpgw::import_class('bim.bimmodelinformation');
         phpgw::import_class('bim.sobimmodelinformation');
-        $this->db = & $GLOBALS['phpgw']->db;
+        $this->db = Db::getInstance();
 		$this->loadXmlVariables();
 		$this->addDummyModel();
 		$this->addTestTypes();

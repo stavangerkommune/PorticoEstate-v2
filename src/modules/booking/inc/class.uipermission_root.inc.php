@@ -59,7 +59,7 @@
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -200,7 +200,7 @@
 
 		public function delete()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 			$this->bo->delete($id);
 			self::redirect($this->generate_link_params('index'));
 		}

@@ -36,13 +36,13 @@
 				$this->use_session = true;
 			}
 
-			$start	= phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query	= phpgw::get_var('query');
-			$sort	= phpgw::get_var('sort');
-			$order	= phpgw::get_var('order');
-			$filter	= phpgw::get_var('filter', 'int');
-			$cat_id	= phpgw::get_var('cat_id', 'int');
-			$allrows= phpgw::get_var('allrows', 'bool');
+			$start	= Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query	= Sanitizer::get_var('query');
+			$sort	= Sanitizer::get_var('sort');
+			$order	= Sanitizer::get_var('order');
+			$filter	= Sanitizer::get_var('filter', 'int');
+			$cat_id	= Sanitizer::get_var('cat_id', 'int');
+			$allrows= Sanitizer::get_var('allrows', 'bool');
 
 
 			$this->start			= $start ? $start : 0;
@@ -246,10 +246,10 @@
 			switch($format)
 			{
 				case 'select':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('cat_select'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('cat_select'));
 					break;
 				case 'filter':
-					$GLOBALS['phpgw']->xslttpl->add_file(array('cat_filter'));
+					phpgwapi_xslttemplates::getInstance()->add_file(array('cat_filter'));
 					break;
 			}
 

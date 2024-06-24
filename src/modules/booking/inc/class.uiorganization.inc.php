@@ -59,12 +59,12 @@
 
 		public function building_users()
 		{
-			if (!phpgw::get_var('phpgw_return_as') == 'json')
+			if (!Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return;
 			}
 
-			if (($building_id = phpgw::get_var('building_id', 'int', 'REQUEST', null)))
+			if (($building_id = Sanitizer::get_var('building_id', 'int', 'REQUEST', null)))
 			{
 				$organizations = $this->bo->find_building_users($building_id);
 				array_walk($organizations["results"], array($this, "_add_links"), "bookingfrontend.uiorganization.show");
@@ -76,7 +76,7 @@
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -265,7 +265,7 @@
 				{
 					$receipt = $this->bo->add($organization);
 
-					if (phpgw::get_var('phpgw_return_as') == 'json')
+					if (Sanitizer::get_var('phpgw_return_as') == 'json')
 					{
 						return array(
 							'status'	 => 'saved',
@@ -275,7 +275,7 @@
 
 					self::redirect(array('menuaction' => 'booking.uiorganization.show', 'id' => $receipt['id']));
 				}
-				else if (phpgw::get_var('phpgw_return_as') == 'json')
+				else if (Sanitizer::get_var('phpgw_return_as') == 'json')
 				{
 					return array(
 						'status'	 => 'error',
@@ -341,9 +341,9 @@
 
 		public function edit()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
-			$session_org_id = phpgw::get_var('session_org_id');
+			$session_org_id = Sanitizer::get_var('session_org_id');
 
 			if(!$id && $session_org_id)
 			{
@@ -372,7 +372,7 @@
 				{
 					$errors['shortname'] = lang('Lengt of shortname is to long, max 11 characters long');
 				}
-				if ( phpgw::get_var('customer_internal', 'bool') && ((strlen($_POST['customer_number']) != 5) && (strlen($_POST['customer_number']) != 6) && ($_POST['customer_number'] != '')))
+				if ( Sanitizer::get_var('customer_internal', 'bool') && ((strlen($_POST['customer_number']) != 5) && (strlen($_POST['customer_number']) != 6) && ($_POST['customer_number'] != '')))
 				{
 					$errors['customer_number'] = lang('Resourcenumber is wrong, 5 or 6 characters long');
 				}
@@ -438,7 +438,7 @@
 
 		public function show()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));

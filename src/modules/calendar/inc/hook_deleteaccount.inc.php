@@ -11,8 +11,8 @@
   \**************************************************************************/
 	/* $Id$ */
 
-	$account_id = phpgw::get_var('account_id', 'int');
-	$new_owner = phpgw::get_var('new_owner', 'int');
+	$account_id = Sanitizer::get_var('account_id', 'int');
+	$new_owner = Sanitizer::get_var('new_owner', 'int');
 
 	// Delete all records for a user
 	if ( !$new_owner )

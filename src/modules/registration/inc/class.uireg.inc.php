@@ -77,16 +77,16 @@
 				$old_ie = true;
 			}
 
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/templates/pure/css/pure-min.css');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/templates/pure/css/pure-min.css');
 			if ($old_ie)
 			{
-				$GLOBALS['phpgw']->css->add_external_file('phpgwapi/templates/pure/css/grids-responsive-old-ie-min.css');
+				phpgwapi_css::getInstance()->add_external_file('phpgwapi/templates/pure/css/grids-responsive-old-ie-min.css');
 			}
 			else
 			{
-				$GLOBALS['phpgw']->css->add_external_file('phpgwapi/templates/pure/css/grids-responsive-min.css');
+				phpgwapi_css::getInstance()->add_external_file('phpgwapi/templates/pure/css/grids-responsive-min.css');
 			}
-			$GLOBALS['phpgw']->css->add_external_file('registration/templates/base/css/rainbow_baby-blue.css');
+			phpgwapi_css::getInstance()->add_external_file('registration/templates/base/css/rainbow_baby-blue.css');
 //			phpgwapi_jquery::formvalidator_generate(array('date', 'security'));
 
 			$form_header = !empty($this->config['form_header']) ? $this->config['form_header'] : $GLOBALS['phpgw_info']['server']['system_name'];
@@ -94,7 +94,7 @@
 			$GLOBALS['phpgw_info']['server']['no_jscombine'] = true;
 			$this->template->set_var('css', $GLOBALS['phpgw']->common->get_css());
 			$this->template->set_var('javascript', $GLOBALS['phpgw']->common->get_javascript());
-			$this->template->set_var('str_base_url', $GLOBALS['phpgw']->link('/', array('logindomain' => $_REQUEST['logindomain']), true));
+			$this->template->set_var('str_base_url', phpgw::link('/', array('logindomain' => $_REQUEST['logindomain']), true));
 			$this->template->set_var('lang_header', "{$form_header}::{$sub}");
 			$this->template->pfp('out', 'header');
 		}
@@ -131,7 +131,7 @@
 				$this->template->set_var('errors', $GLOBALS['phpgw']->common->error_list($errors));
 			}
 
-			$this->template->set_var('form_action', $GLOBALS['phpgw']->link('/registration/main.php', array(
+			$this->template->set_var('form_action', phpgw::link('/registration/main.php', array(
 					'menuaction'	 => 'registration.boreg.step1', 'logindomain'	 => $_REQUEST['logindomain'])));
 			$this->template->set_var('lang_username', lang('Username'));
 			$this->template->set_var('lang_submit', lang('Submit'));
@@ -207,7 +207,7 @@ HTML;
 		function step2( $errors = array(), $r_reg = array(), $o_reg = array(), $missing_fields = array() )
 		{
 			phpgwapi_jquery::load_widget('core');
-			$GLOBALS['phpgw']->js->validate_file('portico', 'ajax', 'registration');
+			phpgwapi_js::getInstance()->validate_file('portico', 'ajax', 'registration');
 
 			$show_password_prompt	 = True;
 			$select_password		 = $this->bo->check_select_password();
@@ -276,7 +276,7 @@ HTML;
 				$this->template->set_var('errors', $GLOBALS['phpgw']->common->error_list($errors));
 			}
 
-			$this->template->set_var('form_action', $GLOBALS['phpgw']->link('/registration/main.php', array(
+			$this->template->set_var('form_action', phpgw::link('/registration/main.php', array(
 					'menuaction'	 => 'registration.boreg.step2', 'logindomain'	 => $_REQUEST['logindomain'])));
 			$this->template->set_var('lang_password', lang('Password'));
 			$this->template->set_var('lang_reenter_password', lang('Re-enter password'));
@@ -311,7 +311,7 @@ HTML;
 
 			if ($this->config['display_tos'])
 			{
-				$this->template->set_var('tos_link', $GLOBALS['phpgw']->link('/registration/main.php', array(
+				$this->template->set_var('tos_link', phpgw::link('/registration/main.php', array(
 						'menuaction'	 => 'registration.uireg.tos',
 						'logindomain'	 => $_REQUEST['logindomain']
 						), true
@@ -357,7 +357,7 @@ HTML;
 				$input_type = 'text';
 			}
 
-			$this->template->set_var('form_action', $GLOBALS['phpgw']->link('/registration/main.php', array(
+			$this->template->set_var('form_action', phpgw::link('/registration/main.php', array(
 					'menuaction'	 => 'registration.boreg.lostpw1', 'logindomain'	 => $_REQUEST['logindomain'])));
 			$this->template->set_var('input_type', $input_type);
 			$this->template->set_var('lang_explain', lang('After you enter your username, instructions to change your password will be sent to you by e-mail to the address you gave when you registered.'));
@@ -385,7 +385,7 @@ HTML;
 				$this->template->set_var('errors', $GLOBALS['phpgw']->common->error_list($errors));
 			}
 
-			$this->template->set_var('form_action', $GLOBALS['phpgw']->link('/registration/main.php', array(
+			$this->template->set_var('form_action', phpgw::link('/registration/main.php', array(
 					'menuaction'	 => 'registration.boreg.lostpw3', 'logindomain'	 => $_REQUEST['logindomain'])));
 			$this->template->set_var('value_username', $lid);
 			$this->template->set_var('lang_changepassword', lang("Change password for user"));
@@ -588,7 +588,7 @@ HTML;
 
 		function ready_to_activate()
 		{
-			$reg_id = phpgw::get_var('reg_id');
+			$reg_id = Sanitizer::get_var('reg_id');
 
 			if ($this->config['activate_account'] == 'email')
 			{
@@ -601,7 +601,7 @@ HTML;
 			else
 			{
 				/* ($this->config['activate_account'] == 'immediately') */
-				$GLOBALS['phpgw']->redirect_link('/registration/main.php', array('menuaction'	 => 'registration.boreg.step4',
+				phpgw::redirect_link('/registration/main.php', array('menuaction'	 => 'registration.boreg.step4',
 					'reg_id'		 => $reg_id, 'logindomain'	 => $_REQUEST['logindomain']));
 			}
 		}

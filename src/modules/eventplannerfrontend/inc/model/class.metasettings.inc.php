@@ -57,35 +57,35 @@
 		public static function get_fields()
 		{
 			$fields = array(
-				'metatag_author' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'metatag_author' => array('action'=> ACL_ADD | ACL_EDIT,
 					'type' => 'string',
 					'history'	=> false
 					),
-				'metatag_robots' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'metatag_robots' => array('action'=> ACL_ADD | ACL_EDIT,
 					'type' => 'string',
 					'history'	=> false
 					),
-				'metatag_keywords' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'metatag_keywords' => array('action'=> ACL_ADD | ACL_EDIT,
 					'type' => 'string',
 					'history'	=> false
 					),
-				'metatag_description' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'metatag_description' => array('action'=> ACL_ADD | ACL_EDIT,
 					'type' => 'string',
 					'history'	=> false
 					),
-				'frontpage_text' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'frontpage_text' => array('action'=> ACL_ADD | ACL_EDIT,
 					'type' => 'html',
 					'history'	=> false
 					),
-				'application_condition' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'application_condition' => array('action'=> ACL_ADD | ACL_EDIT,
 					'type' => 'html',
 					'history'	=> false
 					),
-				'user_agreement_text_1' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'user_agreement_text_1' => array('action'=> ACL_ADD | ACL_EDIT,
 					'type' => 'html',
 					'history'	=> false
 					),
-				'user_agreement_text_2' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'user_agreement_text_2' => array('action'=> ACL_ADD | ACL_EDIT,
 					'type' => 'html',
 					'history'	=> false
 					)

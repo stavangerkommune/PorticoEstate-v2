@@ -1,7 +1,7 @@
 <?php
 		if(!isset($this->db) || !is_object($this->db))
 		{
-			$this->db		= & $GLOBALS['phpgw']->db;
+			$this->db		= Db::getInstance();
 			$this->like		= & $this->db->like;		
 		}
 

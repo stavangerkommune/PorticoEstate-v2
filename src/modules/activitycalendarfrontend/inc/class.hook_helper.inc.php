@@ -34,7 +34,7 @@
 
 		public function __construct()
 		{
-			$script_path = dirname(phpgw::get_var('SCRIPT_FILENAME', 'string', 'SERVER'));
+			$script_path = dirname(Sanitizer::get_var('SCRIPT_FILENAME', 'string', 'SERVER'));
 
 			if(preg_match('/activitycalendarfrontend/', $script_path))
 			{

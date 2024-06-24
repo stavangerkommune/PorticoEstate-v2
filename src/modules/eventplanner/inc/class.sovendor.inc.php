@@ -98,7 +98,7 @@
 				if($this->currentapp == 'eventplannerfrontend')
 				{
 					$where = $clause ? 'OR' : 'AND';
-					$org_id = phpgw::get_var('org_id','string' , 'SESSION', -1);
+					$org_id = Sanitizer::get_var('org_id','string' , 'SESSION', -1);
 					$clause .= " {$where} eventplanner_vendor.organization_number = '{$org_id}'";
 				}
 

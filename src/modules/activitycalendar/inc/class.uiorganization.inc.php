@@ -39,7 +39,7 @@
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -89,7 +89,7 @@
 
 		public function save()
 		{
-			$id = (int)phpgw::get_var('id');
+			$id = (int)Sanitizer::get_var('id');
 
 			$so_org = activitycalendar_soorganization::get_instance();
 			$so_activity = activitycalendar_soactivity::get_instance();
@@ -104,8 +104,8 @@
 
 			if (isset($_POST['store_organization'])) // The user has pressed the store button
 			{
-				$orgno = phpgw::get_var('orgno');
-				$district = phpgw::get_var('org_district');
+				$orgno = Sanitizer::get_var('orgno');
+				$district = Sanitizer::get_var('org_district');
 				if (isset($district) && is_numeric($district))
 				{
 					//get district name before storing to booking
@@ -115,15 +115,15 @@
 				{
 					$district_name = "";
 				}
-				$homepage = phpgw::get_var('homepage');
-				$email = phpgw::get_var('email');
-				$phone = phpgw::get_var('phone');
-				$address = phpgw::get_var('address');
-				$zip = phpgw::get_var('zip_code');
-				$city = phpgw::get_var('city');
-				//phpgw::get_var('address') . ' ' . phpgw::get_var('number') . ', ' . phpgw::get_var('postaddress');
+				$homepage = Sanitizer::get_var('homepage');
+				$email = Sanitizer::get_var('email');
+				$phone = Sanitizer::get_var('phone');
+				$address = Sanitizer::get_var('address');
+				$zip = Sanitizer::get_var('zip_code');
+				$city = Sanitizer::get_var('city');
+				//Sanitizer::get_var('address') . ' ' . Sanitizer::get_var('number') . ', ' . Sanitizer::get_var('postaddress');
 				//$address_array = explode(",",$address_tmp);
-				$desc = phpgw::get_var('org_description');
+				$desc = Sanitizer::get_var('org_description');
 
 				$org_info = array();
 				$org_info['name'] = $org->get_name(); //new
@@ -144,16 +144,16 @@
 				$org_info['activity_id'] = '';
 				$org_info['district'] = $district_name;
 
-				$contact1_id = phpgw::get_var('contact1_id');
-				$contact2_id = phpgw::get_var('contact2_id');
+				$contact1_id = Sanitizer::get_var('contact1_id');
+				$contact2_id = Sanitizer::get_var('contact2_id');
 
-				$contact1_name = phpgw::get_var('contact1_name');
-				$contact1_phone = phpgw::get_var('contact1_phone');
-				$contact1_email = phpgw::get_var('contact1_email');
+				$contact1_name = Sanitizer::get_var('contact1_name');
+				$contact1_phone = Sanitizer::get_var('contact1_phone');
+				$contact1_email = Sanitizer::get_var('contact1_email');
 
-				$contact2_name = phpgw::get_var('contact2_name');
-				$contact2_phone = phpgw::get_var('contact2_phone');
-				$contact2_email = phpgw::get_var('contact2_email');
+				$contact2_name = Sanitizer::get_var('contact2_name');
+				$contact2_phone = Sanitizer::get_var('contact2_phone');
+				$contact2_email = Sanitizer::get_var('contact2_email');
 
 
 				$new_org_id = $so_org->transfer_organization($org_info);
@@ -190,7 +190,7 @@
 				{
 					phpgwapi_cache::message_set(lang('messages_form_error'), 'error');
 				}
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'activitycalendar.uidashboard.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uidashboard.index'));
 			}
 			if (isset($_POST['reject_organization'])) // The user has pressed the reject button
 			{
@@ -210,19 +210,19 @@
 				{
 					phpgwapi_cache::message_set(lang('messages_form_error'), 'error');
 				}
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'activitycalendar.uidashboard.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uidashboard.index'));
 			}
 			if (isset($_POST['reject_organization_update'])) // The user has pressed the reject button
 			{
 				$reject_org_id = $id;
 				$so_org->reject_organization($reject_org_id);
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'activitycalendar.uidashboard.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uidashboard.index'));
 			}
 			else if (isset($_POST['update_organization'])) // The user has pressed the store button
 			{
-				$original_org_id = phpgw::get_var('original_org_id');
-				$orgno = phpgw::get_var('orgno');
-				$district = phpgw::get_var('org_district');
+				$original_org_id = Sanitizer::get_var('original_org_id');
+				$orgno = Sanitizer::get_var('orgno');
+				$district = Sanitizer::get_var('org_district');
 				if (isset($district) && is_numeric($district))
 				{
 					//get district name before storing to booking
@@ -232,13 +232,13 @@
 				{
 					$district_name = "";
 				}
-				$homepage = phpgw::get_var('homepage');
-				$email = phpgw::get_var('email');
-				$phone = phpgw::get_var('phone');
-				$address = phpgw::get_var('address');
-				$zip = phpgw::get_var('zip_code');
-				$city = phpgw::get_var('city');
-				$desc = phpgw::get_var('org_description');
+				$homepage = Sanitizer::get_var('homepage');
+				$email = Sanitizer::get_var('email');
+				$phone = Sanitizer::get_var('phone');
+				$address = Sanitizer::get_var('address');
+				$zip = Sanitizer::get_var('zip_code');
+				$city = Sanitizer::get_var('city');
+				$desc = Sanitizer::get_var('org_description');
 
 				$org_info = array();
 				$org_info['name'] = $org->get_name(); //new
@@ -260,16 +260,16 @@
 				$org_info['district'] = $district_name;
 				$org_info['orgid'] = $original_org_id;
 
-				$contact1_id = phpgw::get_var('contact1_id');
-				$contact2_id = phpgw::get_var('contact2_id');
+				$contact1_id = Sanitizer::get_var('contact1_id');
+				$contact2_id = Sanitizer::get_var('contact2_id');
 
-				$contact1_name = phpgw::get_var('contact1_name');
-				$contact1_phone = phpgw::get_var('contact1_phone');
-				$contact1_email = phpgw::get_var('contact1_email');
+				$contact1_name = Sanitizer::get_var('contact1_name');
+				$contact1_phone = Sanitizer::get_var('contact1_phone');
+				$contact1_email = Sanitizer::get_var('contact1_email');
 
-				$contact2_name = phpgw::get_var('contact2_name');
-				$contact2_phone = phpgw::get_var('contact2_phone');
-				$contact2_email = phpgw::get_var('contact2_email');
+				$contact2_name = Sanitizer::get_var('contact2_name');
+				$contact2_phone = Sanitizer::get_var('contact2_phone');
+				$contact2_email = Sanitizer::get_var('contact2_email');
 
 
 				$so_org->update_organization($org_info);
@@ -297,7 +297,7 @@
 				$org->set_transferred(true);
 				$so_org->update_local($org);
 
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'activitycalendar.uidashboard.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uidashboard.index'));
 			}
 		}
 
@@ -305,7 +305,7 @@
 		{
 			self::set_active_menu('activitycalendar::organizationList::changed_organizations');
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -376,7 +376,7 @@
 		public function edit()
 		{
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('edit');
-			$id = (int)phpgw::get_var('id');
+			$id = (int)Sanitizer::get_var('id');
 
 			$so_org = activitycalendar_soorganization::get_instance();
 			$so_activity = activitycalendar_soactivity::get_instance();
@@ -415,8 +415,8 @@
 			$data = array
 				(
 				'tabs' => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
-				'form_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'activitycalendar.uiorganization.save')),
-				'cancel_url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'activitycalendar.uiorganization.changed_organizations')),
+				'form_action' => phpgw::link('/index.php', array('menuaction' => 'activitycalendar.uiorganization.save')),
+				'cancel_url' => phpgw::link('/index.php', array('menuaction' => 'activitycalendar.uiorganization.changed_organizations')),
 				'lang_update_org' => lang('update_org'),
 				'lang_reject' => lang('reject'),
 				'lang_store' => lang('store'),
@@ -452,7 +452,7 @@
 		{
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('view');
 
-			$id = (int)phpgw::get_var('id');
+			$id = (int)Sanitizer::get_var('id');
 
 			$so_org = activitycalendar_soorganization::get_instance();
 			$so_contact = activitycalendar_socontactperson::get_instance();
@@ -495,8 +495,8 @@
 			$data = array
 				(
 				'tabs' => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
-				'cancel_url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'activitycalendar.uiorganization.changed_organizations')),
-				'edit_url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'activitycalendar.uiorganization.edit',
+				'cancel_url' => phpgw::link('/index.php', array('menuaction' => 'activitycalendar.uiorganization.changed_organizations')),
+				'edit_url' => phpgw::link('/index.php', array('menuaction' => 'activitycalendar.uiorganization.edit',
 					'id' => $id)),
 				'lang_edit' => lang('edit'),
 				'lang_cancel' => lang('cancel'),
@@ -532,34 +532,34 @@
 		 */
 		public function query()
 		{
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
-			$start_index = phpgw::get_var('start', 'int', 'REQUEST', 0);
+			$start_index = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
 			$sort_field = ($columns[$order[0]['column']]['data']) ? $columns[$order[0]['column']]['data'] : 'identifier';
 			$sort_ascending = ($order[0]['dir'] == 'desc') ? false : true;
 			// Form variables
 			$search_for = (string)$search['value'];
-			$search_type = phpgw::get_var('search_option', 'string', 'REQUEST', '');
+			$search_type = Sanitizer::get_var('search_option', 'string', 'REQUEST', '');
 
 			// Create an empty result set
 			$result_objects = array();
 			$result_count = 0;
 
-			$length = phpgw::get_var('length', 'int');
+			$length = Sanitizer::get_var('length', 'int');
 			$user_rows_per_page = $length > 0 ? $length : $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
 			$num_of_objects = $length == -1 ? null : $user_rows_per_page;
 
-			$export = phpgw::get_var('export', 'bool');
+			$export = Sanitizer::get_var('export', 'bool');
 			if ($export)
 			{
 				$num_of_objects = null;
 			}
 
 			//Retrieve the type of query and perform type specific logic
-			$type = phpgw::get_var('type');
+			$type = Sanitizer::get_var('type');
 			$changed_org = false;
 			$changed_group = false;
 			switch ($type)
@@ -582,7 +582,7 @@
 					$changed_group = true;
 					break;
 				default: // ... get all parties of a given type
-					//$filters = array('party_type' => phpgw::get_var('party_type'), 'active' => phpgw::get_var('active'));
+					//$filters = array('party_type' => Sanitizer::get_var('party_type'), 'active' => Sanitizer::get_var('active'));
 					$filters = array();
 					break;
 			}
@@ -650,8 +650,8 @@
 			$GLOBALS['phpgw_info']['flags']['nofooter'] = true;
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = false;
 
-			$org_id = phpgw::get_var('orgid');
-			$group_id = phpgw::get_var('groupid');
+			$org_id = Sanitizer::get_var('orgid');
+			$group_id = Sanitizer::get_var('groupid');
 			$returnHTML = "<option value='0'>Ingen gruppe valgt</option>";
 			if ($org_id)
 			{
@@ -691,7 +691,7 @@
 		  {
 		  $GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('view');
 		  // Get the contract part id
-		  $party_id = (int)phpgw::get_var('id');
+		  $party_id = (int)Sanitizer::get_var('id');
 		  if(isset($party_id) && $party_id > 0)
 		  {
 		  $party = rental_soparty::get_instance()->get_single($party_id);
@@ -702,7 +702,7 @@
 		  return;
 		  }
 
-		  if(isset($party) && $party->has_permission(PHPGW_ACL_READ))
+		  if(isset($party) && $party->has_permission(ACL_READ))
 		  {
 		  return $this->render(
 		  'party.php', array(

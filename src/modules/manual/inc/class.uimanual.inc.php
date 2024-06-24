@@ -39,7 +39,7 @@
 		function index()
 		{
 //			$GLOBALS['phpgw_info']['flags']['xslt_app'] = True;
-			$this->currentapp = phpgw::get_var('app');
+			$this->currentapp = Sanitizer::get_var('app');
 
 			if (!$this->currentapp || $this->currentapp == 'manual')
 			{
@@ -61,7 +61,7 @@
 			$GLOBALS['phpgw_info']['flags']['app_header'] = $appname . ' - ' . $appname;
 
 			$GLOBALS['phpgw']->common->phpgw_header(true);
-//			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('help' => $GLOBALS['phpgw']->help->output));
+//			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('help' => $GLOBALS['phpgw']->help->output));
 		}
 
 		
@@ -69,7 +69,7 @@
 		{
 			$app = $GLOBALS['phpgw_info']['flags']['currentapp'];
 			$section = isset($GLOBALS['phpgw_info']['apps']['manual']['section']) ? $GLOBALS['phpgw_info']['apps']['manual']['section'] : '';
-			$referer = phpgw::get_var('menuaction');
+			$referer = Sanitizer::get_var('menuaction');
 
 			if (!$section)
 			{
@@ -120,13 +120,13 @@
 		{
 			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
 			$GLOBALS['phpgw_info']['flags']['no_reset_fonts'] = true;
-			$app = phpgw::get_var('app', 'string', 'GET');
-			$section = phpgw::get_var('section', 'string', 'GET');
+			$app = Sanitizer::get_var('app', 'string', 'GET');
+			$section = Sanitizer::get_var('section', 'string', 'GET');
 
 
 			if (!$section)
 			{
-				$menuaction = phpgw::get_var('referer');
+				$menuaction = Sanitizer::get_var('referer');
 				if ($menuaction)
 				{
 					list($app_from_referer, $class, $method) = explode('.', $menuaction);
@@ -145,7 +145,7 @@
 
 			$section = $section ? $section : 'overview';
 			$lang = strtoupper(isset($GLOBALS['phpgw_info']['user']['preferences']['common']['lang']) && $GLOBALS['phpgw_info']['user']['preferences']['common']['lang'] ? $GLOBALS['phpgw_info']['user']['preferences']['common']['lang'] : 'en');
-			$navbar = phpgw::get_var('navbar', 'string', 'GET');
+			$navbar = Sanitizer::get_var('navbar', 'string', 'GET');
 
 			$pdffile = PHPGW_SERVER_ROOT . "/{$app}/help/{$lang}/{$section}.pdf";
 
@@ -245,9 +245,9 @@ HTML;
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = false;
 			$GLOBALS['phpgw_info']['flags']['nofooter'] = True;
 
-			$appname = phpgw::get_var('appname');
-			$location = phpgw::get_var('location');
-			$id = phpgw::get_var('id', 'int');
+			$appname = Sanitizer::get_var('appname');
+			$location = Sanitizer::get_var('location');
+			$id = Sanitizer::get_var('id', 'int');
 
 			$attrib_data = $GLOBALS['phpgw']->custom_fields->get($appname, $location, $id);
 

@@ -19,4 +19,4 @@
 	 */
 	include('../header.inc.php');
 
-	$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'manual.uimanual.index'));
+	phpgw::redirect_link('/index.php', array('menuaction' => 'manual.uimanual.index'));

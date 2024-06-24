@@ -34,7 +34,7 @@
 		{
 			$building_filter = array(-1);
 			$filter_top_level = $filter_top_level ? $filter_top_level : array(-1);
-			$_filter_search_type = explode(',', phpgw::get_var('filter_search_type', 'string'));
+			$_filter_search_type = explode(',', Sanitizer::get_var('filter_search_type', 'string'));
 			$types = array();
 			foreach ($_filter_search_type as $key => $value)
 			{
@@ -49,7 +49,7 @@
 				$types = array('building', 'resource', 'organization');//default
 			}
 
-			if ($type = phpgw::get_var('type', 'string', 'REQUEST', null))
+			if ($type = Sanitizer::get_var('type', 'string', 'REQUEST', null))
 			{
 				$types[] = $type;
 			}
@@ -94,10 +94,10 @@
 				{
 					$building_filter[] = $bui['id'];
 					$bui['type'] = "building";
-					$bui['link'] = $GLOBALS['phpgw']->link('/bookingfrontend/', array('menuaction' => 'bookingfrontend.uibuilding.show',
+					$bui['link'] = phpgw::link('/bookingfrontend/', array('menuaction' => 'bookingfrontend.uibuilding.show',
 						'id' => $bui['id']));
 					$bui['img_container'] = "building-" . $bui['id'];
-					$bui['img_url'] = $GLOBALS['phpgw']->link('/bookingfrontend/', array('menuaction' => 'bookingfrontend.uidocument_building.index_images',
+					$bui['img_url'] = phpgw::link('/bookingfrontend/', array('menuaction' => 'bookingfrontend.uidocument_building.index_images',
 						'filter_owner_id' => $bui['id'], 'phpgw_return_as' => 'json', 'results' => '1'));
 					if (trim($bui['homepage']) != '' && !preg_match("/^http|https:\/\//", trim($bui['homepage'])))
 					{
@@ -116,7 +116,7 @@
 				{
 					$org['type'] = "organization";
 					$org['description'] = nl2br(strip_tags($org['description']));
-					$org['link'] = $GLOBALS['phpgw']->link('/bookingfrontend/', array('menuaction' => 'bookingfrontend.uiorganization.show',
+					$org['link'] = phpgw::link('/bookingfrontend/', array('menuaction' => 'bookingfrontend.uiorganization.show',
 						'id' => $org['id']));
 					if (trim($org['homepage']) != '' && !preg_match("/^http|https:\/\//", trim($org['homepage'])))
 					{
@@ -198,10 +198,10 @@
 
 					$res['name'] = $res['building_name'] . ' / ' . $res['name'];
 					$res['type'] = "resource";
-					$res['link'] = $GLOBALS['phpgw']->link('/bookingfrontend/', array('menuaction' => 'bookingfrontend.uiresource.show',
+					$res['link'] = phpgw::link('/bookingfrontend/', array('menuaction' => 'bookingfrontend.uiresource.show',
 						'id' => $res['id']));
 					$res['img_container'] = "resource-" . $res['id'];
-					$res['img_url'] = $GLOBALS['phpgw']->link('/bookingfrontend/', array('menuaction' => 'bookingfrontend.uidocument_resource.index_images',
+					$res['img_url'] = phpgw::link('/bookingfrontend/', array('menuaction' => 'bookingfrontend.uidocument_resource.index_images',
 						'filter_owner_id' => $res['id'], 'phpgw_return_as' => 'json', 'results' => '1'));
 
 					$_check_duplicate[$res['id']] = true;
@@ -254,7 +254,7 @@
 					$event['type'] = "Event";
 					$date = date('Y-m-d', strtotime($event['from_']));
 		//			$event_res = $this->soresource->read(array('filters' => array('id' => $event['resources'][0])));
-					$event['link'] = $GLOBALS['phpgw']->link('/bookingfrontend/', array('menuaction' => 'bookingfrontend.uibuilding.schedule',
+					$event['link'] = phpgw::link('/bookingfrontend/', array('menuaction' => 'bookingfrontend.uibuilding.schedule',
 						'id' => $event['building_id'], 'date' => $date));
 				}
 			}
@@ -1028,7 +1028,7 @@
 					ORDER BY names asc";
 
 			$results = array();
-			$db = & $GLOBALS['phpgw']->db;
+			$db = Db::getInstance();
 			$db->query($sql, __LINE__, __FILE__);
 			$i = 0;
 			while ($db->next_record())
@@ -1060,7 +1060,7 @@
 					ORDER BY names asc";
 
 			$results = array();
-			$db = & $GLOBALS['phpgw']->db;
+			$db = Db::getInstance();
 			$db->query($sql, __LINE__, __FILE__);
 			$i = 0;
 			while ($db->next_record())

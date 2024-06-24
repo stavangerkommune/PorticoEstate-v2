@@ -72,7 +72,7 @@
 
 			$fields = array(
 				'id' => array(
-					'action'=> PHPGW_ACL_READ,
+					'action'=> ACL_READ,
 					'type' => 'int',
 					'label' => 'id',
 					'sortable'=> true,
@@ -80,25 +80,25 @@
 					'public'	=> true
 					),
 				'name' => array(
-					'action'=>  PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+					'action'=>  ACL_READ | ACL_ADD | ACL_EDIT,
 					'type' => 'string',
 					'required' => true,
 					'label' => 'name',
 					'query'	 => true,
 					),
 				'active' => array(
-					'action'=>   PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+					'action'=>   ACL_READ | ACL_ADD | ACL_EDIT,
 					'type' => 'int'
 					),
 				'description' => array(
-					'action'=>  PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+					'action'=>  ACL_READ | ACL_ADD | ACL_EDIT,
 					'type' => 'html',
 					'required' => true,
 					'label' => 'description',
 					'query'	 => true,
 					),
 				'owner_id' => array(
-					'action'=> PHPGW_ACL_ADD,
+					'action'=> ACL_ADD,
 					'type' => 'int',
 					'required' => false
 					),
@@ -108,7 +108,7 @@
 			if($currentapp == 'booking')
 			{
 				$backend_fields = array(
-					'active' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+					'active' => array('action'=> ACL_ADD | ACL_EDIT,
 						'type' => 'int',
 						'history'	=> false
 						)

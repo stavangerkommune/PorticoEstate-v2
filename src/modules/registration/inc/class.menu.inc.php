@@ -37,7 +37,7 @@
 			(
 				'registration' => array
 				(
-					'url'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'registration.uipending.index')),
+					'url'	 => phpgw::link('/index.php', array('menuaction' => 'registration.uipending.index')),
 					'text'	 => lang('registration'),
 					'image'	 => array('admin', 'navbar'),
 					'order'	 => -4,
@@ -53,13 +53,13 @@
 					'index'	 => array
 					(
 						'text'	 => lang('Configuration'),
-						'url'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiconfig.index',
+						'url'	 => phpgw::link('/index.php', array('menuaction' => 'admin.uiconfig.index',
 							'appname'	 => 'registration'))
 					),
 					'fields' => array
 						(
 						'text'	 => $GLOBALS['phpgw']->translation->translate('Manage Fields', array(), true),
-						'url'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'registration.uimanagefields.admin'))
+						'url'	 => phpgw::link('/index.php', array('menuaction' => 'registration.uimanagefields.admin'))
 					)
 				);
 			}
@@ -68,7 +68,7 @@
 //			$menus['navigation'] = array();
 			$menus['navigation']['pending'] = array
 			(
-				'url'	 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'registration.uipending.index')),
+				'url'	 => phpgw::link('/index.php', array('menuaction' => 'registration.uipending.index')),
 				'text'	 => lang('Pending for approval'),
 				'image'	 => array('property', 'location'),
 			);

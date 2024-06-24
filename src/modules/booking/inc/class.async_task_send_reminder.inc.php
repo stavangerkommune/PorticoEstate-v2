@@ -16,7 +16,7 @@
 		public function __construct()
 		{
 			parent::__construct();
-			$this->db = & $GLOBALS['phpgw']->db;
+			$this->db = Db::getInstance();
 
 			$this->booking_bo = CreateObject('booking.bobooking');
 			$this->building_bo = CreateObject('booking.bobuilding');

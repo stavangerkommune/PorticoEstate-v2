@@ -90,22 +90,22 @@
 		public static function get_fields( $debug = true )
 		{
 			$fields = array(
-				'id' => array('action' => PHPGW_ACL_READ,
+				'id' => array('action' => ACL_READ,
 					'type' => 'int',
 					'label' => 'id',
 					'sortable' => true,
 					'formatter' => 'JqueryPortico.formatLink',
 					'public' => true
 				),
-				'calendar_id' => array('action' => PHPGW_ACL_ADD,
+				'calendar_id' => array('action' => ACL_ADD,
 					'type' => 'int',
 					'required' => false
 				),
-				'owner_id' => array('action' => PHPGW_ACL_ADD,
+				'owner_id' => array('action' => ACL_ADD,
 					'type' => 'int',
 					'required' => false
 				),
-				'from_' => array('action' => PHPGW_ACL_READ,
+				'from_' => array('action' => ACL_READ,
 					'type' => 'string',
 					'query' => false,
 					'label' => 'from',
@@ -117,7 +117,7 @@
 						'column' => 'from_'
 					)
 				),
-				'to_' => array('action' => PHPGW_ACL_READ,
+				'to_' => array('action' => ACL_READ,
 					'type' => 'string',
 					'query' => false,
 					'label' => 'to',
@@ -129,7 +129,7 @@
 						'column' => 'to_'
 					)
 				),/*
-				'active' => array('action' => PHPGW_ACL_READ,
+				'active' => array('action' => ACL_READ,
 					'type' => 'string',
 					'query' => false,
 					'label' => 'active',
@@ -141,11 +141,11 @@
 						'column' => 'active'
 					)
 				),*/
-				'completed' => array('action' => PHPGW_ACL_EDIT,
+				'completed' => array('action' => ACL_EDIT,
 					'type' => 'int',
 					'history' => true
 				),
-				'vendor_name' => array('action' => PHPGW_ACL_READ,
+				'vendor_name' => array('action' => ACL_READ,
 					'type' => 'string',
 					'query' => true,
 					'label' => 'vendor',
@@ -157,14 +157,14 @@
 						'column' => 'eventplanner_vendor.name'
 					)
 				),
-				'customer_id' => array('action' => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'customer_id' => array('action' => ACL_ADD | ACL_EDIT,
 					'type' => 'int',
 					'label' => 'customer',
 					'sortable' => true,
 					'history' => true,
 					'public' => true
 				),
-				'customer_name' => array('action' => PHPGW_ACL_READ,
+				'customer_name' => array('action' => ACL_READ,
 					'type' => 'string',
 					'query' => true,
 					'label' => 'customer',
@@ -177,7 +177,7 @@
 					)
 				),
 				'customer_contact_name' => array(
-					'action' => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+					'action' => ACL_ADD | ACL_EDIT,
 					'type' => 'string',
 					'required' => false,
 					'query' => true,
@@ -185,7 +185,7 @@
 					'history' => true,
 				),
 				'customer_contact_email' => array(
-					'action' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+					'action' => ACL_READ | ACL_ADD | ACL_EDIT,
 					'type' => 'string',
 					'required' => false,
 					'query' => true,
@@ -194,7 +194,7 @@
 					'history' => true,
 				),
 				'customer_contact_phone' => array(
-					'action' => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+					'action' => ACL_ADD | ACL_EDIT,
 					'type' => 'string',
 					'required' => false,
 					'query' => true,
@@ -202,7 +202,7 @@
 					'history' => true,
 				),
 				'location' => array(
-					'action' => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+					'action' => ACL_ADD | ACL_EDIT,
 					'type' => 'string',
 					'required' => false,
 					'query' => true,
@@ -211,7 +211,7 @@
 					'public' => true
 				),
 				'comments' => array(
-					'action' => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+					'action' => ACL_ADD | ACL_EDIT,
 					'type' => 'string',
 					'manytomany' => array(
 						'input_field' => 'comment_input',
@@ -221,16 +221,16 @@
 						'order' => array('sort' => 'time', 'dir' => 'ASC')
 					)),
 				'comment' => array(
-					'action' => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+					'action' => ACL_ADD | ACL_EDIT,
 					'type' => 'string',
 					'related' => true,
 				),
-				'created' => array('action' => PHPGW_ACL_READ,
+				'created' => array('action' => ACL_READ,
 					'type' => 'date',
 					'label' => 'created',
 					'sortable' => true,
 				),
-				'secret' => array('action' => PHPGW_ACL_ADD,
+				'secret' => array('action' => ACL_ADD,
 					'type' => 'string',
 					'label' => 'secret',
 					'sortable' => false,

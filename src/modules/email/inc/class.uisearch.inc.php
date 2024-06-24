@@ -101,7 +101,7 @@
 			
 			
 			# Set form action
-			$t->set_var("form_action", $GLOBALS['phpgw']->link('/index.php',
+			$t->set_var("form_action", phpgw::link('/index.php',
 				array
 				(
 					'menuaction' => 'email.uisearch.search',
@@ -318,7 +318,7 @@
 			$jst->pparse('output', 'search_js');
 
 			# have to loop for selected folders
-			$ext_folder_list = phpgw::get_var('folder_list', 'array', 'POST', array());
+			$ext_folder_list = Sanitizer::get_var('folder_list', 'array', 'POST', array());
 			for ($j=0;$j<count($ext_folder_list);$j++) 
 			{
 				$search_vars = array ();
@@ -330,13 +330,13 @@
 				$search_vars['fldball']['acctnum'] = $GLOBALS['phpgw']->msg->get_acctnum();
 
 				# Get and process the textbox values
-				$search_vars['str']['SUBJECT'] = trim(phpgw::get_var('search_subject'));
-				$search_vars['str']['BODY'] = trim(phpgw::get_var('search_body'));
-				$search_vars['str']['FROM'] = trim(phpgw::get_var('search_from'));
-				$search_vars['str']['TO'] = trim(phpgw::get_var('search_to'));
-				$search_vars['str']['CC'] = trim(phpgw::get_var('search_cc'));
-				$search_vars['str']['BCC'] = trim(phpgw::get_var('search_bcc'));
-				$search_vars['str']['KEYWORD'] = trim(phpgw::get_var('search_keyword'));
+				$search_vars['str']['SUBJECT'] = trim(Sanitizer::get_var('search_subject'));
+				$search_vars['str']['BODY'] = trim(Sanitizer::get_var('search_body'));
+				$search_vars['str']['FROM'] = trim(Sanitizer::get_var('search_from'));
+				$search_vars['str']['TO'] = trim(Sanitizer::get_var('search_to'));
+				$search_vars['str']['CC'] = trim(Sanitizer::get_var('search_cc'));
+				$search_vars['str']['BCC'] = trim(Sanitizer::get_var('search_bcc'));
+				$search_vars['str']['KEYWORD'] = trim(Sanitizer::get_var('search_keyword'));
 				//while (list($name, $value) = each($search_vars['str']))
 				foreach($search_vars['str'] as $name => $value)
 				{
@@ -353,7 +353,7 @@
 				{
 					foreach($this->flags_array as $name => $value)
 					{
-						if (phpgw::get_var($name) == "on")
+						if (Sanitizer::get_var($name) == "on")
 						{
 							$temp = explode('_', $name);
 							$imap_search_str .= strtoupper($temp[1]).' ';
@@ -363,25 +363,25 @@
 				//($this->flags_array);
 		
 				# Process dates
-				if (phpgw::get_var('date_on') == "on")
+				if (Sanitizer::get_var('date_on') == "on")
 				{
-					$imap_search_str .= "ON \"".phpgw::get_var('date_on_month').'/';
-					$imap_search_str .= phpgw::get_var('date_on_day').'/';
-					$imap_search_str .= phpgw::get_var('date_on_year');
+					$imap_search_str .= "ON \"".Sanitizer::get_var('date_on_month').'/';
+					$imap_search_str .= Sanitizer::get_var('date_on_day').'/';
+					$imap_search_str .= Sanitizer::get_var('date_on_year');
 					$imap_search_str .= '" ';
 				}
-				if (phpgw::get_var('date_before') == "on")
+				if (Sanitizer::get_var('date_before') == "on")
 				{
-					$imap_search_str .= "BEFORE \"".phpgw::get_var('date_before_month').'/';
-					$imap_search_str .= phpgw::get_var('date_before_day').'/';
-					$imap_search_str .= phpgw::get_var('date_before_year');
+					$imap_search_str .= "BEFORE \"".Sanitizer::get_var('date_before_month').'/';
+					$imap_search_str .= Sanitizer::get_var('date_before_day').'/';
+					$imap_search_str .= Sanitizer::get_var('date_before_year');
 					$imap_search_str .= '" ';
 				}
-				if (phpgw::get_var('date_after') == "on")
+				if (Sanitizer::get_var('date_after') == "on")
 				{
-					$imap_search_str .= "SINCE \"".phpgw::get_var('date_after_month').'/';
-					$imap_search_str .= phpgw::get_var('date_after_day').'/';
-					$imap_search_str .= phpgw::get_var('date_after_year');
+					$imap_search_str .= "SINCE \"".Sanitizer::get_var('date_after_month').'/';
+					$imap_search_str .= Sanitizer::get_var('date_after_day').'/';
+					$imap_search_str .= Sanitizer::get_var('date_after_year');
 					$imap_search_str .= '" ';
 				}
 		
@@ -415,7 +415,7 @@
 				$t->set_var('form_name', 'delmov_'.$search_vars['fldball']['folder']);	
 
 				# set form action
-				$t->set_var('delmov_action', $GLOBALS['phpgw']->link('/index.php', array('menuaction'=>'email.boaction.delmov')));
+				$t->set_var('delmov_action', phpgw::link('/index.php', array('menuaction'=>'email.boaction.delmov')));
 				$t->set_var("folder", $search_vars['fldball']['folder']);
 
 	
@@ -434,7 +434,7 @@
 					$t->set_var('checkbox_val', 'msgball[msgnum]='.$search_results[$i].'&msgball[folder]='.urlencode($GLOBALS['phpgw']->msg->get_folder_long($search_vars['fldball']['folder'])).'&msgball[acctnum]='.$search_vars['fldball']['acctnum']);
 		
 					$t->set_var("from", $header_info->fromaddress);
-					$msg_link = $GLOBALS['phpgw']->link('/index.php', array('menuaction'=>'email.uimessage.message','msgball[msgnum]'=>$search_results[$i],'msgball[folder]'=>$search_vars['fldball']['folder'],'msgball[acctnum]'=>$search_vars['fldball']['acctnum']));
+					$msg_link = phpgw::link('/index.php', array('menuaction'=>'email.uimessage.message','msgball[msgnum]'=>$search_results[$i],'msgball[folder]'=>$search_vars['fldball']['folder'],'msgball[acctnum]'=>$search_vars['fldball']['acctnum']));
 					$t->set_var("msg_link", $msg_link);
 					$t->set_var("subject", $header_info->subject);
 					$t->set_var("date", strftime("%D", $header_info->udate));

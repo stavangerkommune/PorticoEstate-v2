@@ -46,8 +46,8 @@
 			$this->acl_location = '.controller';
 			$this->account = $GLOBALS['phpgw_info']['user']['account_id'];
 
-			$this->acl = & $GLOBALS['phpgw']->acl;
-			$this->acl_read = $this->acl->check($this->acl_location, PHPGW_ACL_READ, 'frontend');
+			$this->acl = Acl::getInstance();
+			$this->acl_read = $this->acl->check($this->acl_location, ACL_READ, 'frontend');
 
 			phpgwapi_cache::session_set('frontend', 'tab', $this->location_id);
 			parent::__construct();
@@ -169,7 +169,7 @@
 				(
 				'my_name' => 'view',
 				'text' => lang('view'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'frontend.uicontroller.view',
 					'location_id' => $this->location_id,
@@ -219,11 +219,11 @@
 
 			$so = CreateObject('controller.socheck_list');
 			
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
-			$control_id = phpgw::get_var('control_id', 'int');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
+			$control_id = Sanitizer::get_var('control_id', 'int');
 
 			$user_id = $GLOBALS['phpgw_info']['user']['account_id'];
 
@@ -237,12 +237,12 @@
 			}
 			
 			$params = array(
-				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results' => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start' => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results' => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query' => $search['value'],
 				'order' => ($columns[$order[0]['column']]['data'] == 'subject') ? 'entry_date' : $columns[$order[0]['column']]['data'],
 				'sort' => $order[0]['dir'],
-				'allrows' => phpgw::get_var('length', 'int') == -1,
+				'allrows' => Sanitizer::get_var('length', 'int') == -1,
 			);
 
 			if (isset($this->location_code) && $this->location_code != '')
@@ -307,7 +307,7 @@
 		
 		public function view()
 		{
-			$check_list_id = phpgw::get_var('id', 'int');
+			$check_list_id = Sanitizer::get_var('id', 'int');
 			
 			createObject('controller.uicheck_list')->get_report($check_list_id);
 					

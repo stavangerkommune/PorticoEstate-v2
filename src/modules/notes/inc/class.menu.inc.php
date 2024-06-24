@@ -46,7 +46,7 @@
 				'notes' => array
 				(
 					'text'	=> $GLOBALS['phpgw']->translation->translate('notes', array(), true),
-					'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'notes.uinotes.index') ),
+					'url'	=> phpgw::link('/index.php', array('menuaction'=> 'notes.uinotes.index') ),
 					'image'	=> array('notes', 'navbar'),
 					'order'	=> 8,
 					'group'	=> 'office'
@@ -57,7 +57,7 @@
 			(
 				array
 				(
-					'url'   => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'notes.uinotes.edit')),
+					'url'   => phpgw::link('/index.php', array('menuaction' => 'notes.uinotes.edit')),
 					'text'  => $GLOBALS['phpgw']->translation->translate('New', array(), true),
 					'image' => array('notes', 'new')
 				)
@@ -71,7 +71,7 @@
 					array
 					(
 						'text'	=> 'Global Categories',
-						'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uicategories.index', 'appname' => 'notes', 'global_cats' => 'true') )
+						'url'	=> phpgw::link('/index.php', array('menuaction' => 'admin.uicategories.index', 'appname' => 'notes', 'global_cats' => 'true') )
 					)
 				);
 			}
@@ -83,12 +83,12 @@
 					array
 					(
 						'text'	=> 'Grant Access',
-						'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.aclprefs', 'acl_app' => 'notes'))
+						'url'	=> phpgw::link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.aclprefs', 'acl_app' => 'notes'))
 					),
 					array
 					(
 						'text'	=> 'Edit categories',
-						'url'	=> $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'preferences.uicategories.index', 'cats_app' => 'notes', 'cats_level' => true, 'global_cats' => true))
+						'url'	=> phpgw::link('/index.php',array('menuaction'=>'preferences.uicategories.index', 'cats_app' => 'notes', 'cats_level' => true, 'global_cats' => true))
 					)
 				);
 			}
@@ -97,7 +97,7 @@
 			(
 				array
 				(
-					'url'   => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'notes.uinotes.edit')),
+					'url'   => phpgw::link('/index.php', array('menuaction' => 'notes.uinotes.edit')),
 					'text'  => $GLOBALS['phpgw']->translation->translate('New', array(), true),
 					'image' => array('notes', 'new')
 				)

@@ -14,7 +14,7 @@
 	$title = $appname;
 	$file = array
 	(
-		'Site Configuration'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiconfig.index', 'appname' => $appname) )
+		'Site Configuration'	=> phpgw::link('/index.php', array('menuaction' => 'admin.uiconfig.index', 'appname' => $appname) )
 	);
 //Do not modify below this line
 	display_section($appname,$title,$file);

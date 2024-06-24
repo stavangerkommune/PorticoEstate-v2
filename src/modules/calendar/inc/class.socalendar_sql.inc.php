@@ -247,9 +247,9 @@ class calendar_socalendar_ extends calendar_socalendar__
 			$this->add_attribute('uid', "phpgw://{$_SERVER['SERVER_NAME']}/calendar/" . (int) $this->stream->f('cal_id'));
 			$this->set_class( !!$this->stream->f('is_public'));
 			$this->set_category($this->stream->f('category'));
-			$this->set_title($GLOBALS['phpgw']->strip_html($this->stream->f('title', true)));
-			$this->set_description($GLOBALS['phpgw']->strip_html($this->stream->f('description', true)));
-			$this->add_attribute('location',$GLOBALS['phpgw']->strip_html($this->stream->f('location', true)));
+			$this->set_title(phpgw::strip_html($this->stream->f('title', true)));
+			$this->set_description(phpgw::strip_html($this->stream->f('description', true)));
+			$this->add_attribute('location',phpgw::strip_html($this->stream->f('location', true)));
 			$this->add_attribute('reference',intval($this->stream->f('reference')));
 			
 			// This is the preferred method once everything is normalized...

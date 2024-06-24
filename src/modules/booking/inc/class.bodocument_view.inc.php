@@ -18,7 +18,7 @@
 				booking_sodocument::CATEGORY_HMS_DOCUMENT,
 				booking_sodocument::CATEGORY_PRICE_LIST);
 			$where_filter = array();
-			if ($owner_filters = phpgw::get_var('owner', 'string'))
+			if ($owner_filters = Sanitizer::get_var('owner', 'string'))
 			{
 				foreach ($owner_filters as $filter)
 				{

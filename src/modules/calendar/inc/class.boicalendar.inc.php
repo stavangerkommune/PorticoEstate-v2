@@ -3304,7 +3304,7 @@ class calendar_boicalendar
 	{
 		if( ! is_array($_FILES['uploadedfile']) || $_FILES['uploadedfile']['tmp_name'] == '' /*|| $_FILES['uploadedfile']['tmp_name'] = 'none'*/)
 		{
-			$GLOBALS['phpgw']->redirect_link('/index.php',
+			phpgw::redirect_link('/index.php',
 						array(
 							'menuaction'	=> 'calendar.uiicalendar.import',
 							'action'	=> 'GetFile'
@@ -3321,7 +3321,7 @@ class calendar_boicalendar
 		$filename = $uploaddir . $newfilename;
 		if ( !move_uploaded_file($_FILES['uploadedfile']['tmp_name'], $filename) )
 		{
-			$GLOBALS['phpgw']->redirect_link('/index.php',
+			phpgw::redirect_link('/index.php',
 						array(
 							'menuaction'    => 'calendar.uiicalendar.import',
 							'action'    => 'GetFile'
@@ -3350,7 +3350,7 @@ class calendar_boicalendar
 			if($isReturn)
 				return false;
 
-			$GLOBALS['phpgw']->redirect_link('/index.php',
+			phpgw::redirect_link('/index.php',
 						array(
 							'menuaction'	=> 'calendar.uiicalendar.import',
 							'action'	=> 'GetFile'
@@ -3927,7 +3927,7 @@ class calendar_boicalendar
 				return false;
 		}
 
-		$GLOBALS['phpgw']->redirect_link('/index.php',
+		phpgw::redirect_link('/index.php',
 					array(
 						'menuaction'	=> 'calendar.uicalendar.view',
 						'cal_id'	=> $event['id']
@@ -3938,7 +3938,7 @@ class calendar_boicalendar
 	
 	function export($params)
 	{
-		$event_id = phpgw::get_var('cal_id', 'int', 'GET', $params['l_event_id']);
+		$event_id = Sanitizer::get_var('cal_id', 'int', 'GET', $params['l_event_id']);
 		
 		if(isset($params['alarms_only']))
 		{

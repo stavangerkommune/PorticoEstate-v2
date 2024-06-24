@@ -41,7 +41,7 @@
 				'logistic' => array
 					(
 					'text' => lang('logistic'),
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'logistic.uiproject.index')),
+					'url' => phpgw::link('/index.php', array('menuaction' => 'logistic.uiproject.index')),
 					'image' => array('property', 'location'),
 					'order' => 10,
 					'group' => 'office'
@@ -60,7 +60,7 @@
 						$favorites_children["{$type}{$target}"] = array
 							(
 							'text' => $target_name,
-							'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => "logistic.ui{$type}.index",
+							'url' => phpgw::link('/index.php', array('menuaction' => "logistic.ui{$type}.index",
 								'filter' => $target)),
 							'image' => array('property', 'location_tenant')
 						);
@@ -73,25 +73,25 @@
 				'project' => array
 					(
 					'text' => lang('project'),
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'logistic.uiproject.index')),
+					'url' => phpgw::link('/index.php', array('menuaction' => 'logistic.uiproject.index')),
 					'image' => array('property', 'location_tenant'),
 					'children' => array(
 						'activity' => array
 							(
 							'text' => lang('activity'),
-							'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'logistic.uiactivity.index')),
+							'url' => phpgw::link('/index.php', array('menuaction' => 'logistic.uiactivity.index')),
 							'image' => array('property', 'location_tenant')
 						),
 					/* 								'requirement' => array
 					  (
 					  'text'	=> lang('requirement'),
-					  'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'logistic.uirequirement.index') ),
+					  'url'	=> phpgw::link('/index.php', array('menuaction'=> 'logistic.uirequirement.index') ),
 					  'image'	=> array('property', 'location_tenant'),
 					  ),
 					  'allocation' => array
 					  (
 					  'text'	=> lang('allocation'),
-					  'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'logistic.uiallocation.index') ),
+					  'url'	=> phpgw::link('/index.php', array('menuaction'=> 'logistic.uiallocation.index') ),
 					  'image'	=> array('property', 'location_tenant'),
 					  ), */
 					)
@@ -99,7 +99,7 @@
 				'favorites' => array
 					(
 					'text' => lang('favorites'),
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'logistic.uiactivity.index')),
+					'url' => phpgw::link('/index.php', array('menuaction' => 'logistic.uiactivity.index')),
 					'image' => array('property', 'location_tenant'),
 					'children' => $favorites_children
 				)
@@ -112,38 +112,38 @@
 					'index' => array
 						(
 						'text' => lang('Configuration'),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiconfig.index',
+						'url' => phpgw::link('/index.php', array('menuaction' => 'admin.uiconfig.index',
 							'appname' => 'logistic'))
 					),
 					'acl' => array
 						(
 						'text' => lang('Configure Access Permissions'),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.list_acl',
+						'url' => phpgw::link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.list_acl',
 							'acl_app' => 'logistic'))
 					),
 					'project_types' => array
 						(
 						'text' => lang('Project types'),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'logistic.uiproject.project_types'))
+						'url' => phpgw::link('/index.php', array('menuaction' => 'logistic.uiproject.project_types'))
 					),
 					'resource_type_requirement' => array(
 						'text' => lang('resource_type_requirement'),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'logistic.uiresource_type_requirement.index'))
+						'url' => phpgw::link('/index.php', array('menuaction' => 'logistic.uiresource_type_requirement.index'))
 					)
 					/* 					'control_cats'	=> array
 					  (
 					  'text'	=> lang('Control area'),
-					  'url'	=> $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uicategories.index', 'appname' => 'controller', 'location' => '.control', 'global_cats' => 'true', 'menu_selection' => 'admin::controller::control_cats') )
+					  'url'	=> phpgw::link('/index.php', array('menuaction' => 'admin.uicategories.index', 'appname' => 'controller', 'location' => '.control', 'global_cats' => 'true', 'menu_selection' => 'admin::controller::control_cats') )
 					  ),
 					  'role_at_location'	=> array
 					  (
-					  'url'	=>	$GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'property.uilocation.responsiblility_role', 'menu_selection' => 'admin::controller::role_at_location') ),
+					  'url'	=>	phpgw::link('/index.php',array('menuaction'=> 'property.uilocation.responsiblility_role', 'menu_selection' => 'admin::controller::role_at_location') ),
 					  'text'	=>	lang('role at location'),
 					  'image'	=> array('property', 'responsibility_role')
 					  ),
 					  'controller_document_types'	=> array
 					  (
-					  'url'	=>	$GLOBALS['phpgw']->link('/index.php',array('menuaction'=> 'controller.uidocument.document_types', 'menu_selection' => 'admin::controller::controller_document_types') ),
+					  'url'	=>	phpgw::link('/index.php',array('menuaction'=> 'controller.uidocument.document_types', 'menu_selection' => 'admin::controller::controller_document_types') ),
 					  'text'	=>	lang('Document types')
 					  ) */
 				);

@@ -10,7 +10,7 @@
 		public function __construct()
 		{
 			parent::__construct();
-			$this->db = & $GLOBALS['phpgw']->db;
+			$this->db = Db::getInstance();
 		}
 
 		public function get_default_times()

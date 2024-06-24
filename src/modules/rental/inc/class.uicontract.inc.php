@@ -60,8 +60,8 @@
 
 			$this->config = CreateObject('phpgwapi.config', 'rental');
 			$this->config->read();
-			$this->district_id		 = phpgw::get_var('district_id', 'int');
-			$this->part_of_town_id	 = phpgw::get_var('part_of_town_id', 'int');
+			$this->district_id		 = Sanitizer::get_var('district_id', 'int');
+			$this->part_of_town_id	 = Sanitizer::get_var('part_of_town_id', 'int');
 			$this->account_id = $GLOBALS['phpgw_info']['user']['account_id'];
 
 		}
@@ -96,7 +96,7 @@
 					$names = $this->locations->get_name($id);
 					if ($names['appname'] == $GLOBALS['phpgw_info']['flags']['currentapp'])
 					{
-						if ($this->hasPermissionOn($names['location'], PHPGW_ACL_ADD))
+						if ($this->hasPermissionOn($names['location'], ACL_ADD))
 						{
 							$new_contract_options[] = array('id' => $id, 'name' => lang($label));
 						}
@@ -121,7 +121,7 @@
 				array('id' => 'composite_address', 'name' => lang('composite_address')),
 				array('id' => 'location_code', 'name' => lang('object_number'))
 			);
-			$search_type = phpgw::get_var('search_type');
+			$search_type = Sanitizer::get_var('search_type');
 			foreach ($search_option as &$entry)
 			{
 				$entry['selected'] = $entry['id'] == $search_type ? 1 : 0;
@@ -901,17 +901,17 @@
 
 		public function query()
 		{
-			$length = phpgw::get_var('length', 'int');
+			$length = Sanitizer::get_var('length', 'int');
 
 			$user_rows_per_page = $length > 0 ? $length : $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
 
-			$search = phpgw::get_var('search');
-			$query = phpgw::get_var('query');//direct url override
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$query = Sanitizer::get_var('query');//direct url override
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
-			$start_index = phpgw::get_var('start', 'int', 'REQUEST', 0);
+			$start_index = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
 			$num_of_objects = $length == -1 ? 0 : $user_rows_per_page;
 
 			$sort_field = ($columns[$order[0]['column']]['data']) ? $columns[$order[0]['column']]['data'] : 'old_contract_id';
@@ -925,10 +925,10 @@
 			{
 				$search_for = $search['value'] ? $search['value'] : '';
 			}
-			$search_type = phpgw::get_var('search_option', 'string', 'REQUEST', 'all');
+			$search_type = Sanitizer::get_var('search_option', 'string', 'REQUEST', 'all');
 
-			$export = phpgw::get_var('export', 'bool');
-			//$editable		= phpgw::get_var('editable', 'bool');
+			$export = Sanitizer::get_var('export', 'bool');
+			//$editable		= Sanitizer::get_var('editable', 'bool');
 			// Create an empty result set
 			$result_objects = array();
 			$result_count = 0;
@@ -938,21 +938,21 @@
 				$num_of_objects = 0;
 			}
 
-			$price_items_only = phpgw::get_var('price_items'); //should only export contract price items
+			$price_items_only = Sanitizer::get_var('price_items'); //should only export contract price items
 
-			$type = phpgw::get_var('type');
+			$type = Sanitizer::get_var('type');
 			switch ($type)
 			{
 				case 'contracts_for_adjustment':
-					$adjustment_id = (int)phpgw::get_var('id');
+					$adjustment_id = (int)Sanitizer::get_var('id');
 					$adjustment = rental_soadjustment::get_instance()->get_single($adjustment_id);
 					$filters = array('contract_type' => $adjustment->get_responsibility_id(),
 						'adjustment_interval' => $adjustment->get_interval(), 'adjustment_year' => $adjustment->get_year(),
 						'adjustment_is_executed' => $adjustment->is_executed(), 'extra_adjustment' => $adjustment->is_extra_adjustment());
 					break;
 				case 'contracts_part':	// Contracts for this party
-					$filters = array('party_id' => phpgw::get_var('party_id'), 'contract_status' => phpgw::get_var('contract_status'),
-						'contract_type' => phpgw::get_var('contract_type'), 'status_date_hidden' => phpgw::get_var('status_date'));
+					$filters = array('party_id' => Sanitizer::get_var('party_id'), 'contract_status' => Sanitizer::get_var('contract_status'),
+						'contract_type' => Sanitizer::get_var('contract_type'), 'status_date_hidden' => Sanitizer::get_var('status_date'));
 					break;
 				case 'contracts_for_executive_officer':  // Contracts for this executive officer
 					$filters = array('executive_officer' => $this->account_id);
@@ -971,7 +971,7 @@
 						$names = $this->locations->get_name($id);
 						if ($names['appname'] == $GLOBALS['phpgw_info']['flags']['currentapp'])
 						{
-							if ($this->hasPermissionOn($names['location'], PHPGW_ACL_ADD))
+							if ($this->hasPermissionOn($names['location'], ACL_ADD))
 							{
 								$ids[] = $id;
 							}
@@ -1014,12 +1014,12 @@
 
 					break;
 				case 'contracts_for_composite': // ... all contracts this composite is involved in, filters (status and date)
-					$filters = array('composite_id' => phpgw::get_var('composite_id'), 'contract_status' => phpgw::get_var('contract_status'),
-						'contract_type' => phpgw::get_var('contract_type'));
-					$filters['status_date'] = phpgwapi_datetime::date_to_timestamp(phpgw::get_var('status_date'));
+					$filters = array('composite_id' => Sanitizer::get_var('composite_id'), 'contract_status' => Sanitizer::get_var('contract_status'),
+						'contract_type' => Sanitizer::get_var('contract_type'));
+					$filters['status_date'] = phpgwapi_datetime::date_to_timestamp(Sanitizer::get_var('status_date'));
 					break;
 				/* case 'get_contract_warnings':	//get the contract warnings
-				  $contract = rental_socontract::get_instance()->get_single(phpgw::get_var('contract_id'));
+				  $contract = rental_socontract::get_instance()->get_single(Sanitizer::get_var('contract_id'));
 				  $contract->check_consistency();
 				  $rows = $contract->get_consistency_warnings();
 				  $result_count = count($rows);
@@ -1029,14 +1029,14 @@
 				default:
 					phpgwapi_cache::session_set('rental', 'contract_query', $search_for);
 					phpgwapi_cache::session_set('rental', 'contract_search_type', $search_type);
-					phpgwapi_cache::session_set('rental', 'contract_status', phpgw::get_var('contract_status'));
-					phpgwapi_cache::session_set('rental', 'contract_status_date', phpgw::get_var('date_status'));
-					phpgwapi_cache::session_set('rental', 'contract_type', phpgw::get_var('contract_type'));
-					$filters = array('contract_status' => phpgw::get_var('contract_status'),
-						'contract_type' => phpgw::get_var('contract_type'));
-					$filters['status_date'] = phpgwapi_datetime::date_to_timestamp(phpgw::get_var('date_status'));
-					$filters['start_date_report'] = phpgwapi_datetime::date_to_timestamp(phpgw::get_var('filter_start_date_report'));
-					$filters['end_date_report'] = phpgwapi_datetime::date_to_timestamp(phpgw::get_var('filter_end_date_report'));
+					phpgwapi_cache::session_set('rental', 'contract_status', Sanitizer::get_var('contract_status'));
+					phpgwapi_cache::session_set('rental', 'contract_status_date', Sanitizer::get_var('date_status'));
+					phpgwapi_cache::session_set('rental', 'contract_type', Sanitizer::get_var('contract_type'));
+					$filters = array('contract_status' => Sanitizer::get_var('contract_status'),
+						'contract_type' => Sanitizer::get_var('contract_type'));
+					$filters['status_date'] = phpgwapi_datetime::date_to_timestamp(Sanitizer::get_var('date_status'));
+					$filters['start_date_report'] = phpgwapi_datetime::date_to_timestamp(Sanitizer::get_var('filter_start_date_report'));
+					$filters['end_date_report'] = phpgwapi_datetime::date_to_timestamp(Sanitizer::get_var('filter_end_date_report'));
 			}
 
 			$filters['district_id'] = $this->district_id;
@@ -1075,7 +1075,7 @@
 			/* if(!$export){
 
 			  //Check if user has access to Catch module
-			  $access = $this->acl->check('.',PHPGW_ACL_READ,'catch');
+			  $access = $this->acl->check('.',ACL_READ,'catch');
 			  if($access)
 			  {
 			  //$config->read();
@@ -1115,12 +1115,12 @@
 		 */
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
 
-			$editable = phpgw::get_var('editable', 'bool');
+			$editable = Sanitizer::get_var('editable', 'bool');
 
 			$appname = lang('contracts');
 			$type = 'all_contracts';
@@ -1180,7 +1180,7 @@
 //					'new_item' => self::link(array('menuaction' => 'rental.uiemail_out.add')),
 					'allrows' => true,
 					'editor_action' => '',
-					'query' => phpgw::get_var('search_for'),
+					'query' => Sanitizer::get_var('search_for'),
 					'field' => array(
 						array(
 							'key' => 'old_contract_id',
@@ -1285,7 +1285,7 @@
 				(
 				'my_name' => 'view',
 				'text' => lang('view'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uicontract.view'
 				)),
@@ -1297,7 +1297,7 @@
 				(
 				'my_name' => 'edit',
 				'text' => lang('edit'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uicontract.edit'
 				)),
@@ -1324,7 +1324,7 @@
 					(
 					'my_name' => 'make_pdf_' . $pdf_template[0],
 					'text' => lang('make_pdf') . ': ' . $pdf_template[0],
-					'action' => $GLOBALS['phpgw']->link('/index.php', array
+					'action' => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'rental.uimakepdf.view',
 						'pdf_template' => $temlate_counter
@@ -1335,7 +1335,7 @@
 				$temlate_counter++;
 			}
 /*
-			$access = $this->acl->check('.', PHPGW_ACL_READ, 'catch');
+			$access = $this->acl->check('.', ACL_READ, 'catch');
 			if ($access)
 			{
 				$entity_id_in = $this->config->config_data['entity_config_move_in'];
@@ -1349,7 +1349,7 @@
 						(
 						'my_name' => 'show_move_in_reports',
 						'text' => lang('show_move_in_reports'),
-						'action' => $GLOBALS['phpgw']->link('/index.php', array
+						'action' => phpgw::link('/index.php', array
 							(
 							'menuaction' => 'property.uientity.index',
 							'entity_id' => $entity_id_in,
@@ -1367,7 +1367,7 @@
 						(
 						'my_name' => 'show_move_out_reports',
 						'text' => lang('show_move_out_reports'),
-						'action' => $GLOBALS['phpgw']->link('/index.php', array
+						'action' => phpgw::link('/index.php', array
 							(
 							'menuaction' => 'property.uientity.index',
 							'entity_id' => $entity_id_out,
@@ -1407,7 +1407,7 @@
 			var currency_suffix = '$this->currency_suffix';
 			var area_suffix = '$this->area_suffix';
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $code);
+			phpgwapi_js::getInstance()->add_code('', $code);
 
 			self::add_javascript('rental', 'base', 'contract.index.js');
 			phpgwapi_jquery::load_widget('bootstrap-multiselect');
@@ -1417,8 +1417,8 @@ JS;
 
 		public function save()
 		{
-			$contract_id = (int)phpgw::get_var('id');
-			$location_id = (int)phpgw::get_var('location_id');
+			$contract_id = (int)Sanitizer::get_var('id');
+			$location_id = (int)Sanitizer::get_var('location_id');
 			$update_price_items = false;
 
 			$message = null;
@@ -1429,7 +1429,7 @@ JS;
 			{
 				$contract = rental_socontract::get_instance()->get_single($contract_id);
 
-				if (!($contract && $contract->has_permission(PHPGW_ACL_EDIT)))
+				if (!($contract && $contract->has_permission(ACL_EDIT)))
 				{
 					phpgw::no_access($GLOBALS['phpgw_info']['flags']['currentapp'], lang('permission_denied_edit_contract'));
 				}
@@ -1438,9 +1438,9 @@ JS;
 				$responsibility_area = rental_socontract::get_instance()->get_responsibility_title($contract->get_location_id());
 
 				// Redirect with error message if responsibility area is eksternleie and contract type not set
-				if (!is_numeric(phpgw::get_var('contract_type')) && (strcmp($responsibility_area, "contract_type_eksternleie") == 0))
+				if (!is_numeric(Sanitizer::get_var('contract_type')) && (strcmp($responsibility_area, "contract_type_eksternleie") == 0))
 				{
-					//$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit', 'id' => $contract->get_id(), 'message' => $message, 'error' => $error));
+					//phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit', 'id' => $contract->get_id(), 'message' => $message, 'error' => $error));
 					phpgwapi_cache::message_set(lang('billing_removed_external_contract'), 'error');
 					$this->edit();
 				}
@@ -1451,9 +1451,9 @@ JS;
 				$responsibility_area = rental_socontract::get_instance()->get_responsibility_title($location_id);
 
 				// Redirect with error message if responsibility area is eksternleie and contract type not set
-				if (!is_numeric(phpgw::get_var('contract_type')) && (strcmp($responsibility_area, "contract_type_eksternleie") == 0))
+				if (!is_numeric(Sanitizer::get_var('contract_type')) && (strcmp($responsibility_area, "contract_type_eksternleie") == 0))
 				{
-					//$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit', 'location_id' => $location_id, 'message' => $message, 'error' => $error));
+					//phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit', 'location_id' => $location_id, 'message' => $message, 'error' => $error));
 					phpgwapi_cache::message_set(lang('billing_removed_external_contract'), 'error');
 					$this->edit();
 				}
@@ -1468,39 +1468,39 @@ JS;
 				}
 			}
 
-			$date_start = phpgwapi_datetime::date_to_timestamp(phpgw::get_var('date_start'));
-			$date_end = phpgwapi_datetime::date_to_timestamp(phpgw::get_var('date_end'));
+			$date_start = phpgwapi_datetime::date_to_timestamp(Sanitizer::get_var('date_start'));
+			$date_end = phpgwapi_datetime::date_to_timestamp(Sanitizer::get_var('date_end'));
 
 			if (isset($contract))
 			{
 				$contract->set_contract_date(new rental_contract_date($date_start, $date_end));
-				$contract->set_security_type(phpgw::get_var('security_type', 'int'));
-				$contract->set_security_amount(phpgw::get_var('security_amount'));
-				$contract->set_executive_officer_id(phpgw::get_var('executive_officer'));
-				$contract->set_comment(phpgw::get_var('comment'));
+				$contract->set_security_type(Sanitizer::get_var('security_type', 'int'));
+				$contract->set_security_amount(Sanitizer::get_var('security_amount'));
+				$contract->set_executive_officer_id(Sanitizer::get_var('executive_officer'));
+				$contract->set_comment(Sanitizer::get_var('comment'));
 
 				if (isset($location_id) && $location_id > 0)
 				{
 					$contract->set_location_id($location_id); // only present when new contract
 				}
-				$contract->set_term_id(phpgw::get_var('billing_term', 'int'));
-				$contract->set_billing_start_date(phpgwapi_datetime::date_to_timestamp(phpgw::get_var('billing_start_date')));
-				$contract->set_billing_end_date(phpgwapi_datetime::date_to_timestamp(phpgw::get_var('billing_end_date')));
-				$contract->set_service_id(phpgw::get_var('service_id'));
-				$contract->set_responsibility_id(phpgw::get_var('responsibility_id'));
-				$contract->set_reference(phpgw::get_var('reference'));
-				$contract->set_customer_order_id(phpgw::get_var('customer_order_id', 'int'));
-				$contract->set_invoice_header(phpgw::get_var('invoice_header'));
-				$contract->set_account_in(phpgw::get_var('account_in'));
+				$contract->set_term_id(Sanitizer::get_var('billing_term', 'int'));
+				$contract->set_billing_start_date(phpgwapi_datetime::date_to_timestamp(Sanitizer::get_var('billing_start_date')));
+				$contract->set_billing_end_date(phpgwapi_datetime::date_to_timestamp(Sanitizer::get_var('billing_end_date')));
+				$contract->set_service_id(Sanitizer::get_var('service_id'));
+				$contract->set_responsibility_id(Sanitizer::get_var('responsibility_id'));
+				$contract->set_reference(Sanitizer::get_var('reference'));
+				$contract->set_customer_order_id(Sanitizer::get_var('customer_order_id', 'int'));
+				$contract->set_invoice_header(Sanitizer::get_var('invoice_header'));
+				$contract->set_account_in(Sanitizer::get_var('account_in'));
 
-				$contract->set_account_out(phpgw::get_var('account_out'));
+				$contract->set_account_out(Sanitizer::get_var('account_out'));
 
-				$contract->set_project_id(phpgw::get_var('project_id'));
-				$contract->set_due_date(phpgwapi_datetime::date_to_timestamp(phpgw::get_var('due_date')));
-				$contract->set_override_adjustment_start(phpgw::get_var('override_adjustment_start', 'int'));
-				$contract->set_contract_type_id(phpgw::get_var('contract_type'));
+				$contract->set_project_id(Sanitizer::get_var('project_id'));
+				$contract->set_due_date(phpgwapi_datetime::date_to_timestamp(Sanitizer::get_var('due_date')));
+				$contract->set_override_adjustment_start(Sanitizer::get_var('override_adjustment_start', 'int'));
+				$contract->set_contract_type_id(Sanitizer::get_var('contract_type'));
 				$old_rented_area = $contract->get_rented_area();
-				$new_rented_area = phpgw::get_var('rented_area');
+				$new_rented_area = Sanitizer::get_var('rented_area');
 				$new_rented_area = str_replace(',', '.', $new_rented_area);
 				$validated_numeric = false;
 				if (!isset($new_rented_area) || $new_rented_area == '')
@@ -1512,12 +1512,12 @@ JS;
 					$update_price_items = true;
 				}
 				$contract->set_rented_area($new_rented_area);
-				$contract->set_adjustment_interval(phpgw::get_var('adjustment_interval'));
-				$contract->set_adjustment_share(phpgw::get_var('adjustment_share'));
-				$contract->set_adjustable(phpgw::get_var('adjustable') == 'on' ? true : false);
-				$contract->set_publish_comment(phpgw::get_var('publish_comment') == 'on' ? true : false);
-				$contract->set_cancelled(phpgw::get_var('cancelled') == 1 ? time() : false);
-				$contract->set_cancelled_by(phpgw::get_var('cancelled') == 1 ? $this->account_id : false);
+				$contract->set_adjustment_interval(Sanitizer::get_var('adjustment_interval'));
+				$contract->set_adjustment_share(Sanitizer::get_var('adjustment_share'));
+				$contract->set_adjustable(Sanitizer::get_var('adjustable') == 'on' ? true : false);
+				$contract->set_publish_comment(Sanitizer::get_var('publish_comment') == 'on' ? true : false);
+				$contract->set_cancelled(Sanitizer::get_var('cancelled') == 1 ? time() : false);
+				$contract->set_cancelled_by(Sanitizer::get_var('cancelled') == 1 ? $this->account_id : false);
 				$validated_numeric = $contract->validate_numeric();
 
 				if ($validated_numeric)
@@ -1590,12 +1590,12 @@ JS;
 
 		public function get( $id = 0 )
 		{
-			$contract_id =  $id ? (int)$id : (int)phpgw::get_var('id');
+			$contract_id =  $id ? (int)$id : (int)Sanitizer::get_var('id');
 			if (!empty($contract_id))
 			{
 				$contract = rental_socontract::get_instance()->get_single($contract_id);
 
-				if (!($contract && $contract->has_permission(PHPGW_ACL_READ)))
+				if (!($contract && $contract->has_permission(ACL_READ)))
 				{
 					phpgw::no_access($GLOBALS['phpgw_info']['flags']['currentapp'], lang('permission_denied_view_contract'));
 				}
@@ -1633,15 +1633,15 @@ JS;
 		 */
 		public function view()
 		{
-			$contract_id = (int)phpgw::get_var('id');
-			$adjustment_id = (int)phpgw::get_var('adjustment_id');
+			$contract_id = (int)Sanitizer::get_var('id');
+			$adjustment_id = (int)Sanitizer::get_var('adjustment_id');
 			$mode = 'view';
 
 			if (!empty($contract_id))
 			{
 				$contract = rental_socontract::get_instance()->get_single($contract_id);
 
-				if (!($contract && $contract->has_permission(PHPGW_ACL_READ)))
+				if (!($contract && $contract->has_permission(ACL_READ)))
 				{
 					phpgw::no_access($GLOBALS['phpgw_info']['flags']['currentapp'], lang('permission_denied_view_contract'));
 				}
@@ -1651,7 +1651,7 @@ JS;
 			}
 			else
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uicontract.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uicontract.index'));
 			}
 
 			if (!$executive_officer = $contract->get_executive_officer_id())
@@ -1843,12 +1843,12 @@ JS;
 				var currency_suffix = '$this->currency_suffix';
 				var area_suffix = '$this->area_suffix';
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $code);
+			phpgwapi_js::getInstance()->add_code('', $code);
 
 			$data = array
 				(
 				'datatable_def' => $datatable_def,
-				'cancel_url' => $GLOBALS['phpgw']->link('/index.php', $link_cancel),
+				'cancel_url' => phpgw::link('/index.php', $link_cancel),
 				'lang_cancel' => lang($cancel_text),
 				'value_contract_number' => $contract->get_old_contract_id(),
 				'value_parties' => $contract->get_party_name_as_list(),
@@ -1911,7 +1911,7 @@ JS;
 
 		public function get_contract_type_options()
 		{
-			$location_id = (int)phpgw::get_var('location_id');
+			$location_id = (int)Sanitizer::get_var('location_id');
 			$contract_types = rental_socontract::get_instance()->get_contract_types($location_id);
 			$contract_type_options[] = array(
 				'id' => '',
@@ -1933,10 +1933,10 @@ JS;
 
 		public function get_executive_officer_options()
 		{
-			$executive_officer = (int)phpgw::get_var('executive_officer');
-			$location_id = (int)phpgw::get_var('location_id');
+			$executive_officer = (int)Sanitizer::get_var('executive_officer');
+			$location_id = (int)Sanitizer::get_var('location_id');
 			$location_info = $GLOBALS['phpgw']->locations->get_name($location_id);
-			$accounts = $GLOBALS['phpgw']->acl->get_user_list_right(PHPGW_ACL_ADD, $location_info['location'], 'rental');
+			$accounts = $GLOBALS['phpgw']->acl->get_user_list_right(ACL_ADD, $location_info['location'], 'rental');
 			$executive_officer_options[] = array('id' => '', 'name' => lang('nobody'), 'selected' => 0);
 			foreach ($accounts as $account)
 			{
@@ -1957,9 +1957,9 @@ JS;
 		{
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('edit');
 
-			$contract_id = (int)phpgw::get_var('id');
-			$location_id = (int)phpgw::get_var('location_id');
-			$adjustment_id = (int)phpgw::get_var('adjustment_id');
+			$contract_id = (int)Sanitizer::get_var('id');
+			$location_id = (int)Sanitizer::get_var('location_id');
+			$adjustment_id = (int)Sanitizer::get_var('adjustment_id');
 
 			$list_consistency_warnings = array();
 
@@ -1972,7 +1972,7 @@ JS;
 			{
 				$contract = rental_socontract::get_instance()->get_single($contract_id);
 
-				if (!($contract && $contract->has_permission(PHPGW_ACL_EDIT)))
+				if (!($contract && $contract->has_permission(ACL_EDIT)))
 				{
 					phpgw::no_access($GLOBALS['phpgw_info']['flags']['currentapp'], lang('permission_denied_edit_contract'));
 				}
@@ -2040,7 +2040,7 @@ JS;
 			}
 
 			$location_name = $contract->get_field_of_responsibility_name();
-			$accounts = $GLOBALS['phpgw']->acl->get_user_list_right(PHPGW_ACL_ADD, $location_name, 'rental');
+			$accounts = $GLOBALS['phpgw']->acl->get_user_list_right(ACL_ADD, $location_name, 'rental');
 			$executive_officer_options[] = array('id' => '', 'name' => lang('nobody'), 'selected' => 0);
 			foreach ($accounts as $account)
 			{
@@ -2133,7 +2133,7 @@ JS;
 
 			if ($start_date == "")
 			{
-				$date = phpgw::get_var('start_date');
+				$date = Sanitizer::get_var('start_date');
 //				$date = str_replace("-", "/", $date);
 
 				$start_date = ($date) ? ($date) : '';
@@ -2240,7 +2240,7 @@ JS;
 				$tableDef_party = $this->_get_tableDef_party($mode, $contract_id);
 				$tableDef_price = $this->_get_tableDef_price($mode, $contract_id);
 				$tableDef_invoice = $this->_get_tableDef_invoice($mode, $contract_id);
-				$tableDef_document = $this->_get_tableDef_document($mode, $contract_id, $contract->has_permission(PHPGW_ACL_EDIT));
+				$tableDef_document = $this->_get_tableDef_document($mode, $contract_id, $contract->has_permission(ACL_EDIT));
 				$tableDef_notification = $this->_get_tableDef_notification($mode, $contract_id);
 
 				$datatable_def = array_merge($datatable_def, $tableDef_composite, $tableDef_party, $tableDef_price, $tableDef_invoice, $tableDef_document, $tableDef_notification);
@@ -2316,7 +2316,7 @@ JS;
 				$notification_recurrence_options[] = array('id' => rental_notification::RECURRENCE_WEEKLY,
 					'name' => lang('weekly'), 'selected' => 0);
 
-				$accounts_users = $GLOBALS['phpgw']->acl->get_user_list_right(PHPGW_ACL_READ, 'run', 'rental');
+				$accounts_users = $GLOBALS['phpgw']->acl->get_user_list_right(ACL_READ, 'run', 'rental');
 				$users[] = array('id' => $this->account_id, 'name' => lang('target_me'));
 				foreach ($accounts_users as $account)
 				{
@@ -2411,7 +2411,7 @@ JS;
 				var currency_suffix = '$this->currency_suffix';
 				var area_suffix = '$this->area_suffix';
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $code);
+			phpgwapi_js::getInstance()->add_code('', $code);
 			$override_adjustment_start = $contract->get_override_adjustment_start();
 
 			/**
@@ -2439,7 +2439,7 @@ JS;
 				$names = $this->locations->get_name($id);
 				if ($names['appname'] == $GLOBALS['phpgw_info']['flags']['currentapp'])
 				{
-					if ($this->hasPermissionOn($names['location'], PHPGW_ACL_ADD))
+					if ($this->hasPermissionOn($names['location'], ACL_ADD))
 					{
 						$new_contract_options[] = array(
 							'id' => $id,
@@ -2459,8 +2459,8 @@ JS;
 			(
 				'valid_contract_types' => array('options' => $new_contract_options),
 				'datatable_def' => $datatable_def,
-				'form_action' => $GLOBALS['phpgw']->link('/index.php', $link_save),
-				'cancel_url' => $GLOBALS['phpgw']->link('/index.php', $link_cancel),
+				'form_action' => phpgw::link('/index.php', $link_save),
+				'cancel_url' => phpgw::link('/index.php', $link_cancel),
 				'lang_save' => lang('save'),
 				'lang_cancel' => lang($cancel_text),
 				'value_contract_number' => $contract->get_old_contract_id(),
@@ -2544,10 +2544,10 @@ JS;
 		 */
 		public function add()
 		{
-			$location_id = phpgw::get_var('location_id');
+			$location_id = Sanitizer::get_var('location_id');
 //			if (isset($location_id) && $location_id > 0)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
 					'location_id' => $location_id));
 			}
 		}
@@ -2558,7 +2558,7 @@ JS;
 		public function add_from_composite()
 		{
 			$contract = new rental_contract();
-			$contract->set_location_id(phpgw::get_var('responsibility_id'));
+			$contract->set_location_id(Sanitizer::get_var('responsibility_id'));
 			$contract->set_account_in(rental_socontract::get_instance()->get_default_account($contract->get_location_id(), true));
 			$contract->set_account_out(rental_socontract::get_instance()->get_default_account($contract->get_location_id(), false));
 			$contract->set_executive_officer_id($this->account_id);
@@ -2569,7 +2569,7 @@ JS;
 
 			$contract->set_term_id($default_billing_term);
 
-			$units = rental_socomposite::get_instance()->get_single(phpgw::get_var('id'))->get_units();
+			$units = rental_socomposite::get_instance()->get_single(Sanitizer::get_var('id'))->get_units();
 			$location_code = $units[0]->get_location()->get_location_code();
 
 			$args = array
@@ -2584,7 +2584,7 @@ JS;
 
 			//		_debug_array($contract); die();
 
-			if ($contract->has_permission(PHPGW_ACL_EDIT))
+			if ($contract->has_permission(ACL_EDIT))
 			{
 				$so_contract = rental_socontract::get_instance();
 				$db_contract = $so_contract->get_db();
@@ -2604,7 +2604,7 @@ JS;
 						}
 					}
 					// Add that composite to the new contract
-					$success = $so_contract->add_composite($contract->get_id(), phpgw::get_var('id'));
+					$success = $so_contract->add_composite($contract->get_id(), Sanitizer::get_var('id'));
 					if ($success)
 					{
 						$parameters = array(
@@ -2612,23 +2612,23 @@ JS;
 							'id' => $contract->get_id()
 						);
 
-						$date = (phpgw::get_var('date')) ? phpgw::get_var('date') : '';
+						$date = (Sanitizer::get_var('date')) ? Sanitizer::get_var('date') : '';
 						if ($date != "")
 						{
 							$parameters['start_date'] = $date;
 						}
 
 						$db_contract->transaction_commit();
-						$comp_name = rental_socomposite::get_instance()->get_single(phpgw::get_var('id'))->get_name();
+						$comp_name = rental_socomposite::get_instance()->get_single(Sanitizer::get_var('id'))->get_name();
 						$message = lang('messages_new_contract_from_composite') . ' ' . $comp_name;
 						phpgwapi_cache::message_set($message, 'message');
-						$GLOBALS['phpgw']->redirect_link('/index.php', $parameters);
+						phpgw::redirect_link('/index.php', $parameters);
 					}
 					else
 					{
 						$db_contract->transaction_abort();
 						phpgwapi_cache::message_set(lang('messages_form_error'), 'error');
-						$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
+						phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
 							'id' => $contract->get_id()));
 					}
 				}
@@ -2636,7 +2636,7 @@ JS;
 				{
 					$db_contract->transaction_abort();
 					phpgwapi_cache::message_set(lang('messages_form_error'), 'error');
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
 						'id' => $contract->get_id()));
 				}
 			}
@@ -2650,13 +2650,13 @@ JS;
 		 */
 		public function copy_contract()
 		{
-			$adjustment_id = (int)phpgw::get_var('adjustment_id');
+			$adjustment_id = (int)Sanitizer::get_var('adjustment_id');
 
 			$so_contract = rental_socontract::get_instance();
-			$contract = $so_contract->get_single(phpgw::get_var('id'));
+			$contract = $so_contract->get_single(Sanitizer::get_var('id'));
 			$old_contract_old_id = $contract->get_old_contract_id();
 			$db_contract = $so_contract->get_db();
-			if ($contract->has_permission(PHPGW_ACL_EDIT))
+			if ($contract->has_permission(ACL_EDIT))
 			{
 				$db_contract->transaction_begin();
 				//reset id's and contract dates
@@ -2669,14 +2669,14 @@ JS;
 				if ($so_contract->store($contract))
 				{
 					// copy the contract
-					$success = $so_contract->copy_contract($contract->get_id(), phpgw::get_var('id'));
+					$success = $so_contract->copy_contract($contract->get_id(), Sanitizer::get_var('id'));
 					if ($success)
 					{
 						$db_contract->transaction_commit();
 						$message = lang('messages_new_contract_copied') . ' ' . $old_contract_old_id;
 						phpgwapi_cache::message_set($message, 'message');
 						//$this->edit(array('contract_id'=>$contract->get_id(), 'adjustment_id' => $adjustment_id));
-						$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
+						phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
 							'id' => $contract->get_id(), 'adjustment_id' => $adjustment_id));
 					}
 					else
@@ -2684,7 +2684,7 @@ JS;
 						$db_contract->transaction_abort();
 						phpgwapi_cache::message_set(lang('messages_form_error'), 'error');
 						//$this->edit(array('contract_id'=>$contract->get_id(), 'adjustment_id' => $adjustment_id));
-						$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
+						phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
 							'id' => $contract->get_id(), 'adjustment_id' => $adjustment_id));
 					}
 				}
@@ -2693,7 +2693,7 @@ JS;
 					$db_contract->transaction_abort();
 					phpgwapi_cache::message_set(lang('messages_form_error'), 'error');
 					//$this->edit(array('contract_id'=>$contract->get_id(), 'adjustment_id' => $adjustment_id));
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
 						'id' => $contract->get_id(), 'adjustment_id' => $adjustment_id));
 				}
 			}
@@ -2710,13 +2710,13 @@ JS;
 		 */
 		public function add_party()
 		{
-			$contract_id = (int)phpgw::get_var('contract_id');
-			$list_party_id = phpgw::get_var('party_id');
+			$contract_id = (int)Sanitizer::get_var('contract_id');
+			$list_party_id = Sanitizer::get_var('party_id');
 
 			$so_contract = rental_socontract::get_instance();
 			$contract = $so_contract->get_single($contract_id);
 			$message = array();
-			if ($contract->has_permission(PHPGW_ACL_EDIT))
+			if ($contract->has_permission(ACL_EDIT))
 			{
 				foreach ($list_party_id as $party_id)
 				{
@@ -2742,13 +2742,13 @@ JS;
 		 */
 		public function remove_party()
 		{
-			$contract_id = (int)phpgw::get_var('contract_id');
-			$list_party_id = phpgw::get_var('party_id');
+			$contract_id = (int)Sanitizer::get_var('contract_id');
+			$list_party_id = Sanitizer::get_var('party_id');
 
 			$so_contract = rental_socontract::get_instance();
 			$contract = $so_contract->get_single($contract_id);
 			$message = array();
-			if ($contract->has_permission(PHPGW_ACL_EDIT))
+			if ($contract->has_permission(ACL_EDIT))
 			{
 				foreach ($list_party_id as $party_id)
 				{
@@ -2774,13 +2774,13 @@ JS;
 		 */
 		public function set_payer()
 		{
-			$contract_id = (int)phpgw::get_var('contract_id');
-			$party_id = (int)phpgw::get_var('party_id');
+			$contract_id = (int)Sanitizer::get_var('contract_id');
+			$party_id = (int)Sanitizer::get_var('party_id');
 			$so_contract = rental_socontract::get_instance();
 			$contract = $so_contract->get_single($contract_id);
 
 			$message = array();
-			if ($contract->has_permission(PHPGW_ACL_EDIT))
+			if ($contract->has_permission(ACL_EDIT))
 			{
 				$result = $so_contract->set_payer($contract_id, $party_id);
 				if ($result)
@@ -2803,13 +2803,13 @@ JS;
 		 */
 		public function add_composite()
 		{
-			$contract_id = (int)phpgw::get_var('contract_id');
-			$list_composite_id = phpgw::get_var('composite_id');
+			$contract_id = (int)Sanitizer::get_var('contract_id');
+			$list_composite_id = Sanitizer::get_var('composite_id');
 
 			$so_contract = rental_socontract::get_instance();
 			$contract = $so_contract->get_single($contract_id);
 			$message = array();
-			if ($contract->has_permission(PHPGW_ACL_EDIT))
+			if ($contract->has_permission(ACL_EDIT))
 			{
 				foreach ($list_composite_id as $composite_id)
 				{
@@ -2835,13 +2835,13 @@ JS;
 		 */
 		public function remove_composite()
 		{
-			$contract_id = (int)phpgw::get_var('contract_id');
-			$list_composite_id = phpgw::get_var('composite_id');
+			$contract_id = (int)Sanitizer::get_var('contract_id');
+			$list_composite_id = Sanitizer::get_var('composite_id');
 
 			$so_contract = rental_socontract::get_instance();
 			$contract = $so_contract->get_single($contract_id);
 			$message = array();
-			if (isset($contract) && $contract->has_permission(PHPGW_ACL_EDIT))
+			if (isset($contract) && $contract->has_permission(ACL_EDIT))
 			{
 				foreach ($list_composite_id as $composite_id)
 				{
@@ -2867,13 +2867,13 @@ JS;
 		 */
 		public function add_price_item()
 		{
-			$contract_id = (int)phpgw::get_var('contract_id');
-			$list_price_item_id = phpgw::get_var('price_item_id');
+			$contract_id = (int)Sanitizer::get_var('contract_id');
+			$list_price_item_id = Sanitizer::get_var('price_item_id');
 
 			$so_contract = rental_socontract::get_instance();
 			$contract = $so_contract->get_single($contract_id);
 			$message = array();
-			if ($contract->has_permission(PHPGW_ACL_EDIT))
+			if ($contract->has_permission(ACL_EDIT))
 			{
 				//return rental_soprice_item::get_instance()->add_price_item($contract_id, $price_item_id, $factor);
 				foreach ($list_price_item_id as $price_item_id)
@@ -2900,13 +2900,13 @@ JS;
 		 */
 		public function remove_price_item()
 		{
-			$contract_id = (int)phpgw::get_var('contract_id');
-			$list_price_item_id = phpgw::get_var('price_item_id');
+			$contract_id = (int)Sanitizer::get_var('contract_id');
+			$list_price_item_id = Sanitizer::get_var('price_item_id');
 
 			$so_contract = rental_socontract::get_instance();
 			$contract = $so_contract->get_single($contract_id);
 			$message = array();
-			if ($contract->has_permission(PHPGW_ACL_EDIT))
+			if ($contract->has_permission(ACL_EDIT))
 			{
 				foreach ($list_price_item_id as $price_item_id)
 				{
@@ -2932,13 +2932,13 @@ JS;
 		 */
 		public function reset_price_item()
 		{
-			$contract_id = (int)phpgw::get_var('contract_id');
-			$list_price_item_id = phpgw::get_var('price_item_id');
+			$contract_id = (int)Sanitizer::get_var('contract_id');
+			$list_price_item_id = Sanitizer::get_var('price_item_id');
 
 			$so_contract = rental_socontract::get_instance();
 			$contract = $so_contract->get_single($contract_id);
 			$message = array();
-			if ($contract->has_permission(PHPGW_ACL_EDIT))
+			if ($contract->has_permission(ACL_EDIT))
 			{
 				//return rental_soprice_item::get_instance()->reset_contract_price_item($price_item_id);
 				foreach ($list_price_item_id as $price_item_id)
@@ -2959,21 +2959,21 @@ JS;
 
 		public function add_notification()
 		{
-			$contract_id = phpgw::get_var('contract_id', 'int');
-			$account_id = phpgw::get_var('notification_target', 'int');
-			$location_id = phpgw::get_var('notification_location', 'int');
-			$date = phpgw::get_var('date_notification');
+			$contract_id = Sanitizer::get_var('contract_id', 'int');
+			$account_id = Sanitizer::get_var('notification_target', 'int');
+			$location_id = Sanitizer::get_var('notification_location', 'int');
+			$date = Sanitizer::get_var('date_notification');
 
 			$so_contract = rental_socontract::get_instance();
 			$contract = $so_contract->get_single($contract_id);
 			$message = array();
-			if ($contract->has_permission(PHPGW_ACL_EDIT))
+			if ($contract->has_permission(ACL_EDIT))
 			{
 				if ($date)
 				{
 					$date = phpgwapi_datetime::date_to_timestamp($date);
 				}
-				$notification = new rental_notification(-1, $account_id, $location_id, $contract_id, $date, phpgw::get_var('notification_message'), phpgw::get_var('notification_recurrence'));
+				$notification = new rental_notification(-1, $account_id, $location_id, $contract_id, $date, Sanitizer::get_var('notification_message'), Sanitizer::get_var('notification_recurrence'));
 				if (rental_sonotification::get_instance()->store($notification))
 				{
 					$message['message'][] = array('msg' => 'notification ' . lang('has been added'));
@@ -2988,11 +2988,11 @@ JS;
 
 		public function get_total_price()
 		{
-			$draw = phpgw::get_var('draw', 'int');
+			$draw = Sanitizer::get_var('draw', 'int');
 			$so_contract = rental_socontract::get_instance();
 			$so_contract_price_item = rental_socontract_price_item::get_instance();
 
-			$contract_id = (int)phpgw::get_var('contract_id');
+			$contract_id = (int)Sanitizer::get_var('contract_id');
 			$total_price = $so_contract_price_item->get_total_price($contract_id);
 			$contract = $so_contract->get_single($contract_id);
 			$area = $contract->get_rented_area();
@@ -3023,8 +3023,8 @@ JS;
 		 */
 		public function get_max_area()
 		{
-			$draw = phpgw::get_var('draw', 'int');
-			$contract_id = (int)phpgw::get_var('contract_id');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$contract_id = (int)Sanitizer::get_var('contract_id');
 			$total_price = rental_socontract_price_item::get_instance()->get_max_area($contract_id);
 			$result_array = array('max_area' => $max_area);
 			$result_data = array('results' => $result_array, 'total_records' => 1, 'draw' => $draw);
@@ -3121,7 +3121,7 @@ JS;
 				if($do_notify)
 				{
 					$subject = lang('contract %1 expires in %2 days', $contract_id, $days_to_expire);
-					$message = '<a href ="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'rental.uicontract.edit',
+					$message = '<a href ="' . phpgw::link('/index.php', array('menuaction' => 'rental.uicontract.edit',
 							'id' => $contract_id), false, true) . '">' . $subject . '</a>';
 					try
 					{

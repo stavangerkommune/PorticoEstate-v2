@@ -79,11 +79,11 @@
 			}
 
 
-			$this->acl = & $GLOBALS['phpgw']->acl;
-			$this->acl_read = $this->acl->check($this->acl_location, PHPGW_ACL_READ, 'property');
-			$this->acl_add = $this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'property');
-			$this->acl_edit = $this->acl->check($this->acl_location, PHPGW_ACL_EDIT, 'property');
-			$this->acl_delete = $this->acl->check($this->acl_location, PHPGW_ACL_DELETE, 'property');
+			$this->acl = Acl::getInstance();
+			$this->acl_read = $this->acl->check($this->acl_location, ACL_READ, 'property');
+			$this->acl_add = $this->acl->check($this->acl_location, ACL_ADD, 'property');
+			$this->acl_edit = $this->acl->check($this->acl_location, ACL_EDIT, 'property');
+			$this->acl_delete = $this->acl->check($this->acl_location, ACL_DELETE, 'property');
 
 			$this->start = $this->bo->start;
 			$this->query = $this->bo->query;
@@ -213,18 +213,18 @@
 
 			if ($this->entity_id && !$this->cat_id)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'frontend.uientity.index',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'frontend.uientity.index',
 					'entity_id' => $this->entity_id, 'cat_id' => 1, 'type' => $this->type));
 			}
 
 			//redirect if no rights
 			if (!$this->acl_read && $this->cat_id)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'property.uilocation.stop',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'property.uilocation.stop',
 					'perm' => 1, 'acl_location' => $this->acl_location));
 			}
 
-			$second_display = phpgw::get_var('second_display', 'bool');
+			$second_display = Sanitizer::get_var('second_display', 'bool');
 
 			$default_district = (isset($GLOBALS['phpgw_info']['user']['preferences']['property']['default_district']) ? $GLOBALS['phpgw_info']['user']['preferences']['property']['default_district'] : '');
 
@@ -243,17 +243,17 @@
 			$filters = $this->_get_filters();
 			krsort($filters);
 
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$columns = Sanitizer::get_var('columns');
 
 			$params = array(
-				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results' => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start' => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results' => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query' => $search['value'],
 				'order' => $columns[$order[0]['column']]['data'],
 				'sort' => $order[0]['dir'],
-				'allrows' => phpgw::get_var('length', 'int') == -1,
+				'allrows' => Sanitizer::get_var('length', 'int') == -1,
 				'dry_run' => true
 			);
 
@@ -376,7 +376,7 @@
 					(
 					'my_name' => 'view',
 					'text' => lang('view'),
-					'action' => $GLOBALS['phpgw']->link('/index.php', array
+					'action' => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'frontend.uientity.view',
 						'location_id' => $this->location_id,
@@ -437,7 +437,7 @@
 					(
 					'my_name' => 'edit',
 					'text' => lang('open JasperReport %1 in new window', $report['title']),
-					'action' => $GLOBALS['phpgw']->link('/index.php', array
+					'action' => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'property.uijasper.view',
 						'jasper_id' => $report['id'],
@@ -517,10 +517,10 @@
 
 		public function query()
 		{
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 			$ordering = $columns[$order[0]['column']]['data'];
 
 			if (!$order[0]['column'])
@@ -529,16 +529,16 @@
 			}
 
 			$params = array(
-				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results' => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start' => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results' => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query' => (is_array($search)) ? $search['value'] : $search,
 				'order' => $ordering,
 				'sort' => $order[0]['dir'],
-				'allrows' => phpgw::get_var('length', 'int') == -1
+				'allrows' => Sanitizer::get_var('length', 'int') == -1
 			);
 
 			$values = $this->bo->read($params);
-			if (phpgw::get_var('export', 'bool'))
+			if (Sanitizer::get_var('export', 'bool'))
 			{
 				return $values;
 			}
@@ -639,7 +639,7 @@
 		public function edit( $values = array(), $mode = 'edit' )
 		{
 			$bo = & $this->bo;
-			$id = phpgw::get_var('id');
+			$id = Sanitizer::get_var('id');
 			$values = $bo->read_single(array('id' => $id, 'entity_id' => $this->entity_id,
 				'cat_id' => $this->cat_id, 'view' => true));
 
@@ -794,18 +794,18 @@
 				'header' => $this->header_state,
 				'section' => array
 					(
-					'entitylist' => $GLOBALS['phpgw']->link('/index.php', array
+					'entitylist' => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'frontend.uientity.index',
 						'location_id' => $this->location_id
 					)),
-					'entityedit' => $GLOBALS['phpgw']->link('/index.php', array
+					'entityedit' => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'frontend.uientity.edit',
 						'location_id' => $this->location_id,
 						'id' => $id
 					)),
-					'start_ticket' => $GLOBALS['phpgw']->link('/index.php', array
+					'start_ticket' => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'frontend.uihelpdesk.add_ticket',
 						'noframework' => 1,
@@ -831,7 +831,7 @@
 				)
 			);
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('location_view', 'files'), PHPGW_SERVER_ROOT . '/property/templates/base');
+			phpgwapi_xslttemplates::getInstance()->add_file(array('location_view', 'files'), PHPGW_SERVER_ROOT . '/property/templates/base');
 			self::render_template_xsl(array('frontend', 'entityview', 'attributes_view'), $data);
 		}
 	}

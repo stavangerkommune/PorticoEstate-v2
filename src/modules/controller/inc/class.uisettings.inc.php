@@ -63,12 +63,12 @@
 
 			$this->cats		= CreateObject('phpgwapi.categories', -1, 'property', '.ticket');
 			$this->cats->supress_info = true;
-			$this->acl = & $GLOBALS['phpgw']->acl;
+			$this->acl = Acl::getInstance();
 			$this->acl_location = '.control';
-			$this->acl_read = $this->acl->check($this->acl_location, PHPGW_ACL_READ, 'controller');
-			$this->acl_add = $this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'controller');
-			$this->acl_edit = $this->acl->check($this->acl_location, PHPGW_ACL_EDIT, 'controller');
-			$this->acl_delete = $this->acl->check($this->acl_location, PHPGW_ACL_DELETE, 'controller');
+			$this->acl_read = $this->acl->check($this->acl_location, ACL_READ, 'controller');
+			$this->acl_add = $this->acl->check($this->acl_location, ACL_ADD, 'controller');
+			$this->acl_edit = $this->acl->check($this->acl_location, ACL_EDIT, 'controller');
+			$this->acl_delete = $this->acl->check($this->acl_location, ACL_DELETE, 'controller');
 			$this->so			= CreateObject('controller.sosettings');
 			$this->so_control = CreateObject('controller.socontrol');
 
@@ -96,7 +96,7 @@
 			/**
 			 * Do not allow save / send here
 			 */
-			if(phpgw::get_var('save', 'bool') || phpgw::get_var('send', 'bool') || phpgw::get_var('init_preview', 'bool'))
+			if(Sanitizer::get_var('save', 'bool') || Sanitizer::get_var('send', 'bool') || Sanitizer::get_var('init_preview', 'bool'))
 			{
 				phpgw::no_access();
 			}
@@ -113,7 +113,7 @@
 			}
 
 
-			if(!$error && phpgw::get_var('save', 'bool'))
+			if(!$error && Sanitizer::get_var('save', 'bool'))
 			{
 				$this->save();
 			}
@@ -138,7 +138,7 @@
 			$content = array();
 			foreach ($controls as $control)
 			{
-				$control_name	= $GLOBALS['phpgw']->strip_html($control->get_title());
+				$control_name	= phpgw::strip_html($control->get_title());
 				$html2text->setHtml($control->get_description());
 				$control_name	.= '<p>' .($html2text->getText()) . '</p>';
 
@@ -149,7 +149,7 @@
 				foreach ($_cat_list as &$cat)
 				{
 					$level		= $cat['level'];
-					$cat_name	= $GLOBALS['phpgw']->strip_html($cat['name']);
+					$cat_name	= phpgw::strip_html($cat['name']);
 
 					if ($level > 0)
 					{
@@ -177,7 +177,7 @@
 			(
 				'lang_add'				=> lang('add'),
 				'lang_add_statustext'	=> lang('add a category'),
-				'action_url'			=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'action_url'			=> phpgw::link('/index.php',$link_data),
 				'lang_done'				=> lang('done'),
 				'lang_done_statustext'	=> lang('return to admin mainscreen')
 			);
@@ -220,7 +220,7 @@
 
 		public function save($ajax = false)
 		{
-			$values = phpgw::get_var('values');
+			$values = Sanitizer::get_var('values');
 
 			try
 			{
@@ -244,7 +244,7 @@
 
 		private function save_users()
 		{
-			$values = phpgw::get_var('values');
+			$values = Sanitizer::get_var('values');
 
 			try
 			{
@@ -274,14 +274,14 @@
 				phpgw::no_access();
 			}
 
-			if(!$error && phpgw::get_var('save', 'bool'))
+			if(!$error && Sanitizer::get_var('save', 'bool'))
 			{
 				$this->save_users();
 			}
 
-			$control_area_id = phpgw::get_var('control_area_id', 'int');
-			$control_id		 = phpgw::get_var('control_id', 'int');
-			$part_of_town_id = phpgw::get_var('part_of_town_id', 'int');
+			$control_area_id = Sanitizer::get_var('control_area_id', 'int');
+			$control_id		 = Sanitizer::get_var('control_id', 'int');
+			$part_of_town_id = Sanitizer::get_var('part_of_town_id', 'int');
 			$user_id = $GLOBALS['phpgw_info']['user']['account_id'];
 
 			if($control_area_id)
@@ -365,7 +365,7 @@
 
 			if($control_id > 0 && $control_area_id > 0 && $part_of_town_id > 0)
 			{
-				$users = $GLOBALS['phpgw']->acl->get_user_list_right(PHPGW_ACL_EDIT, '.checklist');
+				$users = $GLOBALS['phpgw']->acl->get_user_list_right(ACL_EDIT, '.checklist');
 			}
 			else
 			{

@@ -30,7 +30,7 @@
 	
 		function display_app_header()
 		{
-			$GLOBALS['phpgw']->js->validate_file('jscode','editUserdata','emailadmin');
+			phpgwapi_js::getInstance()->validate_file('jscode','editUserdata','emailadmin');
 			$GLOBALS['phpgw_info']['flags']['include_xajax'] = True;
 
 			$GLOBALS['phpgw']->common->egw_header();
@@ -64,14 +64,14 @@
 			$this->t->set_var("lang_deliver_extern",lang("deliver extern"));
 			$this->t->set_var("lang_edit_email_settings",lang("edit email settings"));
 			$this->t->set_var("lang_ready",lang("Done"));
-			$this->t->set_var("link_back",$GLOBALS['phpgw']->link('/admin/accounts.php'));
+			$this->t->set_var("link_back",phpgw::link('/admin/accounts.php'));
 
 			$linkData = array
 			(
 				'menuaction'	=> 'emailadmin.uiuserdata.saveUserData',
 				'account_id'	=> $accountID
 			);
-			$this->t->set_var("form_action", $GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var("form_action", phpgw::link('/index.php',$linkData));
 
 			$this->t->set_var('url_image_add',$GLOBALS['phpgw']->common->image('phpgwapi','new'));
 			$this->t->set_var('url_image_edit',$GLOBALS['phpgw']->common->image('phpgwapi','edit'));

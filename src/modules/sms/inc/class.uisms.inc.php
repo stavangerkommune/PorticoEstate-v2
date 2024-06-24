@@ -48,7 +48,7 @@
 			$this->config = CreateObject('admin.soconfig', $location_id);
 			$this->gateway_number = $this->config->config_data['common']['gateway_number'];
 			$this->bo = CreateObject('sms.bosms', false);
-			$this->acl = & $GLOBALS['phpgw']->acl;
+			$this->acl = Acl::getInstance();
 			$this->grants = $this->bo->grants;
 			$this->start = $this->bo->start;
 			$this->query = $this->bo->query;
@@ -79,12 +79,12 @@
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::inbox';
 			$acl_location = '.inbox';
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('sms', 'nextmatchs',
+			phpgwapi_xslttemplates::getInstance()->add_file(array('sms', 'nextmatchs',
 				'search_field'));
 
 			$this->bo->acl_location = $acl_location;
 
-			if (!$this->acl->check($acl_location, PHPGW_ACL_READ, 'sms'))
+			if (!$this->acl->check($acl_location, ACL_READ, 'sms'))
 			{
 				$this->bocommon->no_access();
 				return;
@@ -92,7 +92,7 @@
 
 			$sms_info = $this->bo->read_inbox();
 
-			if ($this->acl->check($acl_location, PHPGW_ACL_ADD, 'sms'))
+			if ($this->acl->check($acl_location, ACL_ADD, 'sms'))
 			{
 				$add_right = true;
 				$text_answer = lang('answer');
@@ -107,9 +107,9 @@
 			$content = array();
 			foreach ($sms_info as $entry)
 			{
-				if ($this->bocommon->check_perms($entry['grants'], PHPGW_ACL_DELETE))
+				if ($this->bocommon->check_perms($entry['grants'], ACL_DELETE))
 				{
-					$link_delete = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uisms.delete_in',
+					$link_delete = phpgw::link('/index.php', array('menuaction' => 'sms.uisms.delete_in',
 						'id' => $entry['id']));
 					$text_delete = lang('delete');
 					$lang_delete_sms_text = lang('delete the sms from inbox');
@@ -123,7 +123,7 @@
 
 				if ($add_right)
 				{
-					$link_answer = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uisms.send',
+					$link_answer = phpgw::link('/index.php', array('menuaction' => 'sms.uisms.send',
 						'p_num' => $entry['sender']));
 				}
 
@@ -198,17 +198,17 @@
 
 
 
-			if ($this->acl->check($acl_location, PHPGW_ACL_ADD, 'sms'))
+			if ($this->acl->check($acl_location, ACL_ADD, 'sms'))
 			{
 				$table_add[] = array
 					(
 					'lang_send' => lang('Send SMS'),
 					'lang_send_statustext' => lang('Send SMS'),
-					'send_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uisms.send',
+					'send_action' => phpgw::link('/index.php', array('menuaction' => 'sms.uisms.send',
 						'from' => 'index')),
 					'lang_send_group' => lang('Send broadcast SMS'),
 					'lang_send_group_statustext' => lang('send group'),
-					'send_group_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uisms.send_group',
+					'send_group_action' => phpgw::link('/index.php', array('menuaction' => 'sms.uisms.send_group',
 						'from' => 'index')),
 				);
 			}
@@ -225,7 +225,7 @@
 				'record_limit' => $record_limit,
 				'num_records' => count($sms_info),
 				'all_records' => $this->bo->total_records,
-				'link_url' => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'link_url' => phpgw::link('/index.php', $link_data),
 				'img_path' => $GLOBALS['phpgw']->common->get_image_path('phpgwapi', 'default'),
 				'lang_searchfield_statustext' => lang('Enter the search string. To show all entries, empty this field and press the SUBMIT button again'),
 				'lang_searchbutton_statustext' => lang('Submit the search string'),
@@ -240,7 +240,7 @@
 			$function_msg = lang('list inbox');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('sms') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('list_inbox' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('list_inbox' => $data));
 			$this->save_sessiondata();
 		}
 
@@ -251,12 +251,12 @@
 
 			$this->nextmatchs = CreateObject('phpgwapi.nextmatchs');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('sms', 'nextmatchs', 'menu',
+			phpgwapi_xslttemplates::getInstance()->add_file(array('sms', 'nextmatchs', 'menu',
 				'search_field'));
 
 			$this->bo->acl_location = $acl_location;
 
-			if (!$this->acl->check($acl_location, PHPGW_ACL_READ, 'sms'))
+			if (!$this->acl->check($acl_location, ACL_READ, 'sms'))
 			{
 				$this->bocommon->no_access();
 				return;
@@ -269,9 +269,9 @@
 
 			foreach ($sms_info as $entry)
 			{
-				if ($this->bocommon->check_perms($entry['grants'], PHPGW_ACL_DELETE))
+				if ($this->bocommon->check_perms($entry['grants'], ACL_DELETE))
 				{
-					$link_delete = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uisms.delete_out',
+					$link_delete = phpgw::link('/index.php', array('menuaction' => 'sms.uisms.delete_out',
 						'id' => $entry['id']));
 					$text_delete = lang('delete');
 					$lang_delete_sms_text = lang('delete the sms from outbox');
@@ -340,17 +340,17 @@
 			);
 
 
-			if ($this->acl->check($acl_location, PHPGW_ACL_ADD, 'sms'))
+			if ($this->acl->check($acl_location, ACL_ADD, 'sms'))
 			{
 				$table_add[] = array
 					(
 					'lang_send' => lang('Send SMS'),
 					'lang_send_statustext' => lang('Send SMS'),
-					'send_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uisms.send',
+					'send_action' => phpgw::link('/index.php', array('menuaction' => 'sms.uisms.send',
 						'from' => 'outbox')),
 					'lang_send_group' => lang('Send broadcast SMS'),
 					'lang_send_group_statustext' => lang('send group'),
-					'send_group_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uisms.send_group',
+					'send_group_action' => phpgw::link('/index.php', array('menuaction' => 'sms.uisms.send_group',
 						'from' => 'outbox')),
 				);
 			}
@@ -368,7 +368,7 @@
 				'record_limit' => $record_limit,
 				'num_records' => count($sms_info),
 				'all_records' => $this->bo->total_records,
-				'link_url' => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'link_url' => phpgw::link('/index.php', $link_data),
 				'img_path' => $GLOBALS['phpgw']->common->get_image_path('phpgwapi', 'default'),
 				'lang_searchfield_statustext' => lang('Enter the search string. To show all entries, empty this field and press the SUBMIT button again'),
 				'lang_searchbutton_statustext' => lang('Submit the search string'),
@@ -383,7 +383,7 @@
 			$function_msg = lang('list outbox');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('sms') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('list_outbox' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('list_outbox' => $data));
 			$this->save_sessiondata();
 		}
 
@@ -391,18 +391,18 @@
 		{
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::outbox';
 			$acl_location = '.outbox';
-			if (!$this->acl->check($acl_location, PHPGW_ACL_ADD, 'sms'))
+			if (!$this->acl->check($acl_location, ACL_ADD, 'sms'))
 			{
 				$this->bocommon->no_access();
 				return;
 			}
 
-			$p_num = phpgw::get_var('p_num');
-			$values = phpgw::get_var('values');
-			$from = phpgw::get_var('from');
+			$p_num = Sanitizer::get_var('p_num');
+			$values = Sanitizer::get_var('values');
+			$from = Sanitizer::get_var('from');
 			$from = $from ? $from : 'index';
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('sms'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('sms'));
 
 			/**
 			 * Text messages exceeding 160 characters will be split up into a maximum of 6 SMS messages,
@@ -415,9 +415,9 @@
 			if (is_array($values))
 			{
 				$values['p_num_text'] = get_var('p_num_text', array('POST'));
-				$values['message'] = phpgw::get_var('message');
-				$values['msg_flash'] = phpgw::get_var('msg_flash', 'bool', 'POST');
-				$values['msg_unicode'] = phpgw::get_var('msg_unicode', 'bool', 'POST');
+				$values['message'] = Sanitizer::get_var('message');
+				$values['msg_flash'] = Sanitizer::get_var('msg_flash', 'bool', 'POST');
+				$values['msg_unicode'] = Sanitizer::get_var('msg_unicode', 'bool', 'POST');
 
 				$p_num = $values['p_num_text'] ? $values['p_num_text'] : $p_num;
 
@@ -442,13 +442,13 @@
 						if ($values['save'])
 						{
 							$GLOBALS['phpgw']->session->appsession('session_data', 'sms_send_receipt', $receipt);
-							$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'sms.uisms.' . $from));
+							phpgw::redirect_link('/index.php', array('menuaction' => 'sms.uisms.' . $from));
 						}
 					}
 				}
 				else
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'sms.uisms.' . $from));
+					phpgw::redirect_link('/index.php', array('menuaction' => 'sms.uisms.' . $from));
 				}
 			}
 
@@ -528,7 +528,7 @@
 				'lang_send_as_unicode' => lang('send as unicode'),
 				'value_max_length' => $max_length,
 				'msgbox_data' => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action' => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'form_action' => phpgw::link('/index.php', $link_data),
 				'lang_save' => lang('save'),
 				'lang_cancel' => lang('cancel'),
 				'lang_done_status_text' => lang('Back to the list'),
@@ -540,7 +540,7 @@
 			$appname = lang('send sms');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('sms') . ' - ' . $appname;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('send' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('send' => $data));
 		}
 
 		function send_group()
@@ -588,8 +588,8 @@
 
 			echo parse_navbar();
 
-			$message = phpgw::get_var('message');
-			$err = urldecode(phpgw::get_var('err'));
+			$message = Sanitizer::get_var('message');
+			$err = urldecode(Sanitizer::get_var('err'));
 
 			$link_data = array
 				(
@@ -597,7 +597,7 @@
 				'sms_id' => $sms_id,
 				'from' => $from
 			);
-			$form_action = $GLOBALS['phpgw']->link('/index.php', $link_data);
+			$form_action = phpgw::link('/index.php', $link_data);
 
 			/*
 			  $db_query = "SELECT * FROM "._DB_PREF_."_tblUserGroupPhonebook WHERE uid='$uid' ORDER BY gp_name";
@@ -765,39 +765,39 @@
 				'message' => urlencode($message),
 				'err' => urlencode($error_string)
 			);
-			$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+			phpgw::redirect_link('/index.php', $link_data);
 		}
 
 		function delete_in()
 		{
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::inbox';
 			$acl_location = '.inbox';
-			if (!$this->acl->check($acl_location, PHPGW_ACL_DELETE, 'sms'))
+			if (!$this->acl->check($acl_location, ACL_DELETE, 'sms'))
 			{
 				$this->bocommon->no_access();
 				return;
 			}
 
-			$id = phpgw::get_var('id', 'int');
-			$confirm = phpgw::get_var('confirm', 'bool', 'POST');
+			$id = Sanitizer::get_var('id', 'int');
+			$confirm = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 				(
 				'menuaction' => 'sms.uisms.index'
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete_in($id);
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 				(
-				'done_action' => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uisms.delete_in',
+				'done_action' => phpgw::link('/index.php', $link_data),
+				'delete_action' => phpgw::link('/index.php', array('menuaction' => 'sms.uisms.delete_in',
 					'id' => $id)),
 				'lang_confirm_msg' => lang('do you really want to delete this entry'),
 				'lang_yes' => lang('yes'),
@@ -810,39 +810,39 @@
 			$function_msg = lang('delete');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('sms') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 
 		function delete_out()
 		{
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::outbox';
 			$acl_location = '.outbox';
-			if (!$this->acl->check($acl_location, PHPGW_ACL_DELETE, 'sms'))
+			if (!$this->acl->check($acl_location, ACL_DELETE, 'sms'))
 			{
 				$this->bocommon->no_access();
 				return;
 			}
 
-			$id = phpgw::get_var('id', 'int');
-			$confirm = phpgw::get_var('confirm', 'bool', 'POST');
+			$id = Sanitizer::get_var('id', 'int');
+			$confirm = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 				(
 				'menuaction' => 'sms.uisms.outbox'
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete_out($id);
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 				(
-				'done_action' => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uisms.delete_out',
+				'done_action' => phpgw::link('/index.php', $link_data),
+				'delete_action' => phpgw::link('/index.php', array('menuaction' => 'sms.uisms.delete_out',
 					'id' => $id)),
 				'lang_confirm_msg' => lang('do you really want to delete this entry'),
 				'lang_yes' => lang('yes'),
@@ -855,7 +855,7 @@
 			$function_msg = lang('delete');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('sms') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 
 		/**
@@ -865,7 +865,7 @@
 		function daemon_manual( $data = array() )
 		{
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] = 'admin::sms::refresh';
-			if (!$this->acl->check('run', PHPGW_ACL_READ, 'admin'))
+			if (!$this->acl->check('run', ACL_READ, 'admin'))
 			{
 				$this->bocommon->no_access();
 				return;
@@ -880,7 +880,7 @@
 				return;
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('sms'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('sms'));
 
 			$receipt['message'][] = array('msg' => lang('Daemon refreshed'));
 
@@ -896,6 +896,6 @@
 			$function_msg = lang('Daemon manual refresh');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('sms') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('daemon_manual' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('daemon_manual' => $data));
 		}
 	}

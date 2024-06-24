@@ -193,7 +193,7 @@
 			(
 				'menuaction'    => 'felamimail.uipreferences.editSignature'
 			);
-			$urlEditSignature = $GLOBALS['phpgw']->link('/index.php',$linkData);
+			$urlEditSignature = phpgw::link('/index.php',$linkData);
 
 			if(is_array($_signatureList) && !empty($_signatureList)) {
 				foreach($_signatureList as $signature) {
@@ -217,7 +217,7 @@
 			(
 				'menuaction'    => 'felamimail.uipreferences.editAccountData'
 			);
-			$urlEditAccountData = $GLOBALS['phpgw']->link('/index.php',$linkData);
+			$urlEditAccountData = phpgw::link('/index.php',$linkData);
 
 			if(is_array($_identities) && !empty($_identities)) {
 				foreach($_identities as $identity) {
@@ -393,7 +393,7 @@
 						'uid'		=> $header['uid'],
 						'id'		=> $header['id'],
 					);
-					$this->t->set_var('url_read_message', $GLOBALS['phpgw']->link('/index.php',$linkData));
+					$this->t->set_var('url_read_message', phpgw::link('/index.php',$linkData));
 
 					$windowName = 'composeFromDraft_'.$header['uid'];
 					$this->t->set_var('read_message_windowName', $windowName);
@@ -406,7 +406,7 @@
 						'uid'		=> $header['uid'],
 						'id'		=> $header['id'],
 					);
-					$this->t->set_var('url_read_message', $GLOBALS['phpgw']->link('/index.php',$linkData));
+					$this->t->set_var('url_read_message', phpgw::link('/index.php',$linkData));
 
 					$windowName = ($_readInNewWindow == 1 ? 'displayMessage' : 'displayMessage_'.$header['uid']);
 					$this->t->set_var('read_message_windowName', $windowName);
@@ -439,7 +439,7 @@
 					'send_to'	=> base64_encode($senderAddress)
 				);
 				$windowName = 'compose'.$header['uid'];
-				$this->t->set_var('url_compose',"egw_openWindowCentered('".$GLOBALS['phpgw']->link('/index.php',$linkData)."','$windowName',700,egw_getWindowOuterHeight());");
+				$this->t->set_var('url_compose',"egw_openWindowCentered('".phpgw::link('/index.php',$linkData)."','$windowName',700,egw_getWindowOuterHeight());");
 
 				$linkData = array
 				(
@@ -450,7 +450,7 @@
 				);
 				//TODO: url_add_to_addressbook isn't in any of the templates.
 				//If you want to use it, you need to adopt syntax to the new addressbook (popup)
-				$this->t->set_var('url_add_to_addressbook',$GLOBALS['phpgw']->link('/index.php',$linkData));
+				$this->t->set_var('url_add_to_addressbook',phpgw::link('/index.php',$linkData));
 				$this->t->set_var('msg_icon_sm',$msg_icon_sm);
 
 				$this->t->set_var('phpgw_images',PHPGW_IMAGES);

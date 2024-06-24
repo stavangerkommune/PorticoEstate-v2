@@ -27,7 +27,7 @@
 	{
 		$file = array
 		(
-			'Global Categories' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uicategories.index', 'appname' => 'notes', 'global_cats' => 'true') )
+			'Global Categories' => phpgw::link('/index.php', array('menuaction' => 'admin.uicategories.index', 'appname' => 'notes', 'global_cats' => 'true') )
 		);
 		$GLOBALS['phpgw']->common->display_mainscreen($appname,$file);
 	}

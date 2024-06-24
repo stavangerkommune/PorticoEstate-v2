@@ -42,7 +42,7 @@
 			$incoming_app = $GLOBALS['phpgw_info']['flags']['currentapp'];
 			$GLOBALS['phpgw_info']['flags']['currentapp'] = 'sms';
 
-			$acl = & $GLOBALS['phpgw']->acl;
+			$acl = Acl::getInstance();
 			$menus = array();
 
 			$start_page = 'sms.index';
@@ -56,7 +56,7 @@
 				'sms' => array
 					(
 					'text' => lang('sms'),
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => "sms.ui{$start_page}")),
+					'url' => phpgw::link('/index.php', array('menuaction' => "sms.ui{$start_page}")),
 					'image' => array('sms', 'navbar'),
 					'order' => 35,
 					'group' => 'facilities management'
@@ -71,25 +71,25 @@
 					'index'	 => array
 					(
 						'text'		 => lang('Configuration'),
-						'url'		 => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiconfig.index',
+						'url'		 => phpgw::link('/index.php', array('menuaction' => 'admin.uiconfig.index',
 							'appname'	 => 'sms')),
 					),
 					'customconfig' => array
 						(
 						'text' => lang('custom config'),
 						'nav_location' => 'navbar#' . $GLOBALS['phpgw']->locations->get_id('sms', 'run'),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiconfig2.index',
+						'url' => phpgw::link('/index.php', array('menuaction' => 'admin.uiconfig2.index',
 							'location_id' => $GLOBALS['phpgw']->locations->get_id('sms', 'run')))
 					),
 					'refresh' => array
 						(
 						'text' => lang('Daemon manual refresh'),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uisms.daemon_manual'))
+						'url' => phpgw::link('/index.php', array('menuaction' => 'sms.uisms.daemon_manual'))
 					),
 					'acl' => array
 						(
 						'text' => $GLOBALS['phpgw']->translation->translate('Configure Access Permissions', array(), true),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.list_acl',
+						'url' => phpgw::link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.list_acl',
 							'acl_app' => 'sms'))
 					)
 				);
@@ -102,13 +102,13 @@
 					array
 						(
 						'text' => $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
-						'url' => $GLOBALS['phpgw']->link('/preferences/preferences.php', array('appname' => 'sms',
+						'url' => phpgw::link('/preferences/preferences.php', array('appname' => 'sms',
 							'type' => 'user'))
 					),
 					array
 						(
 						'text' => $GLOBALS['phpgw']->translation->translate('Grant Access', array(), true),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.aclprefs',
+						'url' => phpgw::link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.aclprefs',
 							'acl_app' => 'sms'))
 					)
 				);
@@ -116,7 +116,7 @@
 				$menus['toolbar'][] = array
 					(
 					'text' => $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
-					'url' => $GLOBALS['phpgw']->link('/preferences/preferences.php', array('appname' => 'sms')),
+					'url' => phpgw::link('/preferences/preferences.php', array('appname' => 'sms')),
 					'image' => array('sms', 'preferences')
 				);
 			}
@@ -126,7 +126,7 @@
 				'log' => array
 					(
 					'text' => lang('log'),
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uicommand.log'))
+					'url' => phpgw::link('/index.php', array('menuaction' => 'sms.uicommand.log'))
 				)
 			);
 
@@ -135,12 +135,12 @@
 				'inbox' => array
 					(
 					'text' => lang('Inbox'),
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uisms.index'))
+					'url' => phpgw::link('/index.php', array('menuaction' => 'sms.uisms.index'))
 				),
 				'outbox' => array
 					(
 					'text' => lang('Outbox'),
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uisms.outbox'))
+					'url' => phpgw::link('/index.php', array('menuaction' => 'sms.uisms.outbox'))
 				)
 			);
 
@@ -149,7 +149,7 @@
 				$menus['navigation']['autoreply'] = array
 						(
 						'text' => lang('Autoreply'),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uiautoreply.index'))
+						'url' => phpgw::link('/index.php', array('menuaction' => 'sms.uiautoreply.index'))
 					);
 			}
 			if ($GLOBALS['phpgw']->acl->check('.board', phpgwapi_acl::READ, 'sms'))
@@ -157,7 +157,7 @@
 				$menus['navigation']['board'] = array
 						(
 					'text' => lang('Boards'),
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uiboard.index'))
+					'url' => phpgw::link('/index.php', array('menuaction' => 'sms.uiboard.index'))
 					);
 			}
 			if ($GLOBALS['phpgw']->acl->check('.command', phpgwapi_acl::READ, 'sms'))
@@ -165,7 +165,7 @@
 				$menus['navigation']['command'] = array
 						(
 					'text' => lang('commands'),
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uicommand.index')),
+					'url' => phpgw::link('/index.php', array('menuaction' => 'sms.uicommand.index')),
 					'children' => $command_children
 					);
 			}
@@ -174,7 +174,7 @@
 				$menus['navigation']['custom'] = array
 						(
 					'text' => lang('Custom'),
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uicustom.index'))
+					'url' => phpgw::link('/index.php', array('menuaction' => 'sms.uicustom.index'))
 					);
 			}
 			if ($GLOBALS['phpgw']->acl->check('.poll', phpgwapi_acl::READ, 'sms'))
@@ -182,7 +182,7 @@
 				$menus['navigation']['poll'] = array
 						(
 					'text' => lang('Polls'),
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uipoll.index'))
+					'url' => phpgw::link('/index.php', array('menuaction' => 'sms.uipoll.index'))
 					);
 			}
 
@@ -196,7 +196,7 @@
 			{
 				return;
 			}
-			$GLOBALS['phpgw']->xslttpl->add_file(array('menu'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('menu'));
 			$menu_brutto = execMethod('sms.menu.get_menu');
 			$selection = explode('::', $GLOBALS['phpgw_info']['flags']['menu_selection']);
 			$level = 0;

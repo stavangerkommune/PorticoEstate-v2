@@ -9,7 +9,7 @@
 //	'preferences'
 	);
 
-	$aclobj = & $GLOBALS['phpgw']->acl;
+	$aclobj = Acl::getInstance();
 
 	// Sane defaults for the API
 	$values = array

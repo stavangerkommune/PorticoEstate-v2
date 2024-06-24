@@ -449,7 +449,7 @@
 					 */
 					$enforce_ssl = $GLOBALS['phpgw_info']['server']['enforce_ssl'];
 					$GLOBALS['phpgw_info']['server']['enforce_ssl'] = true;
-					$link_backend =  $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uiapplication.show','id' => $application['id']), false, true, true);
+					$link_backend =  phpgw::link('/index.php', array('menuaction' => 'booking.uiapplication.show','id' => $application['id']), false, true, true);
 					$GLOBALS['phpgw_info']['server']['enforce_ssl'] = $enforce_ssl;
 
 					$new_body = "<h1>NB!! KOPI av epost til {$application['contact_email']}</h1>"
@@ -633,7 +633,7 @@
 			 */
 			$enforce_ssl = $GLOBALS['phpgw_info']['server']['enforce_ssl'];
 			$GLOBALS['phpgw_info']['server']['enforce_ssl'] = true;
-			$link =  $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'booking.uiapplication.show','id' => $application['id']), false, true, true);
+			$link =  phpgw::link('/index.php', array('menuaction' => 'booking.uiapplication.show','id' => $application['id']), false, true, true);
 
 			/**
 			 * Text-version
@@ -772,7 +772,7 @@ HTML;
 //				$where_clauses[] = "(%%table%%.case_officer_id = " . intval($for_case_officer_id[1]) . ')';
 			}
 
-			if ($building_id = phpgw::get_var('filter_building_id', 'int', 'REQUEST', 0))
+			if ($building_id = Sanitizer::get_var('filter_building_id', 'int', 'REQUEST', 0))
 			{
 				$where_clauses[] = "(%%table%%.id IN ("
 					. " SELECT DISTINCT a.id"
@@ -780,9 +780,9 @@ HTML;
 					. " WHERE ar.application_id = a.id AND ar.resource_id = r.id AND br.resource_id =r.id  AND br.building_id = " . intval($building_id) . "))";
 			}
 
-			if ($status = phpgw::get_var('status') != '')
+			if ($status = Sanitizer::get_var('status') != '')
 			{
-				$params['filters']['status'] = phpgw::get_var('status');
+				$params['filters']['status'] = Sanitizer::get_var('status');
 			}
 
 			$params['filters']['where'] = $where_clauses;

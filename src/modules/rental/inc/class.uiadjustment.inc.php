@@ -37,7 +37,7 @@
 				$names = $this->locations->get_name($id);
 				if ($names['appname'] == $GLOBALS['phpgw_info']['flags']['currentapp'])
 				{
-					if ($this->hasPermissionOn($names['location'], PHPGW_ACL_ADD))
+					if ($this->hasPermissionOn($names['location'], ACL_ADD))
 					{
 						$party_types[] = array('id' => $id, 'name' => lang($label));
 					}
@@ -56,7 +56,7 @@
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -193,7 +193,7 @@
 				(
 				'my_name' => 'view',
 				'text' => lang('show'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uiadjustment.show_affected_contracts'
 				)),
@@ -204,7 +204,7 @@
 				(
 				'my_name' => 'edit',
 				'text' => lang('edit'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uiadjustment.edit'
 				)),
@@ -216,7 +216,7 @@
 				'my_name' => 'delete',
 				'text' => lang('delete'),
 				'confirm_msg' => lang('do you really want to delete this entry'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uiadjustment.delete'
 				)),
@@ -233,7 +233,7 @@
 				var year_suffix = "$lang_year";
 JS;
 
-			$GLOBALS['phpgw']->js->add_code('', $code);
+			phpgwapi_js::getInstance()->add_code('', $code);
 
 			self::add_javascript('rental', 'base', 'adjustment.index.js');
 			phpgwapi_jquery::load_widget('numberformat');
@@ -252,12 +252,12 @@ JS;
 				$user_rows_per_page = 10;
 			}
 
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
-			$start_index = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$num_of_objects = (phpgw::get_var('length', 'int') <= 0) ? $user_rows_per_page : phpgw::get_var('length', 'int');
+			$start_index = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$num_of_objects = (Sanitizer::get_var('length', 'int') <= 0) ? $user_rows_per_page : Sanitizer::get_var('length', 'int');
 			$sort_field = ($columns[$order[0]['column']]['data']) ? $columns[$order[0]['column']]['data'] : 'year';
 			$sort_ascending = ($order[0]['dir'] == 'desc') ? false : true;
 			// Form variables
@@ -269,9 +269,9 @@ JS;
 				$sort_field = "responsibility_id";
 			}
 
-			$responsibility_id = phpgw::get_var('responsibility_id');
+			$responsibility_id = Sanitizer::get_var('responsibility_id');
 
-			$type = phpgw::get_var('type');
+			$type = Sanitizer::get_var('type');
 			switch ($type)
 			{
 				case 'manual_adjustments':
@@ -304,8 +304,8 @@ JS;
 
 		public function save()
 		{
-			$adjustment_id = (int)phpgw::get_var('id');
-			$responsibility_id = (int)phpgw::get_var('responsibility_id');
+			$adjustment_id = (int)Sanitizer::get_var('id');
+			$responsibility_id = (int)Sanitizer::get_var('responsibility_id');
 
 			$message = null;
 			$error = null;
@@ -313,7 +313,7 @@ JS;
 			if (isset($adjustment_id) && $adjustment_id > 0)
 			{
 				$adjustment = rental_soadjustment::get_instance()->get_single($adjustment_id);
-				if (!$adjustment->has_permission(PHPGW_ACL_EDIT))
+				if (!$adjustment->has_permission(ACL_EDIT))
 				{
 					unset($adjustment);
 					phpgw::no_access($GLOBALS['phpgw_info']['flags']['currentapp'], lang('permission_denied_edit_adjustment'));
@@ -329,11 +329,11 @@ JS;
 				}
 			}
 
-			$adjustment_date = phpgwapi_datetime::date_to_timestamp(phpgw::get_var('adjustment_date'));
+			$adjustment_date = phpgwapi_datetime::date_to_timestamp(Sanitizer::get_var('adjustment_date'));
 
 			if (isset($adjustment))
 			{
-				$adjustment->set_year(phpgw::get_var('adjustment_year'));
+				$adjustment->set_year(Sanitizer::get_var('adjustment_year'));
 				$adjustment->set_adjustment_date($adjustment_date);
 				$adjustment->set_price_item_id(0);
 				if (isset($responsibility_id) && $responsibility_id > 0)
@@ -342,10 +342,10 @@ JS;
 				}
 
 				$adjustment->set_new_price(0);
-				$adjustment->set_percent(phpgw::get_var('percent', 'float'));
-				$adjustment->set_interval(phpgw::get_var('interval'));
-				$adjustment->set_adjustment_type(phpgw::get_var('adjustment_type'));
-				$adjustment->set_extra_adjustment(phpgw::get_var('extra_adjustment') == 'on' ? true : false);
+				$adjustment->set_percent(Sanitizer::get_var('percent', 'float'));
+				$adjustment->set_interval(Sanitizer::get_var('interval'));
+				$adjustment->set_adjustment_type(Sanitizer::get_var('adjustment_type'));
+				$adjustment->set_extra_adjustment(Sanitizer::get_var('extra_adjustment') == 'on' ? true : false);
 
 				$so_adjustment = rental_soadjustment::get_instance();
 				if ($so_adjustment->store($adjustment))
@@ -369,7 +369,7 @@ JS;
 			}
 
 			$this->edit(array('adjustment_id' => $adjustment_id));
-			//$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uiadjustment.edit', 'id' => $adjustment->get_id(), 'message' => $message, 'error' => $error));
+			//phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uiadjustment.edit', 'id' => $adjustment->get_id(), 'message' => $message, 'error' => $error));
 		}
 
 		/**
@@ -377,18 +377,18 @@ JS;
 		 */
 		public function add()
 		{
-			$responsibility_id = phpgw::get_var('responsibility_id');
+			$responsibility_id = Sanitizer::get_var('responsibility_id');
 			if (isset($responsibility_id) && $responsibility_id > 0)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uiadjustment.edit',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uiadjustment.edit',
 					'responsibility_id' => $responsibility_id));
 			}
 		}
 
 		public function edit( $values = array(), $mode = 'edit' )
 		{
-			$adjustment_id = (int)phpgw::get_var('id');
-			$responsibility_id = (int)phpgw::get_var('responsibility_id');
+			$adjustment_id = (int)Sanitizer::get_var('id');
+			$responsibility_id = (int)Sanitizer::get_var('responsibility_id');
 
 			if ($values['adjustment_id'])
 			{
@@ -399,7 +399,7 @@ JS;
 			{
 				$adjustment = rental_soadjustment::get_instance()->get_single($adjustment_id);
 
-				if (!($adjustment && $adjustment->has_permission(PHPGW_ACL_EDIT)))
+				if (!($adjustment && $adjustment->has_permission(ACL_EDIT)))
 				{
 					phpgw::no_access($GLOBALS['phpgw_info']['flags']['currentapp'], lang('permission_denied_edit_adjustment'));
 				}
@@ -456,8 +456,8 @@ JS;
 			$data = array
 				(
 				'tabs' => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
-				'form_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'rental.uiadjustment.save')),
-				'cancel_url' => $GLOBALS['phpgw']->link('/index.php', $link_index),
+				'form_action' => phpgw::link('/index.php', array('menuaction' => 'rental.uiadjustment.save')),
+				'cancel_url' => phpgw::link('/index.php', $link_index),
 				'lang_save' => lang('save'),
 				'lang_cancel' => lang('cancel'),
 				'editable' => true,
@@ -489,7 +489,7 @@ JS;
 
 		public function delete()
 		{
-			$list_adjustment_id = phpgw::get_var('id');
+			$list_adjustment_id = Sanitizer::get_var('id');
 			$message = array();
 
 			if (is_array($list_adjustment_id))
@@ -525,7 +525,7 @@ JS;
 
 		public function show_affected_contracts()
 		{
-			$adjustment_id = (int)phpgw::get_var('id');
+			$adjustment_id = (int)Sanitizer::get_var('id');
 			$adjustment = rental_soadjustment::get_instance()->get_single($adjustment_id);
 
 			//if there exist another regulation that has been exectued after current regulation with the same filters, the affected list will be out of date.
@@ -652,7 +652,7 @@ JS;
 				}
 JS;
 
-			$GLOBALS['phpgw']->js->add_code('', $code);
+			phpgwapi_js::getInstance()->add_code('', $code);
 
 			phpgwapi_jquery::load_widget('numberformat');
 			self::render_template_xsl(array('adjustment', 'datatable_inline'), array('show_affected_contracts' => $data));

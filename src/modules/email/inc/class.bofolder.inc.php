@@ -341,7 +341,7 @@
 				$tr_color_class = (($i + 1)/2 == floor(($i + 1)/2)) ? 'row_off' : 'row_on';
 		//		$this->xi['folder_list_display'][$i]['list_backcolor'] = $tr_color;
 				$this->xi['folder_list_display'][$i]['list_backcolor_class'] = $tr_color_class;
-				$this->xi['folder_list_display'][$i]['folder_link'] = $GLOBALS['phpgw']->link(
+				$this->xi['folder_list_display'][$i]['folder_link'] = phpgw::link(
 								'/index.php',array(
 								'menuaction'=>'email.uiindex.index',
 								'fldball[folder]'=>$GLOBALS['phpgw']->msg->prep_folder_out($folder_long),
@@ -400,7 +400,7 @@
 			$this->xi['all_folders_listbox'] = $GLOBALS['phpgw']->msg->all_folders_listbox($feed_args);
 			
 			// ----  Set Up Form Variables  ---
-			$this->xi['form_action'] = $GLOBALS['phpgw']->link(
+			$this->xi['form_action'] = phpgw::link(
 					'/index.php',array(
 					'menuaction'=>'email.uifolder.folder'));
 			//$GLOBALS['phpgw']->template->set_var('all_folders_listbox',$GLOBALS['phpgw']->msg->all_folders_listbox('','','',False));
@@ -425,15 +425,15 @@
 			// Check if we are supposed to show long or short folder names and create opposite link
         if (($GLOBALS['phpgw']->msg->get_isset_arg('show_long') == true) && ($GLOBALS['phpgw']->msg->get_arg_value('show_long') != '')) {
             $this->xi['view_txt'] = lang('Show short names'); 
-            // $this->xi['view_short_lnk'] = $GLOBALS['phpgw']->link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/folder.php');
-            $this->xi['view_lnk'] = $GLOBALS['phpgw']->link('/index.php',array(
+            // $this->xi['view_short_lnk'] = phpgw::link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/folder.php');
+            $this->xi['view_lnk'] = phpgw::link('/index.php',array(
                 									'menuaction'=>'email.uifolder.folder',
                 									'fldball[folder]'=> $GLOBALS['phpgw']->msg->prep_folder_out(),
                 									'fldball[acctnum]'=>$GLOBALS['phpgw']->msg->get_acctnum()));
         } else {
             $this->xi['view_txt'] = lang('Show long names'); 
-            // $this->xi['view_long_lnk'] = $GLOBALS['phpgw']->link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/folder.php?show_long=1');
-            $this->xi['view_lnk'] = $GLOBALS['phpgw']->link('/index.php',array(
+            // $this->xi['view_long_lnk'] = phpgw::link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/folder.php?show_long=1');
+            $this->xi['view_lnk'] = phpgw::link('/index.php',array(
                 									'menuaction'=>'email.uifolder.folder',
                 									'fldball[folder]'=> $GLOBALS['phpgw']->msg->prep_folder_out(),
                 									'fldball[acctnum]'=> $GLOBALS['phpgw']->msg->get_acctnum(),
@@ -441,8 +441,8 @@
         } 
 		// Depreciated 
 		//	$this->xi['view_long_txt'] = lang('long names');
-			//$this->xi['view_long_lnk'] = $GLOBALS['phpgw']->link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/folder.php?show_long=1');
-		//	$this->xi['view_long_lnk'] = $GLOBALS['phpgw']->link(
+			//$this->xi['view_long_lnk'] = phpgw::link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/folder.php?show_long=1');
+		//	$this->xi['view_long_lnk'] = phpgw::link(
 		//					'/index.php',
 		//					'menuaction=email.uifolder.folder'
 		//					.'&fldball[folder]='.$GLOBALS['phpgw']->msg->prep_folder_out()
@@ -450,8 +450,8 @@
 		//					.'&show_long=1');
 							
 		//	$this->xi['view_short_txt'] = lang('short names');
-			//$this->xi['view_short_lnk'] = $GLOBALS['phpgw']->link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/folder.php');
-		//	$this->xi['view_short_lnk'] = $GLOBALS['phpgw']->link(
+			//$this->xi['view_short_lnk'] = phpgw::link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/folder.php');
+		//	$this->xi['view_short_lnk'] = phpgw::link(
 		//					'/index.php',
 		//					'menuaction=email.uifolder.folder'
 		//					.'&fldball[folder]='.$GLOBALS['phpgw']->msg->prep_folder_out()

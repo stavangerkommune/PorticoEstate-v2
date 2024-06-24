@@ -71,13 +71,13 @@
 				$this->use_session = true;
 			}
 
-			$this->start	= (int)phpgw::get_var('start', 'int');
-			$this->query	= phpgw::get_var('query');
-			$this->sort		= phpgw::get_var('sort');
-			$this->order	= phpgw::get_var('order');
-			$this->filter	= phpgw::get_var('filter', 'int');
-			$this->cat_id	= phpgw::get_var('cat_id', 'int');
-			$this->allrows	= phpgw::get_var('allrows', 'bool');
+			$this->start	= (int)Sanitizer::get_var('start', 'int');
+			$this->query	= Sanitizer::get_var('query');
+			$this->sort		= Sanitizer::get_var('sort');
+			$this->order	= Sanitizer::get_var('order');
+			$this->filter	= Sanitizer::get_var('filter', 'int');
+			$this->cat_id	= Sanitizer::get_var('cat_id', 'int');
+			$this->allrows	= Sanitizer::get_var('allrows', 'bool');
 		}
 
 

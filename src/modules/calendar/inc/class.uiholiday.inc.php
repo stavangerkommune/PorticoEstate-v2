@@ -104,10 +104,10 @@
 					$var = Array(
 						'tr_color'		=> $tr_color,
 						'group_name'	=> $value,
-						'edit_link'		=> '<a href="'.$GLOBALS['phpgw']->link($this->base_url,Array('menuaction'=>'calendar.uiholiday.edit_locale','locale'=>$value)) . '"> '.lang('Edit').' </a>',
-						'delete_link'	=> '<a href="'.$GLOBALS['phpgw']->link($this->base_url,Array('menuaction'=>'calendar.uiholiday.delete_locale','locale'=>$value)).'"> '.lang('Delete').' </a>',
-						'extra_link'	=> '<a href="'.$GLOBALS['phpgw']->link($this->base_url,Array('menuaction'=>'calendar.uiholiday.submit','locale'=>$value)).'"> '.lang('Submit').' </a>'.
-							' &nbsp; &nbsp; <a href="'.$GLOBALS['phpgw']->link($this->base_url,Array('menuaction'=>'calendar.uiholiday.submit','locale'=>$value,'download'=>1)).'"> '.lang('Download').' </a>'
+						'edit_link'		=> '<a href="'.phpgw::link($this->base_url,Array('menuaction'=>'calendar.uiholiday.edit_locale','locale'=>$value)) . '"> '.lang('Edit').' </a>',
+						'delete_link'	=> '<a href="'.phpgw::link($this->base_url,Array('menuaction'=>'calendar.uiholiday.delete_locale','locale'=>$value)).'"> '.lang('Delete').' </a>',
+						'extra_link'	=> '<a href="'.phpgw::link($this->base_url,Array('menuaction'=>'calendar.uiholiday.submit','locale'=>$value)).'"> '.lang('Submit').' </a>'.
+							' &nbsp; &nbsp; <a href="'.phpgw::link($this->base_url,Array('menuaction'=>'calendar.uiholiday.submit','locale'=>$value,'download'=>1)).'"> '.lang('Download').' </a>'
 					);
 					$p->set_var($var);
 					$p->parse('rows','row',True);
@@ -117,9 +117,9 @@
 			}
 
 			$var = Array(
-				'new_action'		=> $GLOBALS['phpgw']->link($this->base_url,Array('menuaction'=>'calendar.uiholiday.edit_holiday','id'=>0)),
+				'new_action'		=> phpgw::link($this->base_url,Array('menuaction'=>'calendar.uiholiday.edit_holiday','id'=>0)),
 				'lang_add'			=> lang('add'),
-				'search_action'	=> $GLOBALS['phpgw']->link($this->base_url,Array('menuaction'=>'calendar.uiholiday.admin')),
+				'search_action'	=> phpgw::link($this->base_url,Array('menuaction'=>'calendar.uiholiday.admin')),
 				'lang_search'		=> lang('search')
 			);
 
@@ -143,7 +143,7 @@
 				$link_params = Array(
 					'menuaction'	=> 'calendar.uiholiday.admin'
 				);
-				$GLOBALS['phpgw']->redirect_link($this->base_url,$link_params);
+				phpgw::redirect_link($this->base_url,$link_params);
 			}
 			unset($GLOBALS['phpgw_info']['flags']['noheader']);
 			unset($GLOBALS['phpgw_info']['flags']['nonavbar']);
@@ -199,9 +199,9 @@
 						'header_delete'=> lang('Delete'),
 						'group_name'	=> $holidays[$i]['name'],
 						'rule'			=> '<td>'.$this->bo->rule_string($holidays[$i]).'</td>',
-						'edit_link'		=> '<a href="'.$GLOBALS['phpgw']->link($this->base_url,Array('menuaction'=>'calendar.uiholiday.edit_holiday','locale'=>$this->bo->locales[0],'id'=>$holidays[$i]['index'],'year'=>$this->bo->year)).'"> '.lang('Edit').' </a>',
-						'extra_link'	=> '<a href="'.$GLOBALS['phpgw']->link($this->base_url,Array('menuaction'=>'calendar.uiholiday.copy_holiday','locale'=>$this->bo->locales[0],'id'=>$holidays[$i]['index'],'year'=>$this->bo->year)).'"> '.lang('Copy').' </a>',
-						'delete_link'	=> '<a href="'.$GLOBALS['phpgw']->link($this->base_url,Array('menuaction'=>'calendar.uiholiday.delete_holiday','locale'=>$this->bo->locales[0],'id'=>$holidays[$i]['index'],'year'=>$this->bo->year)).'"> '.lang('Delete').' </a>'
+						'edit_link'		=> '<a href="'.phpgw::link($this->base_url,Array('menuaction'=>'calendar.uiholiday.edit_holiday','locale'=>$this->bo->locales[0],'id'=>$holidays[$i]['index'],'year'=>$this->bo->year)).'"> '.lang('Edit').' </a>',
+						'extra_link'	=> '<a href="'.phpgw::link($this->base_url,Array('menuaction'=>'calendar.uiholiday.copy_holiday','locale'=>$this->bo->locales[0],'id'=>$holidays[$i]['index'],'year'=>$this->bo->year)).'"> '.lang('Copy').' </a>',
+						'delete_link'	=> '<a href="'.phpgw::link($this->base_url,Array('menuaction'=>'calendar.uiholiday.delete_holiday','locale'=>$this->bo->locales[0],'id'=>$holidays[$i]['index'],'year'=>$this->bo->year)).'"> '.lang('Delete').' </a>'
 					);
 
 					$p->set_var($var);
@@ -210,11 +210,11 @@
 			}
 
 			$var = Array(
-				'new_action'	=> $GLOBALS['phpgw']->link($this->base_url,Array('menuaction'=>'calendar.uiholiday.edit_holiday','locale'=>$this->bo->locales[0],'id'=>0,'year'=>$this->bo->year)),
+				'new_action'	=> phpgw::link($this->base_url,Array('menuaction'=>'calendar.uiholiday.edit_holiday','locale'=>$this->bo->locales[0],'id'=>0,'year'=>$this->bo->year)),
 				'lang_add'		=> lang('add'),
-				'back_action'	=> $GLOBALS['phpgw']->link($this->base_url,Array('menuaction'=>'calendar.uiholiday.admin')),
+				'back_action'	=> phpgw::link($this->base_url,Array('menuaction'=>'calendar.uiholiday.admin')),
 				'lang_back'		=> lang('Back'),
-				'search_action'=> $GLOBALS['phpgw']->link($this->base_url,Array('menuaction'=>'calendar.uiholiday.edit_locale','locale'=>$this->bo->locales[0],'year'=>$this->bo->year)),
+				'search_action'=> phpgw::link($this->base_url,Array('menuaction'=>'calendar.uiholiday.edit_locale','locale'=>$this->bo->locales[0],'year'=>$this->bo->year)),
 				'lang_search'	=> lang('search')
 			);
 			$p->set_var($var);
@@ -271,7 +271,7 @@
 			$var = Array(
 				'title_holiday'=> ($this->bo->id ? lang('Edit') : lang('Add')).' '.lang('Holiday'),
 				'message'		=> $message,
-				'actionurl'	   => $GLOBALS['phpgw']->link($this->base_url,array('menuaction'=>'calendar.boholiday.add','year'=>$this->bo->year)),
+				'actionurl'	   => phpgw::link($this->base_url,array('menuaction'=>'calendar.boholiday.add','year'=>$this->bo->year)),
 				'hidden_vars'	=> '<input type="hidden" name="holiday[hol_id]" value="'.$this->bo->id.'">'."\n"
 							 . '<input type="hidden" name="holiday[locales]" value="'.$this->bo->locales[0].'">'."\n"
 			);
@@ -344,7 +344,7 @@
 			}
 			
 			$t->set_var(Array(
-				'action_url_button'	=> $GLOBALS['phpgw']->link($this->base_url,$link_params),
+				'action_url_button'	=> phpgw::link($this->base_url,$link_params),
 				'action_text_button'	=> lang('Cancel'),
 				'action_confirm_button'	=> '',
 				'action_extra_field'	=> ''
@@ -360,7 +360,7 @@
 					'id'			=> $this->bo->id
 				);
 				$t->set_var(Array(
-					'action_url_button'	=> $GLOBALS['phpgw']->link($this->base_url,$link_params),
+					'action_url_button'	=> phpgw::link($this->base_url,$link_params),
 					'action_text_button'	=> lang('Delete'),
 					'action_confirm_button'	=> '',
 					'action_extra_field'	=> ''
@@ -393,7 +393,7 @@
 			$p->set_var('messages',lang('Are you sure you want to delete this Country ?')."<br />".$this->bo->locales[0]);
 
 			$var = Array(
-				'action_url_button'	=> $GLOBALS['phpgw']->link($this->base_url,Array('menuaction'=>'calendar.uiholiday.admin')),
+				'action_url_button'	=> phpgw::link($this->base_url,Array('menuaction'=>'calendar.uiholiday.admin')),
 				'action_text_button'	=> lang('No'),
 				'action_confirm_button'	=> '',
 				'action_extra_field'	=> ''
@@ -402,7 +402,7 @@
 			$p->parse('no','form_button');
 
 			$var = Array(
-				'action_url_button'	=> $GLOBALS['phpgw']->link($this->base_url,Array('menuaction'=>'calendar.boholiday.delete_locale','locale'=>$this->bo->locales[0])),
+				'action_url_button'	=> phpgw::link($this->base_url,Array('menuaction'=>'calendar.boholiday.delete_locale','locale'=>$this->bo->locales[0])),
 				'action_text_button'	=> lang('Yes'),
 				'action_confirm_button'	=> '',
 				'action_extra_field'	=> ''
@@ -433,7 +433,7 @@
 			$p->set_var('messages',lang('Are you sure you want to delete this holiday ?')."<br />".$holiday['name'].' ('.$this->bo->locales[0].') '.$this->bo->rule_string($holiday));
 
 			$var = Array(
-				'action_url_button'	=> $GLOBALS['phpgw']->link($this->base_url,Array('menuaction'=>'calendar.uiholiday.edit_locale','locale'=>$this->bo->locales[0],'year'=>$this->bo->year)),
+				'action_url_button'	=> phpgw::link($this->base_url,Array('menuaction'=>'calendar.uiholiday.edit_locale','locale'=>$this->bo->locales[0],'year'=>$this->bo->year)),
 				'action_text_button'	=> lang('No'),
 				'action_confirm_button'	=> '',
 				'action_extra_field'	=> ''
@@ -442,7 +442,7 @@
 			$p->parse('no','form_button');
 
 			$var = Array(
-				'action_url_button'	=> $GLOBALS['phpgw']->link($this->base_url,Array('menuaction'=>'calendar.boholiday.delete_holiday','locale'=>$this->bo->locales[0],'id'=>$this->bo->id,'year'=>$this->bo->year)),
+				'action_url_button'	=> phpgw::link($this->base_url,Array('menuaction'=>'calendar.boholiday.delete_holiday','locale'=>$this->bo->locales[0],'id'=>$this->bo->id,'year'=>$this->bo->year)),
 				'action_text_button'	=> lang('Yes'),
 				'action_confirm_button'	=> '',
 				'action_extra_field'	=> ''
@@ -462,7 +462,7 @@
 			$this->bo->year = 0;	// for a complete list with all years
 			$holidays = $this->bo->get_holiday_list();
 
-			if ( phpgw::get_var('download', 'bool', 'POST') )
+			if ( Sanitizer::get_var('download', 'bool', 'POST') )
 			{
 				$locale = $this->bo->locales[0];
 				$browser = CreateObject('phpgwapi.browser');
@@ -481,7 +481,7 @@
 			}
 			elseif($this->debug)
 			{
-				$action = $GLOBALS['phpgw']->link('/calendar/phpgroupware.org/accept_holiday.php');
+				$action = phpgw::link('/calendar/phpgroupware.org/accept_holiday.php');
 			}
 			else
 			{

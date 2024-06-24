@@ -84,7 +84,7 @@
 
 		public function index()
 		{
-			if (empty($this->permissions[PHPGW_ACL_READ]))
+			if (empty($this->permissions[ACL_READ]))
 			{
 				$message = '';
 				if($this->currentapp == 'eventplannerfrontend')
@@ -94,7 +94,7 @@
 				phpgw::no_access(false, $message);
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -185,9 +185,9 @@
 
 		public function edit( $values = array(), $mode = 'edit' )
 		{
-			$active_tab = !empty($values['active_tab']) ? $values['active_tab'] : phpgw::get_var('active_tab', 'string', 'REQUEST', 'first_tab');
+			$active_tab = !empty($values['active_tab']) ? $values['active_tab'] : Sanitizer::get_var('active_tab', 'string', 'REQUEST', 'first_tab');
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('edit');
-			if (empty($this->permissions[PHPGW_ACL_ADD]))
+			if (empty($this->permissions[ACL_ADD]))
 			{
 				phpgw::no_access();
 			}
@@ -198,7 +198,7 @@
 			}
 			else
 			{
-				$id = !empty($values['id']) ? $values['id'] : phpgw::get_var('id', 'int');
+				$id = !empty($values['id']) ? $values['id'] : Sanitizer::get_var('id', 'int');
 				$vendor = $this->bo->read_single($id);
 			}
 
@@ -280,7 +280,7 @@
 			$config = CreateObject('phpgwapi.config', 'eventplanner')->read();
 			$default_category = !empty($config['default_vendor_category']) ? $config['default_vendor_category'] : null;
 
-			$vendor->organization_number = $vendor->organization_number ? $vendor->organization_number :  phpgw::get_var('org_id','int' , 'SESSION');
+			$vendor->organization_number = $vendor->organization_number ? $vendor->organization_number :  Sanitizer::get_var('org_id','int' , 'SESSION');
 			$data = array(
 				'datatable_def' => $datatable_def,
 				'form_action' => self::link(array('menuaction' => "{$this->currentapp}.uivendor.save")),
@@ -303,12 +303,12 @@
 
 		public function get( $id = 0 )
 		{
-			if (empty($this->permissions[PHPGW_ACL_ADD]))
+			if (empty($this->permissions[ACL_ADD]))
 			{
 				phpgw::no_access();
 			}
 
-			$id = !empty($id) ? $id : phpgw::get_var('id', 'int');
+			$id = !empty($id) ? $id : Sanitizer::get_var('id', 'int');
 
 			$vendor = $this->bo->read_single($id)->toArray();
 

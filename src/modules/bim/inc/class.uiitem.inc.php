@@ -44,7 +44,7 @@
 
         $GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
         $GLOBALS['phpgw_info']['flags']['menu_selection'] = 'bim::item::index';
-		$this->db = & $GLOBALS['phpgw']->db;
+		$this->db = Db::getInstance();
         $this->so = bim_soitem::singleton();
         $this->sogroup = bim_soitem_group::singleton();
     }
@@ -63,7 +63,7 @@
         $datatable = array();
         $this->populateDataTable($datatable);
 		$json = $this->populateJson($datatable);
-			if(phpgw::get_var('phpgw_return_as') == 'json')
+			if(Sanitizer::get_var('phpgw_return_as') == 'json')
  		{
             return $json;
         }
@@ -72,9 +72,9 @@
         // Prepare template variables and process XSLT
         $template_vars = array();
         $template_vars['datatable'] = $datatable;
-        $GLOBALS['phpgw']->xslttpl->add_file(array('datatable'));
+        phpgwapi_xslttemplates::getInstance()->add_file(array('datatable'));
         //print_r($template_vars);
-        $GLOBALS['phpgw']->xslttpl->set_var('phpgw', $template_vars);
+        phpgwapi_xslttemplates::getInstance()->set_var('phpgw', $template_vars);
 
         $this->setupCss();
 
@@ -129,7 +129,7 @@
 
 		private function populateDataTable(&$datatable)
 		{
-			if(phpgw::get_var('phpgw_return_as') != 'json')
+			if(Sanitizer::get_var('phpgw_return_as') != 'json')
 			{
             $this->setFormAndNonJsonProperties($datatable);
         }
@@ -154,7 +154,7 @@
 		private function setFormAndNonJsonProperties(&$datatable)
 		{
     	// Set base URL. FIXME: Add more URL parameters when needed
-            $datatable['config']['base_url'] = $GLOBALS['phpgw']->link('/index.php', array
+            $datatable['config']['base_url'] = phpgw::link('/index.php', array
             (
 				'menuaction' => 'bim.uiitem.index',
             ));
@@ -175,7 +175,7 @@
             array_unshift($values_combo_box_0, $default_value);
     	$datatable['actions']['form'] = array(
                 array(
-					'action' => $GLOBALS['phpgw']->link('/index.php', array(
+					'action' => phpgw::link('/index.php', array(
                                 'menuaction' 	=> 'bim.uiitem.index',
                                 'group_id'        => 0
                             )
@@ -193,7 +193,7 @@
                             array(
 								'type' => 'link',
                                     'id'  => 'btn_columns',
-								'url' => "Javascript:window.open('" . $GLOBALS['phpgw']->link('/index.php', array(
+								'url' => "Javascript:window.open('" . phpgw::link('/index.php', array(
                                             'menuaction' => 'bim.uiitem.columns',
                                             'role'		=> $this->role
 								)) . "','','width=350,height=370')",
@@ -244,15 +244,15 @@
     
 		private function setSorting(&$datatable)
 		{
-			if((phpgw::get_var("start") == "") && (phpgw::get_var("order", 'string') == ""))
+			if((Sanitizer::get_var("start") == "") && (Sanitizer::get_var("order", 'string') == ""))
         {
             $datatable['sorting']['order'] 			= 'id'; // name key Column in myColumnDef
             $datatable['sorting']['sort'] 			= 'asc'; // ASC / DESC
         }
         else
         {
-            $datatable['sorting']['order']			= phpgw::get_var('order', 'string'); // name of column of Database
-            $datatable['sorting']['sort'] 			= phpgw::get_var('sort', 'string'); // ASC / DESC
+            $datatable['sorting']['order']			= Sanitizer::get_var('order', 'string'); // name of column of Database
+            $datatable['sorting']['sort'] 			= Sanitizer::get_var('sort', 'string'); // ASC / DESC
         }
     }
 
@@ -333,7 +333,7 @@
         $datatable['rowactions']['action'][] = array(
                 'my_name' 		=> 'view',
                 'text' 			=> lang('view'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
                 (
                     'menuaction'	=> 'bim.uiitem.view',
                     'role'          => $this->role
@@ -343,7 +343,7 @@
         $datatable['rowactions']['action'][] = array(
                 'my_name' 		=> 'view',
                 'text' 			=> lang('open view in new window'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
                 (
                     'menuaction'	=> 'bim.uiitem.view',
                     'role'			=> $this->role,
@@ -356,7 +356,7 @@
         $datatable['rowactions']['action'][] = array(
                 'my_name' 		=> 'edit',
                 'text' 			=> lang('edit'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
                 (
 					'menuaction' => 'bim.uiitem.edit',
                     'role'      => $this->role
@@ -366,7 +366,7 @@
         $datatable['rowactions']['action'][] = array(
                 'my_name' 		=> 'edit',
                 'text' 			=> lang('open edit in new window'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
                 (
                 'menuaction'	=> 'bim.uiitem.edit',
                 'role'			=> $this->role,
@@ -379,7 +379,7 @@
                 'my_name' 			=> 'delete',
                 'text' 			=> lang('delete'),
                 'confirm_msg'	=> lang('do you really want to delete this entry'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
                 (
                 'menuaction'	=> 'bim.uiitem.delete',
                 'role'	=> $this->role
@@ -389,7 +389,7 @@
         $datatable['rowactions']['action'][] = array(
                 'my_name' 			=> 'add',
                 'text' 			=> lang('add'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
                 (
                 'menuaction'	=> 'bim.uiitem.edit',
                 'role'	=> $this->role
@@ -406,7 +406,7 @@
             $GLOBALS['phpgw']->css = createObject('phpgwapi.css');
         }
         
-        $GLOBALS['phpgw']->css->add_external_file('bim/templates/base/css/bim.css');
+        phpgwapi_css::getInstance()->add_external_file('bim/templates/base/css/bim.css');
     }
 
 		private function setupBimCss()
@@ -415,7 +415,7 @@
 			{
             $GLOBALS['phpgw']->css = createObject('phpgwapi.css');
         }
-        $GLOBALS['phpgw']->css->add_external_file('bim/templates/base/css/bim.css');
+        phpgwapi_css::getInstance()->add_external_file('bim/templates/base/css/bim.css');
     }
     
 		public function foo()
@@ -429,9 +429,9 @@
     	$template_vars = array();
         $template_vars['msgbox_data'] = $formTest;
         
-        $GLOBALS['phpgw']->xslttpl->add_file(array('msgbox'));
+        phpgwapi_xslttemplates::getInstance()->add_file(array('msgbox'));
         //print_r($template_vars);
-        $GLOBALS['phpgw']->xslttpl->set_var('phpgw', $template_vars);
+        phpgwapi_xslttemplates::getInstance()->set_var('phpgw', $template_vars);
         */
 			$xml = <<<XML
     	<PHPGW>
@@ -490,8 +490,8 @@
 </PHPGW>
 XML;
 
-    	$GLOBALS['phpgw']->xslttpl->add_file(array('testProject3'));
-    	$GLOBALS['phpgw']->xslttpl->set_xml_data($xml);
+    	phpgwapi_xslttemplates::getInstance()->add_file(array('testProject3'));
+    	phpgwapi_xslttemplates::getInstance()->set_xml_data($xml);
    		
     	$this->setupCss();
     }
@@ -515,7 +515,7 @@ XML;
 		public function showModels()
 		{
     	
-    	$GLOBALS['phpgw']->xslttpl->add_file(array('bim_showmodels'));
+    	phpgwapi_xslttemplates::getInstance()->add_file(array('bim_showmodels'));
     	$bobimmodel = new bobimmodel_impl();
     	$sobimmodel = new sobimmodel_impl($this->db);
      	$bobimmodel->setSobimmodel($sobimmodel);
@@ -525,7 +525,7 @@ XML;
      		'models' => $output,
      		'loadingImage' => $loadingImage
      	);
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('modelData' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('modelData' => $data));
         $this->setupBimCss();
     }
     
@@ -534,9 +534,9 @@ XML;
     
 		public function upload()
 		{
-     	$GLOBALS['phpgw']->xslttpl->add_file(array('bim_upload_ifc'));
+     	phpgwapi_xslttemplates::getInstance()->add_file(array('bim_upload_ifc'));
     	
-			$import_action = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'bim.uiitem.uploadFile',
+			$import_action = phpgw::link('/index.php', array('menuaction' => 'bim.uiitem.uploadFile',
 				'id' => $id));
         $data = array
 			(
@@ -549,14 +549,14 @@ XML;
 				'lang_import'					=> lang('import'),
 				'lang_cancel'					=> lang('cancel')
 			);
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('upload' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('upload' => $data));
         $this->setupBimCss();
      }
     
 		public function uploadFile()
 		{
      	$uploadedFileArray = $_FILES[$this->form_upload_field_filename];
-     	$modelName = phpgw::get_var($this->form_upload_field_modelname);
+     	$modelName = Sanitizer::get_var($this->form_upload_field_modelname);
      	$filename = $uploadedFileArray['name'];
 		$filenameWithPath = $uploadedFileArray['tmp_name'];
      	$bobimmodel = new bobimmodel_impl();
@@ -589,7 +589,7 @@ XML;
 			);
      	
      	
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('upload' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('upload' => $data));
      }
      
 		public function listModels()
@@ -599,7 +599,7 @@ XML;
      
 		public function ifc()
 		{
-     	$GLOBALS['phpgw']->xslttpl->add_file(array('ifc'));
+     	phpgwapi_xslttemplates::getInstance()->add_file(array('ifc'));
      }
 
 		public function testdata()

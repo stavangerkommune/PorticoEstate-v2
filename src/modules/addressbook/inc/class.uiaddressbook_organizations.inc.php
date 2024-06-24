@@ -140,7 +140,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 		{
 			foreach ($this->fields as $field => $field_info)
 			{
-				if($field_info['action'] & PHPGW_ACL_READ)
+				if($field_info['action'] & ACL_READ)
 				{
 					$label = !empty($field_info['translated_label'])  ? $field_info['translated_label'] :'';
 					if(!$label)
@@ -186,7 +186,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 	function get_fields($debug = true)
 	{
 		$fields = array(
-			'contact_id' => array('action'=> PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+			'contact_id' => array('action'=> ACL_READ | ACL_ADD | ACL_EDIT,
 				'type' => 'int',
 				'label' => 'id',
 				'sortable'=> true,
@@ -194,7 +194,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				'public' => false,
 				'group' => 'org_data'
 				),
-			'access' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+			'access' => array('action'=> ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'access',
 				'sortable' => false,
@@ -202,7 +202,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				'public' => true,
 				'group' => 'org_data'
 				),			
-			'org_name' => array('action'=> PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+			'org_name' => array('action'=> ACL_READ | ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'org name',
 				'sortable' => false,
@@ -211,7 +211,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				'required' => true,
 				'group' => 'org_data'
 				),
-			'owner' => array('action'=> PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+			'owner' => array('action'=> ACL_READ | ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'owner',
 				'sortable' => false,
@@ -219,7 +219,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				'public' => true,
 				'group' => 'org_data'
 				),
-			'addr_id' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+			'addr_id' => array('action'=> ACL_ADD | ACL_EDIT,
 				'type' => 'int',
 				'label' => 'addr id',
 				'sortable' => false,
@@ -227,7 +227,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				'public' => true,
 				'group' => 'addr_data'
 				),
-			'addr_add1' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+			'addr_add1' => array('action'=> ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'address 1',
 				'sortable' => false,
@@ -235,7 +235,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				'public' => true,
 				'group' => 'addr_data'
 				),
-			'addr_add2' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+			'addr_add2' => array('action'=> ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'address 2',
 				'sortable' => false,
@@ -243,7 +243,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				'public' => true,
 				'group' => 'addr_data'
 				),
-			'addr_city' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+			'addr_city' => array('action'=> ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'city',
 				'sortable' => false,
@@ -251,7 +251,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				'public' => true,
 				'group' => 'addr_data'
 				),
-			'addr_state' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+			'addr_state' => array('action'=> ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'state',
 				'sortable' => false,
@@ -259,7 +259,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				'public' => true,
 				'group' => 'addr_data'
 				),
-			'addr_postal_code' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+			'addr_postal_code' => array('action'=> ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'postal code',
 				'sortable' => false,
@@ -267,7 +267,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				'public' => true,
 				'group' => 'addr_data'
 				),
-			'addr_country' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+			'addr_country' => array('action'=> ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'country',
 				'sortable' => false,
@@ -275,7 +275,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				'public' => true,
 				'group' => 'addr_data'
 				),
-			'addr_type' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+			'addr_type' => array('action'=> ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'type',
 				'sortable' => false,
@@ -283,7 +283,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				'public' => true,
 				'group' => 'addr_data'
 				),
-			'current_persons' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+			'current_persons' => array('action'=> ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'persons',
 				'sortable' => false,
@@ -291,7 +291,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				'public' => true,
 				'group' => ''
 				),
-			'current_categories' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+			'current_categories' => array('action'=> ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'categories',
 				'sortable' => false,
@@ -299,7 +299,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				'public' => true,
 				'group' => ''
 				),
-			'comm_data' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+			'comm_data' => array('action'=> ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'comm_data',
 				'sortable' => false,
@@ -307,7 +307,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				'public' => true,
 				'group' => ''
 				),
-			'preferred_comm_data' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+			'preferred_comm_data' => array('action'=> ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'preferred_comm_data',
 				'sortable' => false,
@@ -322,7 +322,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 	
 	function index()
 	{
-		if (phpgw::get_var('phpgw_return_as') == 'json')
+		if (Sanitizer::get_var('phpgw_return_as') == 'json')
 		{
 			return $this->query();
 		}
@@ -407,7 +407,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 			(
 			'my_name' => 'view',
 			'text' => lang('view'),
-			'action' => $GLOBALS['phpgw']->link('/index.php', array
+			'action' => phpgw::link('/index.php', array
 				(
 				'menuaction' => "{$this->currentapp}.uiaddressbook_organizations.view"
 			)),
@@ -418,7 +418,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 			(
 			'my_name' => 'copy',
 			'text' => lang('copy'),
-			'action' => $GLOBALS['phpgw']->link('/index.php', array
+			'action' => phpgw::link('/index.php', array
 				(
 				'menuaction' => "{$this->currentapp}.uiaddressbook_organizations.copy"
 			)),
@@ -441,7 +441,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 			'my_name' => 'delete',
 			'text' => lang('delete'),
 			'confirm_msg' => lang('do you really want to delete this entry'),
-			'action' => $GLOBALS['phpgw']->link('/index.php', array
+			'action' => phpgw::link('/index.php', array
 				(
 				'menuaction' => "{$this->currentapp}.uiaddressbook_organizations.delete"
 			)),
@@ -454,16 +454,16 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 
 	public function query($relaxe_acl = false)
 	{
-		$search = phpgw::get_var('search');
-		$order = phpgw::get_var('order');
-		$draw = phpgw::get_var('draw', 'int');
-		$columns = phpgw::get_var('columns');
-		$category = phpgw::get_var('category');
-		$qfield = phpgw::get_var('qfield');
-		$access = phpgw::get_var('access');
+		$search = Sanitizer::get_var('search');
+		$order = Sanitizer::get_var('order');
+		$draw = Sanitizer::get_var('draw', 'int');
+		$columns = Sanitizer::get_var('columns');
+		$category = Sanitizer::get_var('category');
+		$qfield = Sanitizer::get_var('qfield');
+		$access = Sanitizer::get_var('access');
 
-		$start = phpgw::get_var('start', 'int', 'REQUEST', 0);
-		$results = phpgw::get_var('length', 'int', 'REQUEST', 0);
+		$start = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+		$results = Sanitizer::get_var('length', 'int', 'REQUEST', 0);
 		$query = $search['value'];
 		$ordering = $columns[$order[0]['column']]['data'];
 		$sort = $order[0]['dir'];
@@ -537,9 +537,9 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 	
 	public function edit( $values = array(), $mode = 'edit' )
 	{
-		$vcard = phpgw::get_var('vcard', 'int', 'REQUEST', 0);
+		$vcard = Sanitizer::get_var('vcard', 'int', 'REQUEST', 0);
 		
-		$id = !empty($values['org_data']['contact_id']) ? $values['org_data']['contact_id'] : phpgw::get_var('ab_id', 'int');
+		$id = !empty($values['org_data']['contact_id']) ? $values['org_data']['contact_id'] : Sanitizer::get_var('ab_id', 'int');
 		
 		if(!$this->bo->check_edit($id, $this->owner))
 		{
@@ -718,9 +718,9 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 		
 		foreach ($fields as $field	=> $field_info)
 		{
-			if(($field_info['action'] & PHPGW_ACL_ADD) ||  ($field_info['action'] & PHPGW_ACL_EDIT))
+			if(($field_info['action'] & ACL_ADD) ||  ($field_info['action'] & ACL_EDIT))
 			{
-				$value = phpgw::get_var($field, $field_info['type']);
+				$value = Sanitizer::get_var($field, $field_info['type']);
 				
 				if ($field_info['required'] && (($value !== '0' && empty($value)) || empty($value)))
 				{
@@ -754,7 +754,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 	
 	public function save($ajax = false)
 	{
-		$id = phpgw::get_var('contact_id', 'int');
+		$id = Sanitizer::get_var('contact_id', 'int');
 		
 		if (!$_POST)
 		{
@@ -868,7 +868,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 	
 	function get_others_data()
 	{
-		$contact_id = phpgw::get_var('contact_id', 'int');
+		$contact_id = Sanitizer::get_var('contact_id', 'int');
 		
 		if (!$contact_id)
 		{
@@ -888,7 +888,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 		return array
 			(
 			'data' => $others_data,
-			'draw' => phpgw::get_var('draw', 'int'),
+			'draw' => Sanitizer::get_var('draw', 'int'),
 			'recordsTotal' => $total_records,
 			'recordsFiltered' => $total_records
 		);
@@ -932,7 +932,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 	
 	function delete_others()
 	{
-		$other_id = phpgw::get_var('other_id');
+		$other_id = Sanitizer::get_var('other_id');
 		
 		$result = array();
 		
@@ -950,11 +950,11 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 	
 	function add_others()
 	{
-		$contact_id = phpgw::get_var('contact_id');
+		$contact_id = Sanitizer::get_var('contact_id');
 		$owner = $this->owner;
 		
-		$value = phpgw::get_var('value');
-		$description = phpgw::get_var('description');
+		$value = Sanitizer::get_var('value');
+		$description = Sanitizer::get_var('description');
 		
 		$field = array('action'=>'insert', 'other_name'=>$description, 'other_value'=>$value, 
 			'key_other_id'=>0, 'other_owner'=>$owner);
@@ -968,7 +968,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 	
 	function delete()
 	{
-		$person_id = phpgw::get_var('ab_id');
+		$person_id = Sanitizer::get_var('ab_id');
 		
 		if(!$this->bo->check_delete($person_id, $this->owner))
 		{
@@ -1005,13 +1005,13 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 	
 	function copy()
 	{
-		$contact_id = phpgw::get_var('ab_id');
+		$contact_id = Sanitizer::get_var('ab_id');
 
 		$new_contact_id = $this->bo->copy_contact($contact_id);
 		
 		phpgwapi_cache::message_set('Organization has been copied', 'message');
 		
-		$GLOBALS['phpgw']->redirect_link('/index.php', array
+		phpgw::redirect_link('/index.php', array
 				(
 					'menuaction'	=> "{$this->currentapp}.uiaddressbook_organizations.view",
 					'ab_id'		=> $new_contact_id,

@@ -36,7 +36,7 @@
 			$this->bo = CreateObject('sms.bocommand');
 			$this->bocommon = CreateObject('sms.bocommon');
 			$this->sms = CreateObject('sms.sms');
-			$this->acl = & $GLOBALS['phpgw']->acl;
+			$this->acl = Acl::getInstance();
 			$this->acl_location = '.command';
 			$this->cat_id = $this->bo->cat_id;
 			$this->start = $this->bo->start;
@@ -65,13 +65,13 @@
 		{
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 
-			if (!$this->acl->check($this->acl_location, PHPGW_ACL_READ, 'sms'))
+			if (!$this->acl->check($this->acl_location, ACL_READ, 'sms'))
 			{
 				$this->bocommon->no_access();
 				return;
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('command', 'nextmatchs',
+			phpgwapi_xslttemplates::getInstance()->add_file(array('command', 'nextmatchs',
 				'search_field'));
 
 			$receipt = $GLOBALS['phpgw']->session->appsession('session_data', 'sms_command_receipt');
@@ -82,9 +82,9 @@
 
 			foreach ($command_info as $entry)
 			{
-				if ($this->bocommon->check_perms($entry['grants'], PHPGW_ACL_DELETE))
+				if ($this->bocommon->check_perms($entry['grants'], ACL_DELETE))
 				{
-					$link_delete = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uicommand.delete',
+					$link_delete = phpgw::link('/index.php', array('menuaction' => 'sms.uicommand.delete',
 						'command_id' => $entry['id']));
 					$text_delete = lang('delete');
 					$lang_delete_text = lang('delete the command code');
@@ -95,10 +95,10 @@
 					'code' => $entry['code'],
 					'exec' => $entry['exec'],
 					'user' => $GLOBALS['phpgw']->accounts->id2name($entry['uid']),
-					'link_edit' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uicommand.edit_command',
+					'link_edit' => phpgw::link('/index.php', array('menuaction' => 'sms.uicommand.edit_command',
 						'command_id' => $entry['id'])),
 					'link_delete' => $link_delete,
-//					'link_view'				=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'sms.uicommand.view', 'command_id'=> $entry['id'])),
+//					'link_view'				=> phpgw::link('/index.php', array('menuaction'=> 'sms.uicommand.view', 'command_id'=> $entry['id'])),
 //					'lang_view_config_text'			=> lang('view the config'),
 					'lang_edit_config_text' => lang('manage the command code'),
 //					'text_view'				=> lang('view'),
@@ -152,13 +152,13 @@
 				'query' => $this->query
 			);
 
-//			if($this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'sms'))
+//			if($this->acl->check($this->acl_location, ACL_ADD, 'sms'))
 			{
 				$table_add[] = array
 					(
 					'lang_add' => lang('add'),
 					'lang_add_statustext' => lang('add a command'),
-					'add_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uicommand.edit_command')),
+					'add_action' => phpgw::link('/index.php', array('menuaction' => 'sms.uicommand.edit_command')),
 				);
 			}
 
@@ -174,7 +174,7 @@
 				'record_limit' => $record_limit,
 				'num_records' => count($command_info),
 				'all_records' => $this->bo->total_records,
-				'link_url' => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'link_url' => phpgw::link('/index.php', $link_data),
 				'img_path' => $GLOBALS['phpgw']->common->get_image_path('phpgwapi', 'default'),
 				'lang_searchfield_statustext' => lang('Enter the search string. To show all entries, empty this field and press the SUBMIT button again'),
 				'lang_searchbutton_statustext' => lang('Submit the search string'),
@@ -189,7 +189,7 @@
 			$function_msg = lang('list SMS commands');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('sms') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('list' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('list' => $data));
 			$this->save_sessiondata();
 		}
 
@@ -197,10 +197,10 @@
 		{
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 
-			$command_id = phpgw::get_var('command_id', 'int');
+			$command_id = Sanitizer::get_var('command_id', 'int');
 			if ($command_id)
 			{
-				if (!$this->acl->check($this->acl_location, PHPGW_ACL_EDIT, 'sms'))
+				if (!$this->acl->check($this->acl_location, ACL_EDIT, 'sms'))
 				{
 					$this->bocommon->no_access();
 					return;
@@ -208,16 +208,16 @@
 			}
 			else
 			{
-				if (!$this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'sms'))
+				if (!$this->acl->check($this->acl_location, ACL_ADD, 'sms'))
 				{
 					$this->bocommon->no_access();
 					return;
 				}
 			}
 
-			$values = phpgw::get_var('values');
+			$values = Sanitizer::get_var('values');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('command'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('command'));
 
 			if (is_array($values))
 			{
@@ -265,14 +265,14 @@
 						if ($values['save'])
 						{
 							$GLOBALS['phpgw']->session->appsession('session_data', 'sms_command_receipt', $receipt);
-							$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'sms.uicommand.index',
+							phpgw::redirect_link('/index.php', array('menuaction' => 'sms.uicommand.index',
 								'command_id' => $command_id));
 						}
 					}
 				}
 				else
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'sms.uicommand.index',
+					phpgw::redirect_link('/index.php', array('menuaction' => 'sms.uicommand.index',
 						'command_id' => $command_id));
 				}
 			}
@@ -321,7 +321,7 @@
 				'value_exec' => $values['exec'],
 				'lang_exec' => lang('SMS command exec'),
 				'msgbox_data' => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action' => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'form_action' => phpgw::link('/index.php', $link_data),
 				'lang_id' => lang('ID'),
 				'lang_save' => lang('save'),
 				'lang_cancel' => lang('cancel'),
@@ -335,19 +335,19 @@
 			$appname = lang('command');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('sms') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('edit_command' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit_command' => $data));
 		}
 
 		function redirect()
 		{
-			$code = phpgw::get_var('code');
-			$param = urldecode(phpgw::get_var('param'));
+			$code = Sanitizer::get_var('code');
+			$param = urldecode(Sanitizer::get_var('param'));
 
 			if (is_file(PHPGW_SERVER_ROOT . "/sms/bin/{$GLOBALS['phpgw_info']['user']['domain']}/config_" . strtoupper(basename($code)) . '_log'))
 			{
 				include(PHPGW_SERVER_ROOT . "/sms/bin/{$GLOBALS['phpgw_info']['user']['domain']}/config_" . strtoupper(basename($code)) . '_log');
 
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 			else
 			{
@@ -362,22 +362,22 @@
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::log';
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 
-			if (!$this->acl->check($this->acl_location, PHPGW_ACL_READ, 'sms'))
+			if (!$this->acl->check($this->acl_location, ACL_READ, 'sms'))
 			{
 				$this->bocommon->no_access();
 				return;
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('command', 'nextmatchs',
+			phpgwapi_xslttemplates::getInstance()->add_file(array('command', 'nextmatchs',
 				'search_field'));
 
 			$command_info = $this->bo->read_log();
 
 			foreach ($command_info as $entry)
 			{
-				if ($this->bocommon->check_perms($entry['grants'], PHPGW_ACL_DELETE))
+				if ($this->bocommon->check_perms($entry['grants'], ACL_DELETE))
 				{
-					$link_delete = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uicommand.delete',
+					$link_delete = phpgw::link('/index.php', array('menuaction' => 'sms.uicommand.delete',
 						'command_id' => $entry['id']));
 					$text_delete = lang('delete');
 					$lang_delete_text = lang('delete the command code');
@@ -390,7 +390,7 @@
 					'success' => $entry['success'],
 					'datetime' => $entry['datetime'],
 					'code' => $entry['code'],
-					'link_redirect' => $entry['success'] == 1 ? $GLOBALS['phpgw']->link('/index.php', array(
+					'link_redirect' => $entry['success'] == 1 ? phpgw::link('/index.php', array(
 							'menuaction' => 'sms.uicommand.redirect', 'code' => $entry['code'], 'param' => urlencode($entry['param']))) : '',
 					'param' => $entry['param'],
 					'link_delete' => $link_delete,
@@ -474,7 +474,7 @@
 				'record_limit' => $record_limit,
 				'num_records' => count($command_info),
 				'all_records' => $this->bo->total_records,
-				'link_url' => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'link_url' => phpgw::link('/index.php', $link_data),
 				'img_path' => $GLOBALS['phpgw']->common->get_image_path('phpgwapi', 'default'),
 				'lang_searchfield_statustext' => lang('Enter the search string. To show all entries, empty this field and press the SUBMIT button again'),
 				'lang_searchbutton_statustext' => lang('Submit the search string'),
@@ -486,35 +486,35 @@
 				'lang_cat_statustext' => lang('Select the category the location belongs to. To do not use a category select NO CATEGORY'),
 				'select_name' => 'cat_id',
 				'cat_list' => $this->bo->get_category_list(array('format' => 'filter', 'selected' => $this->cat_id)),
-				'select_action' => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'select_action' => phpgw::link('/index.php', $link_data),
 			);
 
 			$appname = lang('commands');
 			$function_msg = lang('list SMS command log');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('sms') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('log' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('log' => $data));
 			$this->save_sessiondata();
 		}
 
 		function delete()
 		{
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
-			if (!$this->acl->check($this->acl_location, PHPGW_ACL_DELETE, 'sms'))
+			if (!$this->acl->check($this->acl_location, ACL_DELETE, 'sms'))
 			{
 				$this->bocommon->no_access();
 				return;
 			}
 
-			$command_id = phpgw::get_var('command_id', 'int');
-			$confirm = phpgw::get_var('confirm', 'bool', 'POST');
+			$command_id = Sanitizer::get_var('command_id', 'int');
+			$confirm = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 				(
 				'menuaction' => 'sms.uicommand.index'
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$sql = "SELECT command_code FROM phpgw_sms_featcommand WHERE command_id='$command_id'";
 				$this->db->query($sql, __LINE__, __FILE__);
@@ -541,15 +541,15 @@
 
 				$link_data['err'] = urlencode($error_string);
 
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 				(
-				'done_action' => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uicommand.delete',
+				'done_action' => phpgw::link('/index.php', $link_data),
+				'delete_action' => phpgw::link('/index.php', array('menuaction' => 'sms.uicommand.delete',
 					'command_id' => $command_id)),
 				'lang_confirm_msg' => lang('do you really want to delete this entry'),
 				'lang_yes' => lang('yes'),
@@ -561,6 +561,6 @@
 			$function_msg = lang('delete SMS command code');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('sms') . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 	}

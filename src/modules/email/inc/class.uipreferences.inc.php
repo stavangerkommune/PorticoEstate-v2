@@ -382,7 +382,7 @@
 			}
 			else
 			{
-				$GLOBALS['phpgw']->xslttpl->add_file(array('app_data'));
+				phpgwapi_xslttemplates::getInstance()->add_file(array('app_data'));
 			}
 
 			$this->tpl->set_file(
@@ -405,7 +405,7 @@
 			$var = Array(
 				'pref_errors'		=> '',
 				'page_title'		=> lang('E-Mail preferences'),
-				'form_action'		=> $GLOBALS['phpgw']->link('/index.php',
+				'form_action'		=> phpgw::link('/index.php',
 					Array(
 						'menuaction'	=> 'email.bopreferences.preferences'
 					)
@@ -419,7 +419,7 @@
 				// added a cancel button
 				'btn_cancel_name'	=> 'cancel',
 				'btn_cancel_value'	=> lang('cancel'),
-				'btn_cancel_url'	=> $GLOBALS['phpgw']->link('/preferences/index.php',array())
+				'btn_cancel_url'	=> phpgw::link('/preferences/index.php',array())
 			);
 			$this->tpl->set_var($var);
 
@@ -441,7 +441,7 @@
 			{
 			// link to display verbose help text
 			$show_help_lnk = $GLOBALS['phpgw']->msg->href_maketag(
-					$GLOBALS['phpgw']->link('/index.php',
+					phpgw::link('/index.php',
 						Array('menuaction'	=> 'email.uipreferences.preferences',
 							)
 					),
@@ -449,7 +449,7 @@
 			} else {
 			// link to hide verbose help text
 			$show_help_lnk = $GLOBALS['phpgw']->msg->href_maketag(
-					$GLOBALS['phpgw']->link('/index.php',
+					phpgw::link('/index.php',
 						Array('menuaction'	=> 'email.uipreferences.preferences',
 							'show_help'		=> '1')
 					),
@@ -513,8 +513,8 @@
 				//$data['function_msg'] = lang('E-Mail preferences');
 				$GLOBALS['phpgw_info']['flags']['email']['app_header'] = lang('E-Mail') . ': ' . lang('E-Mail preferences');
 				$data['email_page'] = $this->tpl->parse('out','T_prefs_ui_out');
-				$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('generic_out' => $data));
-				$GLOBALS['phpgw']->xslttpl->pp();
+				phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('generic_out' => $data));
+				phpgwapi_xslttemplates::getInstance()->pp();
 			}
 		}
 
@@ -561,7 +561,7 @@
 			}
 			else
 			{
-				$GLOBALS['phpgw']->xslttpl->add_file(array('app_data'));
+				phpgwapi_xslttemplates::getInstance()->add_file(array('app_data'));
 			}
 
 			$this->tpl->set_file(
@@ -584,7 +584,7 @@
 			$var = Array(
 				'pref_errors'		=> '',
 				'page_title'		=> lang('E-Mail Extra Accounts'),
-				'form_action'		=> $GLOBALS['phpgw']->link('/index.php',
+				'form_action'		=> phpgw::link('/index.php',
 					Array(
 						'menuaction'	=> 'email.bopreferences.ex_accounts_edit'
 					)
@@ -600,7 +600,7 @@
 				'btn_submit_value'	=> lang('submit'),
 				'btn_cancel_name'	=> 'cancel',
 				'btn_cancel_value'	=> lang('cancel'),
-				'btn_cancel_url'	=> $GLOBALS['phpgw']->link('/index.php',
+				'btn_cancel_url'	=> phpgw::link('/index.php',
 					Array(
 						'menuaction'	=> 'email.uipreferences.ex_accounts_list'
 					)
@@ -627,7 +627,7 @@
 			{
 				// link to display verbose help text
 				$show_help_lnk = $GLOBALS['phpgw']->msg->href_maketag(
-					$GLOBALS['phpgw']->link('/index.php',
+					phpgw::link('/index.php',
 						Array('menuaction'	=> 'email.uipreferences.preferences',
 							'ex_acctnum'	=> $this->bo->acctnum)
 					),
@@ -635,7 +635,7 @@
 			} else {
 				// link to hide verbose help text
 				$show_help_lnk = $GLOBALS['phpgw']->msg->href_maketag(
-					$GLOBALS['phpgw']->link('/index.php',
+					phpgw::link('/index.php',
 						Array('menuaction'	=> 'email.uipreferences.preferences',
 							'ex_acctnum'	=> $this->bo->acctnum,
 							'show_help'		=> '1')
@@ -705,8 +705,8 @@
 				//$data['function_msg'] = lang('E-Mail Extra Accounts');
 				$GLOBALS['phpgw_info']['flags']['email']['app_header'] = lang('E-Mail') . ': ' . lang('E-Mail Extra Accounts');
 				$data['email_page'] = $this->tpl->parse('out','T_prefs_ui_out');
-				$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('generic_out' => $data));
-				$GLOBALS['phpgw']->xslttpl->pp();
+				phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('generic_out' => $data));
+				phpgwapi_xslttemplates::getInstance()->pp();
 			}
 		}
 
@@ -736,7 +736,7 @@
 			}
 			else
 			{
-				$GLOBALS['phpgw']->xslttpl->add_file(array('app_data'));
+				phpgwapi_xslttemplates::getInstance()->add_file(array('app_data'));
 			}
 
 			$this->tpl->set_file(
@@ -810,14 +810,14 @@
 					$this->tpl->parse('V_accts_list','B_accts_list', True);
 				}
 			}
-			$add_new_acct_url = $GLOBALS['phpgw']->link(
+			$add_new_acct_url = phpgw::link(
 									'/index.php',array(
 									 'menuaction'=>'email.uipreferences.ex_accounts_edit',
 									'ex_acctnum'=>$this->bo->add_new_account_token));
 			$add_new_acct_href = '<a href="'.$add_new_acct_url.'">'.lang('New Account').'</a>';
 			$this->tpl->set_var('add_new_acct_href',$add_new_acct_href);
 
-			$done_url = $GLOBALS['phpgw']->link(
+			$done_url = phpgw::link(
 									'/preferences/index.php');
 			$done_href = '<a href="'.$done_url.'">'.lang('Done').'</a>';
 			$this->tpl->set_var('done_href',$done_href);
@@ -840,8 +840,8 @@
 				//$data['function_msg'] = lang('E-Mail Extra Accounts List');
 				$GLOBALS['phpgw_info']['flags']['email']['app_header'] = lang('E-Mail') . ': ' . lang('E-Mail Extra Accounts List');
 				//$data['email_page'] = $this->tpl->parse('out','T_prefs_ex_accounts');
-				$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('generic_out' => $data));
-				//$GLOBALS['phpgw']->xslttpl->pp();
+				phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('generic_out' => $data));
+				//phpgwapi_xslttemplates::getInstance()->pp();
 			}
 		}
 	}

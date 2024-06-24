@@ -91,51 +91,51 @@
 		public static function get_fields( $debug = true )
 		{
 			$fields = array(
-				'id' => array('action' => PHPGW_ACL_READ,
+				'id' => array('action' => ACL_READ,
 					'type' => 'int',
 					'label' => 'id',
 					'sortable' => true,
 					'formatter' => 'JqueryPortico.formatLink',
 					'public' => true
 				),
-				'owner_id' => array('action' => PHPGW_ACL_ADD,
+				'owner_id' => array('action' => ACL_ADD,
 					'type' => 'int',
 					'required' => false
 				),
-				'active' => array('action' => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'active' => array('action' => ACL_ADD | ACL_EDIT,
 					'type' => 'int',
 					'public' => true,
 					'history' => true
 				),
-				'completed' => array('action' => PHPGW_ACL_EDIT,
+				'completed' => array('action' => ACL_EDIT,
 					'type' => 'int',
 					'history' => true
 				),
-				'cost' => array('action' => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'cost' => array('action' => ACL_ADD | ACL_EDIT,
 					'type' => 'decimal'
 				),
-				'from_' => array('action' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'from_' => array('action' => ACL_READ | ACL_ADD | ACL_EDIT,
 					'type' => 'date',
 					'label' => 'from',
 					'history' => true,
 					'required' => true,
 					'public' => true
 				),
-				'to_' => array('action' => PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'to_' => array('action' => ACL_READ | ACL_ADD | ACL_EDIT,
 					'type' => 'date',
 					'label' => 'to',
 					'history' => true,
 					'required' => true,
 					'public' => true
 				),
-				'application_id' => array('action' => PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'application_id' => array('action' => ACL_ADD | ACL_EDIT,
 					'type' => 'int',
 					'label' => 'application',
 					'sortable' => true,
 					'required' => true,
 					'public' => true
 				),
-				'application_name' => array('action' => PHPGW_ACL_READ,
+				'application_name' => array('action' => ACL_READ,
 					'type' => 'string',
 					'query' => true,
 					'label' => 'application',
@@ -147,7 +147,7 @@
 						'column' => 'title'
 					)
 				),
-				'location' => array('action' => PHPGW_ACL_READ,
+				'location' => array('action' => ACL_READ,
 					'type' => 'string',
 					'query' => true,
 					'label' => 'location',
@@ -159,7 +159,7 @@
 						'column' => 'location'
 					)
 				),
-				'vendor_name' => array('action' => PHPGW_ACL_READ,
+				'vendor_name' => array('action' => ACL_READ,
 					'type' => 'string',
 					'query' => true,
 					'label' => 'vendor',
@@ -170,7 +170,7 @@
 						'column' => 'eventplanner_vendor.name'
 					)
 				),
-				'customer_name' => array('action' => PHPGW_ACL_READ,
+				'customer_name' => array('action' => ACL_READ,
 					'type' => 'string',
 					'query' => true,
 					'label' => 'customer',
@@ -181,7 +181,7 @@
 						'column' => 'eventplanner_customer.name'
 					)
 				),
-				'created' => array('action' => PHPGW_ACL_READ,
+				'created' => array('action' => ACL_READ,
 					'type' => 'date',
 					'label' => 'created',
 					'sortable' => true,

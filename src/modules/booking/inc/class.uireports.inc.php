@@ -60,7 +60,7 @@
 			if ($_SERVER['REQUEST_METHOD'] == 'POST')
 			{
 				array_set_default($_POST, 'resources', array());
-				$activity_ids = phpgw::get_var('activity_id', 'int');
+				$activity_ids = Sanitizer::get_var('activity_id', 'int');
 				$soactivity = createObject('booking.soactivity');
 
 
@@ -77,32 +77,32 @@
 				$report['test_ids'] = $test_ids;
 
 				$report['active'] = '1';
-				$report['building_id'] = phpgw::get_var('building_id', 'int');
-				$report['building_name'] = phpgw::get_var('building_name', 'string', 'POST');
-				$report['activity_id'] = phpgw::get_var('activity_id', 'int');
-				$report['description'] = phpgw::get_var('description');
-				$report['resources'] = phpgw::get_var('resources');
-				$report['weekdays'] = phpgw::get_var('weekdays');
+				$report['building_id'] = Sanitizer::get_var('building_id', 'int');
+				$report['building_name'] = Sanitizer::get_var('building_name', 'string', 'POST');
+				$report['activity_id'] = Sanitizer::get_var('activity_id', 'int');
+				$report['description'] = Sanitizer::get_var('description');
+				$report['resources'] = Sanitizer::get_var('resources');
+				$report['weekdays'] = Sanitizer::get_var('weekdays');
 
-				$report['start_date'] = phpgw::get_var('start_date');
-				$report['end_date'] = phpgw::get_var('end_date');
-				$report['start_hour'] = phpgw::get_var('start_hour', 'int');
-				$report['start_minute'] = phpgw::get_var('start_minute', 'int');
-				$report['end_hour'] = phpgw::get_var('end_hour', 'int');
-				$report['end_minute'] = phpgw::get_var('end_minute', 'int');
-				$report['variable_horizontal'] = phpgw::get_var('variable_horizontal');
-				$report['variable_vertical'] = phpgw::get_var('variable_vertical');
-				$report['all_buildings'] = phpgw::get_var('all_buildings', 'bool');
+				$report['start_date'] = Sanitizer::get_var('start_date');
+				$report['end_date'] = Sanitizer::get_var('end_date');
+				$report['start_hour'] = Sanitizer::get_var('start_hour', 'int');
+				$report['start_minute'] = Sanitizer::get_var('start_minute', 'int');
+				$report['end_hour'] = Sanitizer::get_var('end_hour', 'int');
+				$report['end_minute'] = Sanitizer::get_var('end_minute', 'int');
+				$report['variable_horizontal'] = Sanitizer::get_var('variable_horizontal');
+				$report['variable_vertical'] = Sanitizer::get_var('variable_vertical');
+				$report['all_buildings'] = Sanitizer::get_var('all_buildings', 'bool');
 				//			_debug_array($report);
-				$from_ = phpgw::get_var('start_date', 'date');
-				$to_ = phpgw::get_var('end_date', 'date');
+				$from_ = Sanitizer::get_var('start_date', 'date');
+				$to_ = Sanitizer::get_var('end_date', 'date');
 
 				if ($report['all_buildings'] && (($to_ - $from_) > 24 * 3600 * 31))
 				{
 					$errors[] = lang('Maximum 1 month for all buildings');
 				}
 
-				$report_type = phpgw::get_var('report_type');
+				$report_type = Sanitizer::get_var('report_type');
 
 				if (!$errors)
 				{
@@ -202,7 +202,7 @@
 		 */
 		public function get_cover_ratio( $data )
 		{
-			$db = & $GLOBALS['phpgw']->db;
+			$db = Db::getInstance();
 
 			$resources = array();
 			if ($data['all_buildings'])
@@ -375,7 +375,7 @@
 		{
 
 			$output_type = 'XHTML';//'XLS';
-			$db = & $GLOBALS['phpgw']->db;
+			$db = Db::getInstance();
 
 			$resources = array();
 			$resources[] = 0;
@@ -459,7 +459,7 @@
 		 */
 		private function get_freetime( $data )
 		{
-			$db = & $GLOBALS['phpgw']->db;
+			$db = Db::getInstance();
 
 			$buildings = array();
 			if ($data['all_buildings'])
@@ -524,7 +524,7 @@
 
 		public function get_custom()
 		{
-			$activity_id = phpgw::get_var('activity_id', 'int');
+			$activity_id = Sanitizer::get_var('activity_id', 'int');
 			$activity_path = $this->activity_bo->get_path($activity_id);
 			$top_level_activity = $activity_path ? $activity_path[0]['id'] : 0;
 
@@ -580,14 +580,14 @@ HTML;
 
 			if ($_SERVER['REQUEST_METHOD'] == 'POST')
 			{
-				$to = phpgw::get_var('to', 'string');
-				$from = phpgw::get_var('from', 'string');
+				$to = Sanitizer::get_var('to', 'string');
+				$from = Sanitizer::get_var('from', 'string');
 
 				$to_ = date("Y-m-d", phpgwapi_datetime::date_to_timestamp($to));
 				$from_ = date("Y-m-d", phpgwapi_datetime::date_to_timestamp($from));
 
-				$output_type = phpgw::get_var('otype', 'string');
-				$building_list = phpgw::get_var('building');
+				$output_type = Sanitizer::get_var('otype', 'string');
+				$building_list = Sanitizer::get_var('building');
 
 				if (!count($building_list))
 				{
@@ -646,15 +646,15 @@ HTML;
 			$show = '';
 			if ($_SERVER['REQUEST_METHOD'] == 'POST')
 			{
-				$to = phpgw::get_var('to', 'string');
-				$from = phpgw::get_var('from', 'string');
+				$to = Sanitizer::get_var('to', 'string');
+				$from = Sanitizer::get_var('from', 'string');
 
 				$to_ = date("Y-m-d", phpgwapi_datetime::date_to_timestamp($to));
 				$from_ = date("Y-m-d", phpgwapi_datetime::date_to_timestamp($from));
 
 				$show = 'report';
 				$allocations = $this->get_free_allocations(
-					phpgw::get_var('building'), $from_, $to_, phpgw::get_var('weekdays')
+					Sanitizer::get_var('building'), $from_, $to_, Sanitizer::get_var('weekdays')
 				);
 //				_debug_array($allocations);
 				$counter = 0;
@@ -705,7 +705,7 @@ HTML;
 
 		private function get_free_allocations( $buildings, $from, $to, $weekdays )
 		{
-			$db = & $GLOBALS['phpgw']->db;
+			$db = Db::getInstance();
 
 			$buildings = implode(",", $buildings);
 			$weekdays = implode(",", $weekdays);

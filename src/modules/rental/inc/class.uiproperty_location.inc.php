@@ -27,21 +27,21 @@
 				$user_rows_per_page = 10;
 			}
 
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 			// TODO: access control
-			$type_id = phpgw::get_var('type_id');
-			//$composite_id	= phpgw::get_var('composite_id');
-			$search_type = phpgw::get_var('search_option');
-			$part_of_town_id = phpgw::get_var('part_of_town_id', 'int');
+			$type_id = Sanitizer::get_var('type_id');
+			//$composite_id	= Sanitizer::get_var('composite_id');
+			$search_type = Sanitizer::get_var('search_option');
+			$part_of_town_id = Sanitizer::get_var('part_of_town_id', 'int');
 
 			// YUI variables for paging and sorting
-			$start_index = phpgw::get_var('start', 'int', 'REQUEST', 0);
+			$start_index = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
 			$search_for = $search['value'];
-			$num_of_objects = (phpgw::get_var('length', 'int') <= 0) ? $user_rows_per_page : phpgw::get_var('length', 'int');
+			$num_of_objects = (Sanitizer::get_var('length', 'int') <= 0) ? $user_rows_per_page : Sanitizer::get_var('length', 'int');
 			$sort_field = ($columns[$order[0]['column']]['data']) ? $columns[$order[0]['column']]['data'] : 'location_code';
 			$sort = $order[0]['dir'];
 
@@ -83,7 +83,7 @@
 					'results' => $num_of_objects,
 					'order' => $sort_field,
 					'sort' => $sort,
-					'allrows' => phpgw::get_var('length', 'int') == -1,
+					'allrows' => Sanitizer::get_var('length', 'int') == -1,
 					'type_id' => $type_id,
 					'part_of_town_id' => $part_of_town_id,
 				);

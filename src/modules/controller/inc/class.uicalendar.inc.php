@@ -75,10 +75,10 @@
 		{
 			parent::__construct();
 
-			$read = $GLOBALS['phpgw']->acl->check('.control', PHPGW_ACL_READ, 'controller'); //1
-			$add = $GLOBALS['phpgw']->acl->check('.control', PHPGW_ACL_ADD, 'controller'); //2
-			$edit = $GLOBALS['phpgw']->acl->check('.control', PHPGW_ACL_EDIT, 'controller'); //4
-			$delete = $GLOBALS['phpgw']->acl->check('.control', PHPGW_ACL_DELETE, 'controller'); //8
+			$read = $GLOBALS['phpgw']->acl->check('.control', ACL_READ, 'controller'); //1
+			$add = $GLOBALS['phpgw']->acl->check('.control', ACL_ADD, 'controller'); //2
+			$edit = $GLOBALS['phpgw']->acl->check('.control', ACL_EDIT, 'controller'); //4
+			$delete = $GLOBALS['phpgw']->acl->check('.control', ACL_DELETE, 'controller'); //8
 
 			$manage = $GLOBALS['phpgw']->acl->check('.control', 16, 'controller'); //16
 			
@@ -98,7 +98,7 @@
 
 			self::set_active_menu('controller::calendar_overview');
 
-			if (phpgw::get_var('noframework', 'bool'))
+			if (Sanitizer::get_var('noframework', 'bool'))
 			{
 				$GLOBALS['phpgw_info']['flags']['noframework'] = true;
 				phpgwapi_cache::session_set('controller', 'noframework', true);
@@ -107,16 +107,16 @@
 			{
 				$GLOBALS['phpgw_info']['flags']['noframework'] = true;
 			}
-			$GLOBALS['phpgw']->css->add_external_file('controller/templates/base/css/base.css');
+			phpgwapi_css::getInstance()->add_external_file('controller/templates/base/css/base.css');
 		}
 
 		public function view_calendar_for_month()
 		{
-			$location_code = phpgw::get_var('location_code');
-			$year = phpgw::get_var('year');
-			$month = phpgw::get_var('month');
-			$role = phpgw::get_var('role', 'int', 'REQUEST', -1);
-			$repeat_type = phpgw::get_var('repeat_type');
+			$location_code = Sanitizer::get_var('location_code');
+			$year = Sanitizer::get_var('year');
+			$month = Sanitizer::get_var('month');
+			$role = Sanitizer::get_var('role', 'int', 'REQUEST', -1);
+			$repeat_type = Sanitizer::get_var('repeat_type');
 
 			// Validates year. If year is not set, current year is chosen
 			$year = $this->validate_year($year);
@@ -268,14 +268,14 @@
 
 		public function view_calendar_for_year()
 		{
-			$location_code = phpgw::get_var('location_code');
-			$year = phpgw::get_var('year');
-			$role = phpgw::get_var('role', 'int');
+			$location_code = Sanitizer::get_var('location_code');
+			$year = Sanitizer::get_var('year');
+			$role = Sanitizer::get_var('role', 'int');
 
-			$repeat_type = phpgw::get_var('repeat_type');
+			$repeat_type = Sanitizer::get_var('repeat_type');
 			
 			//show only controls that are not done
-			$selected_ctrl_status = phpgw::get_var('current_ctrl_status');
+			$selected_ctrl_status = Sanitizer::get_var('current_ctrl_status');
 			
 			// Validates year. If year is not set, current year is chosen
 			$year = $this->validate_year($year);
@@ -483,7 +483,7 @@
 		
 		public function view_calendar_for_year2($location_array = null, $year = null)
 		{
-			//$location_array = phpgw::get_var('location_array');
+			//$location_array = Sanitizer::get_var('location_array');
 			//_debug_array($location_array['data']);
 //			if(!empty($location_array))
 //			{
@@ -494,15 +494,15 @@
 ////				}
 //			}
 //			
-			$location_code = phpgw::get_var('location_code');
+			$location_code = Sanitizer::get_var('location_code');
 			if($year == null)
-				$year = phpgw::get_var('year');
-			$role = phpgw::get_var('role', 'int');
+				$year = Sanitizer::get_var('year');
+			$role = Sanitizer::get_var('role', 'int');
 
-			$repeat_type = phpgw::get_var('repeat_type');
+			$repeat_type = Sanitizer::get_var('repeat_type');
 			
 			//show only controls that are not done
-			$selected_ctrl_status = phpgw::get_var('current_ctrl_status');
+			$selected_ctrl_status = Sanitizer::get_var('current_ctrl_status');
 			
 			// Validates year. If year is not set, current year is chosen
 			$year = $this->validate_year($year);
@@ -614,13 +614,13 @@
 				$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 				$receipt = array();
 
-				if (phpgw::get_var('phpgw_return_as') == 'json')
+				if (Sanitizer::get_var('phpgw_return_as') == 'json')
 				{
 					return $this->query();
 				}
 
 				$msgbox_data = array();
-				if (phpgw::get_var('phpgw_return_as') != 'json' && $receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
+				if (Sanitizer::get_var('phpgw_return_as') != 'json' && $receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
 				{
 					phpgwapi_cache::session_clear('phpgwapi', 'phpgw_messages');
 					$msgbox_data = $GLOBALS['phpgw']->common->msgbox_data($receipt);
@@ -660,11 +660,11 @@
 		
 		public function get_location_calendar_for_year($location_code, $year = null)
 		{
-			$role = phpgw::get_var('role', 'int');
-			$repeat_type = phpgw::get_var('repeat_type');
+			$role = Sanitizer::get_var('role', 'int');
+			$repeat_type = Sanitizer::get_var('repeat_type');
 			
 			//show only controls that are not done
-			$selected_ctrl_status = phpgw::get_var('current_ctrl_status');
+			$selected_ctrl_status = Sanitizer::get_var('current_ctrl_status');
 			
 			// Validates year. If year is not set, current year is chosen
 			$year = $this->validate_year($year);
@@ -777,12 +777,12 @@
 		{
 			static $_location_name = array();
 
-			$control_id = phpgw::get_var('control_id', 'int');
+			$control_id = Sanitizer::get_var('control_id', 'int');
 			$control = $this->so_control->get_single($control_id);
-			$year = phpgw::get_var('year', 'int');
-			$location_id = phpgw::get_var('location_id', 'int');
-			$component_id = phpgw::get_var('component_id', 'int');
-			$serie_id = phpgw::get_var('serie_id', 'int');
+			$year = Sanitizer::get_var('year', 'int');
+			$location_id = Sanitizer::get_var('location_id', 'int');
+			$component_id = Sanitizer::get_var('component_id', 'int');
+			$serie_id = Sanitizer::get_var('serie_id', 'int');
 
 
 			$user_id = $GLOBALS['phpgw_info']['user']['account_id'];
@@ -793,7 +793,7 @@
 				$bookmark_locations = array_keys($bookmarks);
 			}
 
-			$location_code = phpgw::get_var('location_code', 'string');
+			$location_code = Sanitizer::get_var('location_code', 'string');
 
 			if ($location_code && $location_code != 'all')
 			{
@@ -1058,20 +1058,20 @@
 		public function view_calendar_month_for_locations()
 		{
 			static $_location_name = array();
-			$control_id = phpgw::get_var('control_id', 'int');
+			$control_id = Sanitizer::get_var('control_id', 'int');
 			$control = $this->so_control->get_single($control_id);
-			if (!$year = intval(phpgw::get_var('year')))
+			if (!$year = intval(Sanitizer::get_var('year')))
 			{
 				$year = date('Y');
 			}
-			if (!$month = intval(phpgw::get_var('month')))
+			if (!$month = intval(Sanitizer::get_var('month')))
 			{
 				$month = date('m');
 			}
 
-			$location_id = phpgw::get_var('location_id', 'int');
-			$component_id = phpgw::get_var('component_id', 'int');
-			$serie_id = phpgw::get_var('serie_id', 'int');
+			$location_id = Sanitizer::get_var('location_id', 'int');
+			$component_id = Sanitizer::get_var('component_id', 'int');
+			$serie_id = Sanitizer::get_var('serie_id', 'int');
 
 
 			$user_id = $GLOBALS['phpgw_info']['user']['account_id'];
@@ -1083,7 +1083,7 @@
 				$bookmark_locations = array_keys($bookmarks);
 			}
 
-			$location_code = phpgw::get_var('location_code', 'string');
+			$location_code = Sanitizer::get_var('location_code', 'string');
 
 			if ($location_code && $location_code != 'all')
 			{
@@ -1467,17 +1467,17 @@
 			$loc_checklist_array = array();
 
 			$params = array(
-				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results' => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start' => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results' => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'order' => $columns[$order[0]['column']]['data'],
 				'sort' => $order[0]['dir'],
 				'allrows' => true,
-				'district_id' => phpgw::get_var('district_id', 'int'),
-				'cat_id' => phpgw::get_var('cat_id', 'int'),
-				'status' => phpgw::get_var('status'),
-				'part_of_town_id' => phpgw::get_var('part_of_town_id', 'int'),
-				'location_code' => phpgw::get_var('location_code'),
-				'type_id' => phpgw::get_var('location_level', 'int', 'REQUEST', 1)
+				'district_id' => Sanitizer::get_var('district_id', 'int'),
+				'cat_id' => Sanitizer::get_var('cat_id', 'int'),
+				'status' => Sanitizer::get_var('status'),
+				'part_of_town_id' => Sanitizer::get_var('part_of_town_id', 'int'),
+				'location_code' => Sanitizer::get_var('location_code'),
+				'type_id' => Sanitizer::get_var('location_level', 'int', 'REQUEST', 1)
 			);
 
 			$values = $this->bo->read($params);
@@ -1512,7 +1512,7 @@
 			
 			$this->view_calendar_for_year2($loc_checklist_array, $year);
 			
-			//$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uicalendar.view_calendar_for_year2', 'location_array' => $loc_checklist_array));
+			//phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uicalendar.view_calendar_for_year2', 'location_array' => $loc_checklist_array));
 			
 			
 
@@ -1522,7 +1522,7 @@
 
 		public function update_bookmark()
 		{
-			$location_code = phpgw::get_var('location_code', 'string');
+			$location_code = Sanitizer::get_var('location_code', 'string');
 			$user_id = $GLOBALS['phpgw_info']['user']['account_id'];
 
 			$bookmarks = phpgwapi_cache::user_get('controller', "location_bookmark", $user_id);

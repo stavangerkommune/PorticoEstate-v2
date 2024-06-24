@@ -47,7 +47,7 @@
                     foreach($bdays as $key => $val)
 		{
 			$tmp = '<a href="'
-				. $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'addressbook.uiaddressbook.view_person', 'ab_id' => $val['contact_id'])) . '">'
+				. phpgw::link('/index.php', array('menuaction' => 'addressbook.uiaddressbook.view_person', 'ab_id' => $val['contact_id'])) . '">'
 				. $val['per_first_name'] . ' ' . $val['per_last_name'] . '</a>';
 			echo '<tr><td align="left">' . lang("Today is %1's birthday!", $tmp) . "</td></tr>\n";
 		}
@@ -66,7 +66,7 @@
                     foreach($bdays as $key => $val)
 		{
 			$tmp = '<a href="'
-				. $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'addressbook.uiaddressbook.view_person', 'ab_id' => $val['contact_id'])) . '">'
+				. phpgw::link('/index.php', array('menuaction' => 'addressbook.uiaddressbook.view_person', 'ab_id' => $val['contact_id'])) . '">'
 				. $val['per_first_name'] . ' ' . $val['per_last_name'] . '</a>';
 			echo '<tr><td align="left">' . lang("Tomorrow is %1's birthday.", $tmp) . "</td></tr>\n";
 		}

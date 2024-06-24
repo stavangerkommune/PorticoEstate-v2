@@ -114,7 +114,7 @@
 			$values = array();
 			foreach ($this->fields as $field => $field_info)
 			{
-				if($field_info['action'] & PHPGW_ACL_READ)
+				if($field_info['action'] & ACL_READ)
 				{
 					$data = array(
 						'key' => $field,
@@ -141,7 +141,7 @@
 				phpgw::no_access();
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -205,7 +205,7 @@
 				(
 				'my_name' => 'view',
 				'text' => lang('show'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uiapplication.view'
 				)),
@@ -216,7 +216,7 @@
 				(
 				'my_name' => 'edit',
 				'text' => lang('edit'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uiapplication.edit'
 				)),
@@ -249,9 +249,9 @@
 
 		public function edit( $values = array(), $mode = 'edit' )
 		{
-			$active_tab = !empty($values['active_tab']) ? $values['active_tab'] : phpgw::get_var('active_tab', 'string', 'REQUEST', 'application');
+			$active_tab = !empty($values['active_tab']) ? $values['active_tab'] : Sanitizer::get_var('active_tab', 'string', 'REQUEST', 'application');
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('edit');
-			if (empty($this->permissions[PHPGW_ACL_ADD]))
+			if (empty($this->permissions[ACL_ADD]))
 			{
 				phpgw::no_access();
 			}
@@ -262,11 +262,11 @@
 			}
 			else
 			{
-				$application_id = !empty($values['application_id']) ? $values['application_id'] : phpgw::get_var('id', 'int');
+				$application_id = !empty($values['application_id']) ? $values['application_id'] : Sanitizer::get_var('id', 'int');
 				$application = $this->bo->read_single($application_id);
 			}
 
-			if (empty($this->permissions[PHPGW_ACL_EDIT]))
+			if (empty($this->permissions[ACL_EDIT]))
 			{
 				$step = 1;
 			}
@@ -314,7 +314,7 @@
 			$GLOBALS['phpgw']->jqcal2->add_listener('assign_date_start','datetime');
 			$GLOBALS['phpgw']->jqcal2->add_listener('assign_date_end','datetime');
 
-			$accounts = $GLOBALS['phpgw']->acl->get_user_list_right(PHPGW_ACL_EDIT, $this->acl_location, 'rental');
+			$accounts = $GLOBALS['phpgw']->acl->get_user_list_right(ACL_EDIT, $this->acl_location, 'rental');
 			$executive_officer_options[] = array('id' => '', 'name' => lang('nobody'), 'selected' => 0);
 			foreach ($accounts as $account)
 			{
@@ -360,8 +360,8 @@
 
 			$data = array(
 				'datatable_def' => $datatable_def,
-				'form_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'rental.uiapplication.save')),
-				'cancel_url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'rental.uiapplication.index',)),
+				'form_action' => phpgw::link('/index.php', array('menuaction' => 'rental.uiapplication.save')),
+				'cancel_url' => phpgw::link('/index.php', array('menuaction' => 'rental.uiapplication.index',)),
 				'application' => $application,
 				'list_executive_officer' => array('options' => $executive_officer_options),
 				'step'		=> $step,
@@ -380,7 +380,7 @@
 			);
 
 			// Composite
-			$composite_id = (int)phpgw::get_var('id');
+			$composite_id = (int)Sanitizer::get_var('id');
 
 			$date = ($application->assign_date_start) ? date("Y-m-d", $application->assign_date_start) : "";
 			$date = new DateTime($date);
@@ -389,7 +389,7 @@
 				$date->modify('last monday');
 			}
 
-			$editable = phpgw::get_var('editable', 'bool');
+			$editable = Sanitizer::get_var('editable', 'bool');
 			$type = 'all_composites';
 
 			$filters = ExecMethod('rental.uicomposite.get_filters');
@@ -458,7 +458,7 @@
 			$toolbar[] = array(
 				'name' => 'edit',
 				'text' => lang('edit'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uicomposite.edit'
 				)),
@@ -468,7 +468,7 @@
 			$toolbar[] = array(
 				'name' => 'view',
 				'text' => lang('show'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uicomposite.view'
 				)),
@@ -500,7 +500,7 @@
 				$names = $this->locations->get_name($id);
 				if ($names['appname'] == $GLOBALS['phpgw_info']['flags']['currentapp'])
 				{
-					if ($this->hasPermissionOn($names['location'], PHPGW_ACL_ADD))
+					if ($this->hasPermissionOn($names['location'], ACL_ADD))
 					{
 						$create_types[] = array($id, $label);
 					}
@@ -513,7 +513,7 @@
 					(
 					'name' => $create_type[1],
 					'text' => lang('create_contract_' . $create_type[1]),
-					'action' => $GLOBALS['phpgw']->link('/index.php', array
+					'action' => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'rental.uicontract.add_from_composite',
 						'responsibility_id' => $create_type[0]
@@ -607,7 +607,7 @@
 
 		public function add()
 		{
-			if (empty($this->permissions[PHPGW_ACL_ADD]))
+			if (empty($this->permissions[ACL_ADD]))
 			{
 				phpgw::no_access();
 			}
@@ -617,13 +617,13 @@
 
 		public function save()
 		{
-			if (empty($this->permissions[PHPGW_ACL_ADD]))
+			if (empty($this->permissions[ACL_ADD]))
 			{
 				phpgw::no_access();
 			}
-			$active_tab = phpgw::get_var('active_tab', 'string', 'REQUEST', 'application');
+			$active_tab = Sanitizer::get_var('active_tab', 'string', 'REQUEST', 'application');
 
-			$application_id = phpgw::get_var('id', 'int');
+			$application_id = Sanitizer::get_var('id', 'int');
 
 			$application = $this->bo->read_single($application_id, true);
 
@@ -703,8 +703,8 @@
 		
 		public function add_composite()
 		{
-			$application_id = (int)phpgw::get_var('application_id');
-			$composite_id = (int)phpgw::get_var('composite_id');
+			$application_id = (int)Sanitizer::get_var('application_id');
+			$composite_id = (int)Sanitizer::get_var('composite_id');
 			
 			$so_application = rental_soapplication::get_instance();
 			$result = $so_application->add_composite($application_id, $composite_id);
@@ -721,8 +721,8 @@
 		
 		public function remove_composite()
 		{
-			$application_id = (int)phpgw::get_var('application_id');
-			$composite_id = (int)phpgw::get_var('composite_id');
+			$application_id = (int)Sanitizer::get_var('application_id');
+			$composite_id = (int)Sanitizer::get_var('composite_id');
 			
 			$so_application = rental_soapplication::get_instance();
 			$result = $so_application->remove_composite($application_id, $composite_id);

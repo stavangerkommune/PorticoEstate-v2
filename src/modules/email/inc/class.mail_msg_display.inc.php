@@ -2316,7 +2316,7 @@ class mail_msg extends mail_msg_wrappers
 		// make a URL to directly access this part
 		$url_part_name = urlencode($part_name);
 		// ex_part_href
-		$ex_part_href = $GLOBALS['phpgw']->link(
+		$ex_part_href = phpgw::link(
 			'/index.php',array(
 			'menuaction'=>'email.boaction.get_attach',
 			'msgball[part_no]'=>$m_part_num_mime,
@@ -2368,7 +2368,7 @@ class mail_msg extends mail_msg_wrappers
 			$line = preg_replace("/(ftp:\/\/[^ )\r\n]+)/i","<A href=\"\\1\" target=\"_new\">\\1</A>",$line);
 			$line = preg_replace("/(irc:\/\/[^ )\r\n]+)/i","<A href=\"\\1\">\\1</A>",$line);//added by skwashd for chatzilla :)
 			$line = preg_replace("/([-a-z0-9_]+(\.[_a-z0-9-]+)*@([a-z0-9-]+(\.[a-z0-9-]+)+))/i",
-				"<a href=\"".$GLOBALS['phpgw']->link("/".$GLOBALS['phpgw_info']['flags']['currentapp']."/compose.php",array('folder'=>$this->prep_folder_out($folder)))
+				"<a href=\"".phpgw::link("/".$GLOBALS['phpgw_info']['flags']['currentapp']."/compose.php",array('folder'=>$this->prep_folder_out($folder)))
 				."&to=\\1\">\\1</a>", $line);
 
 			$newText .= $line . "\n";
@@ -2870,7 +2870,7 @@ $hdr_envelope->udate = $new_time;
 			// SUBJECT
 			// NOTE: the acctnum MUST be matched to this individual message and folder
 			$msg_list_display[$x]['subject'] = $this->get_subject($hdr_envelope,'');
-			$msg_list_display[$x]['subject_link'] = $GLOBALS['phpgw']->link(
+			$msg_list_display[$x]['subject_link'] = phpgw::link(
 							'/index.php',array
 							(
 								'menuaction'=>'email.uimessage.message',
@@ -3039,7 +3039,7 @@ $hdr_envelope->udate = $new_time;
 			// the original email is included in this Compose page. Also note that the email app's
 			// message list page, email/index.php, does not have a "reply to" button anywhere on it,
 			// said button is in the "show the message contents" page, email/message.php
-			$msg_list_display[$x]['from_link'] = $GLOBALS['phpgw']->link(
+			$msg_list_display[$x]['from_link'] = phpgw::link(
 								'/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/compose.php',
 								 array(
 									'sort'=>$this->get_arg_value('sort'),

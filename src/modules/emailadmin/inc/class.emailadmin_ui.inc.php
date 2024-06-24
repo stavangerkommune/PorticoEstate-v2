@@ -108,13 +108,13 @@
 			(
 				'menuaction'	=> 'emailadmin.emailadmin_ui.saveProfile'
 			);
-			$this->t->set_var('action_url',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('action_url',phpgw::link('/index.php',$linkData));
 			
 			$linkData = array
 			(
 				'menuaction'	=> 'emailadmin.emailadmin_ui.listProfiles'
 			);
-			$this->t->set_var('back_url',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('back_url',phpgw::link('/index.php',$linkData));
 
 			$this->t->set_var('smtptype',html::select(
 				'smtpsettings[smtpType]',
@@ -189,7 +189,7 @@
 		
 		function display_app_header()
 		{
-			$GLOBALS['phpgw']->js->validate_file('tabs','tabs');
+			phpgwapi_js::getInstance()->validate_file('tabs','tabs');
 			$GLOBALS['phpgw_info']['flags']['include_xajax'] = True;
 
 			switch($_GET['menuaction'])
@@ -197,14 +197,14 @@
 				case 'emailadmin.emailadmin_ui.addProfile':
 				case 'emailadmin.emailadmin_ui.editProfile':
 					$GLOBALS['phpgw_info']['nofooter'] = true;
-					$GLOBALS['phpgw']->js->validate_file('jscode','editProfile','emailadmin');
-					$GLOBALS['phpgw']->js->set_onload('javascript:initAll();');
-					#$GLOBALS['phpgw']->js->set_onload('smtp.init();');
+					phpgwapi_js::getInstance()->validate_file('jscode','editProfile','emailadmin');
+					phpgwapi_js::getInstance()->set_onload('javascript:initAll();');
+					#phpgwapi_js::getInstance()->set_onload('smtp.init();');
 
 					break;
 
 				case 'emailadmin.emailadmin_ui.listProfiles':
-					$GLOBALS['phpgw']->js->validate_file('jscode','listProfile','emailadmin');
+					phpgwapi_js::getInstance()->validate_file('jscode','listProfile','emailadmin');
 
 					break;
 			}
@@ -296,13 +296,13 @@
 				'menuaction'	=> 'emailadmin.emailadmin_ui.saveProfile',
 				'profileID'	=> $profileID
 			);
-			$this->t->set_var('action_url',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('action_url',phpgw::link('/index.php',$linkData));
 			
 			$linkData = array
 			(
 				'menuaction'	=> 'emailadmin.emailadmin_ui.listProfiles'
 			);
-			$this->t->set_var('back_url',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('back_url',phpgw::link('/index.php',$linkData));
 
 			$this->t->set_var('smtptype',html::select(
 				'smtpsettings[smtpType]',
@@ -360,7 +360,7 @@
 					);
 
 					$imapServerLink_data = "javascript:openwindow('"
-					 . $GLOBALS['phpgw']->link('/index.php', $linkData) . "','700','600')";
+					 . phpgw::link('/index.php', $linkData) . "','700','600')";
 
 					$imapServerLink = '<a href="'. $imapServerLink_data . '">'.$profileList[$i]['imapServer']. '</a>';
 
@@ -373,7 +373,7 @@
 					);
 
 					$descriptionLink_data = "javascript:openwindow('"
-					 . $GLOBALS['phpgw']->link('/index.php', $linkData) . "','700','600')";
+					 . phpgw::link('/index.php', $linkData) . "','700','600')";
 
 					$descriptionLink = '<a href="'. $descriptionLink_data . '">'.$profileList[$i]['description']. '</a>';
 					
@@ -386,7 +386,7 @@
 					);
 
 					$smtpServerLink_data = "javascript:openwindow('"
-					 . $GLOBALS['phpgw']->link('/index.php', $linkData) . "','700','600')";
+					 . phpgw::link('/index.php', $linkData) . "','700','600')";
 
 					$smtpServerLink = '<a href="'. $smtpServerLink_data . '">'.$profileList[$i]['smtpServer']. '</a>';
 					
@@ -395,7 +395,7 @@
 						'menuaction'	=> 'emailadmin.emailadmin_ui.deleteProfile',
 						'profileid'	=> $profileList[$i]['profileID']
 					);
-					$deleteLink = '<a href="'.$GLOBALS['phpgw']->link('/index.php',$linkData).
+					$deleteLink = '<a href="'.phpgw::link('/index.php',$linkData).
 									'" onClick="return confirm(\''.lang('Do you really want to delete this Profile').'?\')">'.
 									lang('delete').'</a>';
 
@@ -409,7 +409,7 @@
 					);
 
 					$applicationLink_data = "javascript:openwindow('"
-					 . $GLOBALS['phpgw']->link('/index.php', $linkData) . "','700','600')";
+					 . phpgw::link('/index.php', $linkData) . "','700','600')";
 
 					$applicationLink = '<a href="'. $applicationLink_data . '">'. $application . '</a>';
 
@@ -425,7 +425,7 @@
 					);
 
 					$groupLink_data = "javascript:openwindow('"
-					 . $GLOBALS['phpgw']->link('/index.php', $linkData) . "','700','600')";
+					 . phpgw::link('/index.php', $linkData) . "','700','600')";
 
 					$groupLink = '<a href="'. $groupLink_data . '">'. $group . '</a>';
 					$userLink = '<a href="'. $groupLink_data . '">'. $userLink . '</a>';
@@ -478,7 +478,7 @@
 			);
 
 			$add_link = "javascript:openwindow('"
-			 . $GLOBALS['phpgw']->link('/index.php', $linkData) . "','700','600')";
+			 . phpgw::link('/index.php', $linkData) . "','700','600')";
 
 			$this->t->set_var('add_link',$add_link);
 

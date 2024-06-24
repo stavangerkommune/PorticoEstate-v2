@@ -93,17 +93,17 @@
 			$this->lookup = $this->bo->lookup;
 			$this->location_code = $this->bo->location_code;
 
-			$this->read = $GLOBALS['phpgw']->acl->check('.activity', PHPGW_ACL_READ, 'logistic');//1
-			$this->add = $GLOBALS['phpgw']->acl->check('.activity', PHPGW_ACL_ADD, 'logistic');//2
-			$this->edit = $GLOBALS['phpgw']->acl->check('.activity', PHPGW_ACL_EDIT, 'logistic');//4
-			$this->delete = $GLOBALS['phpgw']->acl->check('.activity', PHPGW_ACL_DELETE, 'logistic');//8
+			$this->read = $GLOBALS['phpgw']->acl->check('.activity', ACL_READ, 'logistic');//1
+			$this->add = $GLOBALS['phpgw']->acl->check('.activity', ACL_ADD, 'logistic');//2
+			$this->edit = $GLOBALS['phpgw']->acl->check('.activity', ACL_EDIT, 'logistic');//4
+			$this->delete = $GLOBALS['phpgw']->acl->check('.activity', ACL_DELETE, 'logistic');//8
 			$this->manage = $GLOBALS['phpgw']->acl->check('.activity', 16, 'logistic');//16
-			$GLOBALS['phpgw']->css->add_external_file('logistic/templates/base/css/base.css');
+			phpgwapi_css::getInstance()->add_external_file('logistic/templates/base/css/base.css');
 		}
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -166,10 +166,10 @@
 
 		public function query()
 		{
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 			if ($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] > 0)
 			{
@@ -181,12 +181,12 @@
 			}
 
 			$params = array(
-				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results' => phpgw::get_var('length', 'int', 'REQUEST', $user_rows_per_page),
+				'start' => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results' => Sanitizer::get_var('length', 'int', 'REQUEST', $user_rows_per_page),
 				'query' => !empty($search['value']) ? $search['value'] : '',
 				'order' => !empty($columns[$order[0]['column']]['data']) ? $columns[$order[0]['column']]['data'] : '',
 				'sort' => $order[0]['dir'],
-				'allrows' => phpgw::get_var('length', 'int') == -1,
+				'allrows' => Sanitizer::get_var('length', 'int') == -1,
 			);
 
 			$start_index = $params['start'];
@@ -196,13 +196,13 @@
 			// Form variables
 			$search_for = $params['query'];
 
-			$search_type = phpgw::get_var('search_option', 'string', 'REQUEST', '');
+			$search_type = Sanitizer::get_var('search_option', 'string', 'REQUEST', '');
 
 			// Create an empty result set
 			$result_objects = array();
 			$result_count = 0;
 
-			$exp_param = phpgw::get_var('export');
+			$exp_param = Sanitizer::get_var('export');
 			$export = false;
 			if (isset($exp_param))
 			{
@@ -211,12 +211,12 @@
 			}
 
 			//Retrieve the type of query and perform type specific logic
-			$query_type = phpgw::get_var('type');
+			$query_type = Sanitizer::get_var('type');
 
 			switch ($query_type)
 			{
 				case 'requirement_id':
-					$requirement_id = phpgw::get_var('requirement_id');
+					$requirement_id = Sanitizer::get_var('requirement_id');
 					$filters = array('requirement_id' => $requirement_id);
 					$result_objects = $this->so->get($start_index, $num_of_objects, $sort_field, $sort_ascending, $search_for, $search_type, $filters, $params['allrows']);
 					$object_count = $this->so->get_count($search_for, $search_type, $filters);
@@ -317,7 +317,7 @@
 			$result_data['dir'] = $params['dir'];
 			$result_data['draw'] = $draw;
 
-			$editable = phpgw::get_var('editable') == 'true' ? true : false;
+			$editable = Sanitizer::get_var('editable') == 'true' ? true : false;
 
 			if (!$export)
 			{
@@ -329,14 +329,14 @@
 
 		public function add()
 		{
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement_resource_allocation.edit'));
+			phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement_resource_allocation.edit'));
 		}
 
 		public function edit()
 		{
-			$activity_id = phpgw::get_var('activity_id');
-			$requirement_id = phpgw::get_var('requirement_id');
-			$allocation_id = phpgw::get_var('id');
+			$activity_id = Sanitizer::get_var('activity_id');
+			$requirement_id = Sanitizer::get_var('requirement_id');
+			$allocation_id = Sanitizer::get_var('id');
 
 			if ($activity_id && is_numeric($activity_id))
 			{
@@ -357,7 +357,7 @@
 				$allocation = new logistic_requirement_resource_allocation();
 			}
 
-//			$accounts = $GLOBALS['phpgw']->acl->get_user_list_right(PHPGW_ACL_READ, 'run', 'logistic');
+//			$accounts = $GLOBALS['phpgw']->acl->get_user_list_right(ACL_READ, 'run', 'logistic');
 			$allocation_suggestions = array();
 
 			if ($requirement)
@@ -518,7 +518,7 @@
 
 		public function save()
 		{
-			$requirement_id = phpgw::get_var('requirement_id');
+			$requirement_id = Sanitizer::get_var('requirement_id');
 
 			if ($requirement_id && is_numeric($requirement_id))
 			{
@@ -527,10 +527,10 @@
 			}
 
 			$user_id = $GLOBALS['phpgw_info']['user']['id'];
-			$chosen_resources = phpgw::get_var('chosen_resources');
+			$chosen_resources = Sanitizer::get_var('chosen_resources');
 
-			$inventory_ids = phpgw::get_var('inventory_ids');
-			$allocations = phpgw::get_var('allocations');
+			$inventory_ids = Sanitizer::get_var('inventory_ids');
+			$allocations = Sanitizer::get_var('allocations');
 			//FIXME: Bruk 'allocation_id' i staden.
 //_debug_array($inventory_ids_orig);die();
 			$filters = array('requirement_id' => $requirement->get_id());
@@ -580,7 +580,7 @@
 				}
 			}
 
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uiactivity.view_resource_allocation',
+			phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uiactivity.view_resource_allocation',
 				'activity_id' => $requirement->get_activity_id()));
 		}
 
@@ -591,7 +591,7 @@
 				return array("status" => "not_deleted");
 			}
 
-			$resource_allocation_id = phpgw::get_var('id');
+			$resource_allocation_id = Sanitizer::get_var('id');
 
 			$status = $this->so->delete($resource_allocation_id);
 
@@ -619,17 +619,17 @@
 
 		public function view()
 		{
-			$activity_id = phpgw::get_var('id');
-			$allocation_id = phpgw::get_var('allocation_id');
-			$requirement_id = phpgw::get_var('requirement_id');
+			$activity_id = Sanitizer::get_var('id');
+			$allocation_id = Sanitizer::get_var('allocation_id');
+			$requirement_id = Sanitizer::get_var('requirement_id');
 			if (isset($_POST['edit_allocation']))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement_resource_allocation.edit',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement_resource_allocation.edit',
 					'id' => $activity_id, 'requirement_id' => $requirement_id, 'allocation_id' => $allocation_id));
 			}
 			else if (isset($_POST['new_activity']))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement_resource_allocation.edit',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'logistic.uirequirement_resource_allocation.edit',
 					'id' => $activity_id, 'requirement_id' => $requirement_id));
 			}
 			else

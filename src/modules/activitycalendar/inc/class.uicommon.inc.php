@@ -19,7 +19,7 @@
 		{
 			if (in_array($key, array_keys($array)))
 			{
-				$result[$key] = phpgw::clean_value($array[$key]);
+				$result[$key] = Sanitizer::clean_value($array[$key]);
 			}
 		}
 		return $result;
@@ -54,7 +54,7 @@
 
 			self::set_active_menu('activitycalendar');
 
-			$this->acl = & $GLOBALS['phpgw']->acl;
+			$this->acl = Acl::getInstance();
 			$this->locations = & $GLOBALS['phpgw']->locations;
 
 			/* 			$this->type_of_user = array(
@@ -74,7 +74,7 @@
 		 * @param $permission
 		 * @return true if check is ok, false othewise
 		 */
-		protected function hasPermissionOn( $location = activitycalendar_uicommon::LOCATION_ROOT, $permission = PHPGW_ACL_PRIVATE )
+		protected function hasPermissionOn( $location = activitycalendar_uicommon::LOCATION_ROOT, $permission = ACL_PRIVATE )
 		{
 			return $this->acl->check($location, $permission, 'bkbooking');
 		}
@@ -86,7 +86,7 @@
 		 */
 		protected function isAdministrator()
 		{
-			return $this->acl->check(activitycalendar_uicommon::LOCATION_ROOT, PHPGW_ACL_PRIVATE, 'activitycalendar');
+			return $this->acl->check(activitycalendar_uicommon::LOCATION_ROOT, ACL_PRIVATE, 'activitycalendar');
 		}
 
 		/**
@@ -97,9 +97,9 @@
 		protected function isExecutiveOfficer()
 		{
 			return (
-				$this->acl->check(activitycalendar_uicommon::LOCATION_IN, PHPGW_ACL_ADD, 'activitycalendar') ||
-				$this->acl->check(activitycalendar_uicommon::LOCATION_OUT, PHPGW_ACL_ADD, 'activitycalendar') ||
-				$this->acl->check(activitycalendar_uicommon::LOCATION_INTERNAL, PHPGW_ACL_ADD, 'activitycalendar')
+				$this->acl->check(activitycalendar_uicommon::LOCATION_IN, ACL_ADD, 'activitycalendar') ||
+				$this->acl->check(activitycalendar_uicommon::LOCATION_OUT, ACL_ADD, 'activitycalendar') ||
+				$this->acl->check(activitycalendar_uicommon::LOCATION_INTERNAL, ACL_ADD, 'activitycalendar')
 				);
 		}
 

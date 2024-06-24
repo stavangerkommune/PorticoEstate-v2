@@ -49,7 +49,7 @@
 			
 			if(!$organization_number)
 			{
-				$organization_number = phpgw::get_var('organization_number');
+				$organization_number = Sanitizer::get_var('organization_number');
 			}
 			
 			$url = "https://data.brreg.no/enhetsregisteret/api/enheter/{$organization_number}";

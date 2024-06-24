@@ -47,7 +47,7 @@
 		}
 	}
 
-	$GLOBALS['phpgw']->template->set_var('action_url',$GLOBALS['phpgw']->link('/addressbook/csv_import.php'));
+	$GLOBALS['phpgw']->template->set_var('action_url',phpgw::link('/addressbook/csv_import.php'));
 
 	$PSep = '||'; // Pattern-Separator, separats the pattern-replacement-pairs in trans
 	$ASep = '|>'; // Assignment-Separator, separats pattern and replacesment
@@ -151,7 +151,7 @@
 			$addr_name_options = "<option value=\"\">none\n";
 			foreach($addr_names as $field => $name)
 			{
-				$addr_name_options .= "<option value=\"$field\">".$GLOBALS['phpgw']->strip_html($name)."\n";
+				$addr_name_options .= "<option value=\"$field\">".phpgw::strip_html($name)."\n";
 			}
 			$csv_fields = fgetcsv($fp,8000,$_POST['fieldsep']);
 

@@ -71,7 +71,7 @@
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -199,7 +199,7 @@
 
 		public function show()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -220,7 +220,7 @@
 
 		public function download()
 		{
-			$export_file = $this->bo->read_single(phpgw::get_var('id', 'int'));
+			$export_file = $this->bo->read_single(Sanitizer::get_var('id', 'int'));
 
 			if (!is_array($export_file))
 			{
@@ -234,7 +234,7 @@
 
 		public function log()
 		{
-			$export_file = $this->bo->read_single(phpgw::get_var('id', 'int'));
+			$export_file = $this->bo->read_single(Sanitizer::get_var('id', 'int'));
 
 			if (!is_array($export_file))
 			{
@@ -248,8 +248,8 @@
 
 		public function upload()
 		{
-			$id = phpgw::get_var('id', 'int');
-			$export_file = $this->bo->read_single(phpgw::get_var('id', 'int'));
+			$id = Sanitizer::get_var('id', 'int');
+			$export_file = $this->bo->read_single(Sanitizer::get_var('id', 'int'));
 
 			if (!is_array($export_file))
 			{

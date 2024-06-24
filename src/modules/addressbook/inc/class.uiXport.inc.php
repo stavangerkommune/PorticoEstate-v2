@@ -40,10 +40,10 @@
 
 		function import()
 		{
-			$convert = phpgw::get_var('convert');
-			$fcat_id = phpgw::get_var('fcat_id');
-			$private = phpgw::get_var('private');
-			$conv_type = phpgw::get_var('conv_type');
+			$convert = Sanitizer::get_var('convert');
+			$fcat_id = Sanitizer::get_var('fcat_id');
+			$private = Sanitizer::get_var('private');
+			$conv_type = Sanitizer::get_var('conv_type');
 			self::set_active_menu("{$this->currentapp}::xport_import");
 				
 			if ($convert)
@@ -51,13 +51,13 @@
 				if (empty($_FILES['tsvfile']['tmp_name']))
 				{
 					phpgwapi_cache::message_set(lang('Please choose file to import'), 'message');
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'addressbook.uiXport.import'));
+					phpgw::redirect_link('/index.php', array('menuaction' => 'addressbook.uiXport.import'));
 				}
 				
 				if (empty($conv_type) || $conv_type == 'none')
 				{
 					phpgwapi_cache::message_set(lang('Please choose a conversion type from the list'), 'message');
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'addressbook.uiXport.import'));
+					phpgw::redirect_link('/index.php', array('menuaction' => 'addressbook.uiXport.import'));
 				}
 				
 				$buffer = $this->bo->import($_FILES['tsvfile']['tmp_name'],$conv_type,$private,$fcat_id);
@@ -139,13 +139,13 @@
 		
 		function export()
 		{
-			$convert = phpgw::get_var('convert');
-			$tsvfilename = phpgw::get_var('tsvfilename');
-			$fcat_id = phpgw::get_var('fcat_id');
-			$download = phpgw::get_var('download');
-			$conv_type = phpgw::get_var('conv_type');
-			$both_types = phpgw::get_var('both_types');
-			$sub_cats = phpgw::get_var('sub_cats');
+			$convert = Sanitizer::get_var('convert');
+			$tsvfilename = Sanitizer::get_var('tsvfilename');
+			$fcat_id = Sanitizer::get_var('fcat_id');
+			$download = Sanitizer::get_var('download');
+			$conv_type = Sanitizer::get_var('conv_type');
+			$both_types = Sanitizer::get_var('both_types');
+			$sub_cats = Sanitizer::get_var('sub_cats');
 			self::set_active_menu("{$this->currentapp}::xport_export");
 			
 			if ($convert)
@@ -153,7 +153,7 @@
 				if (empty($conv_type) || $conv_type == 'none')
 				{
 					phpgwapi_cache::message_set(lang('Please choose a conversion type from the list'), 'message');
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'addressbook.uiXport.export'));
+					phpgw::redirect_link('/index.php', array('menuaction' => 'addressbook.uiXport.export'));
 				}
 
 				$buffer = $this->bo->export($conv_type,$fcat_id,$both_types,$sub_cats);
@@ -178,7 +178,7 @@
 					echo "<pre>\n";
 					echo $buffer;
 					echo "\n</pre>\n";
-					echo '<a href="'.$GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'addressbook.uiXport.export')) . '">' . lang('OK') . '</a>';
+					echo '<a href="'.phpgw::link('/index.php',array('menuaction'=>'addressbook.uiXport.export')) . '">' . lang('OK') . '</a>';
 					$GLOBALS['phpgw']->common->phpgw_footer();
 				}
 			}

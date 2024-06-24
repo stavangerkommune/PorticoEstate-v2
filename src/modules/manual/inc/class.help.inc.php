@@ -71,7 +71,7 @@
 			{
 				$this->output = array();
 			}
-			$GLOBALS['phpgw']->xslttpl->add_file($GLOBALS['phpgw']->common->get_tpl_dir('manual', 'base') . '/help');
+			phpgwapi_xslttemplates::getInstance()->add_file($GLOBALS['phpgw']->common->get_tpl_dir('manual', 'base') . '/help');
 		}
 		/*
 		  Use these functions to get and set the values of this
@@ -107,8 +107,8 @@
 		{
 			if ($this->app_name)
 			{
-				$GLOBALS['phpgw']->xslttpl->add_file($GLOBALS['phpgw']->common->get_tpl_dir('manual', 'base') . '/help_data');
-				//		$GLOBALS['phpgw']->xslttpl->add_file($GLOBALS['phpgw']->common->get_tpl_dir($this->app_name,'base') . '/help_data');
+				phpgwapi_xslttemplates::getInstance()->add_file($GLOBALS['phpgw']->common->get_tpl_dir('manual', 'base') . '/help_data');
+				//		phpgwapi_xslttemplates::getInstance()->add_file($GLOBALS['phpgw']->common->get_tpl_dir($this->app_name,'base') . '/help_data');
 			}
 		}
 
@@ -123,9 +123,9 @@
 					}
 					break;
 				default:
-					$this->setvar('intro', $GLOBALS['phpgw']->link('/help.php'));
-					$this->setvar('app_intro', $GLOBALS['phpgw']->link('/help.php', array('app' => $this->app_name)));
-					$this->setvar('note', $GLOBALS['phpgw']->link('/help.php', array('note' => 'True')));
+					$this->setvar('intro', phpgw::link('/help.php'));
+					$this->setvar('app_intro', phpgw::link('/help.php', array('app' => $this->app_name)));
+					$this->setvar('note', phpgw::link('/help.php', array('note' => 'True')));
 					break;
 			}
 		}
@@ -240,7 +240,7 @@
 			}
 			//	if ($help_file)
 			{
-				return $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'manual.uimanual.help',
+				return phpgw::link('/index.php', array('menuaction' => 'manual.uimanual.help',
 						'app' => $this->app_name, 'section' => basename($help_file, ".odt"), 'navbar' => true));
 			}
 
@@ -251,19 +251,19 @@
 		  $font = $GLOBALS['phpgw_info']['theme']['font'];
 		  $navbar = $GLOBALS['phpgw_info']['user']['preferences']['common']['navbar_format'];
 		  $lang = strtoupper($GLOBALS['phpgw_info']['user']['preferences']['common']['lang']);
-		  $GLOBALS['treemenu'][] = '..'.($navbar != 'text'?'<img src="'.$GLOBALS['phpgw']->common->image($appname,'navbar').'" border="0" alt="'.ucwords($appname).'">':'').($navbar != 'icons'?'<font face="'.$font.'">'.lang($appname).'</font>':'').'|'.$GLOBALS['phpgw']->link('/'.$appname.'/help/index.php');
+		  $GLOBALS['treemenu'][] = '..'.($navbar != 'text'?'<img src="'.$GLOBALS['phpgw']->common->image($appname,'navbar').'" border="0" alt="'.ucwords($appname).'">':'').($navbar != 'icons'?'<font face="'.$font.'">'.lang($appname).'</font>':'').'|'.phpgw::link('/'.$appname.'/help/index.php');
 
 		  $help_file = check_help_file($appname,$lang,$appname.'.php');
 		  if($help_file != '')
 		  {
-		  $GLOBALS['treemenu'][] = '...<font face="'.$font.'">'.lang('Overview').'</font>|'.$GLOBALS['phpgw']->link($help_file);
+		  $GLOBALS['treemenu'][] = '...<font face="'.$font.'">'.lang('Overview').'</font>|'.phpgw::link($help_file);
 		  }
 		  while(list($title,$filename) = each($file))
 		  {
 		  $help_file = check_help_file($appname,$lang,$filename);
 		  if($help_file != '')
 		  {
-		  $GLOBALS['treemenu'][] = '...<font face="'.$font.'">'.lang($title).'</font>|'.$GLOBALS['phpgw']->link($help_file);
+		  $GLOBALS['treemenu'][] = '...<font face="'.$font.'">'.lang($title).'</font>|'.phpgw::link($help_file);
 		  }
 		  }
 		  }

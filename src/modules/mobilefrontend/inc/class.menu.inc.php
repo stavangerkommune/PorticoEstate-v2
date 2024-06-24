@@ -17,7 +17,7 @@
 					'index' => array
 						(
 						'text' => lang('Configuration'),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiconfig.index',
+						'url' => phpgw::link('/index.php', array('menuaction' => 'admin.uiconfig.index',
 							'appname' => 'mobilefrontend'))
 					),
 				);

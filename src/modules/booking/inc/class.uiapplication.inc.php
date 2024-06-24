@@ -67,7 +67,7 @@
 			$this->document_resource = CreateObject('booking.bodocument_resource');
 			$this->building_so		 = new booking_sobuilding();
 			$this->application_bo	 = new booking_boapplication();
-			$this->acl_delete		 = $GLOBALS['phpgw']->acl->check('.application', PHPGW_ACL_DELETE, 'booking');
+			$this->acl_delete		 = $GLOBALS['phpgw']->acl->check('.application', ACL_DELETE, 'booking');
 
 			self::set_active_menu('booking::applications::applications');
 			$this->fields = array(
@@ -102,11 +102,11 @@
 
 		public function get_applications()
 		{
-			if(!$GLOBALS['phpgw']->acl->check('.application', PHPGW_ACL_READ, 'booking'))
+			if(!$GLOBALS['phpgw']->acl->check('.application', ACL_READ, 'booking'))
 			{
 				phpgw::no_access();
 			}
-			$ssn =  phpgw::get_var('ssn', 'string');
+			$ssn =  Sanitizer::get_var('ssn', 'string');
 			$application_data = CreateObject('booking.souser')->get_applications($ssn);
 			return $application_data;
 		}
@@ -420,7 +420,7 @@
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -516,7 +516,7 @@
 					'statustext'	 => lang('delete application'),
 					'text'			 => lang('delete'),
 					'confirm_msg'	 => lang('do you really want to delete this application'),
-					'action'		 => $GLOBALS['phpgw']->link('/index.php', array(
+					'action'		 => phpgw::link('/index.php', array(
 						'menuaction' => 'booking.uiapplication.delete'
 					)),
 					'parameters'	 => json_encode($parameters)
@@ -535,14 +535,14 @@
 		public function query()
 		{
 			$filters = array();
-			$building_id = phpgw::get_var('filter_building_id', 'int', 'REQUEST', null);
-			$case_officer_id = phpgw::get_var('filter_case_officer_id', 'int');
+			$building_id = Sanitizer::get_var('filter_building_id', 'int', 'REQUEST', null);
+			$case_officer_id = Sanitizer::get_var('filter_case_officer_id', 'int');
 
 			$filter_id_sql = $this->bo->accessable_applications(!empty($case_officer_id) ? array_map('abs', $case_officer_id) : null, $building_id);
 
 			$filters['where'] = "(bb_application.id IN ({$filter_id_sql}))";
 
-			$activity_id = phpgw::get_var('activities', 'int', 'REQUEST', null);
+			$activity_id = Sanitizer::get_var('activities', 'int', 'REQUEST', null);
 			if ($activity_id)
 			{
 				$filters['activity_id'] = $this->bo->so->get_activities($activity_id);
@@ -553,8 +553,8 @@
 			}
 			$filters['status'] = 'NEW';
 
-			$test = phpgw::get_var('status', 'string', 'REQUEST', null);
-			if (phpgw::get_var('status') == 'none')
+			$test = Sanitizer::get_var('status', 'string', 'REQUEST', null);
+			if (Sanitizer::get_var('status') == 'none')
 			{
 				$filters['status'] = array('NEW', 'PENDING', 'REJECTED', 'ACCEPTED');
 			}
@@ -568,13 +568,13 @@
 			}
 
 
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$columns = Sanitizer::get_var('columns');
 
 			$params = array(
-				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results' => phpgw::get_var('length', 'int', 'REQUEST', null),
+				'start' => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results' => Sanitizer::get_var('length', 'int', 'REQUEST', null),
 				'query' => $search['value'],
 				'sort' => $columns[$order[0]['column']]['data'],
 				'dir' => $order[0]['dir'],
@@ -633,7 +633,7 @@
 
 		public function associated()
 		{
-			$application_id = phpgw::get_var('filter_application_id', 'int');
+			$application_id = Sanitizer::get_var('filter_application_id', 'int');
 			$application = $this->bo->read_single($application_id);
 			$case_officer = false;
 
@@ -662,12 +662,12 @@
 
 		public function payments()
 		{
-			$application_id	 = phpgw::get_var('application_id', 'int');
+			$application_id	 = Sanitizer::get_var('application_id', 'int');
 
 			$params = array(
 				'application_id' => $application_id,
-				'sort' => phpgw::get_var('sort', 'string'),
-				'dir' => phpgw::get_var('dir', 'string')
+				'sort' => Sanitizer::get_var('sort', 'string'),
+				'dir' => Sanitizer::get_var('dir', 'string')
 			);
 			$payments		 = $this->bo->so->get_application_payments($params);
 
@@ -715,8 +715,8 @@
 
 		function refund_payment()
 		{
-			$payment_id = phpgw::get_var('id', 'int');
-			$application_id = phpgw::get_var('application_id', 'int');
+			$payment_id = Sanitizer::get_var('id', 'int');
+			$application_id = Sanitizer::get_var('application_id', 'int');
 			$application = $this->bo->read_single($application_id);
 
 			if($this->is_assigned_to_current_user($application))
@@ -742,8 +742,8 @@
 
 		function cancel_payment()
 		{
-			$payment_id = phpgw::get_var('id', 'int');
-			$application_id = phpgw::get_var('application_id', 'int');
+			$payment_id = Sanitizer::get_var('id', 'int');
+			$application_id = Sanitizer::get_var('application_id', 'int');
 			$application = $this->bo->read_single($application_id);
 			if($this->is_assigned_to_current_user($application))
 			{
@@ -766,7 +766,7 @@
 
 		function get_purchase_order()
 		{
-			$order_id = phpgw::get_var('id', 'int');
+			$order_id = Sanitizer::get_var('id', 'int');
 //			$purchase_order = $this->bo->so->get_single_purchase_order($order_id);
 			$purchase_order = createObject('booking.sopurchase_order')->get_single_purchase_order($order_id);
 
@@ -871,11 +871,11 @@
 
 		public function cancel_block()
 		{
-			$resource_id = phpgw::get_var('resource_id', 'int' ,'REQUEST');
-			$building_id = phpgw::get_var('building_id', 'int' ,'REQUEST');
+			$resource_id = Sanitizer::get_var('resource_id', 'int' ,'REQUEST');
+			$building_id = Sanitizer::get_var('building_id', 'int' ,'REQUEST');
 
-			$from_ = date('Y-m-d H:i:s', phpgwapi_datetime::date_to_timestamp(phpgw::get_var('from_', 'string', 'GET')));
-			$to_ = date('Y-m-d H:i:s', phpgwapi_datetime::date_to_timestamp( phpgw::get_var('to_', 'string', 'GET')));
+			$from_ = date('Y-m-d H:i:s', phpgwapi_datetime::date_to_timestamp(Sanitizer::get_var('from_', 'string', 'GET')));
+			$to_ = date('Y-m-d H:i:s', phpgwapi_datetime::date_to_timestamp( Sanitizer::get_var('to_', 'string', 'GET')));
 
 			$bo_block = createObject('booking.boblock');
 
@@ -893,7 +893,7 @@
 		}
 		public function set_block()
 		{
-			$resource_id = phpgw::get_var('resource_id', 'int' ,'REQUEST', -1 );
+			$resource_id = Sanitizer::get_var('resource_id', 'int' ,'REQUEST', -1 );
 			$timezone	 = !empty($GLOBALS['phpgw_info']['user']['preferences']['common']['timezone']) ? $GLOBALS['phpgw_info']['user']['preferences']['common']['timezone'] : 'UTC';
 
 			try
@@ -905,10 +905,10 @@
 				throw $ex;
 			}
 
-			$from_ = (new DateTime(phpgw::get_var('from_'), $DateTimeZone));
-			$to_ = (new DateTime(phpgw::get_var('to_'), $DateTimeZone));
-			$from_ = phpgw::get_var('from_');
-			$to_ = phpgw::get_var('to_');
+			$from_ = (new DateTime(Sanitizer::get_var('from_'), $DateTimeZone));
+			$to_ = (new DateTime(Sanitizer::get_var('to_'), $DateTimeZone));
+			$from_ = Sanitizer::get_var('from_');
+			$to_ = Sanitizer::get_var('to_');
 
 //			$from_->setTimezone(new DateTimeZone('UTC'));
 //			$to_->setTimezone(new DateTimeZone('UTC'));
@@ -996,10 +996,10 @@
 		{
 			$organization_number = phpgwapi_cache::session_get($this->module, self::ORGNR_SESSION_KEY);
 
-			$building_id = phpgw::get_var('building_id', 'int' ,'REQUEST', -1 );
-			$resource_id = phpgw::get_var('resource_id', 'int');
+			$building_id = Sanitizer::get_var('building_id', 'int' ,'REQUEST', -1 );
+			$resource_id = Sanitizer::get_var('resource_id', 'int');
 			$resource = $this->resource_bo->so->read_single($resource_id);
-			$simple = phpgw::get_var('simple', 'bool');
+			$simple = Sanitizer::get_var('simple', 'bool');
 
 			if($GLOBALS['phpgw_info']['flags']['currentapp'] == 'bookingfrontend' && $resource['simple_booking_start_date'] && $resource['simple_booking_start_date'] < time() && !$simple)
 			{
@@ -1015,7 +1015,7 @@
 				$this->validate_limit_number($resource_id, $user_data['ssn'],$errors);
 			}
 
-			$application_id = phpgw::get_var('application_id', 'int');
+			$application_id = Sanitizer::get_var('application_id', 'int');
 			if (isset($application_id))
 			{
 				$existing_application = $this->application_bo->read_single($application_id);
@@ -1144,7 +1144,7 @@
 				 * Start dealing with the purchase_order..
 				 */
 				$purchase_order = array('status' => 0, 'customer_id' => -1, 'lines' => array());
-				$selected_articles = (array)phpgw::get_var('selected_articles');
+				$selected_articles = (array)Sanitizer::get_var('selected_articles');
 
 				foreach ($selected_articles as $selected_article)
 				{
@@ -1171,7 +1171,7 @@
 				/**
 				 * In rare case of refresh or double-click
 				 */
-				if ($GLOBALS['phpgw']->session->is_repost())
+				if (phpgw::is_repost())
 				{
 					if ($is_partial1)
 					{
@@ -1223,11 +1223,11 @@
 					if ($_POST['contact_email'] != $_POST['contact_email2'])
 					{
 						$errors['email'] = lang('The e-mail addresses you entered do not match');
-						$application['contact_email2'] = phpgw::get_var('contact_email2', 'string', 'POST');
+						$application['contact_email2'] = Sanitizer::get_var('contact_email2', 'string', 'POST');
 					}
 					else
 					{
-						$application['contact_email2'] = phpgw::get_var('contact_email2', 'string', 'POST');
+						$application['contact_email2'] = Sanitizer::get_var('contact_email2', 'string', 'POST');
 					}
 				}
 
@@ -1356,13 +1356,13 @@
 					phpgwapi_cache::session_clear('phpgwapi', 'history');
 				}
 			}
-			if (phpgw::get_var('resource') == 'null' || !phpgw::get_var('resource'))
+			if (Sanitizer::get_var('resource') == 'null' || !Sanitizer::get_var('resource'))
 			{
 				array_set_default($application, 'resources', array());
 			}
 			else
 			{
-				$resources = explode(",", phpgw::get_var('resource'));
+				$resources = explode(",", Sanitizer::get_var('resource'));
 				if ($resources)
 				{
 					$resources_id = $resources[0];
@@ -1386,9 +1386,9 @@
 				$application['building_name'] = str_replace($search, $replace, $application['building_name']);
 			}
 
-            if (phpgw::get_var('dates', 'string'))
+            if (Sanitizer::get_var('dates', 'string'))
             {
-                $dates_input = explode(',', phpgw::get_var('dates', 'string'));
+                $dates_input = explode(',', Sanitizer::get_var('dates', 'string'));
                 $timezone = !empty($GLOBALS['phpgw_info']['user']['preferences']['common']['timezone']) ? $GLOBALS['phpgw_info']['user']['preferences']['common']['timezone'] : 'UTC';
 
                 try
@@ -1413,11 +1413,11 @@
                 }
 
                 $default_dates = $combined_dates;
-            } else if (phpgw::get_var('from_', 'string'))
+            } else if (Sanitizer::get_var('from_', 'string'))
 			{
-				$default_dates = array_map(array($this, '_combine_dates'), phpgw::get_var('from_', 'string'), phpgw::get_var('to_', 'string'));
+				$default_dates = array_map(array($this, '_combine_dates'), Sanitizer::get_var('from_', 'string'), Sanitizer::get_var('to_', 'string'));
 			}
-			else if (phpgw::get_var('start', 'bool'))
+			else if (Sanitizer::get_var('start', 'bool'))
 			{
 				$timezone	 = !empty($GLOBALS['phpgw_info']['user']['preferences']['common']['timezone']) ? $GLOBALS['phpgw_info']['user']['preferences']['common']['timezone'] : 'UTC';
 
@@ -1430,8 +1430,8 @@
 					throw $ex;
 				}
 
-				$_start_time =  (new DateTime(date('Y-m-d H:i:s', phpgw::get_var('start', 'int')/1000)));
-				$_end_time = ( new DateTime(date('Y-m-d H:i:s', phpgw::get_var('end', 'int')/1000)));
+				$_start_time =  (new DateTime(date('Y-m-d H:i:s', Sanitizer::get_var('start', 'int')/1000)));
+				$_end_time = ( new DateTime(date('Y-m-d H:i:s', Sanitizer::get_var('end', 'int')/1000)));
 				$_start_time->setTimezone($DateTimeZone);
 				$_end_time->setTimezone($DateTimeZone);
 
@@ -1465,7 +1465,7 @@
 			}
 			if (!$activity_id)
 			{
-				$activity_id = phpgw::get_var('activity_id', 'int', 'REQUEST', -1);
+				$activity_id = Sanitizer::get_var('activity_id', 'int', 'REQUEST', -1);
 			}
 			if (!$top_level_activity)
 			{
@@ -1529,7 +1529,7 @@
 			}
 
 
-			if (phpgw::get_var('phpgw_return_as', 'string', 'GET') == 'json' )
+			if (Sanitizer::get_var('phpgw_return_as', 'string', 'GET') == 'json' )
 			{
 				echo json_encode(array(
 						'application' => $application,
@@ -1605,7 +1605,7 @@
 
 			if(!$simple)
 			{
-				$simple = phpgw::get_var('formstage') == 'partial2' ? true : false;
+				$simple = Sanitizer::get_var('formstage') == 'partial2' ? true : false;
 			}
 
 			if($GLOBALS['phpgw_info']['flags']['currentapp'] == 'bookingfrontend' && $simple)
@@ -1616,7 +1616,7 @@
 				 * possible initial value from calendar
 				 * millisec
 				 */
-				$start = phpgw::get_var('start', 'int');
+				$start = Sanitizer::get_var('start', 'int');
 
 				if($start)
 				{
@@ -1667,20 +1667,20 @@
 
             if ($GLOBALS['phpgw_info']['user']['preferences']['common']['template_set'] == 'bookingfrontend_2') {
                 self::add_javascript('bookingfrontend', 'bookingfrontend_2', 'components/light-box.js', true);
-                $GLOBALS['phpgw']->css->add_external_file("bookingfrontend/js/bookingfrontend_2/components/light-box.css");
+                phpgwapi_css::getInstance()->add_external_file("bookingfrontend/js/bookingfrontend_2/components/light-box.css");
 
             }
 
             if($GLOBALS['phpgw_info']['flags']['currentapp'] == 'bookingfrontend' && !$simple)
 			{
-				$GLOBALS['phpgw']->js->add_external_file("phpgwapi/templates/bookingfrontend/js/build/aui/aui-min.js");
+				phpgwapi_js::getInstance()->add_external_file("phpgwapi/templates/bookingfrontend/js/build/aui/aui-min.js");
 				self::add_javascript('bookingfrontend', 'base', 'application_new.js', true);
 			}
 
 			self::add_javascript('phpgwapi', 'dateformatter', 'dateformatter.js');
-			$GLOBALS['phpgw']->js->validate_file('alertify', 'alertify.min', 'phpgwapi');
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
+			phpgwapi_js::getInstance()->validate_file('alertify', 'alertify.min', 'phpgwapi');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
 
             $_building['part_of_town'] = execMethod('property.solocation.get_part_of_town', $_building['location_code'])['part_of_town'];
             $_building['link'] = self::link(array('menuaction' => 'bookingfrontend.uibuilding.show', 'id' => $_building['id']));
@@ -1757,7 +1757,7 @@
 
 			$external_login_info = $bouser->validate_ssn_login( array(), true);
 
-			if(!$organization_number = phpgw::get_var('session_org_id', 'string', 'GET'))
+			if(!$organization_number = Sanitizer::get_var('session_org_id', 'string', 'GET'))
 			{
 				$organization_number = phpgwapi_cache::session_get($this->module, self::ORGNR_SESSION_KEY);
 			}
@@ -1768,8 +1768,8 @@
 			{
 				$partial2 = $this->extract_form_data();
 
-				$customer_organization_number_fallback		 = phpgw::get_var('customer_organization_number_fallback');
-				$customer_organization_number_arr			 = explode('_', phpgw::get_var('customer_organization_number'));
+				$customer_organization_number_fallback		 = Sanitizer::get_var('customer_organization_number_fallback');
+				$customer_organization_number_arr			 = explode('_', Sanitizer::get_var('customer_organization_number'));
 				if (!empty($customer_organization_number_arr[0]))
 				{
 					$partial2['customer_organization_id']		 = $customer_organization_number_arr[0];
@@ -1875,7 +1875,7 @@
 				{
 					$errors['email'] = lang('The e-mail addresses you entered do not match');
 				}
-				$partial2['contact_email2'] = phpgw::get_var('contact_email2', 'string', 'POST');
+				$partial2['contact_email2'] = Sanitizer::get_var('contact_email2', 'string', 'POST');
 
 				if (!$errors)
 				{
@@ -1908,7 +1908,7 @@
 
 							if(empty($application['customer_ssn']))
 							{
-								$application['customer_ssn'] = phpgw::get_var('customer_ssn', 'string', 'POST');
+								$application['customer_ssn'] = Sanitizer::get_var('customer_ssn', 'string', 'POST');
 							}
 
 							$receipt = $this->bo->update($application);
@@ -1982,7 +1982,7 @@
 								createObject('booking.sopurchase_order')->delete_purchase_order($application['id']);
 								$this->bo->delete_application($application['id']);
 								$GLOBALS['phpgw']->db->transaction_commit();
-								if(!phpgw::get_var('phpgw_return_as', 'string', 'GET') == 'json' )
+								if(!Sanitizer::get_var('phpgw_return_as', 'string', 'GET') == 'json' )
 								{
 									phpgwapi_cache::message_set(implode("<br/>", array_values($errors) ));
 									self::redirect(array());
@@ -2037,7 +2037,7 @@
 			/**
 			 * When returning from vipps
 			 */
-			$payment_order_id = phpgw::get_var('payment_order_id', 'string', 'GET');
+			$payment_order_id = Sanitizer::get_var('payment_order_id', 'string', 'GET');
 
 			/**
 			 * check external login - and return here
@@ -2049,7 +2049,7 @@
 				'menuaction' => 'bookingfrontend.uiapplication.add_contact'
 			));
 
-			if(!$organization_number = phpgw::get_var('session_org_id', 'string', 'GET'))
+			if(!$organization_number = Sanitizer::get_var('session_org_id', 'string', 'GET'))
 			{
 				$organization_number = phpgwapi_cache::session_get($this->module, self::ORGNR_SESSION_KEY);
 			}
@@ -2352,7 +2352,7 @@
 				$orgnumbers[] = $org['orgnumber'];
 			}
 
-			$session_org_id = phpgw::get_var('session_org_id');
+			$session_org_id = Sanitizer::get_var('session_org_id');
 
 			if($session_org_id && in_array($session_org_id, $orgnumbers))
 			{
@@ -2574,7 +2574,7 @@
 
 		public function edit()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -2609,7 +2609,7 @@
 				array_set_default($_POST, 'accepted_documents', array());
 
 				$application = array_merge($application, extract_values($_POST, $this->fields));
-				$application['message'] = phpgw::get_var('comment', 'html', 'POST');
+				$application['message'] = Sanitizer::get_var('comment', 'html', 'POST');
 				$this->agegroup_bo->extract_form_data($application);
 				$this->extract_customer_identifier($application);
 
@@ -2643,7 +2643,7 @@
 						'customer_id' => -1,
 						'lines' => array());
 
-					$selected_articles = (array)phpgw::get_var('selected_articles');
+					$selected_articles = (array)Sanitizer::get_var('selected_articles');
 
 					foreach ($selected_articles as $selected_article)
 					{
@@ -2706,7 +2706,7 @@
 			$application['customer_identifier_types']['ssn'] = 'SSN';
 			$application['audience_json'] = json_encode(array_map('intval', $application['audience']));
 
-			if (phpgw::get_var('phpgw_return_as', 'string', 'GET') == 'json' )
+			if (Sanitizer::get_var('phpgw_return_as', 'string', 'GET') == 'json' )
 			{
 				echo json_encode(array(
 						'application' => $application,
@@ -2754,9 +2754,9 @@
 			phpgwapi_jquery::formvalidator_generate(array('location', 'date', 'security',
 				'file'), 'application_form');
 
-			$GLOBALS['phpgw']->js->validate_file('alertify', 'alertify.min', 'phpgwapi');
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
+			phpgwapi_js::getInstance()->validate_file('alertify', 'alertify.min', 'phpgwapi');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
 
 			self::render_template_xsl('application_edit', array(
 				'application' => $application,
@@ -2825,7 +2825,7 @@
 
 		protected function extract_display_in_dashboard_value()
 		{
-			$val = phpgw::get_var('display_in_dashboard', 'int', 'POST', 0);
+			$val = Sanitizer::get_var('display_in_dashboard', 'int', 'POST', 0);
 			if ($val <= 0)
 			{
 				return false;
@@ -2988,7 +2988,7 @@
 //			die();
 
 
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -3002,7 +3002,7 @@
 				phpgw::no_access('booking', lang('not case officer'));
 			}
 
-			$preview = phpgw::get_var('preview', 'bool');
+			$preview = Sanitizer::get_var('preview', 'bool');
 
 			$GLOBALS['phpgw_info']['flags']['noheader']	 = true;
 			$GLOBALS['phpgw_info']['flags']['nofooter']	 = true;
@@ -3135,7 +3135,7 @@
 		}
 		public function show()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -3179,16 +3179,16 @@
 
 				if (array_key_exists('internal_note_content', $_POST))
 				{
-					$internal_note_content = phpgw::get_var('internal_note_content', 'string');
+					$internal_note_content = Sanitizer::get_var('internal_note_content', 'string');
 					$this->add_internal_note($application['id'], $internal_note_content);
 					self::redirect(array('menuaction' => $this->url_prefix . '.show', 'id' => $application['id'], 'return_after_action' => true));
 				}
 
 				if (array_key_exists('message_recipient', $_POST))
 				{
-					$message_recipient = phpgw::get_var('message_recipient', 'int');
-					$message_subject = phpgw::get_var('message_subject', 'string');
-					$message_content = phpgw::get_var('message_content', 'string');
+					$message_recipient = Sanitizer::get_var('message_recipient', 'int');
+					$message_subject = Sanitizer::get_var('message_subject', 'string');
+					$message_content = Sanitizer::get_var('message_content', 'string');
 					createobject('messenger.somessenger')->send_message(array(
 						'to' => $message_recipient,
 						'subject' => $message_subject,
@@ -3198,7 +3198,7 @@
 
 				if (array_key_exists('assign_to_new_user', $_POST))
 				{
-					$update = $this->assign_to_new_user($application, phpgw::get_var('assign_to_new_user', 'int'));
+					$update = $this->assign_to_new_user($application, Sanitizer::get_var('assign_to_new_user', 'int'));
 					if ($application['status'] == 'NEW')
 					{
 						$application['status'] = 'PENDING';
@@ -3232,7 +3232,7 @@
 				else if (isset($_POST['status']))
 				{
 					$this->check_application_assigned_to_current_user($application);
-					$application['status'] = phpgw::get_var('status', 'string', 'POST');
+					$application['status'] = Sanitizer::get_var('status', 'string', 'POST');
 
 					if ($application['status'] == 'REJECTED')
 					{
@@ -3306,7 +3306,7 @@
 				 */
 				if ($_POST['comment'])
 				{
-					$application['comment'] = phpgw::get_var('comment', 'html', 'POST');
+					$application['comment'] = Sanitizer::get_var('comment', 'html', 'POST');
 					$this->add_comment($application, $application['comment']);
 					$update = true;
 					$notify = true;
@@ -3319,13 +3319,13 @@
 				{
 					$log_msg = '';
 					$_application = $application;
-					$_application['status'] = phpgw::get_var('status', 'string', 'POST');
+					$_application['status'] = Sanitizer::get_var('status', 'string', 'POST');
 					$recipient = $this->bo->send_notification($_application);
 					if($recipient)
 					{
 						$log_msg .= "Epost er sendt til {$recipient}";
 					}
-					if(phpgw::get_var('status', 'string', 'POST'))
+					if(Sanitizer::get_var('status', 'string', 'POST'))
 					{
 						$log_msg .= "\nStatus: ". strtolower(lang($application['status']));
 					}
@@ -3448,7 +3448,7 @@
 			$custom_config = CreateObject('admin.soconfig', $location_id);
 			$external_archive = !empty($custom_config->config_data['common_archive']['method']) ? $custom_config->config_data['common_archive']['method'] : '';
 
-			if(phpgw::get_var('return_after_action', 'bool'))
+			if(Sanitizer::get_var('return_after_action', 'bool'))
 			{
 				$js =<<<JS
 				$(document).ready(function ()
@@ -3457,7 +3457,7 @@
 					return_after_action.scrollIntoView();
 				});
 JS;
-				$GLOBALS['phpgw']->js->add_code('', $js);
+				phpgwapi_js::getInstance()->add_code('', $js);
 			}
 
 			$orgid = $this->organization_bo->so->get_orgid($application['customer_organization_number']);
@@ -3500,7 +3500,7 @@ JS;
 
 		function get_activity_data()
 		{
-			$activity_id = phpgw::get_var('activity_id', 'int', 'REQUEST', -1);
+			$activity_id = Sanitizer::get_var('activity_id', 'int', 'REQUEST', -1);
 			$activity_path = $this->activity_bo->get_path($activity_id);
 			$top_level_activity = $activity_path ? $activity_path[0]['id'] : -1;
 			$agegroups = $this->agegroup_bo->fetch_age_groups($top_level_activity);
@@ -3556,7 +3556,7 @@ JS;
 			$status = array('deleted' => false);
 			if(!$id)
 			{
-				$id = phpgw::get_var('id', 'int', 'POST');
+				$id = Sanitizer::get_var('id', 'int', 'POST');
 			}
 			$session_id = $GLOBALS['phpgw']->session->get_session_id();
 			if (!empty($session_id) && $id > 0)
@@ -3598,7 +3598,7 @@ JS;
 				return lang('sorry - insufficient rights');
 			}
 
-			$application_id = phpgw::get_var('id', 'int', 'GET');
+			$application_id = Sanitizer::get_var('id', 'int', 'GET');
 
 			$soassociation = new booking_soapplication_association();
 			$associations = $soassociation->read(array('results' => -1, 'filters' => array('application_id' => $application_id )));

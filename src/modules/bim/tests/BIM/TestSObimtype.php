@@ -33,7 +33,7 @@
 	 */
 	protected function setUp()
 	{
-		$this->db = & $GLOBALS['phpgw']->db;
+		$this->db = Db::getInstance();
 	}
 	
 		public function testDb()

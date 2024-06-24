@@ -67,15 +67,15 @@
 			$this->import_button_label = "Start import";
 
 			// If the parameter 'importsubmit' exist (submit button in import form), set path
-			if (phpgw::get_var("importsubmit"))
+			if (Sanitizer::get_var("importsubmit"))
 			{
 				// Get the path for user input or use a default path
-				$this->path = phpgw::get_var("facilit_path") ? phpgw::get_var("facilit_path") : '/home/notroot/FacilitExport';
+				$this->path = Sanitizer::get_var("facilit_path") ? Sanitizer::get_var("facilit_path") : '/home/notroot/FacilitExport';
 				phpgwapi_cache::session_set('rental', 'import_path', $this->path);
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uiimport.import_regulations',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uiimport.import_regulations',
 					'importstep' => 'true'));
 			}
-			else if (phpgw::get_var("importstep"))
+			else if (Sanitizer::get_var("importstep"))
 			{
 				$this->messages = array();
 				$this->warnings = array();
@@ -156,15 +156,15 @@
 			$this->import_button_label = "Start import";
 
 			// If the parameter 'importsubmit' exist (submit button in import form), set path
-			if (phpgw::get_var("importsubmit"))
+			if (Sanitizer::get_var("importsubmit"))
 			{
 				// Get the path for user input or use a default path
-				$this->path = phpgw::get_var("facilit_path") ? phpgw::get_var("facilit_path") : '/home/notroot/FacilitExport';
+				$this->path = Sanitizer::get_var("facilit_path") ? Sanitizer::get_var("facilit_path") : '/home/notroot/FacilitExport';
 				phpgwapi_cache::session_set('rental', 'import_path', $this->path);
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uiimport.index',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uiimport.index',
 					'importstep' => 'true'));
 			}
-			else if (phpgw::get_var("importstep"))
+			else if (Sanitizer::get_var("importstep"))
 			{
 				$start_time = time(); // Start time of import
 				$start = date("G:i:s", $start_time);

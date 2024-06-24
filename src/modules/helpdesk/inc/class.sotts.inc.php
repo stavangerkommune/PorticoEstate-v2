@@ -63,7 +63,7 @@
 		{
 			$this->account		= (int)$GLOBALS['phpgw_info']['user']['account_id'];
 			$this->historylog	= CreateObject('phpgwapi.historylog','helpdesk');
-			$this->db 			= & $GLOBALS['phpgw']->db;
+			$this->db 			= Db::getInstance();
 			$this->db2 			= clone($this->db);
 			$this->like 		= & $this->db->like;
 			$this->join 		= & $this->db->join;
@@ -167,7 +167,7 @@
 			$grant_category = array();
 			foreach ($categories as $location)
 			{
-				if ($GLOBALS['phpgw']->acl->check($location, PHPGW_ACL_READ, 'helpdesk'))
+				if ($GLOBALS['phpgw']->acl->check($location, ACL_READ, 'helpdesk'))
 				{
 					$category = explode('.',$location);
 					$grant_category[] = $category[3];
@@ -598,7 +598,7 @@
 			$grant_category = array();
 			foreach ($categories as $location)
 			{
-				if ($GLOBALS['phpgw']->acl->check($location, PHPGW_ACL_READ, 'helpdesk'))
+				if ($GLOBALS['phpgw']->acl->check($location, ACL_READ, 'helpdesk'))
 				{
 					$category = explode('.',$location);
 					$grant_category[] = $category[3];

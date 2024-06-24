@@ -94,7 +94,7 @@
 		function index()
 		{
 
-			if(!$this->acl->check('.job', PHPGW_ACL_READ, 'hrm'))
+			if(!$this->acl->check('.job', ACL_READ, 'hrm'))
 			{
 				$this->bocommon->no_access();
 				return;
@@ -102,9 +102,9 @@
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::job_type';
 
-			$GLOBALS['phpgw']->js->validate_file('base', 'check', 'hrm');
+			phpgwapi_js::getInstance()->validate_file('base', 'check', 'hrm');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('job','nextmatchs','menu',
+			phpgwapi_xslttemplates::getInstance()->add_file(array('job','nextmatchs','menu',
 										'search_field'));
 
 
@@ -131,12 +131,12 @@
 					'descr'					=> $entry['descr'],
 					'task_count'				=> $entry['task_count'],
 					'quali_count'				=> $entry['quali_count'],
-					'link_add_sub'				=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.edit_job','parent_id'=> $entry['id'])),
-					'link_edit'				=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.edit_job', 'id'=> $entry['id'])),
-					'link_delete'				=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.delete_job', 'job_id'=> $entry['id'])),
-					'link_view'				=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.view_job', 'id'=> $entry['id'])),
-					'link_qualification'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.qualification', 'job_id'=> $entry['id'])),
-					'link_task'				=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.task', 'job_id'=> $entry['id'])),
+					'link_add_sub'				=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.edit_job','parent_id'=> $entry['id'])),
+					'link_edit'				=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.edit_job', 'id'=> $entry['id'])),
+					'link_delete'				=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.delete_job', 'job_id'=> $entry['id'])),
+					'link_view'				=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.view_job', 'id'=> $entry['id'])),
+					'link_qualification'			=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.qualification', 'job_id'=> $entry['id'])),
+					'link_task'				=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.task', 'job_id'=> $entry['id'])),
 					'lang_qualification_job_text'		=> lang('qualifications for this job'),
 					'lang_task_job_text'			=> lang('tasks for this job'),
 					'lang_view_job_text'			=> lang('view the job'),
@@ -181,10 +181,10 @@
 			(
 				'lang_add'		=> lang('add'),
 				'lang_add_statustext'	=> lang('add a category'),
-				'add_action'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.edit_job')),
+				'add_action'		=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.edit_job')),
 				'lang_reset'		=> lang('reset hierarchy'),
 				'lang_reset_statustext'	=> lang('Reset the hierarchy'),
-				'reset_action'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.reset_job_type_hierarchy'))
+				'reset_action'		=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.reset_job_type_hierarchy'))
 			);
 
 			$table_reset_job_type[] = array
@@ -222,7 +222,7 @@
 				'record_limit'					=> $record_limit,
 				'num_records'					=> count($job_info),
 				'all_records'					=> $this->bo->total_records,
-				'link_url'						=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'link_url'						=> phpgw::link('/index.php',$link_data),
 				'img_path'						=> $GLOBALS['phpgw']->common->get_image_path('phpgwapi','default'),
 				'lang_searchfield_statustext'	=> lang('Enter the search string. To show all entries, empty this field and press the SUBMIT button again'),
 				'lang_searchbutton_statustext'	=> lang('Submit the search string'),
@@ -234,20 +234,20 @@
 				'lang_select_all'				=> lang('Select All'),
 				'img_check'						=> $GLOBALS['phpgw']->common->get_image_path('hrm').'/check.png',
 				'lang_print'					=> lang('print'),
-				'print_action'					=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.print_pdf')),
+				'print_action'					=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.print_pdf')),
 			);
 
 			$appname	= lang('job');
 			$function_msg	= lang('list job');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('list' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('list' => $data));
 			$this->save_sessiondata();
 		}
 
 		function print_pdf()
                                                                   {
-			if(!$this->acl->check('.job', PHPGW_ACL_READ, 'hrm'))
+			if(!$this->acl->check('.job', ACL_READ, 'hrm'))
 			{
 				$this->bocommon->no_access();
 				return;
@@ -261,7 +261,7 @@
 			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
 			$date = $GLOBALS['phpgw']->common->show_date('',$dateformat);
 
-			$values	= phpgw::get_var('values');
+			$values	= Sanitizer::get_var('values');
 
 			// don't want any warnings turning up in the pdf code if the server is set to 'anal' mode.
 			//error_reporting(7);
@@ -360,7 +360,7 @@
 
 		function qualification()
 		{
-			if(!$this->acl->check('.job', PHPGW_ACL_READ, 'hrm'))
+			if(!$this->acl->check('.job', ACL_READ, 'hrm'))
 			{
 				$this->bocommon->no_access();
 				return;
@@ -368,9 +368,9 @@
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::job_type';
 
-			$job_id	= phpgw::get_var('job_id', 'int');
-			$id	= phpgw::get_var('id', 'int');
-			$resort	= phpgw::get_var('resort');
+			$job_id	= Sanitizer::get_var('job_id', 'int');
+			$id	= Sanitizer::get_var('id', 'int');
+			$resort	= Sanitizer::get_var('resort');
 
 			if($resort)
 			{
@@ -380,7 +380,7 @@
 			$receipt = $GLOBALS['phpgw']->session->appsession('session_data','hrm_quali_receipt');
 			$GLOBALS['phpgw']->session->appsession('session_data','hrm_quali_receipt','');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('job'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('job'));
 
 			if ($job_id)
 			{
@@ -399,8 +399,8 @@
 					$content[] = array
 					(
 						'sorting'		=> $entry['value_sort'],
-						'link_up'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.qualification', 'resort'=> 'up', 'id'=> $entry['quali_id'], 'job_id'=> $job_id, 'allrows'=> $this->allrows)),
-						'link_down'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.qualification', 'resort'=> 'down', 'id'=> $entry['quali_id'], 'job_id'=> $job_id, 'allrows'=> $this->allrows)),
+						'link_up'		=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.qualification', 'resort'=> 'up', 'id'=> $entry['quali_id'], 'job_id'=> $job_id, 'allrows'=> $this->allrows)),
+						'link_down'		=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.qualification', 'resort'=> 'down', 'id'=> $entry['quali_id'], 'job_id'=> $job_id, 'allrows'=> $this->allrows)),
 						'text_up'		=> lang('up'),
 						'text_down'		=> lang('down'),
 
@@ -409,9 +409,9 @@
 						'descr'			=> $entry['descr'],
 						'remark'		=> $entry['remark'],
 						'category'		=> $entry['category'],
-						'link_edit'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.edit_qualification', 'job_id'=> $job_id, 'quali_id'=> $entry['quali_id'])),
-						'link_view'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.view_qualification', 'job_id'=> $job_id, 'quali_id'=> $entry['quali_id'])),
-						'link_delete'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.delete_qualification', 'job_id'=> $job_id, 'quali_id'=> $entry['quali_id'])),
+						'link_edit'		=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.edit_qualification', 'job_id'=> $job_id, 'quali_id'=> $entry['quali_id'])),
+						'link_view'		=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.view_qualification', 'job_id'=> $job_id, 'quali_id'=> $entry['quali_id'])),
+						'link_delete'		=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.delete_qualification', 'job_id'=> $job_id, 'quali_id'=> $entry['quali_id'])),
 						'lang_view_text'	=> lang('view qualification item'),
 						'lang_edit_text'	=> lang('edit qualification item'),
 						'lang_delete_text'	=> lang('delete qualification item'),
@@ -475,10 +475,10 @@
 			(
 				'lang_add'			=> lang('add'),
 				'lang_add_qualification_text'	=> lang('add a qualification item'),
-				'add_action'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.edit_qualification', 'job_id'=> $job_id)),
+				'add_action'			=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.edit_qualification', 'job_id'=> $job_id)),
 				'lang_done'			=> lang('done'),
 				'lang_done_qualification_text'	=> lang('back to user list'),
-				'done_action'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.index'))
+				'done_action'			=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.index'))
 			);
 
 			$msgbox_data = $this->bocommon->msgbox_data($receipt);
@@ -492,8 +492,8 @@
 				'table_add'				=> $table_add,
 				'user_values'				=> $user_values,
 				'msgbox_data'				=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'				=> $GLOBALS['phpgw']->link('/index.php',$link_data),
-				'done_action'				=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.index')),
+				'form_action'				=> phpgw::link('/index.php',$link_data),
+				'done_action'				=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.index')),
 				'lang_id'				=> lang('qualification ID'),
 				'lang_descr'				=> lang('Descr'),
 				'lang_save'				=> lang('save'),
@@ -512,12 +512,12 @@
 			$appname = lang('qualification');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('qualification' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('qualification' => $data));
 		}
 
 		function task()
 		{
-			if(!$this->acl->check('.job', PHPGW_ACL_READ, 'hrm'))
+			if(!$this->acl->check('.job', ACL_READ, 'hrm'))
 			{
 				$this->bocommon->no_access();
 				return;
@@ -525,9 +525,9 @@
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::job_type';
 
-			$job_id	= phpgw::get_var('job_id', 'int');
-			$id	= phpgw::get_var('id', 'int');
-			$resort	= phpgw::get_var('resort');
+			$job_id	= Sanitizer::get_var('job_id', 'int');
+			$id	= Sanitizer::get_var('id', 'int');
+			$resort	= Sanitizer::get_var('resort');
 
 			if($resort)
 			{
@@ -537,7 +537,7 @@
 			$receipt = $GLOBALS['phpgw']->session->appsession('session_data','hrm_task_receipt');
 			$GLOBALS['phpgw']->session->appsession('session_data','hrm_task_receipt','');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('job'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('job'));
 
 			if ($job_id)
 			{
@@ -556,17 +556,17 @@
 					$content[] = array
 					(
 						'sorting'		=> $entry['value_sort'],
-						'link_up'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.task', 'resort'=> 'up', 'id'=> $entry['id'], 'job_id'=> $job_id, 'allrows'=> $this->allrows)),
-						'link_down'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.task', 'resort'=> 'down', 'id'=> $entry['id'], 'job_id'=> $job_id, 'allrows'=> $this->allrows)),
+						'link_up'		=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.task', 'resort'=> 'up', 'id'=> $entry['id'], 'job_id'=> $job_id, 'allrows'=> $this->allrows)),
+						'link_down'		=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.task', 'resort'=> 'down', 'id'=> $entry['id'], 'job_id'=> $job_id, 'allrows'=> $this->allrows)),
 						'text_up'		=> lang('up'),
 						'text_down'		=> lang('down'),
 
 						'id'			=> $entry['id'],
 						'name'			=> $entry['name'],
 						'descr'			=> $entry['descr'],
-						'link_edit'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.edit_task', 'job_id'=> $job_id, 'id'=> $entry['id'])),
-						'link_view'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.view_task', 'job_id'=> $job_id, 'id'=> $entry['id'])),
-						'link_delete'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.delete_task', 'job_id'=> $job_id, 'id'=> $entry['id'])),
+						'link_edit'		=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.edit_task', 'job_id'=> $job_id, 'id'=> $entry['id'])),
+						'link_view'		=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.view_task', 'job_id'=> $job_id, 'id'=> $entry['id'])),
+						'link_delete'		=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.delete_task', 'job_id'=> $job_id, 'id'=> $entry['id'])),
 						'lang_view_text'	=> lang('view task item'),
 						'lang_edit_text'	=> lang('edit task item'),
 						'lang_delete_text'	=> lang('delete task item'),
@@ -624,10 +624,10 @@
 			(
 				'lang_add'			=> lang('add'),
 				'lang_add_task_text'		=> lang('add a task item'),
-				'add_action'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.edit_task', 'job_id'=> $job_id)),
+				'add_action'			=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.edit_task', 'job_id'=> $job_id)),
 				'lang_done'			=> lang('done'),
 				'lang_done_task_text'		=> lang('back to user list'),
-				'done_action'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.index'))
+				'done_action'			=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.index'))
 			);
 
 			$msgbox_data = $this->bocommon->msgbox_data($receipt);
@@ -641,8 +641,8 @@
 				'table_add'				=> $table_add,
 				'user_values'				=> $user_values,
 				'msgbox_data'				=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'				=> $GLOBALS['phpgw']->link('/index.php',$link_data),
-				'done_action'				=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.index')),
+				'form_action'				=> phpgw::link('/index.php',$link_data),
+				'done_action'				=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.index')),
 				'lang_id'				=> lang('task ID'),
 				'lang_descr'				=> lang('Descr'),
 				'lang_save'				=> lang('save'),
@@ -661,21 +661,21 @@
 			$appname = lang('task');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('task' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('task' => $data));
 		}
 
 		function edit_task()
 		{
-			$id		= phpgw::get_var('id', 'int');
-			$job_id	= phpgw::get_var('job_id', 'int');
-			$parent_id	= phpgw::get_var('parent_id', 'int');
-			$values		= phpgw::get_var('values');
+			$id		= Sanitizer::get_var('id', 'int');
+			$job_id	= Sanitizer::get_var('job_id', 'int');
+			$parent_id	= Sanitizer::get_var('parent_id', 'int');
+			$values		= Sanitizer::get_var('values');
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::job_type';
 
 			if(!$id)
 			{
-				if(!$this->acl->check('.job', PHPGW_ACL_ADD, 'hrm'))
+				if(!$this->acl->check('.job', ACL_ADD, 'hrm'))
 				{
 					$this->bocommon->no_access();
 					return;
@@ -683,7 +683,7 @@
 			}
 			else
 			{
-				if(!$this->acl->check('.job', PHPGW_ACL_EDIT, 'hrm'))
+				if(!$this->acl->check('.job', ACL_EDIT, 'hrm'))
 				{
 					$this->bocommon->no_access();
 					return;
@@ -691,7 +691,7 @@
 			}
 
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('job'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('job'));
 
 			if (is_array($values))
 			{
@@ -718,13 +718,13 @@
 						if ($values['save'])
 						{
 							$GLOBALS['phpgw']->session->appsession('session_data','hrm_task_receipt',$receipt);
-							$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'=> 'hrm.uijob.task', 'job_id'=> $job_id));
+							phpgw::redirect_link('/index.php', array('menuaction'=> 'hrm.uijob.task', 'job_id'=> $job_id));
 						}
 					}
 				}
 				else
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'=> 'hrm.uijob.task', 'job_id'=> $job_id));
+					phpgw::redirect_link('/index.php', array('menuaction'=> 'hrm.uijob.task', 'job_id'=> $job_id));
 				}
 			}
 
@@ -758,7 +758,7 @@
 			$data = array
 			(
 				'msgbox_data'				=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'				=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'form_action'				=> phpgw::link('/index.php',$link_data),
 				'lang_id'				=> lang('task ID'),
 				'lang_descr'				=> lang('Descr'),
 				'lang_save'				=> lang('save'),
@@ -788,16 +788,16 @@
 			$appname	= lang('task');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('edit_task' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('edit_task' => $data));
 		}
 
 		function view_task()
 		{
-			$id		= phpgw::get_var('id', 'int');
-			$job_id		= phpgw::get_var('job_id', 'int');
-			$parent_id	= phpgw::get_var('parent_id', 'int');
+			$id		= Sanitizer::get_var('id', 'int');
+			$job_id		= Sanitizer::get_var('job_id', 'int');
+			$parent_id	= Sanitizer::get_var('parent_id', 'int');
 
-			if(!$this->acl->check('.job', PHPGW_ACL_READ, 'hrm'))
+			if(!$this->acl->check('.job', ACL_READ, 'hrm'))
 			{
 				$this->bocommon->no_access();
 				return;
@@ -805,7 +805,7 @@
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::job_type';
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('job'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('job'));
 
 			if ($id)
 			{
@@ -830,7 +830,7 @@
 			$data = array
 			(
 				'msgbox_data'				=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'done_action'				=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'done_action'				=> phpgw::link('/index.php',$link_data),
 				'lang_id'				=> lang('task ID'),
 				'lang_descr'				=> lang('Descr'),
 				'value_id'				=> $id,
@@ -853,14 +853,14 @@
 			$appname	= lang('task');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('view_task' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('view_task' => $data));
 		}
 
 
 
 		function lookup_qualification()
 		{
-			if(!$this->acl->check('.job', PHPGW_ACL_ADD, 'hrm'))
+			if(!$this->acl->check('.job', ACL_ADD, 'hrm'))
 			{
 				$this->bocommon->no_access();
 				return;
@@ -874,13 +874,13 @@
 			$receipt = $GLOBALS['phpgw']->session->appsession('session_data','hrm_quali_tp_receipt');
 			$GLOBALS['phpgw']->session->appsession('session_data','hrm_quali_tp_receipt','');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('job','nextmatchs','search_field'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('job','nextmatchs','search_field'));
 
 			$qualification = $this->bo->read_qualification_type();
 
 			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
 
-			if($this->acl->check('.job', PHPGW_ACL_EDIT, 'hrm'))
+			if($this->acl->check('.job', ACL_EDIT, 'hrm'))
 			{
 				$allowed_edit = true;
 			}
@@ -892,7 +892,7 @@
 				{
 					if ($allowed_edit)
 					{
-						$link_edit		= $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.edit_qualification_type', 'quali_type_id'=> $entry['id']));
+						$link_edit		= phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.edit_qualification_type', 'quali_type_id'=> $entry['id']));
 						$text_edit		= lang('edit');
 					}
 
@@ -902,8 +902,8 @@
 						'name'			=> $entry['name'],
 						'descr'			=> $entry['descr'],
 						'link_edit'		=> $link_edit,
-	//					'link_view'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.edit_qualification_type', 'quali_type_id'=> $entry['id']));
-	//					'link_delete'		=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.edit_qualification_type', 'quali_type_id'=> $entry['id']));
+	//					'link_view'		=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.edit_qualification_type', 'quali_type_id'=> $entry['id']));
+	//					'link_delete'		=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.edit_qualification_type', 'quali_type_id'=> $entry['id']));
 						'lang_select'		=> lang('select'),
 						'text_delete'		=> lang('delete'),
 						'text_edit'		=> $text_edit,
@@ -962,10 +962,10 @@
 			(
 				'lang_add'			=> lang('add'),
 				'lang_add_qualification_text'	=> lang('add a qualification item'),
-				'add_action'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.edit_qualification_type', 'job_id'=> $job_id)),
+				'add_action'			=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.edit_qualification_type', 'job_id'=> $job_id)),
 				'lang_done'			=> lang('done'),
 				'lang_done_qualification_text'	=> lang('back to user list'),
-				'done_action'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.lookup_qualification'))
+				'done_action'			=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.lookup_qualification'))
 			);
 
 
@@ -990,7 +990,7 @@
 				'record_limit'					=> $record_limit,
 				'num_records'					=> count($qualification),
 				'all_records'					=> $this->bo->total_records,
-				'link_url'					=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'link_url'					=> phpgw::link('/index.php',$link_data),
 				'img_path'					=> $GLOBALS['phpgw']->common->get_image_path('phpgwapi','default'),
 				'lang_searchfield_statustext'			=> lang('Enter the search string. To show all entries, empty this field and press the SUBMIT button again'),
 				'lang_searchbutton_statustext'			=> lang('Submit the search string'),
@@ -1005,12 +1005,12 @@
 
 				'lang_add'					=> lang('add'),
 				'lang_add_qualification_text'			=> lang('add a qualification item'),
-				'add_action'					=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.edit_qualification_type')),
+				'add_action'					=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.edit_qualification_type')),
 
 				'user_values'					=> $user_values,
 				'msgbox_data'					=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'					=> $GLOBALS['phpgw']->link('/index.php',$link_data),
-				'done_action'					=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.index')),
+				'form_action'					=> phpgw::link('/index.php',$link_data),
+				'done_action'					=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.index')),
 				'lang_id'					=> lang('qualification ID'),
 				'lang_descr'					=> lang('Descr'),
 				'lang_save'					=> lang('save'),
@@ -1029,7 +1029,7 @@
 			$appname	= lang('qualification');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('lookup_qualification' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('lookup_qualification' => $data));
 		}
 
 
@@ -1038,10 +1038,10 @@
 			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
 			$GLOBALS['phpgw_info']['flags']['headonly']=true;
 
-			$quali_type_id	= phpgw::get_var('quali_type_id', 'int');
-			$values		= phpgw::get_var('values');
+			$quali_type_id	= Sanitizer::get_var('quali_type_id', 'int');
+			$values		= Sanitizer::get_var('values');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('job'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('job'));
 
 			if (is_array($values))
 			{
@@ -1067,13 +1067,13 @@
 						if ($values['save'])
 						{
 							$GLOBALS['phpgw']->session->appsession('session_data','hrm_quali_tp_receipt',$receipt);
-							$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'=> 'hrm.uijob.lookup_qualification', 'query'=> $values['name']));
+							phpgw::redirect_link('/index.php', array('menuaction'=> 'hrm.uijob.lookup_qualification', 'query'=> $values['name']));
 						}
 					}
 				}
 				else
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'=> 'hrm.uijob.lookup_qualification'));
+					phpgw::redirect_link('/index.php', array('menuaction'=> 'hrm.uijob.lookup_qualification'));
 				}
 			}
 
@@ -1114,7 +1114,7 @@
 				'lang_descr_status_text'		=> lang('Enter a description'),
 
 				'msgbox_data'				=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'				=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'form_action'				=> phpgw::link('/index.php',$link_data),
 				'lang_id'				=> lang('qualification type ID'),
 				'lang_save'				=> lang('save'),
 				'lang_cancel'				=> lang('cancel'),
@@ -1128,20 +1128,20 @@
 			$appname	= lang('Place');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('edit_qualification_type' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('edit_qualification_type' => $data));
 		}
 
 		function edit_job()
 		{
-			$id			= phpgw::get_var('id', 'int');
-			$parent_id	= phpgw::get_var('parent_id', 'int');
-			$values		= phpgw::get_var('values');
+			$id			= Sanitizer::get_var('id', 'int');
+			$parent_id	= Sanitizer::get_var('parent_id', 'int');
+			$values		= Sanitizer::get_var('values');
 			$type		= ''; //FIXME this only supresses a notice
 			$type_id	= ''; //FIXME this only supresses a notice
 
 			if(!$id)
 			{
-				if(!$this->acl->check('.job', PHPGW_ACL_ADD, 'hrm'))
+				if(!$this->acl->check('.job', ACL_ADD, 'hrm'))
 				{
 					$this->bocommon->no_access();
 					return;
@@ -1149,7 +1149,7 @@
 			}
 			else
 			{
-				if(!$this->acl->check('.job', PHPGW_ACL_EDIT, 'hrm'))
+				if(!$this->acl->check('.job', ACL_EDIT, 'hrm'))
 				{
 					$this->bocommon->no_access();
 					return;
@@ -1158,7 +1158,7 @@
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::job_type';
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('job'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('job'));
 
 			// Initialise some variables to prevent notices
 			$receipt = array();
@@ -1188,13 +1188,13 @@
 						if ($values['save'])
 						{
 							$GLOBALS['phpgw']->session->appsession('session_data','hrm_job_receipt',$receipt);
-							$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'=> 'hrm.uijob.index'));
+							phpgw::redirect_link('/index.php', array('menuaction'=> 'hrm.uijob.index'));
 						}
 					}
 				}
 				else
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'=> 'hrm.uijob.index'));
+					phpgw::redirect_link('/index.php', array('menuaction'=> 'hrm.uijob.index'));
 				}
 			}
 
@@ -1226,8 +1226,8 @@
 			$data = array
 			(
 				'msgbox_data'				=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'				=> $GLOBALS['phpgw']->link('/index.php',$link_data),
-				'done_action'				=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.index' ,'type'=> $type, 'type_id'=> $type_id)),
+				'form_action'				=> phpgw::link('/index.php',$link_data),
+				'done_action'				=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.index' ,'type'=> $type, 'type_id'=> $type_id)),
 				'lang_id'				=> lang('category ID'),
 				'lang_descr'				=> lang('Descr'),
 				'lang_save'				=> lang('save'),
@@ -1258,15 +1258,15 @@
 			$appname = lang('job');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('edit_job' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('edit_job' => $data));
 		}
 
 		function view_job()
 		{
-			$id		= phpgw::get_var('id', 'int');
-			$parent_id	= phpgw::get_var('parent_id', 'int');
+			$id		= Sanitizer::get_var('id', 'int');
+			$parent_id	= Sanitizer::get_var('parent_id', 'int');
 
-			if(!$this->acl->check('.job', PHPGW_ACL_READ, 'hrm'))
+			if(!$this->acl->check('.job', ACL_READ, 'hrm'))
 			{
 				$this->bocommon->no_access();
 				return;
@@ -1274,7 +1274,7 @@
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::job_type';
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('job'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('job'));
 
 
 			if ($id)
@@ -1299,7 +1299,7 @@
 			$data = array
 			(
 				'msgbox_data'				=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'done_action'				=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.index', 'type'=> $type, 'type_id'=> $type_id)),
+				'done_action'				=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.index', 'type'=> $type, 'type_id'=> $type_id)),
 				'lang_id'				=> lang('category ID'),
 				'lang_descr'				=> lang('Descr'),
 				'lang_save'				=> lang('save'),
@@ -1329,17 +1329,17 @@
 			$appname	= lang('job');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('view_job' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('view_job' => $data));
 		}
 
 		function edit_qualification()
 		{
-			$quali_id	= phpgw::get_var('quali_id', 'int');
-			$job_id	= phpgw::get_var('job_id', 'int');
+			$quali_id	= Sanitizer::get_var('quali_id', 'int');
+			$job_id	= Sanitizer::get_var('job_id', 'int');
 
 			if(!$quali_id)
 			{
-				if(!$this->acl->check('.job', PHPGW_ACL_ADD, 'hrm'))
+				if(!$this->acl->check('.job', ACL_ADD, 'hrm'))
 				{
 					$this->bocommon->no_access();
 					return;
@@ -1347,7 +1347,7 @@
 			}
 			else
 			{
-				if(!$this->acl->check('.job', PHPGW_ACL_EDIT, 'hrm'))
+				if(!$this->acl->check('.job', ACL_EDIT, 'hrm'))
 				{
 					$this->bocommon->no_access();
 					return;
@@ -1356,15 +1356,15 @@
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::job_type';
 
-			$values		= phpgw::get_var('values');
+			$values		= Sanitizer::get_var('values');
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('job'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('job'));
 
 			if (is_array($values))
 			{
 				$values['job_id']= $job_id;
 
-				$values['alternative_qualification']	= phpgw::get_var('alternative_qualification');
+				$values['alternative_qualification']	= Sanitizer::get_var('alternative_qualification');
 
 				if ($values['save'] || $values['apply'])
 				{
@@ -1391,13 +1391,13 @@
 						if ($values['save'])
 						{
 							$GLOBALS['phpgw']->session->appsession('session_data','hrm_quali_receipt',$receipt);
-							$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'=> 'hrm.uijob.qualification', 'job_id'=> $job_id));
+							phpgw::redirect_link('/index.php', array('menuaction'=> 'hrm.uijob.qualification', 'job_id'=> $job_id));
 						}
 					}
 				}
 				else
 				{
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction'=> 'hrm.uijob.qualification' ,'job_id'=> $job_id));
+					phpgw::redirect_link('/index.php', array('menuaction'=> 'hrm.uijob.qualification' ,'job_id'=> $job_id));
 				}
 			}
 
@@ -1438,7 +1438,7 @@
 					. 'self.name="first_Window";' ."\n"
 					. 'function qualifications_popup()' ."\n"
 					. '{' ."\n"
-						. 'Window1=window.open("' . $GLOBALS['phpgw']->link('/index.php',$link_data_lookup) . '","Search","width=800,height=600,toolbar=no,scrollbars=yes,resizable=yes");' ."\n"
+						. 'Window1=window.open("' . phpgw::link('/index.php',$link_data_lookup) . '","Search","width=800,height=600,toolbar=no,scrollbars=yes,resizable=yes");' ."\n"
 					. '}' ."\n"
 				. "</script>\n";
 
@@ -1465,7 +1465,7 @@
 				'lang_experience_status_text'		=> lang('Select a experience level'),
 				'lang_no_experience'			=> lang('select experience'),
 				'msgbox_data'				=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'				=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'form_action'				=> phpgw::link('/index.php',$link_data),
 				'lang_id'				=> lang('qualification ID'),
 				'lang_descr'				=> lang('Descr'),
 				'lang_remark'				=> lang('remark'),
@@ -1495,15 +1495,15 @@
 			$appname					= lang('qualification') .' ' . $job_info['name'];
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('edit_qualification' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('edit_qualification' => $data));
 		}
 
 		function view_qualification()
 		{
-			$quali_id	= phpgw::get_var('quali_id', 'int');
-			$job_id	= phpgw::get_var('job_id', 'int');
+			$quali_id	= Sanitizer::get_var('quali_id', 'int');
+			$job_id	= Sanitizer::get_var('job_id', 'int');
 
-			if(!$this->acl->check('.job', PHPGW_ACL_READ, 'hrm'))
+			if(!$this->acl->check('.job', ACL_READ, 'hrm'))
 			{
 				$this->bocommon->no_access();
 				return;
@@ -1511,7 +1511,7 @@
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::job_type';
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('job'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('job'));
 
 			$values = $this->bo->read_single_qualification($quali_id);
 			$function_msg = lang('view qualification');
@@ -1542,7 +1542,7 @@
 				'lang_no_experience'			=> lang('select experience'),
 
 				'msgbox_data'				=> $GLOBALS['phpgw']->common->msgbox($msgbox_data),
-				'form_action'				=> $GLOBALS['phpgw']->link('/index.php',$link_data),
+				'form_action'				=> phpgw::link('/index.php',$link_data),
 				'lang_id'				=> lang('qualification ID'),
 				'lang_descr'				=> lang('Descr'),
 				'lang_remark'				=> lang('remark'),
@@ -1569,12 +1569,12 @@
 			$job_info = $this->bo->read_single_job($job_id);
 			$appname					= lang('qualification') .' ' . $job_info['name'];
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('view_qualification' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('view_qualification' => $data));
 		}
 
 		function delete_job()
 		{
-			if(!$this->acl->check('.job', PHPGW_ACL_DELETE, 'hrm'))
+			if(!$this->acl->check('.job', ACL_DELETE, 'hrm'))
 			{
 				$this->bocommon->no_access();
 				return;
@@ -1582,25 +1582,25 @@
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::job_type';
 
-			$job_id	= phpgw::get_var('job_id', 'int');
-			$confirm		= phpgw::get_var('confirm', 'bool', 'POST');
+			$job_id	= Sanitizer::get_var('job_id', 'int');
+			$confirm		= Sanitizer::get_var('confirm', 'bool', 'POST');
 			$link_data = array
 			(
 				'menuaction'	=> 'hrm.uijob.index',
 				'job_id' 	=> $job_id
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete_job($job_id);
-				$GLOBALS['phpgw']->redirect_link('/index.php',$link_data);
+				phpgw::redirect_link('/index.php',$link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 			$data = array
 			(
-				'done_action'			=> $GLOBALS['phpgw']->link('/index.php',$link_data),
-				'delete_action'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.delete_job', 'job_id'=> $job_id)),
+				'done_action'			=> phpgw::link('/index.php',$link_data),
+				'delete_action'			=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.delete_job', 'job_id'=> $job_id)),
 				'lang_confirm_msg'		=> lang('do you really want to delete this entry'),
 				'lang_yes'			=> lang('yes'),
 				'lang_yes_statustext'		=> lang('Delete the entry'),
@@ -1612,12 +1612,12 @@
 			$function_msg	= lang('delete');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('delete' => $data));
 		}
 
 		function delete_task()
 		{
-			if(!$this->acl->check('.job', PHPGW_ACL_DELETE, 'hrm'))
+			if(!$this->acl->check('.job', ACL_DELETE, 'hrm'))
 			{
 				$this->bocommon->no_access();
 				return;
@@ -1625,9 +1625,9 @@
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::job_type';
 
-			$id		= phpgw::get_var('id', 'int');
-			$job_id	= phpgw::get_var('job_id', 'int');
-			$confirm		= phpgw::get_var('confirm', 'bool', 'POST');
+			$id		= Sanitizer::get_var('id', 'int');
+			$job_id	= Sanitizer::get_var('job_id', 'int');
+			$confirm		= Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 			(
@@ -1635,18 +1635,18 @@
 				'job_id'	=> $job_id
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete_task($id);
-				$GLOBALS['phpgw']->redirect_link('/index.php',$link_data);
+				phpgw::redirect_link('/index.php',$link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 			(
-				'done_action'			=> $GLOBALS['phpgw']->link('/index.php',$link_data),
-				'delete_action'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.delete_task', 'job_id'=> $job_id, 'id'=> $id)),
+				'done_action'			=> phpgw::link('/index.php',$link_data),
+				'delete_action'			=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.delete_task', 'job_id'=> $job_id, 'id'=> $id)),
 				'lang_confirm_msg'		=> lang('do you really want to delete this entry'),
 				'lang_yes'			=> lang('yes'),
 				'lang_yes_categorytext'		=> lang('Delete the entry'),
@@ -1658,12 +1658,12 @@
 			$function_msg	= lang('delete');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('delete' => $data));
 		}
 
 		function delete_qualification()
 		{
-			if(!$this->acl->check('.job', PHPGW_ACL_DELETE, 'hrm'))
+			if(!$this->acl->check('.job', ACL_DELETE, 'hrm'))
 			{
 				$this->bocommon->no_access();
 				return;
@@ -1671,9 +1671,9 @@
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::job_type';
 
-			$quali_id	= phpgw::get_var('quali_id', 'int');
-			$job_id		= phpgw::get_var('job_id', 'int');
-			$confirm	= phpgw::get_var('confirm', 'bool', 'POST');
+			$quali_id	= Sanitizer::get_var('quali_id', 'int');
+			$job_id		= Sanitizer::get_var('job_id', 'int');
+			$confirm	= Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 			(
@@ -1681,18 +1681,18 @@
 				'job_id'	=> $job_id
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->delete_qualification($job_id,$quali_id);
-				$GLOBALS['phpgw']->redirect_link('/index.php',$link_data);
+				phpgw::redirect_link('/index.php',$link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 			(
-				'done_action'			=> $GLOBALS['phpgw']->link('/index.php',$link_data),
-				'delete_action'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.delete_qualification', 'job_id'=> $job_id, 'quali_id'=> $quali_id)),
+				'done_action'			=> phpgw::link('/index.php',$link_data),
+				'delete_action'			=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.delete_qualification', 'job_id'=> $job_id, 'quali_id'=> $quali_id)),
 				'lang_confirm_msg'		=> lang('do you really want to delete this entry'),
 				'lang_yes'			=> lang('yes'),
 				'lang_yes_categorytext'		=> lang('Delete the entry'),
@@ -1704,12 +1704,12 @@
 			$function_msg	= lang('delete');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('delete' => $data));
 		}
 
 		function reset_job_type_hierarchy()
 		{
-			if(!$this->acl->check('.job', PHPGW_ACL_DELETE, 'hrm'))
+			if(!$this->acl->check('.job', ACL_DELETE, 'hrm'))
 			{
 				$this->bocommon->no_access();
 				return;
@@ -1717,24 +1717,24 @@
 
 			$GLOBALS['phpgw_info']['flags']['menu_selection'] .= '::job_type';
 
-			$confirm		= phpgw::get_var('confirm', 'bool', 'POST');
+			$confirm		= Sanitizer::get_var('confirm', 'bool', 'POST');
 			$link_data = array
 			(
 				'menuaction' => 'hrm.uijob.index'
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$this->bo->reset_job_type_hierarchy();
-				$GLOBALS['phpgw']->redirect_link('/index.php',$link_data);
+				phpgw::redirect_link('/index.php',$link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 			(
-				'done_action'			=> $GLOBALS['phpgw']->link('/index.php',$link_data),
-				'delete_action'			=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'hrm.uijob.reset_job_type_hierarchy')),
+				'done_action'			=> phpgw::link('/index.php',$link_data),
+				'delete_action'			=> phpgw::link('/index.php', array('menuaction'=> 'hrm.uijob.reset_job_type_hierarchy')),
 				'lang_confirm_msg'		=> lang('do you really want to reset the hierarchy'),
 				'lang_yes'			=> lang('yes'),
 				'lang_yes_statustext'		=> lang('Reset the hierarchy'),
@@ -1745,7 +1745,7 @@
 			$appname	= lang('job');
 			$function_msg	= lang('delete');
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('delete' => $data));
 		}
 
 		function hierarchy()

@@ -21,7 +21,7 @@
 
 		public function show()
 		{
-			$group = $this->bo->read_single(phpgw::get_var('id', 'int'));
+			$group = $this->bo->read_single(Sanitizer::get_var('id', 'int'));
 			$group['organizations_link'] = self::link(array('menuaction' => $this->module . '.uiorganization.index'));
 			$group['organization_link'] = self::link(array('menuaction' => $this->module . '.uiorganization.show',
 					'id' => $group['organization_id']));
@@ -54,7 +54,7 @@
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}

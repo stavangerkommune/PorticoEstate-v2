@@ -21,4 +21,4 @@
 	 */
 	include('../header.inc.php');
 
-	$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'todo.uitodo.show_list'));
+	phpgw::redirect_link('/index.php', array('menuaction' => 'todo.uitodo.show_list'));

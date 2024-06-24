@@ -65,13 +65,13 @@
 				$this->use_session = true;
 			}
 
-			$start = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$query = phpgw::get_var('query');
-			$sort = phpgw::get_var('dir');
-			$order = phpgw::get_var('sort');
-			$filter = phpgw::get_var('filter', 'int');
-			$status_id = phpgw::get_var('status_id', 'int');
-			$allrows = phpgw::get_var('allrows', 'bool');
+			$start = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$query = Sanitizer::get_var('query');
+			$sort = Sanitizer::get_var('dir');
+			$order = Sanitizer::get_var('sort');
+			$filter = Sanitizer::get_var('filter', 'int');
+			$status_id = Sanitizer::get_var('status_id', 'int');
+			$allrows = Sanitizer::get_var('allrows', 'bool');
 
 			$this->start = $start ? $start : 0;
 			$this->query = isset($query) && $query ? $query : '';
@@ -247,7 +247,7 @@
 //_debug_array($process_approval);die();
 			unset($reg_id);
 
-			$url = $GLOBALS['phpgw']->link('/login.php', array('logindomain' => $GLOBALS['phpgw_info']['user']['domain']), false, true);
+			$url = phpgw::link('/login.php', array('logindomain' => $GLOBALS['phpgw_info']['user']['domain']), false, true);
 
 			if ($this->config['support_email'])
 			{

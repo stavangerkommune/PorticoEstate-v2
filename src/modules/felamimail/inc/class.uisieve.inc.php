@@ -101,7 +101,7 @@
 				#{
 				#	if ($this->sieve->activatescript($scriptName))
 				#	{
-				#		$GLOBALS['phpgw']->redirect_link('/index.php',array(
+				#		phpgw::redirect_link('/index.php',array(
 				#			'menuaction' => 'felamimail.uisieve.editScript',
 				#			'scriptname' => $scriptName,
 				#		));
@@ -326,12 +326,12 @@
 			else
 				$editMode	= 'filter';
 
-			$GLOBALS['phpgw']->js->validate_file('tabs','tabs');
-			$GLOBALS['phpgw']->js->validate_file('jscode','editProfile','felamimail');
-			$GLOBALS['phpgw']->js->validate_file('jscode','listSieveRules','felamimail');
-			$GLOBALS['phpgw']->js->set_onload("javascript:initAll('$editMode');");
+			phpgwapi_js::getInstance()->validate_file('tabs','tabs');
+			phpgwapi_js::getInstance()->validate_file('jscode','editProfile','felamimail');
+			phpgwapi_js::getInstance()->validate_file('jscode','listSieveRules','felamimail');
+			phpgwapi_js::getInstance()->set_onload("javascript:initAll('$editMode');");
 			if($_GET['menuaction'] == 'felamimail.uisieve.editRule') {
-				$GLOBALS['phpgw']->js->set_onunload('opener.fm_sieve_cancelReload();');
+				phpgwapi_js::getInstance()->set_onunload('opener.fm_sieve_cancelReload();');
 			}
 			$GLOBALS['phpgw_info']['flags']['include_xajax'] = True;
 			$GLOBALS['phpgw']->common->egw_header();
@@ -358,13 +358,13 @@
 				'menuaction'	=> 'felamimail.uisieve.editRule',
 				'ruleID'	=> $_ruleID
 			);
-			$this->t->set_var('action_url',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('action_url',phpgw::link('/index.php',$linkData));
 
 			$linkData = array
 			(
 				'menuaction'	=> 'felamimail.uisieve.selectFolder',
 			);
-			$this->t->set_var('folder_select_url',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('folder_select_url',phpgw::link('/index.php',$linkData));
 
 			
 			if(is_array($_ruleData))
@@ -560,7 +560,7 @@
 				$vacation = $newVacation;
 				
 				if(isset($_POST['save']) || isset($_POST['cancel'])) {
-					$GLOBALS['phpgw']->redirect_link('/felamimail/index.php');
+					phpgw::redirect_link('/felamimail/index.php');
 				}
 			}
 
@@ -631,7 +631,7 @@
 				'menuaction'	=> 'felamimail.uisieve.editVacation',
 			);
 			
-			$this->t->set_var('vacation_action_url',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('vacation_action_url',phpgw::link('/index.php',$linkData));
 			
 			if ($this->timed_vacation)
 			{
@@ -678,7 +678,7 @@
 					$emailNotification = $newEmailNotification;
 				}
 				if (isset($_POST['save']) || isset($_POST['cancel'])) {
-					$GLOBALS['phpgw']->redirect_link('/felamimail/index.php');
+					phpgw::redirect_link('/felamimail/index.php');
 				}
 			}
 
@@ -707,7 +707,7 @@
 			// email notification external email
 			$this->t->set_var('external_email', $emailNotification['externalEmail']);
 
-			$this->t->set_var('email_notification_action_url',$GLOBALS['phpgw']->link('/index.php','menuaction=felamimail.uisieve.editEmailNotification'));
+			$this->t->set_var('email_notification_action_url',phpgw::link('/index.php','menuaction=felamimail.uisieve.editEmailNotification'));
 			$this->t->pfp('out','email_notification');
 		}
 
@@ -767,14 +767,14 @@
 					'menuaction'	=> 'felamimail.uisieve.editRule',
 					'ruletype'	=> 'filter'
 				);
-				$this->t->set_var('url_add_rule',$GLOBALS['phpgw']->link('/index.php',$linkData));
+				$this->t->set_var('url_add_rule',phpgw::link('/index.php',$linkData));
 
 				$linkData = array
 				(
 					'menuaction'	=> 'felamimail.uisieve.editRule',
 					'ruletype'	=> 'vacation'
 				);
-				$this->t->set_var('url_add_vacation_rule',$GLOBALS['phpgw']->link('/index.php',$linkData));
+				$this->t->set_var('url_add_vacation_rule',phpgw::link('/index.php',$linkData));
 
 				foreach ($this->rules as $ruleID => $rule)
 				{
@@ -796,27 +796,27 @@
 						'menuaction'	=> 'felamimail.uisieve.editRule',
 						'ruleID'	=> $ruleID,
 					);
-					$this->t->set_var('url_edit_rule',$GLOBALS['phpgw']->link('/index.php',$linkData));
+					$this->t->set_var('url_edit_rule',phpgw::link('/index.php',$linkData));
 
 					$linkData = array
 					(
 						'menuaction'	=> 'felamimail.uisieve.increaseFilter',
 						'ruleID'	=> $ruleID,
 					);
-					$this->t->set_var('url_increase',$GLOBALS['phpgw']->link('/index.php',$linkData));
+					$this->t->set_var('url_increase',phpgw::link('/index.php',$linkData));
 
 					$linkData = array
 					(
 						'menuaction'	=> 'felamimail.uisieve.decreaseFilter',
 						'ruleID'	=> $ruleID,
 					);
-					$this->t->set_var('url_decrease',$GLOBALS['phpgw']->link('/index.php',$linkData));
+					$this->t->set_var('url_decrease',phpgw::link('/index.php',$linkData));
 					
 					$linkData = array
 					(
 						'menuaction'	=> 'felamimail.uisieve.updateRules',
 					);
-					$this->t->set_var('action_rulelist',$GLOBALS['phpgw']->link('/index.php',$linkData));
+					$this->t->set_var('action_rulelist',phpgw::link('/index.php',$linkData));
 
 					$this->t->parse('filterrows','filterrow',true);
 				}
@@ -826,19 +826,19 @@
 			$linkData = array (
 				'menuaction'    => 'felamimail.uisieve.saveScript'
 			);
-			$this->t->set_var('formAction',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('formAction',phpgw::link('/index.php',$linkData));
 			
 			$linkData = array (
 				'menuaction'    => 'felamimail.uisieve.listRules'
 			);
-			$this->t->set_var('refreshURL',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('refreshURL',phpgw::link('/index.php',$linkData));
 			
 			$linkData = array
 			(
 				'menuaction'	=> 'felamimail.uisieve.listScripts',
 				'scriptname'	=> $scriptName
 			);
-			$this->t->set_var('url_back',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('url_back',phpgw::link('/index.php',$linkData));
 
 			$this->t->pfp("out","header");
 
@@ -855,9 +855,9 @@
 		
 		function selectFolder()
 		{
-			$GLOBALS['phpgw']->js->validate_file('dhtmlxtree','js/dhtmlXCommon');
-			$GLOBALS['phpgw']->js->validate_file('dhtmlxtree','js/dhtmlXTree');                        
-			$GLOBALS['phpgw']->js->validate_file('jscode','editSieveRule','felamimail');
+			phpgwapi_js::getInstance()->validate_file('dhtmlxtree','js/dhtmlXCommon');
+			phpgwapi_js::getInstance()->validate_file('dhtmlxtree','js/dhtmlXTree');                        
+			phpgwapi_js::getInstance()->validate_file('jscode','editSieveRule','felamimail');
 			$GLOBALS['phpgw']->common->egw_header();
 
 			$bofelamimail		= CreateObject('felamimail.bofelamimail',$this->displayCharset);

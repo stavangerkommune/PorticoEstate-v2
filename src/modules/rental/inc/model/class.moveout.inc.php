@@ -86,33 +86,33 @@
 		public static function get_fields($debug = true)
 		{
 			 $fields = array(
-				'id' => array('action'=> PHPGW_ACL_READ,
+				'id' => array('action'=> ACL_READ,
 					'type' => 'int',
 					'label' => 'id',
 					'sortable'=> true,
 					'formatter' => 'JqueryPortico.formatLink',
 					),
-				'created' => array('action'=> PHPGW_ACL_READ,
+				'created' => array('action'=> ACL_READ,
 					'type' => 'date',
 					'label' => 'created',
 					'sortable' => true,
 					),
-				'modified' => array('action'=> PHPGW_ACL_READ | PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'modified' => array('action'=> ACL_READ | ACL_ADD | ACL_EDIT,
 					'type' => 'date',
 					'label' => 'modified',
 					'sortable' => true,
 					),
-				'account_id' => array('action'=> PHPGW_ACL_ADD,
+				'account_id' => array('action'=> ACL_ADD,
 					'type' => 'int',
 					'label' => 'contract_id',
 					'sortable' => true,
 					),
-				'contract_id' => array('action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+				'contract_id' => array('action'=> ACL_ADD | ACL_EDIT,
 					'type' => 'int',
 					'label' => 'contract_id',
 					'sortable' => true,
 					),
-				'old_contract_id' => array('action'=>  PHPGW_ACL_READ,
+				'old_contract_id' => array('action'=>  ACL_READ,
 					'type' => 'string',
 					'query' => true,
 					'label' => 'contract',
@@ -124,7 +124,7 @@
 						)
 					),
 				'comments' => array(
-					'action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+					'action'=> ACL_ADD | ACL_EDIT,
 					'type' => 'string',
 					'manytomany' => array(
 						'input_field' => 'comment_input',
@@ -134,7 +134,7 @@
 						'order' => array('sort' => 'time', 'dir' => 'ASC')
 					)),
 				'comment' => array(
-					'action'=> PHPGW_ACL_ADD | PHPGW_ACL_EDIT,
+					'action'=> ACL_ADD | ACL_EDIT,
 					'type' => 'string',
 					'related' => true,
 					)

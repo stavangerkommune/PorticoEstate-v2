@@ -120,7 +120,7 @@
 				$extras = implode('&', $t_extras);
 			}
 			
-			return $GLOBALS['phpgw']->link('/index.php','menuaction='.$this->action.$extras);
+			return phpgw::link('/index.php','menuaction='.$this->action.$extras);
 		}
 		
 		
@@ -176,9 +176,9 @@
 			//$extravar = $prog[1].'&order='.$our_order.'&sort='.$new_sort.$extra;
 			//// this was b0rking menuaction when NOT using redirect, instead using direct object calls to goto the next page
 			//// in thise cases the menuaction that appears in the url remains from the PREVIOUS action, not the object call produced next page
-			////$link = ($this->action?$this->page($extravar):$GLOBALS['phpgw']->link($program,$extravar));
-			////$link = $GLOBALS['phpgw']->link($program,'email.index.uiindex'.$extravar);
-			//$link = $GLOBALS['phpgw']->link($prog[0],$extravar);
+			////$link = ($this->action?$this->page($extravar):phpgw::link($program,$extravar));
+			////$link = phpgw::link($program,'email.index.uiindex'.$extravar);
+			//$link = phpgw::link($prog[0],$extravar);
 			//return '<a href="' .$link .'">' .$text .'</a>';
 			
 			// get rid of setup specified "your server name" because the link below will 
@@ -218,9 +218,9 @@
 			
 			// this was b0rking menuaction when NOT using redirect, instead using direct object calls to goto the next page
 			// in thise cases the menuaction that appears in the url remains from the PREVIOUS action, not the object call produced next page
-			//$link = ($this->action?$this->page($extravar):$GLOBALS['phpgw']->link($program,$extravar));
-			//$link = $GLOBALS['phpgw']->link($program,'email.index.uiindex'.$extravar);
-			$link = $GLOBALS['phpgw']->link($prog[0],$extravar+$extra);
+			//$link = ($this->action?$this->page($extravar):phpgw::link($program,$extravar));
+			//$link = phpgw::link($program,'email.index.uiindex'.$extravar);
+			$link = phpgw::link($prog[0],$extravar+$extra);
 			//echo 'show_sort_order_mail: $link ['.serialize($link).'] <br />';
 			return '<a href="' .$link .'">' .$text .'</a>';
 

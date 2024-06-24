@@ -45,7 +45,7 @@
 				'manual' => array
 					(
 					'text' => $GLOBALS['phpgw']->translation->translate('manual', array(), true),
-					'url' => $GLOBALS['phpgw']->link('/index.php', array
+					'url' => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'manual.uidocuments.index'
 						)
@@ -65,7 +65,7 @@
 					'index' => array
 						(
 						'text' => $GLOBALS['phpgw']->translation->translate('Categories', array(), true),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array
+						'url' => phpgw::link('/index.php', array
 							(
 							'menuaction' => 'admin.uicategories.index',
 							'appname' => 'manual',
@@ -78,7 +78,7 @@
 					'acl' => array
 						(
 						'text' => lang('Configure Access Permissions'),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.list_acl',
+						'url' => phpgw::link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.list_acl',
 							'acl_app' => 'manual'))
 					)
 				);
@@ -90,13 +90,13 @@
 				'add' => array
 					(
 					'text' => lang('add'),
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'manual.uidocuments.add')),
+					'url' => phpgw::link('/index.php', array('menuaction' => 'manual.uidocuments.add')),
 					'image' => array('property', 'location_1'),
 				),
 				'view' => array
 					(
 					'text' => lang('view'),
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'manual.uidocuments.view')),
+					'url' => phpgw::link('/index.php', array('menuaction' => 'manual.uidocuments.view')),
 					'image' => array('property', 'location_1'),
 				),
 			);

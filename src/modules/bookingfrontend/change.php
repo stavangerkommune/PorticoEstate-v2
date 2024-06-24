@@ -18,7 +18,7 @@
 	}
 	$config = createobject('phpgwapi.config', 'bookingfrontend')->read();
 	$login = $config['anonymous_user'];
-	$logindomain = phpgw::get_var('domain', 'string', 'GET');
+	$logindomain = Sanitizer::get_var('domain', 'string', 'GET');
 	if (strstr($login, '#') === false && $logindomain)
 	{
 		$login .= "#{$logindomain}";
@@ -32,13 +32,13 @@
 	$GLOBALS['phpgw']->hooks->process('login');
 
 	$bouser = CreateObject('bookingfrontend.bouser');
-	$session_org_id = phpgw::get_var('session_org_id', 'int', 'GET');
+	$session_org_id = Sanitizer::get_var('session_org_id', 'int', 'GET');
 	$bouser->change_org($session_org_id);
 
-	$after = str_replace('&amp;', '&', urldecode(phpgw::get_var('after', 'string')));
+	$after = str_replace('&amp;', '&', urldecode(Sanitizer::get_var('after', 'string')));
 	if (!$after)
 	{
 		$after = array('menuaction' => 'bookingfrontend.uisearch.index');
 	}
-	$GLOBALS['phpgw']->redirect_link('/bookingfrontend/', $after);
+	phpgw::redirect_link('/bookingfrontend/', $after);
 	exit;

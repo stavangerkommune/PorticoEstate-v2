@@ -13,8 +13,8 @@
 	{
 		$file = array
 			(
-			'Configuration' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uiconfig.index')),
-			'Configure Access Permissions' => $GLOBALS['phpgw']->link('/index.php', array(
+			'Configuration' => phpgw::link('/index.php', array('menuaction' => 'sms.uiconfig.index')),
+			'Configure Access Permissions' => phpgw::link('/index.php', array(
 				'menuaction' => 'preferences.uiadmin_acl.list_acl', 'acl_app' => $appname)),
 		);
 		display_section($appname, $appname, $file);

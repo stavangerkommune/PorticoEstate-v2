@@ -671,7 +671,7 @@ class html
 			parse_str($v,$v);
 			$vars += $v;
 		}
-		return $GLOBALS['phpgw']->link($url,$vars);
+		return phpgw::link($url,$vars);
 	}
 
 	/**
@@ -861,7 +861,7 @@ class html
 		}
 		if (is_array($name))	// menuaction and other get-vars
 		{
-			$name = $GLOBALS['phpgw']->link('/index.php',$name);
+			$name = phpgw::link('/index.php',$name);
 		}
 		if ($name[0] == '/' || substr($name,0,7) == 'http://' || substr($name,0,8) == 'https://')
 		{

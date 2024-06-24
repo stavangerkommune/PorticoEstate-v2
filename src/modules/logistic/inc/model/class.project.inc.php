@@ -164,20 +164,20 @@
 
 		public function populate()
 		{
-			$this->set_id(phpgw::get_var('id'));
-			$this->set_name(phpgw::get_var('name'));
-			$this->set_project_type_id(phpgw::get_var('project_type_id'));
-			$this->set_description(phpgw::get_var('description'));
+			$this->set_id(Sanitizer::get_var('id'));
+			$this->set_name(Sanitizer::get_var('name'));
+			$this->set_project_type_id(Sanitizer::get_var('project_type_id'));
+			$this->set_description(Sanitizer::get_var('description'));
 
-			if (phpgw::get_var('start_date', 'string') != '')
+			if (Sanitizer::get_var('start_date', 'string') != '')
 			{
-				$start_date_ts = phpgwapi_datetime::date_to_timestamp(phpgw::get_var('start_date', 'string'));
+				$start_date_ts = phpgwapi_datetime::date_to_timestamp(Sanitizer::get_var('start_date', 'string'));
 				$this->set_start_date($start_date_ts);
 			}
 
-			if (phpgw::get_var('end_date', 'string') != '')
+			if (Sanitizer::get_var('end_date', 'string') != '')
 			{
-				$end_date_ts = phpgwapi_datetime::date_to_timestamp(phpgw::get_var('end_date', 'string'));
+				$end_date_ts = phpgwapi_datetime::date_to_timestamp(Sanitizer::get_var('end_date', 'string'));
 				$this->set_end_date($end_date_ts);
 			}
 		}

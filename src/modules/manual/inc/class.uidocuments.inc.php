@@ -57,12 +57,12 @@
 		{
 			parent::__construct();
 
-			$acl = & $GLOBALS['phpgw']->acl;
+			$acl = Acl::getInstance();
 			$this->acl_location = '.documents';
-			$this->acl_read = $acl->check($this->acl_location, PHPGW_ACL_READ, 'manual');
-			$this->acl_add = $acl->check($this->acl_location, PHPGW_ACL_ADD, 'manual');
-			$this->acl_edit = $acl->check($this->acl_location, PHPGW_ACL_EDIT, 'manual');
-			$this->acl_delete = $acl->check($this->acl_location, PHPGW_ACL_DELETE, 'manual');
+			$this->acl_read = $acl->check($this->acl_location, ACL_READ, 'manual');
+			$this->acl_add = $acl->check($this->acl_location, ACL_ADD, 'manual');
+			$this->acl_edit = $acl->check($this->acl_location, ACL_EDIT, 'manual');
+			$this->acl_delete = $acl->check($this->acl_location, ACL_DELETE, 'manual');
 			$this->acl_manage = $acl->check($this->acl_location, 16, 'manual');
 
 			$this->bocommon = CreateObject('property.bocommon');
@@ -111,7 +111,7 @@
 		{
 			if (!$cat_id)
 			{
-				$cat_id = phpgw::get_var('cat_id', 'int');
+				$cat_id = Sanitizer::get_var('cat_id', 'int');
 			}
 
 			if ($mode == 'view')
@@ -176,9 +176,9 @@
 			{
 				phpgwapi_jquery::formvalidator_generate(array('location', 'date', 'security',
 					'file'));
-				$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/yui3-gallery/gallery-formvalidator/validatorCss.css');
+				phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/yui3-gallery/gallery-formvalidator/validatorCss.css');
 				self::add_javascript('phpgwapi', 'tinybox2', 'packed.js', false, array('combine' => true ));
-				$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/tinybox2/style.css');
+				phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/tinybox2/style.css');
 				self::add_javascript('manual', 'base', 'documents.add.js', false, array('combine' => true ));
 			}
 
@@ -197,7 +197,7 @@
 		 */
 		public function save()
 		{
-			$cat_id = phpgw::get_var('cat_id', 'int');
+			$cat_id = Sanitizer::get_var('cat_id', 'int');
 
 			if (!$cat_id)
 			{
@@ -220,7 +220,7 @@
 				}
 
 				phpgwapi_cache::message_set('ok!', 'message');
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'manual.uidocuments.edit',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'manual.uidocuments.edit',
 					'cat_id' => $cat_id));
 			}
 		}
@@ -234,7 +234,7 @@
 		 */
 		public function get_files()
 		{
-			$cat_id = phpgw::get_var('cat_id', 'int', 'REQUEST');
+			$cat_id = Sanitizer::get_var('cat_id', 'int', 'REQUEST');
 
 			if (!$this->acl_read)
 			{
@@ -280,7 +280,7 @@
 
 //------ Start pagination
 
-			$start = phpgw::get_var('startIndex', 'int', 'REQUEST', 0);
+			$start = Sanitizer::get_var('startIndex', 'int', 'REQUEST', 0);
 			$total_records = count($files);
 
 			$num_rows = isset($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs']) && $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] ? (int)$GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] : 15;
@@ -315,7 +315,7 @@
 			return array(
 				'recordsTotal' => $total_records,
 				'recordsFiltered' => $total_records,
-				'draw' => phpgw::get_var('draw', 'int'),
+				'draw' => Sanitizer::get_var('draw', 'int'),
 				'data' => $values,
 			);
 		}
@@ -333,7 +333,7 @@
 			{
 				return lang('no access');
 			}
-			ExecMethod('property.bofiles.get_file', phpgw::get_var('file_id', 'int'));
+			ExecMethod('property.bofiles.get_file', Sanitizer::get_var('file_id', 'int'));
 		}
 
 		/**

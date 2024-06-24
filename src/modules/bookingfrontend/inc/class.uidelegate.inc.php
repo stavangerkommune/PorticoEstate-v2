@@ -21,7 +21,7 @@
 
 		public function show()
 		{
-			$delegate = $this->bo->read_single(phpgw::get_var('id', 'int'));
+			$delegate = $this->bo->read_single(Sanitizer::get_var('id', 'int'));
 			$delegate['organizations_link'] = self::link(array('menuaction' => $this->module . '.uiorganization.index'));
 			$delegate['organization_link'] = self::link(array('menuaction' => $this->module . '.uiorganization.show',
 					'id' => $delegate['organization_id']));
@@ -47,7 +47,7 @@
 		}
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}

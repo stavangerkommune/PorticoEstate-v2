@@ -116,8 +116,8 @@
 		{
 			if ($this->debug > 2) { echo 'emai.boattach_file.attach ('.__LINE__.'): $GLOBALS[phpgw]->msg->ref_POST data DUMP<pre>'; print_r($GLOBALS['phpgw']->msg->ref_POST);  echo '</pre>'; }
 			
-			$this->control_data['action'] = htmlentities(phpgw::get_var('action', 'string', 'POST' ) );
-			$this->control_data['delete'] = phpgw::get_var('delete', 'array', 'POST' );
+			$this->control_data['action'] = htmlentities(Sanitizer::get_var('action', 'string', 'POST' ) );
+			$this->control_data['delete'] = Sanitizer::get_var('delete', 'array', 'POST' );
 			
 			if ($this->debug > 2) { echo 'emai.boattach_file.attach ('.__LINE__.'): $this->control_data DUMP<pre>'; print_r($this->control_data);  echo '</pre>'; }
 		}
@@ -381,7 +381,7 @@
 			// end DEBUG INFO
 			
 			// where to submit the form to
-			$form_action = $GLOBALS['phpgw']->link('/index.php',
+			$form_action = phpgw::link('/index.php',
 				array(
 					'menuaction' => 'email.uiattach_file.attach'
 				)

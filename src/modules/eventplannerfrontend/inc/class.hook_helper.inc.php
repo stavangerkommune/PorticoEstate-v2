@@ -40,7 +40,7 @@
 			 */
 			//parent::__construct();
 
-			$script_path = dirname(phpgw::get_var('SCRIPT_FILENAME', 'string', 'SERVER'));
+			$script_path = dirname(Sanitizer::get_var('SCRIPT_FILENAME', 'string', 'SERVER'));
 
 			if(preg_match('/eventplannerfrontend/', $script_path))
 			{
@@ -126,10 +126,10 @@
 			$orgs = array();
 			if(!empty($_SESSION['orgs']) && is_array($_SESSION['orgs']))
 			{
-				$orgs = phpgw::get_var('orgs', 'string', 'SESSION');
+				$orgs = Sanitizer::get_var('orgs', 'string', 'SESSION');
 			}
 
-			$session_org_id = phpgw::get_var('session_org_id','string', 'GET');
+			$session_org_id = Sanitizer::get_var('session_org_id','string', 'GET');
 
 			function get_ids_from_array($org)
 			{
@@ -158,7 +158,7 @@
 
 			if(!empty($_SESSION['orgs']) && is_array($_SESSION['orgs']))
 			{
-				$org_id = phpgw::get_var('org_id','int' , 'SESSION');
+				$org_id = Sanitizer::get_var('org_id','int' , 'SESSION');
 			}
 			else
 			{
@@ -186,18 +186,18 @@ HTML;
 			{
 				if(!empty($_GET['menuaction']))
 				{
-					$action = $GLOBALS['phpgw']->link('/eventplannerfrontend/',
+					$action = phpgw::link('/eventplannerfrontend/',
 						array
 						(
-							'menuaction' => phpgw::get_var('menuaction')
+							'menuaction' => Sanitizer::get_var('menuaction')
 						)
 					);
 					$base = 'eventplannerfrontend/';
-					$oArgs = '{menuaction:"' . phpgw::get_var('menuaction') .'"}';
+					$oArgs = '{menuaction:"' . Sanitizer::get_var('menuaction') .'"}';
 				}
 				else
 				{
-					$action = $GLOBALS['phpgw']->link('/eventplannerfrontend/home.php');
+					$action = phpgw::link('/eventplannerfrontend/home.php');
 					$base = 'eventplannerfrontend/home.php';
 					$oArgs = '{}';
 				}

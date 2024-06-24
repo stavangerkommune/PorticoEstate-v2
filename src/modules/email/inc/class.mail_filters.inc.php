@@ -381,7 +381,7 @@
 				// preserve the folder we searched (raw posted source_folder was never preped in here, so it's ok to send out as is)
 				$mlist_hidden_vars .= '<input type="hidden" name="folder" value="'.$this->filters[0]['source_folder'].'">'."\r\n";
 				// make the first prev next last arrows
-				$this->template->set_var('mlist_submit_form_action', $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'email.uiindex.mlist')));
+				$this->template->set_var('mlist_submit_form_action', phpgw::link('/index.php', array('menuaction' => 'email.uiindex.mlist')));
 				$this->template->set_var('mlist_hidden_vars',$mlist_hidden_vars);
 				$this->template->parse('V_mlist_submit_form','B_mlist_submit_form');
 				

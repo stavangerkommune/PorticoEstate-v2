@@ -39,7 +39,7 @@
 
 		function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -113,12 +113,12 @@
 
 		public function query($relaxe_acl = false)
 		{
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');			
-			$draw = phpgw::get_var('draw', 'int');
-			$apply = phpgw::get_var('apply_for');
-			$start = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$num_rows = phpgw::get_var('length', 'int', 'REQUEST', 10);
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');			
+			$draw = Sanitizer::get_var('draw', 'int');
+			$apply = Sanitizer::get_var('apply_for');
+			$start = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$num_rows = Sanitizer::get_var('length', 'int', 'REQUEST', 10);
 
 			$values = $this->read_custom_fields($search['value'], $apply);
 
@@ -152,9 +152,9 @@
 		
 		private function _populate( $data = array() )
 		{
-			$values['name'] = phpgw::get_var('name');
-			$values['field_name'] = phpgw::get_var('field_name');
-			$values['apply_for'] = phpgw::get_var('apply_for');
+			$values['name'] = Sanitizer::get_var('name');
+			$values['field_name'] = Sanitizer::get_var('field_name');
+			$values['apply_for'] = Sanitizer::get_var('apply_for');
 
 			if (!$values['field_name'])
 			{
@@ -212,7 +212,7 @@
 		
 		function delete()
 		{
-			$fields = phpgw::get_var('name');
+			$fields = Sanitizer::get_var('name');
 
 			foreach($fields as $field)
 			{
@@ -224,7 +224,7 @@
 		
 		function edit()
 		{
-			$name = phpgw::get_var('name');
+			$name = Sanitizer::get_var('name');
 			
 			$record = $this->read_custom_fields($name[0]);
 		

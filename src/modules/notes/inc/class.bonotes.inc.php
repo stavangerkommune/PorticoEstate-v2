@@ -87,12 +87,12 @@
 				$this->use_session = True;
 
 				//XXX Caeies : start could use the 'all' value, perhaps think on using -1 ?
-				$start		= phpgw::get_var('start');
-				$query		= phpgw::get_var('query', 'string');
-				$sort		= phpgw::get_var('sort', 'string');
-				$order		= phpgw::get_var('order', 'string');
-				$filter		= phpgw::get_var('filter', 'string');
-				$_cat_id	= phpgw::get_var('cat_id', 'int');
+				$start		= Sanitizer::get_var('start');
+				$query		= Sanitizer::get_var('query', 'string');
+				$sort		= Sanitizer::get_var('sort', 'string');
+				$order		= Sanitizer::get_var('order', 'string');
+				$filter		= Sanitizer::get_var('filter', 'string');
+				$_cat_id	= Sanitizer::get_var('cat_id', 'int');
 
 				$this->start = $start;
 

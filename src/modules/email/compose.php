@@ -60,7 +60,7 @@
 						'fldball[acctnum]'=>'0');
 	}
 	
-	$GLOBALS['phpgw']->redirect_link(
+	phpgw::redirect_link(
 				'/index.php',array(
 				'menuaction'=>'email.uicompose.compose',
 				'to'=>$to,

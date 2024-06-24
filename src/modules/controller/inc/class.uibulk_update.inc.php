@@ -47,21 +47,21 @@
 			$this->currentapp = 'controller';
 			$this->so = CreateObject('controller.socontrol');
 
-			$this->acl_read = $GLOBALS['phpgw']->acl->check('.checklist', PHPGW_ACL_READ, 'controller');//1
-			$this->acl_add = $GLOBALS['phpgw']->acl->check('.checklist', PHPGW_ACL_ADD, 'controller');//2
-			$this->acl_edit = $GLOBALS['phpgw']->acl->check('.checklist', PHPGW_ACL_EDIT, 'controller');//4
-			$this->acl_delete = $GLOBALS['phpgw']->acl->check('.checklist', PHPGW_ACL_DELETE, 'controller');//8
+			$this->acl_read = $GLOBALS['phpgw']->acl->check('.checklist', ACL_READ, 'controller');//1
+			$this->acl_add = $GLOBALS['phpgw']->acl->check('.checklist', ACL_ADD, 'controller');//2
+			$this->acl_edit = $GLOBALS['phpgw']->acl->check('.checklist', ACL_EDIT, 'controller');//4
+			$this->acl_delete = $GLOBALS['phpgw']->acl->check('.checklist', ACL_DELETE, 'controller');//8
 			
 			self::set_active_menu("controller::bulk_update_assigned");
 		}
 
 		function assign()
 		{
-			$from = phpgw::get_var('from', 'int');
-			$to = phpgw::get_var('to', 'int');
-			$save = phpgw::get_var('save', 'bool', 'POST');
-			$serie_ids = phpgw::get_var('serie_ids', 'int');
-			$check_list_ids = phpgw::get_var('check_list_ids', 'int');
+			$from = Sanitizer::get_var('from', 'int');
+			$to = Sanitizer::get_var('to', 'int');
+			$save = Sanitizer::get_var('save', 'bool', 'POST');
+			$serie_ids = Sanitizer::get_var('serie_ids', 'int');
+			$check_list_ids = Sanitizer::get_var('check_list_ids', 'int');
 
 
 			if($save && $from && $to)
@@ -72,7 +72,7 @@
 			$tabs = array();
 			$tabs['assign'] = array('label' => lang('assign'), 'link' => '#assign');
 
-			$users = $GLOBALS['phpgw']->acl->get_user_list_right(PHPGW_ACL_EDIT, '.checklist');
+			$users = $GLOBALS['phpgw']->acl->get_user_list_right(ACL_EDIT, '.checklist');
 			$from_list = array();
 			foreach ($users as $user)
 			{
@@ -185,7 +185,7 @@
 
 		function get_controller_serie( )
 		{
-			$assigned_to = phpgw::get_var('assigned_to', 'int');
+			$assigned_to = Sanitizer::get_var('assigned_to', 'int');
 
 			if (!$this->acl_read)
 			{
@@ -218,7 +218,7 @@
 
 				$entry['component_name'] = $soentity->get_short_description(array('location_id' => $entry['location_id'], 'id' => $entry['component_id']));
 				$entry['title_text'] = $entry['title'];
-				$entry['title'] = '<a href="' . $GLOBALS['phpgw']->link('/index.php', $control_link_data) . '" target="_blank">' . $entry['title'] . '</a>';
+				$entry['title'] = '<a href="' . phpgw::link('/index.php', $control_link_data) . '" target="_blank">' . $entry['title'] . '</a>';
 				$entry['assigned_to_name'] = "<a title=\"{$lang_history}\" onclick='javascript:showlightbox_assigned_history({$entry['serie_id']});'>{$entry['assigned_to_name']}</a>";
 
 				$entry['start_date'] = $GLOBALS['phpgw']->common->show_date($entry['start_date'], $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat']);
@@ -231,7 +231,7 @@
 				(
 				'results' => $controls,
 				'total_records' => count($controls),
-				'draw' => phpgw::get_var('draw', 'int')
+				'draw' => Sanitizer::get_var('draw', 'int')
 			);
 
 			return $this->jquery_results($result_data);
@@ -239,7 +239,7 @@
 
 		public function get_future_checklist()
 		{
-			$assigned_to = phpgw::get_var('assigned_to', 'int');
+			$assigned_to = Sanitizer::get_var('assigned_to', 'int');
 
 			if (!$this->acl_read)
 			{
@@ -261,7 +261,7 @@
 
 			foreach ($check_lists as $check_list)
 			{
-				$_link = $GLOBALS['phpgw']->link('/index.php', array(
+				$_link = phpgw::link('/index.php', array(
 						'menuaction' => "controller.uicheck_list.edit_check_list",
 						'check_list_id' => $check_list['id']
 						)
@@ -285,7 +285,7 @@
 				(
 				'results' => $_check_list,
 				'total_records' => count($_check_list),
-				'draw' => phpgw::get_var('draw', 'int')
+				'draw' => Sanitizer::get_var('draw', 'int')
 			);
 
 			return $this->jquery_results($result_data);

@@ -154,11 +154,11 @@
 
 // ------------------------- end nextmatch template --------------------------------------
 
-				$this->t->set_var('cat_action',$GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'todo.uitodo.show_list')));
+				$this->t->set_var('cat_action',phpgw::link('/index.php', array('menuaction' => 'todo.uitodo.show_list')));
 				$this->t->set_var('categories',$this->cats->formatted_list('select','all',$this->cat_id,'True'));
-				$this->t->set_var('filter_action',$GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'todo.uitodo.show_list')));
+				$this->t->set_var('filter_action',phpgw::link('/index.php', array('menuaction' => 'todo.uitodo.show_list')));
 				$this->t->set_var('filter_list',$this->nextmatchs->filter(1,array('yours' => 1,'filter' => $this->filter)));
-				$this->t->set_var('search_action',$GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'todo.uitodo.show_list')));
+				$this->t->set_var('search_action',phpgw::link('/index.php', array('menuaction' => 'todo.uitodo.show_list')));
 				$this->t->set_var('search_list',$this->nextmatchs->search(array('search_obj' => 1,'query' => $this->query)));
 
 				$body .= $this->t->fp('out','page_header');
@@ -187,11 +187,11 @@
 				$this->t->set_var('tr_class', $this->nextmatchs->alternate_row_class($tr_class));
 				$level = $todo_list[$i]['level'];
 
-				$title = $GLOBALS['phpgw']->strip_html($todo_list[$i]['title']); 
+				$title = phpgw::strip_html($todo_list[$i]['title']); 
 
 				if (!$title)
 				{
-					$words = explode(' ',$GLOBALS['phpgw']->strip_html($todo_list[$i]['descr']));
+					$words = explode(' ',phpgw::strip_html($todo_list[$i]['descr']));
 					$title = "$words[0] $words[1] $words[2] $words[3] ...";
 				}
 
@@ -259,12 +259,12 @@
 					'assigned'		=> $assigned
 				));
 
-				$this->t->set_var('view','<a href="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'todo.uitodo.view', 'todo_id' => $todo_list[$i]['id']) )
+				$this->t->set_var('view','<a href="' . phpgw::link('/index.php', array('menuaction' => 'todo.uitodo.view', 'todo_id' => $todo_list[$i]['id']) )
 					. '">' . lang('View') . '</a>');
 
-				if ($this->botodo->check_perms($todo_list[$i]['owner_id'], $this->grants, PHPGW_ACL_EDIT))
+				if ($this->botodo->check_perms($todo_list[$i]['owner_id'], $this->grants, ACL_EDIT))
 				{
-					$this->t->set_var('edit','<a href="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'todo.uitodo.edit', 'todo_id' => $todo_list[$i]['id']) )
+					$this->t->set_var('edit','<a href="' . phpgw::link('/index.php', array('menuaction' => 'todo.uitodo.edit', 'todo_id' => $todo_list[$i]['id']) )
 											. '">' . lang('Edit') . '</a>');
 				}
 				else
@@ -272,9 +272,9 @@
 					$this->t->set_var('edit','&nbsp;');
 				}
 
-				if ($this->botodo->check_perms($todo_list[$i]['owner_id'],$this->grants, PHPGW_ACL_DELETE))
+				if ($this->botodo->check_perms($todo_list[$i]['owner_id'],$this->grants, ACL_DELETE))
 				{
-					$this->t->set_var('delete','<a href="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'todo.uitodo.delete', 'todo_id' => $todo_list[$i]['id']) )
+					$this->t->set_var('delete','<a href="' . phpgw::link('/index.php', array('menuaction' => 'todo.uitodo.delete', 'todo_id' => $todo_list[$i]['id']) )
 												. '">' . lang('Delete') . '</a>');
 				}
 				else
@@ -282,9 +282,9 @@
 					$this->t->set_var('delete','&nbsp;');
 				}
 
-				if ($this->botodo->check_perms($todo_list[$i]['owner_id'],$this->grants,PHPGW_ACL_ADD))
+				if ($this->botodo->check_perms($todo_list[$i]['owner_id'],$this->grants,ACL_ADD))
 				{
-					$this->t->set_var('subadd', '<a href="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'todo.uitodo.add', 'parent' => $todo_list[$i]['id'], 'cat_id' => $this->cat_id) )
+					$this->t->set_var('subadd', '<a href="' . phpgw::link('/index.php', array('menuaction' => 'todo.uitodo.add', 'parent' => $todo_list[$i]['id'], 'cat_id' => $this->cat_id) )
 												. '">' . lang('Add Sub') . '</a>');
 				}
 				else
@@ -311,14 +311,14 @@
 
 				if ( !count($cat) || $cat[0]['app_name'] == 'phpgw' || $cat[0]['owner'] == '-1' || !$this->cat_id)
 				{
-					$this->t->set_var('add','<form method="POST" action="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'todo.uitodo.add', 'cat_id' => $this->cat_id) )
+					$this->t->set_var('add','<form method="POST" action="' . phpgw::link('/index.php', array('menuaction' => 'todo.uitodo.add', 'cat_id' => $this->cat_id) )
 						. '"><input type="submit" name="Add" value="' . lang('Add') .'"></form>');
 				}
 				else
 				{
-					if ($this->botodo->check_perms($cat[0]['owner'], $this->grants,PHPGW_ACL_ADD) || $cat[0]['owner'] == $GLOBALS['phpgw_info']['user']['account_id'])
+					if ($this->botodo->check_perms($cat[0]['owner'], $this->grants,ACL_ADD) || $cat[0]['owner'] == $GLOBALS['phpgw_info']['user']['account_id'])
 					{
-						$this->t->set_var('add','<form method="POST" action="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'todo.uitodo.add', 'cat_id' => $this->cat_id) )
+						$this->t->set_var('add','<form method="POST" action="' . phpgw::link('/index.php', array('menuaction' => 'todo.uitodo.add', 'cat_id' => $this->cat_id) )
 							. '"><input type="submit" name="Add" value="' . lang('Add') .'"></form>');
 					}
 					else
@@ -334,7 +334,7 @@
 				$year = date('Y');
 				$month = date('m');
 
-				$this->t->set_var('matrixview', '<a href="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'todo.uitodo.matrix', 'month' => $month, 'year' => $year) ) . '">'
+				$this->t->set_var('matrixview', '<a href="' . phpgw::link('/index.php', array('menuaction' => 'todo.uitodo.matrix', 'month' => $month, 'year' => $year) ) . '">'
 					. lang('View matrix of actual month') . "</a>\n");
 
 				$body .= $this->t->fp('out','page_footer');
@@ -385,13 +385,13 @@
 				}
 				if (! $todo['title'])
 				{
-					$words = explode(' ',$GLOBALS['phpgw']->strip_html($todo['descr']));
+					$words = explode(' ',phpgw::strip_html($todo['descr']));
 					$title = "$words[0] $words[1] $words[2] $words[3] ...";
 					$todo_select .= ">$title";
 				}
 				else
 				{
-					$todo_select .= '>' . $GLOBALS['phpgw']->strip_html($todo['title']);
+					$todo_select .= '>' . phpgw::strip_html($todo['title']);
 				}
 				$todo_select .= '</option>';
 			}
@@ -400,14 +400,14 @@
 
 		function add()
 		{
-			$cat_id			= phpgw::get_var('cat_id', 'int', 'REQUEST', 0);
-			$new_cat		= phpgw::get_var('new_cat', 'int', 'REQUEST', 0);
-			$values			= phpgw::get_var('values');
-			$submit			= phpgw::get_var('submit', 'bool');
-			$new_parent		= phpgw::get_var('new_parent', 'int', 'REQUEST', 0);
-			$parent			= phpgw::get_var('parent', 'int', 'REQUEST', 0);
-			$assigned		= phpgw::get_var('assigned');
-			$assigned_group	= phpgw::get_var('assigned_group');
+			$cat_id			= Sanitizer::get_var('cat_id', 'int', 'REQUEST', 0);
+			$new_cat		= Sanitizer::get_var('new_cat', 'int', 'REQUEST', 0);
+			$values			= Sanitizer::get_var('values');
+			$submit			= Sanitizer::get_var('submit', 'bool');
+			$new_parent		= Sanitizer::get_var('new_parent', 'int', 'REQUEST', 0);
+			$parent			= Sanitizer::get_var('parent', 'int', 'REQUEST', 0);
+			$assigned		= Sanitizer::get_var('assigned');
+			$assigned_group	= Sanitizer::get_var('assigned_group');
 
 			if ($new_parent)
 			{
@@ -457,7 +457,7 @@
 				else
 				{
 					$this->botodo->save($values);
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'todo.uitodo.show_list', 'cat_id' => (int) $cat_id) );
+					phpgw::redirect_link('/index.php', array('menuaction' => 'todo.uitodo.show_list', 'cat_id' => (int) $cat_id) );
 					exit;
 				}
 			}
@@ -469,7 +469,7 @@
 			$this->t->set_block('todo_add','edit','edithandle');
 
 			$this->set_app_langs();
-			$this->t->set_var('actionurl', $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'todo.uitodo.add')));
+			$this->t->set_var('actionurl', phpgw::link('/index.php', array('menuaction' => 'todo.uitodo.add')));
 
 			if ($parent)
 			{
@@ -554,8 +554,8 @@
 			$this->set_app_langs();
 
 			$this->t->set_var('lang_todo_action',lang('View todo item'));
-			$this->t->set_var('value_title',$GLOBALS['phpgw']->strip_html($values['title']));
-			$this->t->set_var('value_descr',$GLOBALS['phpgw']->strip_html($values['descr']));
+			$this->t->set_var('value_title',phpgw::strip_html($values['title']));
+			$this->t->set_var('value_descr',phpgw::strip_html($values['descr']));
 			$this->t->set_var('value_category',$this->cats->id2name($values['cat']));
 
 			$sdate = $values['sdate'] - $this->botodo->datetime->tz_offset;
@@ -570,7 +570,7 @@
 			$parent_values = $this->botodo->read($values['parent']);
 			if ( is_array($parent_values) && count($parent_values) )
 			{
-				$this->t->set_var('value_parent',$GLOBALS['phpgw']->strip_html($parent_values['title']));
+				$this->t->set_var('value_parent',phpgw::strip_html($parent_values['title']));
 			}
 			else
 			{
@@ -619,7 +619,7 @@
 			$this->t->set_var('access',lang($values['access']));
 
 			$this->t->set_var('history',$this->historylog->return_html(array(),'','',$_REQUEST['todo_id']));
-			$this->t->set_var('done_action',$GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'todo.uitodo.show_list') ) );
+			$this->t->set_var('done_action',phpgw::link('/index.php', array('menuaction' => 'todo.uitodo.show_list') ) );
 			$this->t->pfp('out','_view');
 		}
 
@@ -677,7 +677,7 @@
 				else
 				{
 					$this->botodo->save($values,'edit');
-					$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'todo.uitodo.show_list', 'cat_id' => $cat_id) );
+					phpgw::redirect_link('/index.php', array('menuaction' => 'todo.uitodo.show_list', 'cat_id' => $cat_id) );
 					$GLOBALS['phpgw_info']['flags']['nodisplay'] = True;
 					exit;
 				}
@@ -690,7 +690,7 @@
 			$this->t->set_block('todo_edit','edit','edithandle');
 
 			$this->set_app_langs();
-			$this->t->set_var('actionurl',$GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'todo.uitodo.edit', 'todo_id' => $todo_id) ) );
+			$this->t->set_var('actionurl',phpgw::link('/index.php', array('menuaction' => 'todo.uitodo.edit', 'todo_id' => $todo_id) ) );
 
 			$values = $this->botodo->read($todo_id);
 
@@ -706,8 +706,8 @@
 			$this->t->set_var('cat_list',$this->cats->formatted_list('select','all',$values['cat'],'True'));
 			$this->t->set_var('todo_list',$this->formatted_todo($values['parent']));
 
-			$this->t->set_var('descr',$GLOBALS['phpgw']->strip_html($values['descr']));
-			$this->t->set_var('title',$GLOBALS['phpgw']->strip_html($values['title']));
+			$this->t->set_var('descr',phpgw::strip_html($values['descr']));
+			$this->t->set_var('title',phpgw::strip_html($values['title']));
 
 			$this->t->set_var('pri_list', phpgwapi_sbox::getPriority('values[pri]',$values['pri']));
 			$this->t->set_var('stat_list', phpgwapi_sbox::getPercentage('values[status]',$values['status']));
@@ -753,9 +753,9 @@
 
 			$this->t->set_var('access_list', '<input type="checkbox" name="values[access]" value="True"' . ($values['access'] == 'private'?' checked':'') . '>');
 
-			if ($this->botodo->check_perms($values['owner'], $this->grants,PHPGW_ACL_DELETE) || $values['owner'] == $GLOBALS['phpgw_info']['user']['account_id'])
+			if ($this->botodo->check_perms($values['owner'], $this->grants,ACL_DELETE) || $values['owner'] == $GLOBALS['phpgw_info']['user']['account_id'])
 			{
-				$this->t->set_var('delete','<form method="POST" action="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'todo.uitodo.delete', 'todo_id' => $values['id']) )
+				$this->t->set_var('delete','<form method="POST" action="' . phpgw::link('/index.php', array('menuaction' => 'todo.uitodo.delete', 'todo_id' => $values['id']) )
                                     . '"><input type="submit" value="' . lang('Delete') .'"></form>');
 			}
 			else
@@ -784,12 +784,12 @@
 				{
 					$this->botodo->delete($todo_id);
 				}
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'todo.uitodo.show_list') );
+				phpgw::redirect_link('/index.php', array('menuaction' => 'todo.uitodo.show_list') );
 			}
 			$GLOBALS['phpgw']->common->phpgw_header(true);
 
 			$this->t->set_file('todo_delete', 'delete.tpl');
-			$this->t->set_var('actionurl',$GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'todo.uitodo.delete', 'todo_id' => $todo_id) ) );
+			$this->t->set_var('actionurl',phpgw::link('/index.php', array('menuaction' => 'todo.uitodo.delete', 'todo_id' => $todo_id) ) );
 
 			$exists = $this->botodo->exists($todo_id);
 
@@ -804,7 +804,7 @@
 				$this->t->set_var('subs', '');
 			}
 
-			$this->t->set_var('nolink',$GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'todo.uitodo.show_list') ) );
+			$this->t->set_var('nolink',phpgw::link('/index.php', array('menuaction' => 'todo.uitodo.show_list') ) );
 			$this->t->set_var('deleteheader',lang('Are you sure you want to delete this entry'));
 			$this->t->set_var('lang_no',lang('No'));
 			$this->t->set_var('lang_yes',lang('Yes'));
@@ -840,7 +840,7 @@
 
 				if ($entry['sdate_epoch'] > 0 && $entry['edate_epoch'] > 0)
 				{
-					$title = '<a href="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'todo.uitodo.view', 'todo_id' => $entry['id'])) . '">' . $GLOBALS['phpgw']->strip_html($entry['title']) . '</a>';
+					$title = '<a href="' . phpgw::link('/index.php', array('menuaction' => 'todo.uitodo.view', 'todo_id' => $entry['id'])) . '">' . phpgw::strip_html($entry['title']) . '</a>';
 					$startd = date('Y',$entry['sdate_epoch']) . date('m',$entry['sdate_epoch']) . date('d',$entry['sdate_epoch']);
 					$endd = date('Y',$entry['edate_epoch']) . date('m',$entry['edate_epoch']) . date('d',$entry['edate_epoch']);
 					$this->matrix->setPeriod($title, $startd, $endd, $colors[$ind]);
@@ -850,14 +850,14 @@
 					{
 						if ($subentry['sdate_epoch'] > 0 && $subentry['edate_epoch'] > 0)
 						{
-							$title = '<a href="' . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'todo.uitodo.view', 'todo_id' => $subentry['id'])) . '">' . $GLOBALS['phpgw']->strip_html($subentry['title']) . '</a>';
+							$title = '<a href="' . phpgw::link('/index.php', array('menuaction' => 'todo.uitodo.view', 'todo_id' => $subentry['id'])) . '">' . phpgw::strip_html($subentry['title']) . '</a>';
 							$startd = date('Y',$subentry['sdate_epoch']) . date('m',$subentry['sdate_epoch']) . date('d',$subentry['sdate_epoch']);                                                        
 							$endd = date('Y',$subentry['edate_epoch']) . date('m',$subentry['edate_epoch']) . date('d',$subentry['edate_epoch']);
-							$this->matrix->setPeriod($GLOBALS['phpgw']->strip_html($subentry['title']),$startd,$endd,$colors[$ind]);
+							$this->matrix->setPeriod(phpgw::strip_html($subentry['title']),$startd,$endd,$colors[$ind]);
 						}
 					}
 				}
 			}
-			$this->matrix->out($GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'todo.uitodo.matrix') ) );
+			$this->matrix->out(phpgw::link('/index.php', array('menuaction' => 'todo.uitodo.matrix') ) );
 		}
 	}

@@ -24,7 +24,7 @@
 		function __construct()
 		{
 			$this->account = $GLOBALS['phpgw_info']['user']['account_id'];
-			$this->db = & $GLOBALS['phpgw']->db;
+			$this->db = Db::getInstance();
 
 			$GLOBALS['phpgw']->acl->set_account_id($this->account);
 			$this->join = $this->db->join;

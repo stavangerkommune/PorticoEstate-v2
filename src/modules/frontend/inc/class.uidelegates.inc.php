@@ -22,7 +22,7 @@
 		{
 			$config = CreateObject('phpgwapi.config', 'rental')->read();
 			$use_fellesdata = $config['use_fellesdata'];
-			$username = phpgw::get_var('username');
+			$username = Sanitizer::get_var('username');
 			$result = array();
 			if (!isset($username))
 			{
@@ -73,7 +73,7 @@
 			$use_fellesdata = $config->config_data['use_fellesdata'];
 //			if (isset($_POST['search']))
 //			{
-//				$username = phpgw::get_var('username');
+//				$username = Sanitizer::get_var('username');
 //				if (empty($username))
 //				{
 //					$msglog['error'][] = array('msg' => lang('lacking_username'));
@@ -113,7 +113,7 @@
 //			else
 			if (isset($_POST['add']))
 			{
-				$account_id = phpgw::get_var('account_id');
+				$account_id = Sanitizer::get_var('account_id');
 				$success = false;
 				if ($use_fellesdata && !empty($account_id))
 				{
@@ -193,7 +193,7 @@
 			}
 			else if (isset($_POST['remove']))
 			{
-				$account_id = phpgw::get_var('account_id');
+				$account_id = Sanitizer::get_var('account_id');
 				$result = frontend_bofrontend::remove_delegate($account_id, 0, 0);
 				if ($result)
 				{
@@ -206,7 +206,7 @@
 			}
 			else if (isset($_POST['remove_specific']))
 			{
-				$account_id = phpgw::get_var('account_id');
+				$account_id = Sanitizer::get_var('account_id');
 				//Parameter to delegate access to only a single organisational unit
 				$org_unit_id = $this->header_state['selected_org_unit'];
 				$result = frontend_bofrontend::remove_delegate($account_id, 0, $org_unit_id);
@@ -220,7 +220,7 @@
 				}
 			}
 
-			$form_action = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'frontend.uidelegates.index',
+			$form_action = phpgw::link('/index.php', array('menuaction' => 'frontend.uidelegates.index',
 				'location_id' => $this->location_id));
 			$delegates_per_org_unit = frontend_bofrontend::get_delegates($this->header_state['selected_org_unit']);
 			$delegates_per_user = frontend_bofrontend::get_delegates(null, true);
@@ -279,9 +279,9 @@
 			if (!isset($account_id) || $account_id == '')
 			{
 				//User is only registered in Fellesdata
-				$username = phpgw::get_var('username');
-				$firstname = phpgw::get_var('firstname');
-				$lastname = phpgw::get_var('lastname');
+				$username = Sanitizer::get_var('username');
+				$firstname = Sanitizer::get_var('firstname');
+				$lastname = Sanitizer::get_var('lastname');
 //				$password = 'TEst1234';
 				$password = 'PEre' . mt_rand(100, mt_getrandmax()) . '&';
 
@@ -300,10 +300,10 @@
 
 		public function remove_delegate()
 		{
-			$account_id = phpgw::get_var('account_id');
-			$owner_id = (int)phpgw::get_var('owner_id');
+			$account_id = Sanitizer::get_var('account_id');
+			$owner_id = (int)Sanitizer::get_var('owner_id');
 
 			frontend_bofrontend::remove_delegate($account_id, $owner_id, 0);
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'frontend.uidelegates.index'));
+			phpgw::redirect_link('/index.php', array('menuaction' => 'frontend.uidelegates.index'));
 		}
 	}

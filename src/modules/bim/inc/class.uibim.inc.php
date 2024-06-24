@@ -33,18 +33,18 @@
 	public function __construct()
 	{
 			parent::__construct();
-			$this->acl = & $GLOBALS['phpgw']->acl;
+			$this->acl = Acl::getInstance();
 			$this->acl_location = 'admin';
-			$this->acl_read = $this->acl->check($this->acl_location, PHPGW_ACL_READ, 'bim');
-			$this->acl_add = $this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'bim');
-			$this->acl_edit = $this->acl->check($this->acl_location, PHPGW_ACL_EDIT, 'bim');
-			$this->acl_delete = $this->acl->check($this->acl_location, PHPGW_ACL_DELETE, 'bim');
-			$this->acl_manage = $this->acl->check($this->acl_location, PHPGW_ACL_PRIVATE, 'bim'); // manage
+			$this->acl_read = $this->acl->check($this->acl_location, ACL_READ, 'bim');
+			$this->acl_add = $this->acl->check($this->acl_location, ACL_ADD, 'bim');
+			$this->acl_edit = $this->acl->check($this->acl_location, ACL_EDIT, 'bim');
+			$this->acl_delete = $this->acl->check($this->acl_location, ACL_DELETE, 'bim');
+			$this->acl_manage = $this->acl->check($this->acl_location, ACL_PRIVATE, 'bim'); // manage
 
 		$this->bocommon = CreateObject('property.bocommon');
 
 		$GLOBALS['phpgw_info']['flags']['menu_selection'] = 'bim::item::index';
-		$this->db = & $GLOBALS['phpgw']->db;
+		$this->db = Db::getInstance();
 	}
 
 	public $public_functions = array
@@ -66,7 +66,7 @@
 			{
 			$GLOBALS['phpgw']->css = createObject('phpgwapi.css');
 		}
-		$GLOBALS['phpgw']->css->add_external_file('bim/templates/base/css/bim.css');
+		phpgwapi_css::getInstance()->add_external_file('bim/templates/base/css/bim.css');
 	}
 
 		public function getModelsJson()
@@ -85,21 +85,21 @@
 
 		function query()
 		{
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 			$params = array
 				(
-				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results' => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start' => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results' => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query' => $search['value'],
 				'order' => $columns[$order[0]['column']]['data'],
 				'sort' => $order[0]['dir'],
 				'filter' => $this->filter,
-				'allrows' => phpgw::get_var('length', 'int') == -1,
-				'status_id' => phpgw::get_var('status_id')
+				'allrows' => Sanitizer::get_var('length', 'int') == -1,
+				'status_id' => Sanitizer::get_var('status_id')
 			);
 
 			$bobimmodel = new bobimmodel_impl();
@@ -131,7 +131,7 @@
 		$output["result"] = 1;
 			if($modelId == null)
 			{
-				$modelId = (int)phpgw::get_var("modelId");
+				$modelId = (int)Sanitizer::get_var("modelId");
 		}
 			
 		$bobimmodel = new bobimmodel_impl();
@@ -178,7 +178,7 @@
 		$restUrl = $this->bimconverterUrl;
 			if($modelId == null)
 			{
-				$modelId = (int)phpgw::get_var("modelId");
+				$modelId = (int)Sanitizer::get_var("modelId");
 		}
 		//echo "ModelId is:".$modelId;
 		$bobimmodel = new bobimmodel_impl();
@@ -259,7 +259,7 @@
 
 		function showModels()
 		{
-			if(phpgw::get_var('phpgw_return_as') == 'json')
+			if(Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -363,7 +363,7 @@
 				(
 				'my_name' => 'view',
 				'text' => lang('view'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'bim.uibimitem.showItems'
 				)),
@@ -373,7 +373,7 @@
 				(
 				'my_name' => 'load',
 				'text' => lang('load'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'bim.uibim.getFacilityManagementXmlByModelId'
 				)),
@@ -384,7 +384,7 @@
 				'my_name' => 'delete',
 				'text' => lang('Remove'),
 				'confirm_msg' => lang('do you really want to delete this entry'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'bim.uibim.removeModelJson',
 				)),
@@ -394,7 +394,7 @@
 				(
 				'my_name' => 'info',
 				'text' => lang('info'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'bim.uibim.displayModelInformation'
 				)),
@@ -414,7 +414,7 @@
 				phpgw::no_access();
 			}
 			
-			$import_action = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'bim.uibim.uploadFile',
+			$import_action = phpgw::link('/index.php', array('menuaction' => 'bim.uibim.uploadFile',
 				'id' => $id));
 		$data = array
 		(
@@ -435,7 +435,7 @@
 		{
 			if(!$unitTest)
 			{
-			$GLOBALS['phpgw']->xslttpl->add_file(array('bim_upload_ifc_result'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('bim_upload_ifc_result'));
 		}
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 
@@ -450,7 +450,7 @@
 		}
 			if(!$modelName)
 			{
-			$modelName = phpgw::get_var($this->form_upload_field_modelname);
+			$modelName = Sanitizer::get_var($this->form_upload_field_modelname);
 		}
 		$returnValue = array();
 
@@ -488,8 +488,8 @@
 		}
 
 
-			$link_to_models = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'bim.uibim.showModels'));
-			$link_to_upload = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'bim.uibim.upload'));
+			$link_to_models = phpgw::link('/index.php', array('menuaction' => 'bim.uibim.showModels'));
+			$link_to_upload = phpgw::link('/index.php', array('menuaction' => 'bim.uibim.upload'));
 		$data = array
 		(
 				'modelName'						=> $modelName,
@@ -501,7 +501,7 @@
 
 			if(!$unitTest)
 			{
-				$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('uploadResult' => $data));
+				phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('uploadResult' => $data));
 		}
 
 		return $data;
@@ -510,8 +510,8 @@
 		public function displayModelInformation()
 		{
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
-		$GLOBALS['phpgw']->xslttpl->add_file(array('bim_modelinformation'));
-		$modelId = phpgw::get_var("modelId");
+		phpgwapi_xslttemplates::getInstance()->add_file(array('bim_modelinformation'));
+		$modelId = Sanitizer::get_var("modelId");
 		//$modelId = 3;
 			if(empty($modelId))
 			{
@@ -530,7 +530,7 @@
 				'model'		=> $model->transformObjectToArray(),
 				'information' => $modelInfo->transformObjectToArray()
 			);
-				$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('modelInformation' => $data));
+				phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('modelInformation' => $data));
 		}
 		
 //			$this->setupBimCss();

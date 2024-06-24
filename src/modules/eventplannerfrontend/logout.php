@@ -28,7 +28,7 @@
 	*/
 	include_once('../header.inc.php');
 
-	$sessionid = phpgw::get_var($session_name);
+	$sessionid = Sanitizer::get_var($session_name);
 
 	$verified = $GLOBALS['phpgw']->session->verify();
 	if ($verified)
@@ -70,12 +70,12 @@
 		$GLOBALS['phpgw']->session->phpgw_setcookie('domain');
 	}
 
-	$login = phpgw::get_var('login', 'bool');
+	$login = Sanitizer::get_var('login', 'bool');
 
 	if($login)
 	{
-		$GLOBALS['phpgw']->redirect_link('/eventplannerfrontend/login.php', array('after' => phpgw::get_var('after', 'raw')));
+		phpgw::redirect_link('/eventplannerfrontend/login.php', array('after' => Sanitizer::get_var('after', 'raw')));
 
 	}
 
-	$GLOBALS['phpgw']->redirect_link('/eventplannerfrontend/', array('cd' => 1, 'logout' => true));
+	phpgw::redirect_link('/eventplannerfrontend/', array('cd' => 1, 'logout' => true));

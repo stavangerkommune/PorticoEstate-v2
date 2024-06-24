@@ -61,7 +61,7 @@
 		 * @param $permission
 		 * @return true if current user has permission, false otherwise
 		 */
-		public function has_permission( $permission = PHPGW_ACL_PRIVATE )
+		public function has_permission( $permission = ACL_PRIVATE )
 		{
 			return $GLOBALS['phpgw']->acl->check($this->get_field_of_responsibility_name(), $permission, 'bkbooking');
 		}
@@ -85,11 +85,11 @@
 		{
 			$location_name = $this->get_field_of_responsibility_name();
 			return array(
-				PHPGW_ACL_READ => $GLOBALS['phpgw']->acl->check($location_name, PHPGW_ACL_READ, 'bkbooking'),
-				PHPGW_ACL_ADD => $GLOBALS['phpgw']->acl->check($location_name, PHPGW_ACL_ADD, 'bkbooking'),
-				PHPGW_ACL_EDIT => $GLOBALS['phpgw']->acl->check($location_name, PHPGW_ACL_EDIT, 'bkbooking'),
-				PHPGW_ACL_DELETE => $GLOBALS['phpgw']->acl->check($location_name, PHPGW_ACL_DELETE, 'bkbooking'),
-				PHPGW_ACL_PRIVATE => $GLOBALS['phpgw']->acl->check($location_name, PHPGW_ACL_PRIVATE, 'bkbooking')
+				ACL_READ => $GLOBALS['phpgw']->acl->check($location_name, ACL_READ, 'bkbooking'),
+				ACL_ADD => $GLOBALS['phpgw']->acl->check($location_name, ACL_ADD, 'bkbooking'),
+				ACL_EDIT => $GLOBALS['phpgw']->acl->check($location_name, ACL_EDIT, 'bkbooking'),
+				ACL_DELETE => $GLOBALS['phpgw']->acl->check($location_name, ACL_DELETE, 'bkbooking'),
+				ACL_PRIVATE => $GLOBALS['phpgw']->acl->check($location_name, ACL_PRIVATE, 'bkbooking')
 			);
 		}
 

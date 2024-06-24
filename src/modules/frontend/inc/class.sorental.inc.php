@@ -66,7 +66,7 @@
 		public function __construct()
 		{
 			$this->account = (int)$GLOBALS['phpgw_info']['user']['account_id'];
-			$this->_db = & $GLOBALS['phpgw']->db;
+			$this->_db = Db::getInstance();
 			$this->_join = & $this->_db->join;
 			$this->_like = & $this->_db->like;
 			$this->_left_join = & $this->_db->left_join;

@@ -71,7 +71,7 @@
 								$cd_array['domain'] = $_GET['domain'];
 							}
 
-							$GLOBALS['phpgw']->redirect_link('/login.php', $cd_array);
+							phpgw::redirect_link('/login.php', $cd_array);
 						}
 					}
 				}
@@ -98,7 +98,7 @@
 				$account->lastname	 = 'Delegates';
 				$frontend_delegates	 = $GLOBALS['phpgw']->accounts->create($account, array());
 
-				$aclobj = & $GLOBALS['phpgw']->acl;
+				$aclobj = Acl::getInstance();
 				$aclobj->set_account_id($frontend_delegates, true);
 				$aclobj->add('helpdesk', '.', 1);
 				$aclobj->add('helpdesk', 'run', 1);
@@ -245,7 +245,7 @@
 
 			$anonyminized_text = 'Anonymisert';
 
-			$db = & $GLOBALS['phpgw']->db;
+			$db = Db::getInstance();
 			$db->transaction_begin();
 
 			$closed = '';

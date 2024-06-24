@@ -28,8 +28,8 @@
 
 	$contacts	= CreateObject('phpgwapi.contacts');
 
-	$account_id	= phpgw::get_var('account_id', 'int');
-	$new_owner	= phpgw::get_var('new_owner', 'int');
+	$account_id	= Sanitizer::get_var('account_id', 'int');
+	$new_owner	= Sanitizer::get_var('new_owner', 'int');
 	if ( $new_owner == 0 )
 	{
 		$contacts->delete_all($account_id);

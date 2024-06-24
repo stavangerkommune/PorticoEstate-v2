@@ -334,7 +334,7 @@
 			$this->all_filters[$found_filter_num] = $take_my_position;
 			$this->save_all_filters_to_repository();
 			// redirect user back to filters list page
-			$take_me_to_url = $GLOBALS['phpgw']->link(
+			$take_me_to_url = phpgw::link(
 										'/index.php',array(
 										'menuaction'=>'email.uifilters.filters_list'));
 			if ($this->debug > 0 || $this->debug_set_prefs > 0 ) { echo 'bofilters.move_up: LEAVING with redirect to: <br />'.$take_me_to_url.'<br />'; }
@@ -376,7 +376,7 @@
 			$this->all_filters[$found_filter_num] = $take_my_position;
 			$this->save_all_filters_to_repository();
 			// redirect user back to filters list page
-			$take_me_to_url = $GLOBALS['phpgw']->link(
+			$take_me_to_url = phpgw::link(
 										'/index.php',array(
 										'menuaction'=>'email.uifilters.filters_list'));
 			if ($this->debug_set_prefs > 0) { echo 'bofilters.move_down: LEAVING with redirect to: <br />'.$take_me_to_url.'<br />'; }
@@ -831,7 +831,7 @@
 			$GLOBALS['phpgw']->msg->end_request();
 			
 			// redirect user back to filters list page
-			$take_me_to_url = $GLOBALS['phpgw']->link(
+			$take_me_to_url = phpgw::link(
 										'/index.php',array(
 										'menuaction'=>'email.uifilters.filters_list'));
 			
@@ -972,7 +972,7 @@
 			if ($this->debug > 1) { echo 'bofilters.do_filter('.__LINE__.'): calling end_request<br />'; }
 			$GLOBALS['phpgw']->msg->end_request();
 			if ($this->debug > 0) { echo 'bofilters.do_filter('.__LINE__.'): LEAVING<br />'; }
-			$take_me_to_url = $GLOBALS['phpgw']->link(
+			$take_me_to_url = phpgw::link(
 										'/index.php',array(
 										//'menuaction'=>'email.uifilters.filters_list'));
 										'menuaction'=>'email.uiindex.index'));
@@ -1990,7 +1990,7 @@
 				// preserve the folder we searched (raw posted source_account was never preped in here, so it's ok to send out as is)
 				$mlist_hidden_vars .= '<input type="hidden" name="folder" value="'.$this->filters[0]['source_account'].'">'."\r\n";
 				// make the first prev next last arrows
-				$this->template->set_var('mlist_submit_form_action', $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.uiindex.mlist')));
+				$this->template->set_var('mlist_submit_form_action', phpgw::link('/index.php',array('menuaction'=>'email.uiindex.mlist')));
 				$this->template->set_var('mlist_hidden_vars',$mlist_hidden_vars);
 				$this->template->parse('V_mlist_submit_form','B_mlist_submit_form');
 				

@@ -134,12 +134,12 @@
 			$this->nextmatches		= CreateObject('phpgwapi.nextmatchs');
 			$this->account			=& $GLOBALS['phpgw_info']['user']['account_id'];
 	//		$this->bo				= CreateObject('catch.bocatch',true);
-			$this->acl 				=& $GLOBALS['phpgw']->acl;
+			$this->acl 				=Acl::getInstance();
 	//		$this->acl_location 	= $this->bo->get_acl_location();
-			$this->acl_read 		= $this->acl->check($this->acl_location, PHPGW_ACL_READ, 'demo');
-			$this->acl_add 			= $this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'demo');
-			$this->acl_edit 		= $this->acl->check($this->acl_location, PHPGW_ACL_EDIT, 'demo');
-			$this->acl_delete 		= $this->acl->check($this->acl_location, PHPGW_ACL_DELETE, 'demo');
+			$this->acl_read 		= $this->acl->check($this->acl_location, ACL_READ, 'demo');
+			$this->acl_add 			= $this->acl->check($this->acl_location, ACL_ADD, 'demo');
+			$this->acl_edit 		= $this->acl->check($this->acl_location, ACL_EDIT, 'demo');
+			$this->acl_delete 		= $this->acl->check($this->acl_location, ACL_DELETE, 'demo');
 
 			$this->start			= $this->bo->start;
 			$this->query			= $this->bo->query;
@@ -186,8 +186,8 @@
 		*/
 		private static function get_output()
 		{
-			$output = phpgw::get_var('output', 'string', 'REQUEST', 'html');
-			$GLOBALS['phpgw']->xslttpl->set_output($output);
+			$output = Sanitizer::get_var('output', 'string', 'REQUEST', 'html');
+			phpgwapi_xslttemplates::getInstance()->set_output($output);
 			return $output;
 		}
 	}

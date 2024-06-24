@@ -497,7 +497,7 @@
 		{
 			echo 'Error: '.$this->error['code'].' : '.$this->error['msg'].' - '.$this->error['desc']."<br />\r\n";
 			$this->close();
-			echo('<A HREF="'.$GLOBALS['phpgw']->link('/home.php').'">'.lang('Click here to continue').'...</A>'); //cbsman
+			echo('<A HREF="'.phpgw::link('/home.php').'">'.lang('Click here to continue').'...</A>'); //cbsman
 			$GLOBALS['phpgw']->common->phpgw_exit();
 		}
 		

@@ -83,14 +83,14 @@
 			}
 			else
 			{
-				$message = phpgw::get_var('message');
-				$send = phpgw::get_var('send');
-				$cancel = phpgw::get_var('cancel');
+				$message = Sanitizer::get_var('message');
+				$send = Sanitizer::get_var('send');
+				$cancel = Sanitizer::get_var('cancel');
 			}
 
 			if (!$GLOBALS['phpgw']->acl->check('run', 1, 'admin') || $cancel)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'messenger.uimessenger.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'messenger.uimessenger.index'));
 				return False;
 			}
 
@@ -121,7 +121,7 @@
 					$this->so->send_message($message, True);
 				}
 				$this->so->db->transaction_commit();
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'messenger.uimessenger.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'messenger.uimessenger.index'));
 			}
 		}
 
@@ -212,7 +212,7 @@
 
 			if ($cancel)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'messenger.uimessenger.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'messenger.uimessenger.index'));
 				exit;
 			}
 
@@ -225,7 +225,7 @@
 			else
 			{
 				$this->so->send_message($message);
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'messenger.uimessenger.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'messenger.uimessenger.index'));
 			}
 		}
 
@@ -310,7 +310,7 @@
 		{
 			if (!$n_message)
 			{
-				$n_message = phpgw::get_var('n_message');
+				$n_message = Sanitizer::get_var('n_message');
 			}
 
 			$message = $this->so->read_message($message_id);
@@ -341,12 +341,12 @@
 		{
 			if (!$messages)
 			{
-				$messages = phpgw::get_var('messages');
+				$messages = Sanitizer::get_var('messages');
 			}
 
 			if (!is_array($messages))
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'messenger.uimessenger.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'messenger.uimessenger.index'));
 				return False;
 			}
 			$this->so->transaction_begin();
@@ -356,19 +356,19 @@
 				$this->so->delete_message($message_id);
 			}
 			$this->so->transaction_commit();
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'messenger.uimessenger.index'));
+			phpgw::redirect_link('/index.php', array('menuaction' => 'messenger.uimessenger.index'));
 		}
 
 		function reply( $message_id = '', $n_message = '' )
 		{
-			if (phpgw::get_var('cancel', 'bool') == true)
+			if (Sanitizer::get_var('cancel', 'bool') == true)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'messenger.uimessenger.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'messenger.uimessenger.index'));
 			}
 			if (!$message_id)
 			{
-				$message_id = phpgw::get_var('message_id');
-				$n_message = phpgw::get_var('n_message');
+				$message_id = Sanitizer::get_var('message_id');
+				$n_message = Sanitizer::get_var('n_message');
 			}
 
 			$errors = $this->check_for_missing_fields($n_message);
@@ -381,7 +381,7 @@
 			{
 				$this->so->send_message($n_message);
 				$this->so->update_message_status('R', $message_id);
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'messenger.uimessenger.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'messenger.uimessenger.index'));
 			}
 		}
 
@@ -389,8 +389,8 @@
 		{
 			if (!$message_id)
 			{
-				$message_id = phpgw::get_var('message_id');
-				$message = phpgw::get_var('message');
+				$message_id = Sanitizer::get_var('message_id');
+				$message = Sanitizer::get_var('message');
 			}
 
 			$errors = $this->check_for_missing_fields($message);
@@ -404,7 +404,7 @@
 			{
 				$this->so->send_message($message);
 				$this->so->update_message_status('F', $message_id);
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'messenger.uimessenger.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'messenger.uimessenger.index'));
 			}
 		}
 

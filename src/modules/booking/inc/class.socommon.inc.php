@@ -44,7 +44,7 @@
 		{
 			$this->table_name = $table_name;
 			$this->fields = $fields;
-			$this->db = & $GLOBALS['phpgw']->db;
+			$this->db = Db::getInstance();
 			$this->db2 = clone($GLOBALS['phpgw']->db);
 			$this->join = & $this->db->join;
 			$this->like = & $this->db->like;

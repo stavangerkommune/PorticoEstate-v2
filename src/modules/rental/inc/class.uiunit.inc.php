@@ -17,30 +17,30 @@
 
 		public function query()
 		{
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
-			$start_index = phpgw::get_var('start', 'int', 'REQUEST', 0);
-			$num_of_objects = (phpgw::get_var('length', 'int') <= 0) ? 10 : phpgw::get_var('length', 'int');
+			$start_index = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
+			$num_of_objects = (Sanitizer::get_var('length', 'int') <= 0) ? 10 : Sanitizer::get_var('length', 'int');
 			$sort_field = ($columns[$order[0]['column']]['data']) ? $columns[$order[0]['column']]['data'] : 'id';
 			$sort_ascending = ($order[0]['dir'] == 'desc') ? false : true;
 			$search_for = $search['value'];
-			$search_type = phpgw::get_var('search_option', 'string', 'REQUEST', 'all');
+			$search_type = Sanitizer::get_var('search_option', 'string', 'REQUEST', 'all');
 
 			// Create an empty result set
 			$result_objects = array();
 			$result_count = 0;
 
 			// TODO: access control
-			$composite_id = phpgw::get_var('composite_id');
+			$composite_id = Sanitizer::get_var('composite_id');
 			$filters = array('composite_id' => $composite_id);
 
 			$result_objects = rental_sounit::get_instance()->get($start_index, $num_of_objects, $sort_field, $sort_ascending, $search_for, $search_type, $filters);
 			$result_count = rental_sounit::get_instance()->get_count($search_for, $search_type, $filters);
 
-			$editable = phpgw::get_var('editable') == 'true' ? true : false;
+			$editable = Sanitizer::get_var('editable') == 'true' ? true : false;
 
 			//Serialize the documents found
 			$rows = array();
@@ -48,7 +48,7 @@
 			{
 				if (isset($result))
 				{
-					if ($result->has_permission(PHPGW_ACL_READ)) // check for read permission
+					if ($result->has_permission(ACL_READ)) // check for read permission
 					{
 						$rows[] = $result->serialize();
 					}

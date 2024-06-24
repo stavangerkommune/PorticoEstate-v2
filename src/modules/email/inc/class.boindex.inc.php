@@ -267,7 +267,7 @@
 				{
 					$tpl->set_var('lang_size', '');
 					$tpl->set_var('lang_size2', '');
-					$get_size_link = $GLOBALS['phpgw']->link('/index.php',array(
+					$get_size_link = phpgw::link('/index.php',array(
 								'menuaction' => 'email.uiindex.index',
 								'fldball[folder]' => $GLOBALS['phpgw']->msg->prep_folder_out(),
 								'fldball[acctnum]' => $GLOBALS['phpgw']->msg->get_acctnum(),
@@ -313,13 +313,13 @@
 				//{form_folder_switch_closetag}
 				$my_widgets->new_form();
 				$my_widgets->set_form_name('folder_switch');
-				$my_widgets->set_form_action($GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.uiindex.index')));
+				$my_widgets->set_form_action(phpgw::link('/index.php',array('menuaction'=>'email.uiindex.index')));
 				$my_widgets->set_form_method('post');
 				$tpl->set_var('form_folder_switch_opentag', $my_widgets->get_form());
 				$tpl->set_var('folder_switch_combobox', $my_widgets->all_folders_combobox('folder_switch'));
 				$tpl->set_var('form_folder_switch_closetag', $my_widgets->form_closetag());
 				//{folders_btn}
-				$folders_link = $GLOBALS['phpgw']->link('/index.php',array(
+				$folders_link = phpgw::link('/index.php',array(
 								'menuaction' => 'email.uifolder.folder',
 								// going to the folder list page, we only need log into the INBOX folder
 								'fldball[folder]' => 'INBOX',
@@ -396,7 +396,7 @@
 	//		$this->xi['ftr_font']	= $GLOBALS['phpgw_info']['theme']['font'];
 
 			//Empty Trash added by skwashd - move it if you want
-			$this->xi['empty_trash_link'] = $GLOBALS['phpgw']->link('/index.php', 
+			$this->xi['empty_trash_link'] = phpgw::link('/index.php', 
 								array(
 									'menuaction'	=> 'email.boaction.empty_trash',
 									'acctnum'	=> $GLOBALS['phpgw']->msg->get_acctnum()
@@ -440,7 +440,7 @@
 			$this->xi['acctbox_frm_name'] = 'acctbox';
 			
 			// switchbox will itself contain "fake_uri" embedded data which includes the applicable account number for the folder
-			$this->xi['acctbox_action'] = $GLOBALS['phpgw']->link(
+			$this->xi['acctbox_action'] = phpgw::link(
 								'/index.php',
 								 'menuaction=email.uiindex.index');
 			
@@ -471,7 +471,7 @@
 			$this->xi['switchbox_frm_name'] = 'switchbox';
 			
 			// switchbox will itself contain "fake_uri" embedded data which includes the applicable account number for the folder
-			$this->xi['switchbox_action'] = $GLOBALS['phpgw']->link(
+			$this->xi['switchbox_action'] = phpgw::link(
 								'/index.php',
 								 'menuaction=email.uiindex.index');
 			*/
@@ -482,7 +482,7 @@
 				$this->xi['folder_info'] = array();
 				$this->xi['folder_info'] = $GLOBALS['phpgw']->msg->get_folder_status_info();
 			}
-			$this->xi['arrows_form_action'] = $GLOBALS['phpgw']->link(
+			$this->xi['arrows_form_action'] = phpgw::link(
 								'/index.php',array('menuaction'=>'email.uiindex.index'));
 			$this->xi['arrows_form_name'] = 'arrownav';
 	//		$this->xi['arrows_backcolor'] = $GLOBALS['phpgw_info']['theme']['row_off'];
@@ -494,7 +494,7 @@
 			$this->xi['current_order'] = $GLOBALS['phpgw']->msg->get_arg_value('order');
 			$this->xi['current_start'] = $GLOBALS['phpgw']->msg->get_arg_value('start');
 
-			$nav_common_uri = $GLOBALS['phpgw']->link(
+			$nav_common_uri = phpgw::link(
 								'/index.php',array(
 								 'menuaction'=>'email.uiindex.index',
 								'fldball[folder]'=>$GLOBALS['phpgw']->msg->prep_folder_out(),
@@ -537,7 +537,7 @@
 								'order'=>$GLOBALS['phpgw']->msg->get_arg_value('order')));
 			
 		//	$this->xi['ctrl_bar_back2'] = $GLOBALS['phpgw_info']['theme']['row_off'];
-			$this->xi['compose_link'] = $GLOBALS['phpgw']->link(
+			$this->xi['compose_link'] = phpgw::link(
 								'/index.php',array(
 								 'menuaction'=>'email.uicompose.compose',
 								// this data tells us where to return to after sending a message
@@ -563,7 +563,7 @@
 			
 			if ($this->xi['mailsvr_supports_folders'])
 			{
-				$this->xi['folders_link'] = $GLOBALS['phpgw']->link(
+				$this->xi['folders_link'] = phpgw::link(
 								'/index.php',array(
 								 'menuaction'=>'email.uifolder.folder',
 								// going to the folder list page, we only need log into the INBOX folder
@@ -584,7 +584,7 @@
 				$this->xi['folders_btn'] = '&nbsp;';
 			}
 			
-			$this->xi['filters_link'] = $GLOBALS['phpgw']->link(
+			$this->xi['filters_link'] = phpgw::link(
 								'/index.php',array('menuaction'=>'email.uifilters.filters_list'));
 			
 			$this->xi['filters_img'] = $GLOBALS['phpgw']->msg->img_maketag($GLOBALS['phpgw']->msg->_image_on('email',$this->icon_theme.'/filters-'.$this->icon_size,'_on'),$this->xi['folders_txt1'],'','','0');
@@ -593,7 +593,7 @@
 			$this->xi['filters_href'] = '<a href="'.$this->xi['filters_link'].'">'.$this->xi['filters_txt'].'</a>';
 			
 			// FIXME
-			$this->xi['email_prefs_link'] = $GLOBALS['phpgw']->link(
+			$this->xi['email_prefs_link'] = phpgw::link(
 								'/index.php',array(
 								 'menuaction'=>'email.uipreferences.preferences',
 								 'ex_acctnum'=>$GLOBALS['phpgw']->msg->get_acctnum()));
@@ -602,11 +602,11 @@
 			$this->xi['ilnk_email_prefs'] = $GLOBALS['phpgw']->msg->href_maketag($this->xi['email_prefs_link'],$this->xi['email_prefs_img']);
 			
 			// FIXME
-			//$this->xi['accounts_link'] = $GLOBALS['phpgw']->link(
+			//$this->xi['accounts_link'] = phpgw::link(
 			//					'/index.php',
 			//					 'menuaction=email.uipreferences.ex_accounts'
 			//					.'&acctnum=1');
-			$this->xi['accounts_link'] = $GLOBALS['phpgw']->link(
+			$this->xi['accounts_link'] = phpgw::link(
 								'/index.php',array(
 								 'menuaction'=>'email.uipreferences.ex_accounts_list'));
 			$this->xi['accounts_img'] = $GLOBALS['phpgw']->msg->img_maketag($GLOBALS['phpgw']->msg->_image_on('email',$this->icon_theme.'/accounts-'.$this->icon_size,'_on'),$this->xi['folders_txt1'],'','','0');
@@ -627,7 +627,7 @@
 			
 			/*
 			// DEPRECIATED
-			$this->xi['ctrl_bar_acct_0_link'] = $GLOBALS['phpgw']->link(
+			$this->xi['ctrl_bar_acct_0_link'] = phpgw::link(
 								'/index.php',
 								 'menuaction=email.uiindex.index'
 								// going to the folder list page, we only need log into the INBOX folder
@@ -639,7 +639,7 @@
 			$this->xi['ctrl_bar_acct_0_link'] = '<a href="'.$this->xi['ctrl_bar_acct_0_link'].'">'.'goto default'.'</a>';
 			
 			// DEPRECIATED
-			$this->xi['ctrl_bar_acct_1_link'] = $GLOBALS['phpgw']->link(
+			$this->xi['ctrl_bar_acct_1_link'] = phpgw::link(
 								'/index.php',
 								 'menuaction=email.uiindex.index'
 								// going to the folder list page, we only need log into the INBOX folder
@@ -667,7 +667,7 @@
 				.'<option value="3"' .$sort_selected[3] .'>'.$this->xi['lang_subject'].'</option>' ."\r\n"
 				.'<option value="6"' .$sort_selected[6] .'>'.$this->xi['lang_size'].'</option>' ."\r\n";
 			
-			$this->xi['sortbox_action'] = $GLOBALS['phpgw']->link(
+			$this->xi['sortbox_action'] = phpgw::link(
 								'/index.php',array(
 								 'menuaction'=>'email.uiindex.index'));
 			$this->xi['sortbox_on_change'] = 'document.sortbox.submit()';
@@ -725,7 +725,7 @@
 			if ($this->xi['stats_size'] == '')
 			{
 				$this->xi['force_showsize_flag'] = 'force_showsize';
-				$this->xi['get_size_link'] = $GLOBALS['phpgw']->link(
+				$this->xi['get_size_link'] = phpgw::link(
 								'/index.php',
 								 'menuaction=email.uiindex.index'
 								.'&fldball[folder]='.$GLOBALS['phpgw']->msg->prep_folder_out()
@@ -735,7 +735,7 @@
 								.'&start='.$GLOBALS['phpgw']->msg->get_arg_value('start')
 								.'&'.$this->xi['force_showsize_flag'].'=1');
 				$this->xi['frm_get_size_name'] = 'form_get_size';
-				$this->xi['frm_get_size_action'] = $GLOBALS['phpgw']->link(
+				$this->xi['frm_get_size_action'] = phpgw::link(
 								'/index.php',
 								 'menuaction=email.uiindex.index');
 			}
@@ -894,7 +894,7 @@
 					$this->xi['stats_last'] = $this->xi['totaltodisplay'];
 			}
 			// user may select individual messages to move, make combobox to select destination folder
-			$this->xi['frm_delmov_action'] = $GLOBALS['phpgw']->link(
+			$this->xi['frm_delmov_action'] = phpgw::link(
 								'/index.php',array(
 								'menuaction'=>'email.boaction.delmov'));
 			$this->xi['frm_delmov_name'] = 'delmov';
@@ -988,7 +988,7 @@
 				$GLOBALS['phpgw']->msg->login_error($GLOBALS['PHP_SELF'].', mlist_data()');
 			}
 			// base http URI on which we will add other stuff down below
-			$this->index_base_link = $GLOBALS['phpgw']->link('/index.php',$GLOBALS['phpgw']->msg->get_arg_value('mlist_menuaction'));
+			$this->index_base_link = phpgw::link('/index.php',$GLOBALS['phpgw']->msg->get_arg_value('mlist_menuaction'));
 			// any app may use these lang'd labels in their email UI
 			$this->get_langed_labels();
 			// ---  this->xi ("eXternal Interface") is an array that will hold ALL data necessary for an index page
@@ -1082,7 +1082,7 @@
 			$this->xi['td_prev_arrows'] = '';
 			
 			$this->xi['ctrl_bar_back2'] = $GLOBALS['phpgw_info']['theme']['row_off'];
-			$this->xi['compose_link'] = $GLOBALS['phpgw']->link(
+			$this->xi['compose_link'] = phpgw::link(
 								'/index.php',array(
 								 'menuaction'=>'email.uicompose.compose',
 								'fldball[folder]'=>$GLOBALS['phpgw']->msg->prep_folder_out(),
@@ -1090,8 +1090,8 @@
 			
 			if ($this->xi['mailsvr_supports_folders'])
 			{
-				//$this->xi['folders_link'] = $GLOBALS['phpgw']->link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/folder.php');
-				$this->xi['folders_link'] = $GLOBALS['phpgw']->link(
+				//$this->xi['folders_link'] = phpgw::link('/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/folder.php');
+				$this->xi['folders_link'] = phpgw::link(
 							'/index.php',
 							$GLOBALS['phpgw']->msg->get_arg_value('folder_menuaction'));
 				$this->xi['folders_href'] = '<a href="'.$this->xi['folders_link'].'">'.$this->xi['folders_txt2'].'</a>';
@@ -1104,10 +1104,10 @@
 				$this->xi['folders_href'] = '&nbsp;';
 				$this->xi['folders_btn'] = '&nbsp;';
 			}
-			$this->xi['email_prefs_link'] = $GLOBALS['phpgw']->link(
+			$this->xi['email_prefs_link'] = phpgw::link(
 								'/index.php',array(
 								'menuaction'=>'email.uipreferences.preferences'));
-			$this->xi['filters_link'] = $GLOBALS['phpgw']->link(
+			$this->xi['filters_link'] = phpgw::link(
 								'/'.$GLOBALS['phpgw_info']['flags']['currentapp'].'/filters.php');
 			$this->xi['filters_href'] = '<a href="'.$this->xi['filters_link'].'">'.$this->xi['filters_txt'].'</a>';
 			// multiple account maintenance - not yet implemented
@@ -1279,7 +1279,7 @@
 			
 			// NOT YET IMPLEMENTED IN MLIST
 			// user may select individual messages to move, make combobox to select destination folder
-			$this->xi['frm_delmov_action'] = $GLOBALS['phpgw']->link(
+			$this->xi['frm_delmov_action'] = phpgw::link(
 								'/index.php',array(
 								'menuaction'=>'email.uiindex.index'));
 			$this->xi['frm_delmov_name'] = 'delmov';

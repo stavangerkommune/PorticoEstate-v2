@@ -74,7 +74,7 @@
 																		'menuaction'    => 'felamimail.uifilter.mainScreen',
 																		'action'	=> 'updateFilter'
 														);
-					$this->t->set_var('link_action',$GLOBALS['phpgw']->link('/index.php',$linkData));
+					$this->t->set_var('link_action',phpgw::link('/index.php',$linkData));
 
 					$this->t->set_var("filterName",'');
 					$this->t->set_var("from",'');
@@ -94,7 +94,7 @@
 																		'action'	=> 'updateFilter',
 																		'filterID'	=> $filterID
 														);
-					$this->t->set_var('link_action',$GLOBALS['phpgw']->link('/index.php',$linkData));
+					$this->t->set_var('link_action',phpgw::link('/index.php',$linkData));
 
 					$this->t->set_var("filterName",$filterList[$filterID]['filterName']);
 					$this->t->set_var("from",$filterList[$filterID]['from']);
@@ -124,7 +124,7 @@
 																		'action'	=> 'updateFilter',
 																		'filterID'	=> $filterID
 														);
-					$this->t->set_var('link_action',$GLOBALS['phpgw']->link('/index.php',$linkData));
+					$this->t->set_var('link_action',phpgw::link('/index.php',$linkData));
 
 					$this->t->set_var("filterName",$filterList[$filterID]['filterName']);
 					$this->t->set_var("from",$filterList[$filterID]['from']);
@@ -141,7 +141,7 @@
 																		'menuaction'    => 'felamimail.uifilter.mainScreen',
 																		'action'	=> 'updateFilter'
 														);
-					$this->t->set_var('link_action',$GLOBALS['phpgw']->link('/index.php',$linkData));
+					$this->t->set_var('link_action',phpgw::link('/index.php',$linkData));
 
 					$this->t->set_var("filterName",'');
 					$this->t->set_var("from",'');
@@ -155,14 +155,14 @@
 									(
 													'menuaction'    => 'felamimail.uifilter.mainScreen'
 									);
-			$this->t->set_var('link_newFilter',$GLOBALS['phpgw']->link('/index.php',$linkData));
+			$this->t->set_var('link_newFilter',phpgw::link('/index.php',$linkData));
 			$this->t->set_var("filterrows",'');
 			$linkData = array
 			(
 				'menuaction'	=> 'felamimail.uifelamimail.viewMainScreen',
 				'filter'	=> -1
 			);
-			$link = $GLOBALS['phpgw']->link('/index.php',$linkData);
+			$link = phpgw::link('/index.php',$linkData);
 			$this->t->set_var("link_noFilter",$link);
 			
 			$filterList = $this->bofilter->getFilterList();
@@ -181,7 +181,7 @@
 						'action'	=> 'editFilter',
 						'filterID'	=> $key
 					);
-					$link = $GLOBALS['phpgw']->link('/index.php',$linkData);
+					$link = phpgw::link('/index.php',$linkData);
 					$this->t->set_var("link_editFilter",$link);
 
 					$linkData = array
@@ -190,7 +190,7 @@
 						'action'	=> 'deleteFilter',
 						'filterID'	=> $key
 					);
-					$link = $GLOBALS['phpgw']->link('/index.php',$linkData);
+					$link = phpgw::link('/index.php',$linkData);
 					$this->t->set_var("link_deleteFilter",$link);
 
 					$linkData = array
@@ -198,7 +198,7 @@
 						'menuaction'	=> 'felamimail.uifelamimail.changeFilter',
 						'filter'	=> $key
 					);
-					$link = $GLOBALS['phpgw']->link('/index.php',$linkData);
+					$link = phpgw::link('/index.php',$linkData);
 					$this->t->set_var("link_activateFilter",$link);
 
 					$this->t->parse("filterrows","filterrow",true);

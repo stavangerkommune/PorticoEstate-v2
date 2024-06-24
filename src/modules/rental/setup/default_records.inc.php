@@ -96,7 +96,7 @@
 		)
 	);
 
-	$aclobj = & $GLOBALS['phpgw']->acl;
+	$aclobj = Acl::getInstance();
 
 	if (!$GLOBALS['phpgw']->accounts->exists('rental_group')) // no rental accounts already exists
 	{

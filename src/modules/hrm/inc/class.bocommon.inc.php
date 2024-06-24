@@ -217,7 +217,7 @@
 
 		function no_access($links = '')
 		{
-			$GLOBALS['phpgw']->xslttpl->add_file(array('no_access','menu'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('no_access','menu'));
 
 			$receipt['error'][]=array('msg'=>lang('NO ACCESS'));
 
@@ -232,6 +232,6 @@
 			$appname	= lang('No access');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('hrm') . ' - ' . $appname;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw',array('no_access' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('no_access' => $data));
 		}
 	}

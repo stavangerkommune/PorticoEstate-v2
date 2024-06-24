@@ -37,19 +37,19 @@
 
 			if ($_SERVER['REQUEST_METHOD'] == 'POST')
 			{
-				$building_id = phpgw::get_var('building_id', 'int');
-				$building_name = phpgw::get_var('building_name', 'string');
-				if (is_array(phpgw::get_var('seasons')))
+				$building_id = Sanitizer::get_var('building_id', 'int');
+				$building_name = Sanitizer::get_var('building_name', 'string');
+				if (is_array(Sanitizer::get_var('seasons')))
 				{
-					$season = implode(',', phpgw::get_var('seasons'));
+					$season = implode(',', Sanitizer::get_var('seasons'));
 				}
 				else
 				{
-					$season = phpgw::get_var('seasons');
+					$season = Sanitizer::get_var('seasons');
 				}
-				$mailsubject = phpgw::get_var('mailsubject', 'string');
-				$mailbody = phpgw::get_var('mailbody', 'html');
-				$email_recipients = phpgw::get_var('email_recipients', 'string');
+				$mailsubject = Sanitizer::get_var('mailsubject', 'string');
+				$mailbody = Sanitizer::get_var('mailbody', 'html');
+				$email_recipients = Sanitizer::get_var('email_recipients', 'string');
 
 				if ($building_id == '' || $season == '' || $mailsubject == '' || $mailbody == '')
 				{
@@ -101,8 +101,8 @@
 
 		public function receipt()
 		{
-			$ok_count = phpgw::get_var('ok');
-			$fail_count = phpgw::get_var('failed');
+			$ok_count = Sanitizer::get_var('ok');
+			$fail_count = Sanitizer::get_var('failed');
 			self::render_template_xsl('email_receipt', array('ok_count' => $ok_count, 'fail_count' => $fail_count));
 		}
 
@@ -130,11 +130,11 @@
 
 		public function get_email_addresses()
 		{
-			$building_id = phpgw::get_var('building_id', 'int');
-			$seasons = implode(',', phpgw::get_var('seasons', 'int'));
+			$building_id = Sanitizer::get_var('building_id', 'int');
+			$seasons = implode(',', Sanitizer::get_var('seasons', 'int'));
 
 			$contacts = array();
-			$db = & $GLOBALS['phpgw']->db;
+			$db = Db::getInstance();
 
 
 

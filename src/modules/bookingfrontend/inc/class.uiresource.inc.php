@@ -28,7 +28,7 @@
 
 		public function index_json()
 		{
-			if ($sub_activity_id = phpgw::get_var('sub_activity_id'))
+			if ($sub_activity_id = Sanitizer::get_var('sub_activity_id'))
 			{
 				
 				$boactivity = createObject('booking.boactivity');
@@ -52,7 +52,7 @@
 
 		public function read_single()
 		{
-			$resource = $this->bo->read_single(phpgw::get_var('id', 'int', 'GET'));
+			$resource = $this->bo->read_single(Sanitizer::get_var('id', 'int', 'GET'));
 			return $resource;
 		}
 
@@ -81,7 +81,7 @@
 		{
 			$config = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
-			$resource = $this->bo->read_single(phpgw::get_var('id', 'int', 'GET'));
+			$resource = $this->bo->read_single(Sanitizer::get_var('id', 'int', 'GET'));
 
 			if($resource['simple_booking_start_date'] && $resource['simple_booking_start_date'] < time())
 			{
@@ -183,13 +183,13 @@
                 self::add_javascript('phpgwapi', 'pecalendar', 'luxon.js');
                 self::add_javascript('bookingfrontend', 'bookingfrontend_2', 'components/light-box.js', true);
 
-                $GLOBALS['phpgw']->css->add_external_file("phpgwapi/js/pecalendar/pecalendar.css");
-                $GLOBALS['phpgw']->css->add_external_file("bookingfrontend/js/bookingfrontend_2/components/light-box.css");
+                phpgwapi_css::getInstance()->add_external_file("phpgwapi/js/pecalendar/pecalendar.css");
+                phpgwapi_css::getInstance()->add_external_file("bookingfrontend/js/bookingfrontend_2/components/light-box.css");
                 $resource['description'] = self::removeInitialEmptyHtmlTags($resource['description']);
 
 
             } else {
-                $GLOBALS['phpgw']->js->add_external_file("phpgwapi/templates/bookingfrontend/js/build/aui/aui-min.js");
+                phpgwapi_js::getInstance()->add_external_file("phpgwapi/templates/bookingfrontend/js/build/aui/aui-min.js");
             }
 			self::add_javascript('bookingfrontend', 'base', 'resource.js', true);
 
@@ -203,7 +203,7 @@
 
 		private function get_location()
 		{
-			$activity_id = phpgw::get_var('activity_id', 'int');
+			$activity_id = Sanitizer::get_var('activity_id', 'int');
 			$activity_path = $this->activity_bo->get_path($activity_id);
 			$top_level_activity = $activity_path ? $activity_path[0]['id'] : 0;
 			return ".resource.{$top_level_activity}";
@@ -211,7 +211,7 @@
 
 		public function get_custom()
 		{
-			$resource_id = phpgw::get_var('resource_id', 'int');
+			$resource_id = Sanitizer::get_var('resource_id', 'int');
 			$resource = $this->bo->read_single($resource_id);
 			$location = $this->get_location();
 			$location_id = $GLOBALS['phpgw']->locations->get_id('booking', $location);
@@ -245,13 +245,13 @@
 			$data = array(
 				'attributes_group' => $organized_fields,
 			);
-			$GLOBALS['phpgw']->xslttpl->add_file(array('attributes_view'));
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('custom_fields' => $data));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('attributes_view'));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('custom_fields' => $data));
 		}
 
 		public function schedule()
 		{
-			$resource = $this->bo->get_schedule(phpgw::get_var('id', 'int', 'GET'), 'bookingfrontend.uibuilding', 'bookingfrontend.uiresource', 'bookingfrontend.uisearch.index');
+			$resource = $this->bo->get_schedule(Sanitizer::get_var('id', 'int', 'GET'), 'bookingfrontend.uibuilding', 'bookingfrontend.uiresource', 'bookingfrontend.uisearch.index');
 			/* FIXME: Sigurd: handle multiple buildings */
 
 			$pathway = array();

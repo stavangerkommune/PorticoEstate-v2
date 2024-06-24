@@ -86,12 +86,12 @@
 		function columns()
 		{
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
-			$GLOBALS['phpgw']->xslttpl->add_file(array('columns'), PHPGW_SERVER_ROOT."/property/templates/base");
+			phpgwapi_xslttemplates::getInstance()->add_file(array('columns'), PHPGW_SERVER_ROOT."/property/templates/base");
 
 			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
 			$GLOBALS['phpgw_info']['flags']['nofooter'] = true;
 
-			$values = phpgw::get_var('values');
+			$values = Sanitizer::get_var('values');
 			$receipt = array();
 
 			if (isset($values['save']) && $values['save'])
@@ -119,14 +119,14 @@
 				'msgbox_data' => $GLOBALS['phpgw']->common->msgbox($msgbox_data),
 				'column_list' => $this->bo->column_list($values['columns'], $allrows = true),
 				'function_msg' => $function_msg,
-				'form_action' => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'form_action' => phpgw::link('/index.php', $link_data),
 				'lang_columns' => lang('columns'),
 				'lang_none' => lang('None'),
 				'lang_save' => lang('save'),
 			);
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('columns' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('columns' => $data));
 		}
 
 
@@ -155,12 +155,12 @@
 
 		public function index()
 		{
-			if (empty($this->permissions[PHPGW_ACL_READ]))
+			if (empty($this->permissions[ACL_READ]))
 			{
 				phpgw::no_access();
 			}
 
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -239,9 +239,9 @@
 
 		public function edit( $values = array(), $mode = 'edit' )
 		{
-			$active_tab = !empty($values['active_tab']) ? $values['active_tab'] : phpgw::get_var('active_tab', 'string', 'REQUEST', 'first_tab');
+			$active_tab = !empty($values['active_tab']) ? $values['active_tab'] : Sanitizer::get_var('active_tab', 'string', 'REQUEST', 'first_tab');
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('edit');
-			if (empty($this->permissions[PHPGW_ACL_ADD]))
+			if (empty($this->permissions[ACL_ADD]))
 			{
 				phpgw::no_access();
 			}
@@ -252,11 +252,11 @@
 			}
 			else
 			{
-				$id = !empty($values['id']) ? $values['id'] : phpgw::get_var('id', 'int');
+				$id = !empty($values['id']) ? $values['id'] : Sanitizer::get_var('id', 'int');
 				$vendor_report = $this->bo->read_single($id);
 			}
 
-			$booking_id = $vendor_report->booking_id ? $vendor_report->booking_id : phpgw::get_var('booking_id', 'int');
+			$booking_id = $vendor_report->booking_id ? $vendor_report->booking_id : Sanitizer::get_var('booking_id', 'int');
 			$booking = createObject('eventplanner.bobooking')->read_single($booking_id);
 			$calendar_id = $booking->calendar_id;
 			$calendar = createObject('eventplanner.bocalendar')->read_single($calendar_id, true, $relaxe_acl = true);

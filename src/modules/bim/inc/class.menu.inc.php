@@ -40,7 +40,7 @@
 		{
 			$incoming_app = $GLOBALS['phpgw_info']['flags']['currentapp'];
 			$GLOBALS['phpgw_info']['flags']['currentapp'] = 'bim';
-			$acl = & $GLOBALS['phpgw']->acl;
+			$acl = Acl::getInstance();
 			$menus = array();
 
 			$menus['navbar'] = array
@@ -48,7 +48,7 @@
 				'bim' => array
 				(
 					'text'	=> lang('bim'),
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => "bim.uibim.showModels")),
+					'url' => phpgw::link('/index.php', array('menuaction' => "bim.uibim.showModels")),
 					'image'	=> array('bim', 'navbar'),
 					'order'	=> 35,
 					'group'	=> 'facilities management'
@@ -67,13 +67,13 @@
 					'index'	=> array
 					(
 						'text'	=> lang('Configuration'),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'admin.uiconfig.index',
+						'url' => phpgw::link('/index.php', array('menuaction' => 'admin.uiconfig.index',
 							'appname' => 'bim'))
 					),
 					'acl'	=> array
 					(
 						'text'	=> lang('Configure Access Permissions'),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.list_acl',
+						'url' => phpgw::link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.list_acl',
 							'acl_app' => 'bim'))
 					)
 				);
@@ -86,13 +86,13 @@
 					array
 					(
 						'text'	=> $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
-						'url' => $GLOBALS['phpgw']->link('/preferences/preferences.php', array('appname' => 'bim',
+						'url' => phpgw::link('/preferences/preferences.php', array('appname' => 'bim',
 							'type' => 'user'))
 					),
 					array
 					(
 						'text'	=> $GLOBALS['phpgw']->translation->translate('Grant Access', array(), true),
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'bim.uiadmin.aclprefs',
+						'url' => phpgw::link('/index.php', array('menuaction' => 'bim.uiadmin.aclprefs',
 							'acl_app' => 'bim'))
 					)
 				);
@@ -100,7 +100,7 @@
 				$menus['toolbar'][] = array
 				(
 					'text'	=> $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
-					'url'	=> $GLOBALS['phpgw']->link('/preferences/preferences.php', array('appname'	=> 'bim')),
+					'url'	=> phpgw::link('/preferences/preferences.php', array('appname'	=> 'bim')),
 					'image'	=> array('bim', 'preferences')
 				);
 			}
@@ -108,18 +108,18 @@
 			$menus['navigation'] = array();
 
 
-			if($acl->check('.ifc', PHPGW_ACL_READ, 'bim'))
+			if($acl->check('.ifc', ACL_READ, 'bim'))
 			{
 				$menus['navigation']['ifc'] = array
 				(
-					'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'bim.uiifc.import')),
+					'url' => phpgw::link('/index.php', array('menuaction' => 'bim.uiifc.import')),
 					'text'		=> lang('IFC'),
 					'image'		=> array('bim', 'ifc'),
 					'children'	=> array
 					(
 						'import'	=> array
 						(
-							'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'bim.uiifc.import')),
+							'url' => phpgw::link('/index.php', array('menuaction' => 'bim.uiifc.import')),
 							'text'	=> lang('import'),
 							'image'		=> array('bim', 'ifc_import'),
 						)
@@ -129,41 +129,41 @@
 
 			$menus['navigation']['viewer'] = array
 			(
-				'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'bim.uiviewer.index')),
+				'url' => phpgw::link('/index.php', array('menuaction' => 'bim.uiviewer.index')),
 				'text'		=> lang('viewer'),
 				'image'		=> array('bim', 'ifc'),
 			);
 
 			$menus['navigation']['item'] = array
             (
-				'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'bim.uiitem.index')),
+				'url' => phpgw::link('/index.php', array('menuaction' => 'bim.uiitem.index')),
                 'text'	=> lang('BIM Items'),
                 'image'	=> array('bim', 'custom'),
                 'children'	=> array_merge(array
                 (
                     'index'		=> array
                     (
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'bim.uiitem.index')),
+						'url' => phpgw::link('/index.php', array('menuaction' => 'bim.uiitem.index')),
                         'text'	=> lang('Register')
                     ),
                     'foo'       => array
                     (
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'bim.uiitem.foo')),
+						'url' => phpgw::link('/index.php', array('menuaction' => 'bim.uiitem.foo')),
                         'text'	=> lang('Foo')
                     ),
                     'showModels'       => array
                     (
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'bim.uibim.showModels')),
+						'url' => phpgw::link('/index.php', array('menuaction' => 'bim.uibim.showModels')),
                         'text'	=> lang('Show Models')
                     ),
                     'ifc'       => array
                     (
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'bim.uiifc.import')),
+						'url' => phpgw::link('/index.php', array('menuaction' => 'bim.uiifc.import')),
                         'text'	=> lang('Ifc')
                     ),
                     'upload'		=> array
                     (
-						'url' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'bim.uibim.upload')),
+						'url' => phpgw::link('/index.php', array('menuaction' => 'bim.uibim.upload')),
                         'text'	=> lang('Upload Model'),
                         'image'	=> array('bim', 'project_tenant_claim')
                     )

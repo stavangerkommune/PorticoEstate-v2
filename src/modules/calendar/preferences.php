@@ -24,7 +24,7 @@
 
 	phpgw::import_class('phpgwapi.sbox');
 
-	if ( phpgw::get_var('submit', 'bool', 'POST') )
+	if ( Sanitizer::get_var('submit', 'bool', 'POST') )
 	{
 		$phpgw->preferences->read();
 		$phpgw->preferences->add('calendar','weekdaystarts');

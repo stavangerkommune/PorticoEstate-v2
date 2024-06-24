@@ -52,7 +52,7 @@
 				$holidays[] = Array(
 					'index'			=> $this->db->f('hol_id'),
 					'locale'		=> $this->db->f('locale'),
-					'name'			=> $GLOBALS['phpgw']->strip_html($this->db->f('name')),
+					'name'			=> phpgw::strip_html($this->db->f('name')),
 					'day'			=> intval($this->db->f('mday')),
 					'month'			=> intval($this->db->f('month_num')),
 					'occurence'		=> intval($this->db->f('occurence')),

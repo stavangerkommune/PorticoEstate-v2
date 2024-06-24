@@ -71,7 +71,7 @@
 			while ($this->db->next_record())
 			{
 				$permission = $this->db->f('permission');
-				if($permission & PHPGW_ACL_READ)
+				if($permission & ACL_READ)
 				{
 					$object_ids[] = $this->db->f('object_id');
 				}

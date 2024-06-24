@@ -103,11 +103,11 @@
 
 			$this->location_finder = new location_finder();
 
-			$this->read = $GLOBALS['phpgw']->acl->check('.checklist', PHPGW_ACL_READ, 'controller');//1
-			$this->add = $GLOBALS['phpgw']->acl->check('.checklist', PHPGW_ACL_ADD, 'controller');//2
-			$this->edit = $GLOBALS['phpgw']->acl->check('.checklist', PHPGW_ACL_EDIT, 'controller');//4
-			$this->delete = $GLOBALS['phpgw']->acl->check('.checklist', PHPGW_ACL_DELETE, 'controller');//8
-			if (phpgw::get_var('noframework', 'bool'))
+			$this->read = $GLOBALS['phpgw']->acl->check('.checklist', ACL_READ, 'controller');//1
+			$this->add = $GLOBALS['phpgw']->acl->check('.checklist', ACL_ADD, 'controller');//2
+			$this->edit = $GLOBALS['phpgw']->acl->check('.checklist', ACL_EDIT, 'controller');//4
+			$this->delete = $GLOBALS['phpgw']->acl->check('.checklist', ACL_DELETE, 'controller');//8
+			if (Sanitizer::get_var('noframework', 'bool'))
 			{
 				$GLOBALS['phpgw_info']['flags']['noframework'] = true;
 				phpgwapi_cache::session_set('controller', 'noframework', true);
@@ -118,17 +118,17 @@
 			}
 			$this->vfs = CreateObject('phpgwapi.vfs');
 
-//			$GLOBALS['phpgw']->css->add_external_file('controller/templates/base/css/base.css');
-			$GLOBALS['phpgw']->js->validate_file('alertify', 'alertify.min', 'phpgwapi');
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
+//			phpgwapi_css::getInstance()->add_external_file('controller/templates/base/css/base.css');
+			phpgwapi_js::getInstance()->validate_file('alertify', 'alertify.min', 'phpgwapi');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
 			phpgwapi_jquery::load_widget('select2');
 
 			//add javascript
 			self::add_javascript('phpgwapi', 'openlayers', 'js/ol.js', false, array('combine' => true ));
 			//add css
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/openlayers/css/ol.css');
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/openlayers/css/popup.css');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/openlayers/css/ol.css');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/openlayers/css/popup.css');
 
 		}
 
@@ -139,8 +139,8 @@
 				phpgw::no_access();
 			}
 
-			$control_item_id	 = phpgw::get_var('control_item_id', 'int');
-			$new_value		 = phpgw::get_var('new_value');
+			$control_item_id	 = Sanitizer::get_var('control_item_id', 'int');
+			$new_value		 = Sanitizer::get_var('new_value');
 
 			$id = createObject('controller.socontrol_item')->add_regulation_reference_options($control_item_id, $new_value);
 
@@ -165,14 +165,14 @@
 				phpgw::no_access();
 			}
 
-			$get_form = phpgw::get_var('get_form', 'bool');
-			$get_edit_form = phpgw::get_var('get_edit_form', 'bool');
-			$get_info = phpgw::get_var('get_info', 'bool');
-			$enable_add_case = phpgw::get_var('enable_add_case', 'bool');
-			$parent_location_id = phpgw::get_var('parent_location_id', 'int');
-			$parent_component_id = phpgw::get_var('parent_component_id', 'int');
-			$location_id = phpgw::get_var('location_id', 'int');
-			$component_id = phpgw::get_var('component_id', 'int');
+			$get_form = Sanitizer::get_var('get_form', 'bool');
+			$get_edit_form = Sanitizer::get_var('get_edit_form', 'bool');
+			$get_info = Sanitizer::get_var('get_info', 'bool');
+			$enable_add_case = Sanitizer::get_var('enable_add_case', 'bool');
+			$parent_location_id = Sanitizer::get_var('parent_location_id', 'int');
+			$parent_component_id = Sanitizer::get_var('parent_component_id', 'int');
+			$location_id = Sanitizer::get_var('location_id', 'int');
+			$component_id = Sanitizer::get_var('component_id', 'int');
 
 			$system_location = $GLOBALS['phpgw']->locations->get_name($location_id);
 			$system_location_arr = explode('.', $system_location['location']);
@@ -199,7 +199,7 @@
 							'type'			 => $this->type
 						);
 
-						$attribute['link_history'] = $GLOBALS['phpgw']->link('/index.php', $link_history_data);
+						$attribute['link_history'] = phpgw::link('/index.php', $link_history_data);
 					}
 
 					/*
@@ -370,11 +370,11 @@
 
 				$values = array_merge($values, $location_data);
 
-				$_values_attribute = (array)phpgw::get_var('values_attribute');
+				$_values_attribute = (array)Sanitizer::get_var('values_attribute');
 
 				foreach ($_values_attribute as $attribute_id => &$attribute)
 				{
-					$_value = phpgw::get_var($attribute['name']);
+					$_value = Sanitizer::get_var($attribute['name']);
 
 					if($_value)
 					{
@@ -464,7 +464,7 @@
 				phpgw::no_access();
 			}
 
-			$case_id = phpgw::get_var('case_id', 'int');
+			$case_id = Sanitizer::get_var('case_id', 'int');
 
 			if (isset($_FILES['file']['name']) && $_FILES['file']['name'])
 			{
@@ -525,7 +525,7 @@
 				phpgw::no_access();
 			}
 
-			$component_arr = explode("_", phpgw::get_var('component'));
+			$component_arr = explode("_", Sanitizer::get_var('component'));
 
 			$location_id = $component_arr[0];
 			$id	 = $component_arr[1];
@@ -613,8 +613,8 @@
 				phpgw::no_access();
 			}
 
-			$dry_run = phpgw::get_var('dry_run', 'bool');
-			$case_id = phpgw::get_var('case_id', 'int');
+			$dry_run = Sanitizer::get_var('dry_run', 'bool');
+			$case_id = Sanitizer::get_var('case_id', 'int');
 
 			$this->vfs->override_acl = 1;
 
@@ -673,7 +673,7 @@
 				phpgw::no_access();
 			}
 
-			$file_id = phpgw::get_var('file_id', 'int');
+			$file_id = Sanitizer::get_var('file_id', 'int');
 
 			if($file_id)
 			{
@@ -681,8 +681,8 @@
 				return;
 			}
 
-			$dry_run = phpgw::get_var('dry_run', 'bool');
-			$component_arr = explode("_", phpgw::get_var('component'));
+			$dry_run = Sanitizer::get_var('dry_run', 'bool');
+			$component_arr = explode("_", Sanitizer::get_var('component'));
 
 			$location_id = $component_arr[0];
 			$item_id	 = $component_arr[1];
@@ -736,8 +736,8 @@
 
 		private function _get_case_data()
 		{
-			$check_list_id = phpgw::get_var('check_list_id');
-			$case_location_code = phpgw::get_var('location_code');
+			$check_list_id = Sanitizer::get_var('check_list_id');
+			$case_location_code = Sanitizer::get_var('location_code');
 			$check_list = $this->so_check_list->get_single($check_list_id);
 
 			$repeat_descr = '';
@@ -1022,7 +1022,7 @@
 
 		function add_case()
 		{
-			$set_completet_checklist = (int)phpgw::get_var('set_completet_checklist', 'bool');
+			$set_completet_checklist = (int)Sanitizer::get_var('set_completet_checklist', 'bool');
 			$config = CreateObject('phpgwapi.config', 'controller');
 			$config->read();
 			$mandatory_location = $config->config_data['control_mandatory_location'];
@@ -1152,7 +1152,7 @@
 				var set_completet_checklist = {$set_completet_checklist};
 
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $js);
+			phpgwapi_js::getInstance()->add_code('', $js);
 
 			
 			self::add_javascript('controller', 'base', 'edit_component.js');
@@ -1164,8 +1164,8 @@ JS;
 			phpgwapi_jquery::formvalidator_generate(array('location','date', 'security', 'file'));
 
 			self::add_javascript('phpgwapi', 'alertify', 'alertify.min.js');
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
-			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
+			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('controller') . '::' . $check_list->get_id();
 			$GLOBALS['phpgw_info']['flags']['breadcrumb_selection'] = 'controller::add_case' . '::' . $check_list->get_id();
@@ -1180,8 +1180,8 @@ JS;
 
 		public function get_case_data_ajax()
 		{
-			$check_list_id = phpgw::get_var('check_list_id');
-			$case_location_code = phpgw::get_var('location_code');
+			$check_list_id = Sanitizer::get_var('check_list_id');
+			$case_location_code = Sanitizer::get_var('location_code');
 			$case_data = $this->_get_case_data();
 
 			return array("control_groups_with_items_array" => $case_data['control_groups_with_items_array']);
@@ -1194,20 +1194,20 @@ JS;
 				return json_encode(array("status" => "not_saved"));
 			}
 
-			$check_list_id = phpgw::get_var('check_list_id');
-			$control_item_id = phpgw::get_var('control_item_id');
-			$case_descr = phpgw::get_var('case_descr');
-			$proposed_counter_measure =  phpgw::get_var('proposed_counter_measure');
-			$type = phpgw::get_var('type');
-			$status = phpgw::get_var('status');
-			$location_code = phpgw::get_var('location_code');
-			$component_location_id = phpgw::get_var('component_location_id', 'int');
-			$component_id = phpgw::get_var('component_id', 'int');
+			$check_list_id = Sanitizer::get_var('check_list_id');
+			$control_item_id = Sanitizer::get_var('control_item_id');
+			$case_descr = Sanitizer::get_var('case_descr');
+			$proposed_counter_measure =  Sanitizer::get_var('proposed_counter_measure');
+			$type = Sanitizer::get_var('type');
+			$status = Sanitizer::get_var('status');
+			$location_code = Sanitizer::get_var('location_code');
+			$component_location_id = Sanitizer::get_var('component_location_id', 'int');
+			$component_id = Sanitizer::get_var('component_id', 'int');
 
 
-			$component_child =  phpgw::get_var('component_child');
-			$condition_degree =  phpgw::get_var('condition_degree');
-			$consequence =  phpgw::get_var('consequence');
+			$component_child =  Sanitizer::get_var('component_child');
+			$condition_degree =  Sanitizer::get_var('condition_degree');
+			$consequence =  Sanitizer::get_var('consequence');
 
 			if($component_child)
 			{
@@ -1266,27 +1266,27 @@ JS;
 			// Saves selected value from  or measurement
 			if ($type == 'control_item_type_2')
 			{
-				$measurement = phpgw::get_var('measurement');
+				$measurement = Sanitizer::get_var('measurement');
 				$case->set_measurement($measurement);
 			}
 			else if ($type == 'control_item_type_3')
 			{
-				$option_value = phpgw::get_var('option_value');
+				$option_value = Sanitizer::get_var('option_value');
 				$case->set_measurement($option_value);
 			}
 			else if ($type == 'control_item_type_4')
 			{
-				$option_value = phpgw::get_var('option_value');
+				$option_value = Sanitizer::get_var('option_value');
 				$case->set_measurement($option_value);
 			}
 			else if ($type == 'control_item_type_5')
 			{
-				$option_value = phpgw::get_var('option_value');
+				$option_value = Sanitizer::get_var('option_value');
 //				$case->set_measurement(serialize($option_value));
 				$case->set_measurement($option_value);
 			}
 
-			$regulation_reference = phpgw::get_var('regulation_reference');
+			$regulation_reference = Sanitizer::get_var('regulation_reference');
 			$case->set_regulation_reference($regulation_reference);
 			$case_id = $this->so->store($case);
 
@@ -1312,17 +1312,17 @@ JS;
 			}
 
 
-			$case_id = phpgw::get_var('case_id');
-			$case_descr = phpgw::get_var('case_descr');
-			$proposed_counter_measure =  phpgw::get_var('proposed_counter_measure');
-			$case_status = phpgw::get_var('case_status');
-			$measurement = phpgw::get_var('measurement');
-			$regulation_reference = phpgw::get_var('regulation_reference');
+			$case_id = Sanitizer::get_var('case_id');
+			$case_descr = Sanitizer::get_var('case_descr');
+			$proposed_counter_measure =  Sanitizer::get_var('proposed_counter_measure');
+			$case_status = Sanitizer::get_var('case_status');
+			$measurement = Sanitizer::get_var('measurement');
+			$regulation_reference = Sanitizer::get_var('regulation_reference');
 
-			$check_list_id = phpgw::get_var('check_list_id');
+			$check_list_id = Sanitizer::get_var('check_list_id');
 
 
-			$component_child =  phpgw::get_var('component_child');
+			$component_child =  Sanitizer::get_var('component_child');
 
 			if($component_child)
 			{
@@ -1339,8 +1339,8 @@ JS;
 
 			$todays_date_ts = mktime(0, 0, 0, date("m"), date("d"), date("Y"));
 
-			$condition_degree =  phpgw::get_var('condition_degree');
-			$consequence =  phpgw::get_var('consequence');
+			$condition_degree =  Sanitizer::get_var('condition_degree');
+			$consequence =  Sanitizer::get_var('consequence');
 
 			$case = $this->so->get_single($case_id);
 			$case->set_component_child_location_id($component_child_location_id);
@@ -1391,7 +1391,7 @@ JS;
 
 		function create_case_message()
 		{
-			$check_list_id = phpgw::get_var('check_list_id');
+			$check_list_id = Sanitizer::get_var('check_list_id');
 			$check_list = $this->so_check_list->get_single($check_list_id);
 
 			$check_items_and_cases = $this->so_check_item->get_check_items_with_cases($check_list_id, null, "open", "no_message_registered");
@@ -1549,11 +1549,11 @@ JS;
 
 		function send_case_message()
 		{
-			$check_list_id = phpgw::get_var('check_list_id');
-			$location_code = phpgw::get_var('location_code');
-			$message_title = phpgw::get_var('message_title');
-			$message_cat_id = phpgw::get_var('message_cat_id');
-			$case_ids = phpgw::get_var('case_ids');
+			$check_list_id = Sanitizer::get_var('check_list_id');
+			$location_code = Sanitizer::get_var('location_code');
+			$message_title = Sanitizer::get_var('message_title');
+			$message_cat_id = Sanitizer::get_var('message_cat_id');
+			$case_ids = Sanitizer::get_var('case_ids');
 
 			if (!$this->add && !$this->edit)
 			{
@@ -1770,8 +1770,8 @@ JS;
 
 		function view_case_message()
 		{
-			$check_list_id = phpgw::get_var('check_list_id');
-			$message_ticket_id = phpgw::get_var('message_ticket_id');
+			$check_list_id = Sanitizer::get_var('check_list_id');
+			$message_ticket_id = Sanitizer::get_var('message_ticket_id');
 
 			$check_list = $this->so_check_list->get_single($check_list_id);
 
@@ -1902,7 +1902,7 @@ JS;
 				return json_encode(array("status" => "not_deleted"));
 			}
 
-			$case_id = phpgw::get_var('case_id');
+			$case_id = Sanitizer::get_var('case_id');
 
 			$case = $this->so->get_single($case_id);
 			$case->set_status(controller_check_item_case::STATUS_CLOSED);
@@ -1930,7 +1930,7 @@ JS;
 				return json_encode(array("status" => "false"));
 			}
 
-			$case_id = phpgw::get_var('case_id');
+			$case_id = Sanitizer::get_var('case_id');
 
 			$case = $this->so->get_single($case_id);
 			$case->set_status(controller_check_item_case::STATUS_CLOSED);
@@ -1954,8 +1954,8 @@ JS;
 				return json_encode(array("status" => "false"));
 			}
 
-			$case_id = phpgw::get_var('case_id');
-			$check_list_id = phpgw::get_var('check_list_id');
+			$case_id = Sanitizer::get_var('case_id');
+			$check_list_id = Sanitizer::get_var('check_list_id');
 
 			$case = $this->so->get_single($case_id);
 			$case->set_status(controller_check_item_case::STATUS_OPEN);
@@ -1974,8 +1974,8 @@ JS;
 
 		function view_open_cases()
 		{
-			$check_list_id = phpgw::get_var('check_list_id');
-			$case_location_code = phpgw::get_var('location_code');
+			$check_list_id = Sanitizer::get_var('check_list_id');
+			$case_location_code = Sanitizer::get_var('location_code');
 
 			$check_list = $this->so_check_list->get_single($check_list_id);
 			$control = $this->so_control->get_single($check_list->get_control_id());
@@ -2148,8 +2148,8 @@ JS;
 
 		function view_closed_cases()
 		{
-			$check_list_id = phpgw::get_var('check_list_id');
-			$case_location_code = phpgw::get_var('location_code');
+			$check_list_id = Sanitizer::get_var('check_list_id');
+			$case_location_code = Sanitizer::get_var('location_code');
 
 			$check_list = $this->so_check_list->get_single($check_list_id);
 

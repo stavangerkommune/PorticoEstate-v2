@@ -57,13 +57,13 @@
 
 			// Set the submit button label to its initial state
 			$this->import_button_label = "Start import";
-//			var_dump(phpgw::get_var("importstep"));
+//			var_dump(Sanitizer::get_var("importstep"));
 			// If the parameter 'importsubmit' exist (submit button in import form), set path
-			if (phpgw::get_var("importsubmit"))
+			if (Sanitizer::get_var("importsubmit"))
 			{
 				// Get the path for user input or use a default path
-				$this->path = phpgw::get_var("import_path") ? phpgw::get_var("import_path") : '/home/notroot/FacilitExport';
-				$this->office = phpgw::get_var("district") ? phpgw::get_var("district") : '1';
+				$this->path = Sanitizer::get_var("import_path") ? Sanitizer::get_var("import_path") : '/home/notroot/FacilitExport';
+				$this->office = Sanitizer::get_var("district") ? Sanitizer::get_var("district") : '1';
 				$this->file = $_FILES['file']['tmp_name'];
 				$this->csvdata = $this->getcsvdata($_FILES['file']['tmp_name']);
 				//var_dump($this->office);
@@ -72,10 +72,10 @@
 				phpgwapi_cache::session_set('activitycalendar', 'file', $this->file);
 				phpgwapi_cache::session_set('activitycalendar', 'csvdata', $this->csvdata);
 				phpgwapi_cache::session_set('activitycalendar', 'import_district', $this->office);
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiimport.index',
+				phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiimport.index',
 					'importstep' => 'true'));
 			}
-			else if (phpgw::get_var("importstep"))
+			else if (Sanitizer::get_var("importstep"))
 			{
 				$start_time = time(); // Start time of import
 				$start = date("G:i:s", $start_time);

@@ -100,7 +100,7 @@
 				if($this->currentapp == 'eventplannerfrontend')
 				{
 
-					$org_id = $this->db->db_addslashes(phpgw::get_var('org_id','string' , 'SESSION', -1));
+					$org_id = $this->db->db_addslashes(Sanitizer::get_var('org_id','string' , 'SESSION', -1));
 
 
 					$sql = "SELECT eventplanner_booking.id as booking_id"

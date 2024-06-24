@@ -39,7 +39,7 @@
 			$this->bo = CreateObject('sms.boautoreply', true);
 			$this->bocommon = CreateObject('sms.bocommon');
 			$this->sms = CreateObject('sms.sms');
-			$this->acl = & $GLOBALS['phpgw']->acl;
+			$this->acl = Acl::getInstance();
 			$this->acl_location = '.autoreply';
 //			$this->menu->sub = '.autoreply';
 			$this->start = $this->bo->start;
@@ -67,14 +67,14 @@
 		function index()
 		{
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
-			if (!$this->acl->check($this->acl_location, PHPGW_ACL_READ, 'sms'))
+			if (!$this->acl->check($this->acl_location, ACL_READ, 'sms'))
 			{
 
 				$this->bocommon->no_access();
 				return;
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('autoreply', 'nextmatchs',
+			phpgwapi_xslttemplates::getInstance()->add_file(array('autoreply', 'nextmatchs',
 				'search_field'));
 
 			$receipt = $GLOBALS['phpgw']->session->appsession('session_data', 'sms_reply_receipt');
@@ -85,9 +85,9 @@
 
 			foreach ($autoreply_info as $entry)
 			{
-				if ($this->bocommon->check_perms($entry['grants'], PHPGW_ACL_DELETE))
+				if ($this->bocommon->check_perms($entry['grants'], ACL_DELETE))
 				{
-					$link_delete = $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uiautoreply.delete',
+					$link_delete = phpgw::link('/index.php', array('menuaction' => 'sms.uiautoreply.delete',
 						'autoreply_id' => $entry['id']));
 					$text_delete = lang('delete');
 					$lang_delete_text = lang('delete the autoreply code');
@@ -97,10 +97,10 @@
 					(
 					'code' => $entry['code'],
 					'user' => $GLOBALS['phpgw']->accounts->id2name($entry['uid']),
-					'link_edit' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uiautoreply.manage',
+					'link_edit' => phpgw::link('/index.php', array('menuaction' => 'sms.uiautoreply.manage',
 						'autoreply_id' => $entry['id'])),
 					'link_delete' => $link_delete,
-//					'link_view'				=> $GLOBALS['phpgw']->link('/index.php', array('menuaction'=> 'sms.uiautoreply.view&', 'autoreply_id'=> $entry['id'])),
+//					'link_view'				=> phpgw::link('/index.php', array('menuaction'=> 'sms.uiautoreply.view&', 'autoreply_id'=> $entry['id'])),
 //					'lang_view_config_text'			=> lang('view the config'),
 					'lang_edit_config_text' => lang('manage the autoreply code'),
 //					'text_view'				=> lang('view'),
@@ -153,13 +153,13 @@
 				'query' => $this->query
 			);
 
-//			if($this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'sms'))
+//			if($this->acl->check($this->acl_location, ACL_ADD, 'sms'))
 			{
 				$table_add[] = array
 					(
 					'lang_add' => lang('add'),
 					'lang_add_statustext' => lang('add a autoreply'),
-					'add_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uiautoreply.add')),
+					'add_action' => phpgw::link('/index.php', array('menuaction' => 'sms.uiautoreply.add')),
 				);
 			}
 
@@ -175,7 +175,7 @@
 				'record_limit' => $record_limit,
 				'num_records' => count($autoreply_info),
 				'all_records' => $this->bo->total_records,
-				'link_url' => $GLOBALS['phpgw']->link('/index.php', $link_data),
+				'link_url' => phpgw::link('/index.php', $link_data),
 				'img_path' => $GLOBALS['phpgw']->common->get_image_path('phpgwapi', 'default'),
 				'lang_searchfield_statustext' => lang('Enter the search string. To show all entries, empty this field and press the SUBMIT button again'),
 				'lang_searchbutton_statustext' => lang('Submit the search string'),
@@ -190,13 +190,13 @@
 			$function_msg = lang('list SMS autoreplies');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('sms') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('list' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('list' => $data));
 			$this->save_sessiondata();
 		}
 
 		function add()
 		{
-			if (!$this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'sms'))
+			if (!$this->acl->check($this->acl_location, ACL_ADD, 'sms'))
 			{
 				$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 				$this->bocommon->no_access();
@@ -209,8 +209,8 @@
 
 			echo parse_navbar();
 
-			$err = urldecode(phpgw::get_var('err'));
-			$add_autoreply_code = phpgw::get_var('add_autoreply_code');
+			$err = urldecode(Sanitizer::get_var('err'));
+			$add_autoreply_code = Sanitizer::get_var('add_autoreply_code');
 
 			if ($err)
 			{
@@ -222,7 +222,7 @@
 				'autoreply_id' => $autoreply_id
 			);
 
-			$add_url = $GLOBALS['phpgw']->link('/index.php', $add_data);
+			$add_url = phpgw::link('/index.php', $add_data);
 
 
 			$content .= "
@@ -235,7 +235,7 @@
 
 
 			$done_data = array('menuaction' => 'sms.uiautoreply.index');
-			$done_url = $GLOBALS['phpgw']->link('/index.php', $done_data);
+			$done_url = phpgw::link('/index.php', $done_data);
 
 			$content .= "
 			    <p>
@@ -250,14 +250,14 @@
 		function add_yes()
 		{
 
-			if (!$this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'sms'))
+			if (!$this->acl->check($this->acl_location, ACL_ADD, 'sms'))
 			{
 				$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 				$this->bocommon->no_access();
 				return;
 			}
 
-			$add_autoreply_code = strtoupper(phpgw::get_var('add_autoreply_code'));
+			$add_autoreply_code = strtoupper(Sanitizer::get_var('add_autoreply_code'));
 
 			$uid = $this->account;
 			$target = 'add';
@@ -301,13 +301,13 @@
 				'err' => urlencode($error_string)
 			);
 
-			$GLOBALS['phpgw']->redirect_link('/index.php', $add_data);
+			phpgw::redirect_link('/index.php', $add_data);
 		}
 
 		function add_scenario()
 		{
 
-			if (!$this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'sms'))
+			if (!$this->acl->check($this->acl_location, ACL_ADD, 'sms'))
 			{
 				$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 				$this->bocommon->no_access();
@@ -320,9 +320,9 @@
 
 			echo parse_navbar();
 
-			$err = urldecode(phpgw::get_var('err'));
-			$autoreply_id = phpgw::get_var('autoreply_id');
-			$add_autoreply_scenario_result = phpgw::get_var('add_autoreply_scenario_result');
+			$err = urldecode(Sanitizer::get_var('err'));
+			$autoreply_id = Sanitizer::get_var('autoreply_id');
+			$add_autoreply_scenario_result = Sanitizer::get_var('add_autoreply_scenario_result');
 
 
 			$sql = "SELECT * FROM phpgw_sms_featautoreply WHERE autoreply_id='$autoreply_id'";
@@ -343,7 +343,7 @@
 				'autoreply_id' => $autoreply_id
 			);
 
-			$add_url = $GLOBALS['phpgw']->link('/index.php', $add_data);
+			$add_url = phpgw::link('/index.php', $add_data);
 
 
 			$content .= "
@@ -355,7 +355,7 @@
 			for ($i = 1; $i <= 7; $i++)
 			{
 				$param_name = "add_autoreply_scenario_param{$i}";
-				$value = strtoupper(phpgw::get_var($param_name));
+				$value = strtoupper(Sanitizer::get_var($param_name));
 				$content .= "<p>SMS autoreply scenario param $i: <input type=text size=20 maxlength=20 name={$param_name} value=\"" . $value . "\">\n";
 			}
 
@@ -369,7 +369,7 @@
 				'menuaction' => 'sms.uiautoreply.manage',
 				'autoreply_id' => $autoreply_id);
 
-			$done_url = $GLOBALS['phpgw']->link('/index.php', $done_data);
+			$done_url = phpgw::link('/index.php', $done_data);
 
 			$content .= "
 			    <p><li>
@@ -382,15 +382,15 @@
 		function add_scenario_yes()
 		{
 
-			if (!$this->acl->check($this->acl_location, PHPGW_ACL_ADD, 'sms'))
+			if (!$this->acl->check($this->acl_location, ACL_ADD, 'sms'))
 			{
 				$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 				$this->bocommon->no_access();
 				return;
 			}
 
-			$autoreply_id = phpgw::get_var('autoreply_id');
-			$add_autoreply_scenario_result = phpgw::get_var('add_autoreply_scenario_result');
+			$autoreply_id = Sanitizer::get_var('autoreply_id');
+			$add_autoreply_scenario_result = Sanitizer::get_var('add_autoreply_scenario_result');
 
 			$ok = 0;
 
@@ -399,7 +399,7 @@
 			{
 				$param_names[$i] = "add_autoreply_scenario_param{$i}";
 
-				if (phpgw::get_var($param_names[$i], 'bool'))
+				if (Sanitizer::get_var($param_names[$i], 'bool'))
 				{
 					$ok++;
 				}
@@ -447,16 +447,16 @@
 
 			for ($i = 1; $i <= 7; $i++)
 			{
-				$add_data["add_autoreply_scenario_param" . $i] = strtoupper(phpgw::get_var("add_autoreply_scenario_param$i", 'string', 'POST'));
+				$add_data["add_autoreply_scenario_param" . $i] = strtoupper(Sanitizer::get_var("add_autoreply_scenario_param$i", 'string', 'POST'));
 			}
 
-			$GLOBALS['phpgw']->redirect_link('/index.php', $add_data);
+			phpgw::redirect_link('/index.php', $add_data);
 		}
 
 		function edit_scenario()
 		{
 
-			if (!$this->acl->check($this->acl_location, PHPGW_ACL_EDIT, 'sms'))
+			if (!$this->acl->check($this->acl_location, ACL_EDIT, 'sms'))
 			{
 				$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 				$this->bocommon->no_access();
@@ -469,10 +469,10 @@
 
 			echo parse_navbar();
 
-			$err = urldecode(phpgw::get_var('err'));
-			$autoreply_id = phpgw::get_var('autoreply_id');
-			$autoreply_scenario_id = phpgw::get_var('autoreply_scenario_id');
-			$add_autoreply_scenario_result = phpgw::get_var('add_autoreply_scenario_result');
+			$err = urldecode(Sanitizer::get_var('err'));
+			$autoreply_id = Sanitizer::get_var('autoreply_id');
+			$autoreply_scenario_id = Sanitizer::get_var('autoreply_scenario_id');
+			$add_autoreply_scenario_result = Sanitizer::get_var('add_autoreply_scenario_result');
 
 			$sql = "SELECT * FROM phpgw_sms_featautoreply WHERE autoreply_id='$autoreply_id'";
 
@@ -493,7 +493,7 @@
 				'autoreply_scenario_id' => $autoreply_scenario_id
 			);
 
-			$edit_url = $GLOBALS['phpgw']->link('/index.php', $edit_data);
+			$edit_url = phpgw::link('/index.php', $edit_data);
 
 
 			$content .= "
@@ -525,7 +525,7 @@
 				'menuaction' => 'sms.uiautoreply.manage',
 				'autoreply_id' => $autoreply_id);
 
-			$done_url = $GLOBALS['phpgw']->link('/index.php', $done_data);
+			$done_url = phpgw::link('/index.php', $done_data);
 
 			$content .= "
 			    <p><li>
@@ -538,22 +538,22 @@
 		function edit_scenario_yes()
 		{
 
-			if (!$this->acl->check($this->acl_location, PHPGW_ACL_EDIT, 'sms'))
+			if (!$this->acl->check($this->acl_location, ACL_EDIT, 'sms'))
 			{
 				$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
 				$this->bocommon->no_access();
 				return;
 			}
 
-			$autoreply_scenario_id = phpgw::get_var('autoreply_scenario_id');
-			$autoreply_id = phpgw::get_var('autoreply_id');
+			$autoreply_scenario_id = Sanitizer::get_var('autoreply_scenario_id');
+			$autoreply_id = Sanitizer::get_var('autoreply_id');
 			$edit_autoreply_scenario_result = get_var('edit_autoreply_scenario_result', array(
 				'POST', 'GET'));
 			$edit_autoreply_scenario_params = array();
 
 			for ($i = 1; $i <= 7; $i++)
 			{
-				$edit_autoreply_scenario_params[$i] = strtoupper(phpgw::get_var("edit_autoreply_scenario_param$i"));
+				$edit_autoreply_scenario_params[$i] = strtoupper(Sanitizer::get_var("edit_autoreply_scenario_param$i"));
 				if ($edit_autoreply_scenario_params[$i])
 				{
 					$ok++;
@@ -602,10 +602,10 @@
 
 			for ($i = 1; $i <= 7; $i++)
 			{
-				$add_data["edit_autoreply_scenario_param{$i}"] = strtoupper(phpgw::get_var("edit_autoreply_scenario_param{$i}"));
+				$add_data["edit_autoreply_scenario_param{$i}"] = strtoupper(Sanitizer::get_var("edit_autoreply_scenario_param{$i}"));
 			}
 
-			$GLOBALS['phpgw']->redirect_link('/index.php', $add_data);
+			phpgw::redirect_link('/index.php', $add_data);
 		}
 
 		function manage()
@@ -623,10 +623,10 @@
 			echo parse_navbar();
 
 
-			$autoreply_id = phpgw::get_var('autoreply_id');
-			$err = urldecode(phpgw::get_var('err'));
+			$autoreply_id = Sanitizer::get_var('autoreply_id');
+			$err = urldecode(Sanitizer::get_var('err'));
 
-			/* 			if (!$this->acl->check('run', PHPGW_ACL_READ,'admin'))
+			/* 			if (!$this->acl->check('run', ACL_READ,'admin'))
 			  {
 			  $query_user_only = "AND uid='$uid'";
 			  }
@@ -648,7 +648,7 @@
 				'autoreply_id' => $autoreply_id
 			);
 
-			$add_url = $GLOBALS['phpgw']->link('/index.php', $add_data);
+			$add_url = phpgw::link('/index.php', $add_data);
 
 			$content .= "
 			    <p>
@@ -673,9 +673,9 @@
 					$list_of_param .= $this->db->f("autoreply_scenario_param$i") . "&nbsp;";
 				}
 
-				$content .= "[<a href=" . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uiautoreply.edit_scenario',
+				$content .= "[<a href=" . phpgw::link('/index.php', array('menuaction' => 'sms.uiautoreply.edit_scenario',
 						'autoreply_id' => $this->db->f('autoreply_id'), 'autoreply_scenario_id' => $this->db->f('autoreply_scenario_id'))) . ">e</a>] ";
-				$content .= "[<a href=" . $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uiautoreply.delete_scenario',
+				$content .= "[<a href=" . phpgw::link('/index.php', array('menuaction' => 'sms.uiautoreply.delete_scenario',
 						'autoreply_id' => $this->db->f('autoreply_id'), 'autoreply_scenario_id' => $this->db->f('autoreply_scenario_id'))) . ">x</a>] ";
 				$content .= " <b>Param:</b> " . $list_of_param . "&nbsp;<br><b>Return:</b> " . $this->db->f('autoreply_scenario_result') . "&nbsp;&nbsp;<b>User:</b> $owner<br><br>";
 			}
@@ -688,7 +688,7 @@
 			$done_data = array(
 				'menuaction' => 'sms.uiautoreply.index');
 
-			$done_url = $GLOBALS['phpgw']->link('/index.php', $done_data);
+			$done_url = phpgw::link('/index.php', $done_data);
 
 			$content .= "
 			    <p><li>
@@ -701,14 +701,14 @@
 		function delete()
 		{
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
-			if (!$this->acl->check($this->acl_location, PHPGW_ACL_DELETE, 'sms'))
+			if (!$this->acl->check($this->acl_location, ACL_DELETE, 'sms'))
 			{
 				$this->bocommon->no_access();
 				return;
 			}
 
-			$autoreply_id = phpgw::get_var('autoreply_id');
-			$confirm = phpgw::get_var('confirm', 'bool', 'POST');
+			$autoreply_id = Sanitizer::get_var('autoreply_id');
+			$confirm = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 				(
@@ -716,7 +716,7 @@
 				'autoreply_id' => $autoreply_id
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 
 				$sql = "SELECT autoreply_code FROM phpgw_sms_featautoreply WHERE autoreply_id='$autoreply_id'";
@@ -745,17 +745,17 @@
 
 				$link_data['err'] = urlencode($error_string);
 				$GLOBALS['phpgw']->session->appsession('session_data', 'sms_reply_receipt', $receipt);
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 
 
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 				(
-				'done_action' => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uiautoreply.delete',
+				'done_action' => phpgw::link('/index.php', $link_data),
+				'delete_action' => phpgw::link('/index.php', array('menuaction' => 'sms.uiautoreply.delete',
 					'autoreply_id' => $autoreply_id)),
 				'lang_confirm_msg' => lang('do you really want to delete this entry'),
 				'lang_yes' => lang('yes'),
@@ -768,22 +768,22 @@
 			$function_msg = lang('delete autoreply');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('sms') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 
 		function delete_scenario()
 		{
 			$GLOBALS['phpgw_info']['flags']['xslt_app'] = true;
-			if (!$this->acl->check($this->acl_location, PHPGW_ACL_DELETE, 'sms'))
+			if (!$this->acl->check($this->acl_location, ACL_DELETE, 'sms'))
 			{
 				$this->bocommon->no_access();
 				return;
 			}
 
-			$autoreply_scenario_id = phpgw::get_var('autoreply_scenario_id');
-			$autoreply_id = phpgw::get_var('autoreply_id');
+			$autoreply_scenario_id = Sanitizer::get_var('autoreply_scenario_id');
+			$autoreply_id = Sanitizer::get_var('autoreply_id');
 
-			$confirm = phpgw::get_var('confirm', 'bool', 'POST');
+			$confirm = Sanitizer::get_var('confirm', 'bool', 'POST');
 
 			$link_data = array
 				(
@@ -791,7 +791,7 @@
 				'autoreply_id' => $autoreply_id
 			);
 
-			if (phpgw::get_var('confirm', 'bool', 'POST'))
+			if (Sanitizer::get_var('confirm', 'bool', 'POST'))
 			{
 				$sql = "SELECT autoreply_scenario_result FROM phpgw_sms_featautoreply_scenario WHERE autoreply_scenario_id='$autoreply_scenario_id'";
 				$this->db->query($sql, __LINE__, __FILE__);
@@ -817,15 +817,15 @@
 
 				$link_data['err'] = urlencode($error_string);
 
-				$GLOBALS['phpgw']->redirect_link('/index.php', $link_data);
+				phpgw::redirect_link('/index.php', $link_data);
 			}
 
-			$GLOBALS['phpgw']->xslttpl->add_file(array('app_delete'));
+			phpgwapi_xslttemplates::getInstance()->add_file(array('app_delete'));
 
 			$data = array
 				(
-				'done_action' => $GLOBALS['phpgw']->link('/index.php', $link_data),
-				'delete_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'sms.uiautoreply.delete_scenario',
+				'done_action' => phpgw::link('/index.php', $link_data),
+				'delete_action' => phpgw::link('/index.php', array('menuaction' => 'sms.uiautoreply.delete_scenario',
 					'autoreply_id' => $autoreply_id, 'autoreply_scenario_id' => $autoreply_scenario_id)),
 				'lang_confirm_msg' => lang('do you really want to delete this entry'),
 				'lang_yes' => lang('yes'),
@@ -838,6 +838,6 @@
 			$function_msg = lang('delete autoreply');
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('sms') . ' - ' . $appname . ': ' . $function_msg;
-			$GLOBALS['phpgw']->xslttpl->set_var('phpgw', array('delete' => $data));
+			phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 		}
 	}

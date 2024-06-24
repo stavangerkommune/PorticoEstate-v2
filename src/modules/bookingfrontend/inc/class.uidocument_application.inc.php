@@ -20,7 +20,7 @@
 
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -30,7 +30,7 @@
 
 		public function query()
 		{
-			$secret = phpgw::get_var('filter_secret', 'string');
+			$secret = Sanitizer::get_var('filter_secret', 'string');
 			$documents = $this->bo->read();
 			$validated_doc = array('results' => array());
 			foreach ($documents['results'] as &$document)
@@ -48,7 +48,7 @@
 
 			$validated_doc['total_records'] = count($validated_doc['results']);
 
-			if (phpgw::get_var('no_images'))
+			if (Sanitizer::get_var('no_images'))
 			{
 				$validated_doc['results'] = array_filter($validated_doc['results'], array($this, 'is_image'));
 				// the array_filter function preserves the array keys. The javascript that later iterates over the resultset don't like gaps in the array keys
@@ -68,10 +68,10 @@
 
 		public function download()
 		{
-			$id = phpgw::get_var('id', 'int');
+			$id = Sanitizer::get_var('id', 'int');
 
 			$document = $this->bo->read_single($id);
-			if (!empty($document) && $document['secret'] == phpgw::get_var('secret', 'string'))
+			if (!empty($document) && $document['secret'] == Sanitizer::get_var('secret', 'string'))
 			{
 				self::send_file($document['filename'], array('filename' => $document['name']));
 			}

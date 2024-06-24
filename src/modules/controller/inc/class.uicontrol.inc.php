@@ -83,10 +83,10 @@
 		{
 			parent::__construct('controller');
 
-			$this->read = $GLOBALS['phpgw']->acl->check('.control', PHPGW_ACL_READ, 'controller');//1
-			$this->add = $GLOBALS['phpgw']->acl->check('.control', PHPGW_ACL_ADD, 'controller');//2
-			$this->edit = $GLOBALS['phpgw']->acl->check('.control', PHPGW_ACL_EDIT, 'controller');//4
-			$this->delete = $GLOBALS['phpgw']->acl->check('.control', PHPGW_ACL_DELETE, 'controller');//8
+			$this->read = $GLOBALS['phpgw']->acl->check('.control', ACL_READ, 'controller');//1
+			$this->add = $GLOBALS['phpgw']->acl->check('.control', ACL_ADD, 'controller');//2
+			$this->edit = $GLOBALS['phpgw']->acl->check('.control', ACL_EDIT, 'controller');//4
+			$this->delete = $GLOBALS['phpgw']->acl->check('.control', ACL_DELETE, 'controller');//8
 
 			$this->manage = $GLOBALS['phpgw']->acl->check('.control', 16, 'controller');//16
 			//if(!$manage)
@@ -107,7 +107,7 @@
 			$this->home_alternative = isset($config->config_data['home_alternative']) && $config->config_data['home_alternative'] == 1 ? true : false;
 
 			self::set_active_menu('controller::control');
-//			$GLOBALS['phpgw']->css->add_external_file('controller/templates/base/css/base.css');
+//			phpgwapi_css::getInstance()->add_external_file('controller/templates/base/css/base.css');
 			$function_msg	 = lang('control types');
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('controller') . ': ' . $function_msg;
 		}
@@ -130,7 +130,7 @@
 		 */
 		public function control_list()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -275,7 +275,7 @@
 				'my_name' => 'view',
 				'statustext' => lang('view'),
 				'text' => lang('view'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'controller.uicontrol.view_control_details'
 				)),
@@ -295,7 +295,7 @@
 		{
 			if ($control == null)
 			{
-				$control_id = phpgw::get_var('id');
+				$control_id = Sanitizer::get_var('id');
 
 				if (isset($control_id) && $control_id > 0)
 				{
@@ -363,10 +363,10 @@
 		{
 			if (!$this->add && !$this->edit)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uicontrol.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uicontrol.index'));
 			}
 
-			$control_id = phpgw::get_var('control_id');
+			$control_id = Sanitizer::get_var('control_id');
 
 			// Update existing control details
 			$delete_control_groups = false;
@@ -425,7 +425,7 @@
 		 */
 		public function view_control_groups()
 		{
-			$control_id = phpgw::get_var('control_id');
+			$control_id = Sanitizer::get_var('control_id');
 			$control = $this->so->get_single($control_id);
 
 			// Fetches saved control groups from db
@@ -484,11 +484,11 @@
 		{
 			if (!$this->add && !$this->edit)
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'controller.uicontrol.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uicontrol.index'));
 			}
 
-			$control_id = phpgw::get_var('control_id');
-			$control_group_ids = phpgw::get_var('control_group_ids');
+			$control_id = Sanitizer::get_var('control_id');
+			$control_group_ids = Sanitizer::get_var('control_group_ids');
 
 			// Fetches saved control groups 
 			$saved_control_groups = $this->so_control_group_list->get_control_groups_by_control($control_id);
@@ -538,7 +538,7 @@
 		 */
 		public function view_control_items()
 		{
-			$control_id = phpgw::get_var('control_id', 'int');
+			$control_id = Sanitizer::get_var('control_id', 'int');
 			$control = $this->so->get_single($control_id);
 
 			// Array with selected control groups and items
@@ -612,10 +612,10 @@
 		 */
 		public function save_control_items()
 		{
-			$control_id = phpgw::get_var('control_id');
+			$control_id = Sanitizer::get_var('control_id');
 
 			// Fetching selected control items. Tags are on the format 1:2 (group:item). 
-			$control_tag_ids = phpgw::get_var('control_tag_ids');
+			$control_tag_ids = Sanitizer::get_var('control_tag_ids');
 
 			$saved_control_items = $this->so_control_item_list->get_control_items_by_control($control_id, "return_object");
 
@@ -676,7 +676,7 @@
 		 */
 		public function view_check_list()
 		{
-			$control_id = phpgw::get_var('control_id');
+			$control_id = Sanitizer::get_var('control_id');
 			$control = $this->so->get_single($control_id);
 
 			// Fetches saved control groups from DB for this control
@@ -715,7 +715,7 @@
 
 		public function get_control_details()
 		{
-			$control_id = phpgw::get_var('control_id');
+			$control_id = Sanitizer::get_var('control_id');
 			$control = $this->so->get_single($control_id);
 
 			$data = array
@@ -737,7 +737,7 @@
 
 				$tabs['details'] = array(
 					'label' => "1: " . lang('Details'),
-					'link' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'controller.uicontrol.view_control_details',
+					'link' => phpgw::link('/index.php', array('menuaction' => 'controller.uicontrol.view_control_details',
 						'id' => $control->get_id()))
 				);
 
@@ -747,7 +747,7 @@
 				{
 					$tabs['control_groups'] = array(
 						'label' => "2: " . lang('Choose_control_groups'),
-						'link' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'controller.uicontrol.view_control_groups',
+						'link' => phpgw::link('/index.php', array('menuaction' => 'controller.uicontrol.view_control_groups',
 							'control_id' => $control->get_id()))
 					);
 
@@ -757,17 +757,17 @@
 					{
 						$tabs['control_items'] = array(
 							'label' => "3: " . lang('Choose_control_items'),
-							'link' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'controller.uicontrol.view_control_items',
+							'link' => phpgw::link('/index.php', array('menuaction' => 'controller.uicontrol.view_control_items',
 								'control_id' => $control->get_id())));
 						$tabs['check_list'] = array('label' => "4: " . lang('Sort_check_list'),
-							'link' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'controller.uicontrol.view_check_list',
+							'link' => phpgw::link('/index.php', array('menuaction' => 'controller.uicontrol.view_check_list',
 								'control_id' => $control->get_id())));
 					}
 					else
 					{
 						$tabs['control_items'] = array(
 							'label' => "3: " . lang('Choose_control_items'),
-							'link' => $GLOBALS['phpgw']->link('/index.php', array(
+							'link' => phpgw::link('/index.php', array(
 								'menuaction' => 'controller.uicontrol.view_control_items',
 								'control_id' => $control->get_id()))
 							);
@@ -781,7 +781,7 @@
 				{
 					$tabs['control_groups'] = array(
 						'label' => "2: " . lang('Choose_control_groups'),
-						'link' => $GLOBALS['phpgw']->link('/index.php', array(
+						'link' => phpgw::link('/index.php', array(
 								'menuaction' => 'controller.uicontrol.view_control_groups',
 								'control_id' => $control->get_id()))
 						);
@@ -830,7 +830,7 @@
 		 */
 		public function get_controls_by_control_area()
 		{
-			$control_area_id = phpgw::get_var('control_area_id');
+			$control_area_id = Sanitizer::get_var('control_area_id');
 
 			$controls_array = $this->so->get_controls_by_control_area($control_area_id);
 
@@ -852,7 +852,7 @@
 		 */
 		public function get_locations_for_control()
 		{
-			$control_id = phpgw::get_var('control_id');
+			$control_id = Sanitizer::get_var('control_id');
 
 			if (is_numeric($control_id) & $control_id > 0)
 			{
@@ -874,7 +874,7 @@
 				$results['total_records'] = 0;
 			}
 
-			$results['draw'] = phpgw::get_var('draw', 'int');
+			$results['draw'] = Sanitizer::get_var('draw', 'int');
 
 			return $this->jquery_results($results);
 		}
@@ -912,43 +912,43 @@
 
 		public function register_control_to_location()
 		{
-			$control_id = phpgw::get_var('control_id');
-			$location_code = phpgw::get_var('location_code');
+			$control_id = Sanitizer::get_var('control_id');
+			$location_code = Sanitizer::get_var('location_code');
 
 			$this->so->register_control_to_location($control_id, $location_code);
 		}
 
 		public function query()
 		{
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 			$params = array(
-				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results' => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start' => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results' => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query' => $search['value'],
 				'order' => $columns[$order[0]['column']]['data'],
 				'sort' => $order[0]['dir'],
-				'allrows' => phpgw::get_var('length', 'int') == -1,
+				'allrows' => Sanitizer::get_var('length', 'int') == -1,
 			);
 
 			$filters = array();
 			$search_type = '';
 
-			$ctrl_area = phpgw::get_var('control_areas');
+			$ctrl_area = Sanitizer::get_var('control_areas');
 			if (isset($ctrl_area) && $ctrl_area > 0)
 			{
 				$filters['control_areas'] = $ctrl_area;
 			}
-			$responsibility = phpgw::get_var('responsibilities');
+			$responsibility = Sanitizer::get_var('responsibilities');
 			if (isset($responsibility) && $responsibility > 0)
 			{
 				$filters['responsibilities'] = $responsibility;
 			}
 
-			$filters['district_id'] = phpgw::get_var('district_id', 'int', 'REQUEST', null);
+			$filters['district_id'] = Sanitizer::get_var('district_id', 'int', 'REQUEST', null);
 
 			$search_for = $params['query'];
 
@@ -968,7 +968,7 @@
 			$records = array();
 
 			//Retrieve a contract identifier and load corresponding contract
-			$control_id = phpgw::get_var('control_id');
+			$control_id = Sanitizer::get_var('control_id');
 			if (isset($control_id))
 			{
 				$control = $this->so->get_single($control_id);

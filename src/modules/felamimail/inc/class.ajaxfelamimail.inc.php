@@ -751,7 +751,7 @@
 							'part'          => $attachment['partID']
 						);
 						$windowName = 'displayMessage_';
-						$att_link = "egw_openWindowCentered('".$GLOBALS['phpgw']->link('/index.php',$linkData)."','$windowName',700,egw_getWindowOuterHeight()); return false;";
+						$att_link = "egw_openWindowCentered('".phpgw::link('/index.php',$linkData)."','$windowName',700,egw_getWindowOuterHeight()); return false;";
 						
 						break;
 						
@@ -765,7 +765,7 @@
 							'_composeID' => $_composeID,
 						);
 						$windowName = 'displayAttachment_';
-						$att_link = "egw_openWindowCentered('".$GLOBALS['phpgw']->link('/index.php',$linkData)."','$windowName',800,600);";
+						$att_link = "egw_openWindowCentered('".phpgw::link('/index.php',$linkData)."','$windowName',800,600);";
 						
 						break;
 				}

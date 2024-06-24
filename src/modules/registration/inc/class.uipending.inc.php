@@ -76,7 +76,7 @@
 
 		function index()
 		{
-			if ($values = phpgw::get_var('values'))
+			if ($values = Sanitizer::get_var('values'))
 			{
 				$values['pending_users'] = isset($values['pending_users']) && $values['pending_users'] ? array_unique($values['pending_users']) : array();
 				$values['pending_users_orig'] = isset($values['pending_users_orig']) && $values['pending_users_orig'] ? array_unique($values['pending_users_orig']) : array();
@@ -87,7 +87,7 @@
 					$this->bo->process_users($values);
 				}
 			}
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -188,7 +188,7 @@
 				(
 				'my_name' => 'edit',
 				'text' => lang('edit'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'registration.uipending.edit'
 				)),
@@ -249,12 +249,12 @@
 
 		public function edit()
 		{
-			$id = phpgw::get_var('id', 'string');
+			$id = Sanitizer::get_var('id', 'string');
 			$bo = createobject('registration.boreg');
 
 			if (isset($_POST['save']) && $id)
 			{
-				$values = phpgw::get_var('values');
+				$values = Sanitizer::get_var('values');
 
 				$insert_record = $GLOBALS['phpgw']->session->appsession('insert_record', 'property');
 				$insert_record_entity = $GLOBALS['phpgw']->session->appsession('insert_record_entity', 'property');
@@ -268,9 +268,9 @@
 				}
 
 
-				$values['account_permissions'] = phpgw::get_var('account_permissions');
-				$values['account_permissions_admin'] = phpgw::get_var('account_permissions_admin');
-				$values['account_groups'] = phpgw::get_var('account_groups');
+				$values['account_permissions'] = Sanitizer::get_var('account_permissions');
+				$values['account_permissions_admin'] = Sanitizer::get_var('account_permissions_admin');
+				$values['account_groups'] = Sanitizer::get_var('account_groups');
 
 				$values = $this->bocommon->collect_locationdata($values, $insert_record);
 
@@ -294,13 +294,13 @@
 
 			if (isset($_POST['cancel'])) // The user has pressed the cancel button
 			{
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'registration.uipending.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'registration.uipending.index'));
 			}
 
 			if (isset($_POST['delete']) && $id) // The user has pressed the delete button
 			{
 				$this->bo->delete($id);
-				$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'registration.uipending.index'));
+				phpgw::redirect_link('/index.php', array('menuaction' => 'registration.uipending.index'));
 			}
 
 			if ($id)
@@ -461,24 +461,24 @@
 
 		public function query()
 		{
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int');
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int');
+			$columns = Sanitizer::get_var('columns');
 
 			$params = array
 				(
-				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
-				'results' => phpgw::get_var('length', 'int', 'REQUEST', 0),
+				'start' => Sanitizer::get_var('start', 'int', 'REQUEST', 0),
+				'results' => Sanitizer::get_var('length', 'int', 'REQUEST', 0),
 				'query' => $search['value'],
 				'order' => $columns[$order[0]['column']]['data'],
 				'sort' => $order[0]['dir'],
 				'filter' => $this->filter,
-				'allrows' => phpgw::get_var('length', 'int') == -1,
-				'status_id' => phpgw::get_var('status_id')
+				'allrows' => Sanitizer::get_var('length', 'int') == -1,
+				'status_id' => Sanitizer::get_var('status_id')
 			);
 
-			$this->bo->start = phpgw::get_var('startIndex');
+			$this->bo->start = Sanitizer::get_var('startIndex');
 
 			$user_list = $this->bo->read($params);
 

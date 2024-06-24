@@ -99,27 +99,27 @@
 		 */
 		public function query()
 		{
-			$length = phpgw::get_var('length', 'int');
+			$length = Sanitizer::get_var('length', 'int');
 
 			$user_rows_per_page = $length > 0 ? $length : $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
 			$num_of_objects = $length == -1 ? 0 : $user_rows_per_page;
 
-			$search = phpgw::get_var('search');
-			$order = phpgw::get_var('order');
-			$draw = phpgw::get_var('draw', 'int', 'REQUEST', 1);
-			$columns = phpgw::get_var('columns');
+			$search = Sanitizer::get_var('search');
+			$order = Sanitizer::get_var('order');
+			$draw = Sanitizer::get_var('draw', 'int', 'REQUEST', 1);
+			$columns = Sanitizer::get_var('columns');
 
-			$start_index = phpgw::get_var('start', 'int', 'REQUEST', 0);
+			$start_index = Sanitizer::get_var('start', 'int', 'REQUEST', 0);
 			$sort_field = ($columns[$order[0]['column']]['data']) ? $columns[$order[0]['column']]['data'] : 'identifier';
 			$sort_ascending = ($order[0]['dir'] == 'desc') ? false : true;
 			// Form variables
 			$search_for = (is_array($search)) ? $search['value'] : $search;
-			$search_type = phpgw::get_var('search_option', 'string', 'REQUEST', 'all');
-			$party_type = phpgw::get_var('party_type', 'string', 'REQUEST', 'all');
-			$active = phpgw::get_var('active', 'string', 'REQUEST', 'all');
-			$export = phpgw::get_var('export', 'bool');
+			$search_type = Sanitizer::get_var('search_option', 'string', 'REQUEST', 'all');
+			$party_type = Sanitizer::get_var('party_type', 'string', 'REQUEST', 'all');
+			$active = Sanitizer::get_var('active', 'string', 'REQUEST', 'all');
+			$export = Sanitizer::get_var('export', 'bool');
 
-			$editable = phpgw::get_var('editable', 'bool');
+			$editable = Sanitizer::get_var('editable', 'bool');
 
 			// Create an empty result set
 			$result_objects = array();
@@ -131,14 +131,14 @@
 			}
 
 			//Retrieve a contract identifier and load corresponding contract
-			$contract_id = phpgw::get_var('contract_id');
+			$contract_id = Sanitizer::get_var('contract_id');
 			if (isset($contract_id))
 			{
 				$contract = rental_socontract::get_instance()->get_single($contract_id);
 			}
 
 			//Retrieve the type of query and perform type specific logic
-			$type = phpgw::get_var('type');
+			$type = Sanitizer::get_var('type');
 
 			$config = CreateObject('phpgwapi.config', 'rental');
 			$config->read();
@@ -449,12 +449,12 @@
 		 */
 		public function index()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
 
-			$editable = phpgw::get_var('editable', 'bool');
+			$editable = Sanitizer::get_var('editable', 'bool');
 			$user_is = $this->type_of_user;
 
 			self::set_active_menu('rental::parties');
@@ -560,7 +560,7 @@
 				(
 				'my_name' => 'view',
 				'text' => lang('show'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uiparty.view'
 				)),
@@ -573,7 +573,7 @@
 					(
 					'my_name' => 'edit',
 					'text' => lang('edit'),
-					'action' => $GLOBALS['phpgw']->link('/index.php', array
+					'action' => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'rental.uiparty.edit'
 					)),
@@ -591,7 +591,7 @@
 
 JS;
 
-			$GLOBALS['phpgw']->js->add_code('', $jscode);
+			phpgwapi_js::getInstance()->add_code('', $jscode);
 
 			self::add_javascript('rental', 'base', 'party.sync.js');
 			self::render_template_xsl('datatable_jquery', $data);
@@ -602,7 +602,7 @@ JS;
 		 */
 		public function add()
 		{
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uiparty.edit'));
+			phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uiparty.edit'));
 		}
 
 		/**
@@ -611,7 +611,7 @@ JS;
 		 */
 		public function view()
 		{
-			$party_id = (int)phpgw::get_var('id');
+			$party_id = (int)Sanitizer::get_var('id');
 
 			if (isset($party_id) && $party_id > 0)
 			{
@@ -622,7 +622,7 @@ JS;
 				phpgw::no_access($GLOBALS['phpgw_info']['flags']['currentapp'], lang('invalid_request'));
 			}
 
-			if (isset($party) && $party->has_permission(PHPGW_ACL_READ))
+			if (isset($party) && $party->has_permission(ACL_READ))
 			{
 				$this->edit(array(), $mode = 'view');
 			}
@@ -640,7 +640,7 @@ JS;
 		{
 			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang($mode);
 
-			$party_id = (int)phpgw::get_var('id');
+			$party_id = (int)Sanitizer::get_var('id');
 
 			if ($mode == 'edit')
 			{
@@ -907,14 +907,14 @@ JS;
 				var currency_suffix = '$this->currency_suffix';
 				var area_suffix = '$this->area_suffix';
 JS;
-			$GLOBALS['phpgw']->js->add_code('', $jscode);
+			phpgwapi_js::getInstance()->add_code('', $jscode);
 
 			$data = array
 				(
 				'datatable_def' => $datatable_def,
 				'tabs' => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
-				'form_action' => $GLOBALS['phpgw']->link('/index.php', array('menuaction' => 'rental.uiparty.save')),
-				'cancel_url' => $GLOBALS['phpgw']->link('/index.php', $link_index),
+				'form_action' => phpgw::link('/index.php', array('menuaction' => 'rental.uiparty.save')),
+				'cancel_url' => phpgw::link('/index.php', $link_index),
 				'lang_save' => lang('save'),
 				'lang_sync_data' => lang('get_sync_data'),
 				'lang_cancel' => lang('cancel'),
@@ -940,12 +940,12 @@ JS;
 				'value_url' => $party->get_url(),
 				'value_unit_leader' => $party->get_unit_leader(),
 				'value_comment' => $party->get_comment(),
-				'sync_info_url' => $GLOBALS['phpgw']->link('/index.php', $link_sync_info),
+				'sync_info_url' => phpgw::link('/index.php', $link_sync_info),
 				'use_fellesdata' => $config->config_data['use_fellesdata'],
 				'list_organization' => array('options' => $organization_options),
 				'value_organization' => $organization_name,
 				'valid_email' => $valid_email,
-				'link_create_user' => $GLOBALS['phpgw']->link('/index.php', $link_create_user),
+				'link_create_user' => phpgw::link('/index.php', $link_create_user),
 				'list_search_contract' => array('options' => $search_contract_options),
 				'list_status' => array('options' => $status_options),
 				'list_field_of_responsibility' => array('options' => $field_of_responsibility_options),
@@ -969,7 +969,7 @@ JS;
 				phpgw::no_access($GLOBALS['phpgw_info']['flags']['currentapp'], lang('permission_denied_edit'));
 			}
 
-			$party_id = (int)phpgw::get_var('id');
+			$party_id = (int)Sanitizer::get_var('id');
 
 			if (isset($party_id) && $party_id > 0)
 			{
@@ -983,29 +983,29 @@ JS;
 			if (isset($party)) // If a party object is created
 			{
 				// ... set all parameters
-				$party->set_identifier(phpgw::get_var('identifier'));
-				$party->set_customer_id(phpgw::get_var('customer_id', 'int'));
-				$party->set_first_name(phpgw::get_var('firstname'));
-				$party->set_last_name(phpgw::get_var('lastname'));
-				$party->set_title(phpgw::get_var('title'));
-				$party->set_company_name(phpgw::get_var('company_name'));
-				$party->set_department(phpgw::get_var('department'));
-				$party->set_address_1(phpgw::get_var('address1'));
-				$party->set_address_2(phpgw::get_var('address2'));
-				$party->set_postal_code(phpgw::get_var('postal_code'));
-				$party->set_place(phpgw::get_var('place'));
-				$party->set_phone(phpgw::get_var('phone'));
-				$party->set_mobile_phone(phpgw::get_var('mobile_phone'));
-				$party->set_fax(phpgw::get_var('fax'));
-				$party->set_email(phpgw::get_var('email'));
-				$party->set_url(phpgw::get_var('url'));
-				$party->set_account_number(phpgw::get_var('account_number'));
-				$party->set_reskontro(phpgw::get_var('reskontro'));
-				$party->set_is_inactive(phpgw::get_var('is_inactive') == 'on' ? true : false);
-				$party->set_comment(phpgw::get_var('comment'));
-				//$party->set_location_id(phpgw::get_var('location_id'));
-				$party->set_org_enhet_id(phpgw::get_var('org_enhet_id'));
-				$party->set_unit_leader(phpgw::get_var('unit_leader'));
+				$party->set_identifier(Sanitizer::get_var('identifier'));
+				$party->set_customer_id(Sanitizer::get_var('customer_id', 'int'));
+				$party->set_first_name(Sanitizer::get_var('firstname'));
+				$party->set_last_name(Sanitizer::get_var('lastname'));
+				$party->set_title(Sanitizer::get_var('title'));
+				$party->set_company_name(Sanitizer::get_var('company_name'));
+				$party->set_department(Sanitizer::get_var('department'));
+				$party->set_address_1(Sanitizer::get_var('address1'));
+				$party->set_address_2(Sanitizer::get_var('address2'));
+				$party->set_postal_code(Sanitizer::get_var('postal_code'));
+				$party->set_place(Sanitizer::get_var('place'));
+				$party->set_phone(Sanitizer::get_var('phone'));
+				$party->set_mobile_phone(Sanitizer::get_var('mobile_phone'));
+				$party->set_fax(Sanitizer::get_var('fax'));
+				$party->set_email(Sanitizer::get_var('email'));
+				$party->set_url(Sanitizer::get_var('url'));
+				$party->set_account_number(Sanitizer::get_var('account_number'));
+				$party->set_reskontro(Sanitizer::get_var('reskontro'));
+				$party->set_is_inactive(Sanitizer::get_var('is_inactive') == 'on' ? true : false);
+				$party->set_comment(Sanitizer::get_var('comment'));
+				//$party->set_location_id(Sanitizer::get_var('location_id'));
+				$party->set_org_enhet_id(Sanitizer::get_var('org_enhet_id'));
+				$party->set_unit_leader(Sanitizer::get_var('unit_leader'));
 
 				if (rental_soparty::get_instance()->store($party)) // ... and then try to store the object
 				{
@@ -1018,7 +1018,7 @@ JS;
 				}
 			}
 
-			$GLOBALS['phpgw']->redirect_link('/index.php', array('menuaction' => 'rental.uiparty.edit',
+			phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uiparty.edit',
 				'id' => $party_id));
 		}
 
@@ -1070,14 +1070,14 @@ JS;
 
 		public function sync()
 		{
-			if (phpgw::get_var('phpgw_return_as') == 'json')
+			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
 
-			$editable = phpgw::get_var('editable', 'bool');
-			$sync_job = phpgw::get_var('sync', 'string', 'GET');
-			$contract_id = phpgw::get_var('contract_id');
+			$editable = Sanitizer::get_var('editable', 'bool');
+			$sync_job = Sanitizer::get_var('sync', 'string', 'GET');
+			$contract_id = Sanitizer::get_var('contract_id');
 			$user_is = $this->type_of_user;
 
 			switch ($sync_job)
@@ -1224,7 +1224,7 @@ JS;
 				(
 				'my_name' => 'download_agresso',
 				'text' => lang('Download Agresso import file'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uiparty.download_agresso'
 				)),
@@ -1235,7 +1235,7 @@ JS;
 				(
 				'my_name' => 'view',
 				'text' => lang('show'),
-				'action' => $GLOBALS['phpgw']->link('/index.php', array
+				'action' => phpgw::link('/index.php', array
 					(
 					'menuaction' => 'rental.uiparty.view'
 				)),
@@ -1248,7 +1248,7 @@ JS;
 					(
 					'my_name' => 'edit',
 					'text' => lang('edit'),
-					'action' => $GLOBALS['phpgw']->link('/index.php', array
+					'action' => phpgw::link('/index.php', array
 						(
 						'menuaction' => 'rental.uiparty.edit'
 					)),
@@ -1273,7 +1273,7 @@ JS;
 
 JS;
 
-			$GLOBALS['phpgw']->js->add_code('', $jscode);
+			phpgwapi_js::getInstance()->add_code('', $jscode);
 
 			self::add_javascript('rental', 'base', 'party.sync.js');
 			self::render_template_xsl('datatable_jquery', $data);
@@ -1291,7 +1291,7 @@ JS;
 				$bofelles = rental_bofellesdata::get_instance();
 
 
-				$multisync = phpgw::get_var('multisync', 'bool');
+				$multisync = Sanitizer::get_var('multisync', 'bool');
 
 				if($multisync)
 				{
@@ -1301,8 +1301,8 @@ JS;
 				{
 					$candidates = array();
 					$candidates[] = array(
-						'party_id' => phpgw::get_var('party_id', 'int'),
-						'org_unit_id' => phpgw::get_var('org_enhet_id', 'int')
+						'party_id' => Sanitizer::get_var('party_id', 'int'),
+						'org_unit_id' => Sanitizer::get_var('org_enhet_id', 'int')
 					);
 				}
 				$i = 0;
@@ -1363,7 +1363,7 @@ JS;
 		{
 			if (($this->isExecutiveOfficer() || $this->isAdministrator()))
 			{
-				$org_unit_id = phpgw::get_var("org_enhet_id");
+				$org_unit_id = Sanitizer::get_var("org_enhet_id");
 
 				if (isset($org_unit_id) && $org_unit_id > 0)
 				{
@@ -1401,7 +1401,7 @@ JS;
 		public function create_user_based_on_email()
 		{
 			//Get the party identifier from the reuest
-			$party_id = phpgw::get_var('id');
+			$party_id = Sanitizer::get_var('id');
 
 			//Access control: only executive officers and administrators can create such accounts
 			if (($this->isExecutiveOfficer() || $this->isAdministrator()))
@@ -1452,7 +1452,7 @@ JS;
 							'frontend'));
 
 						//Specify the accounts access to modules
-						$aclobj = & $GLOBALS['phpgw']->acl;
+						$aclobj = Acl::getInstance();
 						$aclobj->set_account_id($frontend_account, true);
 						$aclobj->add('frontend', '.', 1);
 						$aclobj->add('frontend', 'run', 1);
@@ -1513,7 +1513,7 @@ JS;
 		public function delete_party()
 		{
 			$receipt = array();
-			$party_id = phpgw::get_var('id');
+			$party_id = Sanitizer::get_var('id');
 			if (($this->isExecutiveOfficer() || $this->isAdministrator()))
 			{
 				if (isset($party_id) && $party_id > 0)
@@ -1529,7 +1529,7 @@ JS;
 						$receipt['error'][] = array('msg' => $error);
 					}
 
-					if (phpgw::get_var('phpgw_return_as') == 'json')
+					if (Sanitizer::get_var('phpgw_return_as') == 'json')
 					{
 						return $receipt;
 					}

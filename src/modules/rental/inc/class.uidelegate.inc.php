@@ -23,8 +23,8 @@
 
 		public function query()
 		{
-			$unit_id = (int)phpgw::get_var('unit_id');
-			$draw = phpgw::get_var('draw', 'int', 'REQUEST', 1);
+			$unit_id = (int)Sanitizer::get_var('unit_id');
+			$draw = Sanitizer::get_var('draw', 'int', 'REQUEST', 1);
 
 			$delegates_per_org_unit = array();
 
@@ -34,7 +34,7 @@
 
 				/* $delegates_data = array('results' => $delegates_per_org_unit, 'total_records' => count($delegates_per_org_unit));
 
-				  $editable = phpgw::get_var('editable') == 'true' ? true : false;
+				  $editable = Sanitizer::get_var('editable') == 'true' ? true : false;
 				  array_walk(
 				  $delegates_data['results'],
 				  array($this, 'add_actions'),

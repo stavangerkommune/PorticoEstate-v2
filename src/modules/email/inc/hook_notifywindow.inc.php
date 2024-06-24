@@ -56,7 +56,7 @@
 			echo '	<!-- Activate Cloaking Device'."\n";
 			echo '	function CheckEmail()'."\n";
 			echo '	{'."\n";
-			echo '		window.opener.document.location.href="'.$GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'email.uiindex.index')).'";'."\n";
+			echo '		window.opener.document.location.href="'.phpgw::link('/index.php',array('menuaction'=>'email.uiindex.index')).'";'."\n";
 			echo '	}'."\n";
 			echo '	//-->'."\n";
 			echo '	</script>'."\n";

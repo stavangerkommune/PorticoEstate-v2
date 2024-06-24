@@ -113,7 +113,7 @@
 				}
 			}
 
-			$var['source'] = $GLOBALS['phpgw']->link('/index.php',$parameters);
+			$var['source'] = phpgw::link('/index.php',$parameters);
 			$this->t->set_var($var);
 			$this->t->fp('out','iframe');
 
@@ -142,13 +142,13 @@
 				$logoutbutton = '<input type="button" id="logoutlink" value="'.$logouttitle.'" onClick="self.location.href=\''.$logouturl.'\'">&nbsp;&nbsp;';
 				$var['logoutbutton'] = $logoutbutton;
 				
-				$var['linkvalue'] = $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'folders.uifolders.disablefolders'));
+				$var['linkvalue'] = phpgw::link('/index.php',array('menuaction'=>'folders.uifolders.disablefolders'));
 				$var['linkname']  = lang('modules');
 			}
 			else
 			{
 				$var['logoutbutton'] = '';
-				$var['linkvalue'] = $GLOBALS['phpgw']->link('/index.php',array('menuaction'=>'folders.uifolders.enablefolders'));
+				$var['linkvalue'] = phpgw::link('/index.php',array('menuaction'=>'folders.uifolders.enablefolders'));
 				$var['linkname']  = lang('folders');
 			}
 			$this->t->set_var($var);
