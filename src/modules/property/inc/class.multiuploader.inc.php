@@ -407,7 +407,7 @@
 
 				/* if($check_path != trim($file_info['directory'], "/"))
 				  {
-				  phpgwapi_cache::message_set( "deleting file from wrong location", 'error');
+				  Cache::message_set( "deleting file from wrong location", 'error');
 				  return false;
 				  } */
 
@@ -425,7 +425,7 @@
 							)
 						)))
 					{
-						//phpgwapi_cache::message_set(lang('failed to delete file') . ' :' .$file, 'error');
+						//Cache::message_set(lang('failed to delete file') . ' :' .$file, 'error');
 						$success = false;
 					}
 					else
@@ -436,7 +436,7 @@
 						{
 							unlink($thumbfile);
 						}
-						//phpgwapi_cache::message_set(lang('file deleted') . ' :' . $file, 'message');
+						//Cache::message_set(lang('file deleted') . ' :' . $file, 'message');
 						$success = true;
 					}
 					$this->bofiles->vfs->override_acl = 0;

@@ -340,7 +340,8 @@
 		 */
 		public static function select_custom_function($selected, $appname)
 		{
-			$dirname = PHPGW_SERVER_ROOT . "/{$appname}/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}";
+			$userSettings = Settings::getInstance()->get('user');
+			$dirname = PHPGW_SERVER_ROOT . "/{$appname}/inc/custom/{$userSettings['domain']}";
 			// prevent path traversal
 			if ( preg_match('/\./', $appname) 
 			 || !is_dir($dirname) )
@@ -352,7 +353,7 @@
 			$replace = array(' ', '');
 
 			$file_list = array();
-			$dir = new DirectoryIterator(PHPGW_SERVER_ROOT . "/{$appname}/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}"); 
+			$dir = new DirectoryIterator(PHPGW_SERVER_ROOT . "/{$appname}/inc/custom/{$userSettings['domain']}"); 
 			if ( is_object($dir) )
 			{
 				foreach ( $dir as $file )

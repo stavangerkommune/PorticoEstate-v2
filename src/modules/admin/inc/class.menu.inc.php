@@ -69,7 +69,7 @@
 			$is_admin = $acl->check('run', Acl::READ, 'admin');
 			if(!$is_admin)
 			{
-				$available_apps = $GLOBALS['phpgw_info']['apps'];
+				$available_apps = Settings::getInstance()->get('apps');
 				foreach($available_apps as $_app => $dummy)
 				{
 					if($acl->check('admin', Acl::ADD, $_app))

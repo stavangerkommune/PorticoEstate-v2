@@ -13,6 +13,7 @@
  */
 
 use App\Database\Db;
+use App\modules\phpgwapi\services\Settings;
 
 phpgw::import_class('phpgwapi.datetime');
 /**
@@ -308,7 +309,8 @@ class admin_soconfig
 		{
 			$this->db->query($sql . $ordermethod, __LINE__, __FILE__);
 		}
-		$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+		$userSettings = Settings::getInstance()->get('user');
+		$dateformat = $userSettings['preferences']['common']['dateformat'];
 		$config_info = array();
 		while ($this->db->next_record())
 		{

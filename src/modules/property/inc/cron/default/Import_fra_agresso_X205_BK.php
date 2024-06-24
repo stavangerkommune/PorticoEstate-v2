@@ -39,6 +39,8 @@ use App\modules\phpgwapi\controllers\Accounts\Accounts;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Ftp\FtpAdapter;
 use League\Flysystem\Ftp\FtpConnectionOptions;
+use App\modules\phpgwapi\services\Cache;
+
 
 class Import_fra_agresso_X205_BK extends property_cron_parent
 {
@@ -138,7 +140,7 @@ class Import_fra_agresso_X205_BK extends property_cron_parent
 					else
 					{
 						$this->db->transaction_commit();
-						phpgwapi_cache::system_clear('property', "budget_order_{$this->order_id}");
+						Cache::system_clear('property', "budget_order_{$this->order_id}");
 					}
 				}
 				else

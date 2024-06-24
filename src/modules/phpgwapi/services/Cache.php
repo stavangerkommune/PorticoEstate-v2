@@ -36,7 +36,7 @@
 	* @category caching
 	*/
     namespace App\modules\phpgwapi\services;
-    use App\modules\phpgwapi\services\Redis;
+    use App\modules\phpgwapi\services\RedisCache;
     use App\modules\phpgwapi\services\Shm;
 		
 	use DirectoryIterator;
@@ -56,7 +56,7 @@
  
 		private static function get_redis()
 		{
-			self::$phpgwapi_redis = new Redis;
+			self::$phpgwapi_redis = new RedisCache();
 		}
 		/**
 		 * Decide whether to use database for caching - or not

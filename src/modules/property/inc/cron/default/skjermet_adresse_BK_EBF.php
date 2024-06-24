@@ -35,6 +35,8 @@
 
 use App\Database\Db2;
 use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\Cache;
+
 
 include_class('property', 'cron_parent', 'inc/cron/');
 
@@ -305,7 +307,7 @@ class fellesdata
 		if (!$db_info['db_host'] || !$this->ping($db_info['db_host']))
 		{
 			$message = "Database server {$db_info['db_host']} is not accessible";
-			phpgwapi_cache::message_set($message, 'error');
+			Cache::message_set($message, 'error');
 			return false;
 		}
 

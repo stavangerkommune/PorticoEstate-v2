@@ -106,9 +106,9 @@
 	}
 	
 /*
-	if( Sanitizer::get_var('phpgw_return_as') != 'json' && $receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
+	if( Sanitizer::get_var('phpgw_return_as') != 'json' && $receipt = Cache::session_get('phpgwapi', 'phpgw_messages'))
 	{
-		phpgwapi_cache::session_clear('phpgwapi', 'phpgw_messages');
+		Cache::session_clear('phpgwapi', 'phpgw_messages');
 		$msgbox_data = $phpgwapi_common->msgbox_data($receipt);
 		$msgbox_data = $phpgwapi_common->msgbox($msgbox_data);
 		foreach($msgbox_data as & $message)

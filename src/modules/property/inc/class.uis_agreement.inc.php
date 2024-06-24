@@ -748,7 +748,7 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 
 					if ($e)
 					{
-						phpgwapi_cache::message_set($e->getMessage(), 'error');
+						Cache::message_set($e->getMessage(), 'error');
 						$this->edit();
 						return;
 					}

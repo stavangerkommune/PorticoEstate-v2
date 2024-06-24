@@ -39,6 +39,8 @@ include_class('property', 'cron_parent', 'inc/cron/');
 require_once PHPGW_API_INC . '/soap_client/bra5/Bra5Autoload.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use App\modules\phpgwapi\services\Cache;
+
 
 class import_filer_til_braarkiv_BK extends property_cron_parent
 {
@@ -101,7 +103,7 @@ class import_filer_til_braarkiv_BK extends property_cron_parent
 		{
 			if ($e)
 			{
-				phpgwapi_cache::message_set($e->getMessage(), 'error');
+				Cache::message_set($e->getMessage(), 'error');
 				return false;
 			}
 		}
@@ -341,7 +343,6 @@ class import_filer_til_braarkiv_BK extends property_cron_parent
 
 	function get_data($path)
 	{
-		phpgw::import_class('phpgwapi.phpspreadsheet');
 
 		$accepted_file_formats = array('xls', 'xlsx', 'ods', 'csv');
 
