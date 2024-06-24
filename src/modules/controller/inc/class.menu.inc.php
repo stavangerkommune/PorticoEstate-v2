@@ -73,7 +73,7 @@
 			);
 
 
-//			if ($GLOBALS['phpgw']->acl->check('run', phpgwapi_acl::READ, 'admin') || $GLOBALS['phpgw']->acl->check('.control', phpgwapi_acl::EDIT, 'controller'))
+//			if ($GLOBALS['phpgw']->acl->check('run', Acl::READ, 'admin') || $GLOBALS['phpgw']->acl->check('.control', Acl::EDIT, 'controller'))
 //			{
 //				$menus['navigation']['settings']			 = array(
 //					'text'	 => lang('settings'),
@@ -206,7 +206,7 @@
 					'group' => 'office'
 				);
 
-//			if ($GLOBALS['phpgw']->acl->check('run', phpgwapi_acl::READ, 'admin') || $GLOBALS['phpgw']->acl->check('.control', phpgwapi_acl::EDIT, 'controller'))
+//			if ($GLOBALS['phpgw']->acl->check('run', Acl::READ, 'admin') || $GLOBALS['phpgw']->acl->check('.control', Acl::EDIT, 'controller'))
 //			{
 //				$menus['navigation']['settings']			 = array(
 //					'text'	 => lang('settings'),
@@ -233,7 +233,7 @@
 						'image' => array('property', 'location_1')
 					);
 
-			if ($GLOBALS['phpgw']->acl->check('run', phpgwapi_acl::READ, 'admin') || $GLOBALS['phpgw']->acl->check('admin', phpgwapi_acl::ADD, 'controller'))
+			if ($GLOBALS['phpgw']->acl->check('run', Acl::READ, 'admin') || $GLOBALS['phpgw']->acl->check('admin', Acl::ADD, 'controller'))
 			{
 				$menus['admin'] = array
 					(

@@ -64,7 +64,7 @@
 			);
 
 			$menus['toolbar'] = array();
-			if ($GLOBALS['phpgw']->acl->check('run', phpgwapi_acl::READ, 'admin'))
+			if ($GLOBALS['phpgw']->acl->check('run', Acl::READ, 'admin'))
 			{
 				$menus['admin'] = array
 				(
@@ -144,7 +144,7 @@
 				)
 			);
 
-			if ($GLOBALS['phpgw']->acl->check('.autoreply', phpgwapi_acl::READ, 'sms'))
+			if ($GLOBALS['phpgw']->acl->check('.autoreply', Acl::READ, 'sms'))
 			{
 				$menus['navigation']['autoreply'] = array
 						(
@@ -152,7 +152,7 @@
 						'url' => phpgw::link('/index.php', array('menuaction' => 'sms.uiautoreply.index'))
 					);
 			}
-			if ($GLOBALS['phpgw']->acl->check('.board', phpgwapi_acl::READ, 'sms'))
+			if ($GLOBALS['phpgw']->acl->check('.board', Acl::READ, 'sms'))
 			{
 				$menus['navigation']['board'] = array
 						(
@@ -160,7 +160,7 @@
 					'url' => phpgw::link('/index.php', array('menuaction' => 'sms.uiboard.index'))
 					);
 			}
-			if ($GLOBALS['phpgw']->acl->check('.command', phpgwapi_acl::READ, 'sms'))
+			if ($GLOBALS['phpgw']->acl->check('.command', Acl::READ, 'sms'))
 			{
 				$menus['navigation']['command'] = array
 						(
@@ -169,7 +169,7 @@
 					'children' => $command_children
 					);
 			}
-			if ($GLOBALS['phpgw']->acl->check('.custom', phpgwapi_acl::READ, 'sms'))
+			if ($GLOBALS['phpgw']->acl->check('.custom', Acl::READ, 'sms'))
 			{
 				$menus['navigation']['custom'] = array
 						(
@@ -177,7 +177,7 @@
 					'url' => phpgw::link('/index.php', array('menuaction' => 'sms.uicustom.index'))
 					);
 			}
-			if ($GLOBALS['phpgw']->acl->check('.poll', phpgwapi_acl::READ, 'sms'))
+			if ($GLOBALS['phpgw']->acl->check('.poll', Acl::READ, 'sms'))
 			{
 				$menus['navigation']['poll'] = array
 						(

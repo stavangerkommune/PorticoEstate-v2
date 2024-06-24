@@ -209,15 +209,15 @@ JS;
 
 			$all_groups = $GLOBALS['phpgw']->accounts->get_list('groups');
 
-			if (!$GLOBALS['phpgw']->acl->check('run', phpgwapi_acl::READ, 'admin'))
+			if (!$GLOBALS['phpgw']->acl->check('run', Acl::READ, 'admin'))
 			{
 				$available_apps = $GLOBALS['phpgw_info']['apps'];
 				$valid_groups = array();
 				foreach ($available_apps as $_app => $dummy)
 				{
-					if ($GLOBALS['phpgw']->acl->check('admin', phpgwapi_acl::ADD, $_app))
+					if ($GLOBALS['phpgw']->acl->check('admin', Acl::ADD, $_app))
 					{
-						$valid_groups = array_merge($valid_groups, $GLOBALS['phpgw']->acl->get_ids_for_location('run', phpgwapi_acl::READ, $_app));
+						$valid_groups = array_merge($valid_groups, $GLOBALS['phpgw']->acl->get_ids_for_location('run', Acl::READ, $_app));
 					}
 				}
 

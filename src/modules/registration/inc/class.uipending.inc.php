@@ -350,15 +350,15 @@
 
 			//FIXME!!
 			/*
-			  if(!$GLOBALS['phpgw']->acl->check('run', phpgwapi_acl::READ, 'admin'))
+			  if(!$GLOBALS['phpgw']->acl->check('run', Acl::READ, 'admin'))
 			  {
 			  $available_apps = $GLOBALS['phpgw_info']['apps'];
 			  $valid_groups = array();
 			  foreach($available_apps as $_app => $dummy)
 			  {
-			  if($GLOBALS['phpgw']->acl->check('admin', phpgwapi_acl::ADD, $_app))
+			  if($GLOBALS['phpgw']->acl->check('admin', Acl::ADD, $_app))
 			  {
-			  $valid_groups	= array_merge($valid_groups,$GLOBALS['phpgw']->acl->get_ids_for_location('run', phpgwapi_acl::READ, $_app));
+			  $valid_groups	= array_merge($valid_groups,$GLOBALS['phpgw']->acl->get_ids_for_location('run', Acl::READ, $_app));
 			  }
 			  }
 
@@ -396,9 +396,9 @@
 			$available_apps = $GLOBALS['phpgw_info']['apps'];
 			asort($available_apps);
 
-			if (!$GLOBALS['phpgw']->acl->check('run', phpgwapi_acl::READ, 'admin'))
+			if (!$GLOBALS['phpgw']->acl->check('run', Acl::READ, 'admin'))
 			{
-				$valid_apps = $GLOBALS['phpgw']->acl->get_app_list_for_id('admin', phpgwapi_acl::ADD, $GLOBALS['phpgw_info']['user']['account_id']);
+				$valid_apps = $GLOBALS['phpgw']->acl->get_app_list_for_id('admin', Acl::ADD, $GLOBALS['phpgw_info']['user']['account_id']);
 			}
 			else
 			{

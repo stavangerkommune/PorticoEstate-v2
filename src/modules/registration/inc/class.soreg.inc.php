@@ -366,7 +366,7 @@ HTML;
 					(
 					'appname' => $app_admin,
 					'location' => 'admin',
-					'rights' => phpgwapi_acl::ADD
+					'rights' => Acl::ADD
 				);
 			}
 

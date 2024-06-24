@@ -806,8 +806,8 @@ class Acl
 
 		if (!$appname)
 		{
-			trigger_error('phpgwapi_acl::get_rights() called with empty appname argument'
-				. ' - check your calls to phpgwapi_acl::check()', E_USER_NOTICE);
+			trigger_error('Acl::get_rights() called with empty appname argument'
+				. ' - check your calls to Acl::check()', E_USER_NOTICE);
 			$appname = $this->server_flags['currentapp'];
 		}
 

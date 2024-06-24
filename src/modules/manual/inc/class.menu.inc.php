@@ -58,7 +58,7 @@
 
 			$menus['admin'] = array();
 
-			if ($GLOBALS['phpgw']->acl->check('run', phpgwapi_acl::READ, 'admin'))
+			if ($GLOBALS['phpgw']->acl->check('run', Acl::READ, 'admin'))
 			{
 				$menus['admin'] = array
 					(

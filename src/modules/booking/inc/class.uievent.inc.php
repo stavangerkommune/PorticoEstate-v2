@@ -1583,7 +1583,7 @@
 			$event_id = Sanitizer::get_var('id', 'int');
 			$application_id = Sanitizer::get_var('application_id', 'int');
 
-			if ($GLOBALS['phpgw']->acl->check('admin', phpgwapi_acl::ADD, 'booking'))
+			if ($GLOBALS['phpgw']->acl->check('admin', Acl::ADD, 'booking'))
 			{
 				$this->bo->so->delete_event($event_id);
 			}

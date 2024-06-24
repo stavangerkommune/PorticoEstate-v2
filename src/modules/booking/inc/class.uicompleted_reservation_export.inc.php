@@ -66,7 +66,7 @@
 			$filter_to = Sanitizer::get_var('filter_to', 'string', 'REQUEST', null);
 			$filter_params = is_null($filter_to) ? array() : array('filter_to' => $filter_to);
 
-			if (!($GLOBALS['phpgw']->acl->check('run', phpgwapi_acl::READ, 'admin') || $GLOBALS['phpgw']->acl->check('admin', phpgwapi_acl::ADD, 'booking') || $this->bo->has_role(booking_sopermission::ROLE_MANAGER)))
+			if (!($GLOBALS['phpgw']->acl->check('run', Acl::READ, 'admin') || $GLOBALS['phpgw']->acl->check('admin', Acl::ADD, 'booking') || $this->bo->has_role(booking_sopermission::ROLE_MANAGER)))
 			{
 				//$this->flash_form_errors(array('access_denied' => lang("Access denied")));
 				phpgwapi_cache::message_set(lang('Access denied'), 'error');
@@ -195,7 +195,7 @@
 					)
 				)
 			);
-			if ($GLOBALS['phpgw']->acl->check('run', phpgwapi_acl::READ, 'admin') || $GLOBALS['phpgw']->acl->check('admin', phpgwapi_acl::ADD, 'booking') || $this->bo->has_role(booking_sopermission::ROLE_MANAGER))
+			if ($GLOBALS['phpgw']->acl->check('run', Acl::READ, 'admin') || $GLOBALS['phpgw']->acl->check('admin', Acl::ADD, 'booking') || $this->bo->has_role(booking_sopermission::ROLE_MANAGER))
 			{
 				$data['form']['list_actions'] = array(
 					'item' => array(

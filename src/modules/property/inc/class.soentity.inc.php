@@ -2394,7 +2394,7 @@ use App\modules\phpgwapi\services\Cache;
 			$table	 = "fm_{$this->type}_{$data['entity_id']}_{$data['cat_id']}";
 			$this->db->query("select max(id) as id from $table");
 			$this->db->next_record();
-			$id		 = $this->db->f('id') + 1;
+			$id		 = (int) $this->db->f('id') + 1;
 
 			return $id;
 		}

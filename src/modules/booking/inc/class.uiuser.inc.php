@@ -72,7 +72,7 @@
 		{
 			self::set_active_menu('booking::users::update_user_address');
 
-			if (!$GLOBALS['phpgw']->acl->check('run', phpgwapi_acl::READ, 'admin') && !$GLOBALS['phpgw']->acl->check('admin', phpgwapi_acl::ADD, 'booking'))
+			if (!$GLOBALS['phpgw']->acl->check('run', Acl::READ, 'admin') && !$GLOBALS['phpgw']->acl->check('admin', Acl::ADD, 'booking'))
 			{
 				phpgw::no_access();
 			}
@@ -115,7 +115,7 @@
 		{
 			self::set_active_menu('booking::users::export_customer');
 
-			if (!$GLOBALS['phpgw']->acl->check('run', phpgwapi_acl::READ, 'admin') && !$GLOBALS['phpgw']->acl->check('admin', phpgwapi_acl::ADD, 'booking'))
+			if (!$GLOBALS['phpgw']->acl->check('run', Acl::READ, 'admin') && !$GLOBALS['phpgw']->acl->check('admin', Acl::ADD, 'booking'))
 			{
 				phpgw::no_access();
 			}
@@ -181,7 +181,7 @@
 		{
 			self::set_active_menu('booking::users::collect_users');
 
-			if (!$GLOBALS['phpgw']->acl->check('run', phpgwapi_acl::READ, 'admin') && !$GLOBALS['phpgw']->acl->check('admin', phpgwapi_acl::ADD, 'booking'))
+			if (!$GLOBALS['phpgw']->acl->check('run', Acl::READ, 'admin') && !$GLOBALS['phpgw']->acl->check('admin', Acl::ADD, 'booking'))
 			{
 				phpgw::no_access();
 			}

@@ -12,11 +12,11 @@
 		var $fields;
 		public function __construct()
 		{
-			$is_admin = $GLOBALS['phpgw']->acl->check('run', phpgwapi_acl::READ, 'admin');
+			$is_admin = $GLOBALS['phpgw']->acl->check('run', Acl::READ, 'admin');
 			$local_admin = false;
 			if(!$is_admin)
 			{
-				if($GLOBALS['phpgw']->acl->check('admin', phpgwapi_acl::ADD, 'bookingfrontend'))
+				if($GLOBALS['phpgw']->acl->check('admin', Acl::ADD, 'bookingfrontend'))
 				{
 					$local_admin = true;
 				}
@@ -43,7 +43,7 @@
 		{
 			$appname = Sanitizer::get_var('appname');
 			$appname = $appname ? $appname : 'booking';
-			if(!$GLOBALS['phpgw']->acl->check('admin', phpgwapi_acl::ADD, $appname))
+			if(!$GLOBALS['phpgw']->acl->check('admin', Acl::ADD, $appname))
 			{
 				phpgw::no_access();
 			}

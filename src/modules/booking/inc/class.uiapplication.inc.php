@@ -637,7 +637,7 @@
 			$application = $this->bo->read_single($application_id);
 			$case_officer = false;
 
-			if ($this->is_assigned_to_current_user($application))// || $GLOBALS['phpgw']->acl->check('admin', phpgwapi_acl::ADD, 'booking'))
+			if ($this->is_assigned_to_current_user($application))// || $GLOBALS['phpgw']->acl->check('admin', Acl::ADD, 'booking'))
 			{
 				$case_officer = true;
 			}
@@ -3410,7 +3410,7 @@
 			}
 			$from = array("data" => implode(',', $from));
 			$num_associations = $associations['total_records'];
-			if ($this->is_assigned_to_current_user($application) || $GLOBALS['phpgw']->acl->check('admin', phpgwapi_acl::ADD, 'booking'))
+			if ($this->is_assigned_to_current_user($application) || $GLOBALS['phpgw']->acl->check('admin', Acl::ADD, 'booking'))
 			{
 				$application['currentuser'] = true;
 			}

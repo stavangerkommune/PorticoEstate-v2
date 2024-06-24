@@ -10,7 +10,7 @@
 
 			$menus = array();
 
-			if ($GLOBALS['phpgw']->acl->check('run', phpgwapi_acl::READ, 'admin') || $GLOBALS['phpgw']->acl->check('admin', phpgwapi_acl::ADD, 'mobilefrontend'))
+			if ($GLOBALS['phpgw']->acl->check('run', Acl::READ, 'admin') || $GLOBALS['phpgw']->acl->check('admin', Acl::ADD, 'mobilefrontend'))
 			{
 				$menus['admin'] = array
 					(
