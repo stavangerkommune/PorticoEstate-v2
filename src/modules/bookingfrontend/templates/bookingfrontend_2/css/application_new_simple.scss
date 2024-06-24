@@ -1,0 +1,9 @@
+.bookable-resources-container {
+  max-height: 3rem;
+  overflow: hidden;
+
+  &.expanded {
+    max-height: none;
+  }
+}
+

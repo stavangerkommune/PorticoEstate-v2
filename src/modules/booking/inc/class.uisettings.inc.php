@@ -18,7 +18,7 @@
 
 		public function index()
 		{
-			$config = new \App\modules\phpgwapi\services\Config('booking');
+			$config = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
 
 			// Define internal and external billing sequence number values

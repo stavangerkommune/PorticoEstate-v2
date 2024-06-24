@@ -71,7 +71,7 @@
 			  while ($this->db->next_record())
 			  {
 			  $permission = $this->db->f('permission');
-			  if($permission & ACL_READ)
+			  if($permission & PHPGW_ACL_READ)
 			  {
 			  $object_ids[] = $this->db->f('object_id');
 			  }
@@ -112,7 +112,7 @@
 
 		private function set_prizing_defaults($article_mapping_id )
 		{
-			$price_table = \Sanitizer::get_var('price_table', 'int');
+			$price_table = phpgw::get_var('price_table', 'int');
 
 			if(!empty($price_table['active']))
 			{
@@ -144,7 +144,7 @@
 
 		private function set_prizing( $article_mapping_id )
 		{
-			$article_prizing = \Sanitizer::get_var('article_prizing');
+			$article_prizing = phpgw::get_var('article_prizing');
 
 			if (empty($article_prizing['date_from']))
 			{

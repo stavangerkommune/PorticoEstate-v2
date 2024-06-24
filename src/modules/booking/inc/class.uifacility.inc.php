@@ -27,7 +27,7 @@
 
 		public function index()
 		{
-			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
+			if (phpgw::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -67,9 +67,9 @@
 
 		public function query()
 		{
-			$search = \Sanitizer::get_var('search');
-			$order = \Sanitizer::get_var('order');
-			$columns = \Sanitizer::get_var('columns');
+			$search = phpgw::get_var('search');
+			$order = phpgw::get_var('order');
+			$columns = phpgw::get_var('columns');
 			if ($order)
 			{
 				$sort = $columns[$order[0]['column']]['data'];
@@ -82,8 +82,8 @@
 			}
 
 			$params = array(
-				'start' => \Sanitizer::get_var('start', 'int', 'REQUEST', 0),
-				'results' => \Sanitizer::get_var('length', 'int', 'REQUEST', -1),
+				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
+				'results' => phpgw::get_var('length', 'int', 'REQUEST', -1),
 				'query' => $search['value'],
 				'order' => $columns[$order[0]['column']]['data'],
 				'sort' => $sort,
@@ -134,7 +134,7 @@
 
 		public function edit()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));

@@ -24,7 +24,7 @@
 
 		public function index()
 		{
-			$config = new \App\modules\phpgwapi\services\Config('booking');
+			$config = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
 
 			if ($_SERVER['REQUEST_METHOD'] == 'POST')
@@ -33,7 +33,7 @@
 				{
 					if (strlen(trim($value)) > 0)
 					{
-						$config->value($dim, Sanitizer::clean_value($value));
+						$config->value($dim, phpgw::clean_value($value));
 					}
 					else
 					{

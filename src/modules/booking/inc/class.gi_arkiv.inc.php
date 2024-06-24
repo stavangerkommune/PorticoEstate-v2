@@ -43,7 +43,7 @@
 			$location_id		 = $GLOBALS['phpgw']->locations->get_id('booking', 'run');
 			$custom_config		 = CreateObject('admin.soconfig', $location_id);
 			$custom_config_data	 = $custom_config->config_data['gi_arkiv'];
-			$config				 = (new \App\modules\phpgwapi\services\Config('booking'))->read();
+			$config				 = CreateObject('phpgwapi.config', 'booking')->read();
 
 			if (!empty($custom_config_data['debug']))
 			{
@@ -192,7 +192,7 @@
 				'ssn' => $ssn
 			);
 
-			$configfrontend			 = (new \App\modules\phpgwapi\services\Config('bookingfrontend'))->read();
+			$configfrontend			 = CreateObject('phpgwapi.config', 'bookingfrontend')->read();
 			$get_name_from_external	 = isset($configfrontend['get_name_from_external']) && $configfrontend['get_name_from_external'] ? $configfrontend['get_name_from_external'] : '';
 
 			$file = PHPGW_SERVER_ROOT . "/bookingfrontend/inc/custom/default/{$get_name_from_external}";

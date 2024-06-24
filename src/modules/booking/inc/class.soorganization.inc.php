@@ -61,7 +61,7 @@
 			 */
 			if( $get_ssn 
 				|| in_array($currentapp, array('booking','login') )
-				|| ( $GLOBALS['phpgw_info']['menuaction'] == 'bookingfrontend.uiorganization.add' && \Sanitizer::get_var('customer_ssn', 'bool', 'POST') ) )
+				|| ( $GLOBALS['phpgw_info']['menuaction'] == 'bookingfrontend.uiorganization.add' && phpgw::get_var('customer_ssn', 'bool', 'POST') ) )
 			{
 				$fields['customer_ssn'] = array('type' => 'string', 'sf_validator' => createObject('booking.sfValidatorNorwegianSSN'),	'required' => false);
 				$fields['contacts']['manytomany']['column']['ssn'] = array('sf_validator' => createObject('booking.sfValidatorNorwegianSSN'));
@@ -151,7 +151,7 @@
 		 * */
 		function find_building_users( $building_id, $params = array(), $split = false, $activities = array() )
 		{
-			$config = new \App\modules\phpgwapi\services\Config('booking');
+			$config = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
 			$test = '';
 

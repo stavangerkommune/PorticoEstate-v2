@@ -62,11 +62,11 @@
 
 		public function index()
 		{
-			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
+			if (phpgw::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
-			$config = new \App\modules\phpgwapi\services\Config('booking');
+			$config = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
 
 			self::add_javascript('booking', 'base', 'account_code_set.js');
@@ -183,8 +183,8 @@
 
 		public function show()
 		{
-			$account_code_set = $this->bo->read_single(\Sanitizer::get_var('id', 'int'));
-			$config = (new \App\modules\phpgwapi\services\Config('booking'))->read();
+			$account_code_set = $this->bo->read_single(phpgw::get_var('id', 'int'));
+			$config = CreateObject('phpgwapi.config', 'booking')->read();
 			//$this->add_default_display_data($account_code_set);
 			$account_code_set['edit_link'] = self::link(array('menuaction' => 'booking.uiaccount_code_set.edit',
 					'id' => $account_code_set['id']));
@@ -202,8 +202,8 @@
 
 		public function edit()
 		{
-			$account_code_set = $this->bo->read_single(\Sanitizer::get_var('id', 'int'));
-			$config = (new \App\modules\phpgwapi\services\Config('booking'))->read();
+			$account_code_set = $this->bo->read_single(phpgw::get_var('id', 'int'));
+			$config = CreateObject('phpgwapi.config', 'booking')->read();
 
 			$errors = array();
 			if ($_SERVER['REQUEST_METHOD'] == 'POST')
@@ -241,7 +241,7 @@
 		public function add()
 		{
 			$account_code_set = array();
-			$config = new \App\modules\phpgwapi\services\Config('booking');
+			$config = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
 
 			$errors = array();

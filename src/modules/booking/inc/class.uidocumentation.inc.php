@@ -36,7 +36,7 @@
 
 		public function index()
 		{
-			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
+			if (phpgw::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -146,7 +146,7 @@
 
 		public function show()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -195,7 +195,7 @@
 
 		public function edit()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 			$document = $this->bo->read_single($id);
 
 			$errors = array();
@@ -226,7 +226,7 @@
 
 		public function download()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 
 			$document = $this->bo->read_single($id);
 
@@ -235,7 +235,7 @@
 
 		public function delete()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 			$this->bo->delete($id);
 
 			self::redirect(array('menuaction' => 'booking.uidocumentation.index'));

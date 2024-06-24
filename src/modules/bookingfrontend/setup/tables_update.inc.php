@@ -1,6 +1,6 @@
 <?php
 	/**
-	 * Update bookingfrontend from v 0.1 to 0.1.1
+	 * Update Bookingfrontend from v 0.1 to 0.1.1
 	 */
 	$test[] = '0.1';
 
@@ -17,7 +17,7 @@
 
 
 	/**
-	 * Update bookingfrontend from v 0.1.1 to 1.0
+	 * Update Bookingfrontend from v 0.1.1 to 1.0
 	 */
 
 	$test[] = '0.1.1';
@@ -32,7 +32,7 @@
 	}
 
 	/**
-	 * Update bookingfrontend from v 1.0 to 1.1
+	 * Update Bookingfrontend from v 1.0 to 1.1
 	 */
 
 	$test[] = '1.0';

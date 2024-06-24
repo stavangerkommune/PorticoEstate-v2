@@ -29,7 +29,7 @@
 			parent::__construct();
 
 			//self::process_booking_unauthorized_exceptions();
-			$this->user_id			 = \Sanitizer::get_var('user_id', 'int');
+			$this->user_id			 = phpgw::get_var('user_id', 'int');
 
 			$this->bo										 = CreateObject('booking.bobuilding');
 			$this->bo_booking								 = CreateObject('booking.bobooking');
@@ -68,7 +68,7 @@
 
 		public function properties()
 		{
-			$q		 = \Sanitizer::get_var('query', 'string', 'REQUEST', null);
+			$q		 = phpgw::get_var('query', 'string', 'REQUEST', null);
 			$type_id = count(explode('-', $q));
 			$so		 = CreateObject('property.solocation');
 			$ret	 = $so->read(array('type_id' => $type_id, 'query' => $q));
@@ -88,12 +88,12 @@
 
 		public function find_buildings_used_by()
 		{
-			if (!\Sanitizer::get_var('phpgw_return_as') == 'json')
+			if (!phpgw::get_var('phpgw_return_as') == 'json')
 			{
 				return;
 			}
 
-			if (($organization_id = \Sanitizer::get_var('organization_id', 'int', 'REQUEST', null)))
+			if (($organization_id = phpgw::get_var('organization_id', 'int', 'REQUEST', null)))
 			{
 				$buildings = $this->bo->find_buildings_used_by($organization_id);
 				array_walk($buildings["results"], array($this, "_add_links"), "bookingfrontend.uibuilding.show");
@@ -105,7 +105,7 @@
 
 		public function index()
 		{
-			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
+			if (phpgw::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -260,7 +260,7 @@
 		public function query()
 		{
 
-			$filter_part_of_town_id = \Sanitizer::get_var('filter_part_of_town_id');
+			$filter_part_of_town_id = phpgw::get_var('filter_part_of_town_id');
 			if ($filter_part_of_town_id && preg_match("/,/", $filter_part_of_town_id))
 			{
 				$_REQUEST['filter_part_of_town_id'] = explode(',', $filter_part_of_town_id);
@@ -332,7 +332,7 @@
 		{
 			$GLOBALS['phpgw_info']['flags']['allow_html_image']	 = true;
 			$GLOBALS['phpgw_info']['flags']['allow_html_iframe'] = true;
-			$id													 = \Sanitizer::get_var('id', 'int');
+			$id													 = phpgw::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -349,7 +349,7 @@
 			$building['cancel_link']			 = self::link(array('menuaction' => 'booking.uibuilding.show',
 					'id'		 => $building['id']));
 			$building['top-nav-bar-buildings']	 = lang('Buildings');
-			$config = new \App\modules\phpgwapi\services\Config('booking');
+			$config								 = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
 
 			if ($config->config_data['extra_schedule'] == 'yes')
@@ -417,7 +417,7 @@
 
 		public function show()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -457,7 +457,7 @@
 
 		public function schedule()
 		{
-			$building = $this->bo->get_schedule(\Sanitizer::get_var('id', 'int'), "booking.uibuilding");
+			$building = $this->bo->get_schedule(phpgw::get_var('id', 'int'), "booking.uibuilding");
 
 			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('booking') . "::{$building['name']}";
 

@@ -34,7 +34,7 @@
 
 		public function index()
 		{
-			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
+			if (phpgw::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -181,41 +181,41 @@
 				$filters['building_id'] = $current_user_building_data;
 			}
 
-			$testdata = \Sanitizer::get_var('filter_building_id', 'int', 'REQUEST', null);
+			$testdata = phpgw::get_var('filter_building_id', 'int', 'REQUEST', null);
 			if ($testdata != 0)
 			{
-				$filters['building_name'] = $this->bo->so->get_building(\Sanitizer::get_var('filter_building_id', 'int', 'REQUEST', null));
+				$filters['building_name'] = $this->bo->so->get_building(phpgw::get_var('filter_building_id', 'int', 'REQUEST', null));
 			}
 			else
 			{
 				unset($filters['building_name']);
 			}
-			$testdata2 = \Sanitizer::get_var('type', 'string', 'REQUEST');
+			$testdata2 = phpgw::get_var('type', 'string', 'REQUEST');
 			if ($testdata2 != '')
 			{
-				$filters['type'] = \Sanitizer::get_var('type', 'string', 'REQUEST');
+				$filters['type'] = phpgw::get_var('type', 'string', 'REQUEST');
 			}
 			else
 			{
 				unset($filters['type']);
 			}
-			$testdata2 = \Sanitizer::get_var('status', 'string', 'REQUEST');
+			$testdata2 = phpgw::get_var('status', 'string', 'REQUEST');
 			if ($testdata2 != '')
 			{
-				$filters['status'] = \Sanitizer::get_var('status', 'string', 'REQUEST');
+				$filters['status'] = phpgw::get_var('status', 'string', 'REQUEST');
 			}
 			else
 			{
 				unset($filters['status']);
 			}
 
-			$search = \Sanitizer::get_var('search');
-			$order = \Sanitizer::get_var('order');
-			$columns = \Sanitizer::get_var('columns');
+			$search = phpgw::get_var('search');
+			$order = phpgw::get_var('order');
+			$columns = phpgw::get_var('columns');
 
 			$params = array(
-				'start' => \Sanitizer::get_var('start', 'int', 'REQUEST', 0),
-				'results' => \Sanitizer::get_var('length', 'int', 'REQUEST', null),
+				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
+				'results' => phpgw::get_var('length', 'int', 'REQUEST', null),
 				'query' => $search['value'],
 				'sort' => $columns[$order[0]['column']]['data'],
 				'dir' => $order[0]['dir'],
@@ -271,7 +271,7 @@
 
 		public function edit()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 
 			if ($id)
 			{
@@ -282,9 +282,9 @@
 			else
 			{
 				date_default_timezone_set("Europe/Oslo");
-				$date = new DateTime(\Sanitizer::get_var('date'));
+				$date = new DateTime(phpgw::get_var('date'));
 				$system_message = array();
-				$system_message['building_id'] = \Sanitizer::get_var('building_id', 'int');
+				$system_message['building_id'] = phpgw::get_var('building_id', 'int');
 				$system_message['building_name'] = $this->bo->so->get_building($system_message['building_id']);
 				$system_message['created'] = $date->format('Y-m-d  H:m');
 				$system_message['cancel_link'] = self::link(array('menuaction' => 'booking.uisystem_message.index'));
@@ -339,7 +339,7 @@
 
 		public function show()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));

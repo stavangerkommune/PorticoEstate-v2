@@ -1,16 +1,9 @@
 <?php
 	phpgw::import_class('booking.account_helper');
 
-	use \App\Database\Db;
-	use \App\Database\Db2;
-	use PDO;
-	use App\modules\phpgwapi\services\Settings;
-	use App\modules\phpgwapi\services\Cache;
-
-
 	abstract class booking_socommon
 	{
-		protected $userSettings, $serverSettings, $flags;
+
 		protected $db;
 		protected $db2;
 		protected $db_null = 'NULL';
@@ -49,19 +42,10 @@
 
 		public function __construct( $table_name, $fields )
 		{
-			$this->userSettings = Settings::getInstance()->get('user');
-			$this->serverSettings = Settings::getInstance()->get('server');
-			$this->flags = Settings::getInstance()->get('flags');
 			$this->table_name = $table_name;
 			$this->fields = $fields;
-			$this->db =	Db::getInstance();
-			$db_config = $this->db->get_config();
-			//create a new pdo  $this->db2 of the database based on the configuration
-			$this->db2 = new Db2("pgsql:host={$db_config['db_host']};port={$db_config['db_port']};dbname={$db_config['db_name']}", $db_config['db_user'], $db_config['db_pass']);
-			$this->db2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$this->db2->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-			$this->db2->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-
+			$this->db = & $GLOBALS['phpgw']->db;
+			$this->db2 = clone($GLOBALS['phpgw']->db);
 			$this->join = & $this->db->join;
 			$this->like = & $this->db->like;
 		}
@@ -651,7 +635,7 @@
 		 */
 		function read( $params )
 		{
-			$maxmatchs	 = $this->userSettings['preferences']['common']['maxmatchs'];
+			$maxmatchs	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
 
 			$start = isset($params['start']) && $params['start'] ? (int)$params['start'] : 0;
 			$results = isset($params['results']) && $params['results'] ? $params['results'] : $maxmatchs;
@@ -820,7 +804,7 @@
 		 */
 		protected function modify_by_timezone( &$value, $reverse = false )
 		{
-			$timezone = $this->userSettings['preferences']['common']['timezone'];
+			$timezone = $GLOBALS['phpgw_info']['user']['preferences']['common']['timezone'];
 			if($value && !empty($timezone))
 			{
 				if($reverse)

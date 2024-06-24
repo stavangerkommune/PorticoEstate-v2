@@ -76,12 +76,12 @@
 
 		public function index()
 		{
-			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
+			if (phpgw::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
 
-			$show_all = \Sanitizer::get_var('show_all') || false;
+			$show_all = phpgw::get_var('show_all') || false;
 			$activities = $this->bo->so->read(array('sort' => 'name', 'dir' => 'ASC', 'results' => -1));
 			$children = array();
 			foreach ($activities['results'] as $activity)
@@ -157,7 +157,7 @@
 
 		public function edit()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));

@@ -1,0 +1,9 @@
+.bookable-resources-container {
+  max-height: 3rem;
+  overflow: hidden;
+}
+.bookable-resources-container.expanded {
+  max-height: none;
+}
+
+/*# sourceMappingURL=resource.css.map */

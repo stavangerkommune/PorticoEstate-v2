@@ -116,13 +116,13 @@
 		public function populate_grid_data($filter_top_level = 0)
 		{
 			$parent_id = 0;
-			if (\Sanitizer::get_var('filter_top_level', 'int', 'REQUEST', 0) == 1)
+			if (phpgw::get_var('filter_top_level', 'int', 'REQUEST', 0) == 1)
 			{
 				$filter_top_level = 1;
 			}
 			else
 			{
-				$parent_id = \Sanitizer::get_var('parent_id', 'int', 'REQUEST', 0);
+				$parent_id = phpgw::get_var('parent_id', 'int', 'REQUEST', 0);
 			}
 			$activities = $this->read_all();
 

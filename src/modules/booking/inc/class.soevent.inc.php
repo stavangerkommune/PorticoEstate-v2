@@ -247,7 +247,7 @@
 		public function update_comment( $allids )
 		{
 			$db = $this->db;
-			$config = new \App\modules\phpgwapi\services\Config('booking');
+			$config = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
 			$external_site_address = isset($config->config_data['external_site_address']) && $config->config_data['external_site_address'] ? $config->config_data['external_site_address'] : $GLOBALS['phpgw_info']['server']['webserver_url'];
 

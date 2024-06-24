@@ -60,7 +60,7 @@
 
 		public function index()
 		{
-			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
+			if (phpgw::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -182,26 +182,26 @@
 		public function query()
 		{
 			$filters = array();
-			$testdata = \Sanitizer::get_var('buildings', 'int', 'REQUEST', null);
+			$testdata = phpgw::get_var('buildings', 'int', 'REQUEST', null);
 			if ($testdata != 0)
 			{
-				$filters['building_name'] = $this->bo->so->get_building(\Sanitizer::get_var('buildings', 'int', 'REQUEST', null));
+				$filters['building_name'] = $this->bo->so->get_building(phpgw::get_var('buildings', 'int', 'REQUEST', null));
 			}
 			else
 			{
 				unset($filters['building_name']);
 			}
-			$testdata2 = \Sanitizer::get_var('activities', 'int', 'REQUEST', null);
+			$testdata2 = phpgw::get_var('activities', 'int', 'REQUEST', null);
 			if ($testdata2 != 0)
 			{
-				$filters['activity_id'] = $this->bo->so->get_activities(\Sanitizer::get_var('activities', 'int', 'REQUEST', null));
+				$filters['activity_id'] = $this->bo->so->get_activities(phpgw::get_var('activities', 'int', 'REQUEST', null));
 			}
 			else
 			{
 				unset($filters['activity_id']);
 			}
 
-			$completed = \Sanitizer::get_var('completed', 'int', 'REQUEST');
+			$completed = phpgw::get_var('completed', 'int', 'REQUEST');
 
 			if($completed === -1)
 			{
@@ -213,8 +213,8 @@
 				$filters['completed'] = $completed;
 			}
 
-			$filter_from = \Sanitizer::get_var('from', 'string', 'REQUEST', null);
-			$from_date = $filter_from ? $filter_from : \Sanitizer::get_var('filter_from', 'string', 'REQUEST', null);
+			$filter_from = phpgw::get_var('from', 'string', 'REQUEST', null);
+			$from_date = $filter_from ? $filter_from : phpgw::get_var('filter_from', 'string', 'REQUEST', null);
 
 			if ($from_date)
 			{
@@ -222,13 +222,13 @@
 				$filters['where'][] = "%%table%%" . sprintf(".from_ >= '%s 00:00:00'", $GLOBALS['phpgw']->db->db_addslashes($filter_from2));
 			}
 
-			$search = \Sanitizer::get_var('search');
-			$order = \Sanitizer::get_var('order');
-			$columns = \Sanitizer::get_var('columns');
+			$search = phpgw::get_var('search');
+			$order = phpgw::get_var('order');
+			$columns = phpgw::get_var('columns');
 
 			$params = array(
-				'start' => \Sanitizer::get_var('start', 'int', 'REQUEST', 0),
-				'results' => \Sanitizer::get_var('length', 'int', 'REQUEST', null),
+				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
+				'results' => phpgw::get_var('length', 'int', 'REQUEST', null),
 				'query' => $search['value'],
 				'order' => $columns[$order[0]['column']]['data'],
 				'sort' => $columns[$order[0]['column']]['data'],
@@ -360,10 +360,9 @@
 					$resource = $this->bo->so->get_resource_info($res);
 					$_mymail = $this->bo->so->get_contact_mail($e, 'allocation');
 
-					$a = $_mymail[0]['email'];
-
-					if(!empty($a))
+					if(!empty($_mymail[0]['email']))
 					{
+						$a = $_mymail[0]['email'];
 						if (array_key_exists($a, $data))
 						{
 							$data[$a][] = array(
@@ -380,7 +379,7 @@
 						}
 					}
 
-					if ($_mymail[1]['email'])
+					if (!empty($_mymail[1]['email']))
 					{
 						$b = $_mymail[1]['email'];
 						if (array_key_exists($b, $data))
@@ -421,10 +420,9 @@
 					$resource = $this->bo->so->get_resource_info($res);
 					$_mymail = $this->bo->so->get_contact_mail($e, 'booking');
 
-					$a = $_mymail[0]['email'];
-
-					if(!empty($a))
+					if(!empty($_mymail[0]['email']))
 					{
+						$a = $_mymail[0]['email'];
 						if (array_key_exists($a, $data))
 						{
 							$data[$a][] = array(
@@ -441,9 +439,9 @@
 						}
 					}
 
-					if ($_mymail[1]['email'])
+					if (!empty($_mymail[1]['email']))
 					{
-						$b = $_mymail[1];
+						$b = $_mymail[1]['email'];
 						if (array_key_exists($b, $data))
 						{
 							$data[$b][] = array(
@@ -475,7 +473,7 @@
 
 			if ($_SERVER['REQUEST_METHOD'] == 'POST')
 			{
-				$event['skip_bas'] = (int)\Sanitizer::get_var('skip_bas', 'int');
+				$event['skip_bas'] = (int)phpgw::get_var('skip_bas', 'int');
 
 				array_set_default($_POST, 'from_', array());
 				array_set_default($_POST, 'to_', array());
@@ -519,7 +517,7 @@
 					{
 						$event['customer_organization_name'] = $_POST['organization_name'];
 						$event['customer_organization_id'] = $_POST['organization_id'];
-						$organization = $this->organization_bo->read_single(intval(\Sanitizer::get_var('organization_id', 'POST')));
+						$organization = $this->organization_bo->read_single(intval(phpgw::get_var('organization_id', 'POST')));
 					}
 					else
 					{
@@ -615,7 +613,7 @@
 				}
 				if ($_POST['cost'] != 0)
 				{
-					$this->add_cost_history($event, lang('cost is set'), \Sanitizer::get_var('cost', 'float'));
+					$this->add_cost_history($event, lang('cost is set'), phpgw::get_var('cost', 'float'));
 				}
 				if (($_POST['organization_name'] != '' or $_POST['org_id2'] != '') and isset($errors['contact_name']))
 				{
@@ -654,7 +652,7 @@
 						 * Start dealing with the purchase_order..
 						 */
 						$purchase_order = array('status' => 0, 'customer_id' => -1, 'lines' => array());
-						$selected_articles = (array)\Sanitizer::get_var('selected_articles');
+						$selected_articles = (array)phpgw::get_var('selected_articles');
 
 						foreach ($selected_articles as $selected_article)
 						{
@@ -705,7 +703,7 @@
 			$default_dates = array_map(array($this, '_combine_dates'), array(''), array(''));
 			array_set_default($event, 'dates', $default_dates);
 
-			if (!\Sanitizer::get_var('from_report', 'POST'))
+			if (!phpgw::get_var('from_report', 'POST'))
 			{
 				/**
 				 * Translate into text
@@ -727,7 +725,7 @@
 			$event['cancel_link'] = self::link(array('menuaction' => 'booking.uievent.index'));
 			array_set_default($event, 'cost', '0');
 
-			$activity_id = \Sanitizer::get_var('activity_id', 'int', 'REQUEST', -1);
+			$activity_id = phpgw::get_var('activity_id', 'int', 'REQUEST', -1);
 			$activity_path = $this->activity_bo->get_path($activity_id);
 			$top_level_activity = $activity_path ? $activity_path[0]['id'] : -1;
 			$activities = $this->activity_bo->fetch_activities();
@@ -759,9 +757,9 @@
 			self::add_javascript('booking', 'base', 'purchase_order_edit.js');
 
 			self::add_javascript('phpgwapi', 'dateformatter', 'dateformatter.js');
-			phpgwapi_js::getInstance()->validate_file('alertify', 'alertify.min', 'phpgwapi');
-			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
-			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
+			$GLOBALS['phpgw']->js->validate_file('alertify', 'alertify.min', 'phpgwapi');
+			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
+			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
 
 			$this->add_template_helpers();
 			self::render_template_xsl('event_new', array(
@@ -783,6 +781,11 @@
 		 */
 		private function send_sms_notification( $receiver, $subject, $body )
 		{
+			if(empty($GLOBALS['phpgw_info']['apps']['sms']))
+			{
+				return false;
+			}
+
 			$sms_service = CreateObject('sms.sms');
 			//html -> text..
 			$html2text			 = createObject('phpgwapi.html2text', "{$subject}<br/>{$body}");
@@ -838,7 +841,7 @@
 		{
 			$send = CreateObject('phpgwapi.send');
 
-			$config = new \App\modules\phpgwapi\services\Config('booking');
+			$config = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
 			$from = isset($config->config_data['email_sender']) && $config->config_data['email_sender'] ? $config->config_data['email_sender'] : "noreply<noreply@{$GLOBALS['phpgw_info']['server']['hostname']}>";
 
@@ -872,10 +875,16 @@
 
 		public function send_sms_participants()
 		{
+			if(empty($GLOBALS['phpgw_info']['apps']['sms']))
+			{
+				phpgwapi_cache::message_set('SMS er deaktivert', 'error');
+				return false;
+			}
+
 			$type = 'event';;
-			$id = \Sanitizer::get_var('id', 'int');
-			$send_sms = \Sanitizer::get_var('send_sms', 'bool');
-			$sms_content = \Sanitizer::get_var('sms_content', 'string');
+			$id = phpgw::get_var('id', 'int');
+			$send_sms = phpgw::get_var('send_sms', 'bool');
+			$sms_content = phpgw::get_var('sms_content', 'string');
 
 			$status = 'error';
 			$message = 'Nothing...';
@@ -952,7 +961,7 @@
 
 		public function edit()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -986,7 +995,7 @@
 			$building_info = $this->bo->so->get_building_info($id);
 			$event['building_id'] = $building_info['id'];
 			$event['building_name'] = $building_info['name'];
-			$config = (new \App\modules\phpgwapi\services\Config('booking'))->read();
+			$config = CreateObject('phpgwapi.config', 'booking')->read();
 
 			$tabs = array();
 			$tabs['generic'] = array('label' => lang('edit event'), 'link' => '#event_edit');
@@ -1020,7 +1029,7 @@
 
 			if ($_SERVER['REQUEST_METHOD'] == 'POST')
 			{
-				$event['skip_bas'] = (int)\Sanitizer::get_var('skip_bas', 'int');
+				$event['skip_bas'] = (int)phpgw::get_var('skip_bas', 'int');
 				$_POST['from_'] = date("Y-m-d H:i:s", phpgwapi_datetime::date_to_timestamp($_POST['from_']));
 				$_POST['to_'] = date("Y-m-d H:i:s", phpgwapi_datetime::date_to_timestamp($_POST['to_']));
 			}
@@ -1054,9 +1063,9 @@
 
 				if ($_POST['organization_name'])
 				{
-					$event['customer_organization_name'] = \Sanitizer::get_var('organization_name', 'string', 'POST');
-					$event['customer_organization_id'] = \Sanitizer::get_var('organization_id', 'int', 'POST');
-					$organization = $this->organization_bo->read_single(intval(\Sanitizer::get_var('organization_id', 'int')));
+					$event['customer_organization_name'] = phpgw::get_var('organization_name', 'string', 'POST');
+					$event['customer_organization_id'] = phpgw::get_var('organization_id', 'int', 'POST');
+					$organization = $this->organization_bo->read_single(intval(phpgw::get_var('organization_id', 'int')));
 
 					if ($organization['customer_internal'] == 0)
 					{
@@ -1088,14 +1097,14 @@
 				elseif ($_POST['customer_identifier_type'] == 'ssn')
 				{
 					$event['customer_identifier_type'] = 'ssn';
-					$event['customer_ssn'] = \Sanitizer::get_var('customer_ssn');
+					$event['customer_ssn'] = phpgw::get_var('customer_ssn');
 				}
 				elseif ($_POST['customer_identifier_type'] == 'organization_number')
 				{
 					$event['customer_identifier_type'] = 'organization_number';
-					$event['customer_organization_number'] = \Sanitizer::get_var('customer_organization_number', 'string', 'POST');
-					$event['customer_organization_name'] = \Sanitizer::get_var('customer_organization_name', 'string', 'POST');
-					$event['customer_organization_id'] = \Sanitizer::get_var('customer_organization_id', 'int', 'POST');
+					$event['customer_organization_number'] = phpgw::get_var('customer_organization_number', 'string', 'POST');
+					$event['customer_organization_name'] = phpgw::get_var('customer_organization_name', 'string', 'POST');
+					$event['customer_organization_id'] = phpgw::get_var('customer_organization_id', 'int', 'POST');
 				}
 
 				/**
@@ -1116,23 +1125,23 @@
 
 				if ($_POST['cost'] != $_POST['cost_orig'])
 				{
-					$this->add_cost_history($event, \Sanitizer::get_var('cost_comment'), \Sanitizer::get_var('cost', 'float'));
+					$this->add_cost_history($event, phpgw::get_var('cost_comment'), phpgw::get_var('cost', 'float'));
 				}
 
 				if (!$errors['event'] and ! $errors['resource_number'] and ! $errors['organization_number'] and ! $errors['invoice_data'] && !$errors['contact_name'] && !$errors['cost'])
 				{
-		//			if ( \Sanitizer::get_var('sendtorbuilding', 'bool', 'POST') || \Sanitizer::get_var('sendtocontact', 'bool', 'POST') || \Sanitizer::get_var('sendtocollision', 'bool', 'POST') ||  \Sanitizer::get_var('sendsmstocontact', 'bool', 'POST') || \Sanitizer::get_var('sendtorbuilding_email1', 'bool', 'POST') || \Sanitizer::get_var('sendtorbuilding_email2', 'bool', 'POST'))
+		//			if ( phpgw::get_var('sendtorbuilding', 'bool', 'POST') || phpgw::get_var('sendtocontact', 'bool', 'POST') || phpgw::get_var('sendtocollision', 'bool', 'POST') ||  phpgw::get_var('sendsmstocontact', 'bool', 'POST') || phpgw::get_var('sendtorbuilding_email1', 'bool', 'POST') || phpgw::get_var('sendtorbuilding_email2', 'bool', 'POST'))
 					{
 
-						if ((\Sanitizer::get_var('sendtocollision', 'bool', 'POST') || \Sanitizer::get_var('sendtocontact', 'bool', 'POST') || \Sanitizer::get_var('sendtorbuilding', 'bool', 'POST') || \Sanitizer::get_var('sendsmstocontact', 'bool', 'POST')  || \Sanitizer::get_var('sendtorbuilding_email1', 'bool', 'POST') || \Sanitizer::get_var('sendtorbuilding_email2', 'bool', 'POST')) && \Sanitizer::get_var('active', 'bool', 'POST'))
+						if ((phpgw::get_var('sendtocollision', 'bool', 'POST') || phpgw::get_var('sendtocontact', 'bool', 'POST') || phpgw::get_var('sendtorbuilding', 'bool', 'POST') || phpgw::get_var('sendsmstocontact', 'bool', 'POST')  || phpgw::get_var('sendtorbuilding_email1', 'bool', 'POST') || phpgw::get_var('sendtorbuilding_email2', 'bool', 'POST')) && phpgw::get_var('active', 'bool', 'POST'))
 						{
 							$maildata = $this->create_sendt_mail_notification_comment_text($event, $errors);
 
-							if (\Sanitizer::get_var('sendtocollision', 'bool', 'POST'))
+							if (phpgw::get_var('sendtocollision', 'bool', 'POST'))
 							{
 
 								$subject = $config['event_conflict_mail_subject'];
-								$body = "<p>" . $config['event_mail_conflict_contact_active_collision'] . "<br />\n" . \Sanitizer::get_var('mail','html', 'POST') . "\n";
+								$body = "<p>" . $config['event_mail_conflict_contact_active_collision'] . "<br />\n" . phpgw::get_var('mail','html', 'POST') . "\n";
 								$body .= '<br /><a href="' . $link . '">Link til ' . $config['application_mail_systemname'] . '</a></p>';
 								$body .= "<p>" . $config['application_mail_signature'] . "</p>";
 								$sendt = 0;
@@ -1186,26 +1195,26 @@
 
 									/**start log comment**/
 
-									$comment = "<p>Melding om konflikt er sendt til" . implode(', ', $mail_sendt_to) . "<br />\n" . \Sanitizer::get_var('mail','html', 'POST') . "</p>";
+									$comment = "<p>Melding om konflikt er sendt til" . implode(', ', $mail_sendt_to) . "<br />\n" . phpgw::get_var('mail','html', 'POST') . "</p>";
 									$this->add_comment($event, $comment);
 									/**End log comment**/
 								}
 							}
-							if (\Sanitizer::get_var('sendtocontact', 'bool', 'POST'))
+							if (phpgw::get_var('sendtocontact', 'bool', 'POST'))
 							{
 								$subject = $config['event_change_mail_subject'];
-								$body = "<p>" . $config['event_change_mail'] . "\n<br/>Melding: " . \Sanitizer::get_var('mail','html', 'POST');
+								$body = "<p>" . $config['event_change_mail'] . "\n<br/>Melding: " . phpgw::get_var('mail','html', 'POST');
 								$body .= '<br /><a href="' . $link . '">Link til ' . $config['application_mail_systemname'] . '</a></p>';
 								$this->send_mailnotification($event['contact_email'], $subject, $body);
 								$comment = $comment_text_log . '<br />Denne er sendt til ' . $event['contact_email'] . ':<br />';
-								$comment .=  \Sanitizer::get_var('mail','html', 'POST');
+								$comment .=  phpgw::get_var('mail','html', 'POST');
 								$this->add_comment($event, $comment);
 							}
 							//sms
-                            if (\Sanitizer::get_var('sendsmstocontact', 'bool', 'POST'))
+                            if (phpgw::get_var('sendsmstocontact', 'bool', 'POST'))
 							{
-                                $rool = \Sanitizer::get_var('mail','html', 'POST');
-                                $phone_number = \Sanitizer::get_var('contact_phone', 'string', 'POST');
+                                $rool = phpgw::get_var('mail','html', 'POST');
+                                $phone_number = phpgw::get_var('contact_phone', 'string', 'POST');
                                 $text_message  = array('text' => $rool);
                                 $newArray = array_map(function($v)
 								{
@@ -1220,21 +1229,28 @@
 									//implement validation
 								}
 
-								 $sms_res = CreateObject('sms.sms')->websend2pv($this->account, $phone_number, $newArray['text']);
-
-								if($sms_res[0][0])
+								if (empty($GLOBALS['phpgw_info']['apps']['sms']))
 								{
-									$comment = $rool . '<br />Denne er sendt til ' . $phone_number;
-									$this->add_comment($event, $comment);
+									phpgwapi_cache::message_set('SMS er deaktivert', 'error');
+								}
+								else
+								{
+									$sms_res = CreateObject('sms.sms')->websend2pv($this->account, $phone_number, $newArray['text']);
+
+									if($sms_res[0][0])
+									{
+										$comment = $rool . '<br />Denne er sendt til ' . $phone_number;
+										$this->add_comment($event, $comment);
+									}
 								}
 							}
 
-							if (\Sanitizer::get_var('sendtorbuilding', 'bool', 'POST') || \Sanitizer::get_var('sendtorbuilding_email1', 'bool', 'POST') || \Sanitizer::get_var('sendtorbuilding_email2', 'bool', 'POST'))
+							if (phpgw::get_var('sendtorbuilding', 'bool', 'POST') || phpgw::get_var('sendtorbuilding_email1', 'bool', 'POST') || phpgw::get_var('sendtorbuilding_email2', 'bool', 'POST'))
 							{
 
 								$subject = $config['event_mail_building_subject'];
 
-								$body = "<p>" . $config['event_mail_building'] . "<br />\n" . \Sanitizer::get_var('mail','html', 'POST') . "</p>";
+								$body = "<p>" . $config['event_mail_building'] . "<br />\n" . phpgw::get_var('mail','html', 'POST') . "</p>";
 
 								if ($event['customer_organization_name'])
 								{
@@ -1267,31 +1283,31 @@
 									$this->send_mailnotification($event['contact_email'], $subject, $body);
 								}
 */
-								if (\Sanitizer::get_var('sendtorbuilding', 'bool', 'POST') && $building_info['email'])
+								if (phpgw::get_var('sendtorbuilding', 'bool', 'POST') && $building_info['email'])
 								{
 									$sendt++;
 									$mail_sendt_to[] = $building_info['email'];
 									$this->send_mailnotification($building_info['email'], $subject, $body);
 								}
-								if (\Sanitizer::get_var('sendtorbuilding', 'bool', 'POST') && $building_info['tilsyn_email'])
+								if (phpgw::get_var('sendtorbuilding', 'bool', 'POST') && $building_info['tilsyn_email'])
 								{
 									$sendt++;
 									$mail_sendt_to[] = $building_info['tilsyn_email'];
 									$this->send_mailnotification($building_info['tilsyn_email'], $subject, $body);
 								}
-								if (\Sanitizer::get_var('sendtorbuilding', 'bool', 'POST') && $building_info['tilsyn_email2'])
+								if (phpgw::get_var('sendtorbuilding', 'bool', 'POST') && $building_info['tilsyn_email2'])
 								{
 									$sendt++;
 									$mail_sendt_to[] = $building_info['tilsyn_email2'];
 									$this->send_mailnotification($building_info['tilsyn_email2'], $subject, $body);
 								}
-								if (\Sanitizer::get_var('sendtorbuilding_email1', 'bool', 'POST'))
+								if (phpgw::get_var('sendtorbuilding_email1', 'bool', 'POST'))
 								{
 									$sendt++;
 									$mail_sendt_to[] = $_POST['sendtorbuilding_email1'];
 									$this->send_mailnotification($_POST['sendtorbuilding_email1'], $subject, $body);
 								}
-								if (\Sanitizer::get_var('sendtorbuilding_email2', 'bool', 'POST'))
+								if (phpgw::get_var('sendtorbuilding_email2', 'bool', 'POST'))
 								{
 									$sendt++;
 									$mail_sendt_to[] = $_POST['sendtorbuilding_email2'];
@@ -1303,17 +1319,17 @@
 								}
 								else
 								{
-									$comment_text_log = \Sanitizer::get_var('mail','string', 'POST');
+									$comment_text_log = phpgw::get_var('mail','string', 'POST');
 									$comment = 'Melding om endring er sendt til ansvarlig for bygg: ' . implode(', ', $mail_sendt_to) . '<br />' . $comment_text_log;
 									$this->add_comment($event, $comment);
 								}
 							}
 						}
-						if (!\Sanitizer::get_var('active', 'bool', 'POST') && \Sanitizer::get_var('sendtorbuilding', 'bool', 'POST'))
+						if (!phpgw::get_var('active', 'bool', 'POST') && phpgw::get_var('sendtorbuilding', 'bool', 'POST'))
 						{
 
 							$subject = $config['event_canceled_mail_subject'];
-							$body = $config['event_canceled_mail'] . "<br />\n" . \Sanitizer::get_var('mail','html', 'POST');
+							$body = $config['event_canceled_mail'] . "<br />\n" . phpgw::get_var('mail','html', 'POST');
 
 							if ($event['customer_organization_name'])
 							{
@@ -1377,7 +1393,7 @@
 							}
 							else
 							{
-								$comment = '<span style="color:red;">Dette arrangemenet er kanselert</span>. Denne er sendt til ' . implode(', ',$mail_sendt_to) . '<br />' . \Sanitizer::get_var('mail','string', 'POST');
+								$comment = '<span style="color:red;">Dette arrangemenet er kanselert</span>. Denne er sendt til ' . implode(', ',$mail_sendt_to) . '<br />' . phpgw::get_var('mail','string', 'POST');
 								$this->add_comment($event, $comment);
 							}
 //						$receipt = $this->bo->update($event);
@@ -1404,7 +1420,7 @@
 							'customer_id' => -1,
 							'lines' => array());
 
-						$selected_articles = (array)\Sanitizer::get_var('selected_articles');
+						$selected_articles = (array)phpgw::get_var('selected_articles');
 
 						foreach ($selected_articles as $selected_article)
 						{
@@ -1544,9 +1560,9 @@
 			phpgwapi_jquery::formvalidator_generate(array('location', 'date', 'security',
 				'file'));
 
-			phpgwapi_js::getInstance()->validate_file('alertify', 'alertify.min', 'phpgwapi');
-			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
-			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
+			$GLOBALS['phpgw']->js->validate_file('alertify', 'alertify.min', 'phpgwapi');
+			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
+			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
 
 			$event['tabs'] = phpgwapi_jquery::tabview_generate($tabs, $active_tab);
 //              echo '<pre>'; print_r($event);echo '</pre>';
@@ -1564,8 +1580,8 @@
 
 		public function delete()
 		{
-			$event_id = \Sanitizer::get_var('id', 'int');
-			$application_id = \Sanitizer::get_var('application_id', 'int');
+			$event_id = phpgw::get_var('id', 'int');
+			$application_id = phpgw::get_var('application_id', 'int');
 
 			if ($GLOBALS['phpgw']->acl->check('admin', phpgwapi_acl::ADD, 'booking'))
 			{
@@ -1587,7 +1603,7 @@
 
 		public function info()
 		{
-			$event = $this->bo->read_single(\Sanitizer::get_var('id', 'int'));
+			$event = $this->bo->read_single(phpgw::get_var('id', 'int'));
 			$resources = $this->resource_bo->so->read(array('filters' => array('id' => $event['resources']),
 				'sort' => 'name'));
 			$event['resources'] = $resources['results'];
@@ -1596,7 +1612,7 @@
 			{
 				$res_names[] = $res['name'];
 			}
-			$event['resource'] = \Sanitizer::get_var('resource');
+			$event['resource'] = phpgw::get_var('resource');
 			$event['resource_info'] = join(', ', $res_names);
 			$event['application_link'] = self::link(array('menuaction' => 'booking.uiapplication.show',
 					'id' => $event['application_id']));
@@ -1613,6 +1629,6 @@
 					'id' => $event['id']));
 
 			self::render_template_xsl('event_info', array('event' => $event));
-			phpgwapi_xslttemplates::getInstance()->set_output('wml'); // Evil hack to disable page chrome
+			$GLOBALS['phpgw']->xslttpl->set_output('wml'); // Evil hack to disable page chrome
 		}
 	}

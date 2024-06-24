@@ -6469,7 +6469,7 @@ SQL;
 //			$to			 = "Sigurd.Nes@bergen.kommune.no";
 //			$subject	 = 'Rydding av duplikater i fakturagrunnlag::' . $config_system['site_title'];
 //			$body		 = 'Vedlegg';
-//			$config		 = (new \App\modules\phpgwapi\services\Config('booking'))->read();
+//			$config		 = CreateObject('phpgwapi.config', 'booking')->read();
 //			$from_email	 = isset($config['email_sender']) && $config['email_sender'] ? $config['email_sender'] : "noreply<noreply@{$GLOBALS['phpgw_info']['server']['hostname']}>";
 //
 //			try
@@ -6549,18 +6549,18 @@ SQL;
 	 *
 	 */
 	$test[] = '0.2.96';
-	function booking_upgrade0_2_96($oProc)
+	function booking_upgrade0_2_96()
 	{
-	//	$oProc->m_odb->transaction_begin();
+		$GLOBALS['phpgw_setup']->oProc->m_odb->transaction_begin();
 
-		$oProc->AddColumn('bb_e_lock_system', 'webservicehost___',
+		$GLOBALS['phpgw_setup']->oProc->AddColumn('bb_e_lock_system', 'webservicehost',
 				array('type' => 'text', 'nullable' => true)
 			);
 
-	//	if ($oProc->m_odb->transaction_commit())
+		if ($GLOBALS['phpgw_setup']->oProc->m_odb->transaction_commit())
 		{
-			$currentver = '0.2.97';
-			return $currentver;
+			$GLOBALS['setup_info']['booking']['currentver'] = '0.2.97';
+			return $GLOBALS['setup_info']['booking']['currentver'];
 		}
 	}
 
@@ -6569,26 +6569,26 @@ SQL;
 	 *
 	 */
 	$test[] = '0.2.97';
-	function booking_upgrade0_2_97($oProc)
+	function booking_upgrade0_2_97()
 	{
-		$oProc->m_odb->transaction_begin();
+		$GLOBALS['phpgw_setup']->oProc->m_odb->transaction_begin();
 
- 		$oProc->AddColumn('bb_allocation', 'skip_bas',
+		$GLOBALS['phpgw_setup']->oProc->AddColumn('bb_allocation', 'skip_bas',
 				array('type' => 'int', 'nullable' => False, 'precision' => '2', 'default' => 0),//Building Automation System" (BAS)
 			);
 
-		$oProc->AddColumn('bb_booking', 'skip_bas',
+		$GLOBALS['phpgw_setup']->oProc->AddColumn('bb_booking', 'skip_bas',
 				array('type' => 'int', 'nullable' => False, 'precision' => '2', 'default' => 0),
 			);
 
-		$oProc->AddColumn('bb_event', 'skip_bas',
+		$GLOBALS['phpgw_setup']->oProc->AddColumn('bb_event', 'skip_bas',
 				array('type' => 'int', 'nullable' => False, 'precision' => '2', 'default' => 0),
 			);
- 
-		if ($oProc->m_odb->transaction_commit())
+
+		if ($GLOBALS['phpgw_setup']->oProc->m_odb->transaction_commit())
 		{
-			$currentver = '0.2.98';
-			return $currentver;
+			$GLOBALS['setup_info']['booking']['currentver'] = '0.2.98';
+			return $GLOBALS['setup_info']['booking']['currentver'];
 		}
 	}
 
@@ -6873,6 +6873,65 @@ SQL;
 		if ($GLOBALS['phpgw_setup']->oProc->m_odb->transaction_commit())
 		{
 			$GLOBALS['setup_info']['booking']['currentver'] = '0.2.101';
+			return $GLOBALS['setup_info']['booking']['currentver'];
+		}
+	}
+
+
+	/**
+	 * Update booking version from 0.2.101 to 0.2.102
+	 *
+	 */
+	$test[] = '0.2.101';
+
+	function booking_upgrade0_2_101()
+	{
+		$GLOBALS['phpgw_setup']->oProc->m_odb->transaction_begin();
+
+		$GLOBALS['phpgw_setup']->oProc->CreateTable(
+			'bb_multi_domain', array(
+			'fd' => array(
+				'id'			 => array('type' => 'auto', 'nullable' => false),
+				'name'			 => array('type' => 'varchar', 'precision' => '200', 'nullable' => false),
+				'webservicehost' => array('type' => 'text', 'nullable' => true),
+				'user_id'		 => array('type' => 'int', 'precision' => 8, 'nullable' => True),
+				'entry_date'	 => array('type' => 'int', 'precision' => 8, 'nullable' => True),
+				'modified_date'	 => array('type' => 'int', 'precision' => 8, 'nullable' => True),
+			),
+			'pk' => array('id'),
+			'fk' => array(),
+			'ix' => array(),
+			'uc' => array(),
+			)
+		);
+
+		if ($GLOBALS['phpgw_setup']->oProc->m_odb->transaction_commit())
+		{
+			$GLOBALS['setup_info']['booking']['currentver'] = '0.2.102';
+			return $GLOBALS['setup_info']['booking']['currentver'];
+		}
+	}
+
+	/**
+	 * Update booking version from 0.2.102 to 0.2.103
+	 *
+	 */
+	$test[] = '0.2.102';
+
+	function booking_upgrade0_2_102()
+	{
+		$GLOBALS['phpgw_setup']->oProc->m_odb->transaction_begin();
+
+		$GLOBALS['phpgw_setup']->oProc->AlterColumn('bb_purchase_order', 'reservation_type',
+			array('type' => 'varchar', 'precision' => '70', 'nullable' => true)
+			);
+		$GLOBALS['phpgw_setup']->oProc->AlterColumn('bb_purchase_order', 'reservation_id',
+			array('type' => 'int', 'precision' => '4', 'nullable' => true)
+			);
+
+		if ($GLOBALS['phpgw_setup']->oProc->m_odb->transaction_commit())
+		{
+			$GLOBALS['setup_info']['booking']['currentver'] = '0.2.103';
 			return $GLOBALS['setup_info']['booking']['currentver'];
 		}
 	}

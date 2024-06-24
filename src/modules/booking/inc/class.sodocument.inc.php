@@ -225,7 +225,7 @@
 					throw new LogicException('File is not a valid image');
 				}
 
-				$config = new \App\modules\phpgwapi\services\Config('booking');
+				$config = CreateObject('phpgwapi.config', 'booking');
 				$config->read();
 				$image_maxwidth = isset($config->config_data['image_maxwidth']) && $config->config_data['image_maxwidth'] ? $config->config_data['image_maxwidth'] : 300;
 				$image_maxheight = isset($config->config_data['image_maxheight']) && $config->config_data['image_maxheight'] ? $config->config_data['image_maxheight'] : 300;

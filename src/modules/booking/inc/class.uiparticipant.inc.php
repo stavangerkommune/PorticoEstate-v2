@@ -98,24 +98,24 @@
 		{
 			if ($this->is_inline())
 			{
-				$params['filter_reservation_id'] = intval(\Sanitizer::get_var('filter_reservation_id'));
+				$params['filter_reservation_id'] = intval(phpgw::get_var('filter_reservation_id'));
 			}
 			return $params;
 		}
 
 		public function get_inline_params()
 		{
-			return array('filter_reservation_id' => \Sanitizer::get_var('filter_reservation_id', 'int', 'REQUEST'));
+			return array('filter_reservation_id' => phpgw::get_var('filter_reservation_id', 'int', 'REQUEST'));
 		}
 
 		public function is_inline()
 		{
-			return false != \Sanitizer::get_var('filter_reservation_id', 'int', 'REQUEST');
+			return false != phpgw::get_var('filter_reservation_id', 'int', 'REQUEST');
 		}
 
 		public function index()
 		{
-			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
+			if (phpgw::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -131,8 +131,8 @@
 					'source' => self::link(array(
 						'menuaction'				 => 'booking.uiparticipant.index',
 						'sort'						 => 'phone',
-						'filter_reservation_id'		 => \Sanitizer::get_var('filter_reservation_id', 'int', 'GET', -1),
-						'filter_reservation_type'	 => \Sanitizer::get_var('filter_reservation_type', 'string', 'GET', 'event'),
+						'filter_reservation_id'		 => phpgw::get_var('filter_reservation_id', 'int', 'GET', -1),
+						'filter_reservation_type'	 => phpgw::get_var('filter_reservation_type', 'string', 'GET', 'event'),
 						'phpgw_return_as'			 => 'json'
 					)),
 					'field'	 => array(
@@ -179,7 +179,7 @@
 
 		public function edit()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 
 		}
 
@@ -189,7 +189,7 @@
 
 		public function delete()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 			if( $this->bo->delete($id) )
 			{
 				return lang('participant %1 has been deleted', $id);

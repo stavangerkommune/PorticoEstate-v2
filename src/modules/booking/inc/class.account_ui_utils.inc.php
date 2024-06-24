@@ -5,7 +5,7 @@
 
 		public static function yui_accounts()
 		{
-			$query = \Sanitizer::get_var('query');
+			$query = phpgw::get_var('query');
 
 			$account_info = $GLOBALS['phpgw']->accounts->get_list('accounts', 0, 'lid', '', $query, 20);
 			$x = 0;

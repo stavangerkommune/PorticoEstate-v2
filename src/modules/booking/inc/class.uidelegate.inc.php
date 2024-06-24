@@ -103,24 +103,24 @@
 		{
 			if ($this->is_inline())
 			{
-				$params['filter_organization_id'] = intval(\Sanitizer::get_var('filter_organization_id'));
+				$params['filter_organization_id'] = intval(phpgw::get_var('filter_organization_id'));
 			}
 			return $params;
 		}
 
 		public function get_inline_params()
 		{
-			return array('filter_organization_id' => \Sanitizer::get_var('filter_organization_id', 'int', 'REQUEST'));
+			return array('filter_organization_id' => phpgw::get_var('filter_organization_id', 'int', 'REQUEST'));
 		}
 
 		public function is_inline()
 		{
-			return false != \Sanitizer::get_var('filter_organization_id', 'int', 'REQUEST');
+			return false != phpgw::get_var('filter_organization_id', 'int', 'REQUEST');
 		}
 
 		public function index()
 		{
-			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
+			if (phpgw::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -189,7 +189,7 @@
 				'statustext' => lang('delete'),
 				'text' => lang('delete'),
 				'confirm_msg' => lang('do you really want to delete this delegate'),
-				'action' => phpgw::link('/index.php', array
+				'action' => $GLOBALS['phpgw']->link('/index.php', array
 					(
 					'menuaction' => 'booking.uidelegate.delete'
 				)),
@@ -234,7 +234,7 @@
 
 		public function edit()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 
 
 			if ($id)
@@ -256,7 +256,7 @@
 				$delegate = array();
 				$delegate['cancel_link'] = $this->link_to('index', array('ui' => 'organization'));
 
-				$organization_id = \Sanitizer::get_var('organization_id', 'int');
+				$organization_id = phpgw::get_var('organization_id', 'int');
 				if($organization_id)
 				{
 					$delegate['organization_link'] = self::link(array('menuaction' => $this->module . '.uiorganization.show',
@@ -354,7 +354,7 @@
 
 		public function show()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -390,7 +390,7 @@
 
 		public function delete()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 			if( $this->bo->delete($id) )
 			{
 				return lang('delegate %1 has been deleted', $id);

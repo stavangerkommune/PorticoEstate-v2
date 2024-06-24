@@ -22,7 +22,7 @@
 			}
 			$send = CreateObject('phpgwapi.send');
 
-			$config = new \App\modules\phpgwapi\services\Config('booking');
+			$config = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
 
 			$from = isset($config->config_data['email_sender']) && $config->config_data['email_sender'] ? $config->config_data['email_sender'] : "noreply<noreply@{$GLOBALS['phpgw_info']['server']['hostname']}>";
@@ -100,7 +100,7 @@
 			}
 			$send = CreateObject('phpgwapi.send');
 
-			$config = new \App\modules\phpgwapi\services\Config('booking');
+			$config = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
 
 			$mailadresses = $config->config_data['emails'];

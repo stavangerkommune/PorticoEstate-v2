@@ -189,7 +189,7 @@
 		{
 			$conditions = parent::_get_conditions($query, $filters);
 
-			$filter_user_id = \Sanitizer::get_var('filter_user_id', 'int');
+			$filter_user_id = phpgw::get_var('filter_user_id', 'int');
 
 			if($filter_user_id)
 			{

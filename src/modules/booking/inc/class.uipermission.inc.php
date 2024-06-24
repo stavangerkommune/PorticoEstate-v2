@@ -99,7 +99,7 @@
 		{
 			if ($this->is_inline())
 			{
-				$params['filter_object_id'] = \Sanitizer::get_var('filter_object_id', 'int');
+				$params['filter_object_id'] = phpgw::get_var('filter_object_id', 'int');
 			}
 			return $params;
 		}
@@ -117,12 +117,12 @@
 
 		public function get_inline_params()
 		{
-			return array('filter_object_id' => \Sanitizer::get_var('filter_object_id', 'int', 'REQUEST'));
+			return array('filter_object_id' => phpgw::get_var('filter_object_id', 'int', 'REQUEST'));
 		}
 
 		public function is_inline()
 		{
-			return false != \Sanitizer::get_var('filter_object_id', 'int', 'REQUEST');
+			return false != phpgw::get_var('filter_object_id', 'int', 'REQUEST');
 		}
 
 		public static function generate_inline_link( $object_type, $permissionObjectId, $action )
@@ -133,7 +133,7 @@
 
 		public function index()
 		{
-			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
+			if (phpgw::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -291,7 +291,7 @@
 		public function show()
 		{
 			#$this->check_active('booking.uipermission_building.show');
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -355,7 +355,7 @@
 
 		public function edit()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -406,7 +406,7 @@
 
 		public function delete()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 			$this->bo->delete($id);
 
 			$this->redirect_to_parent_if_inline();

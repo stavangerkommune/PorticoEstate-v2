@@ -38,7 +38,7 @@
 			$location_id = $GLOBALS['phpgw']->locations->get_id('booking', 'run');
 			$custom_config = CreateObject('admin.soconfig', $location_id);
 			$custom_config_data = $custom_config->config_data['public360'];
-			$config	= (new \App\modules\phpgwapi\services\Config('booking'))->read();
+			$config	= CreateObject('phpgwapi.config', 'booking')->read();
 
 			if (!empty($custom_config_data['debug']))
 			{

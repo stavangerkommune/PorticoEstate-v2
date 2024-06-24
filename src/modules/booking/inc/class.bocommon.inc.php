@@ -35,9 +35,9 @@
 		public function link( $data )
 		{
 			if ($GLOBALS['phpgw_info']['flags']['currentapp'] == 'bookingfrontend')
-				return phpgw::link('/bookingfrontend/', $data);
+				return $GLOBALS['phpgw']->link('/bookingfrontend/', $data);
 			else
-				return phpgw::link('/index.php', $data);
+				return $GLOBALS['phpgw']->link('/index.php', $data);
 		}
 
 		function read($params = array())
@@ -72,7 +72,7 @@
 			/*
 			 * Sigurd: Temporary test for new datatables
 			 */
-			if (\Sanitizer::get_var('columns') || isset($_POST['start']))
+			if (phpgw::get_var('columns') || isset($_POST['start']))
 			{
 				return $this->build_default_read_params_new();
 			}
@@ -81,12 +81,12 @@
 			/*
 			 * startIndex is used in createTable() in js/jquery/common.js
 			 */
-			$start = \Sanitizer::get_var('startIndex', 'int', 'REQUEST', 0);
-			$results = \Sanitizer::get_var('results', 'int', 'REQUEST', null);
-			$query = \Sanitizer::get_var('query');
-			$sort = \Sanitizer::get_var('sort');
-			$dir = \Sanitizer::get_var('dir');
-			$length = \Sanitizer::get_var('length', 'int', 'REQUEST', 0);
+			$start = phpgw::get_var('startIndex', 'int', 'REQUEST', 0);
+			$results = phpgw::get_var('results', 'int', 'REQUEST', null);
+			$query = phpgw::get_var('query');
+			$sort = phpgw::get_var('sort');
+			$dir = phpgw::get_var('dir');
+			$length = phpgw::get_var('length', 'int', 'REQUEST', 0);
 
 			if($length)
 			{
@@ -98,7 +98,7 @@
 			{
 				if (isset($_REQUEST["filter_$field"]) && $_REQUEST["filter_$field"])
 				{
-					$filters[$field] = \Sanitizer::get_var("filter_$field", $params['type']);
+					$filters[$field] = phpgw::get_var("filter_$field", $params['type']);
 				}
 			}
 
@@ -127,25 +127,25 @@
 		protected function build_default_read_params_new()
 		{
 
-			$search = \Sanitizer::get_var('search');
-			$order = \Sanitizer::get_var('order');
-			$draw = \Sanitizer::get_var('draw', 'int');
-			$columns = \Sanitizer::get_var('columns');
+			$search = phpgw::get_var('search');
+			$order = phpgw::get_var('order');
+			$draw = phpgw::get_var('draw', 'int');
+			$columns = phpgw::get_var('columns');
 
 			$params = array(
-				'start' => \Sanitizer::get_var('start', 'int', 'REQUEST', 0),
-				'results' => \Sanitizer::get_var('length', 'int', 'REQUEST', 0),
+				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
+				'results' => phpgw::get_var('length', 'int', 'REQUEST', 0),
 				'query' => $search['value'],
 				'sort' => $columns[$order[0]['column']]['data'],
 				'dir' => $order[0]['dir'],
-				'allrows' => \Sanitizer::get_var('length', 'int') == -1,
+				'allrows' => phpgw::get_var('length', 'int') == -1,
 			);
 
 			foreach ($this->so->get_field_defs() as $field => $_params)
 			{
 				if (isset($_REQUEST["filter_$field"]) && $_REQUEST["filter_$field"])
 				{
-					$params['filters'][$field] = \Sanitizer::get_var("filter_$field", $_params['type']);
+					$params['filters'][$field] = phpgw::get_var("filter_$field", $_params['type']);
 				}
 			}
 

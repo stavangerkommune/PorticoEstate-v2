@@ -13,8 +13,7 @@
 		{
 			parent::__construct();
 			$this->account	 = $GLOBALS['phpgw_info']['user']['account_id'];
-			
-			$this->config	 = (new \App\modules\phpgwapi\services\Config('booking'))->read();
+			$this->config	 = CreateObject('phpgwapi.config', 'booking')->read();
 
 			$bogeneric = createObject('booking.bogeneric');
 			$lock_systems = $bogeneric->read(array('location_info' => array('type' => 'e_lock_system')));

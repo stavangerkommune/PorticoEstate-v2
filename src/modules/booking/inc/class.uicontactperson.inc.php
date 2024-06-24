@@ -32,7 +32,7 @@
 
 		public function index()
 		{
-			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
+			if (phpgw::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -90,7 +90,7 @@
 
 		public function query()
 		{
-			if ($id = \Sanitizer::get_var('id', 'int'))
+			if ($id = phpgw::get_var('id', 'int'))
 			{
 				$person = $this->bo->read_single($id);
 				return $this->jquery_results(array("totalResultsAvailable" => 1, "results" => $person));
@@ -103,7 +103,7 @@
 
 		public function show()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -125,7 +125,7 @@
 
 		public function edit()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 			if ($id)
 			{
 				$person = $this->bo->read_single($id);

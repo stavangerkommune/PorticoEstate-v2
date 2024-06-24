@@ -45,7 +45,7 @@
 
 		public function index()
 		{
-			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
+			if (phpgw::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -53,7 +53,7 @@
 
 			phpgwapi_jquery::load_widget('menu');
 			phpgwapi_jquery::load_widget('autocomplete');
-			$build_id = \Sanitizer::get_var('buildings', 'int', 'REQUEST', null);
+			$build_id = phpgw::get_var('buildings', 'int', 'REQUEST', null);
 			$data = array(
 				'datatable_name' => $this->display_name,
 				'form' => array(
@@ -169,28 +169,28 @@
 			}
 			else
 			{
-				$testdata = \Sanitizer::get_var('filter_building_id', 'int', 'REQUEST', null);
+				$testdata = phpgw::get_var('filter_building_id', 'int', 'REQUEST', null);
 				if ($testdata != 0)
 				{
-					$filters['building_name'] = $this->bo->so->get_building(\Sanitizer::get_var('filter_building_id', 'int', 'REQUEST', null));
+					$filters['building_name'] = $this->bo->so->get_building(phpgw::get_var('filter_building_id', 'int', 'REQUEST', null));
 				}
 				else
 				{
 					unset($filters['building_name']);
 				}
-				$testdata2 = \Sanitizer::get_var('organizations', 'int', 'REQUEST', null);
+				$testdata2 = phpgw::get_var('organizations', 'int', 'REQUEST', null);
 				if ($testdata2 != 0)
 				{
-					$filters['organization_id'] = $this->bo->so->get_organization(\Sanitizer::get_var('organizations', 'int', 'REQUEST', null));
+					$filters['organization_id'] = $this->bo->so->get_organization(phpgw::get_var('organizations', 'int', 'REQUEST', null));
 				}
 				else
 				{
 					unset($filters['organization_id']);
 				}
-				$testdata3 = \Sanitizer::get_var('filter_season_id', 'int', 'REQUEST', null);
+				$testdata3 = phpgw::get_var('filter_season_id', 'int', 'REQUEST', null);
 				if ($testdata3 != 0)
 				{
-					$filters['season_id'] = $this->bo->so->get_season(\Sanitizer::get_var('filter_season_id', 'int', 'REQUEST', null));
+					$filters['season_id'] = $this->bo->so->get_season(phpgw::get_var('filter_season_id', 'int', 'REQUEST', null));
 				}
 				else
 				{
@@ -198,13 +198,13 @@
 				}
 			}
 
-			$search = \Sanitizer::get_var('search');
-			$order = \Sanitizer::get_var('order');
-			$columns = \Sanitizer::get_var('columns');
+			$search = phpgw::get_var('search');
+			$order = phpgw::get_var('order');
+			$columns = phpgw::get_var('columns');
 
 			$params = array(
-				'start' => \Sanitizer::get_var('start', 'int', 'REQUEST', 0),
-				'results' => \Sanitizer::get_var('length', 'int', 'REQUEST', 0),
+				'start' => phpgw::get_var('start', 'int', 'REQUEST', 0),
+				'results' => phpgw::get_var('length', 'int', 'REQUEST', 0),
 				'query' => $search['value'],
 				'order' => $columns[$order[0]['column']]['data'],
 				'sort' => $columns[$order[0]['column']]['data'],
@@ -249,28 +249,28 @@
 			}
 			else
 			{
-				$testdata = \Sanitizer::get_var('filter_building_id', 'int', 'REQUEST', null);
+				$testdata = phpgw::get_var('filter_building_id', 'int', 'REQUEST', null);
 				if ($testdata != 0)
 				{
-					$filters['building_name'] = $this->bo->so->get_building(\Sanitizer::get_var('filter_building_id', 'int', 'REQUEST', null));
+					$filters['building_name'] = $this->bo->so->get_building(phpgw::get_var('filter_building_id', 'int', 'REQUEST', null));
 				}
 				else
 				{
 					unset($filters['building_name']);
 				}
-				$testdata2 = \Sanitizer::get_var('organizations', 'int', 'REQUEST', null);
+				$testdata2 = phpgw::get_var('organizations', 'int', 'REQUEST', null);
 				if ($testdata2 != 0)
 				{
-					$filters['organization_id'] = $this->bo->so->get_organization(\Sanitizer::get_var('organizations', 'int', 'REQUEST', null));
+					$filters['organization_id'] = $this->bo->so->get_organization(phpgw::get_var('organizations', 'int', 'REQUEST', null));
 				}
 				else
 				{
 					unset($filters['organization_id']);
 				}
-				$testdata3 = \Sanitizer::get_var('filter_season_id', 'int', 'REQUEST', null);
+				$testdata3 = phpgw::get_var('filter_season_id', 'int', 'REQUEST', null);
 				if ($testdata3 != 0)
 				{
-					$filters['season_id'] = $this->bo->so->get_season(\Sanitizer::get_var('filter_season_id', 'int', 'REQUEST', null));
+					$filters['season_id'] = $this->bo->so->get_season(phpgw::get_var('filter_season_id', 'int', 'REQUEST', null));
 				}
 				else
 				{
@@ -279,11 +279,11 @@
 			}
 
 			$params = array(
-				'start' => \Sanitizer::get_var('startIndex', 'int', 'REQUEST', 0),
-				'results' => \Sanitizer::get_var('results', 'int', 'REQUEST', null),
-				'query' => \Sanitizer::get_var('query'),
-				'sort' => \Sanitizer::get_var('sort'),
-				'dir' => \Sanitizer::get_var('dir'),
+				'start' => phpgw::get_var('startIndex', 'int', 'REQUEST', 0),
+				'results' => phpgw::get_var('results', 'int', 'REQUEST', null),
+				'query' => phpgw::get_var('query'),
+				'sort' => phpgw::get_var('sort'),
+				'dir' => phpgw::get_var('dir'),
 				'filters' => $filters
 			);
 
@@ -317,24 +317,24 @@
 		public function add()
 		{
 			$errors = array();
-			$step = \Sanitizer::get_var('step', 'int', 'REQUEST', 1);
+			$step = phpgw::get_var('step', 'int', 'REQUEST', 1);
 			$invalid_dates = array();
 			$valid_dates = array();
 
 			if ($_SERVER['REQUEST_METHOD'] == 'POST')
 			{
-				$season = $this->season_bo->read_single(\Sanitizer::get_var('season_id', 'int'));
+				$season = $this->season_bo->read_single(phpgw::get_var('season_id', 'int'));
 				array_set_default($_POST, 'resources', array());
 
-				if(\Sanitizer::get_var('customer_organization_id', 'bool', 'POST'))
+				if(phpgw::get_var('customer_organization_id', 'bool', 'POST'))
 				{
-					$_POST['organization_id'] = \Sanitizer::get_var('customer_organization_id', 'int');
-					$_POST['organization_name'] = \Sanitizer::get_var('customer_organization_name', 'string');
+					$_POST['organization_id'] = phpgw::get_var('customer_organization_id', 'int');
+					$_POST['organization_name'] = phpgw::get_var('customer_organization_name', 'string');
 				}
 
 				if(empty($_POST['organization_id']))
 				{
-					$application_id = \Sanitizer::get_var('application_id', 'int', 'POST');
+					$application_id = phpgw::get_var('application_id', 'int', 'POST');
 					if($application_id)
 					{
 						$application = createObject('booking.boapplication')->read_single($application_id);
@@ -351,15 +351,15 @@
 				}
 
 				$allocation = extract_values($_POST, $this->fields);
-				$allocation['skip_bas'] = (int)\Sanitizer::get_var('skip_bas', 'int');
+				$allocation['skip_bas'] = (int)phpgw::get_var('skip_bas', 'int');
 				if ($_POST['cost'])
 				{
-					$this->add_cost_history($allocation, \Sanitizer::get_var('cost_comment'), \Sanitizer::get_var('cost', 'float'));
+					$this->add_cost_history($allocation, phpgw::get_var('cost_comment'), phpgw::get_var('cost', 'float'));
 				}
 				$allocation['active'] = '1';
 				$allocation['completed'] = '0';
 
-				$weekday = \Sanitizer::get_var('weekday', 'string', 'POST');
+				$weekday = phpgw::get_var('weekday', 'string', 'POST');
 
 				if(!$weekday)
 				{
@@ -400,7 +400,7 @@
 
 					if (($weekday != 'sunday' && date('w') > date('w', strtotime($weekday))) || (date('w') == '0' && date('w') < date('w', strtotime($weekday))))
 					{
-						if (!\Sanitizer::get_var('weekday', 'string', 'POST'))
+						if (!phpgw::get_var('weekday', 'string', 'POST'))
 						{
 //							$allocation['from_'] = strftime("%Y-%m-%d %H:%M", strtotime($weekday . " " . $from_date_arr[1]) - 60 * 60 * 24 * 7);
 //							$allocation['to_'] = strftime("%Y-%m-%d %H:%M", strtotime($weekday . " " . $to_date_arr[1]) - 60 * 60 * 24 * 7);
@@ -419,11 +419,11 @@
 				{
 					$step++;
 				}
-				if ($errors  && \Sanitizer::get_var('repeat_until', 'bool'))
+				if ($errors  && phpgw::get_var('repeat_until', 'bool'))
 				{
 					$_POST['repeat_until'] = date("Y-m-d", phpgwapi_datetime::date_to_timestamp($_POST['repeat_until']));
 				}
-				else if (!$errors && ($_POST['outseason'] != 'on' && !\Sanitizer::get_var('repeat_until', 'bool')))
+				else if (!$errors && ($_POST['outseason'] != 'on' && !phpgw::get_var('repeat_until', 'bool')))
 				{
 					try
 					{
@@ -467,10 +467,10 @@
 						$errors['global'] = lang('Could not add object due to insufficient permissions');
 					}
 				}
-				else if (($_POST['outseason'] == 'on' || \Sanitizer::get_var('repeat_until', 'bool')) && !$errors && $step > 1)
+				else if (($_POST['outseason'] == 'on' || phpgw::get_var('repeat_until', 'bool')) && !$errors && $step > 1)
 				{
 
-					if (\Sanitizer::get_var('repeat_until', 'bool'))
+					if (phpgw::get_var('repeat_until', 'bool'))
 					{
 						$repeat_until = phpgwapi_datetime::date_to_timestamp($_POST['repeat_until']) + 60 * 60 * 24;
 						/*hack to preserve dateformat for next step*/
@@ -489,7 +489,7 @@
 
 					if ($step == 3)
 					{
-						$temp_id = \Sanitizer::get_var('temp_id');
+						$temp_id = phpgw::get_var('temp_id');
 						$purchase_order = phpgwapi_cache::session_get('booking', $temp_id);
 					}
 
@@ -557,16 +557,16 @@
 					}
 				}
 			}
-			if (\Sanitizer::get_var('building_name', 'string') == '')
+			if (phpgw::get_var('building_name', 'string') == '')
 			{
 				array_set_default($allocation, 'resources', array());
 				$weekday = 'monday';
 			}
 			else
 			{
-				$dateformat =  \Sanitizer::get_var('dateformat', 'string');
-				$dateTimeFrom = \Sanitizer::get_var('from_', 'string');
-				$dateTimeTo = \Sanitizer::get_var('to_', 'string');
+				$dateformat =  phpgw::get_var('dateformat', 'string');
+				$dateTimeFrom = phpgw::get_var('from_', 'string');
+				$dateTimeTo = phpgw::get_var('to_', 'string');
 				if(is_array($dateTimeFrom))
 				{
 					$dateTimeFrom = $dateTimeFrom[0];
@@ -585,18 +585,18 @@
 					$timeTo = end($dateTimeToE);
 				}
 
-				array_set_default($allocation, 'resources', array(\Sanitizer::get_var('resource', 'int')));
-				array_set_default($allocation, 'building_id', \Sanitizer::get_var('building_id', 'int'));
-				array_set_default($allocation, 'building_name', \Sanitizer::get_var('building_name', 'string'));
+				array_set_default($allocation, 'resources', array(phpgw::get_var('resource', 'int')));
+				array_set_default($allocation, 'building_id', phpgw::get_var('building_id', 'int'));
+				array_set_default($allocation, 'building_name', phpgw::get_var('building_name', 'string'));
 				array_set_default($allocation, 'from_', $timeFrom);
 				array_set_default($allocation, 'to_', $timeTo);
-				$weekday = \Sanitizer::get_var('weekday', 'string');
+				$weekday = phpgw::get_var('weekday', 'string');
 			}
 
 			$this->flash_form_errors($errors);
-			phpgwapi_js::getInstance()->validate_file('alertify', 'alertify.min', 'phpgwapi');
-			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
-			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
+			$GLOBALS['phpgw']->js->validate_file('alertify', 'alertify.min', 'phpgwapi');
+			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
+			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
 			self::add_javascript('booking', 'base', 'allocation.js');
 
 			$allocation['resources_json'] = json_encode(array_map('intval', $allocation['resources']));
@@ -642,7 +642,7 @@
 				$GLOBALS['phpgw']->jqcal2->add_listener('field_from', 'datetime', $_timeFrom);
 				$GLOBALS['phpgw']->jqcal2->add_listener('field_to', 'datetime', $_timeTo);
 
-				$config = (new \App\modules\phpgwapi\services\Config('booking'))->read();
+				$config = CreateObject('phpgwapi.config', 'booking')->read();
 
 				if( !empty($config['activate_application_articles']))
 				{
@@ -689,7 +689,7 @@
 			 * Start dealing with the purchase_order..
 			 */
 			$purchase_order = array('status' => 0, 'customer_id' => -1, 'lines' => array());
-			$selected_articles = (array)\Sanitizer::get_var('selected_articles');
+			$selected_articles = (array)phpgw::get_var('selected_articles');
 
 			foreach ($selected_articles as $selected_article)
 			{
@@ -728,7 +728,7 @@
 		{
 			$send = CreateObject('phpgwapi.send');
 
-			$config = new \App\modules\phpgwapi\services\Config('booking');
+			$config = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
 			$from = isset($config->config_data['email_sender']) && $config->config_data['email_sender'] ? $config->config_data['email_sender'] : "noreply<noreply@{$GLOBALS['phpgw_info']['server']['hostname']}>";
 
@@ -755,7 +755,7 @@
 
 		public function edit()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -776,16 +776,16 @@
 
 			if ($_SERVER['REQUEST_METHOD'] == 'POST')
 			{
-				$allocation['skip_bas'] = (int)\Sanitizer::get_var('skip_bas', 'int');
+				$allocation['skip_bas'] = (int)phpgw::get_var('skip_bas', 'int');
 				$_POST['from_'] = ($_POST['from_']) ? date("Y-m-d H:i:s", phpgwapi_datetime::date_to_timestamp($_POST['from_'])) : $_POST['from_'];
 				$_POST['to_'] = ($_POST['to_']) ? date("Y-m-d H:i:s", phpgwapi_datetime::date_to_timestamp($_POST['to_'])) : $_POST['to_'];
 				array_set_default($_POST, 'resources', array());
 				$allocation = array_merge($allocation, extract_values($_POST, $this->fields));
-				$organization = $this->organization_bo->read_single(intval(\Sanitizer::get_var('organization_id', 'int', 'POST')));
+				$organization = $this->organization_bo->read_single(intval(phpgw::get_var('organization_id', 'int', 'POST')));
 
 				if ($_POST['cost'] != $_POST['cost_orig'])
 				{
-					$this->add_cost_history($allocation, \Sanitizer::get_var('cost_comment'), \Sanitizer::get_var('cost', 'float'));
+					$this->add_cost_history($allocation, phpgw::get_var('cost_comment'), phpgw::get_var('cost', 'float'));
 				}
 
 				$errors = $this->bo->validate($allocation);
@@ -816,7 +816,7 @@
 						$receipt = $this->bo->update($allocation);
 
 						$this->bo->so->update_id_string();
-						$this->send_mailnotification_to_organization($organization, lang('Allocation changed'), \Sanitizer::get_var('mail', 'html', 'POST'));
+						$this->send_mailnotification_to_organization($organization, lang('Allocation changed'), phpgw::get_var('mail', 'html', 'POST'));
 						self::redirect(array('menuaction' => 'booking.uiallocation.show', 'id' => $allocation['id']));
 					}
 					catch (booking_unauthorized_exception $e)
@@ -832,7 +832,7 @@
 			$this->flash_form_errors($errors);
 			self::add_javascript('booking', 'base', 'allocation.js');
 
-			$config = (new \App\modules\phpgwapi\services\Config('booking'))->read();
+			$config = CreateObject('phpgwapi.config', 'booking')->read();
 
 			$purchase_order = $this->sopurchase_order->get_purchase_order(0, 'allocation', $allocation['id']);
 
@@ -857,9 +857,9 @@
 				}
 			}
 
-			phpgwapi_js::getInstance()->validate_file('alertify', 'alertify.min', 'phpgwapi');
-			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
-			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
+			$GLOBALS['phpgw']->js->validate_file('alertify', 'alertify.min', 'phpgwapi');
+			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/alertify.min.css');
+			$GLOBALS['phpgw']->css->add_external_file('phpgwapi/js/alertify/css/themes/bootstrap.min.css');
 
 			$allocation['resources_json'] = json_encode(array_map('intval', $allocation['resources']));
 			$allocation['cancel_link'] = self::link(array('menuaction' => 'booking.uiallocation.show',
@@ -885,14 +885,14 @@
 
 		public function delete()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
-			$outseason = \Sanitizer::get_var('outseason', 'string');
-			$recurring = \Sanitizer::get_var('recurring', 'string');
-			$repeat_until = \Sanitizer::get_var('repeat_until', 'string');
-			$field_interval = \Sanitizer::get_var('field_interval', 'int');
+			$id = phpgw::get_var('id', 'int');
+			$outseason = phpgw::get_var('outseason', 'string');
+			$recurring = phpgw::get_var('recurring', 'string');
+			$repeat_until = phpgw::get_var('repeat_until', 'string');
+			$field_interval = phpgw::get_var('field_interval', 'int');
 			$allocation = $this->bo->read_single($id);
 			$season = $this->season_bo->read_single($allocation['season_id']);
-			$step = \Sanitizer::get_var('step', 'string', 'REQUEST', 1);
+			$step = phpgw::get_var('step', 'string', 'REQUEST', 1);
 			$errors = array();
 			$invalid_dates = array();
 			$valid_dates = array();
@@ -1029,8 +1029,8 @@
 
 		private function send_sms_participants($id, $type = 'allocation')
 		{
-			$send_sms = \Sanitizer::get_var('send_sms', 'bool');
-			$sms_content = \Sanitizer::get_var('sms_content', 'string');
+			$send_sms = phpgw::get_var('send_sms', 'bool');
+			$sms_content = phpgw::get_var('sms_content', 'string');
 
 			if($send_sms && $sms_content)
 			{
@@ -1094,7 +1094,7 @@
 
 		public function show()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 
 			if (!$id)
 			{
@@ -1131,7 +1131,7 @@
 			$allocation['resource_ids'] = $resource_ids;
 			$allocation['resources_json'] = json_encode(array_map('intval', $allocation['resources']));
 			$allocation['tabs'] = phpgwapi_jquery::tabview_generate($tabs, $active_tab);
-			$config = (new \App\modules\phpgwapi\services\Config('booking'))->read();
+			$config = CreateObject('phpgwapi.config', 'booking')->read();
 
 			if (!empty($config['activate_application_articles']))
 			{
@@ -1146,7 +1146,7 @@
 
 		public function info()
 		{
-			$allocation = $this->bo->read_single(\Sanitizer::get_var('id', 'int'));
+			$allocation = $this->bo->read_single(phpgw::get_var('id', 'int'));
 			$resources = $this->resource_bo->so->read(array('filters' => array('id' => $allocation['resources']),
 				'sort' => 'name','results' => -1));
 			$allocation['resources'] = $resources['results'];
@@ -1156,7 +1156,7 @@
 				$res_names[] = $res['name'];
 			}
 
-			$allocation['resource'] = \Sanitizer::get_var('resource');
+			$allocation['resource'] = phpgw::get_var('resource');
 			$allocation['application_link'] = self::link(array('menuaction' => 'booking.uiapplication.show',
 					'id' => $allocation['application_id']));
 			$allocation['resource_info'] = join(', ', $res_names);
@@ -1172,6 +1172,6 @@
 					'resource' => $allocation['resource']));
 			$allocation['when'] = pretty_timestamp($allocation['from_']) . ' - ' . pretty_timestamp($allocation['to_']);
 			self::render_template_xsl('allocation_info', array('allocation' => $allocation));
-			phpgwapi_xslttemplates::getInstance()->set_output('wml'); // Evil hack to disable page chrome
+			$GLOBALS['phpgw']->xslttpl->set_output('wml'); // Evil hack to disable page chrome
 		}
 	}

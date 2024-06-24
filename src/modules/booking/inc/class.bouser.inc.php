@@ -26,7 +26,7 @@
 		{
 			if(!$ssn)
 			{
-				$ssn = \Sanitizer::get_var('ssn', 'GET');
+				$ssn = phpgw::get_var('ssn', 'GET');
 			}
 
 			return $this->so->get_applications($ssn);
@@ -36,7 +36,7 @@
 		{
 			if(!$ssn)
 			{
-				$ssn = \Sanitizer::get_var('ssn', 'GET');
+				$ssn = phpgw::get_var('ssn', 'GET');
 			}
 			return $this->so->get_invoices($ssn);
 		}
@@ -218,7 +218,7 @@
 		 */
 		public function get_customer_list($get_persons_only = false, $last_billing = false)
 		{
-			$config		 = (new \App\modules\phpgwapi\services\Config('booking'))->read();
+			$config		 = CreateObject('phpgwapi.config', 'booking')->read();
 			$customers	 = $this->so->get_customer_list($get_persons_only, $last_billing );
 
 			if ($config['customer_list_format'] == 'AGRESSO')

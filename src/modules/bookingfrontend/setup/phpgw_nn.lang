@@ -21,9 +21,11 @@ Application cart	bookingfrontend	nn	Handlekurv
 Apply filter	bookingfrontend	nn	Aktiver filter
 Apply for time	bookingfrontend	nn	Søk om tid
 Article	bookingfrontend	nn	artikkel
+rticles	bookingfrontend	nn	Artikklar
 Associated bookings	bookingfrontend	nn	Tilhørende tildelinger/arrangementer
 Back to user list	booking	nn	Attende til brukarlista
 Book resource	bookingfrontend	nn	Søknad
+booking_calendar	bookingfrontend	nn	Bookingkalendar
 Booking Cancel information	bookingfrontend	nn	Skal du avbestille interntildeling på valt dato, vel Avbestill-knappen nedst Skal tida bli vist som ledig i kalenderen kryssar du av for slett tildeling.
 Booking Cancel information2	bookingfrontend	nn	Skal du avbestille fleire kan du velje Ut sesong eller Avbestill til og velje ein dato, du kan også velje intervall (til dømes annan kvar veke).
 Booking Delete information	bookingfrontend	nn	Skal du slette interntildeling på valt dato, vel Slett-knappen nedst.
@@ -62,11 +64,13 @@ Choose another building	bookingfrontend	nn	Velg annet anlegg
 Choose atleast one object	bookingfrontend	nn	Vel minst eitt leigeobjekt
 Choose categories	bookingfrontend	nn	Velg kategorier
 Choose date	bookingfrontend	nn	Velg dato
+add_date	bookingfrontend	nn	Legg til dato
 Choose date-range	bookingfrontend	nn	Velg dato-område
 Choose resources	bookingfrontend	nn	Velg lokaler
 Close	bookingfrontend	nn	Lukke
 Collects users from all applications and events	booking	nn	Haustar brukarar frå alle søknader og arrangement
 Complete applications	bookingfrontend	nn	Fullfør søknad
+complete_applications	bookingfrontend	nn	Fullfør søknad
 Confirm e-mail address	bookingfrontend	nn	Stadfest e-postadressa
 Contact information name is to long. max 50 characters	bookingfrontend	nn	Namnet i kontaktinformasjonen er for langt, maksimalt 50 teikn.
 Could not delete allocation due to a booking still use it	bookingfrontend	nn	Kan ikkje slette denne interntildelinga fordi ei interntildeling framleis brukar ho
@@ -97,6 +101,7 @@ Event was created	booking	nn	Arrangementet vart oppretta
 Event/activity description	bookingfrontend	nn	Kort beskrivelse av arrangementet / aktiviteten
 Event/activity homepage	bookingfrontend	nn	Heimeside for arrangementet / aktiviteten
 Facilities	bookingfrontend	nn	Fasiliteter
+facilities	bookingfrontend	nn	Fasiliteter
 Field %1 is required	bookingfrontend	nn	Feltet '%1' må fylles ut
 Field %1: Invalid format	bookingfrontend	nn	Feltet '%1': ugyldig format
 Find available	bookingfrontend	nn	Finn tilgjengelig
@@ -132,6 +137,7 @@ Needed for the return from the external logout	bookingfrontend	nn	Nødvendig for
 New message	bookingfrontend	nn	Ny melding
 New system message	bookingfrontend	nn	Ny systemmelding
 Next step	bookingfrontend	nn	Gå vidare
+Previous step	bookingfrontend	nn	Gå tilbake
 No available options	bookingfrontend	nn	Ingen tilgjengelige valg
 No rent object chosen	bookingfrontend	nn	Ingen leieobjekt er valgt
 No valid identification returned from login	common	nn	Ingen gyldig identifikasjon returnert frå innlogging.
@@ -269,9 +275,11 @@ apr	bookingfrontend	nn	april
 archived	bookingfrontend	nn	Arkivert
 attachment	bookingfrontend	nn	Vedlegg
 audience	bookingfrontend	nn	Målgruppe/publikum
+amount	bookingfrontend	nn	Antall enheter
 aug	bookingfrontend	nn	august
 available	bookingfrontend	nn	Ledig
 back	bookingfrontend	nn	tilbake
+price_unit	bookingfrontend	nn	Pris pr enhet
 bookable resources	bookingfrontend	nn	Ressursar du kan booke
 booking	bookingfrontend	nn	Interntildeling
 booking district	bookingfrontend	nn	Område/bydel
@@ -295,12 +303,16 @@ category	bookingfrontend	nn	Kategori
 choose a date	bookingfrontend	nn	Vel ein dato
 choose file	bookingfrontend	nn	Vel fil du vil leggja til
 choose rent object and rentperiod	bookingfrontend	nn	Vel leigeobjekt og leigeperiode
+choose rent object	bookingfrontend	nn	Vel leigeobjekt
+add_rent_object	bookingfrontend	nn	Legg til leigeobjekt
 choose rent period	bookingfrontend	nn	Velg leigeperiode
 choose target audience	bookingfrontend	nn	Vel målgruppe for arrangement / aktiviteten
 chosen rent object	bookingfrontend	nn	Valde ressursar
 chosen rent period	bookingfrontend	nn	Valde leigeperioder
+rent period	bookingfrontend	nn	Leigeperiode
 city	bookingfrontend	nn	Poststad
 click to sort ascending	bookingfrontend	nn	Klikk for å sortere stigande
+clock_short	bookingfrontend	nn	Kl
 click to sort descending	bookingfrontend	nn	Klikk for å sortere synkande
 collect users	booking	nn	Legg til brukarar
 contact	bookingfrontend	nn	Kontakt
@@ -374,6 +386,7 @@ found none	booking	nn	Fann ingen
 fr	bookingfrontend	nn	fr.
 free	bookingfrontend	nn	Ledig
 from	bookingfrontend	nn	Frå
+from_date	bookingfrontend	nn	Fra dato
 generate allocations	bookingfrontend	nn	Lag tildeling
 generate allocations from week template	bookingfrontend	nn	Lag tildeling frå vekeplan
 get name from external source	bookingfrontend	nn	Hent navn frå ekstern kilde (som Gule Sider)
@@ -509,6 +522,7 @@ remove date	bookingfrontend	nn	Fjern dato
 rent object	bookingfrontend	nn	Leigeobjekt
 rent	bookingfrontend	nn	Leige
 rent_premises_facilities_equipment	bookingfrontend	nn	Leig lokale, anlegg eller utstyr
+rental_resources	bookingfrontend	nn	Utleigeressursar
 reserved	bookingfrontend	nn	Reservert
 reset	bookingfrontend	nn	Nullstill
 resource	bookingfrontend	nn	Ressurs
@@ -536,6 +550,8 @@ selected	bookingfrontend	nn	Valgt
 sep	bookingfrontend	nn	september
 settings	bookingfrontend	nn	Innstillingar
 show only active	bookingfrontend	nn	Skjul
+show_more	bookingfrontend	nn	Vis mer
+show_less	bookingfrontend	nn	Vis mindre
 showing items	bookingfrontend	nn	Viser
 showing items {startRecord} - {endRecord} of {totalRecords}	bookingfrontend	nn	Viser {startRecord} - {endRecord} av {totalRecords}
 site title	bookingfrontend	nn	Tittel på sida
@@ -558,7 +574,9 @@ th	bookingfrontend	nn	tor
 this application is not within a valid season	bookingfrontend	nn	Denne søknaden er utanfor gyldig åpningstid
 title	bookingfrontend	nn	Tittel
 to	bookingfrontend	nn	Til
+to_date	bookingfrontend	nn	Til dato
 tu	bookingfrontend	nn	tys
+type	bookingfrontend	nn	Type
 unit	bookingfrontend	nn	Enhet
 unit cost	bookingfrontend	nn	Eining pris
 update results	bookingfrontend	nn	Oppdater søkeresultat
@@ -587,10 +605,32 @@ why?	bookingfrontend	nn	Kvifor?
 you must accept to follow all terms and conditions of lease first	common	nn	Stadfest at du har lese vilkåra
 zip code	bookingfrontend	nn	Postnummer
 see_more_filters	bookingfrontend	nn	Sjå fleire filter
+see_less_filters	bookingfrontend	nn	Sjå mindre filter
 event_building	bookingfrontend	nn	Arrangement / bygning
 enter_team_organization_name	bookingfrontend	nn	Skriv namn på lag/organisasjon
 show_only_available	bookingfrontend	nn	Vis berre tilgjengelege
 version_choice	bookingfrontend	nn	Versjonsval
+version	bookingfrontend	nn	Versjon
 which_version_do_you_want	bookingfrontend	nn	Kva versjon ønsker du?
 old	bookingfrontend	nn	Gammal
+new	bookingfrontend	nn	Ny
 what_is_aktiv_kommune	bookingfrontend	nn	Kva er Aktiv kommune?
+add_rental_period	bookingfrontend	nn	Legg til leigeperiode
+minute_rate	bookingfrontend	nn	Minuttpris
+hourly_rate	bookingfrontend	nn	Timepris
+daily_rate	bookingfrontend	nn	Dagspris
+hours	bookingfrontend	nn	Timar
+total	bookingfrontend	nn	Total
+minute	bookingfrontend	nn	Minutt
+days	bookingfrontend	nn	Dagar
+continue	bookingfrontend	nn	Fortsett
+billing	bookingfrontend	nn	Fakturering
+home_page	bookingfrontend	nn	Til forsiden
+summary	bookingfrontend	nn	Oppsummering
+your_applications	bookingfrontend	nn	Dine søknader
+billing_information_contact_person	bookingfrontend	nn	Fakturainformasjon til kontaktperson
+billing_information	bookingfrontend	nn	Fakturainformasjon
+submit_application	bookingfrontend	nn	Send inn søknad
+delete	bookingfrontend	nn	Slett
+delete_rentobject	bookingfrontend	nn	Slette leigeobjekt
+delete_rentobject_body	bookingfrontend	nn	Er du sikker på du vil slette dette utleigeobjektet frå handlekurva?

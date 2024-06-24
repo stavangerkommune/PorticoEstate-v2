@@ -111,7 +111,7 @@
 		{
 			if ($this->is_inline())
 			{
-				$params['filter_owner_id'] = intval(\Sanitizer::get_var('filter_owner_id'));
+				$params['filter_owner_id'] = intval(phpgw::get_var('filter_owner_id'));
 			}
 			return $params;
 		}
@@ -129,12 +129,12 @@
 
 		public function get_inline_params()
 		{
-			return array('filter_owner_id' => \Sanitizer::get_var('filter_owner_id', 'int'));
+			return array('filter_owner_id' => phpgw::get_var('filter_owner_id', 'int'));
 		}
 
 		public function is_inline()
 		{
-			return false != \Sanitizer::get_var('filter_owner_id', 'int', 'REQUEST', false);
+			return false != phpgw::get_var('filter_owner_id', 'int', 'REQUEST', false);
 		}
 
 		public static function generate_inline_link( $documentOwnerType, $documentOwnerId, $action )
@@ -145,7 +145,7 @@
 
 		public function index()
 		{
-			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
+			if (phpgw::get_var('phpgw_return_as') == 'json')
 			{
 				return $this->query();
 			}
@@ -247,7 +247,7 @@
 				}
 			}
 
-			if (\Sanitizer::get_var('no_images'))
+			if (phpgw::get_var('no_images'))
 			{
 				$documents['results'] = array_filter($documents['results'], array($this, 'is_image'));
 				// the array_filter function preserves the array keys. The javascript that later iterates over the resultset don't like gaps in the array keys
@@ -303,7 +303,7 @@
 
 		public function show()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -369,7 +369,7 @@
 
 		public function edit()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 			if (!$id)
 			{
 				phpgw::no_access('booking', lang('missing id'));
@@ -420,7 +420,7 @@
 
 		public function download()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 
 			$document = $this->bo->read_single($id);
 
@@ -429,7 +429,7 @@
 
 		public function delete()
 		{
-			$id = \Sanitizer::get_var('id', 'int');
+			$id = phpgw::get_var('id', 'int');
 			$this->bo->delete($id);
 
 			$this->redirect_to_parent_if_inline();
