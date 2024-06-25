@@ -143,7 +143,7 @@ class Settings
  
     public function set($name, $value)
     {
-		if($name == 'flags')
+		if($name == 'apps')
 		{
 //			_debug_array($value);
 		}

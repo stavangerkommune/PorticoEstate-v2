@@ -841,8 +841,6 @@ class Sessions
 
 		$apps = (new \App\modules\phpgwapi\controllers\Applications($this->_account_id))->read();
 
-		Settings::getInstance()->set('apps', $apps);
-
 		$accounts = new \App\modules\phpgwapi\controllers\Accounts\Accounts($this->_account_id);
 
 		$this->_data               	= $accounts->read()->toArray();
@@ -859,7 +857,7 @@ class Sessions
 		Settings::getInstance()->set('user', $this->_data);
 		Cache::session_set('phpgwapi', 'phpgw_info', array(
 			'user' => $this->_data,
-			'apps' => $apps,
+			'apps' => Settings::getInstance()->get('apps'),
 			'flags' => Settings::getInstance()->get('flags'),
 			'server' => Settings::getInstance()->get('server')
 		));

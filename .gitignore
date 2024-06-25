@@ -6,3 +6,4 @@
 /nbproject/*
 /nbproject/private/
 /composer.lock
+/.vscode/launch.json
