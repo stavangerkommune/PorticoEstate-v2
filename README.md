@@ -2,11 +2,36 @@
 
 New Api based on [Slim framework](https://www.slimframework.com/)
 
-Instructions:
+# Instructions
 
-- Step 1: Clone the code
-- Step 2: Configure the database
-- Step 3: Start the server by running "docker compose up -d"
-- Step 4: Access the Api on http:∕∕localhost:8088/
+Follow these steps to get started:
 
-Note: xdebug.client_port=9004
+1. **Clone the code**
+	- Use your preferred method to clone the repository to your local machine.
+
+2. **Configure the database**
+	- Update the database configuration settings as per your environment.
+
+3. **Build the image**
+	- Set the `INSTALL_XDEBUG` environment variable and build your Docker image:
+	  ```bash
+	  export INSTALL_XDEBUG=true
+	  docker compose build
+	  ```
+
+4. **Start the server**
+	- Launch your containers in detached mode:
+	  ```bash
+	  docker compose up -d
+	  ```
+
+5. **Install required 3rd-party libraries**
+	- Execute the following command to install dependencies inside the `portico_api` container:
+	  ```bash
+	  docker exec -it portico_api composer install
+	  ```
+
+6. **Access the API**
+	- The API will be available at [http://localhost:8088/](http://localhost:8088/)
+
+**Note:** Ensure the `xdebug.client_port` is set to `9004`.

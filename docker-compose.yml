@@ -1,11 +1,21 @@
+## istructions to build the image ##
+# export INSTALL_MSSQL=true
+# export INSTALL_XDEBUG=true
+# docker compose build
 
 volumes:
     logs:
         driver: local
 services:
     slim:
-        container_name: slim_container
-        image: sigurdne/portico_estate_webserver:latest
+        container_name: portico_api
+     #   image: sigurdne/portico_estate_webserver:latest
+        build:
+            context: .
+            dockerfile: Dockerfile
+            args:
+                INSTALL_MSSQL: ${INSTALL_MSSQL}
+                INSTALL_XDEBUG: ${INSTALL_XDEBUG}
         working_dir: /var/www/html
         environment:
             docker: "true"
