@@ -665,8 +665,8 @@
 			{
 				if(!isset($aColumnDef['default']))
 				{
-					$stmt = $oProc->m_odb->prepare("SELECT count(*) as cnt FROM :tableName");
-					$stmt->execute([':tableName' => $sTableName]);
+					$stmt = $oProc->m_odb->prepare("SELECT count(*) as cnt FROM $sTableName");
+					$stmt->execute();
 
 					$result = $stmt->fetch(PDO::FETCH_ASSOC);
 

@@ -21,7 +21,8 @@ use App\Database\Db;
 use App\modules\phpgwapi\controllers\Locations;
 
 $db = Db::getInstance();
-$_locations = new Locations();
+$location_obj = new Locations();
+
 $serverSettings = Settings::getInstance()->get('server');
 
 $db->query("SELECT app_id FROM phpgw_applications WHERE app_name = 'property'");
@@ -181,18 +182,18 @@ $translation = p_setup_translate('Vendor');
 $db->query("INSERT INTO phpgw_locations (app_id, name, descr, allow_grant, allow_c_attrib,c_attrib_table) VALUES ({$app_id}, '.vendor', '{$translation}',1,1,'fm_vendor')");
 
 $translation = p_setup_translate('Admin booking');
-$_locations->add('.admin_booking', $translation, 'property');
+$location_obj->add('.admin_booking', $translation, 'property');
 
-$_locations->add('.jasper', 'JasperReport', 'property', $allow_grant = true);
+$location_obj->add('.jasper', 'JasperReport', 'property', $allow_grant = true);
 
 $translation = p_setup_translate('A dimension for accounting');
-$_locations->add('.invoice.dimb', $translation, 'property');
+$location_obj->add('.invoice.dimb', $translation, 'property');
 $translation = p_setup_translate('Scheduled events');
-$_locations->add('.scheduled_events', $translation, 'property');
+$location_obj->add('.scheduled_events', $translation, 'property');
 $translation = p_setup_translate('Condition Survey');
-$_locations->add('.project.condition_survey', $translation, 'property', true, 'fm_condition_survey', true);
+$location_obj->add('.project.condition_survey', $translation, 'property', true, 'fm_condition_survey', true);
 $translation = p_setup_translate('Org unit');
-$_locations->add('.org_unit', $translation, 'property', false, 'fm_org_unit', false, true);
+$location_obj->add('.org_unit', $translation, 'property', false, 'fm_org_unit', false, true);
 
 $locations = array(
 	'property.ticket' => '.ticket',
@@ -206,14 +207,14 @@ $locations = array(
 $translation = p_setup_translate('Categories');
 foreach ($locations as $dummy => $location)
 {
-	$_locations->add("{$location}.category", $translation, 'property');
+	$location_obj->add("{$location}.category", $translation, 'property');
 }
 
 $translation = p_setup_translate('Generic report');
-$_locations->add('.report', $translation, 'property', $allow_grant = true);
+$location_obj->add('.report', $translation, 'property', $allow_grant = true);
 
 $translation = p_setup_translate('location exception');
-$_locations->add('.location.exception', $translation, 'property');
+$location_obj->add('.location.exception', $translation, 'property');
 
 $db->query("DELETE from phpgw_config WHERE config_app='property'");
 //	$db->query("INSERT INTO phpgw_config (config_app, config_name, config_value) VALUES ('property','meter_table', 'fm_entity_1_1')");
@@ -251,7 +252,7 @@ $db->query("INSERT INTO fm_owner (id, abid, org_name, category) VALUES (1, 1, '{
 #
 #fm_owner_attribute
 #
-$location_id = $_locations->get_id('property', '.owner');
+$location_id = $location_obj->get_id('property', '.owner');
 
 $db->query("INSERT INTO phpgw_cust_attribute (location_id, id, list, column_name, input_text, statustext, size, datatype, attrib_sort, precision_, scale, default_value, nullable, search) VALUES ($location_id, 1, 1, 'abid', 'Contact', 'Contakt person', NULL, 'AB', 1, 4, NULL, NULL, 'True', NULL)");
 $db->query("INSERT INTO phpgw_cust_attribute (location_id, id, list, column_name, input_text, statustext, size, datatype, attrib_sort, precision_, scale, default_value, nullable, search) VALUES ($location_id, 2, 1, 'org_name', 'Name', 'The name of the owner', NULL, 'V', 2, 50, NULL, NULL, 'True', 1)");
@@ -468,7 +469,7 @@ $db->query("INSERT INTO fm_tenant_category (id, descr) VALUES (3, 'organization'
 #
 # Dumping data for table phpgw_cust_attribute
 #
-$location_id = $_locations->get_id('property', '.tenant');
+$location_id = $location_obj->get_id('property', '.tenant');
 
 $db->query("INSERT INTO phpgw_cust_attribute (location_id, id, list, search, column_name, input_text, statustext, size, datatype, attrib_sort, precision_, scale, default_value, nullable) VALUES ($location_id, 1, 1, 1, 'first_name', 'First name', 'First name', NULL, 'V', 1, 50, NULL, NULL, 'True')");
 $db->query("INSERT INTO phpgw_cust_attribute (location_id, id, list, search, column_name, input_text, statustext, size, datatype, attrib_sort, precision_, scale, default_value, nullable) VALUES ($location_id, 2, 1, 1, 'last_name', 'Last name', 'Last name', NULL, 'V', 2, 50, NULL, NULL, 'True')");
@@ -529,10 +530,10 @@ $db->query("INSERT INTO fm_ecomva (id, descr) VALUES (5, 'Mva 5')");
 # Dumping data for table fm_entity
 #
 
-//	$location_id = $_locations->get_id('property', '.entity.1');
+//	$location_id = $location_obj->get_id('property', '.entity.1');
 //	$db->query("INSERT INTO fm_entity (location_id, id, name, descr, location_form, documentation) VALUES ({$location_id}, 1, 'Equipment', 'equipment', 1, 1)");
 ////$db->query("INSERT INTO fm_entity (id, name, descr, location_form, documentation, lookup_entity) VALUES (2, 'Report', 'report', 1, NULL, 'a:1:{i:0;s:1:"1";}')");
-//	$location_id = $_locations->get_id('property', '.entity.2');
+//	$location_id = $location_obj->get_id('property', '.entity.2');
 //	$db->query("INSERT INTO fm_entity (location_id, id, name, descr, location_form, documentation, lookup_entity) VALUES ({$location_id}, 2, 'Report', 'report', 1, NULL, '')");
 
 #
@@ -541,7 +542,7 @@ $db->query("INSERT INTO fm_ecomva (id, descr) VALUES (5, 'Mva 5')");
 #
 # Dumping data for table fm_entity_attribute
 #
-//	$location_id = $_locations->get_id('property', '.entity.1.1');
+//	$location_id = $location_obj->get_id('property', '.entity.1.1');
 //	$db->query("INSERT INTO fm_entity_category (location_id, entity_id, id, name, descr, prefix, lookup_tenant, tracking, location_level) VALUES ({$location_id}, 1, 1, 'Meter', 'Meter', NULL, NULL, NULL, 3)");
 //
 //	$db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable) VALUES ($location_id, 1, 'status', 'Status', 'Status', 'LB', NULL, 1, NULL, NULL, NULL, NULL, 'True')");
@@ -554,7 +555,7 @@ $db->query("INSERT INTO fm_ecomva (id, descr) VALUES (5, 'Mva 5')");
 //	$db->query("INSERT INTO phpgw_cust_choice (location_id, attrib_id, id, value) VALUES ($location_id, 2, 1, 'Tenant power meter')");
 //	$db->query("INSERT INTO phpgw_cust_choice (location_id, attrib_id, id, value) VALUES ($location_id, 2, 2, 'Joint power meter')");
 //
-//	$location_id = $_locations->get_id('property', '.entity.1.2');
+//	$location_id = $location_obj->get_id('property', '.entity.1.2');
 //	$db->query("INSERT INTO fm_entity_category (location_id, entity_id, id, name, descr, prefix, lookup_tenant, tracking, location_level) VALUES ({$location_id}, 1, 2, 'Elevator', 'Elevator', 'E', NULL, NULL, 3)");
 //	$db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable) VALUES ($location_id, 1, 'status', 'Status', 'Status', 'LB', NULL, 1, NULL, NULL, NULL, NULL, 'True')");
 //	$db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable) VALUES ($location_id, 2, 'attribute1', 'Attribute 1', 'Attribute 1 statustext', 'V', NULL, 2, NULL, 12, NULL, NULL, 'True')");
@@ -569,7 +570,7 @@ $db->query("INSERT INTO fm_ecomva (id, descr) VALUES (5, 'Mva 5')");
 //	$db->query("INSERT INTO phpgw_cust_choice (location_id, attrib_id, id, value) VALUES ($location_id, 5, 1, 'choice 1')");
 //	$db->query("INSERT INTO phpgw_cust_choice (location_id, attrib_id, id, value) VALUES ($location_id, 5, 2, 'choice 2')");
 //
-//	$location_id = $_locations->get_id('property', '.entity.1.3');
+//	$location_id = $location_obj->get_id('property', '.entity.1.3');
 //	$db->query("INSERT INTO fm_entity_category (location_id, entity_id, id, name, descr, prefix, lookup_tenant, tracking, location_level) VALUES ({$location_id}, 1, 3, 'Fire alarm central', 'Fire alarm central', 'F', NULL, NULL, 3)");
 //	$db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable) VALUES ($location_id, 1, 'status', 'Status', 'Status', 'LB', NULL, 1, NULL, NULL, NULL, NULL, 'True')");
 //	$db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable) VALUES ($location_id, 2, 'attribute1', 'Attribute 1', 'Attribute 1 statustext', 'V', NULL, 2, NULL, 12, NULL, NULL, 'True')");
@@ -584,7 +585,7 @@ $db->query("INSERT INTO fm_ecomva (id, descr) VALUES (5, 'Mva 5')");
 //	$db->query("INSERT INTO phpgw_cust_choice (location_id, attrib_id, id, value) VALUES ($location_id, 5, 1, 'choice 1')");
 //	$db->query("INSERT INTO phpgw_cust_choice (location_id, attrib_id, id, value) VALUES ($location_id, 5, 2, 'choice 2')");
 //
-//	$location_id = $_locations->get_id('property', '.entity.2.1');
+//	$location_id = $location_obj->get_id('property', '.entity.2.1');
 //	$db->query("INSERT INTO fm_entity_category (location_id, entity_id, id, name, descr, prefix, lookup_tenant, tracking, location_level) VALUES ({$location_id}, 2, 1, 'Report type 1', 'Report type 1', 'RA', 1, 1, 4)");
 //	$db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable) VALUES ($location_id, 1, 'status', 'Status', 'Status', 'LB', NULL, 1, NULL, NULL, NULL, NULL, 'True')");
 //	$db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable) VALUES ($location_id, 2, 'attribute1', 'Attribute 1', 'Attribute 1 statustext', 'V', NULL, 2, NULL, 12, NULL, NULL, 'True')");
@@ -599,7 +600,7 @@ $db->query("INSERT INTO fm_ecomva (id, descr) VALUES (5, 'Mva 5')");
 //	$db->query("INSERT INTO phpgw_cust_choice (location_id, attrib_id, id, value) VALUES ($location_id, 5, 1, 'choice 1')");
 //	$db->query("INSERT INTO phpgw_cust_choice (location_id, attrib_id, id, value) VALUES ($location_id, 5, 2, 'choice 2')");
 //
-//	$location_id = $_locations->get_id('property', '.entity.2.2');
+//	$location_id = $location_obj->get_id('property', '.entity.2.2');
 //	$db->query("INSERT INTO fm_entity_category (location_id, entity_id, id, name, descr, prefix, lookup_tenant, tracking, location_level) VALUES ({$location_id}, 2, 2, 'Report type 2', 'Report type 2', 'RB', 1, 1, 4)");
 //	$db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable) VALUES ($location_id, 1, 'status', 'Status', 'Status', 'LB', NULL, 1, NULL, NULL, NULL, NULL, 'True')");
 //	$db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable) VALUES ($location_id, 2, 'attribute1', 'Attribute 1', 'Attribute 1 statustext', 'V', NULL, 2, NULL, 12, NULL, NULL, 'True')");
@@ -644,7 +645,7 @@ $db->query("INSERT INTO fm_custom_cols (custom_id, id, name, descr, sorting) VAL
 #
 # Dumping data for table fm_vendor_attribute
 #
-$location_id = $_locations->get_id('property', '.vendor');
+$location_id = $location_obj->get_id('property', '.vendor');
 $db->query("INSERT INTO phpgw_cust_attribute (location_id, id, list, column_name, input_text, statustext, size, datatype, attrib_sort, precision_, scale, default_value, nullable, search) VALUES ($location_id, 1, 1, 'org_name', 'Name', 'The Name of the vendor', NULL, 'V', 1, 50, NULL, NULL, 'True', 1)");
 $db->query("INSERT INTO phpgw_cust_attribute (location_id, id, list, column_name, input_text, statustext, size, datatype, attrib_sort, precision_, scale, default_value, nullable, search) VALUES ($location_id, 2, 1, 'contact_phone', 'Contact phone', 'Contact phone', NULL, 'V', 2, 20, NULL, NULL, 'True', 1)");
 $db->query("INSERT INTO phpgw_cust_attribute (location_id, id, list, column_name, input_text, statustext, size, datatype, attrib_sort, precision_, scale, default_value, nullable, search) VALUES ($location_id, 3, 1, 'email', 'email', 'email', NULL, 'email', 3, 64, NULL, NULL, 'True', 1)");
@@ -764,7 +765,7 @@ for ($location_type = 1; $location_type < 5; $location_type++)
 	$db->query("UPDATE fm_location_type set list_info = 'a:3:{i:1;s:1:\"1\";i:2;s:1:\"2\";i:3;s:1:\"3\";}', list_address = 1 WHERE id = 3");
 	$db->query("UPDATE fm_location_type set list_info = 'a:1:{i:1;s:1:\"1\";}', list_address = 1  WHERE id = 4");
 
-	$location_id = $_locations->get_id('property', ".location.{$location_type}");
+	$location_id = $location_obj->get_id('property', ".location.{$location_type}");
 
 	for ($i = 0; $i < count($default_attrib['id']); $i++)
 	{
@@ -788,7 +789,7 @@ for ($location_type = 1; $location_type < 5; $location_type++)
 #
 # Dumping data for table fm_location_attrib
 #
-$location_id = $_locations->get_id('property', '.location.1');
+$location_id = $location_obj->get_id('property', '.location.1');
 $db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable,custom) VALUES ($location_id, 10, 'status', 'Status', 'Status', 'LB', NULL, 1, NULL, NULL, NULL, NULL, 'True', 1)");
 $db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable,custom) VALUES ($location_id, 11, 'remark', 'Remark', 'Remark', 'T', NULL, 2, NULL, NULL, NULL, NULL, 'True', 1)");
 $db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable,custom) VALUES ($location_id, 12, 'mva', 'mva', 'Status', 'I', NULL, 3, NULL, 4, NULL, NULL, 'True', 1)");
@@ -807,7 +808,7 @@ $db->query("INSERT INTO phpgw_cust_choice (location_id, attrib_id, id, value) VA
 $db->query("INSERT INTO phpgw_cust_choice (location_id, attrib_id, id, value) VALUES ($location_id, 10, 2, 'Not OK')");
 
 
-$location_id = $_locations->get_id('property', '.location.2');
+$location_id = $location_obj->get_id('property', '.location.2');
 $db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable,custom) VALUES ($location_id, 11, 'status', 'Status', 'Status', 'LB', NULL, 1, NULL, NULL, NULL, NULL, 'True', 1)");
 $db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable,custom) VALUES ($location_id, 12, 'remark', 'Remark', 'Remark', 'T', NULL, 2, NULL, NULL, NULL, NULL, 'True', 1)");
 $db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable,custom) VALUES ($location_id, 13, 'change_type', 'change_type', 'change_type', 'I', NULL, NULL, NULL, 4, NULL, NULL, 'True', NULL)");
@@ -823,7 +824,7 @@ $translation = p_setup_translate('Building number');
 
 $db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable,custom) VALUES ($location_id, 20, 'building_number', '{$translation}', '{$translation}', 'I', NULL, NULL, NULL, 8, NULL, NULL, 'True', 1)");
 
-$location_id = $_locations->get_id('property', '.location.3');
+$location_id = $location_obj->get_id('property', '.location.3');
 $db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable,custom) VALUES ($location_id, 12, 'status', 'Status', 'Status', 'LB', NULL, 1, NULL, NULL, NULL, NULL, 'True', 1)");
 $db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable,custom) VALUES ($location_id, 13, 'remark', 'Remark', 'Remark', 'T', NULL, 2, NULL, NULL, NULL, NULL, 'True', 1)");
 $db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable,custom) VALUES ($location_id, 14, 'change_type', 'change_type', 'change_type', 'I', NULL, NULL, NULL, 4, NULL, NULL, 'True', NULL)");
@@ -835,7 +836,7 @@ $db->query("INSERT INTO phpgw_cust_choice (location_id, attrib_id, id, value) VA
 $db->query("INSERT INTO phpgw_cust_choice (location_id, attrib_id, id, value) VALUES ($location_id, 12, 2, 'Not OK')");
 
 
-$location_id = $_locations->get_id('property', '.location.4');
+$location_id = $location_obj->get_id('property', '.location.4');
 $db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable,custom) VALUES ($location_id, 13, 'status', 'Status', 'Status', 'LB', NULL, 1, NULL, NULL, NULL, NULL, 'True', 1)");
 $db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable,custom) VALUES ($location_id, 14, 'remark', 'Remark', 'Remark', 'T', NULL, 2, NULL, NULL, NULL, NULL, 'True', 1)");
 $db->query("INSERT INTO phpgw_cust_attribute (location_id, id, column_name, input_text, statustext, datatype, list, attrib_sort, size, precision_, scale, default_value, nullable,custom) VALUES ($location_id, 15, 'tenant_id', 'tenant_id', 'tenant_id', 'I', NULL, NULL, NULL, 4, NULL, NULL, 'True', NULL)");
@@ -895,7 +896,7 @@ else
 	echo "<li><b>Run the \"Update location\" from within the administration->property after installation</b></li>";
 }
 
-$custom_config = CreateObject('admin.soconfig', $_locations->get_id('property', '.invoice'));
+$custom_config = CreateObject('admin.soconfig', $location_obj->get_id('property', '.invoice'));
 
 // common
 $receipt_section_common = $custom_config->add_section(

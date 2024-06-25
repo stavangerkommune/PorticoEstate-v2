@@ -98,7 +98,7 @@ class admin_uiaccounts extends phpgwapi_uicommon_jquery
 	 */
 	protected $_ldap_extended = false;
 	protected $accounts;
-	protected $apps;
+//	protected $apps;
 
 	/**
 	 * Constructor

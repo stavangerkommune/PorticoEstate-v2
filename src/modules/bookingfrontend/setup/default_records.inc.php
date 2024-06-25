@@ -1,50 +1,61 @@
 <?php
 // Default user
-	$GLOBALS['phpgw']->accounts = createObject('phpgwapi.accounts');
-	$GLOBALS['phpgw']->acl = CreateObject('phpgwapi.acl');
 
-	$modules = array
-		(
-		'bookingfrontend',
-//	'preferences'
-	);
+use App\modules\phpgwapi\services\Settings;
+use App\Database\Db;
+use App\modules\phpgwapi\controllers\Locations;
+use App\modules\phpgwapi\security\Acl;
+use App\modules\phpgwapi\controllers\Accounts\Accounts;
+use App\modules\phpgwapi\controllers\Accounts\phpgwapi_user;
 
-	$aclobj = & $GLOBALS['phpgw']->acl;
 
-	if (!$GLOBALS['phpgw']->accounts->exists('bookingguest')) // no guest account already exists
-	{
-		$passwd = $GLOBALS['phpgw']->common->randomstring(6) . "ABab1!";
+$db = Db::getInstance();
+$location_obj = new Locations();
+$serverSettings = Settings::getInstance()->get('server');
 
-		$GLOBALS['phpgw_info']['server']['password_level'] = '8CHAR';
-		$account = new phpgwapi_user();
-		$account->lid = 'bookingguest';
-		$account->firstname = 'booking';
-		$account->lastname = 'Guest';
-		$account->passwd = $passwd;
-		$account->enabled = true;
-		$account->expires = -1;
-		$bookingguest = $GLOBALS['phpgw']->accounts->create($account, array(), array(), $modules);
 
-		$preferences = createObject('phpgwapi.preferences');
-		$preferences->set_account_id($bookingguest);
-		$preferences->add('common', 'template_set', 'bookingfrontend');
-		$preferences->save_repository(true, 'user');
+$modules = array(
+	'bookingfrontend',
+	//	'preferences'
+);
 
-		$config = CreateObject('phpgwapi.config', 'bookingfrontend');
-		$config->read();
-		$config->value('anonymous_user', 'bookingguest');
-		$config->value('anonymous_passwd', $passwd);
-		$config->save_repository();
-	}
+$aclobj = Acl::getInstance();
+$accounts_obj = new Accounts();
 
-	// Sane defaults for the API
-	$values = array
-	(
-		'usecookies'			=> 'True'
-	);
+if (!$accounts_obj->exists('bookingguest')) // no guest account already exists
+{
+	$phpgwapi_common = new \phpgwapi_common();
+	$passwd = $phpgwapi_common->randomstring(6) . "ABab1!";
 
-	foreach ( $values as $name => $val )
-	{
-		$sql = "INSERT INTO phpgw_config VALUES('bookingfrontend', '{$name}', '{$val}')";
-		$GLOBALS['phpgw_setup']->oProc->query($sql, __LINE__, __FILE__);
-	}
+	$serverSettings['password_level'] = '8CHAR';
+	$account = new phpgwapi_user();
+	$account->lid = 'bookingguest';
+	$account->firstname = 'booking';
+	$account->lastname = 'Guest';
+	$account->passwd = $passwd;
+	$account->enabled = true;
+	$account->expires = -1;
+	$bookingguest = $accounts_obj->create($account, array(), array(), $modules);
+
+	$preferences = createObject('phpgwapi.preferences');
+	$preferences->set_account_id($bookingguest);
+	$preferences->add('common', 'template_set', 'bookingfrontend');
+	$preferences->save_repository(true, 'user');
+
+	$config = CreateObject('phpgwapi.config', 'bookingfrontend');
+	$config->read();
+	$config->value('anonymous_user', 'bookingguest');
+	$config->value('anonymous_passwd', $passwd);
+	$config->save_repository();
+}
+
+// Sane defaults for the API
+$values = array(
+	'usecookies'			=> 'True'
+);
+
+foreach ($values as $name => $val)
+{
+	$sql = "INSERT INTO phpgw_config VALUES('bookingfrontend', '{$name}', '{$val}')";
+	$db->query($sql, __LINE__, __FILE__);
+}

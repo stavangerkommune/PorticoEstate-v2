@@ -46,7 +46,7 @@
 		{
 			$userSettings = Settings::getInstance()->get('user');
 			$flags = Settings::getInstance()->get('flags');
-			$phpgw_locations = new Locations();
+			$location_obj = new Locations();
 			$translation = Translation::getInstance();
 			
 			$incoming_app			 = $flags['currentapp'];
@@ -107,7 +107,7 @@
 								'entity_id'	 => $entry['id'])),
 							'text'			 => $entry['name'],
 							'image'			 => array('property', 'entity_' . $entry['id']),
-							'nav_location'	 => "admin#" . $phpgw_locations->get_id('property', ".entity.{$entry['id']}")
+							'nav_location'	 => "admin#" . $location_obj->get_id('property', ".entity.{$entry['id']}")
 						);
 
 						$admin_children_entity["entity_{$entry['id']}"]['children'] = $entity->read_category_tree($entry['id'], 'property.uiadmin_entity.list_attribute', false, 'admin#');
@@ -271,9 +271,9 @@
 					'ticket_config'		 => array
 						(
 						'text'	 => lang('ticket config'),
-						'nav_location' => 'navbar#' . $phpgw_locations->get_id('property', '.ticket'),
+						'nav_location' => 'navbar#' . $location_obj->get_id('property', '.ticket'),
 						'url'	 => phpgw::link('/index.php', array('menuaction'	 => 'admin.uiconfig2.index',
-							'location_id'	 => $phpgw_locations->get_id('property', '.ticket')))
+							'location_id'	 => $location_obj->get_id('property', '.ticket')))
 					),
 					'ticket_attribs'	 => array
 						(
@@ -380,9 +380,9 @@
 					'accounting_config'		 => array
 						(
 						'text'	 => lang('Configuration'),
-						'nav_location' => 'navbar#' . $phpgw_locations->get_id('property', '.invoice'),
+						'nav_location' => 'navbar#' . $location_obj->get_id('property', '.invoice'),
 						'url'	 => phpgw::link('/index.php', array('menuaction'	 => 'admin.uiconfig2.index',
-							'location_id'	 => $phpgw_locations->get_id('property', '.invoice')))
+							'location_id'	 => $location_obj->get_id('property', '.invoice')))
 					),
 					'accounting_tax'		 => array
 						(
@@ -613,9 +613,9 @@
 						'children'	 => array(
 							'custom_config'		 => array(
 								'text'			 => lang('custom config'),
-								'nav_location'	 => 'navbar#' . $phpgw_locations->get_id('property', '.admin'),
+								'nav_location'	 => 'navbar#' . $location_obj->get_id('property', '.admin'),
 								'url'			 => phpgw::link('/index.php', array('menuaction'	 => 'admin.uiconfig2.index',
-									'location_id'	 => $phpgw_locations->get_id('property', '.admin')))
+									'location_id'	 => $location_obj->get_id('property', '.admin')))
 							),
 							'klassifikasjonssystemet'	 => array(
 								'text'	 => 'Klassifikasjonssystemet',
@@ -647,7 +647,7 @@
 						'text'		 => lang('Admin entity'),
 						'url'		 => phpgw::link('/index.php', array('menuaction' => 'property.uiadmin_entity.index')),
 						'children'	 => $admin_children_entity,
-						'nav_location' => "admin#" . $phpgw_locations->get_id('property', '.admin.entity')
+						'nav_location' => "admin#" . $location_obj->get_id('property', '.admin.entity')
 					),
 					'location'					 => array
 						(
@@ -1604,8 +1604,7 @@
 				);
 			}
 
-			$flags['currentapp'] = $incoming_app;
-			Settings::getInstance()->set('flags', $flags);
+			Settings::getInstance()->update('flags', ['currentapp' => $incoming_app]);
 			return $menus;
 		}
 	}	
