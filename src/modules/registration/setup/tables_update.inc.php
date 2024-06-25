@@ -12,10 +12,9 @@
 	/* $Id$ */
 
 	$test[] = '0.8.1';
-
-	function registration_upgrade0_8_1()
+	function registration_upgrade0_8_1($oProc)
 	{
-		$phpgw_setup->oProc->CreateTable('phpgw_reg_fields', array(
+		$oProc->CreateTable('phpgw_reg_fields', array(
 			'fd' => array(
 				'field_name' => array('type' => 'varchar', 'precision' => 255, 'nullable' => False),
 				'field_text' => array('type' => 'text', 'nullable' => False),
@@ -30,53 +29,53 @@
 			'uc' => array()
 		));
 
-		$GLOBALS['setup_info']['registration']['currentver'] = '0.8.2';
-		return $GLOBALS['setup_info']['registration']['currentver'];
+		$currentver = '0.8.2';
+		return $currentver;
 	}
+
 	$test[] = '0.8.2';
-
-	function registration_upgrade0_8_2()
+	function registration_upgrade0_8_2($oProc)
 	{
-		$GLOBALS['phpgw_setup']->oProc->m_odb->transaction_begin();
+		$oProc->m_odb->transaction_begin();
 
-		$GLOBALS['phpgw_setup']->oProc->AddColumn('phpgw_reg_accounts', 'reg_approved', array(
+		$oProc->AddColumn('phpgw_reg_accounts', 'reg_approved', array(
 			'type' => 'int', 'precision' => 2, 'nullable' => True));
 
-		if ($GLOBALS['phpgw_setup']->oProc->m_odb->transaction_commit())
+		if ($oProc->m_odb->transaction_commit())
 		{
-			$GLOBALS['setup_info']['registration']['currentver'] = '0.8.3';
-			return $GLOBALS['setup_info']['registration']['currentver'];
+			$currentver = '0.8.3';
+			return $currentver;
 		}
 	}
+
 	$test[] = '0.8.3';
-
-	function registration_upgrade0_8_3()
+	function registration_upgrade0_8_3($oProc)
 	{
-		$GLOBALS['phpgw_setup']->oProc->m_odb->transaction_begin();
+		$oProc->m_odb->transaction_begin();
 
-		$GLOBALS['phpgw_setup']->oProc->AlterColumn('phpgw_reg_accounts', 'reg_info', array(
+		$oProc->AlterColumn('phpgw_reg_accounts', 'reg_info', array(
 			'type' => 'text', 'nullable' => True));
 
-		if ($GLOBALS['phpgw_setup']->oProc->m_odb->transaction_commit())
+		if ($oProc->m_odb->transaction_commit())
 		{
-			$GLOBALS['setup_info']['registration']['currentver'] = '0.8.4';
-			return $GLOBALS['setup_info']['registration']['currentver'];
+			$currentver = '0.8.4';
+			return $currentver;
 		}
 	}
-	$test[] = '0.8.4';
 
-	function registration_upgrade0_8_4()
+	$test[] = '0.8.4';
+	function registration_upgrade0_8_4($oProc)
 	{
-		$GLOBALS['phpgw_setup']->oProc->m_odb->transaction_begin();
+		$oProc->m_odb->transaction_begin();
 
 		$asyncservice = CreateObject('phpgwapi.asyncservice');
 		$asyncservice->set_timer(
 			array('hour' => "*/2"), 'registration_clear_reg_accounts', 'registration.hook_helper.clear_reg_accounts', null
 		);
 
-		if ($GLOBALS['phpgw_setup']->oProc->m_odb->transaction_commit())
+		if ($oProc->m_odb->transaction_commit())
 		{
-			$GLOBALS['setup_info']['registration']['currentver'] = '0.8.5';
-			return $GLOBALS['setup_info']['registration']['currentver'];
+			$currentver = '0.8.5';
+			return $currentver;
 		}
 	}

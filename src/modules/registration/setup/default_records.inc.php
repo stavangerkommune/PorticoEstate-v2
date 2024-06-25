@@ -1,5 +1,5 @@
 <?php
-	/*	 * ************************************************************************\
+/*	 * ************************************************************************\
 	 * phpGroupWare - Setup                                                     *
 	 * http://www.phpgroupware.org                                              *
 	 * --------------------------------------------                             *
@@ -9,25 +9,32 @@
 	 *  option) any later version.                                              *
 	  \************************************************************************* */
 
-	$GLOBALS['phpgw_setup']->oProc->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('bday','Birthday','birthday','','Y',1)");
-	$GLOBALS['phpgw_setup']->oProc->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('email','E-Mail','email','','Y',2)");
-	$GLOBALS['phpgw_setup']->oProc->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('n_given','First Name','first_name','','Y',3)");
-	$GLOBALS['phpgw_setup']->oProc->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('n_family','Last Name','last_name','','Y',4)");
-	$GLOBALS['phpgw_setup']->oProc->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('adr_one_street','Address','address','','Y',5)");
-	$GLOBALS['phpgw_setup']->oProc->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('adr_one_locality','City','city','','Y',6)");
-	$GLOBALS['phpgw_setup']->oProc->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('adr_one_region','State','state','','Y',7)");
-	$GLOBALS['phpgw_setup']->oProc->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('adr_one_postalcode','ZIP/Postal','zip','','Y',8)");
-	$GLOBALS['phpgw_setup']->oProc->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('adr_one_countryname','Country','country','','Y',9)");
-	$GLOBALS['phpgw_setup']->oProc->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('tel_work','Phone','phone','','N',10)");
-	$GLOBALS['phpgw_setup']->oProc->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('gender','Gender','gender','','N',11)");
+use App\Database\Db;
 
-	$GLOBALS['phpgw_setup']->oProc->query("DELETE FROM phpgw_config WHERE config_app='registration'");
-	$GLOBALS['phpgw_setup']->oProc->query("INSERT INTO phpgw_config (config_app, config_name, config_value) VALUES ('registration','display_tos','True')");
-	$GLOBALS['phpgw_setup']->oProc->query("INSERT INTO phpgw_config (config_app, config_name, config_value) VALUES ('registration','activate_account','email')");
-	$GLOBALS['phpgw_setup']->oProc->query("INSERT INTO phpgw_config (config_app, config_name, config_value) VALUES ('registration','username_is','choice')");
-	$GLOBALS['phpgw_setup']->oProc->query("INSERT INTO phpgw_config (config_app, config_name, config_value) VALUES ('registration','password_is','choice')");
+$db = Db::getInstance();
 
-	$asyncservice = CreateObject('phpgwapi.asyncservice');
-	$asyncservice->set_timer(
-		array('hour' => "*/2"), 'registration_clear_reg_accounts', 'registration.hook_helper.clear_reg_accounts', null
-	);
+$db->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('bday','Birthday','birthday','','Y',1)");
+$db->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('email','E-Mail','email','','Y',2)");
+$db->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('n_given','First Name','first_name','','Y',3)");
+$db->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('n_family','Last Name','last_name','','Y',4)");
+$db->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('adr_one_street','Address','address','','Y',5)");
+$db->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('adr_one_locality','City','city','','Y',6)");
+$db->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('adr_one_region','State','state','','Y',7)");
+$db->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('adr_one_postalcode','ZIP/Postal','zip','','Y',8)");
+$db->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('adr_one_countryname','Country','country','','Y',9)");
+$db->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('tel_work','Phone','phone','','N',10)");
+$db->query("INSERT INTO phpgw_reg_fields (field_name, field_text, field_type, field_values, field_required, field_order) VALUES ('gender','Gender','gender','','N',11)");
+
+$db->query("DELETE FROM phpgw_config WHERE config_app='registration'");
+$db->query("INSERT INTO phpgw_config (config_app, config_name, config_value) VALUES ('registration','display_tos','True')");
+$db->query("INSERT INTO phpgw_config (config_app, config_name, config_value) VALUES ('registration','activate_account','email')");
+$db->query("INSERT INTO phpgw_config (config_app, config_name, config_value) VALUES ('registration','username_is','choice')");
+$db->query("INSERT INTO phpgw_config (config_app, config_name, config_value) VALUES ('registration','password_is','choice')");
+
+$asyncservice = CreateObject('phpgwapi.asyncservice');
+$asyncservice->set_timer(
+	array('hour' => "*/2"),
+	'registration_clear_reg_accounts',
+	'registration.hook_helper.clear_reg_accounts',
+	null
+);

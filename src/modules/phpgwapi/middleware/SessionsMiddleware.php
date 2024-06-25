@@ -55,7 +55,7 @@ class SessionsMiddleware implements MiddlewareInterface
 		{
 			$this->routePath = $route->getPattern();
 			$routePath_arr = explode('/', $this->routePath);
-			$currentApp = $routePath_arr[1];
+			$currentApp = trim($routePath_arr[1], '[');
 		}
 
 		$this->read_initial_settings($currentApp);

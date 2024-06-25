@@ -1,14 +1,15 @@
 <?php
-	/**
-	 * Admin - Menus
-	 *
-	 * @author Dave Hall <skwashd@phpgroupware.org>
-	 * @copyright Copyright (C) 2007 - 2008 Free Software Foundation, Inc. http://www.fsf.org/
-	 * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
-	 * @package addressbook
-	 * @version $Id$
-	 */
-	/*
+
+/**
+ * Admin - Menus
+ *
+ * @author Dave Hall <skwashd@phpgroupware.org>
+ * @copyright Copyright (C) 2007 - 2008 Free Software Foundation, Inc. http://www.fsf.org/
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
+ * @package addressbook
+ * @version $Id$
+ */
+/*
 	  This program is free software: you can redistribute it and/or modify
 	  it under the terms of the GNU General Public License as published by
 	  the Free Software Foundation, either version 2 of the License, or
@@ -23,92 +24,104 @@
 	  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
+use App\modules\phpgwapi\controllers\Locations;
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\security\Acl;
+use App\modules\phpgwapi\services\Translation;
+
+/**
+ * Menus
+ *
+ * @package admin
+ */
+class manual_menu
+{
+
 	/**
-	 * Menus
+	 * Get the menus for admin
 	 *
-	 * @package admin
+	 * @return array available menus for the current user
 	 */
-	class manual_menu
+	function get_menu()
 	{
+		$location_obj = new Locations();
+		$flags = Settings::getInstance()->get('flags');
+		$userSettings = Settings::getInstance()->get('user');
+		$translation = Translation::getInstance();
 
-		/**
-		 * Get the menus for admin
-		 *
-		 * @return array available menus for the current user
-		 */
-		function get_menu()
-		{
-			$menus = array();
+		$incoming_app = $flags['currentapp'];
+		Settings::getInstance()->update('flags', ['currentapp' => 'manual']);
 
-			$menus['navbar'] = array
-				(
-				'manual' => array
-					(
-					'text' => $GLOBALS['phpgw']->translation->translate('manual', array(), true),
-					'url' => phpgw::link('/index.php', array
-						(
+		$acl = Acl::getInstance();
+
+		$menus = array();
+
+		$menus['navbar'] = array(
+			'manual' => array(
+				'text' => $translation->translate('manual', array(), true),
+				'url' => phpgw::link(
+					'/index.php',
+					array(
 						'menuaction' => 'manual.uidocuments.index'
-						)
-					),
-					'image' => array('hrm', 'navbar'),
-					'order' => -5,
-					'group' => 'systools'
-				)
-			);
+					)
+				),
+				'image' => array('hrm', 'navbar'),
+				'order' => -5,
+				'group' => 'systools'
+			)
+		);
 
-			$menus['admin'] = array();
+		$menus['admin'] = array();
 
-			if ($GLOBALS['phpgw']->acl->check('run', Acl::READ, 'admin'))
-			{
-				$menus['admin'] = array
-					(
-					'index' => array
-						(
-						'text' => $GLOBALS['phpgw']->translation->translate('Categories', array(), true),
-						'url' => phpgw::link('/index.php', array
-							(
+		if ($acl->check('run', Acl::READ, 'admin'))
+		{
+			$menus['admin'] = array(
+				'index' => array(
+					'text' => $translation->translate('Categories', array(), true),
+					'url' => phpgw::link(
+						'/index.php',
+						array(
 							'menuaction' => 'admin.uicategories.index',
 							'appname' => 'manual',
 							'location' => '.documents',
 							'global_cats' => 'true',
 							'menu_selection' => 'admin::manual::index'
-							)
 						)
-					),
-					'acl' => array
-						(
-						'text' => lang('Configure Access Permissions'),
-						'url' => phpgw::link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.list_acl',
-							'acl_app' => 'manual'))
 					)
-				);
-			}
-
-
-			$menus['navigation'] = array
-				(
-				'add' => array
-					(
-					'text' => lang('add'),
-					'url' => phpgw::link('/index.php', array('menuaction' => 'manual.uidocuments.add')),
-					'image' => array('property', 'location_1'),
 				),
-				'view' => array
-					(
-					'text' => lang('view'),
-					'url' => phpgw::link('/index.php', array('menuaction' => 'manual.uidocuments.view')),
-					'image' => array('property', 'location_1'),
-				),
+				'acl' => array(
+					'text' => lang('Configure Access Permissions'),
+					'url' => phpgw::link('/index.php', array(
+						'menuaction' => 'preferences.uiadmin_acl.list_acl',
+						'acl_app' => 'manual'
+					))
+				)
 			);
-
-			if (isset($GLOBALS['phpgw_info']['user']['apps']['preferences']))
-			{
-				$menus['preferences'] = array();
-			}
-
-			$menus['toolbar'] = array();
-
-
-			return $menus;
 		}
+
+
+		$menus['navigation'] = array(
+			'add' => array(
+				'text' => lang('add'),
+				'url' => phpgw::link('/index.php', array('menuaction' => 'manual.uidocuments.add')),
+				'image' => array('property', 'location_1'),
+			),
+			'view' => array(
+				'text' => lang('view'),
+				'url' => phpgw::link('/index.php', array('menuaction' => 'manual.uidocuments.view')),
+				'image' => array('property', 'location_1'),
+			),
+		);
+
+		if (isset($userSettings['apps']['preferences']))
+		{
+			$menus['preferences'] = array();
+		}
+
+		$menus['toolbar'] = array();
+
+		Settings::getInstance()->update('flags', ['currentapp' => $incoming_app]);
+
+		return $menus;
 	}
+}

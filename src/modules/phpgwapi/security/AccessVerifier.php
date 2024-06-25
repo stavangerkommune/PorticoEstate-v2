@@ -40,32 +40,22 @@ class AccessVerifier  implements MiddlewareInterface
 			return $this->sendErrorResponse(['msg' => 'route not found'], 404);
 		}
 
-		//get the route path
-		$routePath = $route->getPattern();
-		$routePath_arr = explode('/', $routePath);
-		$currentApp = $routePath_arr[1];
-
 
 		$flags = Settings::getInstance()->get('flags');
 		$account_id = Settings::getInstance()->get('account_id');
-
-		//	print_r(__CLASS__);
+		$currentApp = $flags['currentapp'];
 
 		$acl = Acl::getInstance();
 
 		$run = $acl->check('run', ACL_READ, $currentApp);
 
 
-
-		// Perform access verification here
-
-
 		// Check if the user has permission to access the route
-		//	if (!$this->acl->hasPermission($routeName))
+		if (!$run)
 		{
 			//        throw new HttpForbiddenException($request, "You do not have permission to access this route.");
 
-			//		return $this->sendErrorResponse(['msg' => 'You do not have permission to access this route.']);
+			return $this->sendErrorResponse(['msg' => 'You do not have permission to access this route.']);
 		}
 
 		return $handler->handle($request);

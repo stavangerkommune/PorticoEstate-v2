@@ -53,7 +53,7 @@ phpgw::clean_value
 Sanitizer::clean_value
 
 use App\modules\phpgwapi\controllers\Locations;
-$locations = new Locations();
+$location_obj = new Locations();
 
 
 $GLOBALS['phpgw']->css->

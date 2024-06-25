@@ -1,173 +1,187 @@
 <?php
-	/**
-	 * phpGroupWare - Manual
-	 *
-	 * @author Sigurd Nes <sigurdne@online.no>
-	 * @copyright Copyright (C) 2003-2010 Free Software Foundation, Inc. http://www.fsf.org/
-	 * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
-	 * @internal Development of this application was funded by http://www.bergen.kommune.no/bbb_/ekstern/
-	 * @package manual
-	 * @version $Id$
-	 */
 
-	/**
-	 * Manual Renderer
-	 * @package manual
-	 */
-	class manual_uimanual
+/**
+ * phpGroupWare - Manual
+ *
+ * @author Sigurd Nes <sigurdne@online.no>
+ * @copyright Copyright (C) 2003-2010 Free Software Foundation, Inc. http://www.fsf.org/
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
+ * @internal Development of this application was funded by http://www.bergen.kommune.no/bbb_/ekstern/
+ * @package manual
+ * @version $Id$
+ */
+
+use App\modules\phpgwapi\services\Hooks;
+use App\modules\phpgwapi\services\Settings;
+use App\helpers\Template;
+
+
+/**
+ * Manual Renderer
+ * @package manual
+ */
+class manual_uimanual
+{
+
+	var $grants;
+	var $start;
+	var $query;
+	var $sort;
+	var $order;
+	var $sub;
+	var $currentapp;
+	var $hooks;
+	var $phpgwapi_common;
+	var $serverSettings;
+	var $userSettings;
+	var $apps;
+	var $flags;
+	var $public_functions = array(
+		'index' => true,
+		'help' => true,
+		'attrib_help' => true
+	);
+
+	public function __construct()
 	{
+		$this->phpgwapi_common = new \phpgwapi_common();
+		$this->serverSettings = Settings::getInstance()->get('server');
+		$this->userSettings = Settings::getInstance()->get('user');
+		$this->apps = Settings::getInstance()->get('apps');
+		$this->flags = Settings::getInstance()->get('flags');
 
-		var $grants;
-		var $start;
-		var $query;
-		var $sort;
-		var $order;
-		var $sub;
-		var $currentapp;
-		var $public_functions = array
-			(
-			'index' => true,
-			'help' => true,
-			'attrib_help' => true
+	}
+
+	function index()
+	{
+		$this->currentapp = Sanitizer::get_var('app');
+		$this->hooks = new Hooks();
+
+		if (!$this->currentapp || $this->currentapp == 'manual')
+		{
+			$this->currentapp = 'help';
+		}
+
+		if ($this->currentapp == 'help')
+		{
+			$this->hooks->process('help', array('manual'));
+		}
+		else
+		{
+			$this->hooks->single('help', $this->currentapp);
+		}
+
+		$appname = lang('Help');
+		$function_msg = lang($this->currentapp);
+
+		Settings::getInstance()->update('flags', ['app_header' => $appname . ' - ' . $function_msg]);
+
+		$this->phpgwapi_common->phpgw_header(true);
+	}
+
+
+	function help_file_exist()
+	{
+		$app = $this->flags['currentapp'];
+		$section = isset($this->apps['manual']['section']) ? $this->apps['manual']['section'] : '';
+		$referer = Sanitizer::get_var('menuaction');
+
+		if (!$section)
+		{
+			$menuaction = $referer;
+			if ($menuaction)
+			{
+				list($app_from_referer, $class, $method) = explode('.', $menuaction);
+				if (strpos($class, 'ui') === 0)
+				{
+					$class = ltrim($class, 'ui');
+				}
+				$section = "{$class}.{$method}";
+			}
+		}
+
+		if (!$app)
+		{
+			$app = isset($app_from_referer) && $app_from_referer ? $app_from_referer : 'manual';
+		}
+
+		$section = $section ? $section : 'overview';
+		$lang = strtoupper(isset($this->userSettings['preferences']['common']['lang']) && $this->userSettings['preferences']['common']['lang'] ? $this->userSettings['preferences']['common']['lang'] : 'en');
+
+		$pdffile = PHPGW_SERVER_ROOT . "/{$app}/help/{$lang}/{$section}.pdf";
+
+		$file_exist = false;
+		if (is_file($pdffile))
+		{
+			$file_exist = true;
+		}
+		$odtfile = PHPGW_SERVER_ROOT . "/{$app}/help/{$lang}/{$section}.odt";
+
+
+		if (is_file($odtfile))
+		{
+			$file_exist = true;
+		}
+
+		return array(
+			'app' => $app,
+			'section' => $section,
+			'referer' => $referer,
+			'file_exist' => $file_exist
 		);
+	}
 
-		public function __construct()
+	function help()
+	{
+		Settings::getInstance()->update('flags', ['noframework' => true, 'no_reset_fonts' => true]);
+		$app = Sanitizer::get_var('app', 'string', 'GET');
+		$section = Sanitizer::get_var('section', 'string', 'GET');
+
+
+		if (!$section)
 		{
-			$GLOBALS['phpgw']->help = CreateObject('manual.help_helper');
-		}
-
-		function index()
-		{
-//			$GLOBALS['phpgw_info']['flags']['xslt_app'] = True;
-			$this->currentapp = Sanitizer::get_var('app');
-
-			if (!$this->currentapp || $this->currentapp == 'manual')
+			$menuaction = Sanitizer::get_var('referer');
+			if ($menuaction)
 			{
-				$this->currentapp = 'help';
-			}
-
-			if ($this->currentapp == 'help')
-			{
-				$GLOBALS['phpgw']->hooks->process('help', array('manual'));
-			}
-			else
-			{
-				$GLOBALS['phpgw']->hooks->single('help', $this->currentapp);
-			}
-
-			$appname = lang('Help');
-			$function_msg = lang($this->currentapp);
-
-			$GLOBALS['phpgw_info']['flags']['app_header'] = $appname . ' - ' . $appname;
-
-			$GLOBALS['phpgw']->common->phpgw_header(true);
-//			phpgwapi_xslttemplates::getInstance()->set_var('phpgw',array('help' => $GLOBALS['phpgw']->help->output));
-		}
-
-		
-		function help_file_exist()
-		{
-			$app = $GLOBALS['phpgw_info']['flags']['currentapp'];
-			$section = isset($GLOBALS['phpgw_info']['apps']['manual']['section']) ? $GLOBALS['phpgw_info']['apps']['manual']['section'] : '';
-			$referer = Sanitizer::get_var('menuaction');
-
-			if (!$section)
-			{
-				$menuaction = $referer;
-				if ($menuaction)
+				list($app_from_referer, $class, $method) = explode('.', $menuaction);
+				if (strpos($class, 'ui') === 0)
 				{
-					list($app_from_referer, $class, $method) = explode('.', $menuaction);
-					if (strpos($class, 'ui') === 0)
-					{
-						$class = ltrim($class, 'ui');
-					}
-					$section = "{$class}.{$method}";
+					$class = ltrim($class, 'ui');
 				}
+				$section = "{$class}.{$method}";
 			}
-
-			if (!$app)
-			{
-				$app = isset($app_from_referer) && $app_from_referer ? $app_from_referer : 'manual';
-			}
-
-			$section = $section ? $section : 'overview';
-			$lang = strtoupper(isset($GLOBALS['phpgw_info']['user']['preferences']['common']['lang']) && $GLOBALS['phpgw_info']['user']['preferences']['common']['lang'] ? $GLOBALS['phpgw_info']['user']['preferences']['common']['lang'] : 'en');
-
-			$pdffile = PHPGW_SERVER_ROOT . "/{$app}/help/{$lang}/{$section}.pdf";
-
-			$file_exist = false;
-			if(is_file($pdffile))
-			{
-				$file_exist = true;
-			}
-			$odtfile = PHPGW_SERVER_ROOT . "/{$app}/help/{$lang}/{$section}.odt";
-
-
-			if (is_file($odtfile))
-			{
-				$file_exist = true;
-			}
-
-			return array(
-				'app' => $app,
-				'section' => $section,
-				'referer' => $referer,
-				'file_exist' => $file_exist
-			);
 		}
-		
-		function help()
+
+		if (!$app)
 		{
-			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
-			$GLOBALS['phpgw_info']['flags']['no_reset_fonts'] = true;
-			$app = Sanitizer::get_var('app', 'string', 'GET');
-			$section = Sanitizer::get_var('section', 'string', 'GET');
+			$app = isset($app_from_referer) && $app_from_referer ? $app_from_referer : 'manual';
+		}
 
+		$section = $section ? $section : 'overview';
+		$lang = strtoupper(isset($this->userSettings['preferences']['common']['lang']) && $this->userSettings['preferences']['common']['lang'] ? $this->userSettings['preferences']['common']['lang'] : 'en');
+		$navbar = Sanitizer::get_var('navbar', 'string', 'GET');
 
-			if (!$section)
-			{
-				$menuaction = Sanitizer::get_var('referer');
-				if ($menuaction)
-				{
-					list($app_from_referer, $class, $method) = explode('.', $menuaction);
-					if (strpos($class, 'ui') === 0)
-					{
-						$class = ltrim($class, 'ui');
-					}
-					$section = "{$class}.{$method}";
-				}
-			}
+		$pdffile = PHPGW_SERVER_ROOT . "/{$app}/help/{$lang}/{$section}.pdf";
 
-			if (!$app)
-			{
-				$app = isset($app_from_referer) && $app_from_referer ? $app_from_referer : 'manual';
-			}
-
-			$section = $section ? $section : 'overview';
-			$lang = strtoupper(isset($GLOBALS['phpgw_info']['user']['preferences']['common']['lang']) && $GLOBALS['phpgw_info']['user']['preferences']['common']['lang'] ? $GLOBALS['phpgw_info']['user']['preferences']['common']['lang'] : 'en');
-			$navbar = Sanitizer::get_var('navbar', 'string', 'GET');
-
-			$pdffile = PHPGW_SERVER_ROOT . "/{$app}/help/{$lang}/{$section}.pdf";
-
-			/*
+		/*
 			  if(is_file($pdffile))
 			  {
 			  $content = file_get_contents($pdffile);
 			  $browser = CreateObject('phpgwapi.browser');
 			  $browser->content_header("{$section}.pdf", 'application/pdf', strlen($content));
 			  echo $content;
-			  $GLOBALS['phpgw']->common->phpgw_exit();
+			  $this->phpgwapi_common->phpgw_exit();
 			  }
 			 */
 
 
-			if (is_file($pdffile))
+		if (is_file($pdffile))
+		{
+			$browser = CreateObject('phpgwapi.browser');
+			if ($browser->BROWSER_AGENT = 'IE')
 			{
-				$browser = CreateObject('phpgwapi.browser');
-				if ($browser->BROWSER_AGENT = 'IE')
-				{
-					$fname = "{$GLOBALS['phpgw_info']['server']['webserver_url']}/{$app}/help/{$lang}/{$section}.pdf";
-					echo <<<HTML
+				$fname = "{$this->serverSettings['webserver_url']}/{$app}/help/{$lang}/{$section}.pdf";
+				echo <<<HTML
 		<html>
 			<head>
 				<script language="javascript">
@@ -185,90 +199,86 @@
 		</html>
 
 HTML;
-				}
-				else
-				{
-					$browser->content_header("{$section}.pdf", '', filesize($pdffile));
-					ob_clean();
-					flush();
-					readfile($pdffile);
-				}
-				$GLOBALS['phpgw']->common->phpgw_exit();
-			}
-
-
-			$GLOBALS['phpgw_info']['flags']['app_header'] = $app . '::' . lang($section);
-			$GLOBALS['phpgw']->common->phpgw_header();
-			if ($navbar)
-			{
-				$GLOBALS['phpgw']->help->currentapp = $app;
-				$GLOBALS['phpgw']->help->section = $section;
-				$GLOBALS['phpgw']->hooks->process('help', array('manual'));
-				parse_navbar();
-			}
-
-			$odtfile = PHPGW_SERVER_ROOT . "/{$app}/help/{$lang}/{$section}.odt";
-
-			// test the manual on odt2xhtml
-			//$odtfile = PHPGW_SERVER_ROOT . '/phpgwapi/inc/odt2xhtml/odt2xhtml.odt';
-
-			if (is_file($odtfile))
-			{
-				$frontend = '/'; # directory where file odt to converse
-				$root = $GLOBALS['phpgw_info']['server']['temp_dir'];
-
-				$odt2xhtml = CreateObject('phpgwapi.odt2xhtml', $root, $frontend, $odtfile);
-				$odt2xhtml->convert2xhtml();
-				$odt2xhtml->get_elements_html();
-				$odt2xhtml->display_elements_html('css', 0);
-				$odt2xhtml->display_elements_html('body', 1);
-				$odt2xhtml->delete_tmp();
 			}
 			else
 			{
-				$error = lang('Invalid or missing manual entry requested, please contact your system administrator');
-				echo <<<HTML
+				$browser->content_header("{$section}.pdf", '', filesize($pdffile));
+				ob_clean();
+				flush();
+				readfile($pdffile);
+			}
+			$this->phpgwapi_common->phpgw_exit();
+		}
+
+
+		Settings::getInstance()->update('flags', ['app_header' => $app . '::' . lang($section)]);
+		$this->phpgwapi_common->phpgw_header();
+		if ($navbar)
+		{
+	//		$GLOBALS['phpgw']->help->currentapp = $app;
+	//		$GLOBALS['phpgw']->help->section = $section;
+			$this->hooks->process('help', array('manual'));
+			parse_navbar();
+		}
+
+		$odtfile = PHPGW_SERVER_ROOT . "/{$app}/help/{$lang}/{$section}.odt";
+
+		// test the manual on odt2xhtml
+		//$odtfile = PHPGW_SERVER_ROOT . '/phpgwapi/inc/odt2xhtml/odt2xhtml.odt';
+
+		if (is_file($odtfile))
+		{
+			$frontend = '/'; # directory where file odt to converse
+			$root = $this->serverSettings['temp_dir'];
+
+			$odt2xhtml = CreateObject('phpgwapi.odt2xhtml', $root, $frontend, $odtfile);
+			$odt2xhtml->convert2xhtml();
+			$odt2xhtml->get_elements_html();
+			$odt2xhtml->display_elements_html('css', 0);
+			$odt2xhtml->display_elements_html('body', 1);
+			$odt2xhtml->delete_tmp();
+		}
+		else
+		{
+			$error = lang('Invalid or missing manual entry requested, please contact your system administrator');
+			echo <<<HTML
 					<div class="err">$error</div>
 
 HTML;
-			}
-
-			$GLOBALS['phpgw']->common->phpgw_footer();
 		}
 
-		function attrib_help()
-		{
-			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
-			$t = & $GLOBALS['phpgw']->template;
-			$t->set_root(PHPGW_APP_TPL);
-
-			$GLOBALS['phpgw_info']['flags']['xslt_app'] = false;
-			$GLOBALS['phpgw_info']['flags']['nofooter'] = True;
-
-			$appname = Sanitizer::get_var('appname');
-			$location = Sanitizer::get_var('location');
-			$id = Sanitizer::get_var('id', 'int');
-
-			$attrib_data = $GLOBALS['phpgw']->custom_fields->get($appname, $location, $id);
-
-			$helpmsg = nl2br(str_replace(array
-				(
-				'[',
-				']'
-					), array
-				(
-				'<',
-				'>'
-					), $attrib_data['helpmsg']));
-
-			$function_msg = lang('Help');
-
-			$t->set_file('help', 'help.tpl');
-			$t->set_var('title', lang('Help') . " - \"{$attrib_data['input_text']}\"");
-			$t->set_var('help_msg', $helpmsg);
-			$t->set_var('lang_close', lang('close'));
-
-			$GLOBALS['phpgw']->common->phpgw_header();
-			$t->pfp('out', 'help');
-		}
+		$this->phpgwapi_common->phpgw_footer();
 	}
+
+	function attrib_help()
+	{
+		$t = new Template(PHPGW_APP_TPL);
+
+		Settings::getInstance()->update('flags', ['noframework' => true, 'xslt_app' => false, 'nofooter' => true]);
+
+		$appname = Sanitizer::get_var('appname');
+		$location = Sanitizer::get_var('location');
+		$id = Sanitizer::get_var('id', 'int');
+
+		$custom_fields = CreateObject('phpgwapi.custom_fields');
+		$attrib_data = $custom_fields->get($appname, $location, $id);
+
+		$helpmsg = nl2br(str_replace(array(
+			'[',
+			']'
+		), array(
+			'<',
+			'>'
+		), $attrib_data['helpmsg']));
+
+		$function_msg = lang('Help');
+
+		$t->set_file('help', 'help.tpl');
+		$t->set_var('title', lang('Help') . " - \"{$attrib_data['input_text']}\"");
+		$t->set_var('help_msg', $helpmsg);
+		$t->set_var('lang_close', lang('close'));
+
+		$this->phpgwapi_common->phpgw_header();
+		$t->pfp('out', 'help');
+	}
+}
