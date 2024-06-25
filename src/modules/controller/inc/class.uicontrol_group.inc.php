@@ -237,7 +237,7 @@
 			{
 				if (!$this->add && !$this->edit)
 				{
-					phpgwapi_cache::message_set('No access', 'error');
+					Cache::message_set('No access', 'error');
 					phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uicontrol_group.index'));
 				}
 
@@ -323,7 +323,7 @@
 			{
 				if (!$this->add && !$this->edit)
 				{
-					phpgwapi_cache::message_set('No access', 'error');
+					Cache::message_set('No access', 'error');
 					phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uicontrol_group.index'));
 				}
 
@@ -441,7 +441,7 @@
 			{
 				if (!$this->add && !$this->edit)
 				{
-					phpgwapi_cache::message_set('No access', 'error');
+					Cache::message_set('No access', 'error');
 					phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uicontrol_group.index'));
 				}
 
@@ -672,7 +672,7 @@
 		{
 			if (!$this->add && !$this->edit)
 			{
-				phpgwapi_cache::message_set('No access', 'error');
+				Cache::message_set('No access', 'error');
 				phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uicontrol_group.index'));
 			}
 

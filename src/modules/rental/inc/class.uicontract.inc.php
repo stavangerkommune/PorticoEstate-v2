@@ -1027,11 +1027,11 @@
 				  break; */
 				case 'all_contracts':
 				default:
-					phpgwapi_cache::session_set('rental', 'contract_query', $search_for);
-					phpgwapi_cache::session_set('rental', 'contract_search_type', $search_type);
-					phpgwapi_cache::session_set('rental', 'contract_status', Sanitizer::get_var('contract_status'));
-					phpgwapi_cache::session_set('rental', 'contract_status_date', Sanitizer::get_var('date_status'));
-					phpgwapi_cache::session_set('rental', 'contract_type', Sanitizer::get_var('contract_type'));
+					Cache::session_set('rental', 'contract_query', $search_for);
+					Cache::session_set('rental', 'contract_search_type', $search_type);
+					Cache::session_set('rental', 'contract_status', Sanitizer::get_var('contract_status'));
+					Cache::session_set('rental', 'contract_status_date', Sanitizer::get_var('date_status'));
+					Cache::session_set('rental', 'contract_type', Sanitizer::get_var('contract_type'));
 					$filters = array('contract_status' => Sanitizer::get_var('contract_status'),
 						'contract_type' => Sanitizer::get_var('contract_type'));
 					$filters['status_date'] = phpgwapi_datetime::date_to_timestamp(Sanitizer::get_var('date_status'));
@@ -1441,7 +1441,7 @@ JS;
 				if (!is_numeric(Sanitizer::get_var('contract_type')) && (strcmp($responsibility_area, "contract_type_eksternleie") == 0))
 				{
 					//phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit', 'id' => $contract->get_id(), 'message' => $message, 'error' => $error));
-					phpgwapi_cache::message_set(lang('billing_removed_external_contract'), 'error');
+					Cache::message_set(lang('billing_removed_external_contract'), 'error');
 					$this->edit();
 				}
 			}
@@ -1454,7 +1454,7 @@ JS;
 				if (!is_numeric(Sanitizer::get_var('contract_type')) && (strcmp($responsibility_area, "contract_type_eksternleie") == 0))
 				{
 					//phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit', 'location_id' => $location_id, 'message' => $message, 'error' => $error));
-					phpgwapi_cache::message_set(lang('billing_removed_external_contract'), 'error');
+					Cache::message_set(lang('billing_removed_external_contract'), 'error');
 					$this->edit();
 				}
 
@@ -1578,11 +1578,11 @@ JS;
 
 			if (!empty($error))
 			{
-				phpgwapi_cache::message_set($error, 'error');
+				Cache::message_set($error, 'error');
 			}
 			if (!empty($message))
 			{
-				phpgwapi_cache::message_set($message, 'message');
+				Cache::message_set($message, 'message');
 			}
 			$this->edit(array('contract_id' => $contract_id));
 		}
@@ -2621,13 +2621,13 @@ JS;
 						$db_contract->transaction_commit();
 						$comp_name = rental_socomposite::get_instance()->get_single(Sanitizer::get_var('id'))->get_name();
 						$message = lang('messages_new_contract_from_composite') . ' ' . $comp_name;
-						phpgwapi_cache::message_set($message, 'message');
+						Cache::message_set($message, 'message');
 						phpgw::redirect_link('/index.php', $parameters);
 					}
 					else
 					{
 						$db_contract->transaction_abort();
-						phpgwapi_cache::message_set(lang('messages_form_error'), 'error');
+						Cache::message_set(lang('messages_form_error'), 'error');
 						phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
 							'id' => $contract->get_id()));
 					}
@@ -2635,7 +2635,7 @@ JS;
 				else
 				{
 					$db_contract->transaction_abort();
-					phpgwapi_cache::message_set(lang('messages_form_error'), 'error');
+					Cache::message_set(lang('messages_form_error'), 'error');
 					phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
 						'id' => $contract->get_id()));
 				}
@@ -2674,7 +2674,7 @@ JS;
 					{
 						$db_contract->transaction_commit();
 						$message = lang('messages_new_contract_copied') . ' ' . $old_contract_old_id;
-						phpgwapi_cache::message_set($message, 'message');
+						Cache::message_set($message, 'message');
 						//$this->edit(array('contract_id'=>$contract->get_id(), 'adjustment_id' => $adjustment_id));
 						phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
 							'id' => $contract->get_id(), 'adjustment_id' => $adjustment_id));
@@ -2682,7 +2682,7 @@ JS;
 					else
 					{
 						$db_contract->transaction_abort();
-						phpgwapi_cache::message_set(lang('messages_form_error'), 'error');
+						Cache::message_set(lang('messages_form_error'), 'error');
 						//$this->edit(array('contract_id'=>$contract->get_id(), 'adjustment_id' => $adjustment_id));
 						phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
 							'id' => $contract->get_id(), 'adjustment_id' => $adjustment_id));
@@ -2691,7 +2691,7 @@ JS;
 				else
 				{
 					$db_contract->transaction_abort();
-					phpgwapi_cache::message_set(lang('messages_form_error'), 'error');
+					Cache::message_set(lang('messages_form_error'), 'error');
 					//$this->edit(array('contract_id'=>$contract->get_id(), 'adjustment_id' => $adjustment_id));
 					phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uicontract.edit',
 						'id' => $contract->get_id(), 'adjustment_id' => $adjustment_id));
@@ -3129,7 +3129,7 @@ JS;
 					}
 					catch (Exception $exc)
 					{
-						phpgwapi_cache::message_set($exc->getMessage(),'error');
+						Cache::message_set($exc->getMessage(),'error');
 					}
 
 					rental_socontract::get_instance()->set_notified_on_expire($contract_id, $notify_on_expire);

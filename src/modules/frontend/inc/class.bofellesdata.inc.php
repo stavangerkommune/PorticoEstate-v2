@@ -64,7 +64,7 @@
 			if (!$config->config_data['external_db_host'] || !$this->ping($config->config_data['external_db_host']))
 			{
 				$message = "Database server {$config->config_data['external_db_host']} is not accessible";
-				phpgwapi_cache::message_set($message, 'error');
+				Cache::message_set($message, 'error');
 				return false;
 			}
 
@@ -90,7 +90,7 @@
 			}
 			catch (Exception $e)
 			{
-				phpgwapi_cache::message_set('Could not connect to backend-server ' . $config->config_data['external_db_host'], 'error');
+				Cache::message_set('Could not connect to backend-server ' . $config->config_data['external_db_host'], 'error');
 				phpgw::redirect_link('/home.php');
 			}
 			$this->db = $db;

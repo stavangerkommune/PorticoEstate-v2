@@ -70,7 +70,7 @@ HTML;
 					}
 					catch (Exception $e)
 					{
-						phpgwapi_cache::message_set($e->getMessage(), 'error');
+						Cache::message_set($e->getMessage(), 'error');
 
 					}
 				}
@@ -158,7 +158,7 @@ HTML;
 		}
 		catch (Exception $exc)
 		{
-			phpgwapi_cache::message_set($exc->getMessage(), 'error');
+			Cache::message_set($exc->getMessage(), 'error');
 		}
 	}
 

@@ -118,7 +118,7 @@
 		/**
 		 * Reset timer
 		 */
-		phpgwapi_cache::session_clear('mobilefrontend', 'keep_alive_timestamp');
+		Cache::session_clear('mobilefrontend', 'keep_alive_timestamp');
 
 		if (Sanitizer::get_var('X-Requested-With', 'string', 'SERVER') == 'XMLHttpRequest'
 			// deprecated
@@ -131,7 +131,7 @@
 			$GLOBALS['phpgw_info']['flags']['nofooter'] = true;
 
 			//If debug info is not triggered elsewhere.
-			if (isset($GLOBALS['phpgw_info']['user']['apps']['admin']) && DEBUG_TIMER && !phpgwapi_cache::session_get($app, 'id_debug'))
+			if (isset($GLOBALS['phpgw_info']['user']['apps']['admin']) && DEBUG_TIMER && !Cache::session_get($app, 'id_debug'))
 			{
 				$debug_timer_stop = perfgetmicrotime();
 				//BTW: wil not destroy the json output - click on the 'Debug-link' to view message

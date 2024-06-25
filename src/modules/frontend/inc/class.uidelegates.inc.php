@@ -14,7 +14,7 @@
 
 		public function __construct()
 		{
-			phpgwapi_cache::session_set('frontend', 'tab', $GLOBALS['phpgw']->locations->get_id('frontend', '.delegates'), $GLOBALS['phpgw_info']['user']['account_id']);
+			Cache::session_set('frontend', 'tab', $GLOBALS['phpgw']->locations->get_id('frontend', '.delegates'), $GLOBALS['phpgw_info']['user']['account_id']);
 			parent::__construct();
 		}
 
@@ -236,8 +236,8 @@
 				$delegateLimit = 3;
 			$error_message = lang('max %1 delegates', $delegateLimit);
 
-			//$msglog = phpgwapi_cache::session_get('frontend','msgbox');
-			phpgwapi_cache::session_clear('frontend', 'msgbox');
+			//$msglog = Cache::session_get('frontend','msgbox');
+			Cache::session_clear('frontend', 'msgbox');
 			self::add_javascript('frontend', 'jquery', 'resultunit.edit.js');
 
 			$data = array(

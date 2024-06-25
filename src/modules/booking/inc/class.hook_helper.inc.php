@@ -141,7 +141,7 @@
 			if($insert_update)
 			{
 				$GLOBALS['phpgw']->db->insert($add_sql, $insert_update, __LINE__, __FILE__);
-				phpgwapi_cache::message_set(lang('%1 resources mapped as articles', count($insert_update)));
+				Cache::message_set(lang('%1 resources mapped as articles', count($insert_update)));
 			}
 		}
 	}

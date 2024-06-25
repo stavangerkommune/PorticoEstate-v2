@@ -361,11 +361,11 @@ JS;
 
 			if (!empty($error))
 			{
-				phpgwapi_cache::message_set($error, 'error');
+				Cache::message_set($error, 'error');
 			}
 			if (!empty($message))
 			{
-				phpgwapi_cache::message_set($message, 'message');
+				Cache::message_set($message, 'message');
 			}
 
 			$this->edit(array('adjustment_id' => $adjustment_id));

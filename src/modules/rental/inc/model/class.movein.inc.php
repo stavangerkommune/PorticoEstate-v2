@@ -147,7 +147,7 @@
 				{
 					if(!property_exists('rental_movein', $field))
 					{
-					   phpgwapi_cache::message_set('$'."{$field},", 'error');
+					   Cache::message_set('$'."{$field},", 'error');
 					}
 
 				}

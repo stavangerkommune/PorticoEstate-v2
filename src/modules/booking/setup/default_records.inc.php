@@ -342,7 +342,7 @@
 		'property'
 	);
 
-	$aclobj = Acl::getInstance();
+	$aclobj = & $GLOBALS['phpgw']->acl;
 
 	if (!$GLOBALS['phpgw']->accounts->exists('booking_group'))
 	{

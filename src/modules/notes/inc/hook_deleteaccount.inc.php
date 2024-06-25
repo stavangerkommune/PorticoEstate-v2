@@ -24,7 +24,7 @@
 	*/
 
 	// Delete all records for a user
-	$db =& $GLOBALS['phpgw']->db;
+	$db = Db::getInstance();
 	$db->lock(array('phpgw_notes'));
 
 	if ( (int) $_POST['new_owner'] == 0 )

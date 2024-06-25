@@ -358,7 +358,7 @@
 			}
 			else
 			{
-				$messages = phpgwapi_cache::message_get(true);
+				$messages = Cache::message_get(true);
 				return array(
 					'status_kode' => 'error',
 					'status' => lang('error'),
@@ -381,7 +381,7 @@
 			}
 			else
 			{
-				$messages = phpgwapi_cache::message_get(true);
+				$messages = Cache::message_get(true);
 				return array
 				(
 					'status_kode' => 'error',

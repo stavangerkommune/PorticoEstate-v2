@@ -69,9 +69,9 @@
 				//var_dump($this->office);
 				//var_dump($_FILES['file']['name']);
 				//var_dump($_FILES['file']['tmp_name']);
-				phpgwapi_cache::session_set('activitycalendar', 'file', $this->file);
-				phpgwapi_cache::session_set('activitycalendar', 'csvdata', $this->csvdata);
-				phpgwapi_cache::session_set('activitycalendar', 'import_district', $this->office);
+				Cache::session_set('activitycalendar', 'file', $this->file);
+				Cache::session_set('activitycalendar', 'csvdata', $this->csvdata);
+				Cache::session_set('activitycalendar', 'import_district', $this->office);
 				phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiimport.index',
 					'importstep' => 'true'));
 			}
@@ -81,9 +81,9 @@
 				$start = date("G:i:s", $start_time);
 				echo "<h3>Import started at: {$start}</h3>";
 				echo "<ul>";
-				$this->file = phpgwapi_cache::session_get('activitycalendar', 'file');
-				$this->csvdata = phpgwapi_cache::session_get('activitycalendar', 'csvdata');
-				$this->office = phpgwapi_cache::session_get('activitycalendar', 'import_district');
+				$this->file = Cache::session_get('activitycalendar', 'file');
+				$this->csvdata = Cache::session_get('activitycalendar', 'csvdata');
+				$this->office = Cache::session_get('activitycalendar', 'import_district');
 				//$this->path = '/home/notroot/FacilitExport/aktiviteter';
 
 				$result = $this->import(); // Do import step, result determines if finished for this area
@@ -173,9 +173,9 @@
 			$this->errors = array();
 
 			// Import arenas if not done before and put them on the users session
-			if (!phpgwapi_cache::session_get('activitycalendar', 'arenas'))
+			if (!Cache::session_get('activitycalendar', 'arenas'))
 			{
-				phpgwapi_cache::session_set('activitycalendar', 'arenas', $this->import_organizations());
+				Cache::session_set('activitycalendar', 'arenas', $this->import_organizations());
 				$this->log_messages(1);
 				return '1';
 				$this->clean_up();
@@ -184,7 +184,7 @@
 			// We're done with the import, so clear all session variables so we're ready for a new one
 			// We do not clear parties (same for all responsibility areas)
 			// We do not clear event data, the array is just added for each
-			phpgwapi_cache::session_clear('activitycalendar', 'arenas');
+			Cache::session_clear('activitycalendar', 'arenas');
 			return '1';
 		}
 

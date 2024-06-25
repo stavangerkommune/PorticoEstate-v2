@@ -121,13 +121,13 @@
 			switch ($query_type)
 			{
 				case 'project_type':
-					phpgwapi_cache::session_set('logistic', 'project_type_query', $search_for);
+					Cache::session_set('logistic', 'project_type_query', $search_for);
 					$search_type = 'project_type';
 					$result_objects = $this->so->get($start_index, $num_of_objects, $sort_field, $sort_ascending, $search_for, $search_type, $filters, $params['allrows']);
 					$object_count = $this->so->get_count($search_for, $search_type, $filters);
 					break;
 				default: // ... all composites, filters (active and vacant)
-					phpgwapi_cache::session_set('logistic', 'project_query', $search_for);
+					Cache::session_set('logistic', 'project_query', $search_for);
 					$filters = array('project_type' => Sanitizer::get_var('project_type'));
 					$result_objects = $this->so->get($start_index, $num_of_objects, $sort_field, $sort_ascending, $search_for, $search_type, $filters, $params['allrows']);
 					$object_count = $this->so->get_count($search_for, $search_type, $filters);

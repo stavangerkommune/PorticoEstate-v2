@@ -947,7 +947,7 @@ class addressbook_uiaddressbook_persons extends phpgwapi_uicommon
 			{
 				if ($e)
 				{
-					phpgwapi_cache::message_set($e->getMessage(), 'error');
+					Cache::message_set($e->getMessage(), 'error');
 					$this->edit($values);
 					return;					
 				}
@@ -1193,7 +1193,7 @@ class addressbook_uiaddressbook_persons extends phpgwapi_uicommon
 
 		$new_contact_id = $this->bo->copy_contact($contact_id);
 		
-		phpgwapi_cache::message_set('Person has been copied', 'message');
+		Cache::message_set('Person has been copied', 'message');
 		
 		phpgw::redirect_link('/index.php', array
 				(

@@ -75,7 +75,7 @@
 
 			if($bouser->is_logged_in())
 			{
-				$orgs = phpgwapi_cache::session_get($bouser->get_module(), $bouser::ORGARRAY_SESSION_KEY);
+				$orgs = Cache::session_get($bouser->get_module(), $bouser::ORGARRAY_SESSION_KEY);
 			}
 
 			if(!empty($orgs) && is_array($orgs) && count($orgs) > 1)

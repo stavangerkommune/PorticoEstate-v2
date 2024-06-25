@@ -182,7 +182,7 @@
 		{
 			if(!$this->mailPreferences)
 			{
-				phpgwapi_cache::message_set('bofelamimail::mailPreferences not set', 'error');
+				Cache::message_set('bofelamimail::mailPreferences not set', 'error');
 				return;
 			}
 			$icServer = $this->mailPreferences->getIncomingServer(0);

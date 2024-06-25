@@ -733,7 +733,7 @@
 			}
 			else
 			{
-				phpgwapi_cache::message_set('current user is not assigned to application', 'error');
+				Cache::message_set('current user is not assigned to application', 'error');
 			}
 
 			self::redirect(array('menuaction' => $this->url_prefix . '.show', 'id' => $application_id));
@@ -758,7 +758,7 @@
 			}
 			else
 			{
-				phpgwapi_cache::message_set('current user is not assigned to application', 'error');
+				Cache::message_set('current user is not assigned to application', 'error');
 			}
 			self::redirect(array('menuaction' => $this->url_prefix . '.show', 'id' => $application_id));
 
@@ -994,7 +994,7 @@
 
 		public function add()
 		{
-			$organization_number = phpgwapi_cache::session_get($this->module, self::ORGNR_SESSION_KEY);
+			$organization_number = Cache::session_get($this->module, self::ORGNR_SESSION_KEY);
 
 			$building_id = Sanitizer::get_var('building_id', 'int' ,'REQUEST', -1 );
 			$resource_id = Sanitizer::get_var('resource_id', 'int');
@@ -1009,7 +1009,7 @@
 			$bouser = CreateObject('bookingfrontend.bouser');
 
 			$errors = array();
-			$user_data = phpgwapi_cache::session_get($bouser->get_module(), $bouser::USERARRAY_SESSION_KEY);
+			$user_data = Cache::session_get($bouser->get_module(), $bouser::USERARRAY_SESSION_KEY);
 			if($user_data['ssn'])
 			{
 				$this->validate_limit_number($resource_id, $user_data['ssn'],$errors);
@@ -1175,7 +1175,7 @@
 				{
 					if ($is_partial1)
 					{
-//						phpgwapi_cache::message_set(
+//						Cache::message_set(
 //							lang("Complete application text booking") .
 //							'<br/><button onclick="GoToApplicationPartialTwo()" class="btn btn-light mt-4" data-bind="visible: applicationCartItems().length > 0">' .
 //							lang("Complete applications") .
@@ -1188,7 +1188,7 @@
 					}
 					else
 					{
-						$repost_add_application = 	phpgwapi_cache::session_get('booking', 'repost_add_application', $receipt['id']);
+						$repost_add_application = 	Cache::session_get('booking', 'repost_add_application', $receipt['id']);
 						$application = $this->bo->read_single($repost_add_application);
 						self::redirect(array('menuaction' => $this->url_prefix . '.show', 'id' => $repost_add_application,
 								'secret' => $application['secret']));
@@ -1202,7 +1202,7 @@
 				}
 
 				// if logged in
-				$user_data = phpgwapi_cache::session_get($bouser->get_module(), $bouser::USERARRAY_SESSION_KEY);
+				$user_data = Cache::session_get($bouser->get_module(), $bouser::USERARRAY_SESSION_KEY);
 				if($user_data['ssn'])
 				{
 					$resources = $this->resource_bo->so->read(array(
@@ -1305,7 +1305,7 @@
 							}
 							catch (booking_unauthorized_exception $e)
 							{
-								phpgwapi_cache::message_set(lang('Could not add object due to insufficient permissions'),'error');
+								Cache::message_set(lang('Could not add object due to insufficient permissions'),'error');
 							}
 						}
 						else
@@ -1324,7 +1324,7 @@
 						}
 						else
 						{
-//							phpgwapi_cache::message_set(
+//							Cache::message_set(
 //								lang("Complete application text booking") .
 //								'<br/><button onclick="GoToApplicationPartialTwo()" class="btn btn-light mt-4" data-bind="visible: applicationCartItems().length > 0">' .
 //								lang("Complete applications") .
@@ -1338,7 +1338,7 @@
 					else
 					{
 						$this->bo->send_notification($application, true);
-						phpgwapi_cache::message_set(lang("Your application has now been registered and a confirmation email has been sent to you.") . "<br />" .
+						Cache::message_set(lang("Your application has now been registered and a confirmation email has been sent to you.") . "<br />" .
 							lang("A Case officer will review your application as soon as possible.") . "<br />" .
 							lang("Please check your Spam Filter if you are missing mail."
 						));
@@ -1346,14 +1346,14 @@
 //								 lang("A Case officer will review your application as soon as possible.")."<br />".
 //								 lang("Please check your Spam Filter if you are missing mail."));
 
-						phpgwapi_cache::session_set('booking', 'repost_add_application', $receipt['id']);
+						Cache::session_set('booking', 'repost_add_application', $receipt['id']);
 						self::redirect(array('menuaction' => $this->url_prefix . '.show', 'id' => $receipt['id'],
 							'secret' => $application['secret']));
 					}
 				}
 				else
 				{
-					phpgwapi_cache::session_clear('phpgwapi', 'history');
+					Cache::session_clear('phpgwapi', 'history');
 				}
 			}
 			if (Sanitizer::get_var('resource') == 'null' || !Sanitizer::get_var('resource'))
@@ -1741,7 +1741,7 @@
 							$resource['booking_limit_number'],
 							$resource['booking_limit_number_horizont']);
 
-						phpgwapi_cache::message_set($error_message, 'error');
+						Cache::message_set($error_message, 'error');
 					}
 				}
 			}
@@ -1759,7 +1759,7 @@
 
 			if(!$organization_number = Sanitizer::get_var('session_org_id', 'string', 'GET'))
 			{
-				$organization_number = phpgwapi_cache::session_get($this->module, self::ORGNR_SESSION_KEY);
+				$organization_number = Cache::session_get($this->module, self::ORGNR_SESSION_KEY);
 			}
 
 			$errors = array();
@@ -1984,7 +1984,7 @@
 								$GLOBALS['phpgw']->db->transaction_commit();
 								if(!Sanitizer::get_var('phpgw_return_as', 'string', 'GET') == 'json' )
 								{
-									phpgwapi_cache::message_set(implode("<br/>", array_values($errors) ));
+									Cache::message_set(implode("<br/>", array_values($errors) ));
 									self::redirect(array());
 								}
 							}
@@ -2051,7 +2051,7 @@
 
 			if(!$organization_number = Sanitizer::get_var('session_org_id', 'string', 'GET'))
 			{
-				$organization_number = phpgwapi_cache::session_get($this->module, self::ORGNR_SESSION_KEY);
+				$organization_number = Cache::session_get($this->module, self::ORGNR_SESSION_KEY);
 			}
 
 			$errors = array();
@@ -2217,7 +2217,7 @@
 								$GLOBALS['phpgw']->db->transaction_abort();
 								foreach ($errors as $key => $error_values)
 								{
-									phpgwapi_cache::message_set($error_values, 'error');
+									Cache::message_set($error_values, 'error');
 								}
 							}
 						}
@@ -2226,7 +2226,7 @@
 						 */
 						else if($collision_dates)
 						{
-							phpgwapi_cache::message_set('Det er desverre opptatt', 'error');
+							Cache::message_set('Det er desverre opptatt', 'error');
 							$GLOBALS['phpgw']->db->transaction_abort();
 							$this->delete_partial($application['id']);
 							self::redirect(array());
@@ -2283,7 +2283,7 @@
 						}
 						$message_arr[] = lang("Please check your Spam Filter if you are missing mail.");
 
-						phpgwapi_cache::message_set(implode("<br/>", $message_arr ));
+						Cache::message_set(implode("<br/>", $message_arr ));
 					}
 					// Redirect to the front page
 					self::redirect(array());
@@ -2344,7 +2344,7 @@
 				$bouser->log_in();
 			}
 
-			$orgs = (array)phpgwapi_cache::session_get($bouser->get_module(), $bouser::ORGARRAY_SESSION_KEY);
+			$orgs = (array)Cache::session_get($bouser->get_module(), $bouser::ORGARRAY_SESSION_KEY);
 
 			$orgnumbers = array();
 			foreach ($orgs as $org)
@@ -2411,7 +2411,7 @@
 			/**
 			 * Check on return from external payment operator
 			 */
-			$selected_payment_method =  phpgwapi_cache::session_get('bookingfrontend', 'payment_method');
+			$selected_payment_method =  Cache::session_get('bookingfrontend', 'payment_method');
 
 			self::render_template_xsl('application_contact', array(
 				'application'			 => $partial2,
@@ -2590,7 +2590,7 @@
 			if(!empty($resource_participant_limit_gross['results'][0]['quantity']) && $resource_participant_limit_gross['results'][0]['quantity'] > 0)
 			{
 				$resource_participant_limit = $resource_participant_limit_gross['results'][0]['quantity'];
-				phpgwapi_cache::message_set(lang('overridden participant limit is set to %1', $resource_participant_limit),'message');
+				Cache::message_set(lang('overridden participant limit is set to %1', $resource_participant_limit),'message');
 			}
 
 			$activity_path = $this->activity_bo->get_path($application['activity_id']);
@@ -3024,15 +3024,15 @@
 
 			if ($preview)
 			{
-				$pdf_preview_alternate = phpgwapi_cache::session_get('booking', 'pdf_preview_alternate');
+				$pdf_preview_alternate = Cache::session_get('booking', 'pdf_preview_alternate');
 				if(empty($pdf_preview_alternate))
 				{
-					phpgwapi_cache::session_set('booking', 'pdf_preview_alternate', 1);
+					Cache::session_set('booking', 'pdf_preview_alternate', 1);
 					$pdf1->print_pdf($file_data1, "{$lang_application}_{$application['id']}_1");
 				}
 				else
 				{
-					phpgwapi_cache::session_set('booking', 'pdf_preview_alternate', 0);
+					Cache::session_set('booking', 'pdf_preview_alternate', 0);
 					$pdf1->print_pdf($file_data2, "{$lang_application}_{$application['id']}_2");
 				}
 			}
@@ -3122,12 +3122,12 @@
 					}
 					else
 					{
-						phpgwapi_cache::message_set( 'overføring feilet', 'error');
+						Cache::message_set( 'overføring feilet', 'error');
 					}
 				}
 				else
 				{
-					phpgwapi_cache::message_set( 'integrasjonsmetode er ikke konfigurert', 'error');
+					Cache::message_set( 'integrasjonsmetode er ikke konfigurert', 'error');
 				}
 				self::redirect(array('menuaction' => $this->url_prefix . '.show', 'id' => $application['id'], 'return_after_action' => true));
 			}
@@ -3151,7 +3151,7 @@
 			if(!empty($resource_participant_limit_gross['results'][0]['quantity']) && $resource_participant_limit_gross['results'][0]['quantity'] > 0)
 			{
 				$resource_participant_limit = $resource_participant_limit_gross['results'][0]['quantity'];
-				phpgwapi_cache::message_set(lang('overridden participant limit is set to %1', $resource_participant_limit),'message');
+				Cache::message_set(lang('overridden participant limit is set to %1', $resource_participant_limit),'message');
 			}
 
 			$activity_path = $this->activity_bo->get_path($application['activity_id']);
@@ -3272,7 +3272,7 @@
 							if ($old_file['name'] == $files['name']['name'])
 							{
 								$file_exist = true;
-								phpgwapi_cache::message_set(lang('file exists'),'error');
+								Cache::message_set(lang('file exists'),'error');
 								break;
 							}
 						}
@@ -3294,7 +3294,7 @@
 						}
 						catch (booking_unauthorized_exception $e)
 						{
-							phpgwapi_cache::message_set(lang('Could not add object due to insufficient permissions'),'error');
+							Cache::message_set(lang('Could not add object due to insufficient permissions'),'error');
 						}
 					}
 
@@ -3332,7 +3332,7 @@
 
 					if($log_msg)
 					{
-						phpgwapi_cache::message_set($log_msg);
+						Cache::message_set($log_msg);
 						$this->add_comment($application, $log_msg);
 						$this->bo->update($application);
 					}

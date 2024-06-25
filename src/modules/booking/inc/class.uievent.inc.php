@@ -877,7 +877,7 @@
 		{
 			if(empty($GLOBALS['phpgw_info']['apps']['sms']))
 			{
-				phpgwapi_cache::message_set('SMS er deaktivert', 'error');
+				Cache::message_set('SMS er deaktivert', 'error');
 				return false;
 			}
 
@@ -977,16 +977,16 @@
 			if(!empty($resource_participant_limit_gross['results'][0]['quantity']) && $resource_participant_limit_gross['results'][0]['quantity'] > 0)
 			{
 				$resource_participant_limit = $resource_participant_limit_gross['results'][0]['quantity'];
-				phpgwapi_cache::message_set(lang('overridden participant limit is set to %1', $resource_participant_limit),'message');
+				Cache::message_set(lang('overridden participant limit is set to %1', $resource_participant_limit),'message');
 			}
 
 			if($event['participant_limit'])
 			{
-				phpgwapi_cache::message_set(lang('overridden participant limit is set to %1', $event['participant_limit']),'message');
+				Cache::message_set(lang('overridden participant limit is set to %1', $event['participant_limit']),'message');
 			}
 			else if($resource_participant_limit)
 			{
-				phpgwapi_cache::message_set(lang('overridden participant limit is set to %1', $resource_participant_limit),'message');
+				Cache::message_set(lang('overridden participant limit is set to %1', $resource_participant_limit),'message');
 			}
 
 			$activity_path = $this->activity_bo->get_path($event['activity_id']);
@@ -1231,7 +1231,7 @@
 
 								if (empty($GLOBALS['phpgw_info']['apps']['sms']))
 								{
-									phpgwapi_cache::message_set('SMS er deaktivert', 'error');
+									Cache::message_set('SMS er deaktivert', 'error');
 								}
 								else
 								{
@@ -1589,7 +1589,7 @@
 			}
 			else
 			{
-				phpgwapi_cache::message_set('Mangler rettighet for å slette', 'error');
+				Cache::message_set('Mangler rettighet for å slette', 'error');
 			}
 			if (isset($application_id))
 			{

@@ -151,7 +151,7 @@
 			}
 			else
 			{
-				phpgwapi_cache::message_set('Missing contract_id as input', 'error');
+				Cache::message_set('Missing contract_id as input', 'error');
 				self::redirect(array('menuaction' => 'rental.uicontract.index'));
 			}
 		}

@@ -283,12 +283,12 @@
 				{
 					$this->bo->process_users($values);
 					$message = lang('messages_saved_form');
-					phpgwapi_cache::message_set($message, 'message');
+					Cache::message_set($message, 'message');
 				}
 				else
 				{
 					$error = lang('messages_form_error');
-					phpgwapi_cache::message_set($message, 'error');
+					Cache::message_set($message, 'error');
 				}
 			}
 

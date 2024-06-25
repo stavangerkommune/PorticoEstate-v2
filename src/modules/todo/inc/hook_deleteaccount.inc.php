@@ -14,7 +14,7 @@
 	$new_owner = Sanitizer::get_var('new_owner', 'int');
 
 	// Delete all records for a user
-	$db =& $GLOBALS['phpgw']->db;
+	$db = Db::getInstance();
 
 	if ( !$new_owner )
 	{

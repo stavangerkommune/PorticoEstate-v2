@@ -435,8 +435,8 @@
 			}
 			catch (Exception $e)
 			{
-				phpgwapi_cache::message_set("Epost feilet for {$application['contact_email']}", 'error');
-				phpgwapi_cache::message_set($e->getMessage(), 'error');
+				Cache::message_set("Epost feilet for {$application['contact_email']}", 'error');
+				Cache::message_set($e->getMessage(), 'error');
 
 			}
 
@@ -463,8 +463,8 @@
 				}
 				catch (Exception $ex)
 				{
-					phpgwapi_cache::message_set("Epost feilet for {$application['contact_email']}", 'error');
-					phpgwapi_cache::message_set($e->getMessage(), 'error');
+					Cache::message_set("Epost feilet for {$application['contact_email']}", 'error');
+					Cache::message_set($e->getMessage(), 'error');
 
 				}
 			}
@@ -692,12 +692,12 @@ HTML;
 
 					if($GLOBALS['phpgw_info']['flags']['currentapp'] == 'booking')
 					{
-						phpgwapi_cache::message_set("Epost er sendt til {$adr}");
+						Cache::message_set("Epost er sendt til {$adr}");
 					}
 				}
 				catch (Exception $e)
 				{
-					phpgwapi_cache::message_set("Epost feilet til {$adr}", 'error');
+					Cache::message_set("Epost feilet til {$adr}", 'error');
 					$GLOBALS['phpgw']->log->error(array(
 						'text'	=> 'booking_boapplication::send_admin_notification() : error when trying to send email. Error: %1',
 						'p1'	=> $e->getMessage(),

@@ -141,7 +141,7 @@
 					{
 						$error = true;
 						$message = lang('maximum of granted events are reached');
-						phpgwapi_cache::message_set($message, 'error');
+						Cache::message_set($message, 'error');
 						break;
 					}
 				}
@@ -163,7 +163,7 @@
 					else
 					{
 						$message = lang('can not delete calendar with customer');
-						phpgwapi_cache::message_set($message, 'error');
+						Cache::message_set($message, 'error');
 					}
 				}		
 			}
@@ -403,10 +403,10 @@ HTML;
 				}
 				catch (Exception $e)
 				{
-					phpgwapi_cache::message_set($e->getMessage(), 'error');
+					Cache::message_set($e->getMessage(), 'error');
 				}
 
-				phpgwapi_cache::message_set("Email: $to_email, $cc", 'message');
+				Cache::message_set("Email: $to_email, $cc", 'message');
 			}
 		}
 

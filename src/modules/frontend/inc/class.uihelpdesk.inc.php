@@ -44,7 +44,7 @@
 		var $location_code;
 		public function __construct()
 		{
-			phpgwapi_cache::session_set('frontend', 'tab', $GLOBALS['phpgw']->locations->get_id('frontend', '.ticket'));
+			Cache::session_set('frontend', 'tab', $GLOBALS['phpgw']->locations->get_id('frontend', '.ticket'));
 
 			parent::__construct();
 
@@ -185,8 +185,8 @@
 			  array('menuaction'	=> 'frontend.uihelpdesk.view'));
 			  $datatable['exchange_values'] = "document.location = '{$link}&id=' + data.getData().id;"; */
 
-			$msglog = phpgwapi_cache::session_get('frontend', 'msgbox');
-			phpgwapi_cache::session_clear('frontend', 'msgbox');
+			$msglog = Cache::session_get('frontend', 'msgbox');
+			Cache::session_clear('frontend', 'msgbox');
 //			_debug_array($this->header_state);die();
 
 			$data = array(
@@ -208,7 +208,7 @@
 
 		public function query()
 		{
-			phpgwapi_cache::session_clear('frontend', 'msgbox');
+			Cache::session_clear('frontend', 'msgbox');
 
 			$bo = CreateObject('property.botts');
 
@@ -378,8 +378,8 @@
 				$i++;
 			}
 
-			$msglog = phpgwapi_cache::session_get('frontend', 'msgbox');
-			phpgwapi_cache::session_clear('frontend', 'msgbox');
+			$msglog = Cache::session_get('frontend', 'msgbox');
+			Cache::session_clear('frontend', 'msgbox');
 
 			$data = array(
 				'header' => $this->header_state,
@@ -527,7 +527,7 @@
 						}
 
 						$redirect = true;
-						phpgwapi_cache::session_set('frontend', 'msgbox', $msglog);
+						Cache::session_set('frontend', 'msgbox', $msglog);
 						// /Files
 					}
 				}

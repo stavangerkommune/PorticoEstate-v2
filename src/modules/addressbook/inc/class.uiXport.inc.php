@@ -50,18 +50,18 @@
 			{
 				if (empty($_FILES['tsvfile']['tmp_name']))
 				{
-					phpgwapi_cache::message_set(lang('Please choose file to import'), 'message');
+					Cache::message_set(lang('Please choose file to import'), 'message');
 					phpgw::redirect_link('/index.php', array('menuaction' => 'addressbook.uiXport.import'));
 				}
 				
 				if (empty($conv_type) || $conv_type == 'none')
 				{
-					phpgwapi_cache::message_set(lang('Please choose a conversion type from the list'), 'message');
+					Cache::message_set(lang('Please choose a conversion type from the list'), 'message');
 					phpgw::redirect_link('/index.php', array('menuaction' => 'addressbook.uiXport.import'));
 				}
 				
 				$buffer = $this->bo->import($_FILES['tsvfile']['tmp_name'],$conv_type,$private,$fcat_id);
-				phpgwapi_cache::message_set($buffer, 'message');
+				Cache::message_set($buffer, 'message');
 			}
 			
 			$conv = $this->get_convert_type_import();
@@ -152,7 +152,7 @@
 			{
 				if (empty($conv_type) || $conv_type == 'none')
 				{
-					phpgwapi_cache::message_set(lang('Please choose a conversion type from the list'), 'message');
+					Cache::message_set(lang('Please choose a conversion type from the list'), 'message');
 					phpgw::redirect_link('/index.php', array('menuaction' => 'addressbook.uiXport.export'));
 				}
 

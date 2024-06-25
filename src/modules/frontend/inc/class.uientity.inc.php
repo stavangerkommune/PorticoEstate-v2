@@ -103,7 +103,7 @@
 			$this->bo->category_dir = $this->category_dir;
 
 
-			phpgwapi_cache::session_set('frontend', 'tab', $this->location_id);
+			Cache::session_set('frontend', 'tab', $this->location_id);
 
 			$this->location_code = $this->header_state['selected_location'];
 			$this->bo->location_code = $this->location_code;
@@ -496,8 +496,8 @@
 				$GLOBALS['phpgw_info']['flags']['app_header'] = lang($this->type_app[$this->type]) . ' - ' . $appname . ': ' . $function_msg;
 			}
 
-			$msglog = phpgwapi_cache::session_get('frontend', 'msgbox');
-			phpgwapi_cache::session_clear('frontend', 'msgbox');
+			$msglog = Cache::session_get('frontend', 'msgbox');
+			Cache::session_clear('frontend', 'msgbox');
 
 			$data = array(
 				'header' => $this->header_state,
@@ -679,7 +679,7 @@
 				{
 					if (!isset($_config_section_data['url']))
 					{
-						phpgwapi_cache::message_set("'url' is a required setting for integrations, '{$_config_section}' is disabled", 'error');
+						Cache::message_set("'url' is a required setting for integrations, '{$_config_section}' is disabled", 'error');
 						break;
 					}
 
@@ -787,8 +787,8 @@
 				}
 			}
 
-			$msglog = phpgwapi_cache::session_get('frontend', 'msgbox');
-			phpgwapi_cache::session_clear('frontend', 'msgbox');
+			$msglog = Cache::session_get('frontend', 'msgbox');
+			Cache::session_clear('frontend', 'msgbox');
 
 			$data = array(
 				'header' => $this->header_state,

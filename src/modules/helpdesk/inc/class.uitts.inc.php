@@ -1832,7 +1832,7 @@ JS;
 
 				if (Sanitizer::get_var('phpgw_return_as') == 'json')
 				{
-					phpgwapi_cache::session_clear('phpgwapi', 'history');
+					Cache::session_clear('phpgwapi', 'history');
 					return array(
 						'status' => 'error',
 						'parent_cat_id' => $this->parent_cat_id,
@@ -2247,7 +2247,7 @@ JS;
 
 				if(!$this->acl_edit)
 				{
-					phpgwapi_cache::message_set(lang('no access'), 'error');
+					Cache::message_set(lang('no access'), 'error');
 					phpgw::redirect_link('/index.php', array('menuaction' => 'helpdesk.uitts.index', 'parent_cat_id' => $this->parent_cat_id));
 					phpgw::no_access();
 				}
@@ -2415,7 +2415,7 @@ JS;
 				{
 					foreach ($receipt['error'] as $error)
 					{
-						phpgwapi_cache::message_set($error['msg'], 'error');
+						Cache::message_set($error['msg'], 'error');
 					}
 				}
 
@@ -2423,7 +2423,7 @@ JS;
 				{
 					foreach ($receipt['message'] as $message)
 					{
-						phpgwapi_cache::message_set($message['msg']);
+						Cache::message_set($message['msg']);
 					}
 				}
 

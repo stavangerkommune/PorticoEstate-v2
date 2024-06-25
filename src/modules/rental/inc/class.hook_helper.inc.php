@@ -40,7 +40,7 @@
 		{
 			if (!isset($data['location_code']) || !$data['location_code'])
 			{
-				phpgwapi_cache::message_set("location_code not set", 'error');
+				Cache::message_set("location_code not set", 'error');
 				return false;
 			}
 

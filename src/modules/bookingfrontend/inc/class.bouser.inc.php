@@ -43,7 +43,7 @@
 //			if($get_external_login_info && $this->is_logged_in())
 			if($session_org_id && $this->is_logged_in())
 			{
-				$orgs = phpgwapi_cache::session_get($this->get_module(), self::ORGARRAY_SESSION_KEY);
+				$orgs = Cache::session_get($this->get_module(), self::ORGARRAY_SESSION_KEY);
 
 				if ($session_org_id && ($session_org_id != $this->org_id) && in_array($session_org_id, array_map("self::get_ids_from_array", $orgs)))
 				{
@@ -177,7 +177,7 @@
 
 		public function change_org( $org_id )
 		{
-			$orgs = phpgwapi_cache::session_get($this->get_module(), self::ORGARRAY_SESSION_KEY);
+			$orgs = Cache::session_get($this->get_module(), self::ORGARRAY_SESSION_KEY);
 			$orglist = array();
 			foreach ($orgs as $org)
 			{
@@ -263,7 +263,7 @@
 			 */
 			if(!$organization_id && $organization_number)
 			{
-				$orgs = (array)phpgwapi_cache::session_get($this->get_module(), self::ORGARRAY_SESSION_KEY);
+				$orgs = (array)Cache::session_get($this->get_module(), self::ORGARRAY_SESSION_KEY);
 
 				$orgs_map = array();
 				foreach ($orgs as $org)
@@ -316,36 +316,36 @@
 				throw new LogicException('Cannot write orgnr to session unless user is logged on');
 			}
 
-			phpgwapi_cache::session_set($this->get_module(), self::ORGNR_SESSION_KEY, $this->get_user_orgnr());
-			phpgwapi_cache::session_set($this->get_module(), self::ORGID_SESSION_KEY, $this->get_user_org_id());
+			Cache::session_set($this->get_module(), self::ORGNR_SESSION_KEY, $this->get_user_orgnr());
+			Cache::session_set($this->get_module(), self::ORGID_SESSION_KEY, $this->get_user_org_id());
 
 		}
 
 		protected function clear_user_orgnr_from_session()
 		{
-			phpgwapi_cache::session_clear($this->get_module(), self::ORGNR_SESSION_KEY);
+			Cache::session_clear($this->get_module(), self::ORGNR_SESSION_KEY);
 		}
 
 		protected function clear_user_org_id_from_session()
 		{
-			phpgwapi_cache::session_clear($this->get_module(), self::ORGID_SESSION_KEY);
+			Cache::session_clear($this->get_module(), self::ORGID_SESSION_KEY);
 		}
 
 		protected function clear_user_orglist_from_session()
 		{
-#			phpgwapi_cache::session_clear($this->get_module(), self::ORGARRAY_SESSION_KEY);
+#			Cache::session_clear($this->get_module(), self::ORGARRAY_SESSION_KEY);
 		}
 
 		protected function get_user_org_id_from_session()
 		{
-			return phpgwapi_cache::session_get($this->get_module(), self::ORGID_SESSION_KEY);
+			return Cache::session_get($this->get_module(), self::ORGID_SESSION_KEY);
 		}
 
 		protected function get_user_orgnr_from_session()
 		{
 			try
 			{
-				return createObject('booking.sfValidatorNorwegianOrganizationNumber')->clean(phpgwapi_cache::session_get($this->get_module(), self::ORGNR_SESSION_KEY));
+				return createObject('booking.sfValidatorNorwegianOrganizationNumber')->clean(Cache::session_get($this->get_module(), self::ORGNR_SESSION_KEY));
 			}
 			catch (sfValidatorError $e)
 			{
@@ -367,7 +367,7 @@
 			static $user_data = array();
 			if(!$user_data)
 			{
-				$user_data = phpgwapi_cache::session_get($this->get_module(), self::USERARRAY_SESSION_KEY);
+				$user_data = Cache::session_get($this->get_module(), self::USERARRAY_SESSION_KEY);
 			}
 			if(!empty($user_data['ssn']))
 			{
@@ -377,7 +377,7 @@
 			if(!empty($this->config->config_data['test_ssn']))
 			{
 				$ssn = 	$this->config->config_data['test_ssn'];
-				phpgwapi_cache::message_set('Warning: ssn is set by test-data', 'error');
+				Cache::message_set('Warning: ssn is set by test-data', 'error');
 			}
 			else if (!empty($_SERVER['HTTP_UID']))
 			{
@@ -395,7 +395,7 @@
 					'phone' => (string)$_SERVER['HTTP_MOBILTELEFONNUMMER'],
 					'email'	=> (string)$_SERVER['HTTP_EPOSTADRESSE']
 					);
-				phpgwapi_cache::session_set($this->get_module(), self::USERARRAY_SESSION_KEY, $ret);
+				Cache::session_set($this->get_module(), self::USERARRAY_SESSION_KEY, $ret);
 
 				return $ret;
 			}
@@ -421,7 +421,7 @@
 					phpgw::no_access($this->current_app(), 'Du må logge inn via ID-porten');
 				}
 
-				phpgwapi_cache::session_set('bookingfrontend', 'redirect', json_encode($redirect));
+				Cache::session_set('bookingfrontend', 'redirect', json_encode($redirect));
 
 				$login_parameter = isset($configfrontend['login_parameter']) && $configfrontend['login_parameter'] ? $configfrontend['login_parameter'] : '';
 				$custom_login_url = isset($configfrontend['custom_login_url']) && $configfrontend['custom_login_url'] ? $configfrontend['custom_login_url'] : '';
@@ -473,7 +473,7 @@
 				}
 			}
 
-			phpgwapi_cache::session_set($this->get_module(), self::USERARRAY_SESSION_KEY, $ret);
+			Cache::session_set($this->get_module(), self::USERARRAY_SESSION_KEY, $ret);
 
 			return $ret;
 		}

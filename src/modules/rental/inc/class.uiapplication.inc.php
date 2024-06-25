@@ -636,7 +636,7 @@
 			{
 				if($application->store($application))
 				{
-					phpgwapi_cache::message_set(lang('messages_saved_form'), 'message');
+					Cache::message_set(lang('messages_saved_form'), 'message');
 					self::redirect(array(
 						'menuaction' => 'rental.uiapplication.edit',
 						'id'		=> $application->get_id(),
@@ -646,7 +646,7 @@
 				}
 				else
 				{
-					phpgwapi_cache::message_set(lang('messages_form_error'), 'error');
+					Cache::message_set(lang('messages_form_error'), 'error');
 					$this->edit(array('application'	=> $application, 'active_tab' => $active_tab));
 				}
 			}

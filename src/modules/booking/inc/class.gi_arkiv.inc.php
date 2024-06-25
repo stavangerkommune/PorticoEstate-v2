@@ -162,7 +162,7 @@
 		{
 			if (!$this->archive_user_id)
 			{
-				phpgwapi_cache::message_set('Ansvarlig arkiv-bruker er ikke angitt under innstillinger', 'error');
+				Cache::message_set('Ansvarlig arkiv-bruker er ikke angitt under innstillinger', 'error');
 				return;
 			}
 

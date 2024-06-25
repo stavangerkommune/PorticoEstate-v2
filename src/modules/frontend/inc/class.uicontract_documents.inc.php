@@ -51,7 +51,7 @@
 			$this->contracts_per_location_identifier_doc = "contracts_in_per_location";
 			$this->form_url_doc = phpgw::link('/', array('menuaction' => 'frontend.uicontract_documents.index',
 				'location_id' => $this->location_id));
-			phpgwapi_cache::session_set('frontend', 'tab', $GLOBALS['phpgw']->locations->get_id('frontend', '.document.contracts'));
+			Cache::session_set('frontend', 'tab', $GLOBALS['phpgw']->locations->get_id('frontend', '.document.contracts'));
 
 			$this->location_code = $this->header_state['selected_location'];
 //			$this->location_code = '1102-01';
@@ -68,7 +68,7 @@
 			if (isset($filter))
 			{
 				$this->contract_filter_doc = $filter;
-				phpgwapi_cache::session_set('frontend', 'contract_filter_doc', $filter);
+				Cache::session_set('frontend', 'contract_filter_doc', $filter);
 
 				// ... if the user changes filter that may cause the
 				if ($filter == 'active' || $filter == 'not_active')
@@ -78,16 +78,16 @@
 			}
 			else
 			{
-				$filter = phpgwapi_cache::session_get('frontend', 'contract_filter_doc');
+				$filter = Cache::session_get('frontend', 'contract_filter_doc');
 				$this->contract_filter_doc = isset($filter) ? $filter : 'active';
 			}
 
 			// If the user wants to view another contract connected to this location
 			// Request parameter: the user wants to view details about anther contract
 			// The current state of the contract view of this user's session
-			$this->contract_state_doc = phpgwapi_cache::session_get('frontend', $this->contract_state_identifier_doc);
+			$this->contract_state_doc = Cache::session_get('frontend', $this->contract_state_identifier_doc);
 			$new_contract = Sanitizer::get_var('contract_id');
-			$contracts_per_location_all = phpgwapi_cache::session_get('frontend', $this->contracts_per_location_identifier_doc);
+			$contracts_per_location_all = Cache::session_get('frontend', $this->contracts_per_location_identifier_doc);
 			$contracts_for_selection = array();
 			$number_of_valid_contracts = 0;
 			$contracts_per_location = $contracts_per_location_all[$org_unit];
@@ -113,7 +113,7 @@
 							$this->contract_state_doc['selected'] = $contract->get_id();
 							$this->contract_state_doc['contract'] = $contract;
 							//$this->contract = rental_socontract::get_instance()->get_single($new_contract);
-							phpgwapi_cache::session_set('frontend', $this->contract_state_identifier_doc, $this->contract_state_doc);
+							Cache::session_set('frontend', $this->contract_state_identifier_doc, $this->contract_state_doc);
 							$change_contract = false;
 						}
 					}

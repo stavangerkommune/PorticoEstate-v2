@@ -116,9 +116,9 @@
 			if (Sanitizer::get_var('noframework', 'bool'))
 			{
 				$GLOBALS['phpgw_info']['flags']['noframework'] = true;
-				phpgwapi_cache::session_set('controller', 'noframework', true);
+				Cache::session_set('controller', 'noframework', true);
 			}
-			else if (phpgwapi_cache::session_get('controller', 'noframework'))
+			else if (Cache::session_get('controller', 'noframework'))
 			{
 				$GLOBALS['phpgw_info']['flags']['noframework'] = true;
 			}
@@ -1087,7 +1087,7 @@
 				{
 					if (!isset($_config_section_data['url']))
 					{
-						phpgwapi_cache::message_set("'url' is a required setting for integrations, '{$_config_section}' is disabled", 'error');
+						Cache::message_set("'url' is a required setting for integrations, '{$_config_section}' is disabled", 'error');
 						break;
 					}
 
@@ -1199,7 +1199,7 @@
 			$check_list_id = Sanitizer::get_var('check_list_id');
 			if (!$this->add && !$this->edit)
 			{
-				phpgwapi_cache::message_set('No access', 'error');
+				Cache::message_set('No access', 'error');
 				self::redirect(array('menuaction' => 'controller.uicheck_list.edit_check_list',
 					'check_list_id' => $check_list_id));
 			}
@@ -1324,7 +1324,7 @@
 					$completed_date_ts = 0;
 					$error_message = "Status kunne ikke settes til utført - prøv igjen";
 					$error = true;
-					phpgwapi_cache::message_set($error_message, 'error');
+					Cache::message_set($error_message, 'error');
 				}
 
 				$check_list = new controller_check_list();
@@ -1374,7 +1374,7 @@
 				$error_message = lang("Please enter billable hours");
 				if (Sanitizer::get_var('phpgw_return_as') != 'json')
 				{
-					phpgwapi_cache::message_set($error_message, 'error');
+					Cache::message_set($error_message, 'error');
 				}
 				$error = true;
 			}
@@ -1500,7 +1500,7 @@
 					}
 					else
 					{
-						phpgwapi_cache::message_set("Mangler epostadresse til avsender eller addresat - eller begge", 'error');
+						Cache::message_set("Mangler epostadresse til avsender eller addresat - eller begge", 'error');
 					}
 */				}
 
@@ -1996,14 +1996,14 @@
 			$required_actual_hours = isset($config->config_data['required_actual_hours']) && $config->config_data['required_actual_hours'] ? $config->config_data['required_actual_hours'] : false;
 			if ($check_list_status == controller_check_list::STATUS_DONE && $required_actual_hours && (int)$check_list->get_billable_hours() == 0)
 			{
-				phpgwapi_cache::message_set(lang("Please enter billable hours"), 'error');
+				Cache::message_set(lang("Please enter billable hours"), 'error');
 				$ok = false;
 				$error = 'missing_billable_hours';
 			}
 //
 			if (!$this->_check_for_required($check_list) || !$ok)
 			{
-				$messages = phpgwapi_cache::message_get(true);
+				$messages = Cache::message_get(true);
 				$message = '';
 				foreach ($messages as $_type => $_message)
 				{
@@ -2536,7 +2536,7 @@ HTML;
 						$error_message .= "\"{$required_control_item['title']}\"</br>";
 						$error_message .= $short_desc;
 						$error_message .= "</br>";
-						phpgwapi_cache::message_set($error_message, 'error');
+						Cache::message_set($error_message, 'error');
 //						echo $error_message;
 						$ok = false;
 					}
@@ -2596,7 +2596,7 @@ HTML;
 								$error_message .= execMethod('property.soentity.get_short_description', array(
 									'location_id' => $_component_at_location['location_id'], 'id' => $_component_at_location['id']));
 								$error_message .= "</br>";
-								phpgwapi_cache::message_set($error_message, 'error');
+								Cache::message_set($error_message, 'error');
 //								echo $error_message;
 								$ok = false;
 							}
@@ -2611,7 +2611,7 @@ HTML;
 
 			if ($check_list->get_status == controller_check_list::STATUS_DONE && $required_actual_hours && $check_list->get_billable_hours() == 0)
 			{
-				phpgwapi_cache::message_set(lang("Please enter billable hours"), 'error');
+				Cache::message_set(lang("Please enter billable hours"), 'error');
 				$ok = false;
 			}
 
@@ -2757,7 +2757,7 @@ HTML;
 			}
 			catch (Exception $e)
 			{
-				phpgwapi_cache::message_set($e->getMessage(), 'error');
+				Cache::message_set($e->getMessage(), 'error');
 			}
 			return;
 //test
@@ -2771,12 +2771,12 @@ HTML;
 				}
 				catch (Exception $e)
 				{
-					phpgwapi_cache::message_set($e->getMessage(), 'error');
+					Cache::message_set($e->getMessage(), 'error');
 				}
 			}
 			else
 			{
-				phpgwapi_cache::message_set(lang('SMTP server is not set! (admin section)'), 'error');
+				Cache::message_set(lang('SMTP server is not set! (admin section)'), 'error');
 			}
 
 			return $rc;

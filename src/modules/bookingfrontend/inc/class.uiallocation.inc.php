@@ -81,7 +81,7 @@
 			if ($config->config_data['user_can_delete_allocations'] != 'yes')
 			{
 
-				phpgwapi_cache::message_set('user can not delete allocations', 'error');
+				Cache::message_set('user can not delete allocations', 'error');
 
 				$allocation		 = $this->bo->read_single(intval(Sanitizer::get_var('allocation_id', 'int')));
 				$original_from	 = $allocation['from_'];
@@ -826,7 +826,7 @@
 				{
 					if ($new_from_ > $new_to_)
 					{
-						phpgwapi_cache::message_set(lang('Cannot change start time'), 'error');
+						Cache::message_set(lang('Cannot change start time'), 'error');
 					}
 					else
 					{
@@ -868,7 +868,7 @@
 
 
 						$this->system_message_bo->add($system_message);
-						phpgwapi_cache::message_set($message);
+						Cache::message_set($message);
 					}
 				}
 
@@ -885,16 +885,16 @@
 							 */
 //							$allocation['from_'] = $new_from_;
 //							$this->allocation_so->update($allocation);
-//							phpgwapi_cache::message_set(lang('Successfully changed start time') . ' ' . $allocation['from_']);
+//							Cache::message_set(lang('Successfully changed start time') . ' ' . $allocation['from_']);
 						}
 						else
 						{
-							phpgwapi_cache::message_set(lang('Cannot change start time'), 'error');
+							Cache::message_set(lang('Cannot change start time'), 'error');
 						}
 					}
 					else
 					{
-						phpgwapi_cache::message_set(lang('Decrease of from time overlap with existing booking'), 'error');
+						Cache::message_set(lang('Decrease of from time overlap with existing booking'), 'error');
 					}
 				}
 
@@ -911,18 +911,18 @@
 							 */
 //							$allocation['to_'] = $new_to_;
 //							$this->allocation_so->update($allocation);
-//							phpgwapi_cache::message_set(lang('Successfully changed end time') . ' ' . $allocation['to_']);
+//							Cache::message_set(lang('Successfully changed end time') . ' ' . $allocation['to_']);
 						}
 						else
 						{
-							phpgwapi_cache::message_set(lang('Cannot change end time'), 'error');
+							Cache::message_set(lang('Cannot change end time'), 'error');
 						}
 
 
 					}
 					else
 					{
-						phpgwapi_cache::message_set(lang('Decrease of to time overlap with existing booking'), 'error');
+						Cache::message_set(lang('Decrease of to time overlap with existing booking'), 'error');
 					}
 				}
 
@@ -948,7 +948,7 @@
 					$system_message['message'] = $comment . '<br/>' . '<a href="' . $link . '" target="_blank">' . lang('Go to allocation') .'</a>';
 
 					$this->system_message_bo->add($system_message);
-					phpgwapi_cache::message_set($message);
+					Cache::message_set($message);
 				}
 			}
 

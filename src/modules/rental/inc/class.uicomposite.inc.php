@@ -240,12 +240,12 @@
 					$object_count = rental_socomposite::get_instance()->get_count($search_for, $search_type, $filters);
 					break;
 				case 'all_composites': // ... all composites, filters (active and vacant)
-					phpgwapi_cache::session_set('rental', 'composite_query', $search_for);
-					phpgwapi_cache::session_set('rental', 'composite_search_type', $search_type);
-					phpgwapi_cache::session_set('rental', 'composite_status', Sanitizer::get_var('is_active'));
-					phpgwapi_cache::session_set('rental', 'composite_status_id', Sanitizer::get_var('status_id'));
-					phpgwapi_cache::session_set('rental', 'composite_status_contract', Sanitizer::get_var('has_contract'));
-					phpgwapi_cache::session_set('rental', 'composite_furnished_status', Sanitizer::get_var('furnished_status'));
+					Cache::session_set('rental', 'composite_query', $search_for);
+					Cache::session_set('rental', 'composite_search_type', $search_type);
+					Cache::session_set('rental', 'composite_status', Sanitizer::get_var('is_active'));
+					Cache::session_set('rental', 'composite_status_id', Sanitizer::get_var('status_id'));
+					Cache::session_set('rental', 'composite_status_contract', Sanitizer::get_var('has_contract'));
+					Cache::session_set('rental', 'composite_furnished_status', Sanitizer::get_var('furnished_status'));
 					$filters = array(
 						'furnished_status' => Sanitizer::get_var('furnished_status'),
 						'is_active' => Sanitizer::get_var('is_active'),
@@ -1219,13 +1219,13 @@ JS;
 
 				if (rental_socomposite::get_instance()->store($composite))
 				{
-					phpgwapi_cache::message_set(lang('messages_saved_form'), 'message');
+					Cache::message_set(lang('messages_saved_form'), 'message');
 					$composite_id = $composite->get_id();
 					$this->_handle_files($composite_id);
 				}
 				else
 				{
-					phpgwapi_cache::message_set(lang('messages_form_error'), 'error');
+					Cache::message_set(lang('messages_form_error'), 'error');
 				}
 			}
 
@@ -1247,7 +1247,7 @@ JS;
 						'relatives' => array(RELATIVE_NONE)
 					)))
 				{
-					phpgwapi_cache::message_set(lang('This file already exists !'), 'error');
+					Cache::message_set(lang('This file already exists !'), 'error');
 				}
 				else
 				{
@@ -1259,7 +1259,7 @@ JS;
 							'to' => $to_file,
 							'relatives' => array(RELATIVE_NONE | VFS_REAL, RELATIVE_ALL))))
 					{
-						phpgwapi_cache::message_set(lang('Failed to upload file !'), 'error');
+						Cache::message_set(lang('Failed to upload file !'), 'error');
 					}
 					$bofiles->vfs->override_acl = 0;
 				}

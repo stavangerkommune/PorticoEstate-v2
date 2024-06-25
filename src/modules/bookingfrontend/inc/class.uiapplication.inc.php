@@ -92,7 +92,7 @@
 						if ($old_file['name'] == $files['name']['name'])
 						{
 							$file_exist = true;
-							phpgwapi_cache::message_set(lang('file exists'));
+							Cache::message_set(lang('file exists'));
 							break;
 						}
 					}
@@ -120,7 +120,7 @@
 					}
 					catch (booking_unauthorized_exception $e)
 					{
-						phpgwapi_cache::message_set(lang('Could not add object due to insufficient permissions'));
+						Cache::message_set(lang('Could not add object due to insufficient permissions'));
 					}
 				}
 			}

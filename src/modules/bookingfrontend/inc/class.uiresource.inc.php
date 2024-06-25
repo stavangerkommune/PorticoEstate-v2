@@ -119,7 +119,7 @@
 			}
 
 			$bouser = CreateObject('bookingfrontend.bouser');
-			$user_data = phpgwapi_cache::session_get($bouser->get_module(), $bouser::USERARRAY_SESSION_KEY);
+			$user_data = Cache::session_get($bouser->get_module(), $bouser::USERARRAY_SESSION_KEY);
 			if($user_data['ssn'])
 			{
 				CreateObject('booking.uiapplication')->check_booking_limit(

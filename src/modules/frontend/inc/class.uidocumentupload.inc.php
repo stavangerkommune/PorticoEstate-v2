@@ -108,7 +108,7 @@
 			if ($mime != 'application/pdf')
 			{
 				$message = 'Only PDF is supported for this one';
-				phpgwapi_cache::message_set($message, 'error');
+				Cache::message_set($message, 'error');
 				return $message;
 			}
 
@@ -127,7 +127,7 @@
 			if ($result)
 			{
 				$message = 'Stored in vfs';
-				phpgwapi_cache::message_set($message, 'message');
+				Cache::message_set($message, 'message');
 				return $message;
 			}
 			return "something failed...";

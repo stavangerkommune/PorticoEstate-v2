@@ -665,7 +665,7 @@
 		{
 			if(!is_array($_FILES['uploadedfile']) || ($_FILES['uploadedfile']['error'] != UPLOAD_ERR_OK))
 			{
-				phpgwapi_cache::message_set('You must select a vcard. (*.vcf)', 'error');
+				Cache::message_set('You must select a vcard. (*.vcf)', 'error');
 				
 				phpgw::redirect_link('/index.php',array('menuaction' => 'addressbook.uivcard.in'));
 			}
@@ -699,7 +699,7 @@
 				unlink($filename);
 				unlink($filename . '.info');
 				
-				phpgwapi_cache::message_set('vcard has been added', 'message');
+				Cache::message_set('vcard has been added', 'message');
 				
 				phpgw::redirect_link('/index.php',array('menuaction' => 'addressbook.uiaddressbook_persons.view', 'ab_id' => $ab_id, 'vcard' => 1));
 			}

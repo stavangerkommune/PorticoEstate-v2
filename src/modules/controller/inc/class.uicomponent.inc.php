@@ -185,7 +185,7 @@
 
 //			if($entity_group_id)
 			{
-				$location_filter = phpgwapi_cache::session_get('controller', "location_filter_{$entity_group_id}");
+				$location_filter = Cache::session_get('controller', "location_filter_{$entity_group_id}");
 			}
 
 			if (empty($location_filter))
@@ -256,7 +256,7 @@
 				{
 					array_multisort($id, SORT_ASC, SORT_STRING, $location_filter);
 				}
-				phpgwapi_cache::session_set('controller', "location_filter_{$entity_group_id}", $location_filter);
+				Cache::session_set('controller', "location_filter_{$entity_group_id}", $location_filter);
 			}
 
 			foreach ($location_filter as &$location)
@@ -281,7 +281,7 @@
 			phpgwapi_jquery::load_widget('core');
 			phpgwapi_jquery::load_widget('autocomplete');
 
-			$filter_status_components = phpgwapi_cache::user_get('controller', 'filter_status_components', $this->account);
+			$filter_status_components = Cache::user_get('controller', 'filter_status_components', $this->account);
 
 			$users = $GLOBALS['phpgw']->acl->get_user_list_right(ACL_EDIT, '.checklist');
 			$user_list = array();
@@ -865,7 +865,7 @@
 				'filter_part_of_town_id' => $part_of_town_id
 			);
 
-			phpgwapi_cache::user_set('controller', 'filter_status_components', $filter_status_components, $this->account);
+			Cache::user_set('controller', 'filter_status_components', $filter_status_components, $this->account);
 
 			if($all_items)
 			{

@@ -131,7 +131,7 @@
 
 			foreach ($errors as $error)
 			{
-				phpgwapi_cache::message_set($error, 'error');
+				Cache::message_set($error, 'error');
 			}
 
 			self::add_javascript('booking', 'base', 'report.js');
@@ -448,7 +448,7 @@
 
 			foreach ($errors as $error)
 			{
-				phpgwapi_cache::message_set($error, 'error');
+				Cache::message_set($error, 'error');
 			}
 		}
 
@@ -619,7 +619,7 @@ HTML;
 				$from = date($this->dateFormat, time());
 			}
 
-			phpgwapi_cache::message_set($errors, 'error');
+			Cache::message_set($errors, 'error');
 
 			$GLOBALS['phpgw']->jqcal2->add_listener('from', 'date');
 			$GLOBALS['phpgw']->jqcal2->add_listener('to', 'date');
@@ -686,7 +686,7 @@ HTML;
 				$show = 'gui';
 			}
 
-			phpgwapi_cache::message_set($errors, 'error');
+			Cache::message_set($errors, 'error');
 			//$this->flash_form_errors($errors);
 
 			$GLOBALS['phpgw']->jqcal2->add_listener('from', 'date');

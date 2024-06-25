@@ -312,7 +312,7 @@
 					$object_count = $this->so->get_count($search_for, $search_type, $filters);
 					break;
 				default: // ... all activities, filters (active and vacant)
-					phpgwapi_cache::session_set('logistic', 'activity_query', $search_for);
+					Cache::session_set('logistic', 'activity_query', $search_for);
 					$filters = array('project' => Sanitizer::get_var('project'), 'user' => Sanitizer::get_var('user'),
 						'activity' => Sanitizer::get_var('filter', 'int'));
 					$result_objects = $this->so->get($start_index, $num_of_objects, $sort_field, $sort_ascending, $search_for, $search_type, $filters, $params['allrows']);

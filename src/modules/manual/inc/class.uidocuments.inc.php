@@ -213,13 +213,13 @@
 				{
 					if ($e)
 					{
-						phpgwapi_cache::message_set($e->getMessage(), 'error');
+						Cache::message_set($e->getMessage(), 'error');
 						$this->edit($values);
 						return;
 					}
 				}
 
-				phpgwapi_cache::message_set('ok!', 'message');
+				Cache::message_set('ok!', 'message');
 				phpgw::redirect_link('/index.php', array('menuaction' => 'manual.uidocuments.edit',
 					'cat_id' => $cat_id));
 			}
@@ -362,7 +362,7 @@
 			{
 				if (!is_file($_FILES['file']['tmp_name']))
 				{
-					phpgwapi_cache::message_set(lang('Failed to upload file !'), 'error');
+					Cache::message_set(lang('Failed to upload file !'), 'error');
 					return;
 				}
 
@@ -372,7 +372,7 @@
 						'relatives' => Array(RELATIVE_NONE)
 					)))
 				{
-					phpgwapi_cache::message_set(lang('This file already exists !'), 'error');
+					Cache::message_set(lang('This file already exists !'), 'error');
 				}
 				else
 				{
@@ -384,7 +384,7 @@
 							'to' => $to_file,
 							'relatives' => array(RELATIVE_NONE | VFS_REAL, RELATIVE_ALL))))
 					{
-						phpgwapi_cache::message_set(lang('Failed to upload file !'), 'error');
+						Cache::message_set(lang('Failed to upload file !'), 'error');
 					}
 					$bofiles->vfs->override_acl = 0;
 				}

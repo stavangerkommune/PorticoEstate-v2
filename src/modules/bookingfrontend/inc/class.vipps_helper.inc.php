@@ -25,7 +25,7 @@
 
 		public function __construct()
 		{
-			phpgwapi_cache::session_set('bookingfrontend', 'payment_method', 'vipps');
+			Cache::session_set('bookingfrontend', 'payment_method', 'vipps');
 
 			$location_id		 = $GLOBALS['phpgw']->locations->get_id('booking', 'run');
 			$custom_config		 = CreateObject('admin.soconfig', $location_id);
@@ -275,7 +275,7 @@
 				$GLOBALS['phpgw']->db->transaction_commit();
 			}
 
-			phpgwapi_cache::message_set('cancelled');
+			Cache::message_set('cancelled');
 		}
 
 		public function cancel_payment( $remote_order_id )
@@ -331,7 +331,7 @@
 			catch (\GuzzleHttp\Exception\BadResponseException $e)
 			{
 				// handle exception or api errors.
-				phpgwapi_cache::message_set($e->getMessage(), 'error');
+				Cache::message_set($e->getMessage(), 'error');
 
 				if ($this->debug)
 				{
@@ -418,7 +418,7 @@
 			catch (\GuzzleHttp\Exception\BadResponseException $e)
 			{
 				// handle exception or api errors.
-				phpgwapi_cache::message_set($e->getMessage(), 'error');
+				Cache::message_set($e->getMessage(), 'error');
 
 				if ($this->debug)
 				{

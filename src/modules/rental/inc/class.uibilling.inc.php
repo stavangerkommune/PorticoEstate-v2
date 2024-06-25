@@ -386,7 +386,7 @@ JS;
 			{
 				if (phpgw::is_repost())
 				{
-					phpgwapi_cache::message_set(lang('Hmm... looks like a repost!'), 'error');
+					Cache::message_set(lang('Hmm... looks like a repost!'), 'error');
 					self::redirect(array(
 						'menuaction' => 'rental.uibilling.index'
 						)
@@ -1215,7 +1215,7 @@ JS;
 			if ($billing_job == null) // Not found
 			{
 				//$errorMsgs[] = lang('Could not find specified billing job.');
-				phpgwapi_cache::message_set(lang('Could not find specified billing job.'), 'error');
+				Cache::message_set(lang('Could not find specified billing job.'), 'error');
 				phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uibilling.index'));
 			}
 			else if (Sanitizer::get_var('generate_export') != null) // User wants to generate export
@@ -1241,19 +1241,19 @@ JS;
 					if (rental_sobilling::get_instance()->generate_export($billing_job))
 					{
 						//$infoMsgs[] = lang('Export generated.');
-						phpgwapi_cache::message_set(lang('Export generated.'), 'message');
+						Cache::message_set(lang('Export generated.'), 'message');
 						$billing_job->set_generated_export(true); // The template need to know that we've genereated the export
 					}
 					else
 					{
 						//$errorMsgs = lang('Export failed.');
-						phpgwapi_cache::message_set(lang('Export failed.'), 'error');
+						Cache::message_set(lang('Export failed.'), 'error');
 					}
 				}
 				else
 				{
 					//$errorMsgs[] = lang('open_and_exported_exist');
-					phpgwapi_cache::message_set(lang('open_and_exported_exist'), 'error');
+					Cache::message_set(lang('open_and_exported_exist'), 'error');
 				}
 			}
 			else if (Sanitizer::get_var('commit') != null) // User wants to commit/close billing so that it cannot be deleted

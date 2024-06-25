@@ -473,7 +473,7 @@ HTML;
 
 			if (!$account_id)
 			{
-				phpgwapi_cache::message_set("User {$account_lid} already exist", 'error');
+				Cache::message_set("User {$account_lid} already exist", 'error');
 				return false;
 			}
 

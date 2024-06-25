@@ -213,7 +213,7 @@
 				{
 					if (!property_exists('booking_article_mapping', $field))
 					{
-						phpgwapi_cache::message_set('$' . "{$field},", 'error');
+						Cache::message_set('$' . "{$field},", 'error');
 					}
 				}
 			}

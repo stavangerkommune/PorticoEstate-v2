@@ -228,7 +228,7 @@
 				{
 					if(!property_exists('eventplanner_vendor', $field))
 					{
-					   phpgwapi_cache::message_set('$'."{$field},", 'error');
+					   Cache::message_set('$'."{$field},", 'error');
 					}
 
 				}

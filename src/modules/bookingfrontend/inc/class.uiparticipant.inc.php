@@ -224,7 +224,7 @@ ICAL;
 			$sms_error_message = '';
 			if ($_SERVER['REQUEST_METHOD'] == 'POST' && $register_type && $enable_register_form)
 			{
-				$user_inputs = (array)phpgwapi_cache::system_get('bookingfrontendt', 'add_participant');
+				$user_inputs = (array)Cache::system_get('bookingfrontendt', 'add_participant');
 				$ip_address = phpgw::get_ip_address();
 				$user_inputs[$ip_address][time()] = 1;
 
@@ -252,7 +252,7 @@ ICAL;
 					}
 				}
 
-				phpgwapi_cache::system_set('bookingfrontendt', 'add_participant', $user_inputs);
+				Cache::system_set('bookingfrontendt', 'add_participant', $user_inputs);
 
 				if($number_of_submits > $limit)
 				{
@@ -400,7 +400,7 @@ ICAL;
 						}
 					}
 
-					phpgwapi_cache::message_set($sms_text);
+					Cache::message_set($sms_text);
 
 					self::redirect(array('menuaction'	=> 'bookingfrontend.uiparticipant.add',
 					'reservation_type'	 => $reservation_type, 'reservation_id'	 => $reservation_id));

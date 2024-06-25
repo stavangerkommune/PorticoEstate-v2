@@ -53,7 +53,7 @@
 	$bouser = CreateObject('bookingfrontend.bouser');
 	$bouser->log_in();
 
-	$redirect =	json_decode(phpgwapi_cache::session_get('bookingfrontend', 'redirect'), true);
+	$redirect =	json_decode(Cache::session_get('bookingfrontend', 'redirect'), true);
 
 
 	if(!empty($config['debug_local_login']))
@@ -81,7 +81,7 @@
 			$redirect_data['kp3'] = Sanitizer::get_var('kp3', 'string', 'GET');
 		}
 
-		phpgwapi_cache::session_clear('bookingfrontend', 'redirect');
+		Cache::session_clear('bookingfrontend', 'redirect');
 		phpgw::redirect_link('/bookingfrontend/', $redirect_data);
 	}
 

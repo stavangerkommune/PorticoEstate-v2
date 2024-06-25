@@ -68,7 +68,7 @@
 			$ret = eventplanner_sobooking::get_instance()->store($object);
 			if ($ret && $save_last_booking)
 			{
-				phpgwapi_cache::system_set('eventplanner', "last_booking{$object->customer_id}", time());
+				Cache::system_set('eventplanner', "last_booking{$object->customer_id}", time());
 
 
 				/**
@@ -85,7 +85,7 @@
 		{
 			if (empty($GLOBALS['phpgw_info']['server']['smtp_server']))
 			{
-				phpgwapi_cache::message_set(lang('SMTP server is not set! (admin section)'), 'error');
+				Cache::message_set(lang('SMTP server is not set! (admin section)'), 'error');
 				return false;
 			}
 
@@ -282,10 +282,10 @@ HTML;
 			}
 			catch (Exception $e)
 			{
-				phpgwapi_cache::message_set($e->getMessage(), 'error');
+				Cache::message_set($e->getMessage(), 'error');
 			}
 
-			phpgwapi_cache::message_set("Email: $to_email, $cc", 'message');
+			Cache::message_set("Email: $to_email, $cc", 'message');
 
 			return $rcpt;
 		}

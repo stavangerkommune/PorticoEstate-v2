@@ -34,7 +34,7 @@
 		/* 		//FIXME Sigurd 22. nov 2013: - not used?
 		  public static function contract_exist_per_location($contract_id, $location_code, $contract_state_identifier)
 		  {
-		  $contracts_per_location = phpgwapi_cache::session_get('frontend', $contract_state_identifier);
+		  $contracts_per_location = Cache::session_get('frontend', $contract_state_identifier);
 		  $exist = false;
 		  foreach($contracts_per_location[$location_code] as $contract)
 		  {
@@ -88,14 +88,14 @@
 		//FIXME : Sigurd 16 okt 2013: not used?
 		public static function get_first_contract_per_location( $location_code )
 		{
-			$contracts_per_location = phpgwapi_cache::session_get('frontend', 'contracts_per_location');
+			$contracts_per_location = Cache::session_get('frontend', 'contracts_per_location');
 			return $contracts_per_location[$location_code][0];
 		}
 
 		//FIXME : Sigurd 16 okt 2013: not used?
 		public static function get_first_contract_in_per_location( $location_code )
 		{
-			$contracts_in_per_location = phpgwapi_cache::session_get('frontend', 'contracts_in_per_location');
+			$contracts_in_per_location = Cache::session_get('frontend', 'contracts_in_per_location');
 			return $contracts_in_per_location[$location_code][0];
 		}
 

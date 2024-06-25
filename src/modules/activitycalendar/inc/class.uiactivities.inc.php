@@ -260,7 +260,7 @@
 
 			if (empty($activity))
 			{
-				phpgwapi_cache::message_set(lang('Could not find specified activity.'), 'error');
+				Cache::message_set(lang('Could not find specified activity.'), 'error');
 				phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.index'));
 			}
 
@@ -503,7 +503,7 @@
 
 			if ($activity->get_new_org())
 			{
-				phpgwapi_cache::message_set(lang('org_not_transferred'), 'error');
+				Cache::message_set(lang('org_not_transferred'), 'error');
 				phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiactivities.view',
 					'id' => $activity->get_id()));
 			}
@@ -956,12 +956,12 @@ JS;
 							}
 						}
 						//$message = lang('messages_saved_form');
-						phpgwapi_cache::message_set(lang('messages_saved_form'), 'message');
+						Cache::message_set(lang('messages_saved_form'), 'message');
 					}
 					else
 					{
 						//$error = lang('messages_form_error');
-						phpgwapi_cache::message_set(lang('messages_form_error'), 'error');
+						Cache::message_set(lang('messages_form_error'), 'error');
 					}
 
 					if (isset($activity_id) && $activity_id > 0)
@@ -994,12 +994,12 @@ JS;
 					if (!$target_ok)
 					{
 						//$error .= "<br/>" . lang('target_not_selected');
-						phpgwapi_cache::message_set(lang('target_not_selected'), 'error');
+						Cache::message_set(lang('target_not_selected'), 'error');
 					}
 					if (!$district_ok)
 					{
 						//$error .= "<br/>" . lang('district_not_selected');
-						phpgwapi_cache::message_set(lang('district_not_selected'), 'error');
+						Cache::message_set(lang('district_not_selected'), 'error');
 					}
 				}
 			}

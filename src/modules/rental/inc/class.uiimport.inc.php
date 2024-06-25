@@ -71,7 +71,7 @@
 			{
 				// Get the path for user input or use a default path
 				$this->path = Sanitizer::get_var("facilit_path") ? Sanitizer::get_var("facilit_path") : '/home/notroot/FacilitExport';
-				phpgwapi_cache::session_set('rental', 'import_path', $this->path);
+				Cache::session_set('rental', 'import_path', $this->path);
 				phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uiimport.import_regulations',
 					'importstep' => 'true'));
 			}
@@ -85,7 +85,7 @@
 				$start = date("G:i:s", $start_time);
 				echo "<h3>Import started at: {$start}</h3>";
 				echo "<ul>";
-				$this->path = phpgwapi_cache::session_get('rental', 'import_path') . '/Intern';
+				$this->path = Cache::session_get('rental', 'import_path') . '/Intern';
 
 				$result = $this->import_adjustment_information(); // Do import step, result determines if finished for this area
 				echo '<li class="info">Finished importing adjustment information</li>';
@@ -160,7 +160,7 @@
 			{
 				// Get the path for user input or use a default path
 				$this->path = Sanitizer::get_var("facilit_path") ? Sanitizer::get_var("facilit_path") : '/home/notroot/FacilitExport';
-				phpgwapi_cache::session_set('rental', 'import_path', $this->path);
+				Cache::session_set('rental', 'import_path', $this->path);
 				phpgw::redirect_link('/index.php', array('menuaction' => 'rental.uiimport.index',
 					'importstep' => 'true'));
 			}
@@ -172,7 +172,7 @@
 				echo "<ul>";
 				$types = rental_socontract::get_instance()->get_fields_of_responsibility();
 				$this->location_id = array_search('contract_type_internleie', $types);
-				$this->path = phpgwapi_cache::session_get('rental', 'import_path') . '/Intern';
+				$this->path = Cache::session_get('rental', 'import_path') . '/Intern';
 
 				$result = $this->import(); // Do import step, result determines if finished for this area
 				echo '<li class="info">Internleie: finished step ' . $result . '</li>';
@@ -184,7 +184,7 @@
 				}
 
 				$this->location_id = array_search('contract_type_eksternleie', $types);
-				$this->path = phpgwapi_cache::session_get('rental', 'import_path') . '/Ekstern';
+				$this->path = Cache::session_get('rental', 'import_path') . '/Ekstern';
 
 				$result = $this->import(); // Do import step, result determines if finished for this area
 				echo '<li class="info">Eksternleie: finished step ' . $result . '</li>';
@@ -196,7 +196,7 @@
 				}
 
 				$this->location_id = array_search('contract_type_innleie', $types);
-				$this->path = phpgwapi_cache::session_get('rental', 'import_path') . '/Innleie';
+				$this->path = Cache::session_get('rental', 'import_path') . '/Innleie';
 
 				$result = $this->import(); // Do import step, result determines if finished for this area
 				echo '<li class="info">Innleie: finished step ' . $result . '</li>';
@@ -253,73 +253,73 @@
 			$this->errors = array();
 
 			// Import contract parties if not done before and put them on the users session
-			if (!phpgwapi_cache::session_get('rental', 'facilit_parties'))
+			if (!Cache::session_get('rental', 'facilit_parties'))
 			{
-				phpgwapi_cache::session_set('rental', 'facilit_parties', $this->import_parties());
+				Cache::session_set('rental', 'facilit_parties', $this->import_parties());
 				$this->log_messages(1);
 				return '1';
 			}
 
 			// Import composites if not done before and put them on the users session
-			if (!phpgwapi_cache::session_get('rental', 'facilit_composites'))
+			if (!Cache::session_get('rental', 'facilit_composites'))
 			{
-				phpgwapi_cache::session_set('rental', 'facilit_composites', $this->import_composites());
+				Cache::session_set('rental', 'facilit_composites', $this->import_composites());
 				$this->log_messages(2);
 				return '2';
 			}
 
 			// Load composite to contract link table if not done before and put them on the users session
-			if (!phpgwapi_cache::session_get('rental', 'facilit_rentalobject_to_contract'))
+			if (!Cache::session_get('rental', 'facilit_rentalobject_to_contract'))
 			{
-				phpgwapi_cache::session_set('rental', 'facilit_rentalobject_to_contract', $this->import_rentalobject_to_contract());
+				Cache::session_set('rental', 'facilit_rentalobject_to_contract', $this->import_rentalobject_to_contract());
 				$this->log_messages(3);
 				return '3';
 			}
 
 			// Import contracts if not done before and put them on the users session
 			// Prerequisites: Composites, parties, contract to composite bindings, and default values for accounts/project number for 
-			if (!phpgwapi_cache::session_get('rental', 'facilit_contracts'))
+			if (!Cache::session_get('rental', 'facilit_contracts'))
 			{
-				$composites = phpgwapi_cache::session_get('rental', 'facilit_composites');
-				$rentalobject_to_contract = phpgwapi_cache::session_get('rental', 'facilit_rentalobject_to_contract');
-				$parties = phpgwapi_cache::session_get('rental', 'facilit_parties');
+				$composites = Cache::session_get('rental', 'facilit_composites');
+				$rentalobject_to_contract = Cache::session_get('rental', 'facilit_rentalobject_to_contract');
+				$parties = Cache::session_get('rental', 'facilit_parties');
 				$location_id = $this->location_id;
 				$defalt_values['account_in'] = rental_socontract::get_instance()->get_default_account($location_id, true); //IN
 				$defalt_values['account_out'] = rental_socontract::get_instance()->get_default_account($location_id, false); //OUT
 				$defalt_values['project_number'] = rental_socontract::get_instance()->get_default_project_number($location_id); //PROJECTNUMBER
-				phpgwapi_cache::session_set('rental', 'facilit_contracts', $this->import_contracts($composites, $rentalobject_to_contract, $parties, $defalt_values));
+				Cache::session_set('rental', 'facilit_contracts', $this->import_contracts($composites, $rentalobject_to_contract, $parties, $defalt_values));
 				$this->log_messages(4);
 				return '4';
 			}
 
 			// Import price items if not done before and put them on the users session
 			// Prerequisites: Contracts	
-			if (!phpgwapi_cache::session_get('rental', 'facilit_contract_price_items'))
+			if (!Cache::session_get('rental', 'facilit_contract_price_items'))
 			{
-				$contracts = phpgwapi_cache::session_get('rental', 'facilit_contracts');
-				phpgwapi_cache::session_set('rental', 'facilit_contract_price_items', $this->import_contract_price_items($contracts));
+				$contracts = Cache::session_get('rental', 'facilit_contracts');
+				Cache::session_set('rental', 'facilit_contract_price_items', $this->import_contract_price_items($contracts));
 				$this->log_messages(5);
 				return '5';
 			}
 
 			// Import events if not done before and put them on the users session
 			// Prerequistes: Contracts
-			if (!phpgwapi_cache::session_get('rental', 'facilit_events'))
+			if (!Cache::session_get('rental', 'facilit_events'))
 			{
-				$contracts = phpgwapi_cache::session_get('rental', 'facilit_contracts');
-				$event_data = phpgwapi_cache::session_get('rental', 'facilit_events');
+				$contracts = Cache::session_get('rental', 'facilit_contracts');
+				$event_data = Cache::session_get('rental', 'facilit_events');
 				$regulation_id_location_id = isset($event_data) ? $event_data : array();
-				phpgwapi_cache::session_set('rental', 'facilit_events', $this->import_events($contracts, $regulation_id_location_id));
+				Cache::session_set('rental', 'facilit_events', $this->import_events($contracts, $regulation_id_location_id));
 				$this->log_messages(6);
 				return '6';
 			}
 
 			// Import adjustments
 			// Prerequistes: Contracts
-			if (!phpgwapi_cache::session_get('rental', 'facilit_adjustments'))
+			if (!Cache::session_get('rental', 'facilit_adjustments'))
 			{
-				$contracts = phpgwapi_cache::session_get('rental', 'facilit_contracts');
-				$event_data = phpgwapi_cache::session_get('rental', 'facilit_events');
+				$contracts = Cache::session_get('rental', 'facilit_contracts');
+				$event_data = Cache::session_get('rental', 'facilit_events');
 				$regulation_id_location_id = isset($event_data) ? $event_data : array();
 				$this->import_adjustments($contracts, $regulation_id_location_id);
 				$this->log_messages(7);
@@ -329,12 +329,12 @@
 			// We're done with the import, so clear all session variables so we're ready for a new one
 			// We do not clear parties (same for all responsibility areas)
 			// We do not clear event data, the array is just added for each
-			phpgwapi_cache::session_clear('rental', 'facilit_composites');
-			phpgwapi_cache::session_clear('rental', 'facilit_rentalobject_to_contract');
-			phpgwapi_cache::session_clear('rental', 'facilit_contracts');
-			phpgwapi_cache::session_clear('rental', 'facilit_contract_price_items');
-			phpgwapi_cache::session_clear('rental', 'facilit_events');
-			phpgwapi_cache::session_clear('rental', 'facilit_adjustments');
+			Cache::session_clear('rental', 'facilit_composites');
+			Cache::session_clear('rental', 'facilit_rentalobject_to_contract');
+			Cache::session_clear('rental', 'facilit_contracts');
+			Cache::session_clear('rental', 'facilit_contract_price_items');
+			Cache::session_clear('rental', 'facilit_events');
+			Cache::session_clear('rental', 'facilit_adjustments');
 			return '7';
 		}
 

@@ -30,7 +30,7 @@ phpgw::import_class('phpgwapi.datetime');
 
 		function __construct($param)
 		{
-			$this->db =& $GLOBALS['phpgw']->db;
+			$this->db = Db::getInstance();
 		//	$this->owner = (!isset($param['owner']) || $param['owner'] == 0?$GLOBALS['phpgw_info']['user']['account_id']:$param['owner']);
 			$this->owner = (!isset($param['owner']) || $param['owner'] == 0?$GLOBALS['phpgw']->accounts->search_person($GLOBALS['phpgw_info']['user']['account_id']):$param['owner']);
 			

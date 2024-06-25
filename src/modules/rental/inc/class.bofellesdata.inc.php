@@ -94,7 +94,7 @@
 			if ($config->config_data['external_db_host'] && !$this->ping($config->config_data['external_db_host']))
 			{
 				$message = "Database server {$config->config_data['external_db_host']} is not accessible";
-				phpgwapi_cache::message_set($message, 'error');
+				Cache::message_set($message, 'error');
 				return false;
 			}
 
@@ -120,7 +120,7 @@
 			catch (Exception $e)
 			{
 				$status = lang('unable_to_connect_to_database');
-				phpgwapi_cache::message_set($status, 'error');
+				Cache::message_set($status, 'error');
 			}
 
 			$this->db = $db;

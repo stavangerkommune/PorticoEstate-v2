@@ -3971,7 +3971,7 @@ class calendar_boicalendar
 
 		if ( !isset($db) || !is_object($db) )
 		{
-			$db =& $GLOBALS['phpgw']->db;
+			$db = Db::getInstance();
 		}
 
 		if( !isset($GLOBALS['uicalendar']) || !is_object($GLOBALS['uicalendar']) )

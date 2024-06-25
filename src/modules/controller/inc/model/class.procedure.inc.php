@@ -293,7 +293,7 @@
 		{
 			if (!$this->get_start_date())
 			{
-//				phpgwapi_cache::message_set(lang('missing start date'), 'error');
+//				Cache::message_set(lang('missing start date'), 'error');
 //				return false;
 			}
 

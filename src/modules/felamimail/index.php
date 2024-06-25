@@ -32,6 +32,6 @@
 	}
 	catch(Exception $e)
 	{
-		phpgwapi_cache::message_set($e->getMessage(), 'error');
+		Cache::message_set($e->getMessage(), 'error');
 		phpgw::redirect_link('/home.php');
 	}

@@ -62,14 +62,14 @@
 			$logo_path = $this->config->config_data['logo_path'];
 
 			// Get the mode: in frame or full screen
-			$mode = phpgwapi_cache::session_get('frontend', 'noframework');
+			$mode = Cache::session_get('frontend', 'noframework');
 			$noframework = isset($mode) ? $mode : true;
 
 			/* Get the tabs and check to see whether the user has specified a tab or has a selected tab on session */
 			$tabs = $this->get_tabs();
 			//print_r($tabs); die;
 			$location_id = Sanitizer::get_var('location_id', 'int', 'REQUEST');
-			$tab = isset($location_id) ? $location_id : phpgwapi_cache::session_get('frontend', 'tab');
+			$tab = isset($location_id) ? $location_id : Cache::session_get('frontend', 'tab');
 			$selected = isset($tab) && $tab ? $tab : array_shift(array_keys($tabs));
 
 			$this->location_id = $location_id;
@@ -90,10 +90,10 @@
 			//$this->tabs		= $GLOBALS['phpgw']->common->create_tabs($tabs, $selected);
 			$this->menu = $this->create_menu($tabs, $selected);
 
-			phpgwapi_cache::session_set('frontend', 'tab', $selected);
+			Cache::session_set('frontend', 'tab', $selected);
 
 			// Get header state
-			$this->header_state = phpgwapi_cache::session_get('frontend', 'header_state');
+			$this->header_state = Cache::session_get('frontend', 'header_state');
 			$this->header_state['use_fellesdata'] = $use_fellesdata;
 			$this->header_state['logo_path'] = $logo_path;
 			$this->header_state['form_action'] = $tabs[$selected]['link'];
@@ -189,7 +189,7 @@
 					$property_locations_update = true;
 
 					$noframework = false; // In regular frames
-					phpgwapi_cache::session_set('frontend', 'noframework', $noframework); // Store mode on session
+					Cache::session_set('frontend', 'noframework', $noframework); // Store mode on session
 					$GLOBALS['phpgw_info']['flags']['menu_selection'] = "frontend::{$selected}";
 					$this->insert_links_on_header_state();
 				}
@@ -274,7 +274,7 @@
 					$this->header_state['selected_total_price'] = number_format($totals['sum_total_price'], 2, ",", " ") . " " . lang('currency');
 					$this->header_state['selected_total_area'] = number_format($totals['sum_total_area'], 2, ",", " ") . " " . lang('square_meters');
 
-					phpgwapi_cache::session_set('frontend', 'header_state', $this->header_state);
+					Cache::session_set('frontend', 'header_state', $this->header_state);
 				}
 				else
 				{
@@ -282,12 +282,12 @@
 					$this->header_state['selected_location'] = $param_selected_location;
 					$this->header_state['selected_total_price'] = lang('no_selection');
 					$this->header_state['selected_total_area'] = lang('no_selection');
-					phpgwapi_cache::session_set('frontend', 'header_state', $this->header_state);
+					Cache::session_set('frontend', 'header_state', $this->header_state);
 				}
 
-				phpgwapi_cache::session_clear('frontend', 'contract_state');
-				phpgwapi_cache::session_clear('frontend', 'contract_state_in');
-				phpgwapi_cache::session_clear('frontend', 'contract_state_ex');
+				Cache::session_clear('frontend', 'contract_state');
+				Cache::session_clear('frontend', 'contract_state_in');
+				Cache::session_clear('frontend', 'contract_state_ex');
 			}
 			/* Store the header state on the session */
 			$bomessenger = CreateObject('messenger.bomessenger');
@@ -307,7 +307,7 @@
 				'cellphone' => $GLOBALS['phpgw_info']['user']['preferences']['common']['cellphone']
 				);
 
-			phpgwapi_cache::session_set('frontend', 'header_state', $this->header_state);
+			Cache::session_set('frontend', 'header_state', $this->header_state);
 
 			phpgwapi_css::getInstance()->add_external_file("frontend/templates/{$GLOBALS['phpgw_info']['user']['preferences']['common']['template_set']}/css/base.css");
 			$GLOBALS['phpgw_info']['flags']['noframework'] = true;
@@ -362,14 +362,14 @@
 				}
 			}
 
-			$extra_tabs = phpgwapi_cache::session_get('frontend', 'extra_tabs');
+			$extra_tabs = Cache::session_get('frontend', 'extra_tabs');
 
 			if (isset($extra_tabs) && $extra_tabs)
 			{
 				$tabs = $extra_tabs + $tabs;
 			}
 
-			phpgwapi_cache::session_clear('frontend', 'extra_tabs');
+			Cache::session_clear('frontend', 'extra_tabs');
 
 			return $tabs;
 		}

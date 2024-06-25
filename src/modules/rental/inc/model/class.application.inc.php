@@ -250,7 +250,7 @@
 				{
 					if(!property_exists('rental_application', $field))
 					{
-					   phpgwapi_cache::message_set('$'."{$field}", 'error');
+					   Cache::message_set('$'."{$field}", 'error');
 					}
 
 				}

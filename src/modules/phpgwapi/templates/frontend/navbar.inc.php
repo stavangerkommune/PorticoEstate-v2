@@ -13,7 +13,7 @@
 
 		if (true)
 		{
-//			$bookmarks = phpgwapi_cache::user_get('phpgwapi', "bookmark_menu", $GLOBALS['phpgw_info']['user']['id']);
+//			$bookmarks = Cache::user_get('phpgwapi', "bookmark_menu", $GLOBALS['phpgw_info']['user']['id']);
 			$lang_bookmarks = lang('bookmarks');
 
 			$navigation = execMethod('phpgwapi.menu.get', 'navigation');
@@ -40,9 +40,9 @@ HTML;
 
 		$GLOBALS['phpgw']->hooks->process('after_navbar');
 
-		if( Sanitizer::get_var('phpgw_return_as') != 'json' && $receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
+		if( Sanitizer::get_var('phpgw_return_as') != 'json' && $receipt = Cache::session_get('phpgwapi', 'phpgw_messages'))
 		{
-			phpgwapi_cache::session_clear('phpgwapi', 'phpgw_messages');
+			Cache::session_clear('phpgwapi', 'phpgw_messages');
 			$msgbox_data = $GLOBALS['phpgw']->common->msgbox_data($receipt);
 			$msgbox_data = $GLOBALS['phpgw']->common->msgbox($msgbox_data);
 			foreach($msgbox_data as & $message)
@@ -137,7 +137,7 @@ HTML;
 		$GLOBALS['phpgw']->template->set_root(PHPGW_TEMPLATE_DIR);
 		$GLOBALS['phpgw']->template->set_file('footer', 'footer.tpl');
 
-		$footer_info = phpgwapi_cache::session_get('phpgwapi', 'footer_info');
+		$footer_info = Cache::session_get('phpgwapi', 'footer_info');
 		$var = array
 		(
 			'footer_info'	=> $footer_info, //'Bergen kommune | R&aring;dhusgt 10 | Postboks 7700 | 5020 Bergen',

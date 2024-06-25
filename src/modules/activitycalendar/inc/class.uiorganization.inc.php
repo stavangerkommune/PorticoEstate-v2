@@ -168,7 +168,7 @@
 					$contact1['org_id'] = $new_org_id;
 					$so_activity->add_contact_person_org($contact1);
 
-					phpgwapi_cache::message_set(lang('messages_saved_form'), 'message');
+					Cache::message_set(lang('messages_saved_form'), 'message');
 
 					//get affected activities and update with new org id
 					$update_activities = $so_activity->get_activities_for_update($id);
@@ -188,7 +188,7 @@
 				}
 				else
 				{
-					phpgwapi_cache::message_set(lang('messages_form_error'), 'error');
+					Cache::message_set(lang('messages_form_error'), 'error');
 				}
 				phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uidashboard.index'));
 			}
@@ -208,7 +208,7 @@
 				}
 				else
 				{
-					phpgwapi_cache::message_set(lang('messages_form_error'), 'error');
+					Cache::message_set(lang('messages_form_error'), 'error');
 				}
 				phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uidashboard.index'));
 			}
@@ -290,7 +290,7 @@
 				$contact2['org_id'] = $original_org_id;
 				$so_activity->add_contact_person_org($contact2);
 
-				phpgwapi_cache::message_set(lang('messages_saved_form'), 'message');
+				Cache::message_set(lang('messages_saved_form'), 'message');
 
 				//set local organization as stored
 				$org->set_change_type("added");

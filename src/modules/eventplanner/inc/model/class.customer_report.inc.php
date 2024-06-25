@@ -126,7 +126,7 @@
 				{
 					if (!property_exists('eventplanner_customer_report', $field))
 					{
-						phpgwapi_cache::message_set('$' . "{$field},", 'error');
+						Cache::message_set('$' . "{$field},", 'error');
 					}
 				}
 			}

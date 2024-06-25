@@ -243,7 +243,7 @@
 				{
 					if (!property_exists('eventplanner_booking', $field))
 					{
-						phpgwapi_cache::message_set('$' . "{$field},", 'error');
+						Cache::message_set('$' . "{$field},", 'error');
 					}
 				}
 			}
@@ -299,7 +299,7 @@
 			$test_total_tecords = 0;
 			if ($entity->customer_id && $entity->customer_id != $orig_customer_id)
 			{
-				$last_booking = (int)phpgwapi_cache::system_get('eventplanner', "last_booking{$entity->customer_id}");
+				$last_booking = (int)Cache::system_get('eventplanner', "last_booking{$entity->customer_id}");
 				$config = CreateObject('phpgwapi.config', 'eventplanner')->read();
 				$booking_interval = !empty($config['booking_interval']) ? (int)$config['booking_interval'] : 0;
 

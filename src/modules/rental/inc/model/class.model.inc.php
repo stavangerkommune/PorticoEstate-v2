@@ -246,7 +246,7 @@
 			$this->doValidate( $this, $errors);
 			foreach ($errors as $key => $message)
 			{
-				phpgwapi_cache::message_set($message, 'error');
+				Cache::message_set($message, 'error');
 			}
 			return $errors ? false : true;
 		}

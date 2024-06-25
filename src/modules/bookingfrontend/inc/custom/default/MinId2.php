@@ -75,11 +75,11 @@
 							'orgname' => $this->get_orgname_from_db($org['orgnr'], $org['customer_ssn'], $org['org_id'])
 							);
 					}
-					phpgwapi_cache::session_set($this->get_module(), self::ORGARRAY_SESSION_KEY, $orgs);
+					Cache::session_set($this->get_module(), self::ORGARRAY_SESSION_KEY, $orgs);
 				}
 				elseif (count($bregorgs) == 1)
 				{
-					phpgwapi_cache::session_set($this->get_module(), self::ORGARRAY_SESSION_KEY, NULL);
+					Cache::session_set($this->get_module(), self::ORGARRAY_SESSION_KEY, NULL);
 					$external_user = (object)'ciao';
 					$external_user->login = $bregorgs[0]['orgnr'];
 				}

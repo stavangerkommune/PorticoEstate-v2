@@ -103,9 +103,9 @@
 			}
 
 			$msgbox_data = array();
-			if (Sanitizer::get_var('phpgw_return_as') != 'json' && $receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
+			if (Sanitizer::get_var('phpgw_return_as') != 'json' && $receipt = Cache::session_get('phpgwapi', 'phpgw_messages'))
 			{
-				phpgwapi_cache::session_clear('phpgwapi', 'phpgw_messages');
+				Cache::session_clear('phpgwapi', 'phpgw_messages');
 				$msgbox_data = $GLOBALS['phpgw']->common->msgbox_data($receipt);
 				$msgbox_data = $GLOBALS['phpgw']->common->msgbox($msgbox_data);
 			}
@@ -382,7 +382,7 @@ JS;
 				if (!$GLOBALS['phpgw']->acl->check('.admin', ACL_EDIT, 'property'))
 				{
 					$receipt['error'][] = true;
-					phpgwapi_cache::message_set(lang('you are not approved for this task'), 'error');
+					Cache::message_set(lang('you are not approved for this task'), 'error');
 				}
 				if (!$receipt['error'])
 				{
@@ -406,9 +406,9 @@ JS;
 
 			if (Sanitizer::get_var('phpgw_return_as') == 'json')
 			{
-				if ($receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
+				if ($receipt = Cache::session_get('phpgwapi', 'phpgw_messages'))
 				{
-					phpgwapi_cache::session_clear('phpgwapi', 'phpgw_messages');
+					Cache::session_clear('phpgwapi', 'phpgw_messages');
 					$result['receipt'] = $receipt;
 				}
 				else

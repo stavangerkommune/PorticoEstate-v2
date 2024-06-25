@@ -69,7 +69,7 @@
 			if (!($GLOBALS['phpgw']->acl->check('run', Acl::READ, 'admin') || $GLOBALS['phpgw']->acl->check('admin', Acl::ADD, 'booking') || $this->bo->has_role(booking_sopermission::ROLE_MANAGER)))
 			{
 				//$this->flash_form_errors(array('access_denied' => lang("Access denied")));
-				phpgwapi_cache::message_set(lang('Access denied'), 'error');
+				Cache::message_set(lang('Access denied'), 'error');
 				$this->redirect_to('index', $filter_params);
 			}
 			//This will read all of the list data using the values of the standard search filters in the ui index view
@@ -78,7 +78,7 @@
 			if (!is_array($exports) || count($exports['results']) <= 0)
 			{
 				//$this->flash_form_errors(array('empty_list' => lang("Cannot generate files from empty list")));
-				phpgwapi_cache::message_set(lang('Cannot generate files from empty list'), 'error');
+				Cache::message_set(lang('Cannot generate files from empty list'), 'error');
 				$this->redirect_to('index', $filter_params);
 			}
 
@@ -88,7 +88,7 @@
 			}
 
 			//$this->flash_form_errors(array('already_generated' => lang("The invoice data in this list already has generated files")));
-			phpgwapi_cache::message_set(lang('The invoice data in this list already has generated files'), 'error');
+			Cache::message_set(lang('The invoice data in this list already has generated files'), 'error');
 			$this->redirect_to('index', $filter_params);
 		}
 
@@ -429,7 +429,7 @@
 			}
 			else
 			{
-				phpgwapi_cache::message_set(lang('Access denied'), 'error');
+				Cache::message_set(lang('Access denied'), 'error');
 			}
 
 			self::redirect(array('menuaction' => 'booking.uicompleted_reservation.index'));
@@ -467,7 +467,7 @@
 //			$this->flash_form_errors($export_errors);
 			foreach ($export_errors as $key => $value)
 			{
-				phpgwapi_cache::message_set($value, 'error');
+				Cache::message_set($value, 'error');
 			}
 			$this->redirect_to('index', $redirect_params);
 		}
@@ -508,7 +508,7 @@
 
 			foreach ($errors as $key => $value)
 			{
-				phpgwapi_cache::message_set($value, 'error');
+				Cache::message_set($value, 'error');
 			}
 
 			$this->pre_validate($export);

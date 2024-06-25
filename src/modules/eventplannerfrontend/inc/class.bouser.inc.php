@@ -106,7 +106,7 @@
 
 		public function change_org( $orgnumber )
 		{
-			$orgs = phpgwapi_cache::session_get($this->get_module(), self::ORGARRAY_SESSION_KEY);
+			$orgs = Cache::session_get($this->get_module(), self::ORGARRAY_SESSION_KEY);
 			$orglist = array();
 			foreach ($orgs as $org)
 			{
@@ -211,24 +211,24 @@
 				throw new LogicException('Cannot write orgnr to session unless user is logged on');
 			}
 
-			phpgwapi_cache::session_set($this->get_module(), self::ORGNR_SESSION_KEY, $this->get_user_orgnr());
+			Cache::session_set($this->get_module(), self::ORGNR_SESSION_KEY, $this->get_user_orgnr());
 		}
 
 		protected function clear_user_orgnr_from_session()
 		{
-			phpgwapi_cache::session_clear($this->get_module(), self::ORGNR_SESSION_KEY);
+			Cache::session_clear($this->get_module(), self::ORGNR_SESSION_KEY);
 		}
 
 		protected function clear_user_orglist_from_session()
 		{
-#			phpgwapi_cache::session_clear($this->get_module(), self::ORGARRAY_SESSION_KEY);
+#			Cache::session_clear($this->get_module(), self::ORGARRAY_SESSION_KEY);
 		}
 
 		protected function get_user_orgnr_from_session()
 		{
 			try
 			{
-				return createObject('booking.sfValidatorNorwegianOrganizationNumber')->clean(phpgwapi_cache::session_get($this->get_module(), self::ORGNR_SESSION_KEY));
+				return createObject('booking.sfValidatorNorwegianOrganizationNumber')->clean(Cache::session_get($this->get_module(), self::ORGNR_SESSION_KEY));
 			}
 			catch (sfValidatorError $e)
 			{

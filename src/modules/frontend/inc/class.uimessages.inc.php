@@ -17,8 +17,8 @@
 				'link' => phpgw::link('/', array('menuaction' => "frontend.uimessages.index",
 					'noframework' => $noframework))
 			);
-			phpgwapi_cache::session_set('frontend', 'extra_tabs', $extra_tabs);
-			phpgwapi_cache::session_set('frontend', 'tab', 0);
+			Cache::session_set('frontend', 'extra_tabs', $extra_tabs);
+			Cache::session_set('frontend', 'tab', 0);
 			parent::__construct();
 		}
 

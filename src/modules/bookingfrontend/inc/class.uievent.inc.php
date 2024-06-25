@@ -195,7 +195,7 @@ class bookingfrontend_uievent extends booking_uievent
 
                     $change_status = $free_up_time ? false : 'PENDING';
                     $this->application_ui->add_comment_to_application($event['application_id'], $comment, $change_status, $this->customer_name);
-                    phpgwapi_cache::message_set(lang('Request for changed time') . '</br>' . lang('Follow status'));
+                    Cache::message_set(lang('Request for changed time') . '</br>' . lang('Follow status'));
                 }
             }
 
@@ -205,7 +205,7 @@ class bookingfrontend_uievent extends booking_uievent
                     $comment = "ID: " . $event['id'] . " " . lang("User has changed field for equipment") . ' ' . $event['equipment'];
 
                     $this->application_ui->add_comment_to_application($event['application_id'], $comment, false, $this->customer_name);
-                    phpgwapi_cache::message_set(lang('Request for equipment has been sent') . '</br>' . lang('Follow status'));
+                    Cache::message_set(lang('Request for equipment has been sent') . '</br>' . lang('Follow status'));
 
                 }
             }
@@ -329,7 +329,7 @@ class bookingfrontend_uievent extends booking_uievent
         $currdate = new DateTime(Sanitizer::get_var('date'));
         $cdate = $currdate->format('Y-m-d H:m:s');
         if ($config->config_data['user_can_delete_events'] != 'yes') {
-            phpgwapi_cache::message_set('user can not delete events', 'error');
+            Cache::message_set('user can not delete events', 'error');
 
             $can_delete_events = 0;
         } else {

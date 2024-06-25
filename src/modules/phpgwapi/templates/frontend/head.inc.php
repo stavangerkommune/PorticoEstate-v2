@@ -51,7 +51,7 @@ JS;
 	{
 		$old_ie = true;
 		$message = lang('outdated browser: %1', $_SERVER['HTTP_USER_AGENT']);
-		phpgwapi_cache::message_set($message, 'error');
+		Cache::message_set($message, 'error');
 	}
 
 	$stylesheets = array();
@@ -173,7 +173,7 @@ JS;
 		$footer_info = "footer info settes i {$app} config";
 	}
 
-   phpgwapi_cache::session_set('phpgwapi', 'footer_info', $footer_info);
+   Cache::session_set('phpgwapi', 'footer_info', $footer_info);
 
 	$test = $GLOBALS['phpgw']->common->get_on_events();
     $test = str_replace('window.onload = function()','$(document).ready(function()',$test);

@@ -107,32 +107,32 @@
 
 			if($control_area_id)
 			{
-				phpgwapi_cache::user_set('controller', "calendar_control_area_id", $control_area_id, $user_id);
+				Cache::user_set('controller', "calendar_control_area_id", $control_area_id, $user_id);
 			}
 			else
 			{
-				$control_area_id = (int)phpgwapi_cache::user_get('controller', "calendar_control_area_id", $user_id);
+				$control_area_id = (int)Cache::user_get('controller', "calendar_control_area_id", $user_id);
 			}
 			if($control_id)
 			{
-				phpgwapi_cache::user_set('controller', "calendar_planner_control_id", $control_id, $user_id);
+				Cache::user_set('controller', "calendar_planner_control_id", $control_id, $user_id);
 			}
 			else
 			{
-				$control_id = (int)phpgwapi_cache::user_get('controller', "calendar_planner_control_id", $user_id);
+				$control_id = (int)Cache::user_get('controller', "calendar_planner_control_id", $user_id);
 			}
 
 			if($part_of_town_id)
 			{
-				phpgwapi_cache::user_set('controller', "calendar_planner_part_of_town", $part_of_town_id, $user_id);
+				Cache::user_set('controller', "calendar_planner_part_of_town", $part_of_town_id, $user_id);
 			}
 			else if ($_POST)
 			{
-				phpgwapi_cache::user_clear('controller', "calendar_planner_part_of_town", $user_id);
+				Cache::user_clear('controller', "calendar_planner_part_of_town", $user_id);
 			}
 			else
 			{
-				$part_of_town_id = (array)phpgwapi_cache::user_get('controller', "calendar_planner_part_of_town", $user_id);
+				$part_of_town_id = (array)Cache::user_get('controller', "calendar_planner_part_of_town", $user_id);
 			}
 
 			$entity_group_id = Sanitizer::get_var('entity_group_id', 'int');
@@ -1145,32 +1145,32 @@ HTML;
 
 			if($control_area_id)
 			{
-				phpgwapi_cache::user_set('controller', "calendar_control_area_id", $control_area_id, $user_id);
+				Cache::user_set('controller', "calendar_control_area_id", $control_area_id, $user_id);
 			}
 			else
 			{
-				$control_area_id = (int)phpgwapi_cache::user_get('controller', "calendar_control_area_id", $user_id);
+				$control_area_id = (int)Cache::user_get('controller', "calendar_control_area_id", $user_id);
 			}
 			if($control_id)
 			{
-				phpgwapi_cache::user_set('controller', "calendar_planner_control_id", $control_id, $user_id);
+				Cache::user_set('controller', "calendar_planner_control_id", $control_id, $user_id);
 			}
 			else
 			{
-				$control_id = (int)phpgwapi_cache::user_get('controller', "calendar_planner_control_id", $user_id);
+				$control_id = (int)Cache::user_get('controller', "calendar_planner_control_id", $user_id);
 			}
 
 			if($part_of_town_id)
 			{
-				phpgwapi_cache::user_set('controller', "calendar_planner_part_of_town", $part_of_town_id, $user_id);
+				Cache::user_set('controller', "calendar_planner_part_of_town", $part_of_town_id, $user_id);
 			}
 			else if ($_POST)
 			{
-				phpgwapi_cache::user_clear('controller', "calendar_planner_part_of_town", $user_id);
+				Cache::user_clear('controller', "calendar_planner_part_of_town", $user_id);
 			}
 			else
 			{
-				$part_of_town_id = (array)phpgwapi_cache::user_get('controller', "calendar_planner_part_of_town", $user_id);
+				$part_of_town_id = (array)Cache::user_get('controller', "calendar_planner_part_of_town", $user_id);
 			}
 
 			$entity_group_id = Sanitizer::get_var('entity_group_id', 'int');
@@ -1676,32 +1676,32 @@ HTML;
 
 			if($control_area_id)
 			{
-				phpgwapi_cache::user_set('controller', "calendar_control_area_id", $control_area_id, $user_id);
+				Cache::user_set('controller', "calendar_control_area_id", $control_area_id, $user_id);
 			}
 			else
 			{
-				$control_area_id = (int)phpgwapi_cache::user_get('controller', "calendar_control_area_id", $user_id);
+				$control_area_id = (int)Cache::user_get('controller', "calendar_control_area_id", $user_id);
 			}
 			if($control_id)
 			{
-				phpgwapi_cache::user_set('controller', "calendar_planner_control_id", $control_id, $user_id);
+				Cache::user_set('controller', "calendar_planner_control_id", $control_id, $user_id);
 			}
 			else
 			{
-				$control_id = (int)phpgwapi_cache::user_get('controller', "calendar_planner_control_id", $user_id);
+				$control_id = (int)Cache::user_get('controller', "calendar_planner_control_id", $user_id);
 			}
 
 			if($part_of_town_id)
 			{
-				phpgwapi_cache::user_set('controller', "calendar_planner_part_of_town", $part_of_town_id, $user_id);
+				Cache::user_set('controller', "calendar_planner_part_of_town", $part_of_town_id, $user_id);
 			}
 			else if ($_POST)
 			{
-				phpgwapi_cache::user_clear('controller', "calendar_planner_part_of_town", $user_id);
+				Cache::user_clear('controller', "calendar_planner_part_of_town", $user_id);
 			}
 			else
 			{
-				$part_of_town_id = (array)phpgwapi_cache::user_get('controller', "calendar_planner_part_of_town", $user_id);
+				$part_of_town_id = (array)Cache::user_get('controller', "calendar_planner_part_of_town", $user_id);
 			}
 
 			$entity_group_id = Sanitizer::get_var('entity_group_id', 'int');
@@ -1926,32 +1926,32 @@ HTML;
 
 			if($control_area_id)
 			{
-				phpgwapi_cache::user_set('controller', "calendar_control_area_id", $control_area_id, $user_id);
+				Cache::user_set('controller', "calendar_control_area_id", $control_area_id, $user_id);
 			}
 			else
 			{
-				$control_area_id = (int)phpgwapi_cache::user_get('controller', "calendar_control_area_id", $user_id);
+				$control_area_id = (int)Cache::user_get('controller', "calendar_control_area_id", $user_id);
 			}
 			if($control_id)
 			{
-				phpgwapi_cache::user_set('controller', "calendar_planner_control_id", $control_id, $user_id);
+				Cache::user_set('controller', "calendar_planner_control_id", $control_id, $user_id);
 			}
 			else
 			{
-				$control_id = (int)phpgwapi_cache::user_get('controller', "calendar_planner_control_id", $user_id);
+				$control_id = (int)Cache::user_get('controller', "calendar_planner_control_id", $user_id);
 			}
 
 			if($part_of_town_id)
 			{
-				phpgwapi_cache::user_set('controller', "calendar_planner_part_of_town", $part_of_town_id, $user_id);
+				Cache::user_set('controller', "calendar_planner_part_of_town", $part_of_town_id, $user_id);
 			}
 			else if ($_POST)
 			{
-				phpgwapi_cache::user_clear('controller', "calendar_planner_part_of_town", $user_id);
+				Cache::user_clear('controller', "calendar_planner_part_of_town", $user_id);
 			}
 			else
 			{
-				$part_of_town_id = (array)phpgwapi_cache::user_get('controller', "calendar_planner_part_of_town", $user_id);
+				$part_of_town_id = (array)Cache::user_get('controller', "calendar_planner_part_of_town", $user_id);
 			}
 
 			$entity_group_id = Sanitizer::get_var('entity_group_id', 'int');

@@ -49,7 +49,7 @@
 			$this->acl = Acl::getInstance();
 			$this->acl_read = $this->acl->check($this->acl_location, ACL_READ, 'frontend');
 
-			phpgwapi_cache::session_set('frontend', 'tab', $this->location_id);
+			Cache::session_set('frontend', 'tab', $this->location_id);
 			parent::__construct();
 			$this->location_code = $this->header_state['selected_location'];
 			$GLOBALS['phpgw']->translation->add_app('controller');
@@ -90,7 +90,7 @@
 
 			$user_id = $GLOBALS['phpgw_info']['user']['account_id'];
 
-			$control_id = (int)phpgwapi_cache::user_get('controller', "calendar_planner_control_id", $user_id);
+			$control_id = (int)Cache::user_get('controller', "calendar_planner_control_id", $user_id);
 
 
 			$search_option = array(array('id' => '', 'name' => lang('select')));
@@ -195,8 +195,8 @@
 				)
 			);
 
-			$msglog = phpgwapi_cache::session_get('frontend', 'msgbox');
-			phpgwapi_cache::session_clear('frontend', 'msgbox');
+			$msglog = Cache::session_get('frontend', 'msgbox');
+			Cache::session_clear('frontend', 'msgbox');
 
 			$data = array(
 				'header' => $this->header_state,
@@ -215,7 +215,7 @@
 
 		public function query()
 		{
-			phpgwapi_cache::session_clear('frontend', 'msgbox');
+			Cache::session_clear('frontend', 'msgbox');
 
 			$so = CreateObject('controller.socheck_list');
 			
@@ -229,11 +229,11 @@
 
 			if($control_id)
 			{
-				phpgwapi_cache::user_set('controller', "calendar_planner_control_id", $control_id, $user_id);
+				Cache::user_set('controller', "calendar_planner_control_id", $control_id, $user_id);
 			}
 			else
 			{
-				$control_id = (int)phpgwapi_cache::user_get('controller', "calendar_planner_control_id", $user_id);				
+				$control_id = (int)Cache::user_get('controller', "calendar_planner_control_id", $user_id);				
 			}
 			
 			$params = array(

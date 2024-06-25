@@ -42,7 +42,7 @@
 		var $location_code,$start,$query,$sort,$order,$filter;
 		public function __construct()
 		{
-			phpgwapi_cache::session_set('frontend', 'tab', $GLOBALS['phpgw']->locations->get_id('frontend', '.drawings'));
+			Cache::session_set('frontend', 'tab', $GLOBALS['phpgw']->locations->get_id('frontend', '.drawings'));
 			parent::__construct();
 			$this->location_code = $this->header_state['selected_location'];
 		}
@@ -100,8 +100,8 @@
 				}
 			}
 
-			$msglog = phpgwapi_cache::session_get('frontend', 'msgbox');
-			phpgwapi_cache::session_clear('frontend', 'msgbox');
+			$msglog = Cache::session_get('frontend', 'msgbox');
+			Cache::session_clear('frontend', 'msgbox');
 
 			$datatable_def[] = array
 				(

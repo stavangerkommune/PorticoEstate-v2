@@ -36,7 +36,7 @@
 			if (isset($filter))
 			{
 				$this->contract_filter = $filter;
-				phpgwapi_cache::session_set('frontend', 'contract_filter', $filter);
+				Cache::session_set('frontend', 'contract_filter', $filter);
 
 				// ... if the user changes filter that may cause the
 				if ($filter == 'active' || $filter == 'not_active')
@@ -46,7 +46,7 @@
 			}
 			else
 			{
-				$filter = phpgwapi_cache::session_get('frontend', 'contract_filter');
+				$filter = Cache::session_get('frontend', 'contract_filter');
 				$this->contract_filter = isset($filter) && $filter ? $filter : 'active';
 			}
 
@@ -96,7 +96,7 @@
 			// If the user wants to view another contract connected to this location
 			// Request parameter: the user wants to view details about anther contract
 			// The current state of the contract view of this user's session
-			$this->contract_state = phpgwapi_cache::session_get('frontend', $this->contract_state_identifier);
+			$this->contract_state = Cache::session_get('frontend', $this->contract_state_identifier);
 			$new_contract = Sanitizer::get_var('contract_id');
 
 			$contracts_per_location = $this->get_contracts_per_location();
@@ -124,7 +124,7 @@
 						$this->contract_state['selected'] = $contract->get_id();
 						$this->contract_state['contract'] = $contract;
 						//$this->contract = rental_socontract::get_instance()->get_single($new_contract);
-						phpgwapi_cache::session_set('frontend', $this->contract_state_identifier, $this->contract_state);
+						Cache::session_set('frontend', $this->contract_state_identifier, $this->contract_state);
 						$change_contract = false;
 						//Get more details on contract parties
 						$parties = rental_soparty::get_instance()->get(0, 0, '', false, '', '', array(
@@ -210,11 +210,11 @@
 
 			if (($org_unit == 'all' || $org_unit == 'none') || !$location_code)
 			{
-				phpgwapi_cache::message_set('Velg organisasjon', 'error');
+				Cache::message_set('Velg organisasjon', 'error');
 				return array();
 			}
 
-			$values = phpgwapi_cache::session_get('frontend', $this->contracts_per_location_identifier);
+			$values = Cache::session_get('frontend', $this->contracts_per_location_identifier);
 
 			if (isset($values[$org_unit][$location_code]))
 			{
@@ -297,9 +297,9 @@
 					}
 				}
 			}
-			phpgwapi_cache::session_set('frontend', 'contracts_per_location', $contracts_per_location);
-			phpgwapi_cache::session_set('frontend', 'contracts_in_per_location', $contracts_in_per_location);
-			phpgwapi_cache::session_set('frontend', 'contracts_ex_per_location', $contracts_ex_per_location);
+			Cache::session_set('frontend', 'contracts_per_location', $contracts_per_location);
+			Cache::session_set('frontend', 'contracts_in_per_location', $contracts_in_per_location);
+			Cache::session_set('frontend', 'contracts_ex_per_location', $contracts_ex_per_location);
 
 			$values = array(
 				'contracts_per_location' => $contracts_per_location,

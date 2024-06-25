@@ -112,7 +112,7 @@
 				{
 					if ($e)
 					{
-						phpgwapi_cache::message_set($e->getMessage(), 'error');
+						Cache::message_set($e->getMessage(), 'error');
 						$this->index();
 						return;					
 					}

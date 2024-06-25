@@ -164,7 +164,7 @@
 			switch ($query_type)
 			{
 				default: // ... all composites, filters (active and vacant)
-					phpgwapi_cache::session_set('logistic', 'requirement_query', $search_for);
+					Cache::session_set('logistic', 'requirement_query', $search_for);
 					$filters = array('activity' => $activity_id);
 					$result_objects = $this->so->get($start_index, (int)$num_of_objects, $sort_field, $sort_ascending, $search_for, $search_type, $filters, $params['allrows']);
 					$object_count = $this->so->get_count($search_for, $search_type, $filters);
@@ -1092,7 +1092,7 @@
 		{
 			if (!$this->add && !$this->edit)
 			{
-				phpgwapi_cache::message_set('No access', 'error');
+				Cache::message_set('No access', 'error');
 			}
 
 			$assign_requirement_json = str_replace('&quot;', '"', Sanitizer::get_var('assign_requirement'));

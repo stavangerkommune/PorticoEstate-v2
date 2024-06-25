@@ -98,12 +98,12 @@
 					)))
 				{
 					$message = lang('failed to remove directory') . ' :' . $dir;
-					phpgwapi_cache::message_set($message, 'error');
+					Cache::message_set($message, 'error');
 				}
 				else
 				{
 					$message = lang('directory deleted') . ' :' . $dir;
-					phpgwapi_cache::message_set($message, 'message');
+					Cache::message_set($message, 'message');
 				}
 				$this->vfs->override_acl = 0;
 			}
@@ -155,12 +155,12 @@
 				)))
 			{
 				$message = lang('failed to create directory') . ' :' . $dir;
-				phpgwapi_cache::message_set($message, 'error');
+				Cache::message_set($message, 'error');
 			}
 			else
 			{
 				$message = lang('directory created') . ' :' . $dir;
-				phpgwapi_cache::message_set($message, 'message');
+				Cache::message_set($message, 'message');
 				$ok = true;
 			}
 			$this->vfs->override_acl = 0;

@@ -162,10 +162,10 @@
 					}
 					break;
 				default: // ... get all parties of a given type
-					phpgwapi_cache::session_set('rental', 'party_query', $search_for);
-					phpgwapi_cache::session_set('rental', 'party_search_type', $search_type);
-					phpgwapi_cache::session_set('rental', 'party_type', $party_type);
-					phpgwapi_cache::session_set('rental', 'party_status', $active);
+					Cache::session_set('rental', 'party_query', $search_for);
+					Cache::session_set('rental', 'party_search_type', $search_type);
+					Cache::session_set('rental', 'party_type', $party_type);
+					Cache::session_set('rental', 'party_status', $active);
 					$filters = array('party_type' => $party_type, 'active' => $active);
 					break;
 			}
@@ -1009,12 +1009,12 @@ JS;
 
 				if (rental_soparty::get_instance()->store($party)) // ... and then try to store the object
 				{
-					phpgwapi_cache::message_set(lang('messages_saved_form'), 'message');
+					Cache::message_set(lang('messages_saved_form'), 'message');
 					$party_id = $party->get_id();
 				}
 				else
 				{
-					phpgwapi_cache::message_set(lang('messages_form_error'), 'error');
+					Cache::message_set(lang('messages_form_error'), 'error');
 				}
 			}
 
@@ -1416,13 +1416,13 @@ JS;
 					$validator = CreateObject('phpgwapi.EmailAddressValidator');
 					if (!$validator->check_email_address($email))
 					{
-						phpgwapi_cache::message_set(lang('error_create_user_based_on_email_not_valid_address'), 'error');
+						Cache::message_set(lang('error_create_user_based_on_email_not_valid_address'), 'error');
 						$this->edit();
 						return;
 					}
 					if ($GLOBALS['phpgw']->accounts->exists($email))
 					{
-						phpgwapi_cache::message_set(lang('error_create_user_based_on_email_account_exist'), 'error');
+						Cache::message_set(lang('error_create_user_based_on_email_account_exist'), 'error');
 						$this->edit();
 						return;
 					}
@@ -1471,7 +1471,7 @@ JS;
 					catch (Exception $e)
 					{
 
-						phpgwapi_cache::message_set($e->getMessage(), 'error');
+						Cache::message_set($e->getMessage(), 'error');
 						$this->edit();
 						return;
 					}
@@ -1497,7 +1497,7 @@ JS;
 						//Redirect with sucess message if receipt is ok
 						if ($rcpt)
 						{
-							phpgwapi_cache::message_set(lang('success_create_user_based_on_email'), 'message');
+							Cache::message_set(lang('success_create_user_based_on_email'), 'message');
 							$this->edit();
 							return;
 						}
@@ -1505,7 +1505,7 @@ JS;
 				}
 			}
 
-			phpgwapi_cache::message_set(lang('error_create_user_based_on_email'), 'error');
+			Cache::message_set(lang('error_create_user_based_on_email'), 'error');
 			$this->edit();
 			return;
 		}

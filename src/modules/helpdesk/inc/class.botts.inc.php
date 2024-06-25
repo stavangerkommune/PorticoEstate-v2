@@ -176,13 +176,13 @@
 		{
 			if ($this->use_session)
 			{
-				$data = phpgwapi_cache::session_set('helpdesk', 'session_data',$data);
+				$data = Cache::session_set('helpdesk', 'session_data',$data);
 			}
 		}
 
 		function read_sessiondata()
 		{
-			$data = phpgwapi_cache::session_get('helpdesk', 'session_data');
+			$data = Cache::session_get('helpdesk', 'session_data');
 
 			if(empty($data) || !is_array($data))
 			{

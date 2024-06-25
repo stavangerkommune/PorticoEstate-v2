@@ -269,7 +269,7 @@
 					$this->bo->copy_boundaries($id, $receipt['id']);
 					$this->bo->copy_wtemplate($id, $receipt['id']);
 					$GLOBALS['phpgw']->db->transaction_commit();
-					phpgwapi_cache::message_set(lang('season %1 copied to %2', $id, $receipt['id']));
+					Cache::message_set(lang('season %1 copied to %2', $id, $receipt['id']));
 					self::redirect(array('menuaction' => 'booking.uiseason.edit', 'id' => $receipt['id']));
 				}
 				catch (booking_unauthorized_exception $e)

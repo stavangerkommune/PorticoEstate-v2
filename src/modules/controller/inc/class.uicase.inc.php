@@ -110,9 +110,9 @@
 			if (Sanitizer::get_var('noframework', 'bool'))
 			{
 				$GLOBALS['phpgw_info']['flags']['noframework'] = true;
-				phpgwapi_cache::session_set('controller', 'noframework', true);
+				Cache::session_set('controller', 'noframework', true);
 			}
-			else if (phpgwapi_cache::session_get('controller', 'noframework'))
+			else if (Cache::session_get('controller', 'noframework'))
 			{
 				$GLOBALS['phpgw_info']['flags']['noframework'] = true;
 			}
@@ -1557,7 +1557,7 @@ JS;
 
 			if (!$this->add && !$this->edit)
 			{
-				phpgwapi_cache::message_set('No access', 'error');
+				Cache::message_set('No access', 'error');
 				self::redirect(array('menuaction' => 'controller.uicheck_list.edit_check_list',
 					'check_list_id' => $check_list_id));
 			}
@@ -1746,7 +1746,7 @@ JS;
 						)))
 					{
 						$receipt['error'][] = array('msg' => lang('This file already exists !'));
-						phpgwapi_cache::message_set($file_name . ': ' . lang('This file already exists !'), 'error');
+						Cache::message_set($file_name . ': ' . lang('This file already exists !'), 'error');
 					}
 					else
 					{
@@ -1758,7 +1758,7 @@ JS;
 								'to' => $to_file,
 								'relatives' => array(RELATIVE_NONE, RELATIVE_NONE))))
 						{
-							phpgwapi_cache::message_set($file_name . ': ' . lang('Failed to upload file !'), 'error');
+							Cache::message_set($file_name . ': ' . lang('Failed to upload file !'), 'error');
 						}
 						$bofiles->vfs->override_acl = 0;
 					}

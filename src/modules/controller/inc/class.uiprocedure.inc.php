@@ -216,7 +216,7 @@
 
 			if ($procedure->get_procedure_id())
 			{
-				phpgwapi_cache::message_set(lang('Do not edit archived version' ), 'error');
+				Cache::message_set(lang('Do not edit archived version' ), 'error');
 				phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.view',
 					'id' => $procedure_id));
 			}
@@ -230,7 +230,7 @@
 			{
 				if (!$this->add && !$this->edit)
 				{
-					phpgwapi_cache::message_set('No access', 'error');
+					Cache::message_set('No access', 'error');
 					phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.view',
 						'id' => $procedure_id));
 				}
@@ -238,7 +238,7 @@
 				$start_date = Sanitizer::get_var('start_date', 'date');
 				if (!$start_date)
 				{
-					phpgwapi_cache::message_set(lang('missing start date'), 'error');
+					Cache::message_set(lang('missing start date'), 'error');
 					$error = true;
 				}
 
@@ -319,7 +319,7 @@
 			{
 				if (!$this->add && !$this->edit)
 				{
-					phpgwapi_cache::message_set('No access', 'error');
+					Cache::message_set('No access', 'error');
 					phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uiprocedure.view',
 						'id' => $procedure_id));
 				}
@@ -826,7 +826,7 @@
 			switch ($query_type)
 			{
 				default: // ... all composites, filters (active and vacant)
-					phpgwapi_cache::session_set('controller', 'procedure_query', $search_for);
+					Cache::session_set('controller', 'procedure_query', $search_for);
 					//$filters = array();
 					$result_objects = $this->so->get($start_index, $num_of_objects, $sort_field, $sort_ascending, $search_for, $search_type, $filters);
 					$object_count = $this->so->get_count($search_for, $search_type, $filters);

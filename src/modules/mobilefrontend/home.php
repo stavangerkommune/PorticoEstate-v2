@@ -38,13 +38,13 @@
 	if(Sanitizer::get_var('keep_alive', 'bool', 'GET')	&& Sanitizer::get_var('phpgw_return_as', 'string', 'GET') == 'json')
 	{
 		$now = time();
-		$keep_alive_timestamp = phpgwapi_cache::session_get('mobilefrontend', 'keep_alive_timestamp');
+		$keep_alive_timestamp = Cache::session_get('mobilefrontend', 'keep_alive_timestamp');
 		
 		// first check
 		if(!$keep_alive_timestamp)
 		{
 			$keep_alive_timestamp = $now;
-			phpgwapi_cache::session_set('mobilefrontend', 'keep_alive_timestamp', $keep_alive_timestamp);
+			Cache::session_set('mobilefrontend', 'keep_alive_timestamp', $keep_alive_timestamp);
 		}
 
 		$sessions_timeout = 7200; // 120 minutes
@@ -59,7 +59,7 @@
 		}
 		else
 		{
-			phpgwapi_cache::session_set('mobilefrontend', 'keep_alive_timestamp', $now);
+			Cache::session_set('mobilefrontend', 'keep_alive_timestamp', $now);
 			$ret = array('status' => 200);
 		}
 
@@ -126,12 +126,12 @@
 		}
 		$GLOBALS['phpgw']->preferences->save_repository();
 	}
-	if( phpgwapi_cache::system_get('phpgwapi', 'phpgw_home_screen_message'))
+	if( Cache::system_get('phpgwapi', 'phpgw_home_screen_message'))
 	{
 		echo "<div class='container'><div class='jumbotron'><h1>";
-		echo nl2br(phpgwapi_cache::system_get('phpgwapi', 'phpgw_home_screen_message_title'));
+		echo nl2br(Cache::system_get('phpgwapi', 'phpgw_home_screen_message_title'));
 		echo "</h1>";
-		echo nl2br(phpgwapi_cache::system_get('phpgwapi', 'phpgw_home_screen_message'));
+		echo nl2br(Cache::system_get('phpgwapi', 'phpgw_home_screen_message'));
 		echo '</div></div>';
 	}
 	$GLOBALS['phpgw']->common->phpgw_footer();

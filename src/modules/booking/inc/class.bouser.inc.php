@@ -196,7 +196,7 @@
 				}
 				else
 				{
-					phpgwapi_cache::message_set("{$customer['name']} validerer ikke, mangler komplett datasett", 'error');
+					Cache::message_set("{$customer['name']} validerer ikke, mangler komplett datasett", 'error');
 				}
 			}
 
@@ -256,7 +256,7 @@
 			{
 				if(empty($entry['zip_code']))
 				{
-					phpgwapi_cache::message_set("{$entry['name']} mangler PostNr", 'error');
+					Cache::message_set("{$entry['name']} mangler PostNr", 'error');
 					continue;
 				}
 
@@ -337,13 +337,13 @@
 			{
 				if($entry['customer_internal'])
 				{
-					phpgwapi_cache::message_set("{$entry['name']} er intern kunde", 'message');
+					Cache::message_set("{$entry['name']} er intern kunde", 'message');
 					continue;
 				}
 
 				if(empty($entry['zip_code']))
 				{
-					phpgwapi_cache::message_set("{$entry['name']} mangler PostNr", 'error');
+					Cache::message_set("{$entry['name']} mangler PostNr", 'error');
 					continue;
 				}
 

@@ -28,7 +28,7 @@
 	}
 
 	$userlang  = $selected_lang ? $selected_lang : $GLOBALS['phpgw_info']['user']['preferences']['common']['lang'];
-	$return_data = phpgwapi_cache::system_get('phpgwapi', "lang_{$userlang}", true);
+	$return_data = Cache::system_get('phpgwapi', "lang_{$userlang}", true);
 
 	header('Content-Type: application/json');
 	echo json_encode($return_data);

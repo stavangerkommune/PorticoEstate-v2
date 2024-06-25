@@ -371,18 +371,18 @@ JS;
 			$price_item->set_price_type_id(Sanitizer::get_var('price_type_id', 'int'));
 			if ($price_item->get_agresso_id() == null)
 			{
-				phpgwapi_cache::message_set(lang('missing_agresso_id'), 'error');
+				Cache::message_set(lang('missing_agresso_id'), 'error');
 			}
 			else
 			{
 				if (rental_soprice_item::get_instance()->store($price_item))
 				{
-					phpgwapi_cache::message_set(lang('messages_saved_form'), 'message');
+					Cache::message_set(lang('messages_saved_form'), 'message');
 					$price_item_id = $price_item->get_id();
 				}
 				else
 				{
-					phpgwapi_cache::message_set(lang('messages_form_error'), 'error');
+					Cache::message_set(lang('messages_form_error'), 'error');
 				}
 			}
 			$this->edit(array('price_item_id' => $price_item_id));

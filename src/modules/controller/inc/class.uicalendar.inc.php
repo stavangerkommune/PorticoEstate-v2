@@ -101,9 +101,9 @@
 			if (Sanitizer::get_var('noframework', 'bool'))
 			{
 				$GLOBALS['phpgw_info']['flags']['noframework'] = true;
-				phpgwapi_cache::session_set('controller', 'noframework', true);
+				Cache::session_set('controller', 'noframework', true);
 			}
-			else if (phpgwapi_cache::session_get('controller', 'noframework'))
+			else if (Cache::session_get('controller', 'noframework'))
 			{
 				$GLOBALS['phpgw_info']['flags']['noframework'] = true;
 			}
@@ -620,9 +620,9 @@
 				}
 
 				$msgbox_data = array();
-				if (Sanitizer::get_var('phpgw_return_as') != 'json' && $receipt = phpgwapi_cache::session_get('phpgwapi', 'phpgw_messages'))
+				if (Sanitizer::get_var('phpgw_return_as') != 'json' && $receipt = Cache::session_get('phpgwapi', 'phpgw_messages'))
 				{
-					phpgwapi_cache::session_clear('phpgwapi', 'phpgw_messages');
+					Cache::session_clear('phpgwapi', 'phpgw_messages');
 					$msgbox_data = $GLOBALS['phpgw']->common->msgbox_data($receipt);
 					$msgbox_data = $GLOBALS['phpgw']->common->msgbox($msgbox_data);
 				}
@@ -787,7 +787,7 @@
 
 			$user_id = $GLOBALS['phpgw_info']['user']['account_id'];
 
-			$bookmarks = phpgwapi_cache::user_get('controller', "location_bookmark", $user_id);
+			$bookmarks = Cache::user_get('controller', "location_bookmark", $user_id);
 			if (is_array($bookmarks))
 			{
 				$bookmark_locations = array_keys($bookmarks);
@@ -1077,7 +1077,7 @@
 			$user_id = $GLOBALS['phpgw_info']['user']['account_id'];
 
 			$bookmark_locations = array();
-			$bookmarks = phpgwapi_cache::user_get('controller', "location_bookmark", $user_id);
+			$bookmarks = Cache::user_get('controller', "location_bookmark", $user_id);
 			if (is_array($bookmarks))
 			{
 				$bookmark_locations = array_keys($bookmarks);
@@ -1525,7 +1525,7 @@
 			$location_code = Sanitizer::get_var('location_code', 'string');
 			$user_id = $GLOBALS['phpgw_info']['user']['account_id'];
 
-			$bookmarks = phpgwapi_cache::user_get('controller', "location_bookmark", $user_id);
+			$bookmarks = Cache::user_get('controller', "location_bookmark", $user_id);
 			if ($bookmarks && is_array($bookmarks) && isset($bookmarks[$location_code]))
 			{
 				unset($bookmarks[$location_code]);
@@ -1542,7 +1542,7 @@
 				$status = lang('added');
 			}
 
-			phpgwapi_cache::user_set('controller', "location_bookmark", $bookmarks, $user_id);
+			Cache::user_set('controller', "location_bookmark", $bookmarks, $user_id);
 
 			return array
 				(

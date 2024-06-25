@@ -218,7 +218,7 @@
 
 				default:
 					$message = lang('ERROR: illegal type %1', $type);
-					phpgwapi_cache::message_set($message, 'error');
+					Cache::message_set($message, 'error');
 					throw new Exception;
 			}
 

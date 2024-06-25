@@ -143,7 +143,7 @@
 
 			if (empty($arena))
 			{
-				phpgwapi_cache::message_set(lang('Could not find specified arena.'), 'error');
+				Cache::message_set(lang('Could not find specified arena.'), 'error');
 				phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiarena.index'));
 			}
 
@@ -311,11 +311,11 @@ JS;
 
 			if (activitycalendar_soarena::get_instance()->store($arena)) // ... and then try to store the object
 			{
-				phpgwapi_cache::message_set(lang('messages_saved_form'), 'message');
+				Cache::message_set(lang('messages_saved_form'), 'message');
 			}
 			else
 			{
-				phpgwapi_cache::message_set(lang('messages_form_error'), 'error');
+				Cache::message_set(lang('messages_form_error'), 'error');
 			}
 
 			phpgw::redirect_link('/index.php', array('menuaction' => 'activitycalendar.uiarena.view',

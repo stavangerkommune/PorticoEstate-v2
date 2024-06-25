@@ -48,7 +48,7 @@
 
 			if($bouser->is_logged_in())
 			{
-				$orgs = (array)phpgwapi_cache::session_get($bouser->get_module(), $bouser::ORGARRAY_SESSION_KEY);
+				$orgs = (array)Cache::session_get($bouser->get_module(), $bouser::ORGARRAY_SESSION_KEY);
 
 				$orgs_map = array();
 				foreach ($orgs as $org)

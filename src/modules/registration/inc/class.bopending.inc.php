@@ -306,17 +306,17 @@ HTML;
 					}
 					catch (Exception $e)
 					{
-						phpgwapi_cache::message_set($e->getMessage(), 'error');
+						Cache::message_set($e->getMessage(), 'error');
 					}
 
 					if ($rcpt)
 					{
-						phpgwapi_cache::message_set("Confirmation sent to {$to}", 'message');
+						Cache::message_set("Confirmation sent to {$to}", 'message');
 						$so->delete_reg_info($reg_id);
 					}
 					else
 					{
-						phpgwapi_cache::message_set("Confirmation NOT sent to {$info['email']}", 'error');
+						Cache::message_set("Confirmation NOT sent to {$info['email']}", 'error');
 					}
 				}
 			}

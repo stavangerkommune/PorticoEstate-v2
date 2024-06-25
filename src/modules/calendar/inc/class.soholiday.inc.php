@@ -19,7 +19,7 @@
 
 		function __construct()
 		{
-			$this->db =& $GLOBALS['phpgw']->db;
+			$this->db = Db::getInstance();
 		}
 
 		/* Begin Holiday functions */

@@ -245,7 +245,7 @@
 			{
 				if (!$this->add && !$this->edit)
 				{
-					phpgwapi_cache::message_set('No access', 'error');
+					Cache::message_set('No access', 'error');
 					phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uidocument.show',
 						'procedure_id' => $procedure->get_id(),
 						'tab' => 'documents'));
@@ -284,14 +284,14 @@
 					}
 					else
 					{
-						phpgwapi_cache::message_set('feil ved opplasting', 'error');
+						Cache::message_set('feil ved opplasting', 'error');
 						// Handle failure on storing document
 						$this->_redirect($document, $document_properties, '', '');
 					}
 				}
 				else
 				{
-					phpgwapi_cache::message_set('feil ved opplasting', 'error');
+					Cache::message_set('feil ved opplasting', 'error');
 					phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uidocument.show',
 							'procedure_id' => $procedure->get_id(),
 							'tab' => 'documents'));
@@ -343,7 +343,7 @@
 
 			if (!$this->delete)
 			{
-				phpgwapi_cache::message_set('No access', 'error');
+				Cache::message_set('No access', 'error');
 				phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uidocument.show',
 					'procedure_id' => $procedure_id,
 					'tab' => 'documents'));
@@ -369,7 +369,7 @@
 			}
 			else
 			{
-				phpgwapi_cache::message_set('Not deleted', 'error');
+				Cache::message_set('Not deleted', 'error');
 			}
 			phpgw::redirect_link('/index.php', array('menuaction' => 'controller.uidocument.show',
 					'procedure_id' => $procedure->get_id(),

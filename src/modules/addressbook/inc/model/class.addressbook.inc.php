@@ -212,7 +212,7 @@
 				{
 					if(!property_exists('eventplanner_application', $field))
 					{
-					   phpgwapi_cache::message_set('$'."{$field},", 'error');
+					   Cache::message_set('$'."{$field},", 'error');
 					}
 
 				}
@@ -229,7 +229,7 @@
 			if($entity->date_start && $entity->date_start >  $entity->date_end)
 			{
 				$entity->date_end = $entity->date_start;
-				phpgwapi_cache::message_set(lang('End date cannot be before start date'), 'error');
+				Cache::message_set(lang('End date cannot be before start date'), 'error');
 			}
 		}
 

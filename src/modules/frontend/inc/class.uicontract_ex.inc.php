@@ -33,7 +33,7 @@
 			$this->contracts_per_location_identifier = "contracts_ex_per_location";
 			//	$this->form_url = "index.php?menuaction=frontend.uicontract_ex.index";
 			$this->form_url = phpgw::link('/', array('menuaction' => 'frontend.uicontract_ex.index'));
-			phpgwapi_cache::session_set('frontend', 'tab', $GLOBALS['phpgw']->locations->get_id('frontend', '.rental.contract_ex'));
+			Cache::session_set('frontend', 'tab', $GLOBALS['phpgw']->locations->get_id('frontend', '.rental.contract_ex'));
 			parent::__construct();
 		}
 	}

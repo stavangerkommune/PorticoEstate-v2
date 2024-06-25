@@ -38,7 +38,7 @@
 				if (!$this->config->config_data['fellesdata']['host'] || !$this->ping($this->config->config_data['fellesdata']['host']))
 				{
 					$message = "Database server {$this->config->config_data['fellesdata']['host']} is not accessible";
-					phpgwapi_cache::message_set($message, 'error');
+					Cache::message_set($message, 'error');
 					return false;
 				}
 

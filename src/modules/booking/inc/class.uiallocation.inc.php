@@ -490,7 +490,7 @@
 					if ($step == 3)
 					{
 						$temp_id = Sanitizer::get_var('temp_id');
-						$purchase_order = phpgwapi_cache::session_get('booking', $temp_id);
+						$purchase_order = Cache::session_get('booking', $temp_id);
 					}
 
 
@@ -719,7 +719,7 @@
 			}
 			else
 			{
-				phpgwapi_cache::session_set('booking', $temp_id , $purchase_order);
+				Cache::session_set('booking', $temp_id , $purchase_order);
 			}
 
 		}
@@ -1046,7 +1046,7 @@
 				$participants = $soparticipant->read($params);
 				if(!$participants['results'])
 				{
-					phpgwapi_cache::message_set(lang('no records found.'), 'error');
+					Cache::message_set(lang('no records found.'), 'error');
 				}
 
 				$sms_service = CreateObject('sms.sms');
@@ -1068,13 +1068,13 @@
 						if (empty($sms_res[0][0]))
 						{
 							$error_message = 'SMS-melding feilet til ' . $final_recipient;
-							phpgwapi_cache::message_set($error_message, 'error');
+							Cache::message_set($error_message, 'error');
 							$log_error[] = $final_recipient;
 						}
 						else
 						{
 							$comment = 'SMS-melding er sendt til ' . $final_recipient;
-							phpgwapi_cache::message_set($comment, 'message');
+							Cache::message_set($comment, 'message');
 							$log_success[] = $final_recipient;
 
 						}
@@ -1082,7 +1082,7 @@
 					catch (Exception $ex)
 					{
 						$error_message = 'SMS-melding feilet til ' . $final_recipient;
-						phpgwapi_cache::message_set($error_message, 'error');
+						Cache::message_set($error_message, 'error');
 						$log_error[] = $final_recipient;
 					}
 

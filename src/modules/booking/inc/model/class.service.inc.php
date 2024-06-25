@@ -126,7 +126,7 @@
 				{
 					if(!property_exists('booking_service', $field))
 					{
-					   phpgwapi_cache::message_set('$'."{$field},", 'error');
+					   Cache::message_set('$'."{$field},", 'error');
 					}
 
 				}

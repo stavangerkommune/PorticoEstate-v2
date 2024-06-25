@@ -230,7 +230,7 @@
 			{
 				if ($e)
 				{
-					phpgwapi_cache::message_set($e->getMessage(), 'error');
+					Cache::message_set($e->getMessage(), 'error');
 					$this->edit($error = true);
 					return;
 				}
@@ -254,7 +254,7 @@
 			{
 				if ($e)
 				{
-					phpgwapi_cache::message_set($e->getMessage(), 'error');
+					Cache::message_set($e->getMessage(), 'error');
 					$this->users( $error = true);
 					return;
 				}
@@ -286,27 +286,27 @@
 
 			if($control_area_id)
 			{
-				phpgwapi_cache::user_set('controller', "calendar_control_area_id", $control_area_id, $user_id);
+				Cache::user_set('controller', "calendar_control_area_id", $control_area_id, $user_id);
 			}
 			else
 			{
-				$control_area_id = (int)phpgwapi_cache::user_get('controller', "calendar_control_area_id", $user_id);
+				$control_area_id = (int)Cache::user_get('controller', "calendar_control_area_id", $user_id);
 			}
 			if($control_id)
 			{
-				phpgwapi_cache::user_set('controller', "calendar_planner_control_id", $control_id, $user_id);
+				Cache::user_set('controller', "calendar_planner_control_id", $control_id, $user_id);
 			}
 			else
 			{
-				$control_id = (int)phpgwapi_cache::user_get('controller', "calendar_planner_control_id", $user_id);
+				$control_id = (int)Cache::user_get('controller', "calendar_planner_control_id", $user_id);
 			}
 			if($part_of_town_id)
 			{
-				phpgwapi_cache::user_set('controller', "settings_control_id", $part_of_town_id, $user_id);
+				Cache::user_set('controller', "settings_control_id", $part_of_town_id, $user_id);
 			}
 			else
 			{
-				$part_of_town_id = (int)phpgwapi_cache::user_get('controller', "settings_control_id", $user_id);
+				$part_of_town_id = (int)Cache::user_get('controller', "settings_control_id", $user_id);
 			}
 
 			$control_types = $this->so_control->get_controls_by_control_area($control_area_id);
