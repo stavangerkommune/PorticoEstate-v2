@@ -2,9 +2,10 @@
 
 use Slim\Routing\RouteCollectorProxy;
 use App\modules\bookingfrontend\controllers\DataStore;
-
 use App\modules\phpgwapi\controllers\StartPoint;
 use App\modules\phpgwapi\middleware\SessionsMiddleware;
+use App\modules\bookingfrontend\helpers\LangHelper;
+
 
 
 $app->group('/bookingfrontend', function (RouteCollectorProxy $group) {
@@ -21,3 +22,5 @@ $settings = [
 ];
 $app->get('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer(), $settings));
 $app->post('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer(), $settings));
+
+$app->get('/bookingfrontend/lang.php', LangHelper::class . ':process')->addMiddleware(new SessionsMiddleware($container));

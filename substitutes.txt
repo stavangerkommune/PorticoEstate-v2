@@ -1,5 +1,4 @@
 use App\Database\Db;
-
 $GLOBALS['phpgw']->db
 Db::getInstance()
 

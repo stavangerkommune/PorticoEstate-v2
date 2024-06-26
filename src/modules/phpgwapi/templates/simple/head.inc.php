@@ -1,91 +1,99 @@
 <?php
-	/**
-	* Template header
-	* @copyright Copyright (C) 2003-2005 Free Software Foundation, Inc. http://www.fsf.org/
-	* @license http://www.gnu.org/licenses/gpl.html GNU General Public License
-	* @package phpgwapi
-	* @subpackage gui
-	* @version $Id$
-	*/
 
-	$webserver_url = $GLOBALS['phpgw_info']['server']['webserver_url'] . PHPGW_MODULES_PATH;
+/**
+ * Template header
+ * @copyright Copyright (C) 2003-2005 Free Software Foundation, Inc. http://www.fsf.org/
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
+ * @package phpgwapi
+ * @subpackage gui
+ * @version $Id$
+ */
 
-	if ( !isset($GLOBALS['phpgw_info']['server']['site_title']) )
-	{
-		$GLOBALS['phpgw_info']['server']['site_title'] = lang('please set a site name in admin &gt; siteconfig');
-	}
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\Translation;
 
-	// we hack the template root here as this is the template set of last resort
-	$tpl = CreateObject('phpgwapi.template', dirname(__FILE__), "remove");
-	$tpl->set_file(array('head' => 'head.tpl'));
-	$tpl->set_block('head', 'theme_stylesheet', 'theme_stylesheets');
+$serverSettings = Settings::getInstance()->get('server');
+$flags = Settings::getInstance()->get('flags');
+$apps = Settings::getInstance()->get('apps');
+$userSettings = Settings::getInstance()->get('user');
+$phpgwapi_common = new phpgwapi_common();
+$translation = Translation::getInstance();
 
-	$app = $GLOBALS['phpgw_info']['flags']['currentapp'];
+$webserver_url = isset($serverSettings['webserver_url']) ? $serverSettings['webserver_url'] . PHPGW_MODULES_PATH : PHPGW_MODULES_PATH;
 
-	$stylesheets = array();
-	$stylesheets[] = "/phpgwapi/templates/pure/css/global.css";
-	$stylesheets[] = "/phpgwapi/templates/pure/css/version_3/pure-min.css";
-	$stylesheets[] = "/phpgwapi/templates/pure/css/pure-extension.css";
-	$stylesheets[] = "/phpgwapi/templates/pure/css/version_3/grids-responsive-min.css";
-	$stylesheets[] = "/phpgwapi/js/DataTables/DataTables/css/jquery.dataTables.min.css";
-	$stylesheets[] = "/phpgwapi/js/DataTables/DataTables/css/dataTables.jqueryui.min.css";
-	$stylesheets[] = "/phpgwapi/js/DataTables/Responsive/css/responsive.dataTables.min.css";
-	if( !isset($GLOBALS['phpgw_info']['flags']['noframework']) )
-	{
+if (!isset($serverSettings['site_title']))
+{
+	$serverSettings['site_title'] = lang('please set a site name in admin &gt; siteconfig');
+}
 
-		$javascripts = array
-		(
-			"/phpgwapi/templates/portico/js/base.js"
-		);
+// we hack the template root here as this is the template set of last resort
+$tpl = CreateObject('phpgwapi.template', dirname(__FILE__), "remove");
+$tpl->set_file(array('head' => 'head.tpl'));
+$tpl->set_block('head', 'theme_stylesheet', 'theme_stylesheets');
 
-		$stylesheets[] = "/phpgwapi/templates/simple/css/base.css";
-	}
+$app = $flags['currentapp'];
 
-	if(file_exists(PHPGW_SERVER_ROOT . '/phpgwapi/templates/simple/css/' . $GLOBALS['phpgw_info']['user']['preferences']['common']['theme'] . '.css'))
-	{
-		$stylesheets[] = "/phpgwapi/templates/simple/css/{$GLOBALS['phpgw_info']['user']['preferences']['common']['theme']}.css";
-	}
-	else
-	{
-		$stylesheets[] = "/phpgwapi/templates/simple/css/simple.css";
-		$GLOBALS['phpgw_info']['user']['preferences']['common']['theme'] = 'simple';
-	}
+$stylesheets = array();
+$stylesheets[] = "/phpgwapi/templates/pure/css/global.css";
+$stylesheets[] = "/phpgwapi/templates/pure/css/version_3/pure-min.css";
+$stylesheets[] = "/phpgwapi/templates/pure/css/pure-extension.css";
+$stylesheets[] = "/phpgwapi/templates/pure/css/version_3/grids-responsive-min.css";
+$stylesheets[] = "/phpgwapi/js/DataTables/DataTables/css/jquery.dataTables.min.css";
+$stylesheets[] = "/phpgwapi/js/DataTables/DataTables/css/dataTables.jqueryui.min.css";
+$stylesheets[] = "/phpgwapi/js/DataTables/Responsive/css/responsive.dataTables.min.css";
+if (!isset($flags['noframework']))
+{
 
-	if(file_exists(PHPGW_SERVER_ROOT . "/{$app}/templates/base/css/base.css"))
-	{
-		$stylesheets[] = "/{$app}/templates/base/css/base.css";
-	}
+	$javascripts = array(
+		"/phpgwapi/templates/portico/js/base.js"
+	);
 
-	if(file_exists(PHPGW_SERVER_ROOT . "/{$app}/templates/simple/css/base.css"))
-	{
-		$stylesheets[] = "/{$app}/templates/simple/css/base.css";
-	}
+	$stylesheets[] = "/phpgwapi/templates/simple/css/base.css";
+}
 
-	if(file_exists(PHPGW_SERVER_ROOT . "/{$app}/templates/simple/css/{$GLOBALS['phpgw_info']['user']['preferences']['common']['theme']}.css"))
-	{
-		$stylesheets[] = "/{$app}/templates/simple/css/{$GLOBALS['phpgw_info']['user']['preferences']['common']['theme']}.css";
-	}
+if (file_exists(PHPGW_SERVER_ROOT . '/phpgwapi/templates/simple/css/' . $userSettings['preferences']['common']['theme'] . '.css'))
+{
+	$stylesheets[] = "/phpgwapi/templates/simple/css/{$userSettings['preferences']['common']['theme']}.css";
+}
+else
+{
+	$stylesheets[] = "/phpgwapi/templates/simple/css/simple.css";
+	$userSettings['preferences']['common']['theme'] = 'simple';
+}
 
-	foreach ( $stylesheets as $style )
-	{
-		$tpl->set_var('theme_style', $webserver_url . $style);
-		$tpl->parse('theme_stylesheets', 'theme_stylesheet', true);
-	}
+if (file_exists(PHPGW_SERVER_ROOT . "/{$app}/templates/base/css/base.css"))
+{
+	$stylesheets[] = "/{$app}/templates/base/css/base.css";
+}
 
-	$app = $app ? ' ['.(isset($GLOBALS['phpgw_info']['apps'][$app]) ? $GLOBALS['phpgw_info']['apps'][$app]['title'] : lang($app)).']':'';
+if (file_exists(PHPGW_SERVER_ROOT . "/{$app}/templates/simple/css/base.css"))
+{
+	$stylesheets[] = "/{$app}/templates/simple/css/base.css";
+}
 
-	$tpl->set_var(array
-	(
-		'css'			=> $GLOBALS['phpgw']->common->get_css(),
-		'javascript'	=> $GLOBALS['phpgw']->common->get_javascript(),
-		'img_icon'      => PHPGW_IMAGES_DIR . '/favicon.ico',
-		'img_shortcut'  => PHPGW_IMAGES_DIR . '/favicon.ico',
-		'str_base_url'	=> phpgw::link('/', array(), true),		
-		'userlang'		=> $GLOBALS['phpgw_info']['user']['preferences']['common']['lang'],
-		'website_title'	=> $GLOBALS['phpgw_info']['server']['site_title'] . $app,
-		'win_on_events'	=> $GLOBALS['phpgw']->common->get_on_events(),
-	));
+if (file_exists(PHPGW_SERVER_ROOT . "/{$app}/templates/simple/css/{$userSettings['preferences']['common']['theme']}.css"))
+{
+	$stylesheets[] = "/{$app}/templates/simple/css/{$userSettings['preferences']['common']['theme']}.css";
+}
 
-	$tpl->pfp('out','head');
-	unset($tpl);
+foreach ($stylesheets as $style)
+{
+	$tpl->set_var('theme_style', $webserver_url . $style);
+	$tpl->parse('theme_stylesheets', 'theme_stylesheet', true);
+}
 
+$app = $app ? ' [' . (isset($apps[$app]) ? $apps[$app]['title'] : lang($app)) . ']' : '';
+
+$tpl->set_var(array(
+	'css'			=> $phpgwapi_common->get_css(),
+	'javascript'	=> $phpgwapi_common->get_javascript(),
+	'img_icon'      => PHPGW_IMAGES_DIR . '/favicon.ico',
+	'img_shortcut'  => PHPGW_IMAGES_DIR . '/favicon.ico',
+	'str_base_url'	=> phpgw::link('/', array(), true),
+	'userlang'		=> $userSettings['preferences']['common']['lang'],
+	'website_title'	=> $serverSettings['site_title'] . $app,
+	'win_on_events'	=> $phpgwapi_common->get_on_events(),
+));
+
+$tpl->pfp('out', 'head');
+unset($tpl);

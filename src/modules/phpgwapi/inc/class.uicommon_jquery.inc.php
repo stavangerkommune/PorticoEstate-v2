@@ -541,7 +541,7 @@
 		{
 			$flags = Settings::getInstance()->get('flags');
 			$flags['xslt_app'] = true;
-			Settings::getInstance()->set('flags', $flags);
+			Settings::getInstance()->update('flags', ['xslt_app' => true]);
 			$phpgwapi_common = new \phpgwapi_common();
 
 			if($xsl_rootdir)

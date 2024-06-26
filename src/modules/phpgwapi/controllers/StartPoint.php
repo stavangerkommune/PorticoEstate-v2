@@ -377,7 +377,6 @@ HTML;
 
 		$this->validate_object_method();
 
-
 		if (!$this->app || !$this->class || !$this->method)
 		{
 			$this->app = 'bookingfrontend';
@@ -385,6 +384,8 @@ HTML;
 			$this->method = 'index';
 			$this->invalid_data = false;
 		}
+
+		$phpgwapi_common->get_tpl_dir($this->app);
 
 		if ($this->app != 'bookingfrontend')
 		{

@@ -1,5 +1,6 @@
 <?php
-	phpgw::import_class('booking.socommon');
+
+phpgw::import_class('booking.socommon');
 
 	abstract class booking_sodocument extends booking_socommon
 	{
@@ -58,7 +59,7 @@
 					)
 				);
 			}
-			else if($this->get_owner_type() == 'application' && $GLOBALS['phpgw_info']['flags']['currentapp'] == 'bookingfrontend')
+			else if($this->get_owner_type() == 'application' && $this->flags['currentapp'] == 'bookingfrontend')
 			{
 				$fields['secret'] = array(
 					'type' => 'string',
@@ -73,9 +74,9 @@
 			}
 
 			parent::__construct(sprintf('bb_document_%s', $this->get_owner_type()), $fields);
-			$this->account = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->account = $this->userSettings['account_id'];
 
-			$server_files_dir = $this->_chomp_dir_sep($GLOBALS['phpgw_info']['server']['files_dir']);
+			$server_files_dir = $this->_chomp_dir_sep($this->serverSettings['files_dir']);
 
 			if (!file_exists($server_files_dir) || !is_dir($server_files_dir))
 			{

@@ -13,6 +13,7 @@ abstract class booking_socommon
 	protected $db_null = 'NULL';
 	protected $userSettings;
 	protected $serverSettings;
+	protected $flags;
 	
 	protected $valid_field_types = array(
 		'date' => true,
@@ -61,6 +62,7 @@ abstract class booking_socommon
 		$this->like = $this->db->like;
 		$this->userSettings = Settings::getInstance()->get('user');
 		$this->serverSettings = Settings::getInstance()->get('server');
+		$this->flags = Settings::getInstance()->get('flags');
 	}
 
 	/**
