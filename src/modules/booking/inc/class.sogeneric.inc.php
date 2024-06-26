@@ -26,6 +26,11 @@
 	 * @subpackage generic
 	 * @version $Id: $
 	 */
+
+use App\modules\phpgwapi\services\Translation;
+use App\modules\phpgwapi\services\Cache;
+
+
 	phpgw::import_class('property.sogeneric_');
 
 	class booking_sogeneric extends property_sogeneric_
@@ -40,6 +45,7 @@
 
 		public function get_location_info( $type, $type_id = 0 )
 		{
+			$translation = Translation::getInstance();
 
 			$type_id		 = (int)$type_id;
 			$this->type		 = $type;
@@ -72,7 +78,7 @@
 						),
 						'edit_msg'			 => lang('edit'),
 						'add_msg'			 => lang('add'),
-						'name'				 => $GLOBALS['phpgw']->translation->translate('office', array(), false, 'booking'),
+						'name'				 => $translation->translate('office', array(), false, 'booking'),
 						'acl_app'			 => 'booking',
 						'acl_location'		 => '.office',
 						'system_location'	 => '.office',
@@ -93,7 +99,7 @@
 						'fields'			 => array(
 							array(
 								'name'		 => 'office',
-								'descr'		 => $GLOBALS['phpgw']->translation->translate('office', array(), false, 'booking'),
+								'descr'		 => $translation->translate('office', array(), false, 'booking'),
 								'type'		 => 'select',
 								'filter'	 => true,
 								'values_def' => array(
@@ -106,7 +112,7 @@
 						),
 						'edit_msg'			 => lang('edit'),
 						'add_msg'			 => lang('add'),
-						'name'				 => $GLOBALS['phpgw']->translation->translate('office user', array(), false, 'booking'),
+						'name'				 => $translation->translate('office user', array(), false, 'booking'),
 						'acl_app'			 => 'booking',
 						'acl_location'		 => '.office.user',
 						'system_location'	 => '.office.user',
@@ -133,7 +139,7 @@
 						),
 						'edit_msg'			 => lang('edit'),
 						'add_msg'			 => lang('add'),
-						'name'				 => $GLOBALS['phpgw']->translation->translate('article category', array(), false, 'booking'),
+						'name'				 => $translation->translate('article category', array(), false, 'booking'),
 						'acl_app'			 => 'booking',
 						'acl_location'		 => '.admin',
 						'system_location'	 => '.article',
@@ -174,7 +180,7 @@
 						),
 						'edit_msg'			 => lang('edit'),
 						'add_msg'			 => lang('add'),
-						'name'				 => $GLOBALS['phpgw']->translation->translate('article service', array(), false, 'booking'),
+						'name'				 => $translation->translate('article service', array(), false, 'booking'),
 						'acl_app'			 => 'booking',
 						'acl_location'		 => '.admin',
 						'system_location'	 => '.article',
@@ -237,7 +243,7 @@
 						),
 						'edit_msg'		 => lang('edit'),
 						'add_msg'		 => lang('add'),
-						'name'			 => $GLOBALS['phpgw']->translation->translate('e_lock_system', array(), false, 'booking'),
+						'name'			 => $translation->translate('e_lock_system', array(), false, 'booking'),
 						'acl_app'		 => 'booking',
 						'acl_location'	 => '.admin',
 						'menu_selection' => 'booking::settings::e_lock_system',
@@ -291,7 +297,7 @@
 						),
 						'edit_msg'		 => lang('edit'),
 						'add_msg'		 => lang('add'),
-						'name'			 => $GLOBALS['phpgw']->translation->translate('multi domain', array(), false, 'booking'),
+						'name'			 => $translation->translate('multi domain', array(), false, 'booking'),
 						'acl_app'		 => 'booking',
 						'acl_location'	 => '.admin',
 						'menu_selection' => 'admin::bookingfrontend::multi_domain',

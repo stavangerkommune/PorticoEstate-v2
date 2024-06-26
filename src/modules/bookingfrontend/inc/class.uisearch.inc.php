@@ -120,9 +120,9 @@
             $params = array(
                 'landing_sections' => $landing_sections,
                 'landing_sections_json' => json_encode($landing_sections),
-				'baseurl' => "{$GLOBALS['phpgw_info']['server']['webserver_url']}",
+				'baseurl' => "{$this->serverSettings['webserver_url']}",
 				'filterboxtitle' => $filterboxtitle,
-				'frontimage' => "{$GLOBALS['phpgw_info']['server']['webserver_url']}/phpgwapi/templates/bkbooking/images/newlayout/forsidebilde.jpg",
+				'frontimage' => "{$this->serverSettings['webserver_url']}/phpgwapi/templates/bkbooking/images/newlayout/forsidebilde.jpg",
 				'frontpagetitle' => $frontpagetitle,
 				'frontpagetext' => $frontpagetext,
 				'frontimagetext' => $frontimagetext,
@@ -138,6 +138,7 @@
 
 			$top_levels = array();
 			$filter_tree = array();
+			$custom_fields = createObject('phpgwapi.custom_fields');
 			foreach ($activities as $activity)
 			{
 				if(!$activity['active'])
@@ -155,7 +156,7 @@
 						'building_id' => $building_id,
 						'filter_part_of_town' => $imploded_filter_part_of_town));
 
-				$organized_fields = $GLOBALS['phpgw']->custom_fields->get_attribute_tree('booking', ".resource.{$activity['id']}", 0, $activity['id']);
+				$organized_fields = $custom_fields->get_attribute_tree('booking', ".resource.{$activity['id']}", 0, $activity['id']);
 				if (!$organized_fields)
 				{
 					continue;

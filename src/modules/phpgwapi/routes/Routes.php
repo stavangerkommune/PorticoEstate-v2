@@ -14,17 +14,6 @@ $app->post('/', StartPoint::class . ':run')->add(new SessionsMiddleware($app->ge
 $app->get('/index.php', StartPoint::class . ':run')->add(new SessionsMiddleware($app->getContainer()));
 $app->post('/index.php', StartPoint::class . ':run')->add(new SessionsMiddleware($app->getContainer()));
 
-$settings = [
-	'session_name' => [
-		'bookingfrontend' => 'bookingfrontendsession',
-		'eventplannerfrontend' => 'eventplannerfrontendsession',
-		'activitycalendarfrontend' => 'activitycalendarfrontendsession'
-	]
-	// Add more settings as needed
-];
-
-$app->get('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer(), $settings));
-$app->post('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer(), $settings));
 
 $app->get('/preferences/', PreferenceHelper::class . ':index')->add(new SessionsMiddleware($app->getContainer()));
 $app->post('/preferences/', PreferenceHelper::class . ':index')->add(new SessionsMiddleware($app->getContainer()));

@@ -39,10 +39,11 @@ class admin_uiconfig
 
 	public function __construct()
 	{
+		$appname = Sanitizer::get_var('appname', 'string');
 		$this->serverSettings = Settings::getInstance()->get('server');
 		$this->flags = Settings::getInstance()->get('flags');
+		Settings::getInstance()->update('flags', ['currentapp' => $appname]);
 		$this->apps = Settings::getInstance()->get('apps');
-		$appname = Sanitizer::get_var('appname', 'string');
 		$this->appname = $appname;
 		$acl = Acl::getInstance();
 		$this->hooks = new Hooks();
@@ -149,10 +150,10 @@ HTML;
 		}
 
 		$appname	= $this->appname;
-		$this->flags['menu_selection']	 = "admin::{$appname}::index";
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['menu_selection' => "admin::{$appname}::index"]);
 
 		$this->apps['manual']['app'] = $appname; // override the appname fetched from the referer for the manual.
+		Settings::getInstance()->set('apps', $this->apps);
 
 		switch ($appname)
 		{

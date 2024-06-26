@@ -383,6 +383,7 @@ HTML;
 			$this->app = 'bookingfrontend';
 			$this->class = 'uisearch';
 			$this->method = 'index';
+			$this->invalid_data = false;
 		}
 
 		if ($this->app != 'bookingfrontend')

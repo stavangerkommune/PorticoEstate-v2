@@ -1,32 +1,46 @@
 <?php
-	$GLOBALS['phpgw_info']['server']['no_jscombine'] = true;
-	phpgw::import_class('phpgwapi.jquery');
-	phpgw::import_class('phpgwapi.template_portico');
 
-	if (!isset($GLOBALS['phpgw_info']['server']['site_title']))
-	{
-		$GLOBALS['phpgw_info']['server']['site_title'] = lang('please set a site name in admin &gt; siteconfig');
-	}
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\Cache;
+use App\helpers\Template;
+use App\modules\phpgwapi\services\Translation;
 
-	$webserver_url = $GLOBALS['phpgw_info']['server']['webserver_url'];
+$serverSettings = Settings::getInstance()->get('server');
+$flags = Settings::getInstance()->get('flags');
+$userSettings = Settings::getInstance()->get('user');
+$phpgwapi_common = new phpgwapi_common();
+$translation = Translation::getInstance();
 
-	$app = $GLOBALS['phpgw_info']['flags']['currentapp'];
 
-	$cache_refresh_token = '';
-	if (!empty($GLOBALS['phpgw_info']['server']['cache_refresh_token']))
-	{
-		$cache_refresh_token = "?n={$GLOBALS['phpgw_info']['server']['cache_refresh_token']}";
-	}
 
-	$config_frontend = CreateObject('phpgwapi.config', 'bookingfrontend')->read();
-	$config_backend	 = CreateObject('phpgwapi.config', 'booking')->read();
+$serverSettings['no_jscombine'] = true;
+phpgw::import_class('phpgwapi.jquery');
+phpgw::import_class('phpgwapi.template_portico');
 
-	$tracker_id		 = !empty($config_frontend['tracker_id']) ? $config_frontend['tracker_id'] : '';
-	$tracker_code1	 = <<<JS
+if (!isset($serverSettings['site_title']))
+{
+	$serverSettings['site_title'] = lang('please set a site name in admin &gt; siteconfig');
+}
+
+$webserver_url = isset($serverSettings['webserver_url']) ? $serverSettings['webserver_url'] . PHPGW_MODULES_PATH : PHPGW_MODULES_PATH;
+
+$app = $flags['currentapp'];
+
+$cache_refresh_token = '';
+if (!empty($serverSettings['cache_refresh_token']))
+{
+	$cache_refresh_token = "?n={$serverSettings['cache_refresh_token']}";
+}
+
+$config_frontend = CreateObject('phpgwapi.config', 'bookingfrontend')->read();
+$config_backend	 = CreateObject('phpgwapi.config', 'booking')->read();
+
+$tracker_id		 = !empty($config_frontend['tracker_id']) ? $config_frontend['tracker_id'] : '';
+$tracker_code1	 = <<<JS
 		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
 		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
 JS;
-	$tracker_code2	 = <<<JS
+$tracker_code2	 = <<<JS
 		try
 		{
 			var pageTracker = _gat._getTracker("{$tracker_id}");
@@ -38,283 +52,283 @@ JS;
 		}
 JS;
 
-	if ($tracker_id)
+if ($tracker_id)
+{
+	phpgwapi_js::getInstance()->add_code('', $tracker_code1);
+	phpgwapi_js::getInstance()->add_code('', $tracker_code2);
+}
+
+$template = new Template(PHPGW_TEMPLATE_DIR);
+$template->set_unknowns('remove');
+$template->set_file('head', 'head.tpl');
+$template->set_block('head', 'stylesheet', 'stylesheets');
+$template->set_block('head', 'javascript', 'javascripts');
+
+$stylesheets	 = array();
+$stylesheets[]	 = "/phpgwapi/js/bootstrap5/vendor/twbs/bootstrap/dist/css/bootstrap.min.css";
+$stylesheets[]	 = "/phpgwapi/templates/base/css/fontawesome/css/all.min.css";
+$stylesheets[]	 = "/phpgwapi/templates/base/css/flag-icons.min.css";
+$stylesheets[]	 = "/phpgwapi/templates/bookingfrontend/css/jquery.autocompleter.css";
+$stylesheets[]	 = "/phpgwapi/templates/bookingfrontend/css/normalize.css";
+$stylesheets[]	 = "/phpgwapi/templates/bookingfrontend/css/rubik-font.css";
+$stylesheets[]	 = "/phpgwapi/js/select2/css/select2.min.css";
+$stylesheets[]	 = "/phpgwapi/js/jquery/css/redmond/jquery-ui.min.css";
+$stylesheets[]	 = "/phpgwapi/js/pecalendar/pecalendar.css";
+
+foreach ($stylesheets as $stylesheet)
+{
+	if (file_exists(PHPGW_SERVER_ROOT . $stylesheet))
 	{
-		phpgwapi_js::getInstance()->add_code('', $tracker_code1);
-		phpgwapi_js::getInstance()->add_code('', $tracker_code2);
+		$template->set_var('stylesheet_uri', $webserver_url . $stylesheet . $cache_refresh_token);
+		$template->parse('stylesheets', 'stylesheet', true);
 	}
+}
 
-	$GLOBALS['phpgw']->template->set_root(PHPGW_TEMPLATE_DIR);
-	$GLOBALS['phpgw']->template->set_unknowns('remove');
-	$GLOBALS['phpgw']->template->set_file('head', 'head.tpl');
-	$GLOBALS['phpgw']->template->set_block('head', 'stylesheet', 'stylesheets');
-	$GLOBALS['phpgw']->template->set_block('head', 'javascript', 'javascripts');
+if (!empty($serverSettings['site_title']))
+{
 
-	$stylesheets	 = array();
-	$stylesheets[]	 = "/phpgwapi/js/bootstrap5/vendor/twbs/bootstrap/dist/css/bootstrap.min.css";
-	$stylesheets[]	 = "/phpgwapi/templates/base/css/fontawesome/css/all.min.css";
-	$stylesheets[]	 = "/phpgwapi/templates/base/css/flag-icons.min.css";
-	$stylesheets[]	 = "/phpgwapi/templates/bookingfrontend/css/jquery.autocompleter.css";
-	$stylesheets[]	 = "/phpgwapi/templates/bookingfrontend/css/normalize.css";
-	$stylesheets[]	 = "/phpgwapi/templates/bookingfrontend/css/rubik-font.css";
-	$stylesheets[]	 = "/phpgwapi/js/select2/css/select2.min.css";
-	$stylesheets[]	 = "/phpgwapi/js/jquery/css/redmond/jquery-ui.min.css";
-	$stylesheets[]	 = "/phpgwapi/js/pecalendar/pecalendar.css";
+	$site_title = $serverSettings['site_title'];
+}
 
-	foreach ($stylesheets as $stylesheet)
+$headlogopath = $webserver_url . "/phpgwapi/templates/bookingfrontend_2/styleguide/gfx";
+
+$langmanual = lang('Manual');
+$template->set_var('manual', $langmanual);
+
+$privacy = lang('Privacy');
+$template->set_var('privacy', $privacy);
+
+
+$textaboutmunicipality = lang('About Aktive kommune');
+$template->set_var('textaboutmunicipality', $textaboutmunicipality);
+
+$sign_in = lang('login'); //lang('sign in');
+$template->set_var('sign_in', $sign_in);
+
+$contact = lang('contact'); //lang('sign in');
+$template->set_var('contact', $contact);
+
+$executiveofficer = lang('executiveofficer');
+$template->set_var('executiveofficer', $executiveofficer);
+
+$executiveofficer_url = $webserver_url . "/";
+$template->set_var('executiveofficer_url', $executiveofficer_url);
+
+$municipality = $site_title;
+
+$template->set_var('municipality', $municipality);
+
+if (!empty($config_backend['support_address']))
+{
+	$support_email = $config_backend['support_address'];
+}
+else
+{
+	if (!empty($serverSettings['support_address']))
 	{
-		if (file_exists(PHPGW_SERVER_ROOT . $stylesheet))
-		{
-			$GLOBALS['phpgw']->template->set_var('stylesheet_uri', $webserver_url . $stylesheet . $cache_refresh_token);
-			$GLOBALS['phpgw']->template->parse('stylesheets', 'stylesheet', true);
-		}
-	}
-
-	if (!empty($GLOBALS['phpgw_info']['server']['site_title']))
-	{
-
-		$site_title = $GLOBALS['phpgw_info']['server']['site_title'];
-	}
-
-	$headlogopath = $webserver_url . "/phpgwapi/templates/bookingfrontend_2/styleguide/gfx";
-
-	$langmanual = lang('Manual');
-	$GLOBALS['phpgw']->template->set_var('manual', $langmanual);
-
-	$privacy = lang('Privacy');
-	$GLOBALS['phpgw']->template->set_var('privacy', $privacy);
-
-
-	$textaboutmunicipality = lang('About Aktive kommune');
-	$GLOBALS['phpgw']->template->set_var('textaboutmunicipality', $textaboutmunicipality);
-
-	$sign_in = lang('login');//lang('sign in');
-	$GLOBALS['phpgw']->template->set_var('sign_in', $sign_in);
-
-	$contact = lang('contact');//lang('sign in');
-	$GLOBALS['phpgw']->template->set_var('contact', $contact);
-
-	$executiveofficer = lang('executiveofficer');
-	$GLOBALS['phpgw']->template->set_var('executiveofficer', $executiveofficer);
-
-	$executiveofficer_url = $webserver_url . "/";
-	$GLOBALS['phpgw']->template->set_var('executiveofficer_url', $executiveofficer_url);
-
-	$municipality = $site_title;
-
-	$GLOBALS['phpgw']->template->set_var('municipality', $municipality);
-
-	if (!empty($config_backend['support_address']))
-	{
-		$support_email = $config_backend['support_address'];
+		$support_email = $serverSettings['support_address'];
 	}
 	else
 	{
-		if (!empty($GLOBALS['phpgw_info']['server']['support_address']))
-		{
-			$support_email = $GLOBALS['phpgw_info']['server']['support_address'];
-		}
-		else
-		{
-			$support_email = 'support@aktivkommune.no';
-		}
+		$support_email = 'support@aktivkommune.no';
 	}
-	$GLOBALS['phpgw']->template->set_var('support_email', $support_email);
+}
+$template->set_var('support_email', $support_email);
 
-	if (!empty($config_frontend['url_uustatus']))
-	{
-		$lang_uustatus = lang('uustatus');
-		$url_uustatus ="<li><a target='_blank' class='link-text link-text-secondary normal' rel='noopener noreferrer'  href='{$config_frontend['url_uustatus']}'>{$lang_uustatus}</a></li>";
-		$GLOBALS['phpgw']->template->set_var('url_uustatus', $url_uustatus);
-	}
+if (!empty($config_frontend['url_uustatus']))
+{
+	$lang_uustatus = lang('uustatus');
+	$url_uustatus = "<li><a target='_blank' class='link-text link-text-secondary normal' rel='noopener noreferrer'  href='{$config_frontend['url_uustatus']}'>{$lang_uustatus}</a></li>";
+	$template->set_var('url_uustatus', $url_uustatus);
+}
 
 //loads jquery
-	phpgwapi_jquery::load_widget('core');
+phpgwapi_jquery::load_widget('core');
 
-	$javascripts	 = array();
-	$javascripts[]	 = "/phpgwapi/js/popper/popper.min.js";
-	$javascripts[]	 = "/phpgwapi/js/bootstrap5/vendor/twbs/bootstrap/dist/js/bootstrap.min.js";
-	$javascripts[]	 = "/phpgwapi/js/select2/js/select2.min.js";
-	$javascripts[]	 = "/phpgwapi/templates/bookingfrontend_2/js/knockout-min.js";
-	$javascripts[]	 = "/phpgwapi/templates/bookingfrontend_2/js/knockout.validation.js";
-	$javascripts[]	 = "/phpgwapi/templates/bookingfrontend_2/js/jquery.autocompleter.js";
-	$javascripts[]	 = "/phpgwapi/templates/bookingfrontend_2/js/common.js";
-	$javascripts[]	 = "/phpgwapi/templates/bookingfrontend_2/js/custom.js";
-	$javascripts[]	 = "/phpgwapi/templates/bookingfrontend_2/js/nb-NO.js";
-	$javascripts[]	 = "/phpgwapi/js/dateformat/dateformat.js";
-	$javascripts[]	 = "/phpgwapi/js/pecalendar/luxon.js";
-	$javascripts[]	 = "/phpgwapi/js/pecalendar/pecalendar.js";
+$javascripts	 = array();
+$javascripts[]	 = "/phpgwapi/js/popper/popper.min.js";
+$javascripts[]	 = "/phpgwapi/js/bootstrap5/vendor/twbs/bootstrap/dist/js/bootstrap.min.js";
+$javascripts[]	 = "/phpgwapi/js/select2/js/select2.min.js";
+$javascripts[]	 = "/phpgwapi/templates/bookingfrontend_2/js/knockout-min.js";
+$javascripts[]	 = "/phpgwapi/templates/bookingfrontend_2/js/knockout.validation.js";
+$javascripts[]	 = "/phpgwapi/templates/bookingfrontend_2/js/jquery.autocompleter.js";
+$javascripts[]	 = "/phpgwapi/templates/bookingfrontend_2/js/common.js";
+$javascripts[]	 = "/phpgwapi/templates/bookingfrontend_2/js/custom.js";
+$javascripts[]	 = "/phpgwapi/templates/bookingfrontend_2/js/nb-NO.js";
+$javascripts[]	 = "/phpgwapi/js/dateformat/dateformat.js";
+$javascripts[]	 = "/phpgwapi/js/pecalendar/luxon.js";
+$javascripts[]	 = "/phpgwapi/js/pecalendar/pecalendar.js";
 
-	foreach ($javascripts as $javascript)
+foreach ($javascripts as $javascript)
+{
+	if (file_exists(PHPGW_SERVER_ROOT . $javascript))
 	{
-		if (file_exists(PHPGW_SERVER_ROOT . $javascript))
-		{
-			$GLOBALS['phpgw']->template->set_var('javascript_uri', $webserver_url . $javascript . $cache_refresh_token);
-			$GLOBALS['phpgw']->template->parse('javascripts', 'javascript', true);
-		}
+		$template->set_var('javascript_uri', $webserver_url . $javascript . $cache_refresh_token);
+		$template->parse('javascripts', 'javascript', true);
 	}
+}
 
-	if (!empty($GLOBALS['phpgw_info']['server']['logo_url']))
-	{
-		$footerlogoimg = $GLOBALS['phpgw_info']['server']['logo_url'];
-		$GLOBALS['phpgw']->template->set_var('footer_logo_img', $footerlogoimg);
-	}
-	else
-	{
+if (!empty($serverSettings['logo_url']))
+{
+	$footerlogoimg = $serverSettings['logo_url'];
+	$template->set_var('footer_logo_img', $footerlogoimg);
+}
+else
+{
 
-		$footerlogoimg = $webserver_url . "/phpgwapi/templates/bookingfrontend_2/img/Aktiv-kommune-footer-logo.png";
-		$GLOBALS['phpgw']->template->set_var('logoimg', $footerlogoimg);
-	}
+	$footerlogoimg = $webserver_url . "/phpgwapi/templates/bookingfrontend_2/img/Aktiv-kommune-footer-logo.png";
+	$template->set_var('logoimg', $footerlogoimg);
+}
 
-	if (!empty($GLOBALS['phpgw_info']['server']['bakcground_image']))
-	{
-		$footer_logo_url = $GLOBALS['phpgw_info']['server']['bakcground_image'];
-		$GLOBALS['phpgw']->template->set_var('footer_logo_url', $footer_logo_url);
-	}
+if (!empty($serverSettings['bakcground_image']))
+{
+	$footer_logo_url = $serverSettings['bakcground_image'];
+	$template->set_var('footer_logo_url', $footer_logo_url);
+}
 
-	$bodoc	 = CreateObject('booking.bodocumentation');
-	$manual	 = $bodoc->so->getFrontendDoc();
+$bodoc	 = CreateObject('booking.bodocumentation');
+$manual	 = $bodoc->so->getFrontendDoc();
 
-	$menuaction	 = Sanitizer::get_var('menuaction', 'GET');
-	$id			 = Sanitizer::get_var('id', 'GET');
-	if (strpos($menuaction, 'organization'))
-	{
-		$boorganization	 = CreateObject('booking.boorganization');
-		$metainfo		 = $boorganization->so->get_metainfo($id);
-		$description	 = preg_replace('/\s+/', ' ', strip_tags(html_entity_decode($metainfo['description_json']['no'])));
-		$keywords		 = $metainfo['name'] . "," . $metainfo['shortname'] . "," . $metainfo['district'] . "," . $metainfo['city'];
-	}
-	elseif (strpos($menuaction, 'group'))
-	{
-		$bogroup	 = CreateObject('booking.bogroup');
-		$metainfo	 = $bogroup->so->get_metainfo($id);
-		$description = preg_replace('/\s+/', ' ', strip_tags($metainfo['description']));
-		$keywords	 = $metainfo['name'] . "," . $metainfo['shortname'] . "," . $metainfo['organization'] . "," . $metainfo['district'] . "," . $metainfo['city'];
-	}
-	elseif (strpos($menuaction, 'building'))
-	{
-		$bobuilding	 = CreateObject('booking.bobuilding');
-		$metainfo	 = $bobuilding->so->get_metainfo($id);
-		$description = preg_replace('/\s+/', ' ', strip_tags(html_entity_decode($metainfo['description_json']['no'])));
-		$keywords	 = $metainfo['name'] . "," . $metainfo['district'] . "," . $metainfo['city'];
-	}
-	elseif (strpos($menuaction, 'resource'))
-	{
-		$boresource	 = CreateObject('booking.boresource');
-		$metainfo	 = $boresource->so->get_metainfo($id);
-		$description = preg_replace('/\s+/', ' ', strip_tags(html_entity_decode($metainfo['description_json']['no'])));
-		$keywords	 = $metainfo['name'] . "," . $metainfo['building'] . "," . $metainfo['district'] . "," . $metainfo['city'];
-	}
-	if ($keywords != '')
-	{
-		$keywords = '<meta name="keywords" content="' . htmlspecialchars($keywords) . '">';
-	}
-	else
-	{
-		$keywords = '<meta name="keywords" content="PorticoEstate">';
-	}
-	if (!empty($description))
-	{
-		$description = '<meta name="description" content="' . htmlspecialchars($description) . '">';
-	}
-	else
-	{
-		$description = '<meta name="description" content="PorticoEstate">';
-	}
-	if (!empty($config_frontend['metatag_author']))
-	{
-		$author = '<meta name="author" content="' . $config_frontend['metatag_author'] . '">';
-	}
-	else
-	{
-		$author = '<meta name="author" content="PorticoEstate https://github.com/PorticoEstate/PorticoEstate">';
-	}
-	if (!empty($config_frontend['metatag_robots']))
-	{
-		$robots = '<meta name="robots" content="' . $config_frontend['metatag_robots'] . '">';
-	}
-	else
-	{
-		$robots = '<meta name="robots" content="none">';
-	}
-	if (!empty($config_frontend['site_title']))
-	{
-		$site_title = $config_frontend['site_title'];
-	}
-	else
-	{
-		$site_title = $GLOBALS['phpgw_info']['server']['site_title'];
-	}
+$menuaction	 = Sanitizer::get_var('menuaction', 'GET');
+$id			 = Sanitizer::get_var('id', 'GET');
+if (strpos($menuaction, 'organization'))
+{
+	$boorganization	 = CreateObject('booking.boorganization');
+	$metainfo		 = $boorganization->so->get_metainfo($id);
+	$description	 = preg_replace('/\s+/', ' ', strip_tags(html_entity_decode($metainfo['description_json']['no'])));
+	$keywords		 = $metainfo['name'] . "," . $metainfo['shortname'] . "," . $metainfo['district'] . "," . $metainfo['city'];
+}
+elseif (strpos($menuaction, 'group'))
+{
+	$bogroup	 = CreateObject('booking.bogroup');
+	$metainfo	 = $bogroup->so->get_metainfo($id);
+	$description = preg_replace('/\s+/', ' ', strip_tags($metainfo['description']));
+	$keywords	 = $metainfo['name'] . "," . $metainfo['shortname'] . "," . $metainfo['organization'] . "," . $metainfo['district'] . "," . $metainfo['city'];
+}
+elseif (strpos($menuaction, 'building'))
+{
+	$bobuilding	 = CreateObject('booking.bobuilding');
+	$metainfo	 = $bobuilding->so->get_metainfo($id);
+	$description = preg_replace('/\s+/', ' ', strip_tags(html_entity_decode($metainfo['description_json']['no'])));
+	$keywords	 = $metainfo['name'] . "," . $metainfo['district'] . "," . $metainfo['city'];
+}
+elseif (strpos($menuaction, 'resource'))
+{
+	$boresource	 = CreateObject('booking.boresource');
+	$metainfo	 = $boresource->so->get_metainfo($id);
+	$description = preg_replace('/\s+/', ' ', strip_tags(html_entity_decode($metainfo['description_json']['no'])));
+	$keywords	 = $metainfo['name'] . "," . $metainfo['building'] . "," . $metainfo['district'] . "," . $metainfo['city'];
+}
+if ($keywords != '')
+{
+	$keywords = '<meta name="keywords" content="' . htmlspecialchars($keywords) . '">';
+}
+else
+{
+	$keywords = '<meta name="keywords" content="PorticoEstate">';
+}
+if (!empty($description))
+{
+	$description = '<meta name="description" content="' . htmlspecialchars($description) . '">';
+}
+else
+{
+	$description = '<meta name="description" content="PorticoEstate">';
+}
+if (!empty($config_frontend['metatag_author']))
+{
+	$author = '<meta name="author" content="' . $config_frontend['metatag_author'] . '">';
+}
+else
+{
+	$author = '<meta name="author" content="PorticoEstate https://github.com/PorticoEstate/PorticoEstate">';
+}
+if (!empty($config_frontend['metatag_robots']))
+{
+	$robots = '<meta name="robots" content="' . $config_frontend['metatag_robots'] . '">';
+}
+else
+{
+	$robots = '<meta name="robots" content="none">';
+}
+if (!empty($config_frontend['site_title']))
+{
+	$site_title = $config_frontend['site_title'];
+}
+else
+{
+	$site_title = $serverSettings['site_title'];
+}
 
-	if (!empty($GLOBALS['phpgw_info']['server']['logo_title']))
-	{
-		$logo_title = $GLOBALS['phpgw_info']['server']['logo_title'];
-	}
-	else
-	{
-		$logo_title = 'Logo';
-	}
+if (!empty($serverSettings['logo_title']))
+{
+	$logo_title = $serverSettings['logo_title'];
+}
+else
+{
+	$logo_title = 'Logo';
+}
 
-	$site_base = $app == 'bookingfrontend' ? "/{$app}/" : '/index.php';
+$site_base = $app == 'bookingfrontend' ? "/{$app}/" : '/index.php';
 
-	$site_url			 = phpgw::link($site_base, array());
-	$eventsearch_url	 = phpgw::link('/bookingfrontend/', array('menuaction' => 'bookingfrontend.uieventsearch.show'));
-	$placeholder_search	 = lang('Search');
-	$myorgs_text		 = lang('Show my events');
+$site_url			 = phpgw::link($site_base, array());
+$eventsearch_url	 = phpgw::link('/bookingfrontend/', array('menuaction' => 'bookingfrontend.uieventsearch.show'));
+$placeholder_search	 = lang('Search');
+$myorgs_text		 = lang('Show my events');
 
-	$userlang	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['lang'];
-	$flag_no	 = "{$webserver_url}/phpgwapi/templates/base/images/flag_no.gif";
-	$flag_en	 = "{$webserver_url}/phpgwapi/templates/base/images/flag_en.gif";
+$userlang	 = $userSettings['preferences']['common']['lang'];
+$flag_no	 = "{$webserver_url}/phpgwapi/templates/base/images/flag_no.gif";
+$flag_en	 = "{$webserver_url}/phpgwapi/templates/base/images/flag_en.gif";
 
-	if (Sanitizer::get_var('lang', 'bool', 'GET'))
-	{
-		$selected_lang = Sanitizer::get_var('lang', 'string', 'GET');
-	}
-	else
-	{
-		$selected_lang = Sanitizer::get_var('selected_lang', 'string', 'COOKIE', $userlang);
-	}
-	
-	switch ($selected_lang)
-	{
-		case 'no':
-		case 'nn':
-			$selected_flag_class = 'fi-no';
-			break;
-		case 'en':
-			$selected_flag_class = 'fi-gb';
-			break;
-		default:
-			$selected_flag_class = "fi-{$key}";
-			break;
-	}
+if (Sanitizer::get_var('lang', 'bool', 'GET'))
+{
+	$selected_lang = Sanitizer::get_var('lang', 'string', 'GET');
+}
+else
+{
+	$selected_lang = Sanitizer::get_var('selected_lang', 'string', 'COOKIE', $userlang);
+}
+
+switch ($selected_lang)
+{
+	case 'no':
+	case 'nn':
+		$selected_flag_class = 'fi-no';
+		break;
+	case 'en':
+		$selected_flag_class = 'fi-gb';
+		break;
+	default:
+		$selected_flag_class = "fi-{$key}";
+		break;
+}
 
 
-	$self_uri	 = $_SERVER['REQUEST_URI'];
-	$separator	 = strpos($self_uri, '?') ? '&' : '?';
-	$self_uri	 = str_replace(array("{$separator}lang=no", "{$separator}lang=en"), '', $self_uri);
+$self_uri	 = $_SERVER['REQUEST_URI'];
+$separator	 = strpos($self_uri, '?') ? '&' : '?';
+$self_uri	 = str_replace(array("{$separator}lang=no", "{$separator}lang=en"), '', $self_uri);
 
-	switch ($GLOBALS['phpgw_info']['user']['preferences']['common']['template_set'])
-	{
-		case 'bookingfrontend_2':
-			$selected_bookingfrontend_2	 = ' checked';
-			$selected_bookingfrontend	 = '';
-			break;
-		case 'bookingfrontend':
-			$selected_bookingfrontend_2	 = '';
-			$selected_bookingfrontend	 = ' checked';
-			break;
-	}
-	$about	 = "https://www.aktiv-kommune.no/";
-	$faq	 = "https://www.aktiv-kommune.no/manual/";
+switch ($userSettings['preferences']['common']['template_set'])
+{
+	case 'bookingfrontend_2':
+		$selected_bookingfrontend_2	 = ' checked';
+		$selected_bookingfrontend	 = '';
+		break;
+	case 'bookingfrontend':
+		$selected_bookingfrontend_2	 = '';
+		$selected_bookingfrontend	 = ' checked';
+		break;
+}
+$about	 = "https://www.aktiv-kommune.no/";
+$faq	 = "https://www.aktiv-kommune.no/manual/";
 
-	if ($config_frontend['develope_mode'])
-	{
-        $version_title = lang('version_choice');
-        $version_ingress = lang('which_version_do_you_want');
-        $version_old = lang('old');
-        $version_new = lang('new');
-		$template_selector = <<<HTML
+if ($config_frontend['develope_mode'])
+{
+	$version_title = lang('version_choice');
+	$version_ingress = lang('which_version_do_you_want');
+	$version_old = lang('old');
+	$version_new = lang('new');
+	$template_selector = <<<HTML
               <div>
                 <h3>{$version_title}</h3>
                 <p>{$version_ingress}</p>
@@ -332,58 +346,57 @@ JS;
                 </form>
               </div>
 HTML;
-	}
-	else
+}
+else
+{
+	$template_selector = '';
+}
+
+$installed_langs = $translation->get_installed_langs();
+$langs = array();
+
+$lang_selector = '';
+foreach ($installed_langs as $key => $name)
+{
+	$trans = lang($name);
+	$installed_langs[$key] = $trans;
+
+	switch ($key)
 	{
-		$template_selector = '';
+		case 'no':
+		case 'nn':
+			$flag_class = 'fi-no';
+			break;
+		case 'en':
+			$flag_class = 'fi-gb';
+			break;
+		default:
+			$flag_class = "fi-{$key}";
+			break;
 	}
 
-	$installed_langs = $GLOBALS['phpgw']->translation->get_installed_langs();
-	$langs = array();
-
-	$lang_selector = '';
-	foreach ($installed_langs as $key => $name)
-	{
-		$trans = lang($name);
-		$installed_langs[$key] = $trans;
-
-		switch ($key)
-		{
-			case 'no':
-			case 'nn':
-				$flag_class = 'fi-no';
-				break;
-			case 'en':
-				$flag_class = 'fi-gb';
-				break;
-			default:
-				$flag_class = "fi-{$key}";
-				break;
-		}
-
-		$_selected_lang = $selected_lang == $key ? 'checked' : '';
-		$lang_selector .= <<<HTML
+	$_selected_lang = $selected_lang == $key ? 'checked' : '';
+	$lang_selector .= <<<HTML
 		  <label class="choice mb-3">
 			<input type="radio" name="select_language" value="{$key}" {$_selected_lang} />
 			<i class="fi {$flag_class}" title="{$key}"></i> {$trans}
 			<span class="choice__radio"></span>
 		  </label>
 HTML;
+}
 
-	}
+$selected_lang_trans = $installed_langs[$selected_lang];
 
-	$selected_lang_trans = $installed_langs[$selected_lang];
-
-	$choose_lang_trans = lang('choose language');
-	$choose_lang_trans2 = lang('Which language do you want?');
-
-
-	$version_trans = lang('version');
-    $what_is_aktiv_kommune = lang('what_is_aktiv_kommune');
-    $cart_header = lang('Application basket');
+$choose_lang_trans = lang('choose language');
+$choose_lang_trans2 = lang('Which language do you want?');
 
 
-	$nav = <<<HTML
+$version_trans = lang('version');
+$what_is_aktiv_kommune = lang('what_is_aktiv_kommune');
+$cart_header = lang('Application basket');
+
+
+$nav = <<<HTML
 <div class="border-top border-2 pt-5 pb-2r">
   <nav class="navbar">
     <a href="{$site_url}" class="navbar__logo">
@@ -477,92 +490,95 @@ HTML;
         </div>
 HTML;
 
-	$tpl_vars = array
-		(
-		'site_title'			 => $site_title,
-		'css'					 => $GLOBALS['phpgw']->common->get_css($cache_refresh_token),
-		'javascript'			 => $GLOBALS['phpgw']->common->get_javascript($cache_refresh_token),
-		'img_icon'				 => $GLOBALS['phpgw']->common->find_image('phpgwapi', 'favicon.ico'),
-		'str_base_url'			 => phpgw::link('/', array(), true),
-		'dateformat_backend'	 => $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'],
-		'site_url'				 => phpgw::link($site_base, array()),
-		'eventsearch_url'		 => phpgw::link('/bookingfrontend/', array('menuaction' => 'bookingfrontend.uieventsearch.show')),
-		'webserver_url'			 => $webserver_url,
-		'metainfo_author'		 => $author,
-		'userlang'				 => $userlang,
-		'metainfo_keywords'		 => $keywords,
-		'metainfo_description'	 => $description,
-		'metainfo_robots'		 => $robots,
-		'lbl_search'			 => lang('Search'),
-		'header_search_class'	 => 'hidden', //(isset($_GET['menuaction']) && $_GET['menuaction'] == 'bookingfrontend.uisearch.index' ? 'hidden' : '')
-		'nav'					 => empty($GLOBALS['phpgw_info']['flags']['noframework']) ? $nav : ''
-	);
 
-	$bouser	 = CreateObject('bookingfrontend.bouser', true);
+$tpl_vars = array(
+	'site_title'			 => $site_title,
+	'css'					 => $phpgwapi_common->get_css($cache_refresh_token),
+	'javascript'			 => $phpgwapi_common->get_javascript($cache_refresh_token),
+	'img_icon'				 => $phpgwapi_common->find_image('phpgwapi', 'favicon.ico'),
+	'str_base_url'			 => phpgw::link('/', array(), true),
+	'dateformat_backend'	 => $userSettings['preferences']['common']['dateformat'],
+	'site_url'				 => phpgw::link($site_base, array()),
+	'eventsearch_url'		 => phpgw::link('/bookingfrontend/', array('menuaction' => 'bookingfrontend.uieventsearch.show')),
+	'webserver_url'			 => $webserver_url,
+	'metainfo_author'		 => $author,
+	'userlang'				 => $userlang,
+	'metainfo_keywords'		 => $keywords,
+	'metainfo_description'	 => $description,
+	'metainfo_robots'		 => $robots,
+	'lbl_search'			 => lang('Search'),
+	'header_search_class'	 => 'hidden', //(isset($_GET['menuaction']) && $_GET['menuaction'] == 'bookingfrontend.uisearch.index' ? 'hidden' : '')
+	'nav'					 => empty($flags['noframework']) ? $nav : ''
+);
 
-	/**
-	 * Might be set wrong in the ui-class
-	 */
-	$xslt_app = !empty($GLOBALS['phpgw_info']['flags']['xslt_app']) ? true : false;
-	$org	 = CreateObject('booking.soorganization');
-	$GLOBALS['phpgw_info']['flags']['xslt_app'] = $xslt_app;
+$bouser	 = CreateObject('bookingfrontend.bouser', true);
 
-	$user_url = phpgw::link("/{$app}/", array('menuaction' => 'bookingfrontend.uiuser.show'));
-	$lang_user = lang('My page');
-	$tpl_vars['user_info_view'] = "<li><a class='link-text link-text-secondary normal' href='{$user_url}'><i class='fas fa-user'></i>{$lang_user}</a></li>";
+/**
+ * Might be set wrong in the ui-class
+ */
+$xslt_app = !empty($flags['xslt_app']) ? true : false;
+$org	 = CreateObject('booking.soorganization');
+$flags['xslt_app'] = $xslt_app;
+Settings::getInstance()->update('flags', ['xslt_app' => $xslt_app]);
 
-	$user_data = Cache::session_get($bouser->get_module(), $bouser::USERARRAY_SESSION_KEY);
-	if ($bouser->is_logged_in())
+$user_url = phpgw::link("/{$app}/", array('menuaction' => 'bookingfrontend.uiuser.show'));
+$lang_user = lang('My page');
+$tpl_vars['user_info_view'] = "<li><a class='link-text link-text-secondary normal' href='{$user_url}'><i class='fas fa-user'></i>{$lang_user}</a></li>";
+
+$user_data = Cache::session_get($bouser->get_module(), $bouser::USERARRAY_SESSION_KEY);
+if ($bouser->is_logged_in())
+{
+
+	if ($bouser->orgname == '000000000')
 	{
-
-		if ($bouser->orgname == '000000000')
-		{
-			$tpl_vars['login_text_org']	 = lang('SSN not registred');
-			$tpl_vars['login_text']		 = lang('Logout');
-			$tpl_vars['org_url']		 = '#';
-		}
-		else
-		{
-			$org_url = phpgw::link("/{$app}/", array('menuaction' => 'bookingfrontend.uiorganization.show',
-				'id' => $org->get_orgid($bouser->orgnr, $bouser->ssn)));
-
-			$lang_organization = lang('Organization');
-			$tpl_vars['org_info_view'] = "<li><a class='link-text link-text-secondary normal' href='{$org_url}'><i class='fas fa-sign-in-alt' title='{$lang_organization}'></i>{$bouser->orgname}</a></li>";
-			$tpl_vars['login_text_org']	 = $bouser->orgname;
-			$tpl_vars['login_text']		 = lang('Logout');
-		}
-		$tpl_vars['login_text']	 = $bouser->orgnr . ' :: ' . lang('Logout');
-		$tpl_vars['login_url']	 = 'logout.php';
-	}
-	else if(!empty($user_data['ssn']))
-	{
-			$tpl_vars['login_text_org']	 = '';
-			$tpl_vars['login_text']		 = "{$user_data['first_name']} {$user_data['last_name']} :: " . lang('Logout');
-			$tpl_vars['org_url']		 = '#';
-			$tpl_vars['login_url']	 = 'logout.php';
+		$tpl_vars['login_text_org']	 = lang('SSN not registred');
+		$tpl_vars['login_text']		 = lang('Logout');
+		$tpl_vars['org_url']		 = '#';
 	}
 	else
 	{
-		$tpl_vars['login_text_org']	 = '';
-		$tpl_vars['org_url']		 = '#';
-		$tpl_vars['login_text']		 = lang('Organization');
-		$tpl_vars['login_url']		 = 'login.php?after=' . urlencode($_SERVER['QUERY_STRING']);
-		$login_parameter			 = !empty($config_frontend['login_parameter']) ? $config_frontend['login_parameter'] : '';
-		$custom_login_url			 = !empty($config_frontend['custom_login_url']) ? $config_frontend['custom_login_url'] : '';
-		if ($login_parameter)
-		{
-			$login_parameter		 = ltrim($login_parameter, '&');
-			$tpl_vars['login_url']	 .= "&{$login_parameter}";
-		}
-		if ($custom_login_url)
-		{
-			$tpl_vars['login_url'] = $custom_login_url;
-		}
+		$org_url = phpgw::link("/{$app}/", array(
+			'menuaction' => 'bookingfrontend.uiorganization.show',
+			'id' => $org->get_orgid($bouser->orgnr, $bouser->ssn)
+		));
+
+		$lang_organization = lang('Organization');
+		$tpl_vars['org_info_view'] = "<li><a class='link-text link-text-secondary normal' href='{$org_url}'><i class='fas fa-sign-in-alt' title='{$lang_organization}'></i>{$bouser->orgname}</a></li>";
+		$tpl_vars['login_text_org']	 = $bouser->orgname;
+		$tpl_vars['login_text']		 = lang('Logout');
 	}
+	$tpl_vars['login_text']	 = $bouser->orgnr . ' :: ' . lang('Logout');
+	$tpl_vars['login_url']	 = 'logout.php';
+}
+else if (!empty($user_data['ssn']))
+{
+	$tpl_vars['login_text_org']	 = '';
+	$tpl_vars['login_text']		 = "{$user_data['first_name']} {$user_data['last_name']} :: " . lang('Logout');
+	$tpl_vars['org_url']		 = '#';
+	$tpl_vars['login_url']	 = 'logout.php';
+}
+else
+{
+	$tpl_vars['login_text_org']	 = '';
+	$tpl_vars['org_url']		 = '#';
+	$tpl_vars['login_text']		 = lang('Organization');
+	$tpl_vars['login_url']		 = 'login.php?after=' . urlencode($_SERVER['QUERY_STRING']);
+	$login_parameter			 = !empty($config_frontend['login_parameter']) ? $config_frontend['login_parameter'] : '';
+	$custom_login_url			 = !empty($config_frontend['custom_login_url']) ? $config_frontend['custom_login_url'] : '';
+	if ($login_parameter)
+	{
+		$login_parameter		 = ltrim($login_parameter, '&');
+		$tpl_vars['login_url']	 .= "&{$login_parameter}";
+	}
+	if ($custom_login_url)
+	{
+		$tpl_vars['login_url'] = $custom_login_url;
+	}
+}
 
 
-	$GLOBALS['phpgw']->template->set_var($tpl_vars);
+$template->set_var($tpl_vars);
 
-	$GLOBALS['phpgw']->template->pfp('out', 'head');
+$template->pfp('out', 'head');
 
-	unset($tpl_vars);
+unset($tpl_vars);
