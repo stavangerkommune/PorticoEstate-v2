@@ -75,7 +75,6 @@ class Translation
 	private function __construct($preferences = [])
 	{
 		$this->db = \App\Database\Db::getInstance();
-		$this->cache = new Cache();
 		$this->serverSettings = Settings::getInstance()->get('server');
 
 		$this->preferences = isset(Settings::getInstance()->get('user')['preferences']) ? Settings::getInstance()->get('user')['preferences'] : $preferences;
@@ -124,7 +123,8 @@ class Translation
 		{
 			return;
 		}
-		$lang = $this->cache->system_get('phpgwapi', "lang_{$this->userlang}", true);
+		$lang = Cache::system_get('phpgwapi', "lang_{$this->userlang}", true);
+		$this->lang_is_cached = false;
 		if ($lang && is_array($lang))
 		{
 			self::$lang = $lang;
@@ -223,13 +223,13 @@ class Translation
 		{
 			foreach ($language as $lang)
 			{
-				$this->cache->system_set('phpgwapi', "lang_{$lang}", $lang_set[$lang], true);
+				Cache::system_set('phpgwapi', "lang_{$lang}", $lang_set[$lang], true);
 
 				//FIXME: evaluate beenefits from chunking into app_lang
 				/*
 					foreach ($lang_set[$lang] as $app => $app_lang)
 					{
-						$this->cache->system_set('phpgwapi', "lang_{$lang}_{$app}", $app_lang, true);
+						Cache::system_set('phpgwapi', "lang_{$lang}_{$app}", $app_lang, true);
 					}
 */
 			}
