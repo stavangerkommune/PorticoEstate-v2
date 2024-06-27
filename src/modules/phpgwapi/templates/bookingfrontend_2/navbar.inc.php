@@ -37,7 +37,7 @@ function parse_footer_end()
 		return true;
 	}
 	$serverSettings = Settings::getInstance()->get('server');
-	$template = new Template(PHPGW_TEMPLATE_DIR);
+	$template = Template::getInstance(PHPGW_TEMPLATE_DIR);
 
 	$template->set_root(PHPGW_TEMPLATE_DIR);
 	$template->set_file('footer', 'footer.tpl');

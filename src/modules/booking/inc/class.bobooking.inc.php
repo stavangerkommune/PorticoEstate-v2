@@ -42,7 +42,7 @@
 		 */
 		function send_notification( $booking, $allocation, $maildata, $mailadresses, $valid_dates = null )
 		{
-			if (!(isset($GLOBALS['phpgw_info']['server']['smtp_server']) && $GLOBALS['phpgw_info']['server']['smtp_server']))
+			if (!(isset($this->serverSettings['smtp_server']) && $this->serverSettings['smtp_server']))
 			{
 				return;
 			}
@@ -52,9 +52,9 @@
 			$config = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
 
-			$from = isset($config->config_data['email_sender']) && $config->config_data['email_sender'] ? $config->config_data['email_sender'] : "noreply<noreply@{$GLOBALS['phpgw_info']['server']['hostname']}>";
+			$from = isset($config->config_data['email_sender']) && $config->config_data['email_sender'] ? $config->config_data['email_sender'] : "noreply<noreply@{$this->serverSettings['hostname']}>";
 
-			$external_site_address = isset($config->config_data['external_site_address']) && $config->config_data['external_site_address'] ? $config->config_data['external_site_address'] : $GLOBALS['phpgw_info']['server']['webserver_url'];
+			$external_site_address = isset($config->config_data['external_site_address']) && $config->config_data['external_site_address'] ? $config->config_data['external_site_address'] : $this->serverSettings['webserver_url'];
 
 
 			if (($maildata['outseason'] != 'on' && $maildata['recurring'] != 'on' && $maildata['delete_allocation'] != 'on') ||
@@ -178,16 +178,16 @@
 
 		function send_admin_notification( $booking, $maildata, $system_message, $allocation, $valid_dates = null )
 		{
-			if (!(isset($GLOBALS['phpgw_info']['server']['smtp_server']) && $GLOBALS['phpgw_info']['server']['smtp_server']))
+			if (!(isset($this->serverSettings['smtp_server']) && $this->serverSettings['smtp_server']))
 				return;
 			$send = CreateObject('phpgwapi.send');
 
 			$config = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
 
-			$from = isset($config->config_data['email_sender']) && $config->config_data['email_sender'] ? $config->config_data['email_sender'] : "noreply<noreply@{$GLOBALS['phpgw_info']['server']['hostname']}>";
+			$from = isset($config->config_data['email_sender']) && $config->config_data['email_sender'] ? $config->config_data['email_sender'] : "noreply<noreply@{$this->serverSettings['hostname']}>";
 
-			$external_site_address = isset($config->config_data['external_site_address']) && $config->config_data['external_site_address'] ? $config->config_data['external_site_address'] : $GLOBALS['phpgw_info']['server']['webserver_url'];
+			$external_site_address = isset($config->config_data['external_site_address']) && $config->config_data['external_site_address'] ? $config->config_data['external_site_address'] : $this->serverSettings['webserver_url'];
 
 			$subject		 = $system_message['title'];
 			$body			 = '<b>Beskjed fra ' . $system_message['name'] . '</b><br />' . $system_message['message'] . '<br /><br /><b>Epost som er sendt til brukere av Hallen:</b><br />';
@@ -1363,7 +1363,7 @@
 		function get_free_events( $building_id, $resource_id, $start_date, $end_date, $weekdays, $stop_on_end_date=false, $all_simple_bookings=false )
 		{
 
-			$timezone	 = !empty($GLOBALS['phpgw_info']['user']['preferences']['common']['timezone']) ? $GLOBALS['phpgw_info']['user']['preferences']['common']['timezone'] : 'UTC';
+			$timezone	 = !empty($this->userSettings['preferences']['common']['timezone']) ? $this->userSettings['preferences']['common']['timezone'] : 'UTC';
 
 			try
 			{
@@ -1544,7 +1544,7 @@
 			);
 
 
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
 			$datetimeformat = "{$dateformat} H:i";
 
 			$soseason = CreateObject('booking.soseason');
@@ -1743,7 +1743,8 @@
 
 		private function get_partials(& $events, $resource_ids)
 		{
-			$session_id = $GLOBALS['phpgw']->session->get_session_id();
+			$sessions = \App\modules\phpgwapi\security\Sessions::getInstance();
+			$session_id = $sessions->get_session_id();
 			if (!empty($session_id))
 			{
 				$filters = array('status' => 'NEWPARTIAL1', 'session_id' => $session_id);
@@ -1783,7 +1784,7 @@
 
 		function check_if_resurce_is_taken( $resource, $StartTime, $endTime, $events)
 		{
-			$timezone		 = $GLOBALS['phpgw_info']['user']['preferences']['common']['timezone'];
+			$timezone		 = $this->userSettings['preferences']['common']['timezone'];
 			$DateTimeZone	 = new DateTimeZone($timezone);
 			$overlap = false;
 

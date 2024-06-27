@@ -6,9 +6,16 @@ class booking_bocommon
 {
 
 	var $so;
+	protected $phpgwapi_common, $flags, $serverSettings, $userSettings, $apps;
 
 	public function __construct()
 	{
+		$this->phpgwapi_common = new \phpgwapi_common();
+		$this->flags = Settings::getInstance()->get('flags');
+		$this->serverSettings = Settings::getInstance()->get('server');
+		$this->userSettings = Settings::getInstance()->get('user');
+		$this->apps = Settings::getInstance()->get('apps');
+
 	}
 
 	/**
