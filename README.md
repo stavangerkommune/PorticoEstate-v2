@@ -2,7 +2,7 @@
 
 New Api based on [Slim framework](https://www.slimframework.com/)
 
-# Instructions
+## Instructions to run the code
 
 Follow these steps to get started:
 
@@ -34,4 +34,9 @@ Follow these steps to get started:
 6. **Access the API**
 	- The API will be available at [http://localhost:8088/](http://localhost:8088/)
 
-**Note:** Ensure the `xdebug.client_port` is set to `9004`.
+**Note:** Ensure the `xdebug.client_port` is set to `9003`.
+
+## Generate minified js for bookingfrontend
+1. Navigate to `src/modules/bookingfrontend/js/bookingfrontend_2`
+2. Run `npm install`
+3. Run `npm run prod` to build for production
