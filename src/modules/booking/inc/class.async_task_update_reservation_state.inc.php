@@ -1,126 +1,127 @@
 <?php
-	phpgw::import_class('booking.async_task');
-	phpgw::import_class('booking.socompleted_reservation');
-	phpgw::import_class('phpgwapi.datetime');
+
+use App\Database\Db;
+
+phpgw::import_class('booking.async_task');
+phpgw::import_class('booking.socompleted_reservation');
+phpgw::import_class('phpgwapi.datetime');
 
 
-	class booking_async_task_update_reservation_state extends booking_async_task
+class booking_async_task_update_reservation_state extends booking_async_task
+{
+
+	private $soapplication, $sopurchase_order, $update_reservation_time, $activate_application_articles;
+
+	public function __construct()
 	{
+		parent::__construct();
+		$this->soapplication	 = CreateObject('booking.soapplication');
+		$this->sopurchase_order	 = createObject('booking.sopurchase_order');
+		$config					 = CreateObject('phpgwapi.config', 'booking')->read();
 
-		private $soapplication, $sopurchase_order, $update_reservation_time, $activate_application_articles;
+		$this->activate_application_articles = !empty($config['activate_application_articles']) ? true : false;
 
-		public function __construct()
+		$billing_delay = !empty($config['billing_delay']) ? (int) $config['billing_delay']  : 0;
+		$this->update_reservation_time = date('Y-m-d');
+
+		if ($billing_delay)
 		{
-			parent::__construct();
-			$this->soapplication	 = CreateObject('booking.soapplication');
-			$this->sopurchase_order	 = createObject('booking.sopurchase_order');
-			$config					 = CreateObject('phpgwapi.config', 'booking')->read();
-
-			$this->activate_application_articles = !empty($config['activate_application_articles']) ? true : false;
-
-			$billing_delay = !empty($config['billing_delay']) ? (int) $config['billing_delay']  : 0;
-			$this->update_reservation_time = date('Y-m-d');
-
-			if($billing_delay)
+			$_finnish_datestamp = time();
+			for ($i = 1; $i < 30; $i++)
 			{
-				$_finnish_datestamp = time();
-				for ($i = 1; $i < 30; $i++)
+				$finnish_datestamp	 = $_finnish_datestamp - (86400 * $i);
+				$working_days	 = phpgwapi_datetime::get_working_days($finnish_datestamp, $_finnish_datestamp);
+				if ($working_days == $billing_delay)
 				{
-					$finnish_datestamp	 = $_finnish_datestamp - (86400 * $i);
-					$working_days	 = phpgwapi_datetime::get_working_days( $finnish_datestamp, $_finnish_datestamp);
-					if ($working_days == $billing_delay)
-					{
-						$this->update_reservation_time = date('Y-m-d', $finnish_datestamp) . ' 10:00:00';
-						break;
-					}
+					$this->update_reservation_time = date('Y-m-d', $finnish_datestamp) . ' 10:00:00';
+					break;
 				}
 			}
 		}
+	}
 
-		public function get_default_times()
+	public function get_default_times()
+	{
+		return array('hour' => '*/1');
+	}
+
+	public function run($options = array())
+	{
+		$db = Db::getInstance();
+
+		$reservation_types = array(
+			//				'booking',
+			'event',
+			'allocation'
+		);
+
+		$completed_so = CreateObject('booking.socompleted_reservation');
+
+		foreach ($reservation_types as $reservation_type)
 		{
-			return array( 'hour' => '*/1');
-		}
+			$bo = CreateObject('booking.bo' . $reservation_type);
 
-		public function run( $options = array() )
-		{
-			$db = Db::getInstance();
+			$expired = $bo->find_expired($this->update_reservation_time);
 
-			$reservation_types = array(
-//				'booking',
-				'event',
-				'allocation'
-			);
-
-			$completed_so = CreateObject('booking.socompleted_reservation');
-
-			foreach ($reservation_types as $reservation_type)
+			if (!is_array($expired) || !isset($expired['results']))
 			{
-				$bo = CreateObject('booking.bo' . $reservation_type);
+				continue;
+			}
 
-				$expired = $bo->find_expired($this->update_reservation_time);
+			$db->transaction_begin();
 
-				if (!is_array($expired) || !isset($expired['results']))
+			if (count($expired['results']) > 0)
+			{
+				foreach ($expired['results'] as $reservation)
 				{
-					continue;
-				}
+					$completed_so->create_from($reservation_type, $reservation);
+					$orders = $completed_so->find_expired_orders($reservation_type, $reservation['id'], $this->update_reservation_time);
 
-				$db->transaction_begin();
-
-				if (count($expired['results']) > 0)
-				{
-					foreach ($expired['results'] as $reservation)
+					/**
+					 * For vipps kan det være flere krav, for etterfakturering vil det være ett
+					 */
+					foreach ($orders as $order_id)
 					{
-						$completed_so->create_from($reservation_type, $reservation);
-						$orders = $completed_so->find_expired_orders($reservation_type, $reservation['id'], $this->update_reservation_time);
+						$this->add_payment($order_id);
+						$order = $this->sopurchase_order->get_single_purchase_order($order_id);
+						$_reservation = $bo->read_single($reservation['id']);
 
-						/**
-						 * For vipps kan det være flere krav, for etterfakturering vil det være ett
-						 */
-						foreach ($orders as $order_id)
+						if ($this->activate_application_articles && (float)$_reservation['cost'] != (float)$order['sum'])
 						{
-							$this->add_payment($order_id);
-							$order = $this->sopurchase_order->get_single_purchase_order($order_id);
-							$_reservation = $bo->read_single($reservation['id']);
-
-							if($this->activate_application_articles && (float)$_reservation['cost'] != (float)$order['sum'])
-							{
-								$_reservation['cost'] = $order['sum'];
-								$this->add_cost_history($_reservation, 'update from order', $order['sum']);
-								$bo->update($_reservation);
-							}
+							$_reservation['cost'] = $order['sum'];
+							$this->add_cost_history($_reservation, 'update from order', $order['sum']);
+							$bo->update($_reservation);
 						}
 					}
-
-					$bo->complete_expired($expired['results']);
 				}
 
-				$db->transaction_commit();
-			}
-		}
-
-		private function add_payment( int $order_id )
-		{
-			$this->soapplication->add_payment($order_id, 'local_invoice', 'live', 2);
-		}
-
-		private function add_cost_history( &$reservation, $comment = '', $cost = '0.00' )
-		{
-			if (!$comment)
-			{
-				$comment = lang('cost is set');
+				$bo->complete_expired($expired['results']);
 			}
 
-			$reservation['costs'][] = array(
-				'time' => 'now',
-				'author' => 'Cron-job',
-				'comment' => $comment,
-				'cost' => (float)$cost
-			);
+			$db->transaction_commit();
 		}
-
-
 	}
+
+	private function add_payment(int $order_id)
+	{
+		$this->soapplication->add_payment($order_id, 'local_invoice', 'live', 2);
+	}
+
+	private function add_cost_history(&$reservation, $comment = '', $cost = '0.00')
+	{
+		if (!$comment)
+		{
+			$comment = lang('cost is set');
+		}
+
+		$reservation['costs'][] = array(
+			'time' => 'now',
+			'author' => 'Cron-job',
+			'comment' => $comment,
+			'cost' => (float)$cost
+		);
+	}
+}
 	/*
 Begreper:
 application  - Søknad

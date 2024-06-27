@@ -358,7 +358,7 @@
 				 */
 				$filter		 = 'AND bb_resource_service.resource_id =' . $_article['resource_id'];
 
-				if($GLOBALS['phpgw_info']['flags']['currentapp'] == 'bookingfrontend')
+				if($this->flags['currentapp'] == 'bookingfrontend')
 				{
 					$filter .= ' AND deactivate_in_frontend IS NULL';
 				}

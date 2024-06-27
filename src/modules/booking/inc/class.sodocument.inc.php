@@ -249,9 +249,9 @@ phpgw::import_class('booking.socommon');
 
 		/**
 		 * Resize image using GD
-		 * @param type $source
-		 * @param type $dest
-		 * @param type $target_height
+		 * @param string $source
+		 * @param string $dest
+		 * @param int $target_height
 		 */
 		function resize_image( $source, $dest, $target_height = 800 )
 		{

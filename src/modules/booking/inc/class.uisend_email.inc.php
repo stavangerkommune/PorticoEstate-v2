@@ -1,149 +1,153 @@
 <?php
-	phpgw::import_class('booking.uicommon');
-	phpgw::import_class('phpgwapi.send');
 
-	class booking_uisend_email extends booking_uicommon
+use App\modules\phpgwapi\services\Settings;
+use App\Database\Db;
+
+phpgw::import_class('booking.uicommon');
+phpgw::import_class('phpgwapi.send');
+
+class booking_uisend_email extends booking_uicommon
+{
+
+	public $public_functions = array(
+		'index'					 => true,
+		'get_email_addresses'	 => true,
+		'query'					 => true,
+		'receipt'				 => true,
+	);
+
+	private $from;
+
+	public function __construct()
 	{
+		parent::__construct();
 
-		public $public_functions = array(
-			'index'					 => true,
-			'get_email_addresses'	 => true,
-			'query'					 => true,
-			'receipt'				 => true,
-		);
-
-		private $from;
-
-		public function __construct()
-		{
-			parent::__construct();
-
-			$config = CreateObject('phpgwapi.config', 'booking')->read();
-			$this->from = isset($config['email_sender']) && $config['email_sender'] ? $config['email_sender'] : "noreply<noreply@{$GLOBALS['phpgw_info']['server']['hostname']}>";
+		$config = CreateObject('phpgwapi.config', 'booking')->read();
+		$this->from = isset($config['email_sender']) && $config['email_sender'] ? $config['email_sender'] : "noreply<noreply@{$this->serverSettings['hostname']}>";
 
 
-			self::set_active_menu('booking::mailing');
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('booking') . "::" . lang('Send e-mail');
-		}
+		self::set_active_menu('booking::mailing');
+		Settings::getInstance()->update('flags', ['app_header' => lang('booking') . "::" . lang('Send e-mail')]);
+	}
 
-		public function query()
-		{
-			
-		}
+	public function query()
+	{
+	}
 
-		public function index()
-		{
-			$errors = array();
+	public function index()
+	{
+		$errors = array();
 
-			if ($_SERVER['REQUEST_METHOD'] == 'POST')
-			{
-				$building_id = Sanitizer::get_var('building_id', 'int');
-				$building_name = Sanitizer::get_var('building_name', 'string');
-				if (is_array(Sanitizer::get_var('seasons')))
-				{
-					$season = implode(',', Sanitizer::get_var('seasons'));
-				}
-				else
-				{
-					$season = Sanitizer::get_var('seasons');
-				}
-				$mailsubject = Sanitizer::get_var('mailsubject', 'string');
-				$mailbody = Sanitizer::get_var('mailbody', 'html');
-				$email_recipients = Sanitizer::get_var('email_recipients', 'string');
-
-				if ($building_id == '' || $season == '' || $mailsubject == '' || $mailbody == '')
-				{
-					$errors['incomplete form'] = lang('All fields are required');
-				}
-
-
-				if (!$errors)
-				{
-					$_contacts = array();
-
-					foreach ($email_recipients as $email_recipient)
-					{
-						$_contacts[] = array('email' => $email_recipient);
-					}
-
-					$result = $this->send_emails($_contacts, $mailsubject, $mailbody);
-					self::redirect(array('menuaction' => 'booking.uisend_email.receipt',
-						'ok' => count($result['ok']),
-						'failed' => count($result['failed'])
-					));
-				}
-				$building['id'] = $building_id;
-				$building['name'] = $building_name;
-			}
-
-			$this->flash_form_errors($errors);
-			self::add_javascript('booking', 'base', 'email_send.js');
-			phpgwapi_jquery::load_widget('autocomplete');
-
-			$tabs = array();
-			$tabs['generic'] = array('label' => lang('Send e-mail'), 'link' => '#building');
-			$active_tab = 'generic';
-
-			$building['tabs'] = phpgwapi_jquery::tabview_generate($tabs, $active_tab);
-			$building['validator'] = phpgwapi_jquery::formvalidator_generate(array('location',
-					'date', 'security', 'file'));
-			phpgwapi_jquery::load_widget('bootstrap-multiselect');
-			$this->rich_text_editor(array('field_mailbody'));
-			self::render_template_xsl('email_index', array(
-				'building'		 => $building,
-				'season'		 => $season,
-				'mailsubject'	 => $mailsubject,
-				'mailbody'		 => $mailbody,
-				'from'			 => $this->from,
-				'html_editor'	 => $GLOBALS['phpgw_info']['user']['preferences']['common']['rteditor']
-			));
-		}
-
-		public function receipt()
-		{
-			$ok_count = Sanitizer::get_var('ok');
-			$fail_count = Sanitizer::get_var('failed');
-			self::render_template_xsl('email_receipt', array('ok_count' => $ok_count, 'fail_count' => $fail_count));
-		}
-
-		private function send_emails( $contacts, $subject, $body )
-		{
-			$from = $this->from;
-
-			$send = CreateObject('phpgwapi.send');
-			$result = array('ok' => array(),'failed' => array());
-
-			foreach ($contacts as $contact)
-			{
-				try
-				{
-					$send->msg('email', $contact['email'], $subject, $body, '', '', '', $from, 'AktivKommune', 'html');
-					$result['ok'][] = $contact;
-				}
-				catch (Exception $e)
-				{
-					$result['failed'][] = $contact;
-				}
-			}
-			return $result;
-		}
-
-		public function get_email_addresses()
+		if ($_SERVER['REQUEST_METHOD'] == 'POST')
 		{
 			$building_id = Sanitizer::get_var('building_id', 'int');
-			$seasons = implode(',', Sanitizer::get_var('seasons', 'int'));
+			$building_name = Sanitizer::get_var('building_name', 'string');
+			if (is_array(Sanitizer::get_var('seasons')))
+			{
+				$season = implode(',', Sanitizer::get_var('seasons'));
+			}
+			else
+			{
+				$season = Sanitizer::get_var('seasons');
+			}
+			$mailsubject = Sanitizer::get_var('mailsubject', 'string');
+			$mailbody = Sanitizer::get_var('mailbody', 'html');
+			$email_recipients = Sanitizer::get_var('email_recipients', 'string');
 
-			$contacts = array();
-			$db = Db::getInstance();
+			if ($building_id == '' || $season == '' || $mailsubject == '' || $mailbody == '')
+			{
+				$errors['incomplete form'] = lang('All fields are required');
+			}
 
 
+			if (!$errors)
+			{
+				$_contacts = array();
 
-			$sql = "SELECT from_ FROM public.bb_season WHERE bb_season.id IN($seasons) ORDER BY from_ ASC";
-			$db->query($sql);
-			$db->next_record();
-			$from = $db->f('from_');
+				foreach ($email_recipients as $email_recipient)
+				{
+					$_contacts[] = array('email' => $email_recipient);
+				}
 
-			$sql = "SELECT DISTINCT oc.name, oc.email
+				$result = $this->send_emails($_contacts, $mailsubject, $mailbody);
+				self::redirect(array(
+					'menuaction' => 'booking.uisend_email.receipt',
+					'ok' => count($result['ok']),
+					'failed' => count($result['failed'])
+				));
+			}
+			$building['id'] = $building_id;
+			$building['name'] = $building_name;
+		}
+
+		$this->flash_form_errors($errors);
+		self::add_javascript('booking', 'base', 'email_send.js');
+		phpgwapi_jquery::load_widget('autocomplete');
+
+		$tabs = array();
+		$tabs['generic'] = array('label' => lang('Send e-mail'), 'link' => '#building');
+		$active_tab = 'generic';
+
+		$building['tabs'] = phpgwapi_jquery::tabview_generate($tabs, $active_tab);
+		$building['validator'] = phpgwapi_jquery::formvalidator_generate(array(
+			'location',
+			'date', 'security', 'file'
+		));
+		phpgwapi_jquery::load_widget('bootstrap-multiselect');
+		$this->rich_text_editor(array('field_mailbody'));
+		self::render_template_xsl('email_index', array(
+			'building'		 => $building,
+			'season'		 => $season,
+			'mailsubject'	 => $mailsubject,
+			'mailbody'		 => $mailbody,
+			'from'			 => $this->from,
+			'html_editor'	 => $this->userSettings['preferences']['common']['rteditor']
+		));
+	}
+
+	public function receipt()
+	{
+		$ok_count = Sanitizer::get_var('ok');
+		$fail_count = Sanitizer::get_var('failed');
+		self::render_template_xsl('email_receipt', array('ok_count' => $ok_count, 'fail_count' => $fail_count));
+	}
+
+	private function send_emails($contacts, $subject, $body)
+	{
+		$from = $this->from;
+
+		$send = CreateObject('phpgwapi.send');
+		$result = array('ok' => array(), 'failed' => array());
+
+		foreach ($contacts as $contact)
+		{
+			try
+			{
+				$send->msg('email', $contact['email'], $subject, $body, '', '', '', $from, 'AktivKommune', 'html');
+				$result['ok'][] = $contact;
+			}
+			catch (Exception $e)
+			{
+				$result['failed'][] = $contact;
+			}
+		}
+		return $result;
+	}
+
+	public function get_email_addresses()
+	{
+		$building_id = Sanitizer::get_var('building_id', 'int');
+		$seasons = implode(',', Sanitizer::get_var('seasons', 'int'));
+
+		$contacts = array();
+		$db = Db::getInstance();
+
+		$sql = "SELECT from_ FROM public.bb_season WHERE bb_season.id IN($seasons) ORDER BY from_ ASC";
+		$db->query($sql);
+		$db->next_record();
+		$from = $db->f('from_');
+
+		$sql = "SELECT DISTINCT oc.name, oc.email
 				FROM bb_allocation alo
 				INNER JOIN bb_organization_contact oc ON oc.organization_id = alo.organization_id AND trim(oc.email) <> ''
 				INNER JOIN bb_season se ON se.id = alo.season_id AND se.active = 1
@@ -171,25 +175,25 @@
 				WHERE bb_season.id in($seasons)
 				AND bb_event.from_ > '$from'
 				ORDER BY name";
-				$db->query($sql);
+		$db->query($sql);
 
-			$result = $db->resultSet;
+		$result = $db->resultSet;
 
-			$duplicates = array();
+		$duplicates = array();
 
-			foreach ($result as $c)
+		foreach ($result as $c)
+		{
+			if (empty($c['email']))
 			{
-				if(empty($c['email']))
-				{
-					continue;
-				}
-				if(!isset($duplicates[$c['email']]))
-				{
-					$contacts[] = array('email' => $c['email'], 'name' => $c['name']);
-					$duplicates[$c['email']] = true;
-				}
+				continue;
 			}
-
-			return $contacts;
+			if (!isset($duplicates[$c['email']]))
+			{
+				$contacts[] = array('email' => $c['email'], 'name' => $c['name']);
+				$duplicates[$c['email']] = true;
+			}
 		}
+
+		return $contacts;
 	}
+}

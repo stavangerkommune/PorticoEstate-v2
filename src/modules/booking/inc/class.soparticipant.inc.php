@@ -18,7 +18,7 @@
 				'quantity' => array('type' => 'int', 'query' => false, 'required' => true),
 				)
 			);
-			$this->account = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->account = $this->userSettings['account_id'];
 		}
 
 		protected function preValidate( &$entity )

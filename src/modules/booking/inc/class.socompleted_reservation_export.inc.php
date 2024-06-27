@@ -73,7 +73,7 @@
 
 		protected function _get_search_to_date( &$entity )
 		{
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
 			$to_date = isset($entity['to_']) && $entity['to_'] ? $entity['to_'] : date($dateformat);
 
 			$to_date = date('Y-m-d', phpgwapi_datetime::date_to_timestamp($to_date));
@@ -299,12 +299,12 @@
 				throw new InvalidArgumentException('Invalid entity parameter');
 			}
 
-			if (!isset($GLOBALS['phpgw_info']['user']['apps']['admin']) && // admin users should have access to all buildings
+			if (!isset($this->userSettings['apps']['admin']) && // admin users should have access to all buildings
 				!$this->completed_reservation_bo->has_role(booking_sopermission::ROLE_MANAGER))
 			{ // users with the booking role admin should have access to all buildings
 				if (!isset($filters['building_id']))
 				{
-					$filters['building_id'] = $this->completed_reservation_bo->accessable_buildings($GLOBALS['phpgw_info']['user']['id']);
+					$filters['building_id'] = $this->completed_reservation_bo->accessable_buildings($this->userSettings['id']);
 				}
 			}
 

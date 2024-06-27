@@ -117,7 +117,7 @@
 		{
 			$table_name = $this->table_name;
 
-			$timezone	 = !empty($GLOBALS['phpgw_info']['user']['preferences']['common']['timezone']) ? $GLOBALS['phpgw_info']['user']['preferences']['common']['timezone'] : 'UTC';
+			$timezone	 = !empty($this->userSettings['preferences']['common']['timezone']) ? $this->userSettings['preferences']['common']['timezone'] : 'UTC';
 
 			try
 			{

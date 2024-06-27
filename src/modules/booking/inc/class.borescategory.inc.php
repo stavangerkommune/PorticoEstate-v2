@@ -62,7 +62,7 @@
 				array_multisort($rescategory_names, SORT_DESC, $rescategories['results']);
 			}
 
-			$maxmatchs	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
+			$maxmatchs	 = $this->userSettings['preferences']['common']['maxmatchs'];
 
 			$start = isset($params['start']) && $params['start'] ? (int)$params['start'] : 0;
 			$results = isset($params['results']) && $params['results'] ? $params['results'] : $maxmatchs;

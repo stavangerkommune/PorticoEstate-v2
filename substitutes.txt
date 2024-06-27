@@ -102,3 +102,7 @@ ACL_PRIVATE
 
 $GLOBALS['phpgw']->session->is_repost()
 phpgw::is_repost()
+
+
+use App\modules\phpgwapi\services\AsyncService;
+$asyncservice = AsyncService::getInstance();

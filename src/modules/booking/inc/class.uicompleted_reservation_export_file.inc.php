@@ -1,5 +1,10 @@
 <?php
-	phpgw::import_class('booking.uicommon');
+
+use App\modules\phpgwapi\services\Settings;
+use App\Database\Db;
+
+
+phpgw::import_class('booking.uicommon');
 
 	phpgw::import_class('booking.uidocument_building');
 	phpgw::import_class('booking.uipermission_building');
@@ -31,8 +36,7 @@
 			self::set_active_menu('booking::invoice_center::generated_files');
 			$this->url_prefix = 'booking.uicompleted_reservation_export_file';
 			$this->display_name = lang('Generated Files');
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('booking') . "::{$this->display_name}";
-
+			Settings::getInstance()->update('flags', ['app_header' => lang('booking') . "::{$this->display_name}"]); 
 		}
 
 		public function link_to( $action, $params = array() )
@@ -138,7 +142,7 @@
 
 		public function query()
 		{
-			$this->db = $GLOBALS['phpgw']->db;
+			$this->db = Db::getInstance();
 			$config = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
 #            if ($config->config_data['output_files'] == 'single')

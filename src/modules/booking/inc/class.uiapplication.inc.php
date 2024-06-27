@@ -5,6 +5,7 @@ use App\modules\phpgwapi\controllers\Accounts\Accounts;
 use App\modules\phpgwapi\security\Sessions;
 use App\modules\phpgwapi\services\Cache;
 use App\Database\Db;
+use App\modules\phpgwapi\security\Acl;
 
 
 phpgw::import_class('booking.uicommon');
@@ -1226,7 +1227,7 @@ class booking_uiapplication extends booking_uicommon
 				}
 				else
 				{
-					$repost_add_application = 	Cache::session_get('booking', 'repost_add_application', $receipt['id']);
+					$repost_add_application = 	Cache::session_get('booking', 'repost_add_application');
 					$application = $this->bo->read_single($repost_add_application);
 					self::redirect(array(
 						'menuaction' => $this->url_prefix . '.show', 'id' => $repost_add_application,
@@ -2846,6 +2847,7 @@ class booking_uiapplication extends booking_uicommon
 
 	private function event_for_date($application, $date_id)
 	{
+		$date = null;
 		foreach ($application['dates'] as $d)
 		{
 			if ($d['id'] == $date_id)

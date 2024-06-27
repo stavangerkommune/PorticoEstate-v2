@@ -43,7 +43,7 @@
 					))
 				)
 			);
-			$this->account = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->account = $this->userSettings['account_id'];
 		}
 
 		function doValidate( $entity, booking_errorstack $errors )
@@ -347,7 +347,7 @@
 				'to_' => array('type' => 'time', 'required' => true)
 				)
 			);
-			$this->account = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->account = $this->userSettings['account_id'];
 		}
 
 		function doValidate( $entity, booking_errorstack $errors )

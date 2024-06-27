@@ -3,13 +3,14 @@
 	phpgw::import_class('booking.soallocation');
 	phpgw::import_class('booking.uiapplication');
 	phpgw::import_class('booking.boapplication');
+
 	use Kigkonsult\Icalcreator\Vcalendar;
+	use App\modules\phpgwapi\services\Cache;
 
 	class bookingfrontend_uiallocation extends booking_uiallocation
 	{
 
-		public $public_functions = array
-			(
+		public $public_functions = array(
 			'info'	 => true,
 			'info_json'	 => true,
 			'cancel' => true,
@@ -17,7 +18,7 @@
 			'edit'	 => true
 		);
 
-		var $org_bo, $system_message_bo,$booking_bo,$allocation_so,$application_ui,$application_bo;
+		var $org_bo, $system_message_bo, $booking_bo, $allocation_so, $application_ui, $application_bo;
 		public function __construct()
 		{
 			parent::__construct();
@@ -32,7 +33,7 @@
 			$this->application_bo 	 = new booking_boapplication();
 		}
 
-		public function building_users( $building_id, $type = false, $activities = array() )
+		public function building_users($building_id, $type = false, $activities = array())
 		{
 			$contacts		 = array();
 			$organizations	 = $this->organization_bo->find_building_users($building_id, $type, $activities);
@@ -77,6 +78,7 @@
 			$config->read();
 
 			$from_org = Sanitizer::get_var('from_org', 'boolean', "REQUEST", false);
+			$jqcal2 = CreateObject('phpgwapi.jqcal2');
 
 			if ($config->config_data['user_can_delete_allocations'] != 'yes')
 			{
@@ -107,7 +109,7 @@
 					$system_message['building_id']	 = intval($allocation['building_id']);
 					$system_message['building_name'] = $this->bo->so->get_building($system_message['building_id']);
 					$system_message['created']		 = $date->format('Y-m-d  H:m');
-//					$system_message					 = array_merge($system_message, extract_values($_POST, array('message')));
+					//					$system_message					 = array_merge($system_message, extract_values($_POST, array('message')));
 					$system_message['message']		 = Sanitizer::get_var('message', 'html');
 					$system_message['type']			 = 'cancelation';
 					$system_message['status']		 = 'NEW';
@@ -115,9 +117,11 @@
 					$system_message['phone']		 = $organization['contacts'][0]['phone'];
 					$system_message['email']		 = $organization['contacts'][0]['email'];
 					$system_message['title']		 = lang('Cancelation of allocation from') . " " . $allocation['organization_name'];
-					$link							 = self::link(array('menuaction'	 => 'booking.uiallocation.delete',
-							'id'	 => $allocation['id'], 'outseason'		 => $outseason, 'recurring'		 => $recurring,
-							'repeat_until'	 => $repeat_until, 'field_interval' => $field_interval));
+					$link							 = self::link(array(
+						'menuaction'	 => 'booking.uiallocation.delete',
+						'id'	 => $allocation['id'], 'outseason'		 => $outseason, 'recurring'		 => $recurring,
+						'repeat_until'	 => $repeat_until, 'field_interval' => $field_interval
+					));
 					if (strpos($link, '/portico/bookingfrontend') !== false)
 					{
 						$link	 = mb_strcut($link, 24, strlen($link));
@@ -134,13 +138,17 @@
 
 					if ($from_org)
 					{
-						self::redirect(array('menuaction' => 'bookingfrontend.uiorganization.show',
-							'id' => $allocation['organization_id'], 'date' => date("Y-m-d", strtotime($original_from))));
+						self::redirect(array(
+							'menuaction' => 'bookingfrontend.uiorganization.show',
+							'id' => $allocation['organization_id'], 'date' => date("Y-m-d", strtotime($original_from))
+						));
 					}
 					else
 					{
-						self::redirect(array('menuaction' => 'bookingfrontend.uibuilding.show',
-							'id'		 => $system_message['building_id'], 'date'		 => date("Y-m-d", strtotime($original_from))));
+						self::redirect(array(
+							'menuaction' => 'bookingfrontend.uibuilding.show',
+							'id'		 => $system_message['building_id'], 'date'		 => date("Y-m-d", strtotime($original_from))
+						));
 					}
 				}
 
@@ -148,18 +156,22 @@
 
 				if ($from_org)
 				{
-					$allocation['cancel_link'] = self::link(array('menuaction' => 'bookingfrontend.uiorganization.show',
-						'id' => $allocation['organization_id'], 'date' => date("Y-m-d", strtotime($original_from))));
+					$allocation['cancel_link'] = self::link(array(
+						'menuaction' => 'bookingfrontend.uiorganization.show',
+						'id' => $allocation['organization_id'], 'date' => date("Y-m-d", strtotime($original_from))
+					));
 				}
 				else
 				{
-					$allocation['cancel_link'] = self::link(array('menuaction' => 'bookingfrontend.uibuilding.show',
-						'id'		 => $allocation['building_id'], 'date'		 => date("Y-m-d", strtotime($original_from))));
+					$allocation['cancel_link'] = self::link(array(
+						'menuaction' => 'bookingfrontend.uibuilding.show',
+						'id'		 => $allocation['building_id'], 'date'		 => date("Y-m-d", strtotime($original_from))
+					));
 				}
 
 				$allocation['from_'] = pretty_timestamp($allocation['from_']);
 				$allocation['to_']	 = pretty_timestamp($allocation['to_']);
-				$GLOBALS['phpgw']->jqcal2->add_listener('field_repeat_until', 'date');
+				$jqcal2->add_listener('field_repeat_until', 'date');
 
 				self::rich_text_editor('field-message');
 				self::render_template_xsl('allocation_cancel', array('allocation' => $allocation));
@@ -227,7 +239,7 @@
 							$system_message['building_id']	 = intval($allocation['building_id']);
 							$system_message['building_name'] = $this->bo->so->get_building($system_message['building_id']);
 							$system_message['created']		 = $date->format('Y-m-d  H:m');
-//							$system_message					 = array_merge($system_message, extract_values($_POST, array('message')));
+							//							$system_message					 = array_merge($system_message, extract_values($_POST, array('message')));
 							$system_message['message']		 = Sanitizer::get_var('message', 'html');
 							$system_message['type']			 = 'cancelation';
 							$system_message['status']		 = 'NEW';
@@ -248,13 +260,17 @@
 
 							if ($from_org)
 							{
-								self::redirect(array('menuaction' => 'bookingfrontend.uiorganization.show',
-									'id' => $allocation['organization_id'], 'date' => date("Y-m-d", strtotime($original_from))));
+								self::redirect(array(
+									'menuaction' => 'bookingfrontend.uiorganization.show',
+									'id' => $allocation['organization_id'], 'date' => date("Y-m-d", strtotime($original_from))
+								));
 							}
 							else
 							{
-								self::redirect(array('menuaction' => 'bookingfrontend.uibuilding.show',
-									'id'		 => $allocation['building_id'], 'date'		 => date("Y-m-d", strtotime($original_from))));
+								self::redirect(array(
+									'menuaction' => 'bookingfrontend.uibuilding.show',
+									'id'		 => $allocation['building_id'], 'date'		 => date("Y-m-d", strtotime($original_from))
+								));
 							}
 						}
 					}
@@ -326,7 +342,7 @@
 							$system_message['building_id']	 = intval($allocation['building_id']);
 							$system_message['building_name'] = $this->bo->so->get_building($system_message['building_id']);
 							$system_message['created']		 = $date->format('Y-m-d  H:m');
-//							$system_message					 = array_merge($system_message, extract_values($_POST, array('message')));
+							//							$system_message					 = array_merge($system_message, extract_values($_POST, array('message')));
 							$system_message['message']		 = Sanitizer::get_var('message', 'html');
 							$system_message['type']			 = 'cancelation';
 							$system_message['status']		 = 'NEW';
@@ -350,44 +366,55 @@
 
 							if ($from_org)
 							{
-								self::redirect(array('menuaction' => 'bookingfrontend.uiorganization.show',
-									'id' => $allocation['organization_id'], 'date' => date("Y-m-d", strtotime($original_from))));
+								self::redirect(array(
+									'menuaction' => 'bookingfrontend.uiorganization.show',
+									'id' => $allocation['organization_id'], 'date' => date("Y-m-d", strtotime($original_from))
+								));
 							}
 							else
 							{
-								self::redirect(array('menuaction' => 'bookingfrontend.uibuilding.show',
-									'id'		 => $allocation['building_id'], 'date'		 => date("Y-m-d", strtotime($original_from))));
+								self::redirect(array(
+									'menuaction' => 'bookingfrontend.uibuilding.show',
+									'id'		 => $allocation['building_id'], 'date'		 => date("Y-m-d", strtotime($original_from))
+								));
 							}
 						}
 					}
 				}
 				$this->flash_form_errors($errors);
-//				self::add_javascript('booking', 'base', 'allocation.js');
+				//				self::add_javascript('booking', 'base', 'allocation.js');
 
 				$allocation['resources_json']	 = json_encode(array_map('intval', $allocation['resources']));
-#				$allocation['cancel_link'] = self::link(array('menuaction' => 'bookingfrontend.uiallocation.show', 'id' => $allocation['id']));
+				#				$allocation['cancel_link'] = self::link(array('menuaction' => 'bookingfrontend.uiallocation.show', 'id' => $allocation['id']));
 				if ($from_org)
 				{
-					$allocation['cancel_link'] = self::link(array('menuaction' => 'bookingfrontend.uiorganization.show',
-						'id' => $allocation['organization_id'], 'date' => date("Y-m-d", strtotime($original_from))));
+					$allocation['cancel_link'] = self::link(array(
+						'menuaction' => 'bookingfrontend.uiorganization.show',
+						'id' => $allocation['organization_id'], 'date' => date("Y-m-d", strtotime($original_from))
+					));
 				}
 				else
 				{
-					$allocation['cancel_link'] = self::link(array('menuaction' => 'bookingfrontend.uibuilding.show',
-						'id'		 => $allocation['building_id'], 'date'		 => date("Y-m-d", strtotime($original_from))));
+					$allocation['cancel_link'] = self::link(array(
+						'menuaction' => 'bookingfrontend.uibuilding.show',
+						'id'		 => $allocation['building_id'], 'date'		 => date("Y-m-d", strtotime($original_from))
+					));
 				}
 
-				$allocation['application_link']	 = self::link(array('menuaction' => 'bookingfrontend.uiapplication.show',
-						'id'		 => $allocation['application_id']));
+				$allocation['application_link']	 = self::link(array(
+					'menuaction' => 'bookingfrontend.uiapplication.show',
+					'id'		 => $allocation['application_id']
+				));
 				$allocation['from_'] = pretty_timestamp($allocation['from_']);
 				$allocation['to_']	 = pretty_timestamp($allocation['to_']);
 
-				$GLOBALS['phpgw']->jqcal2->add_listener('field_repeat_until', 'date');
+				$jqcal2->add_listener('field_repeat_until', 'date');
 
 				if ($step < 2)
 				{
 					self::rich_text_editor('field-message');
-					self::render_template_xsl('allocation_delete', array('allocation'	 => $allocation,
+					self::render_template_xsl('allocation_delete', array(
+						'allocation'	 => $allocation,
 						'recurring'		 => $recurring,
 						'outseason'		 => $outseason,
 						'interval'		 => $field_interval,
@@ -396,7 +423,8 @@
 				}
 				elseif ($step == 2)
 				{
-					self::render_template_xsl('allocation_delete_preview', array('allocation'	 => $allocation,
+					self::render_template_xsl('allocation_delete_preview', array(
+						'allocation'	 => $allocation,
 						'step'			 => $step,
 						'recurring'		 => $_POST['recurring'],
 						'outseason'		 => $_POST['outseason'],
@@ -412,154 +440,177 @@
 			}
 		}
 
-        public function info_json() {
-            $config = CreateObject('phpgwapi.config', 'booking')->read();
-            $user_can_delete_allocations = $config['user_can_delete_allocations'] === 'yes' ? 1 : ($config['user_can_delete_allocations'] === 'never' ? 2 : 0);
+		public function info_json()
+		{
+			$config = CreateObject('phpgwapi.config', 'booking')->read();
+			$user_can_delete_allocations = $config['user_can_delete_allocations'] === 'yes' ? 1 : ($config['user_can_delete_allocations'] === 'never' ? 2 : 0);
 
-            // Retrieve multiple allocation IDs
-            $ids = Sanitizer::get_var('ids', 'string');
-            if ($ids) {
-                $ids = explode(',', $ids);
-            } elseif (!$ids || !is_array($ids)) {
-                $ids = array(Sanitizer::get_var('id', 'int'));
-            }
-            $allocations_info = [];
-            foreach ($ids as $id) {
-                $allocation = $this->bo->read_single((int)$id);
-                if (!$allocation) {
-                    continue; // Skip if the allocation is not found
-                }
+			// Retrieve multiple allocation IDs
+			$ids = Sanitizer::get_var('ids', 'string');
+			if ($ids)
+			{
+				$ids = explode(',', $ids);
+			}
+			elseif (!$ids || !is_array($ids))
+			{
+				$ids = array(Sanitizer::get_var('id', 'int'));
+			}
+			$allocations_info = [];
+			foreach ($ids as $id)
+			{
+				$allocation = $this->bo->read_single((int)$id);
+				if (!$allocation)
+				{
+					continue; // Skip if the allocation is not found
+				}
 
-                // Process each allocation
-                $allocation['info_resource_info'] = $this->calculate_resource_info($allocation['resources']);
-                $allocation['info_building_link'] = self::link([
-                    'menuaction' => 'bookingfrontend.uibuilding.show',
-                    'id' => $allocation['building_id']
-                ]);
-                $allocation['info_org_link'] = self::link([
-                    'menuaction' => 'bookingfrontend.uiorganization.show',
-                    'id' => $allocation['organization_id']
-                ]);
-                $allocation['info_when'] = $this->info_format_allocation_time($allocation['from_'], $allocation['to_']);
-                $allocation['info_participant_limit'] = $this->info_calculate_participant_limit($allocation, $config);
-                $allocation['info_add_link'] = $this->info_determine_add_link($allocation);
-                $allocation['info_edit_link'] = $this->info_determine_edit_link($allocation);
-                $allocation['info_cancel_link'] = $this->info_determine_cancel_link($allocation, $user_can_delete_allocations);
-                $allocation['info_ical_link'] = self::link([
-                    'menuaction' => 'bookingfrontend.uiparticipant.ical',
-                    'reservation_type' => 'allocation',
-                    'reservation_id' => $allocation['id']
-                ]);
-                $allocation['info_show_link'] = self::link(array('menuaction' => 'bookingfrontend.uiallocation.show',
-                    'id' => $allocation['id']));
+				// Process each allocation
+				$allocation['info_resource_info'] = $this->calculate_resource_info($allocation['resources']);
+				$allocation['info_building_link'] = self::link([
+					'menuaction' => 'bookingfrontend.uibuilding.show',
+					'id' => $allocation['building_id']
+				]);
+				$allocation['info_org_link'] = self::link([
+					'menuaction' => 'bookingfrontend.uiorganization.show',
+					'id' => $allocation['organization_id']
+				]);
+				$allocation['info_when'] = $this->info_format_allocation_time($allocation['from_'], $allocation['to_']);
+				$allocation['info_participant_limit'] = $this->info_calculate_participant_limit($allocation, $config);
+				$allocation['info_add_link'] = $this->info_determine_add_link($allocation);
+				$allocation['info_edit_link'] = $this->info_determine_edit_link($allocation);
+				$allocation['info_cancel_link'] = $this->info_determine_cancel_link($allocation, $user_can_delete_allocations);
+				$allocation['info_ical_link'] = self::link([
+					'menuaction' => 'bookingfrontend.uiparticipant.ical',
+					'reservation_type' => 'allocation',
+					'reservation_id' => $allocation['id']
+				]);
+				$allocation['info_show_link'] = self::link(array(
+					'menuaction' => 'bookingfrontend.uiallocation.show',
+					'id' => $allocation['id']
+				));
 
-                // Add processed allocation to the array
-                $allocations_info[$id] = $allocation;
-            }
+				// Add processed allocation to the array
+				$allocations_info[$id] = $allocation;
+			}
 
-            return ['allocations' => $allocations_info, 'user_can_delete_allocations' => $user_can_delete_allocations];
-        }
+			return ['allocations' => $allocations_info, 'user_can_delete_allocations' => $user_can_delete_allocations];
+		}
 
-        private function info_determine_add_link($allocation) {
-            $bouser = CreateObject('bookingfrontend.bouser');
-            if ($bouser->is_logged_in() &&  $bouser->is_organization_admin($allocation['organization_id'])) {
-                return self::link([
-                    'menuaction' => 'bookingfrontend.uibooking.add',
-                    'allocation_id' => $allocation['id'],
-                    'from_' => $allocation['from_'],
-                    'to_' => $allocation['to_'],
-                    'resource' => Sanitizer::get_var('resource'),
-                    'resource_ids' => $allocation['resource_ids'],
-                    'from_org' => Sanitizer::get_var('from_org', 'boolean', "GET", false)
-                ]);
-            }
-            return null;
-        }
+		private function info_determine_add_link($allocation)
+		{
+			$bouser = CreateObject('bookingfrontend.bouser');
+			if ($bouser->is_logged_in() &&  $bouser->is_organization_admin($allocation['organization_id']))
+			{
+				return self::link([
+					'menuaction' => 'bookingfrontend.uibooking.add',
+					'allocation_id' => $allocation['id'],
+					'from_' => $allocation['from_'],
+					'to_' => $allocation['to_'],
+					'resource' => Sanitizer::get_var('resource'),
+					'resource_ids' => $allocation['resource_ids'],
+					'from_org' => Sanitizer::get_var('from_org', 'boolean', "GET", false)
+				]);
+			}
+			return null;
+		}
 
-        private function info_determine_cancel_link($allocation, $user_can_delete_allocations) {
-            $bouser = CreateObject('bookingfrontend.bouser');
+		private function info_determine_cancel_link($allocation, $user_can_delete_allocations)
+		{
+			$bouser = CreateObject('bookingfrontend.bouser');
 
-            // Assuming a similar permission check as your prior implementation
-            if ($bouser->is_logged_in() && $user_can_delete_allocations == 1) {
-                // Check if the allocation's start date is in the future
-                $isFutureAllocation = $allocation['from_'] > date('Y-m-d H:i:s');
+			// Assuming a similar permission check as your prior implementation
+			if ($bouser->is_logged_in() && $user_can_delete_allocations == 1)
+			{
+				// Check if the allocation's start date is in the future
+				$isFutureAllocation = $allocation['from_'] > date('Y-m-d H:i:s');
 
-                if ($isFutureAllocation) {
-                    return self::link([
-                        'menuaction' => 'bookingfrontend.uiallocation.cancel',
-                        'allocation_id' => $allocation['id'],
-                        'from_org' => Sanitizer::get_var('from_org', 'boolean', "GET", false)
-                    ]);
-                }
-            }
+				if ($isFutureAllocation)
+				{
+					return self::link([
+						'menuaction' => 'bookingfrontend.uiallocation.cancel',
+						'allocation_id' => $allocation['id'],
+						'from_org' => Sanitizer::get_var('from_org', 'boolean', "GET", false)
+					]);
+				}
+			}
 
-            return null; // Return null if conditions are not met
-        }
-
-
-        private function info_determine_edit_link($allocation) {
-            $bouser = CreateObject('bookingfrontend.bouser');
-
-            if(!$bouser->is_logged_in()) {
-                return null;
-            }
-
-            // Assuming a method similar to is_organization_admin exists and checks if the current user can administer the given organization
-            $canEdit = $bouser->is_organization_admin($allocation['organization_id']);
-
-            // Check if the allocation's start date is in the future
-            $isFutureAllocation = $allocation['from_'] > date('Y-m-d H:i:s');
-
-            // Combine conditions: user must have permission and the allocation must be in the future
-            if ($canEdit && $isFutureAllocation) {
-                $from_org = Sanitizer::get_var('from_org', 'boolean', "GET", false);
-
-                // Generate and return the edit link
-                return self::link([
-                    'menuaction' => 'bookingfrontend.uiallocation.edit',
-                    'allocation_id' => $allocation['id'],
-                    'from_org' 		 => $from_org
-                ]);
-            }
-
-            // If conditions are not met, return null or an appropriate alternative
-            return null;
-        }
+			return null; // Return null if conditions are not met
+		}
 
 
-        private function calculate_resource_info($resourceIds) {
-            $resources = $this->resource_bo->so->read([
-                'filters' => ['id' => $resourceIds],
-                'sort' => 'name'
-            ]);
-            $resNames = array_map(function($res) {
-                return $res['name'];
-            }, $resources['results']);
+		private function info_determine_edit_link($allocation)
+		{
+			$bouser = CreateObject('bookingfrontend.bouser');
 
-            return join(', ', $resNames);
-        }
+			if (!$bouser->is_logged_in())
+			{
+				return null;
+			}
 
-        private function info_format_allocation_time($from, $to) {
-            $interval = (new DateTime($from))->diff(new DateTime($to));
-            $when = "";
-            if($interval->days > 0) {
-                $when = pretty_timestamp($from) . ' - ' . pretty_timestamp($to);
-            } else {
-                $end = new DateTime($to);
-                $when = pretty_timestamp($from) . ' - ' . $end->format('H:i');
-            }
-            return $when;
-        }
-        private function info_calculate_participant_limit($allocation, $config) {
-            $resource_participant_limit_gross = $this->resource_bo->so->get_participant_limit($allocation['resources'], true);
-            $resource_participant_limit = !empty($resource_participant_limit_gross['results'][0]['quantity']) ? $resource_participant_limit_gross['results'][0]['quantity'] : 0;
-            return !$allocation['participant_limit'] ? ($resource_participant_limit ?: (int)$config['participant_limit']) : $allocation['participant_limit'];
-        }
+			// Assuming a method similar to is_organization_admin exists and checks if the current user can administer the given organization
+			$canEdit = $bouser->is_organization_admin($allocation['organization_id']);
+
+			// Check if the allocation's start date is in the future
+			$isFutureAllocation = $allocation['from_'] > date('Y-m-d H:i:s');
+
+			// Combine conditions: user must have permission and the allocation must be in the future
+			if ($canEdit && $isFutureAllocation)
+			{
+				$from_org = Sanitizer::get_var('from_org', 'boolean', "GET", false);
+
+				// Generate and return the edit link
+				return self::link([
+					'menuaction' => 'bookingfrontend.uiallocation.edit',
+					'allocation_id' => $allocation['id'],
+					'from_org' 		 => $from_org
+				]);
+			}
+
+			// If conditions are not met, return null or an appropriate alternative
+			return null;
+		}
+
+
+		private function calculate_resource_info($resourceIds)
+		{
+			$resources = $this->resource_bo->so->read([
+				'filters' => ['id' => $resourceIds],
+				'sort' => 'name'
+			]);
+			$resNames = array_map(function ($res)
+			{
+				return $res['name'];
+			}, $resources['results']);
+
+			return join(', ', $resNames);
+		}
+
+		private function info_format_allocation_time($from, $to)
+		{
+			$interval = (new DateTime($from))->diff(new DateTime($to));
+			$when = "";
+			if ($interval->days > 0)
+			{
+				$when = pretty_timestamp($from) . ' - ' . pretty_timestamp($to);
+			}
+			else
+			{
+				$end = new DateTime($to);
+				$when = pretty_timestamp($from) . ' - ' . $end->format('H:i');
+			}
+			return $when;
+		}
+		private function info_calculate_participant_limit($allocation, $config)
+		{
+			$resource_participant_limit_gross = $this->resource_bo->so->get_participant_limit($allocation['resources'], true);
+			$resource_participant_limit = !empty($resource_participant_limit_gross['results'][0]['quantity']) ? $resource_participant_limit_gross['results'][0]['quantity'] : 0;
+			return !$allocation['participant_limit'] ? ($resource_participant_limit ?: (int)$config['participant_limit']) : $allocation['participant_limit'];
+		}
 
 
 
 
-        public function info()
+		public function info()
 		{
 			$config = CreateObject('phpgwapi.config', 'booking')->read();
 			if ($config['user_can_delete_allocations'] != 'never')
@@ -579,8 +630,10 @@
 			}
 
 			$allocation				 = $this->bo->read_single(Sanitizer::get_var('id', 'int'));
-			$resources				 = $this->resource_bo->so->read(array('filters'	 => array('id' => $allocation['resources']),
-				'sort'		 => 'name'));
+			$resources				 = $this->resource_bo->so->read(array(
+				'filters'	 => array('id' => $allocation['resources']),
+				'sort'		 => 'name'
+			));
 			$allocation['resources'] = $resources['results'];
 			$res_names				 = array();
 			$res_ids				 = array();
@@ -592,41 +645,52 @@
 			$allocation['resource']		 = Sanitizer::get_var('resource');
 			$allocation['resource_ids']	 = $res_ids;
 			$allocation['resource_info'] = join(', ', $res_names);
-			$allocation['building_link'] = self::link(array('menuaction' => 'bookingfrontend.uibuilding.show',
-					'id'		 => $allocation['building_id']));
-			$allocation['org_link']		 = self::link(array('menuaction' => 'bookingfrontend.uiorganization.show',
-					'id'		 => $allocation['organization_id']));
+			$allocation['building_link'] = self::link(array(
+				'menuaction' => 'bookingfrontend.uibuilding.show',
+				'id'		 => $allocation['building_id']
+			));
+			$allocation['org_link']		 = self::link(array(
+				'menuaction' => 'bookingfrontend.uiorganization.show',
+				'id'		 => $allocation['organization_id']
+			));
 			$bouser						 = CreateObject('bookingfrontend.bouser');
 
 			$from_org = Sanitizer::get_var('from_org', 'boolean', "GET", false);
 			if ($bouser->is_organization_admin($allocation['organization_id']))
 			{
-				$allocation['add_link']		 = self::link(array('menuaction'	 => 'bookingfrontend.uibooking.add',
-						'allocation_id'	 => $allocation['id'], 'from_'			 => $allocation['from_'],
-						'to_'			 => $allocation['to_'],
-						'resource'		 => $allocation['resource'],
-						'resource_ids'	 => $allocation['resource_ids'],
-						'from_org' 		 => $from_org));
+				$allocation['add_link']		 = self::link(array(
+					'menuaction'	 => 'bookingfrontend.uibooking.add',
+					'allocation_id'	 => $allocation['id'], 'from_'			 => $allocation['from_'],
+					'to_'			 => $allocation['to_'],
+					'resource'		 => $allocation['resource'],
+					'resource_ids'	 => $allocation['resource_ids'],
+					'from_org' 		 => $from_org
+				));
 				if ($allocation['from_'] > Date('Y-m-d H:i:s'))
 				{
-					$allocation['edit_link']	 = self::link(array('menuaction'	 => 'bookingfrontend.uiallocation.edit',
+					$allocation['edit_link']	 = self::link(array(
+						'menuaction'	 => 'bookingfrontend.uiallocation.edit',
 						'allocation_id'	 => $allocation['id'],
-						'from_org' 		 => $from_org));
+						'from_org' 		 => $from_org
+					));
 
-					$allocation['cancel_link']	 = self::link(array('menuaction'	 => 'bookingfrontend.uiallocation.cancel',
+					$allocation['cancel_link']	 = self::link(array(
+						'menuaction'	 => 'bookingfrontend.uiallocation.cancel',
 						'allocation_id'	 => $allocation['id'], 'from_'			 => $allocation['from_'],
 						'to_'			 => $allocation['to_'],
 						'resource'		 => $allocation['resource'],
 						'resource_ids'		 => $allocation['resource_ids'],
-						'from_org' 		 => $from_org));
+						'from_org' 		 => $from_org
+					));
 				}
 
 				if ($allocation['application_id'] != null)
 				{
-					$allocation['copy_link']	 = self::link(array('menuaction'	 => 'bookingfrontend.uiapplication.add',
-						'application_id'	 => $allocation['application_id']));
+					$allocation['copy_link']	 = self::link(array(
+						'menuaction'	 => 'bookingfrontend.uiapplication.add',
+						'application_id'	 => $allocation['application_id']
+					));
 				}
-
 			}
 			$interval	 = (new DateTime($allocation['from_']))->diff(new DateTime($allocation['to_']));
 			$when		 = "";
@@ -640,35 +704,41 @@
 				$when	 = pretty_timestamp($allocation['from_']) . ' - ' . $end->format('H:i');
 			}
 			$allocation['when'] = $when;
-			$allocation['show_link'] = self::link(array('menuaction' => 'bookingfrontend.uiallocation.show',
-						'id' => $allocation['id']));
+			$allocation['show_link'] = self::link(array(
+				'menuaction' => 'bookingfrontend.uiallocation.show',
+				'id' => $allocation['id']
+			));
 
-			$allocation['ical_link'] = self::link(array('menuaction' => 'bookingfrontend.uiparticipant.ical','reservation_type' => 'allocation','reservation_id' => $allocation['id']));
+			$allocation['ical_link'] = self::link(array('menuaction' => 'bookingfrontend.uiparticipant.ical', 'reservation_type' => 'allocation', 'reservation_id' => $allocation['id']));
 
 			$resource_participant_limit_gross = $this->resource_bo->so->get_participant_limit($allocation['resources'], true);
 
-			if(!empty($resource_participant_limit_gross['results'][0]['quantity']))
+			if (!empty($resource_participant_limit_gross['results'][0]['quantity']))
 			{
 				$resource_participant_limit = $resource_participant_limit_gross['results'][0]['quantity'];
 			}
 
-			if(!$allocation['participant_limit'])
+			if (!$allocation['participant_limit'])
 			{
 				$allocation['participant_limit'] = $resource_participant_limit ? $resource_participant_limit : (int)$config['participant_limit'];
 			}
 
 			$allocation['participant_limit'] = $allocation['participant_limit'] ? $allocation['participant_limit'] : (int)$config['participant_limit'];
 
-			self::render_template_xsl('allocation_info', array('allocation'	 => $allocation,
-				'user_can_delete_allocations'	 => $user_can_delete_allocations));
+			self::render_template_xsl('allocation_info', array(
+				'allocation'	 => $allocation,
+				'user_can_delete_allocations'	 => $user_can_delete_allocations
+			));
 			phpgwapi_xslttemplates::getInstance()->set_output('wml'); // Evil hack to disable page chrome
 		}
 
 		public function show()
 		{
 			$allocation				 = $this->bo->read_single(Sanitizer::get_var('id', 'int'));
-			$resources				 = $this->resource_bo->so->read(array('filters'	 => array('id' => $allocation['resources']),
-				'sort'		 => 'name'));
+			$resources				 = $this->resource_bo->so->read(array(
+				'filters'	 => array('id' => $allocation['resources']),
+				'sort'		 => 'name'
+			));
 			$allocation['resources'] = $resources['results'];
 			$res_names				 = array();
 			foreach ($allocation['resources'] as $res)
@@ -677,21 +747,29 @@
 			}
 			$allocation['resource']		 = Sanitizer::get_var('resource');
 			$allocation['resource_info'] = join(', ', $res_names);
-			$allocation['building_link'] = self::link(array('menuaction' => 'bookingfrontend.uibuilding.show',
-					'id'		 => $allocation['building_id']));
-			$allocation['org_link']		 = self::link(array('menuaction' => 'bookingfrontend.uiorganization.show',
-					'id'		 => $allocation['organization_id']));
+			$allocation['building_link'] = self::link(array(
+				'menuaction' => 'bookingfrontend.uibuilding.show',
+				'id'		 => $allocation['building_id']
+			));
+			$allocation['org_link']		 = self::link(array(
+				'menuaction' => 'bookingfrontend.uiorganization.show',
+				'id'		 => $allocation['organization_id']
+			));
 			$bouser						 = CreateObject('bookingfrontend.bouser');
 			if ($bouser->is_organization_admin($allocation['organization_id']))
 			{
-				$allocation['add_link']		 = self::link(array('menuaction'	 => 'bookingfrontend.uibooking.add',
-						'allocation_id'	 => $allocation['id'], 'from_'			 => $allocation['from_'],
-						'to_'			 => $allocation['to_'],
-						'resource'		 => $allocation['resource']));
-				$allocation['cancel_link']	 = self::link(array('menuaction'	 => 'bookingfrontend.uiallocation.cancel',
-						'allocation_id'	 => $allocation['id'], 'from_'			 => $allocation['from_'],
-						'to_'			 => $allocation['to_'],
-						'resource'		 => $allocation['resource']));
+				$allocation['add_link']		 = self::link(array(
+					'menuaction'	 => 'bookingfrontend.uibooking.add',
+					'allocation_id'	 => $allocation['id'], 'from_'			 => $allocation['from_'],
+					'to_'			 => $allocation['to_'],
+					'resource'		 => $allocation['resource']
+				));
+				$allocation['cancel_link']	 = self::link(array(
+					'menuaction'	 => 'bookingfrontend.uiallocation.cancel',
+					'allocation_id'	 => $allocation['id'], 'from_'			 => $allocation['from_'],
+					'to_'			 => $allocation['to_'],
+					'resource'		 => $allocation['resource']
+				));
 			}
 			$interval	 = (new DateTime($allocation['from_']))->diff(new DateTime($allocation['to_']));
 			$when		 = "";
@@ -711,7 +789,7 @@
 			$allocation['number_of_participants'] = $number_of_participants;
 
 			$config = CreateObject('phpgwapi.config', 'booking')->read();
-			$external_site_address = !empty($config['external_site_address'])? $config['external_site_address'] : $GLOBALS['phpgw_info']['server']['webserver_url'];
+			$external_site_address = !empty($config['external_site_address']) ? $config['external_site_address'] : $this->serverSettings['webserver_url'];
 
 			$participant_registration_link = $external_site_address
 				. "/bookingfrontend/?menuaction=bookingfrontend.uiparticipant.add"
@@ -719,16 +797,16 @@
 				. "&reservation_id={$allocation['id']}";
 
 			$allocation['participant_registration_link'] = $participant_registration_link;
-			$allocation['participanttext'] = !empty($config['participanttext'])? $config['participanttext'] :'';
+			$allocation['participanttext'] = !empty($config['participanttext']) ? $config['participanttext'] : '';
 
 			$resource_participant_limit_gross = $this->resource_bo->so->get_participant_limit($allocation['resources'], true);
 
-			if(!empty($resource_participant_limit_gross['results'][0]['quantity']))
+			if (!empty($resource_participant_limit_gross['results'][0]['quantity']))
 			{
 				$resource_participant_limit = $resource_participant_limit_gross['results'][0]['quantity'];
 			}
 
-			if(!$allocation['participant_limit'])
+			if (!$allocation['participant_limit'])
 			{
 				$allocation['participant_limit'] = $resource_participant_limit ? $resource_participant_limit : (int)$config['participant_limit'];
 			}
@@ -737,7 +815,7 @@
 
 			phpgw::import_class('phpgwapi.phpqrcode');
 			$code_text					 = $participant_registration_link;
-			$filename					 = $GLOBALS['phpgw_info']['server']['temp_dir'] . '/' . md5($code_text) . '.png';
+			$filename					 = $this->serverSettings['temp_dir'] . '/' . md5($code_text) . '.png';
 			QRcode::png($code_text, $filename);
 			$allocation['encoded_qr']	 = 'data:image/png;base64,' . base64_encode(file_get_contents($filename));
 
@@ -750,16 +828,16 @@
 			$allocation['get_participants_link'] = $get_participants_link;
 
 			$datatable_def	 = array();
-			if(CreateObject('bookingfrontend.bouser')->is_logged_in())
+			if (CreateObject('bookingfrontend.bouser')->is_logged_in())
 			{
-				$datatable_def[] = array
-					(
+				$datatable_def[] = array(
 					'container'	 => 'datatable-container_0',
 					'requestUrl' => json_encode(self::link(array(
-							'menuaction'				 => 'bookingfrontend.uiparticipant.index',
-							'filter_reservation_id'		 => $allocation['id'],
-							'filter_reservation_type'	 => 'allocation',
-							'phpgw_return_as'			 => 'json'))),
+						'menuaction'				 => 'bookingfrontend.uiparticipant.index',
+						'filter_reservation_id'		 => $allocation['id'],
+						'filter_reservation_type'	 => 'allocation',
+						'phpgw_return_as'			 => 'json'
+					))),
 					'ColumnDefs' => array(
 						array(
 							'key'		 => 'phone',
@@ -784,9 +862,10 @@
 			self::render_template_xsl(array(
 				'allocation_show',
 				'datatable_inline'
-				), array(
+			), array(
 				'allocation'	 => $allocation,
-				'datatable_def'	 => $datatable_def));
+				'datatable_def'	 => $datatable_def
+			));
 		}
 
 		public function edit()
@@ -801,7 +880,7 @@
 			$application = $this->application_bo->read_single($allocation['application_id']);
 			if ($_SERVER['REQUEST_METHOD'] == 'POST')
 			{
-				$link =  phpgw::link('/index.php', array('menuaction' => 'booking.uiallocation.show','id' => $allocation['id']), false, true, true);
+				$link =  phpgw::link('/index.php', array('menuaction' => 'booking.uiallocation.show', 'id' => $allocation['id']), false, true, true);
 				$outseason = $_POST['outseason'];
 				$recurring = $_POST['recurring'];
 				$repeat_until = $_POST['repeat_until'];
@@ -813,7 +892,7 @@
 				$system_message = array();
 				$system_message['building_id'] = intval($allocation['building_id']);
 				$system_message['building_name'] = $this->bo->so->get_building($system_message['building_id']);
-				$system_message['created'] =(new DateTime('now', new DateTimeZone('Europe/Oslo')))->format('Y-m-d  H:i');
+				$system_message['created'] = (new DateTime('now', new DateTimeZone('Europe/Oslo')))->format('Y-m-d  H:i');
 				$system_message['type'] = 'message';
 				$system_message['status'] = 'NEW';
 				$system_message['name'] = $allocation['organization_name'] . ' - ' . $organization['contacts'][0]['name'];
@@ -830,7 +909,7 @@
 					}
 					else
 					{
-						$comment = lang('allocation') ." #: " . $allocation['id'] . " " . lang("User has made a request to alter time on existing booking") . ' ' . $new_from_ . ' - ' . $new_to_;
+						$comment = lang('allocation') . " #: " . $allocation['id'] . " " . lang("User has made a request to alter time on existing booking") . ' ' . $new_from_ . ' - ' . $new_to_;
 						$message = lang('Request for changed time');
 
 						if ($outseason == 'on')
@@ -861,10 +940,10 @@
 							$this->application_ui->add_comment_to_application($allocation['application_id'], $comment, 'PENDING');
 						}
 
-//						$external_site_address = !empty($config->config_data['external_site_address'])? $config->config_data['external_site_address'] : $GLOBALS['phpgw_info']['server']['webserver_url'];
+						//						$external_site_address = !empty($config->config_data['external_site_address'])? $config->config_data['external_site_address'] : $this->serverSettings['webserver_url'];
 
 						$system_message['title'] = lang("Request to increase time on existing booking") . " " . $allocation['id'];
-						$system_message['message'] = $comment . '<br/>' . '<a href="' . $link . '" target="_blank">' . lang('Go to allocation') .'</a>';
+						$system_message['message'] = $comment . '<br/>' . '<a href="' . $link . '" target="_blank">' . lang('Go to allocation') . '</a>';
 
 
 						$this->system_message_bo->add($system_message);
@@ -883,9 +962,9 @@
 							/**
 							 * Saksbehandler må håndtere eventuelle endringer
 							 */
-//							$allocation['from_'] = $new_from_;
-//							$this->allocation_so->update($allocation);
-//							Cache::message_set(lang('Successfully changed start time') . ' ' . $allocation['from_']);
+							//							$allocation['from_'] = $new_from_;
+							//							$this->allocation_so->update($allocation);
+							//							Cache::message_set(lang('Successfully changed start time') . ' ' . $allocation['from_']);
 						}
 						else
 						{
@@ -909,16 +988,14 @@
 							/**
 							 * Saksbehandler må håndtere eventuelle endringer
 							 */
-//							$allocation['to_'] = $new_to_;
-//							$this->allocation_so->update($allocation);
-//							Cache::message_set(lang('Successfully changed end time') . ' ' . $allocation['to_']);
+							//							$allocation['to_'] = $new_to_;
+							//							$this->allocation_so->update($allocation);
+							//							Cache::message_set(lang('Successfully changed end time') . ' ' . $allocation['to_']);
 						}
 						else
 						{
 							Cache::message_set(lang('Cannot change end time'), 'error');
 						}
-
-
 					}
 					else
 					{
@@ -940,12 +1017,12 @@
 						$application = $this->application_bo->read_single($allocation['application_id']);
 						$application['equipment'] = $_POST['equipment'];
 						$this->application_bo->update($application);
-						$this->application_ui->add_comment_to_application($allocation['application_id'], $comment , false);
-						$message .= '</br>' . lang('Follow status' );
+						$this->application_ui->add_comment_to_application($allocation['application_id'], $comment, false);
+						$message .= '</br>' . lang('Follow status');
 					}
 
 					$system_message['title'] = lang("Request for equipment") . " " . $allocation['id'];
-					$system_message['message'] = $comment . '<br/>' . '<a href="' . $link . '" target="_blank">' . lang('Go to allocation') .'</a>';
+					$system_message['message'] = $comment . '<br/>' . '<a href="' . $link . '" target="_blank">' . lang('Go to allocation') . '</a>';
 
 					$this->system_message_bo->add($system_message);
 					Cache::message_set($message);
@@ -956,13 +1033,17 @@
 			$allocation['to_'] = pretty_timestamp($allocation['to_']);
 			if ($from_org)
 			{
-				$allocation['cancel_link'] = self::link(array('menuaction' => 'bookingfrontend.uiorganization.show',
-					'id' => $allocation['organization_id'], 'date' => date("Y-m-d", strtotime($original_from))));
+				$allocation['cancel_link'] = self::link(array(
+					'menuaction' => 'bookingfrontend.uiorganization.show',
+					'id' => $allocation['organization_id'], 'date' => date("Y-m-d", strtotime($original_from))
+				));
 			}
 			else
 			{
-				$allocation['cancel_link'] = self::link(array('menuaction' => 'bookingfrontend.uibuilding.show',
-					'id' => $allocation['building_id'], 'date' => date("Y-m-d", strtotime($original_from))));
+				$allocation['cancel_link'] = self::link(array(
+					'menuaction' => 'bookingfrontend.uibuilding.show',
+					'id' => $allocation['building_id'], 'date' => date("Y-m-d", strtotime($original_from))
+				));
 			}
 
 			self::add_javascript('bookingfrontend', 'base', 'allocation.js', true);
@@ -971,6 +1052,7 @@
 			self::rich_text_editor('field-message');
 			self::render_template_xsl('allocation_edit', array(
 				'allocation' => $allocation,
-				'application' => $application));
+				'application' => $application
+			));
 		}
 	}

@@ -249,7 +249,7 @@
 			$db = $this->db;
 			$config = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
-			$external_site_address = isset($config->config_data['external_site_address']) && $config->config_data['external_site_address'] ? $config->config_data['external_site_address'] : $GLOBALS['phpgw_info']['server']['webserver_url'];
+			$external_site_address = isset($config->config_data['external_site_address']) && $config->config_data['external_site_address'] ? $config->config_data['external_site_address'] : $this->serverSettings['webserver_url'];
 
 			$comment = lang('Multiple Events was created') . ',<br />' . lang('Event') . ' ';
 			foreach ($allids as $id)
@@ -284,7 +284,7 @@
 				),
 				3	=> array
 				(
-					'value'	=> $GLOBALS['phpgw_info']['user']['account_id'],
+					'value'	=> $this->userSettings['account_id'],
 					'type'	=> PDO::PARAM_INT
 				),
 				4	=> array

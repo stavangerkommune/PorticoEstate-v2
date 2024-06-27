@@ -31,12 +31,15 @@
 	 * @param $config
 	 * @return string HTML select box
 	 */
+
+	use App\modules\phpgwapi\services\Settings;
 	function request_method( $config )
 	{
+		$userSettings = Settings::getInstance()->get('user');
 
 		$selected = $config['e_lock_request_method'];
 
-		$dirname = PHPGW_SERVER_ROOT . "/booking/inc/custom/{$GLOBALS['phpgw_info']['user']['domain']}";
+		$dirname = PHPGW_SERVER_ROOT . "/booking/inc/custom/{$userSettings['domain']}";
 		$dirname = PHPGW_SERVER_ROOT . "/booking/inc/custom/default";
 
 		$find = array('/_/', '/\.php$/');

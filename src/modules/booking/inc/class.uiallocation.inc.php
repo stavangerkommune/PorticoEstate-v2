@@ -1,4 +1,8 @@
 <?php
+
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\services\Cache;
+
 	phpgw::import_class('booking.uicommon');
 	phpgw::import_class('booking.boorganization');
 
@@ -40,7 +44,7 @@
 				'organization_shortname', 'from_', 'to_', 'active', 'skip_bas');
 
 			$this->display_name = lang('allocations');
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang('booking') . "::{$this->display_name}";
+			Settings::getInstance()->update('flags', ['app_header' => lang('booking') . "::{$this->display_name}"]);
 		}
 
 		public function index()
@@ -617,7 +621,7 @@
 			{
 				if($dateformat == 'Y-m-d' && $_SERVER['REQUEST_METHOD'] == 'GET')
 				{
-					$_dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+					$_dateformat = $this->userSettings['preferences']['common']['dateformat'];
 					$allocation['from_'] = date("{$_dateformat} H:i",strtotime($dateTimeFrom));
 					$_timeFrom = strtotime($dateTimeFrom);
 					$allocation['to_'] = date("{$_dateformat} H:i",strtotime($dateTimeTo));
@@ -638,9 +642,10 @@
 	//				$_timeTo = $allocation['to_'];
 				}
 
-				$GLOBALS['phpgw']->jqcal2->add_listener('field_repeat_until', 'date');
-				$GLOBALS['phpgw']->jqcal2->add_listener('field_from', 'datetime', $_timeFrom);
-				$GLOBALS['phpgw']->jqcal2->add_listener('field_to', 'datetime', $_timeTo);
+				$jqcal2 =createObject('phpgwapi.jqcal2');
+				$jqcal2->add_listener('field_repeat_until', 'date');
+				$jqcal2->add_listener('field_from', 'datetime', $_timeFrom);
+				$jqcal2->add_listener('field_to', 'datetime', $_timeTo);
 
 				$config = CreateObject('phpgwapi.config', 'booking')->read();
 
@@ -730,7 +735,7 @@
 
 			$config = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
-			$from = isset($config->config_data['email_sender']) && $config->config_data['email_sender'] ? $config->config_data['email_sender'] : "noreply<noreply@{$GLOBALS['phpgw_info']['server']['hostname']}>";
+			$from = isset($config->config_data['email_sender']) && $config->config_data['email_sender'] ? $config->config_data['email_sender'] : "noreply<noreply@{$this->serverSettings['hostname']}>";
 
 			if (strlen(trim($body)) == 0)
 			{
@@ -871,8 +876,9 @@
 					'date', 'security', 'file'));
 			$cost_history = $this->bo->so->get_ordered_costs($id);
 
-			$GLOBALS['phpgw']->jqcal2->add_listener('field_from', 'datetime', phpgwapi_datetime::date_to_timestamp($allocation['from_']));
-			$GLOBALS['phpgw']->jqcal2->add_listener('field_to', 'datetime', phpgwapi_datetime::date_to_timestamp($allocation['to_']));
+			$jqcal2 = createObject('phpgwapi.jqcal2');
+			$jqcal2->add_listener('field_from', 'datetime', phpgwapi_datetime::date_to_timestamp($allocation['from_']));
+			$jqcal2->add_listener('field_to', 'datetime', phpgwapi_datetime::date_to_timestamp($allocation['to_']));
 
 			self::render_template_xsl('allocation_edit', array(
 				'allocation' => $allocation,
@@ -1000,7 +1006,8 @@
 			$active_tab = 'generic';
 			$allocation['tabs'] = phpgwapi_jquery::tabview_generate($tabs, $active_tab);
 
-			$GLOBALS['phpgw']->jqcal2->add_listener('field_repeat_until', 'date');
+			$jqcal2 = createObject('phpgwapi.jqcal2');
+			$jqcal2->add_listener('field_repeat_until', 'date');
 
 			if ($step < 2)
 			{

@@ -6,7 +6,6 @@
 
 		function __construct()
 		{
-			$currentapp = $GLOBALS['phpgw_info']['flags']['currentapp'];
 
 			$fields = array(
 				'id'				 => array('type' => 'int'),
@@ -25,7 +24,7 @@
 			);
 
 			parent::__construct('bb_user', $fields);
-			$this->account = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->account = $this->userSettings['account_id'];
 		}
 
 
@@ -437,13 +436,14 @@
 			$value_set_update	 = $this->db->validate_update($dataset);
 			$this->db->query("UPDATE {$table} SET {$value_set_update} WHERE id = " . (int)$id, __LINE__, __FILE__);
 
+		$phpgwapi_common = new \phpgwapi_common();
 			$table				 = 'bb_application';
 			$dataset			 = array(
 				'organizer'			 => 'Anonymisert: ' . date('Ymd'),
 				'contact_name'		 => 'Anonymisert: ' . date('Ymd'),
 				'contact_email'		 => 'Anonymisert: ' . date('Ymd'),
 				'contact_phone'		 => '00000000',
-				'secret'			 => $GLOBALS['phpgw']->common->randomstring(32),
+				'secret'			 => $phpgwapi_common->randomstring(32),
 				'customer_ssn'		 => $substitute_ssn,
 				'responsible_street' => '',
 			);
@@ -457,7 +457,7 @@
 				'contact_email'	 => 'Anonymisert: ' . date('Ymd'),
 				'contact_phone'	 => '00000000',
 				'customer_ssn'	 => $substitute_ssn,
-				'secret'		 => $GLOBALS['phpgw']->common->randomstring(32),
+				'secret'		 => $phpgwapi_common->randomstring(32),
 			);
 			$value_set_update	 = $this->db->validate_update($dataset);
 			$this->db->query("UPDATE {$table} SET {$value_set_update} WHERE customer_ssn = '{$ssn}'", __LINE__, __FILE__);

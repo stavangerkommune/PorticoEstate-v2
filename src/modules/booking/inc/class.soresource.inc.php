@@ -143,7 +143,7 @@
 					)),
 				)
 			);
-			$this->account = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->account = $this->userSettings['account_id'];
 		}
 
 		function get_metainfo( $id )
@@ -441,7 +441,7 @@
 				),
 				5	=> array
 				(
-					'value'	=> (int)$GLOBALS['phpgw_info']['user']['account_id'],
+					'value'	=> (int)$this->userSettings['account_id'],
 					'type'	=> PDO::PARAM_INT
 				),
 				6	=> array
@@ -627,7 +627,7 @@
 				),
 				3	=> array
 				(
-					'value'	=> (int)$GLOBALS['phpgw_info']['user']['account_id'],
+					'value'	=> (int)$this->userSettings['account_id'],
 					'type'	=> PDO::PARAM_INT
 				),
 				4	=> array

@@ -67,7 +67,7 @@
 
 		protected function current_app()
 		{
-			return $GLOBALS['phpgw_info']['flags']['currentapp'];
+			return $this->flags['currentapp'];
 		}
 
 		protected function current_account_id()

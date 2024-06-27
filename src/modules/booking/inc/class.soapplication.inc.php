@@ -503,31 +503,6 @@
 				return false;
 			}
 
-//			$timezone = !empty($GLOBALS['phpgw_info']['user']['preferences']['common']['timezone']) ? $GLOBALS['phpgw_info']['user']['preferences']['common']['timezone'] : 'UTC';
-//
-//			$now = new DateTime();
-//
-//			try
-//			{
-//				$DateTimeZone = new DateTimeZone($timezone);
-//				$now->setTimezone($DateTimeZone);
-//			}
-//			catch (Exception $ex)
-//			{
-//
-//			}
-//
-//			$future_limit_full	 = clone ($now);
-//			$future_limit_full->modify("+{$booking_limit_number_horizont} days");
-//
-//			$history_limit_full	 = clone ($now);
-//			$history_limit_full->modify("-{$booking_limit_number_horizont} days");
-//
-//			$timestamp_history = $history_limit_full->getTimestamp();
-//			$timestamp_future = $future_limit_full->getTimestamp();
-//
-//			$interval_history = abs($timestamp_history - time());
-//			$interval_future = $timestamp_future - time();
 
 			$booking_horizont_seconds = (int)$booking_limit_number_horizont * 3600 * 24;
 

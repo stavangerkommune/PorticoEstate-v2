@@ -30,7 +30,7 @@
 				)
 			);
 
-			$this->account = $GLOBALS['phpgw_info']['user']['account_id'];
+			$this->account = $this->userSettings['account_id'];
 		}
 
 		public function get_roles()
