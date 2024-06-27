@@ -23,4 +23,4 @@ $settings = [
 $app->get('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer(), $settings));
 $app->post('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer(), $settings));
 
-$app->get('/bookingfrontend/lang.php', LangHelper::class . ':process')->addMiddleware(new SessionsMiddleware($container));
+$app->get('/bookingfrontend/lang', LangHelper::class . ':process')->addMiddleware(new SessionsMiddleware($container));
