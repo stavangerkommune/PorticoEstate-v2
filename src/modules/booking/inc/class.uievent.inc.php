@@ -7,7 +7,7 @@ use App\modules\phpgwapi\services\Cache;
 use App\Database\Db;
 
 phpgw::import_class('booking.uicommon');
-phpgw::import_class('phpgwapi.send');
+//phpgw::import_class('phpgwapi.send');
 
 phpgw::import_class('booking.uidocument_building');
 phpgw::import_class('booking.uipermission_building');
@@ -799,7 +799,7 @@ class booking_uievent extends booking_uicommon
 	}
 
 	/**
-	 * 
+	 *
 	 * @param array $receiver
 	 * @param string $subject
 	 * @param string $body

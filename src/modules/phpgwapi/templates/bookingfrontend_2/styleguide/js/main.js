@@ -117,7 +117,7 @@ const updateDateBasic = () => {
     //Datepicker
     //Datepicker
     $(".js-basic-datepicker").datepicker({
-        dateFormat: "d.m.yy",
+        dateFormat: "dd.mm.yy",
         changeMonth: true,
         changeYear: true,
         dayNames: ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"],
@@ -237,15 +237,15 @@ function GenerateDateTime(start, end) {
     if ((startTime.getMonth() === endTime.getMonth() && startTime.getFullYear() === endTime.getFullYear() && startTime.getDate() === endTime.getDate())) {
         // language=HTML
         return `
-<!--            <div class="single-date">-->
-                <div class="date">
-                    <span className="text-primary text-bold">${startDate}</span>
-                </div>
-                <div class="time">
-                    ${startTime.toLocaleTimeString('no', options).replace(':', '.')} -
-                    ${endTime.toLocaleTimeString('no', options).replace(':', '.')}
-                </div>
-<!--            </div>-->
+            <!--            <div class="single-date">-->
+            <div class="date">
+                <span className="text-primary text-bold">${startDate}</span>
+            </div>
+            <div class="time">
+                ${startTime.toLocaleTimeString('no', options).replace(':', '.')} -
+                ${endTime.toLocaleTimeString('no', options).replace(':', '.')}
+            </div>
+            <!--            </div>-->
         `
     }
 
@@ -261,7 +261,7 @@ function GenerateDateTime(start, end) {
                 ${endTime.toLocaleTimeString('no', options).replace(':', '.')}
             </div>
         </div>
-        `
+    `
 }
 
 

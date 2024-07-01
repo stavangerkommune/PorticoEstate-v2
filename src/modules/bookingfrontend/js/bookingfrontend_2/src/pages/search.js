@@ -114,6 +114,7 @@ class Search {
                 const remoteUrl = phpGWLink('bookingfrontend/searchdataall', {}, true, remote.webservicehost);
                 return fetch(remoteUrl, {
                     signal: AbortSignal.timeout(2500)
+
                 }) // Fetch remote data
                     .then(response => {
                         if (!response.ok) throw new Error(`Failed to fetch data from ${remote.webservicehost}`);

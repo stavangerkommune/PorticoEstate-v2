@@ -196,10 +196,26 @@ class PECalendar {
     dragEnd = ko.observable(null);
     tempEvent = ko.observable(null);
 
-    constructor({building_id, resource_id = null, dateString = null, disableResourceSwap = false}) {
+
+    instance = undefined;
+
+    disableInteraction = false;
+
+    filterGroups = undefined;
+
+    constructor({
+                    building_id,
+                    resource_id = null,
+                    dateString = null,
+                    disableResourceSwap = true,
+                    instance = undefined,
+                    nointeraction = false,
+                    filterGroups = undefined
+                }) {
         luxon.Settings.defaultLocale = getCookie("selected_lang") || 'no';
-
-
+        this.instance = instance;
+        this.disableInteraction = nointeraction;
+        this.filterGroups = filterGroups;
         // Initialize the date of the instance
         if (dateString) {
             this.currentDate(DateTime.fromJSDate(new Date(dateString)).setLocale(luxon.Settings.defaultLocale));
@@ -281,6 +297,34 @@ class PECalendar {
         return slots;
     });
 
+
+    availableTimeSlotWithOverlaps = ko.computed(() => {
+        const allocations = this.events().filter(event => event.type === 'allocation');
+        const availableSlots = this.availableTimeSlots()[this.resource_id()] || [];
+
+        const updatedslots = availableSlots.map(slot => {
+            const slotStart = DateTime.fromMillis(parseInt(slot.start));
+            const slotEnd = DateTime.fromMillis(parseInt(slot.end));
+            let overlap = false;
+
+            allocations.forEach(allocation => {
+                const allocationStart = DateTime.fromISO(`${allocation.date}T${allocation.from}`);
+                const allocationEnd = DateTime.fromISO(`${allocation.date}T${allocation.to}`);
+
+                if (allocationStart <= slotEnd && allocationEnd >= slotStart) {
+                    overlap = true;
+                }
+            });
+
+            return {...slot, overlap: overlap ? 2 : slot.overlap};
+        });
+
+        return updatedslots;
+
+        // Update the availableTimeSlots observable to trigger reactivity
+        // this.availableTimeSlots.valueHasMutated();
+    });
+
     /**
      * Generates Unix timestamps for the provided start and end times on a given date.
      *
@@ -330,7 +374,7 @@ class PECalendar {
             delete reqParams.dates;
         }
 
-        let url = phpGWLink('bookingfrontend/', reqParams, false);
+        let url = phpGWLink('bookingfrontend/', reqParams, false, this.instance);
 
         if (resource.simple_booking === 1) {
             // dateRanges = this.selectedTimeSlots().map(selected => {
@@ -343,7 +387,7 @@ class PECalendar {
                 resource_id: this.resource_id(),
                 simple: true,
                 dates: dateRanges
-            }, false);
+            }, false, this.instance);
         }
 
         return url;
@@ -370,14 +414,14 @@ class PECalendar {
                 menuaction: 'bookingfrontend.uibooking.building_schedule_pe',
                 building_id: this.building_id(),
                 dates_csv: weeksToFetch
-            }, true);
+            }, true, this.instance);
 
             let urlFreeTime = phpGWLink('bookingfrontend/', {
                 menuaction: 'bookingfrontend.uibooking.get_freetime',
                 building_id: this.building_id(),
                 start_date: currDate.toFormat('dd/LL-yyyy'),
                 end_date: maxEndDate.toFormat('dd/LL-yyyy')
-            }, true);
+            }, true, this.instance);
 
             const [timeSlotsData, buildingData] = await Promise.all([
                 fetch(urlFreeTime).then(res => res.json()),
@@ -622,7 +666,12 @@ class PECalendar {
         // Filter events where any of the associated resources has an id that matches this.resource_id
         const allocationIds = this.events().map(event => event.allocation_id); // comment out this to test overlaps
         // const allocationIds = [];
-        const filteredEvents = this.events().filter(event => !allocationIds.includes(event.id));
+        let filteredEvents = this.events().filter(event => !allocationIds.includes(event.id));
+
+        if(this.filterGroups !== undefined && this.filterGroups() !== undefined) {
+            // console.log('fiiiiilter', filteredEvents, this.filterGroups());
+            filteredEvents = filteredEvents.filter((a) => this.filterGroups().includes(a.group_id))
+        }
 
         return filteredEvents.filter(event => event?.resources.some(resource => resource?.id === this.resource_id()));
     });
@@ -685,98 +734,58 @@ class PECalendar {
         if (!events) {
             return [];
         }
-        const DBG = events[0].date.from.toISODate() === '2024-03-24';
+        const DBG = events[0].date.from.toISODate() === '2024-05-28';
 
         // Assuming the day starts at 00:00 and ends at 24:00, creating intervals based on hourParts
         let intervals = new Array(24 * this.hourParts()).fill(null).map(() => []);
 
         // Populate intervals with events
         events.forEach(event => {
-            let start = this.convertToStartIntervalIndex(event.date.from);
-            let end = this.convertToEndIntervalIndex(event.date.to);
-
+            const start = this.convertToStartIntervalIndex(event.date.from);
+            const end = this.convertToEndIntervalIndex(event.date.to);
             for (let i = start; i < end; i++) {
-                if (!intervals[i]) {
-                    intervals[i] = [];
-                }
                 intervals[i].push(event);
             }
         });
 
 
-        // Initialize occupied space for each interval
-        let occupiedSpace = new Map();
-
-        // Populate the map with empty arrays for each interval
+        const occupiedColumns = new Map();
         for (let i = 0; i < intervals.length; i++) {
-            occupiedSpace.set(i, new Array(12).fill(false));
+            occupiedColumns.set(i, new Array(12).fill(false));
         }
 
-        // Allocate columns based on overlaps within each interval
         events.forEach(event => {
-            let startInterval = this.convertToStartIntervalIndex(event.date.from);
-            let endInterval = this.convertToEndIntervalIndex(event.date.to);
+            const startInterval = this.convertToStartIntervalIndex(event.date.from);
+            const endInterval = this.convertToEndIntervalIndex(event.date.to);
             let overlapCount = 0;
 
-            // Find the maximum overlap for this event
+            // Determine maximum overlap in the interval range
             for (let i = startInterval; i < endInterval; i++) {
                 overlapCount = Math.max(overlapCount, intervals[i].length);
             }
 
-            // Calculate column span
             event.columnSpan = Math.floor(12 / overlapCount);
 
-            // Allocate a start column that is not occupied
-            let space = occupiedSpace.get(startInterval);
-            for (let i = 0; i < space.length; i += event.columnSpan) {
-                if (space.slice(i, i + event.columnSpan).every(x => !x)) {
-                    // Found space for the event
-                    event.startColumn = i;
-                    for (let j = startInterval; j < endInterval; j++) {
-                        // Mark space as occupied for the duration of the event
-                        let jSpace = occupiedSpace.get(j);
-                        jSpace.fill(true, i, i + event.columnSpan);
-                        occupiedSpace.set(j, jSpace);
+            // Find available column span
+            let foundColumn = false;
+            for (let col = 0; col < 12; col++) {
+                if (foundColumn) break;
+
+                // Check if the required column span is available
+                for (let i = startInterval; i < endInterval; i++) {
+                    const columnCheck = occupiedColumns.get(i).slice(col, col + event.columnSpan).every(x => !x);
+                    if (!columnCheck) break;
+
+                    if (i === endInterval - 1) {
+                        event.startColumn = col;
+                        for (let j = startInterval; j < endInterval; j++) {
+                            occupiedColumns.set(j, occupiedColumns.get(j).fill(true, col, col + event.columnSpan));
+                        }
+                        foundColumn = true;
                     }
-                    break;
                 }
             }
         });
-
-
-        for (let i = 0; i < intervals.length; i++) {
-            let intervalEvents = intervals[i];
-            if (intervalEvents.length > 0) {
-                let totalSpan = intervalEvents.reduce((acc, curr) => acc + curr.columnSpan, 0);
-                // Check if total span does not equal 12 and events do not overlap with other intervals
-                if (totalSpan !== 12) {
-                    let uniqueEvents = intervalEvents.filter(event => {
-                        // Check if this event exists only in the current interval
-                        let startInterval = this.convertToStartIntervalIndex(event.date.from);
-                        let endInterval = this.convertToEndIntervalIndex(event.date.to);
-                        return startInterval === i && endInterval === i + 1;
-                    });
-
-
-                    // If unique events found
-                    if (uniqueEvents.length > 0) {
-
-                        let remainingSpans = 12 - totalSpan;
-
-                        let additionalSpanPerEvent = Math.floor(remainingSpans / uniqueEvents.length);
-                        let additionalSpanRemainder = remainingSpans % uniqueEvents.length;
-
-                        // Evenly distribute remaining spans among events
-                        uniqueEvents.forEach((event, index) => {
-                            event.columnSpan += additionalSpanPerEvent;
-                            if (index < additionalSpanRemainder) {
-                                event.columnSpan += 1; // Distribute any remainder
-                            }
-                        });
-                    }
-                }
-            }
-        }
 
         if (DBG) {
             console.log(intervals);
@@ -1036,6 +1045,7 @@ class PECalendar {
             to: endTime,
             date: date,
             type: "temporary",
+            is_public: 1,
             resources: [
                 resource
             ]
@@ -1063,10 +1073,16 @@ class PECalendar {
     }
 
     handleMouseDown = (_allProps, event) => {
+
         if (this.touchMoving()) {
             console.log("touchMoving");
             return;
         }
+
+        if (!(event.target.className === 'calendar-cell' || event.target.classList.contains('event-temporary'))) {
+            return;
+        }
+
         if (this.currentPopper()) {
             const [oldel, oldInfo] = this.currentPopper();
 
@@ -1077,7 +1093,8 @@ class PECalendar {
             this.currentPopper(null);
 
         }
-        if (!(event.target.className === 'calendar-cell' || event.target.classList.contains('event-temporary'))) {
+
+        if(this.disableInteraction) {
             return;
         }
 
@@ -1144,6 +1161,7 @@ class PECalendar {
             id: `TOTEST`,
             from: startTime,
             to: endTime,
+            is_public: 1,
             date: date,
             resources: [
                 resource
@@ -1266,7 +1284,7 @@ class PECalendar {
         const formattedFromTime = fromTime.toFormat('HH:mm');
         const formattedToTime = toTime.toFormat('HH:mm');
 
-        return `${formattedFromTime}-${formattedToTime}`;
+        return `${formattedFromTime} - ${formattedToTime}`;
     }
 
     /**
@@ -1465,15 +1483,15 @@ class PECalendar {
         let bookingUrl = phpGWLink('bookingfrontend/', {
             menuaction: 'bookingfrontend.uibooking.info_json',
             ids: [...bookings],
-        }, true);
+        }, true, this.instance);
         let eventUrl = phpGWLink('bookingfrontend/', {
             menuaction: 'bookingfrontend.uievent.info_json',
             ids: [...events],
-        }, true);
+        }, true, this.instance);
         let allocationUrl = phpGWLink('bookingfrontend/', {
             menuaction: 'bookingfrontend.uiallocation.info_json',
             ids: [...allocations],
-        }, true);
+        }, true, this.instance);
 
         const res = await Promise.all([
             (await fetch(bookingUrl)).json(),
@@ -1501,7 +1519,7 @@ class PECalendar {
                 menuaction: 'bookingfrontend.uiparticipant.ical',
                 reservation_type: event.type,
                 reservation_id: event.id,
-            })
+            }, false, this.instance)
         };
         switch (event.type) {
             case 'booking':
@@ -1645,6 +1663,47 @@ class PECalendar {
         return name;
     }
 
+    /**
+     * Helper method to escape special characters for iCal format
+     * @param {string} text
+     * @returns {string}
+     */
+    escapeICalText(text) {
+        return text.replace(/([\,;])/g, '\\$1').replace(/\n/g, '\\n');
+    }
+
+    /**
+     * Method to generate iCal data
+     */
+    generateICal() {
+        const events = this.calendarEvents();
+        let icalContent = 'BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Your Product//EN\n';
+        console.log(events);
+        events.forEach(eventData => {
+            const event = eventData.event;
+            const eventStart = DateTime.fromISO(`${event.date}T${event.from}`).toUTC().toFormat("yyyyMMdd'T'HHmmss'Z'");
+            const eventEnd = DateTime.fromISO(`${event.date}T${event.to}`).toUTC().toFormat("yyyyMMdd'T'HHmmss'Z'");
+            const summary = this.escapeICalText(this.getEventName(event));
+            const description = this.escapeICalText(event.description || '');
+            const location = this.escapeICalText(event.building_name) + ': ' + this.escapeICalText(event.resources.map(resource => resource.name).join(', '));
+            const uid = event.id_string || event.id;
+            const eventType = event.type.charAt(0).toUpperCase() + event.type.slice(1); // Capitalize first letter
+
+            icalContent += `BEGIN:VEVENT\nUID:${uid}@yourdomain.com\nDTSTAMP:${DateTime.now().toUTC().toFormat("yyyyMMdd'T'HHmmss'Z'")}\nDTSTART:${eventStart}\nDTEND:${eventEnd}\nSUMMARY:${summary}\nDESCRIPTION:${description}\nLOCATION:${location}\nX-EVENT-TYPE:${eventType}\nEND:VEVENT\n`;
+        });
+
+        icalContent += 'END:VCALENDAR';
+
+        // Trigger the download
+        const blob = new Blob([icalContent], {type: 'text/calendar'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'calendar.ics';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
 
 }
 
@@ -1658,12 +1717,12 @@ if (globalThis['ko']) {
                 <div class="header">
                     <!-- ko ifnot: combinedTempEvents().length -->
                     <!-- SPACING PLACEHOLDER-->
-                    <div class="pending-row">
+                    <div class="pending-row" data-bind="hidden: disableInteraction">
                         <div id="tempEventPills" class="pills">
                         </div>
                     </div>
                     <!-- /ko -->
-                    <div class="select_building_resource">
+                    <div class="select_building_resource"  data-bind="hidden: disableInteraction">
                         <div class="resource-switch" data-bind="css: { 'invisible': disableResourceSwap }">
                             <!-- ko if: resourcesAsArray().length > 0 -->
 
@@ -1674,8 +1733,8 @@ if (globalThis['ko']) {
                             <!-- /ko -->
 
                         </div>
-                        <!-- ko ifnot: hasTimeSlots() -->
-                        <a class="application-button link-button link-button-primary"
+                        <!-- ko ifnot: hasTimeSlots() || disableInteraction -->
+                        <a class="pe-btn pe-btn-primary pe-btn-colour-primary link-text link-text-white d-flex gap-3 "
                            data-bind="attr: { href: applicationURL }">
                             <trans>bookingfrontend:application</trans>
                         </a>
@@ -1734,24 +1793,31 @@ if (globalThis['ko']) {
                                 </button>
                             </div>
                         </div data-bind="css: { 'invisible': !hasTimeSlots() }">
+                        <button type="button"
+                                class="pe-btn  pe-btn--transparent text-secondary d-flex gap-2 align-items-center"
+                                data-bind="click: generateICal">
+                            <div>iCal</div>
+                            <div><i class="fas fa-calendar-alt export-ical" title="Export to iCal"
+                                    data-bind="click: generateICal"></i></div>
+                        </button>
                         <!-- ko ifnot: hasTimeSlots() -->
 
-                        <div class="info-types">
+                        <div class="info-types d-none">
                             <div class="type text-small">
                                 <img class="event-filter"
-                                     src="${phpGWLink('phpgwapi/templates/bookingfrontend_2/svg/ellipse.svg', {}, false)}"
+                                     src="${phpGWLink('phpgwapi/templates/bookingfrontend_2/svg/ellipse.svg', {}, false, this.instance)}"
                                      alt="ellipse">
                                 <trans>bookingfrontend:event</trans>
                             </div>
                             <div class="type text-small">
                                 <img class="booking-filter"
-                                     src="${phpGWLink('phpgwapi/templates/bookingfrontend_2/svg/ellipse.svg', {}, false)}"
+                                     src="${phpGWLink('phpgwapi/templates/bookingfrontend_2/svg/ellipse.svg', {}, false, this.instance)}"
                                      alt="ellipse">
                                 <trans>bookingfrontend:booking</trans>
                             </div>
                             <div class="type text-small">
                                 <img class="allocation-filter"
-                                     src="${phpGWLink('phpgwapi/templates/bookingfrontend_2/svg/ellipse.svg', {}, false)}"
+                                     src="${phpGWLink('phpgwapi/templates/bookingfrontend_2/svg/ellipse.svg', {}, false, this.instance)}"
                                      alt="ellipse">
                                 <trans>bookingfrontend:allocation</trans>
                             </div>
@@ -1799,7 +1865,7 @@ if (globalThis['ko']) {
                         <!-- ko foreach: calendarEvents -->
                         <div class="event"
                              data-bind="
-                                 css: Object.assign($data.props, {'event-small': $data.heightREM() < 1}), 
+                                 css: Object.assign($data.props, {'event-small': $data.heightREM() < 1, 'event-no-title': $data.props?.columnSpan !== undefined && $data.props?.columnSpan < 8}), 
                                  style: {
                                         gridRow: $parent.getGridRow($data.date, $data.event),
                                         gridColumn: $parent.getGridColumn($data.date, $data)
@@ -1809,7 +1875,12 @@ if (globalThis['ko']) {
                                  click: $data.heightREM() < 1 && $data.event.type !== 'temporary' && $parent.eventPopperDataEntry($data.event) ? (e,c) => $parent.togglePopper(e,c) : undefined
                             ">
                             <div class="event-text">
+                                <!-- ko if: $data.event.is_public === undefined || $data.event.is_public === 1 -->
                                 <span class="event-title" data-bind="text: $parent.getEventName($data.event)"></span>
+                                <!-- /ko -->
+                                <!-- ko if: $data.event.is_public === 0 -->
+                                <span class="event-title"><trans>bookingfrontend:private event</trans></span>
+                                <!-- /ko -->
                                 <!-- ko if: $data.event.resources -->
                                 <!--                                <div data-bind="text: $data.event.resources.filter(r => r.id).map(r => r.name).join(' / ')"></div>-->
                                 <!-- /ko -->
@@ -1819,6 +1890,7 @@ if (globalThis['ko']) {
                             <button class="dots-container"
                                     data-bind="click: () => $parent.removeTempEventPill($data.event)">
                                 <i class="fas fa-times"></i>
+
                             </button>
                             <!-- /ko -->
                             <!--                            <div data-bind="text: ko.toJSON($parent.popperData)"></div>-->
@@ -1830,38 +1902,40 @@ if (globalThis['ko']) {
                                 <!--                                        data-bind="attr: {src: phpGWLink('phpgwapi/templates/bookingfrontend_2/svg/dots.svg', {}, false)}"-->
                                 <!--                                        class="dots"/>-->
                                 <i class="fas fa-info-circle"></i>
+
                             </button>
 
                             <div class="info"
                                  data-bind="click: (e,c) => $parent.togglePopper(e,c), with: $parent.eventPopperDataEntry($data.event), as: 'infoData'">
                                 <div class="info-inner">
                                     <!-- Display ID for all types -->
-                                    <div>
-                                        <b data-bind="text: '#' + infoData.id"></b>
-                                    </div>
-                                    <!-- Dynamically display Name or Organization Name based on type -->
-                                    <div>
-                                        <!-- ko if: $parent.event.type === 'booking' -->
-                                        <b data-bind="text: infoData.info_group.organization_name"></b>
-                                        <!-- /ko -->
-                                        <!-- ko if: $parent.event.type === 'event' -->
-                                        <b data-bind="text: infoData.name"></b>
-                                        <!-- /ko -->
-                                        <!-- ko if: $parent.event.type === 'allocation' -->
-                                        <b data-bind="text: infoData.organization_name"></b>
-                                        <!-- /ko -->
+                                    <div class="info-title mb-3">
+                                        <h3>
+                                            <!-- ko if: $parent.event.is_public === undefined || $parent.event.is_public === 1 -->
+                                            <span data-bind="text: $component.getEventName($parent.event)"></span>
+                                            <!-- /ko -->
+                                            <!-- ko if: $parent.event.is_public === 0 -->
+                                            <span><trans>bookingfrontend:private event</trans></span>
+                                            <!-- /ko -->
+                                        </h3>
+                                        <span data-bind="text: '(#' + infoData.id +')'"></span>
                                     </div>
                                     <!-- Group (2018) and Group Name for bookings, Organizer for events, or Display nothing specific for allocations -->
                                     <!-- ko if: $parent.event.type === 'booking' -->
-                                    <div class="mb-3">
+                                    <div>
                                         <span class="text-bold"><trans>booking:group (2018)</trans>:</span>
                                         <a data-bind="attr: { href: infoData.group_link }, text: infoData.info_group.name"></a>
                                     </div>
                                     <!-- /ko -->
                                     <!-- ko if: $parent.event.type === 'event' -->
-                                    <div class="mb-3">
+                                    <div>
                                         <span class="text-bold"><trans>booking:organizer</trans>:</span>
+                                        <!-- ko if: $parent.event.is_public === undefined || $parent.event.is_public === 1 -->
                                         <span data-bind="text: infoData.organizer"></span>
+                                        <!-- /ko -->
+                                        <!-- ko if: $parent.event.is_public === 0 -->
+                                        <span><trans>bookingfrontend:private event</trans></span>
+                                        <!-- /ko -->
                                     </div>
                                     <!-- /ko -->
                                     <!-- Event/Booking/Allocation Time -->
@@ -1873,7 +1947,10 @@ if (globalThis['ko']) {
                                     <div>
                                         <span class="text-bold"><trans>bookingfrontend:place</trans>:</span>
                                         <a data-bind="attr: { href: infoData.building_link }, text: infoData.building_name"></a>
-                                        (<span data-bind="text: infoData.info_resource_info"></span>)
+                                    </div>
+                                    <div>
+                                        <span class="text-bold"><trans>bookingfrontend:resources</trans>:</span>
+                                        <span data-bind="text: infoData.info_resource_info"></span>
                                     </div>
                                     <!-- Participant Limit (common for all types if applicable) -->
                                     <!-- ko if: infoData.info_participant_limit !== 0 -->
@@ -1883,18 +1960,18 @@ if (globalThis['ko']) {
                                     </div>
                                     <!-- /ko -->
                                     <!-- Actions (Register, Edit, Cancel, iCal, Add for allocation) -->
-                                    <div class="actions">
+                                    <div class="info-actions   mt-4">
                                         <!-- ko if: infoData.info_show_link && infoData.info_participant_limit > 0 -->
 
                                         <a data-bind="attr: { href: $component.cleanUrl(infoData.info_show_link), target: '_blank' }, click: $component.clickBubbler, clickBubble: false"
-                                           class="btn btn-light mt-4">
+                                           class="pe-btn  pe-btn--transparent pe-btn-text-primary">
                                             <trans>booking:register participants</trans>
                                         </a>
                                         <!-- /ko -->
                                         <!-- Edit Link -->
                                         <!-- ko if: infoData.info_edit_link && $component.userCanEdit($parent.event) -->
                                         <a data-bind="attr: { href: $component.cleanUrl(infoData.info_edit_link), target: '_blank' }, click: $component.clickBubbler, clickBubble: false"
-                                           class="btn btn-light mt-4">
+                                           class="pe-btn  pe-btn--transparent pe-btn-text-primary">
                                             <!-- Conditional text based on type -->
                                             <!-- ko if: $parent.event.type === 'booking' -->
                                             <trans>bookingfrontend:edit booking</trans>
@@ -1910,7 +1987,7 @@ if (globalThis['ko']) {
                                         <!-- Cancel Link -->
                                         <!-- ko if: $component.userCanEdit($parent.event) && infoData.info_cancel_link -->
                                         <a data-bind="attr: { href: $component.cleanUrl(infoData.info_cancel_link), target: '_blank' },click: $component.clickBubbler, clickBubble: false"
-                                           class="btn btn-light mt-4">
+                                           class="pe-btn  pe-btn--transparent pe-btn-text-primary">
                                             <!-- Conditional text based on type -->
                                             <!-- ko if: $parent.event.type === 'booking' -->
                                             <trans>bookingfrontend:cancel booking</trans>
@@ -1926,7 +2003,7 @@ if (globalThis['ko']) {
                                         <!-- iCal Link -->
                                         <!-- ko if: infoData.info_ical_link -->
                                         <a data-bind="attr: { href: $component.cleanUrl(infoData.info_ical_link), target: '_blank' }, text: 'iCal',click: $component.clickBubbler, clickBubble: false"
-                                           class="btn btn-light mt-4"></a>
+                                           class="pe-btn  pe-btn--transparent pe-btn-text-primary"></a>
                                         <!-- /ko -->
                                         <!-- Additional Actions for Allocations -->
                                         <!-- ko if: $parent.event.type === 'allocation' -->
@@ -1951,13 +2028,17 @@ if (globalThis['ko']) {
                 <!-- ko if: hasTimeSlots() -->
                 <div class="time-slot-body">
                     <!-- ko if: hasTimeSlotsInCurrentCalendarRange -->
-                    <!-- ko foreach: availableTimeSlots()[resource_id()] -->
+                    <!-- ko foreach: availableTimeSlotWithOverlaps -->
                     <!-- ko if: $data.overlap !== 3 && $parent.isWithinCurrentCalendarRange($data.start, $data.end) -->
                     <div class="time-slot-card">
                         <!-- Status section -->
+                        <!--                        <div class="time-slot-status"-->
+                        <!--                             data-bind="css: { 'green': $data.overlap === false, 'yellow': $data.overlap === 2, 'red': $data.overlap === 1 }">-->
+                        <!--                            <span data-bind="text: $data.overlap === false ? 'Ledig' : ($data.overlap === 2 ? 'Reservert' : 'Opptatt')"></span>-->
+                        <!--                        </div>-->
                         <div class="time-slot-status"
-                             data-bind="css: { 'green': $data.overlap === false, 'yellow': $data.overlap === 2, 'red': $data.overlap === 1 }">
-                            <span data-bind="text: $data.overlap === false ? 'Ledig' : ($data.overlap === 2 ? 'Reservert' : 'Opptatt')"></span>
+                             data-bind="css: { 'green': $data.overlap === false, 'red': $data.overlap !== false }">
+                            <span data-bind="text: $data.overlap === false ? 'Ledig' : 'Opptatt'"></span>
                         </div>
 
                         <!-- Date and time section -->
@@ -1971,7 +2052,7 @@ if (globalThis['ko']) {
                         <div class="time-slot-button">
                             <!-- ko if: $data.overlap === false -->
                             <a class="pe-btn  pe-btn-secondary pe-btn--small link-text "
-                               data-bind="attr: {href: phpGWLink('bookingfrontend/', $data.applicationLink, false)}">Velg
+                               data-bind="attr: {href: phpGWLink('bookingfrontend/', $data.applicationLink, false, $parent.instance)}">Velg
                             </a>
 
                             <!-- /ko -->
@@ -2041,4 +2122,38 @@ function getCookie(cname) {
         }
     }
     return "";
+}
+
+/**
+ * Emulate phpGW's link function
+ *
+ * @param String strURL target URL
+ * @param Object oArgs Query String args as associate array object
+ * @param bool bAsJSON ask that the request be returned as JSON (experimental feature)
+ * @param String baseURL (optional) Base URL to use instead of strBaseURL
+ * @returns String URL
+ */
+function phpGWLink(strURL, oArgs, bAsJSON, baseURL) {
+    // console.log(strBaseURL)
+    if (baseURL) {
+        const baseURLParts = (baseURL).split('/').filter(a => a !== '' && !a.includes('http'));
+        baseURL = '//' + baseURLParts.slice(0, baseURLParts.length - 1).join('/') + '/'; // Remove last element (file name)
+    }
+    const urlParts = (baseURL || strBaseURL).split('?');
+    let newURL = urlParts[0] + strURL + '?';
+
+    if (oArgs == null) {
+        oArgs = new Object();
+    }
+    for (const key in oArgs) {
+        newURL += key + '=' + oArgs[key] + '&';
+    }
+    if (urlParts[1]) {
+        newURL += urlParts[1];
+    }
+
+    if (bAsJSON) {
+        newURL += '&phpgw_return_as=json';
+    }
+    return newURL;
 }
