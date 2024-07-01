@@ -196,7 +196,7 @@
 				$item['url'] = 'file:///' . str_replace(':', '|', $item['url']);
 			}
 
-			$icon = !empty($item['icon']) ? "<i class='{$item['icon']} mr-2 text-gray-400'></i>": '<i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>';
+			$icon = !empty($item['icon']) ? "{$item['icon']} mr-2 text-gray-400": "fas fa-cogs fa-sm fa-fw mr-2 text-gray-400";
 			$nav_location = isset($item['nav_location']) ? $item['nav_location'] : '';
 
 			$ret = array(
