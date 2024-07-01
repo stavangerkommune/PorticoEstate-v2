@@ -33,11 +33,9 @@ RUN pecl install xdebug apcu && docker-php-ext-enable xdebug apcu
 RUN curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php
 RUN php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
 
-COPY composer.lock composer.json /var/www/html/
 
 WORKDIR /var/www/html
 
-RUN composer install --no-autoloader --no-scripts --no-dev
 
 
 # Conditionally install MSSQL support
@@ -106,9 +104,3 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN mkdir -p /var/public/files
 RUN chmod 777 /var/public/files
-
-##Run composer install and then the default Docker entrypoint
-#RUN echo '#!/bin/bash\n\n# Run composer install\ncomposer install\n\n# Execute the default Docker entrypoint (e.g., Apache or PHP-FPM)\nexec "$@"' > /usr/local/bin/entrypoint.sh \
-#    && chmod +x /usr/local/bin/entrypoint.sh
-
-#ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
