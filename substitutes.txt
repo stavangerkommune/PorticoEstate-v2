@@ -81,7 +81,8 @@ $GLOBALS['phpgw']->common
 $this->phpgwapi_common = new \phpgwapi_common();
 
 
-$log = new \App\modules\phpgwapi\services\Log();
+use App\modules\phpgwapi\services\Log;
+$log = new Log();
 
 use App\modules\phpgwapi\controllers\Accounts\Accounts;
 
@@ -103,6 +104,8 @@ ACL_PRIVATE
 $GLOBALS['phpgw']->session->is_repost()
 phpgw::is_repost()
 
+use App\modules\phpgwapi\security\Sessions;
+$sessions = Sessions::getInstance();
 
 use App\modules\phpgwapi\services\AsyncService;
 $asyncservice = AsyncService::getInstance();

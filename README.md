@@ -26,7 +26,7 @@ Follow these steps to get started:
 	  ```
 
 5. **Install required 3rd-party libraries**
-	- Execute the following command to install dependencies inside the `portico_api` container:
+	- First-time: Execute the following command to install dependencies inside the `portico_api` container:
 	  ```bash
 	  docker exec -it portico_api composer install
 	  ```

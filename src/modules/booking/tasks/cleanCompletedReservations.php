@@ -8,7 +8,7 @@
 		{
 			$sql = "TRUNCATE table $table CASCADE";
 			echo $sql . "\n";
-			$c->getDb()->query($sql, __LINE__, __FILE__);
+//			$c->getDb()->query($sql, __LINE__, __FILE__);
 		}
 	}
 	PhpgwEntry::phpgw_call('cleanCompletedReservations');

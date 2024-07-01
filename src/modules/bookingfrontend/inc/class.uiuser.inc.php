@@ -76,17 +76,17 @@
 
 			$application_data = $this->bo->so->get_applications($this->ssn);
 
-			$dateformat	 = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat	 = $this->userSettings['preferences']['common']['dateformat'];
 			foreach ($application_data as &$entry)
 			{
 				$entry['lang_status'] = lang($entry['status']);
-				$entry['date'] = $GLOBALS['phpgw']->common->show_date(strtotime($entry['created']), $dateformat);
+				$entry['date'] = $this->phpgwapi_common->show_date(strtotime($entry['created']), $dateformat);
 				$entry['link'] = '<a href="' .self::link(array('menuaction' => "{$this->module}.uiapplication.show", 'id' => $entry['id'], 'secret' => $entry['secret'])) . '">' . $lang_view . '</a>';
 				$entry['copy_link'] ='<a href="' .self::link(array('menuaction' => "{$this->module}.uiapplication.add", 'application_id' => $entry['id'])) . '" target="_blank">' . $lang_copy . '</a>';
 			}
 			unset($entry);
 
-			$GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] = 10;
+			$this->userSettings['preferences']['common']['maxmatchs'] = 10;
 			$lang = array();
 			$this->add_jquery_translation( $lang );
 
@@ -99,7 +99,7 @@
 				'config'	 => array(
 		//			array('disableFilter' => true),
 		//			array('disablePagination' => true),
-		//			array('rows_per_page' => $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs']),
+		//			array('rows_per_page' => $this->userSettings['preferences']['common']['maxmatchs']),
 					array('order' => json_encode(array(0, 'desc'))),
 				)
 			);
@@ -134,7 +134,7 @@
 				'config'	 => array(
 		//			array('disableFilter' => true),
 		//			array('disablePagination' => true),
-		//			array('rows_per_page' => $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs']),
+		//			array('rows_per_page' => $this->userSettings['preferences']['common']['maxmatchs']),
 					array('order' => json_encode(array(0, 'desc'))),
 				)
 			);
@@ -239,7 +239,7 @@
 					'date', 'security', 'file'));
 
 			self::render_template_xsl('user_edit', array('user' => $user,
-				"new_form" => "1", 'module' => $this->module, 'currentapp' => $GLOBALS['phpgw_info']['flags']['currentapp']));
+				"new_form" => "1", 'module' => $this->module, 'currentapp' => $this->flags['currentapp']));
 		}
 
 		public function edit()
@@ -303,7 +303,7 @@
 			$this->add_template_helpers();
 			self::render_template_xsl('user_edit', array('user' => $user,
 				"save_or_create_text" => "Save", "module" => $this->module, "contact_form_link" => $contact_form_link,
-				'activities' => $activities, 'currentapp' => $GLOBALS['phpgw_info']['flags']['currentapp']));
+				'activities' => $activities, 'currentapp' => $this->flags['currentapp']));
 		}
 
 		public function index()

@@ -1,4 +1,6 @@
 <?php
+
+use App\modules\phpgwapi\services\Cache;
 	phpgw::import_class('booking.uiapplication');
 	phpgw::import_class('booking.boapplication');
 	phpgw::import_class('booking.soapplication');

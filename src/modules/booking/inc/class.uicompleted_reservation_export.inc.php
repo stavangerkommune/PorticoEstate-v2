@@ -308,7 +308,7 @@ class booking_uicompleted_reservation_export extends booking_uicommon
 			$account_id = $accounts_obj->name2id($export['created_by_name']);
 			if ($account_id)
 			{
-				$export['created_by_name'] = $GLOBALS['phpgw']->accounts->get($account_id)->__toString();
+				$export['created_by_name'] = $accounts_obj->get($account_id)->__toString();
 			}
 		}
 		$results = $this->jquery_results($exports);

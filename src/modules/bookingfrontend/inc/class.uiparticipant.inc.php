@@ -1,4 +1,9 @@
 <?php
+
+use App\modules\phpgwapi\services\Cache;
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\Log;
+
 	phpgw::import_class('booking.uiparticipant');
 	phpgw::import_class('phpgwapi.datetime');
 
@@ -24,9 +29,7 @@
 
 		function ical()
 		{
-			$GLOBALS['phpgw_info']['flags']['noheader']	 = true;
-			$GLOBALS['phpgw_info']['flags']['nofooter']	 = true;
-			$GLOBALS['phpgw_info']['flags']['xslt_app']	 = false;
+			Settings::getInstance()->update('flags', ['noheader' => true, 'nofooter' => true, 'xslt_app' => false]);
 
 			$config = CreateObject('phpgwapi.config', 'booking')->read();
 
@@ -48,9 +51,9 @@
 			$start = $reservation['from_'];
 			$end = $reservation['to_'];
 
-			$cal_name	 = !empty($GLOBALS['phpgw_info']['server']['site_title']) ? $GLOBALS['phpgw_info']['server']['site_title'] : $GLOBALS['phpgw_info']['server']['system_name'];
+			$cal_name	 = !empty($this->serverSettings['site_title']) ? $this->serverSettings['site_title'] : $this->serverSettings['system_name'];
 
-//			$timezone	 = !empty($GLOBALS['phpgw_info']['user']['preferences']['common']['timezone']) ? $GLOBALS['phpgw_info']['user']['preferences']['common']['timezone'] : 'UTC';
+//			$timezone	 = !empty($this->userSettings['preferences']['common']['timezone']) ? $this->userSettings['preferences']['common']['timezone'] : 'UTC';
 			$uid = date("Ymd\TGis") . rand() . "@" . $cal_name;
 			$dtstamp = date("Ymd\TGis");
 //			$dtstart = (new DateTime($start, new DateTimezone($timezone)))->format("Ymd\THis");
@@ -81,7 +84,7 @@
 
 			if($resource_participant_limit)
 			{
-				$external_site_address = !empty($config['external_site_address'])? $config['external_site_address'] : $GLOBALS['phpgw_info']['server']['webserver_url'];
+				$external_site_address = !empty($config['external_site_address'])? $config['external_site_address'] : $this->serverSettings['webserver_url'];
 
 				$participant_registration_link = $external_site_address
 					. "/bookingfrontend/?menuaction=bookingfrontend.uiparticipant.add"
@@ -181,7 +184,7 @@ ICAL;
 				$when	 = pretty_timestamp($reservation['from_']) . ' - ' . $end->format('H:i');
 			}
 
-			$timezone	 = !empty($GLOBALS['phpgw_info']['user']['preferences']['common']['timezone']) ? $GLOBALS['phpgw_info']['user']['preferences']['common']['timezone'] : 'UTC';
+			$timezone	 = !empty($this->userSettings['preferences']['common']['timezone']) ? $this->userSettings['preferences']['common']['timezone'] : 'UTC';
 
 			try
 			{
@@ -225,7 +228,7 @@ ICAL;
 			if ($_SERVER['REQUEST_METHOD'] == 'POST' && $register_type && $enable_register_form)
 			{
 				$user_inputs = (array)Cache::system_get('bookingfrontendt', 'add_participant');
-				$ip_address = phpgw::get_ip_address();
+				$ip_address = Sanitizer::get_ip_address();
 				$user_inputs[$ip_address][time()] = 1;
 
 				/**
@@ -327,7 +330,7 @@ ICAL;
 					}
 
 //					$participant_id = $receipt['id'];
-//					$external_site_address = !empty($config['external_site_address'])? $config['external_site_address'] : $GLOBALS['phpgw_info']['server']['webserver_url'];
+//					$external_site_address = !empty($config['external_site_address'])? $config['external_site_address'] : $this->serverSettings['webserver_url'];
 //
 //					// Hack..
 //					if(!preg_match('/^http/', $external_site_address))
@@ -543,13 +546,14 @@ ICAL;
 
 		private function log( $what, $value = '' )
 		{
-			$GLOBALS['phpgw']->log->message(array(
+			$log = new Log();
+			$log->message(array(
 				'text'	 => "what: %1, <br/>value: %2",
 				'p1'	 => $what,
 				'p2'	 => $value ? $value : ' ',
 				'line'	 => __LINE__,
 				'file'	 => __FILE__
 			));
-			$GLOBALS['phpgw']->log->commit();
+			$log->commit();
 		}
 	}

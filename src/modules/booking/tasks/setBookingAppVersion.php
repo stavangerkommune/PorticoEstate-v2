@@ -16,6 +16,6 @@
 			"UPDATE phpgw_applications SET app_version = '%s' WHERE app_name = 'booking'", $options['version']
 		);
 		echo $sql . "\n";
-		$c->getDb()->query($sql, __LINE__, __FILE__);
+//		$c->getDb()->query($sql, __LINE__, __FILE__);
 	}
 	PhpgwEntry::phpgw_call('setBookingAppVersion');

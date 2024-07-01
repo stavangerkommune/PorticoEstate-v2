@@ -137,7 +137,8 @@ class booking_uicompleted_reservation extends booking_uicommon
 			return $this->export();
 		}
 
-		$GLOBALS['phpgw']->jqcal2->add_listener('filter_to');
+		$jqcal2 = createObject('phpgwapi.jqcal2');
+		$jqcal2->add_listener('filter_to');
 		phpgwapi_jquery::load_widget('datepicker');
 
 		self::add_javascript('booking', 'base', 'completed_reservation.js');
@@ -372,15 +373,15 @@ JS;
 		if ($to_date)
 		{
 			$filter_to2 = date('Y-m-d', phpgwapi_datetime::date_to_timestamp($to_date));
-			$filters['where'][] = "%%table%%" . sprintf(".to_ <= '%s 23:59:59'", $GLOBALS['phpgw']->db->db_addslashes($filter_to2));
+			$filters['where'][] = "%%table%%" . sprintf(".to_ <= '%s 23:59:59'", Db::getInstance()->db_addslashes($filter_to2));
 		}
 
 		if (
-			!isset($GLOBALS['phpgw_info']['user']['apps']['admin']) && // admin users should have access to all buildings
+			!isset($this->userSettings['apps']['admin']) && // admin users should have access to all buildings
 			!$this->bo->has_role(booking_sopermission::ROLE_MANAGER)
 		)
 		{ // users with the booking role admin should have access to all buildings
-			$accessable_buildings = $this->bo->accessable_buildings($GLOBALS['phpgw_info']['user']['id']);
+			$accessable_buildings = $this->bo->accessable_buildings($this->userSettings['id']);
 
 			// if no buildings are searched for, show all accessable buildings
 			if (!isset($filters['building_id']))
@@ -619,9 +620,9 @@ JS;
 		$this->add_default_display_data($reservation);
 		$this->install_customer_identifier_ui($reservation);
 		$show_edit_button = false;
-		$building_role = $this->bo->accessable_buildings($GLOBALS['phpgw_info']['user']['id']);
+		$building_role = $this->bo->accessable_buildings($this->userSettings['id']);
 
-		if (isset($GLOBALS['phpgw_info']['user']['apps']['admin']) || in_array($reservation['building_id'], $building_role))
+		if (isset($this->userSettings['apps']['admin']) || in_array($reservation['building_id'], $building_role))
 		{
 			$show_edit_button = true;
 		}
@@ -694,10 +695,10 @@ JS;
 	{
 		//TODO: Display hint to user about primary type of customer identifier
 
-		$building_role = $this->bo->accessable_buildings($GLOBALS['phpgw_info']['user']['id']);
+		$building_role = $this->bo->accessable_buildings($this->userSettings['id']);
 		$reservation = $this->bo->read_single(Sanitizer::get_var('id', 'int'));
 
-		if (!isset($GLOBALS['phpgw_info']['user']['apps']['admin']) && !in_array($reservation['building_id'], $building_role))
+		if (!isset($this->userSettings['apps']['admin']) && !in_array($reservation['building_id'], $building_role))
 		{
 			$this->redirect_to('show', array('id' => Sanitizer::get_var('id', 'int')));
 		}

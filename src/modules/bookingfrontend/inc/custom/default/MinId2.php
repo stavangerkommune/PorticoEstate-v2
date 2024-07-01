@@ -37,6 +37,7 @@
 use App\modules\phpgwapi\services\Settings;
 use App\modules\phpgwapi\services\Cache;
 use App\Database\Db;
+use App\modules\phpgwapi\services\Log;
 
 /**
  * START WRAPPER
@@ -137,7 +138,7 @@ class bookingfrontend_external_user extends bookingfrontend_bouser
 		}
 		catch (Exception $e)
 		{
-			$log = &$GLOBALS['phpgw']->log;
+			$log = new Log();
 			$log->error(array(
 				'text'	=> "<b>Exception:</b>\n" . $e->getMessage() . "\n" . $e->getTraceAsString(),
 				'line'	=> $e->getline(),
@@ -306,7 +307,7 @@ class bookingfrontend_external_user extends bookingfrontend_bouser
 		if (!empty($serverSettings['log_levels']['module']['login']))
 		{
 			$bt = debug_backtrace();
-			$log = new \App\modules\phpgwapi\services\Log();
+			$log = new Log();
 			$log->debug(array(
 				'text' => "what: %1, <br/>value: %2",
 				'p1' => $what,

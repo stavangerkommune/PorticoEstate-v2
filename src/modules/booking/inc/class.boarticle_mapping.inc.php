@@ -68,12 +68,11 @@
 		{
 			$values =  booking_soarticle_mapping::get_instance()->read($params);
 	//		$status_text = booking_article_mapping::get_status_list();
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
 			foreach ($values['results'] as &$entry)
 			{
 	//				$entry['status'] = $status_text[$entry['status']];
-					$entry['created'] = $GLOBALS['phpgw']->common->show_date($entry['created']);
-					$entry['modified'] = $GLOBALS['phpgw']->common->show_date($entry['modified']);
+					$entry['created'] = $this->phpgwapi_common->show_date($entry['created']);
+					$entry['modified'] = $this->phpgwapi_common->show_date($entry['modified']);
 			}
 			return $values;
 		}

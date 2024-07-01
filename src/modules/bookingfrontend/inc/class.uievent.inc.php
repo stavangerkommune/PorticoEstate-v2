@@ -1,4 +1,6 @@
 <?php
+
+use App\modules\phpgwapi\services\Cache;
 phpgw::import_class('booking.uievent');
 phpgw::import_class('booking.uiapplication');
 
@@ -292,8 +294,10 @@ class bookingfrontend_uievent extends booking_uievent
         $event['from_2'] = date("H:i", phpgwapi_datetime::date_to_timestamp($event['from_']));
         $event['to_2'] = date("H:i", phpgwapi_datetime::date_to_timestamp($event['to_']));
 
-        $GLOBALS['phpgw']->jqcal2->add_listener('from_', 'time');
-        $GLOBALS['phpgw']->jqcal2->add_listener('to_', 'time');
+		$jqcal2 = createObject('phpgwapi.jqcal2');
+		$jqcal2->add_listener('from_', 'time');
+        $jqcal2->add_listener('to_', 'time');
+
         phpgwapi_jquery::load_widget('datepicker');
         phpgwapi_jquery::load_widget('timepicker');
 
@@ -792,7 +796,7 @@ class bookingfrontend_uievent extends booking_uievent
         $event['number_of_participants'] = $number_of_participants;
 
         $config = CreateObject('phpgwapi.config', 'booking')->read();
-        $external_site_address = !empty($config['external_site_address']) ? $config['external_site_address'] : $GLOBALS['phpgw_info']['server']['webserver_url'];
+        $external_site_address = !empty($config['external_site_address']) ? $config['external_site_address'] : $this->serverSettings['webserver_url'];
 
         $participant_registration_link = $external_site_address
             . "/bookingfrontend/?menuaction=bookingfrontend.uiparticipant.add"
@@ -816,7 +820,7 @@ class bookingfrontend_uievent extends booking_uievent
 
         phpgw::import_class('phpgwapi.phpqrcode');
         $code_text = $participant_registration_link;
-        $filename = $GLOBALS['phpgw_info']['server']['temp_dir'] . '/' . md5($code_text) . '.png';
+        $filename = $this->serverSettings['temp_dir'] . '/' . md5($code_text) . '.png';
         QRcode::png($code_text, $filename);
         $event['encoded_qr'] = 'data:image/png;base64,' . base64_encode(file_get_contents($filename));
 //			_debug_array($event);

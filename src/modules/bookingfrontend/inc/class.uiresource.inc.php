@@ -1,4 +1,10 @@
 <?php
+
+use App\modules\phpgwapi\services\Translation;
+use App\modules\phpgwapi\services\Cache;
+use App\modules\phpgwapi\security\Sessions;
+
+
 	phpgw::import_class('booking.uicommon');
 
 	class bookingfrontend_uiresource extends booking_uicommon
@@ -120,10 +126,12 @@
 
 			$bouser = CreateObject('bookingfrontend.bouser');
 			$user_data = Cache::session_get($bouser->get_module(), $bouser::USERARRAY_SESSION_KEY);
+			
 			if($user_data['ssn'])
 			{
+				
 				CreateObject('booking.uiapplication')->check_booking_limit(
-					$GLOBALS['phpgw']->session->get_session_id(),
+					Sessions::getInstance()->get_session_id(),
 					$user_data['ssn'],	array('results' => array($resource)));
 			}
 
@@ -162,7 +170,8 @@
 			}
 
 //			$resource['building']		 = ExecMethod('booking.bobuilding.read_single', $resource['building_id']);
-			$userlang = $GLOBALS['phpgw']->translation->get_userlang();
+			$translation = Translation::getInstance();
+			$userlang = $translation->get_userlang();
 			$resource['description'] = !empty($resource['description_json'][$userlang]) ? $resource['description_json'][$userlang] : $resource['description_json']['no'];
 			$resource['building_link'] = self::link(array('menuaction' => 'bookingfrontend.uibuilding.show',
 					'id' => $resource['building_id']));
@@ -178,7 +187,7 @@
 				'pathway' => $pathway,
 				'config_data' => $config->config_data
 			);
-            if ($GLOBALS['phpgw_info']['user']['preferences']['common']['template_set'] == 'bookingfrontend_2') {
+            if ($this->userSettings['preferences']['common']['template_set'] == 'bookingfrontend_2') {
                 phpgwapi_jquery::load_widget("datetimepicker");
                 self::add_javascript('phpgwapi', 'pecalendar', 'luxon.js');
                 self::add_javascript('bookingfrontend', 'bookingfrontend_2', 'components/light-box.js', true);
@@ -214,7 +223,7 @@
 			$resource_id = Sanitizer::get_var('resource_id', 'int');
 			$resource = $this->bo->read_single($resource_id);
 			$location = $this->get_location();
-			$location_id = $GLOBALS['phpgw']->locations->get_id('booking', $location);
+			$location_id = $this->locations->get_id('booking', $location);
 			$custom_values = $resource['json_representation'][$location_id];
 //			_debug_array($custom_values);
 
@@ -298,7 +307,7 @@
 			));
 			self::add_javascript('bookingfrontend', 'base', 'schedule.js');
 			phpgwapi_jquery::load_widget("datepicker");
-			$resource['picker_img'] = $GLOBALS['phpgw']->common->image('phpgwapi', 'cal');
+			$resource['picker_img'] = $this->phpgwapi_common->image('phpgwapi', 'cal');
 
 			self::render_template_xsl('resource_schedule', array('resource' => $resource,
 				'pathway' => $pathway));

@@ -16,7 +16,7 @@
 		 */
 		function send_notification( $allocation, $maildata, $mailadresses )
 		{
-			if (!(isset($GLOBALS['phpgw_info']['server']['smtp_server']) && $GLOBALS['phpgw_info']['server']['smtp_server']))
+			if (!(isset($this->serverSettings['smtp_server']) && $this->serverSettings['smtp_server']))
 			{
 				return;
 			}
@@ -25,9 +25,9 @@
 			$config = CreateObject('phpgwapi.config', 'booking');
 			$config->read();
 
-			$from = isset($config->config_data['email_sender']) && $config->config_data['email_sender'] ? $config->config_data['email_sender'] : "noreply<noreply@{$GLOBALS['phpgw_info']['server']['hostname']}>";
+			$from = isset($config->config_data['email_sender']) && $config->config_data['email_sender'] ? $config->config_data['email_sender'] : "noreply<noreply@{$this->serverSettings['hostname']}>";
 
-			$external_site_address = isset($config->config_data['external_site_address']) && $config->config_data['external_site_address'] ? $config->config_data['external_site_address'] : $GLOBALS['phpgw_info']['server']['webserver_url'];
+			$external_site_address = isset($config->config_data['external_site_address']) && $config->config_data['external_site_address'] ? $config->config_data['external_site_address'] : $this->serverSettings['webserver_url'];
 
 			if ($maildata['outseason'] != 'on' && $maildata['recurring'] != 'on')
 			{
@@ -94,7 +94,7 @@
 
 		function send_admin_notification( $allocation, $maildata, $system_message )
 		{
-			if (!(isset($GLOBALS['phpgw_info']['server']['smtp_server']) && $GLOBALS['phpgw_info']['server']['smtp_server']))
+			if (!(isset($this->serverSettings['smtp_server']) && $this->serverSettings['smtp_server']))
 			{
 				return;
 			}
@@ -117,9 +117,9 @@
 				$mailadresses = array_values($extra_mail_addresses);
 			}
 
-			$from = isset($config->config_data['email_sender']) && $config->config_data['email_sender'] ? $config->config_data['email_sender'] : "noreply<noreply@{$GLOBALS['phpgw_info']['server']['hostname']}>";
+			$from = isset($config->config_data['email_sender']) && $config->config_data['email_sender'] ? $config->config_data['email_sender'] : "noreply<noreply@{$this->serverSettings['hostname']}>";
 
-			$external_site_address = isset($config->config_data['external_site_address']) && $config->config_data['external_site_address'] ? $config->config_data['external_site_address'] : $GLOBALS['phpgw_info']['server']['webserver_url'];
+			$external_site_address = isset($config->config_data['external_site_address']) && $config->config_data['external_site_address'] ? $config->config_data['external_site_address'] : $this->serverSettings['webserver_url'];
 
 			$subject = $system_message['title'];
 			$body = '<b>Beskjed fra ' . $system_message['name'] . '</b><br />' . $system_message['message'] . '<br /><br /><b>Epost som er sendt til brukere av Hallen:</b><br />';
