@@ -2,6 +2,7 @@
 
 namespace App\modules\phpgwapi\middleware;
 
+use App\modules\bookingfrontend\helpers\LoginHelper;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Psr7\Response;
@@ -26,7 +27,7 @@ class SessionsMiddleware implements MiddlewareInterface
 
 	public function process(Request $request, RequestHandler $handler): Response
 	{
-		$second_pass = \Sanitizer::get_var('login_second_pass', 'bool', 'COOKIE');
+		$second_pass = Sanitizer::get_var('login_second_pass', 'bool', 'COOKIE');
 
 		$routeContext = RouteContext::fromRequest($request);
 		$route = $routeContext->getRoute();
@@ -78,6 +79,7 @@ class SessionsMiddleware implements MiddlewareInterface
 		{
 			if($currentApp == 'bookingfrontend')
 			{
+				\App\modules\bookingfrontend\helpers\LoginHelper::process();
 				return $handler->handle($request);
 			}
 			else if($second_pass)

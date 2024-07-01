@@ -224,78 +224,6 @@ class StartPoint
 
 		$phpgwapi_common = new \phpgwapi_common();
 
-		if (!Sanitizer::get_var(session_name(), 'string', 'COOKIE') || !$sessions->verify())
-		{
-			$config = (new \App\modules\phpgwapi\services\Config('bookingfrontend'))->read();
-
-			$login		 = $config['anonymous_user'];
-			$logindomain = Sanitizer::get_var('domain', 'string', 'GET');
-			if ($logindomain && strstr($login, '#') === false)
-			{
-				$login .= "#{$logindomain}";
-			}
-
-			$passwd				 = $config['anonymous_passwd'];
-			$_POST['submitit']	 = "";
-
-			$sessionid = $sessions->create($login, $passwd);
-			if (!$sessionid)
-			{
-				$lang_denied = lang('Anonymous access not correctly configured');
-				if ($sessions->reason)
-				{
-					$lang_denied = $sessions->reason;
-				}
-				echo <<<HTML
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Nede for vedlikehold</title>
-	<style>
-		body {
-			background-color: #f2f2f2;
-			font-family: Arial, sans-serif;
-		}
-		h1 {
-			font-size: 48px;
-			color: #333333;
-			text-align: center;
-			margin-top: 100px;
-		}
-		p {
-			font-size: 24px;
-			color: #666666;
-			text-align: center;
-			margin-top: 50px;
-		}
-		.footer {
-			font-size: 14px;
-			color: #666666;
-			text-align: center;
-			position: fixed;
-			bottom: 0;
-			width: 100%;
-			margin-bottom: 10px;
-		}
-	</style>
-</head>
-<body>
-	<h1>Nede for vedlikehold</h1>
-	<p>Vi beklager ulempen, men denne nettsiden er for tiden under vedlikehold. Kom tilbake senere.</p>
-	<div class="footer">$lang_denied</div>
-</body>
-</html>
-
-HTML;
-
-				/**
-				 * Used for footer on exit
-				 */
-				//			define('PHPGW_APP_INC', ExecMethod('phpgwapi.phpgw.common.get_inc_dir'));
-				$phpgwapi_common->phpgw_exit(True);
-			}
-		}
-
 		$redirect_input = Sanitizer::get_var('redirect', 'raw', 'COOKIE');
 		$redirect = $redirect_input ? json_decode(Sanitizer::get_var('redirect', 'raw', 'COOKIE'), true) : null;
 
@@ -347,9 +275,11 @@ HTML;
 		 */
 		$availableMenuActions = (object) [
 			'bookingfrontend.uiapplication.add' => true,
+			'bookingfrontend.uisearch.index' => true,
 			'bookingfrontend.uiapplication.add_contact' => true,
 			'bookingfrontend.uiresource.show' => true,
 			'bookingfrontend.uibuilding.show' => true,
+			'bookingfrontend.uiorganization.show' => true,
 		];
 
 		/**
