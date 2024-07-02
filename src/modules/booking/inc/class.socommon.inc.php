@@ -9,7 +9,7 @@ abstract class booking_socommon
 {
 
 	protected $db;
-	protected $db2;
+	protected static $db2 = null;
 	protected $db_null = 'NULL';
 	protected $userSettings;
 	protected $serverSettings;
@@ -57,12 +57,21 @@ abstract class booking_socommon
 		$this->table_name = $table_name;
 		$this->fields = $fields;
 		$this->db = Db::getInstance();
-		$this->db2 = new Db2();
+		$this->db2 = self::getDb2();
 		$this->join = $this->db->join;
 		$this->like = $this->db->like;
 		$this->userSettings = Settings::getInstance()->get('user');
 		$this->serverSettings = Settings::getInstance()->get('server');
 		$this->flags = Settings::getInstance()->get('flags');
+	}
+
+	protected static function getDb2()
+	{
+		if (self::$db2 === null)
+		{
+			self::$db2 = new Db2();
+		}
+		return self::$db2;
 	}
 
 	/**
