@@ -26,7 +26,8 @@ class StartPoint
 
 	public function init()
 	{
-		$this->loadConfig();
+		require_once SRC_ROOT_PATH . '/helpers/LegacyObjectHandler.php';
+
 		$this->loadLanguage();
 		$this->loadSession();
 		$this->loadUser();
@@ -36,7 +37,16 @@ class StartPoint
 
 	public function loadConfig()
 	{
-		require_once SRC_ROOT_PATH . '/helpers/LegacyObjectHandler.php';
+
+		define('PHPGW_TEMPLATE_DIR', ExecMethod('phpgwapi.phpgw.common.get_tpl_dir', 'phpgwapi'));
+		define('PHPGW_IMAGES_DIR', ExecMethod('phpgwapi.phpgw.common.get_image_path', 'phpgwapi'));
+		define('PHPGW_IMAGES_FILEDIR', ExecMethod('phpgwapi.phpgw.common.get_image_dir', 'phpgwapi'));
+		define('PHPGW_APP_ROOT', ExecMethod('phpgwapi.phpgw.common.get_app_dir'));
+		define('PHPGW_APP_INC', ExecMethod('phpgwapi.phpgw.common.get_inc_dir'));
+		define('PHPGW_APP_TPL', ExecMethod('phpgwapi.phpgw.common.get_tpl_dir'));
+		define('PHPGW_IMAGES', ExecMethod('phpgwapi.phpgw.common.get_image_path'));
+		define('PHPGW_APP_IMAGES_DIR', ExecMethod('phpgwapi.phpgw.common.get_image_dir'));
+
 
 		/************************************************************************\
 		 * Load the menuaction                                                    *
@@ -69,6 +79,7 @@ class StartPoint
 
 	public function run(Request $request, Response $response)
 	{
+		$this->loadConfig();
 		$this->validate_object_method();
 		$phpgwapi_common = new \phpgwapi_common();
 
@@ -138,10 +149,10 @@ class StartPoint
 					$return_data = '';
 				}
 
+				register_shutdown_function(array($phpgwapi_common, 'phpgw_final'));
+
 				$response->getBody()->write($return_data);
 				return $response->withHeader('Content-Type', 'text/html');
-
-				return;
 			}
 			unset($this->app);
 			unset($this->class);
@@ -181,8 +192,10 @@ class StartPoint
 
 			// phpgw::redirect_link('/home/');
 		}
+
 		//   $phpgwapi_common->phpgw_footer();
 
+		register_shutdown_function(array($phpgwapi_common, 'phpgw_final'));
 
 		$response_str = json_encode(['message' => 'Welcome to Portico API']);
 		$response->getBody()->write($response_str);
@@ -273,7 +286,7 @@ class StartPoint
 		/**
 		 *  converted menuactions
 		 */
-		$availableMenuActions = (object) [
+/* 		$availableMenuActions = (object) [
 			'bookingfrontend.uiapplication.add' => true,
 			'bookingfrontend.uisearch.index' => true,
 			'bookingfrontend.uiapplication.add_contact' => true,
@@ -281,23 +294,15 @@ class StartPoint
 			'bookingfrontend.uibuilding.show' => true,
 			'bookingfrontend.uiorganization.show' => true,
 		];
-
+ */
 		/**
 		 * we want the "bookingfrontend" for now
 		 */
 		switch ($template_set)
 		{
-			case 'bookingfrontend_2':
-				if (
-					str_ends_with(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), 'bookingfrontend/') &&
-					(!$_GET['menuaction'] || $availableMenuActions->{$_GET['menuaction']})
-				)
-				{
-					$userSettings['preferences']['common']['template_set'] = $template_set;
-					break;
-				}
 			case 'bookingfrontend':
-				$userSettings['preferences']['common']['template_set']	 = 'bookingfrontend';
+			case 'bookingfrontend_2':
+				$userSettings['preferences']['common']['template_set'] = $template_set;
 				break;
 			default: // respect the global setting
 				break;
@@ -306,6 +311,7 @@ class StartPoint
 		Settings::getInstance()->set('user', $userSettings);
 
 		$this->validate_object_method();
+		$this->loadConfig();
 
 		if (!$this->app || !$this->class || !$this->method)
 		{
@@ -315,7 +321,7 @@ class StartPoint
 			$this->invalid_data = false;
 		}
 
-		$phpgwapi_common->get_tpl_dir($this->app);
+//		$phpgwapi_common->get_tpl_dir($this->app);
 
 		if ($this->app != 'bookingfrontend')
 		{
@@ -383,10 +389,10 @@ HTML;
 					$return_data = '';
 				}
 
+				register_shutdown_function(array($phpgwapi_common, 'phpgw_final'));
+
 				$response->getBody()->write($return_data);
 				return $response->withHeader('Content-Type', 'text/html');
-
-				return;
 			}
 			unset($this->app);
 			unset($this->class);
@@ -428,6 +434,7 @@ HTML;
 		}
 		//   $phpgwapi_common->phpgw_footer();
 
+		register_shutdown_function(array($phpgwapi_common, 'phpgw_final'));
 
 		$response_str = json_encode(['message' => 'Welcome to Portico API']);
 		$response->getBody()->write($response_str);

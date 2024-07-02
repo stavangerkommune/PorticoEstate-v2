@@ -345,9 +345,11 @@ class Translation
 		$stmt = $this->db->prepare($sql);
 		$stmt->execute([':userlang' => $userlang, ':app' => $app]);
 
+		$currentapp = Settings::getInstance()->get('flags')['currentapp'];
+
 		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 		{
-			self::$lang[$app][strtolower($row['message_id'])] = $row['content'];
+			self::$lang[$currentapp][strtolower($row['message_id'])] = $row['content'];
 		}
 	}
 

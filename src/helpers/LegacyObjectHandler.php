@@ -48,7 +48,7 @@ Settings::getInstance()->set('flags', $flags);
 
 
 
-
+/* 
 define('PHPGW_TEMPLATE_DIR', ExecMethod('phpgwapi.phpgw.common.get_tpl_dir', 'phpgwapi'));
 define('PHPGW_IMAGES_DIR', ExecMethod('phpgwapi.phpgw.common.get_image_path', 'phpgwapi'));
 define('PHPGW_IMAGES_FILEDIR', ExecMethod('phpgwapi.phpgw.common.get_image_dir', 'phpgwapi'));
@@ -57,7 +57,7 @@ define('PHPGW_APP_INC', ExecMethod('phpgwapi.phpgw.common.get_inc_dir'));
 define('PHPGW_APP_TPL', ExecMethod('phpgwapi.phpgw.common.get_tpl_dir'));
 define('PHPGW_IMAGES', ExecMethod('phpgwapi.phpgw.common.get_image_path'));
 define('PHPGW_APP_IMAGES_DIR', ExecMethod('phpgwapi.phpgw.common.get_image_dir'));
-
+ */
 include_once SRC_ROOT_PATH . '/modules/phpgwapi/inc/class.xslttemplates.inc.php';
 
 

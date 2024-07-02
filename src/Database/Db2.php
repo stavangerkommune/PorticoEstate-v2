@@ -38,6 +38,8 @@ class Db2 extends Db
 			throw new Exception($e->getMessage());
 		}
 		$this->set_config($config);
+		//not the paren, just this one
+		register_shutdown_function(array(&$this, 'disconnect'));
 	}
 
 	public function set_config($config)

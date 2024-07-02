@@ -41,6 +41,7 @@ class Db
 		{
 			$this->db = new PDO($dsn, $username, $password, $options);
 		}
+
 	}
 
 	/**
@@ -92,6 +93,15 @@ class Db
 		return $dsn;
 
 	}
+
+	/**
+	 * Close a connection to a database - only needed for persistent connections
+	 */
+	public function disconnect()
+	{
+		$this->db = null;
+	}
+
 	public function __debugInfo()
 	{
 		$reflectionClass = new ReflectionClass($this);
