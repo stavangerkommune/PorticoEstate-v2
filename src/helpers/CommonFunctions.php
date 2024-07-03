@@ -81,12 +81,13 @@ function get_phpgw_info($key)
 {
 	$_keys = explode('|', $key);
 
-	$settings = Settings::getInstance($_keys[0]);
-	//reduce the array by one
-	$stack = (array)array_shift($_keys);
+	$settings = Settings::getInstance()->get($_keys[0]);
+	//reduce the array by removing the first element
+
+	array_shift($_keys);
 
 	$ret = null;
-	foreach ($stack as $needle)
+	foreach ($_keys as $needle)
 	{
 		if (isset($settings[$needle]))
 		{

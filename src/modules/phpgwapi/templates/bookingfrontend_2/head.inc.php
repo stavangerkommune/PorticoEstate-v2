@@ -111,7 +111,7 @@ $template->set_var('contact', $contact);
 $executiveofficer = lang('executiveofficer');
 $template->set_var('executiveofficer', $executiveofficer);
 
-$executiveofficer_url = $webserver_url . "/";
+$executiveofficer_url = phpgw::link("/", array('menuaction' => 'booking.uiapplication.index'));
 $template->set_var('executiveofficer_url', $executiveofficer_url);
 
 $municipality = $site_title;
@@ -548,21 +548,21 @@ if ($bouser->is_logged_in())
 		$tpl_vars['login_text']		 = lang('Logout');
 	}
 	$tpl_vars['login_text']	 = $bouser->orgnr . ' :: ' . lang('Logout');
-	$tpl_vars['login_url']	 = 'logout.php';
+	$tpl_vars['login_url']	 = 'logout';
 }
 else if (!empty($user_data['ssn']))
 {
 	$tpl_vars['login_text_org']	 = '';
 	$tpl_vars['login_text']		 = "{$user_data['first_name']} {$user_data['last_name']} :: " . lang('Logout');
 	$tpl_vars['org_url']		 = '#';
-	$tpl_vars['login_url']	 = 'logout.php';
+	$tpl_vars['login_url']	 = 'logout';
 }
 else
 {
 	$tpl_vars['login_text_org']	 = '';
 	$tpl_vars['org_url']		 = '#';
 	$tpl_vars['login_text']		 = lang('Organization');
-	$tpl_vars['login_url']		 = 'login.php?after=' . urlencode($_SERVER['QUERY_STRING']);
+	$tpl_vars['login_url']		 = 'login/?after=' . urlencode($_SERVER['QUERY_STRING']);
 	$login_parameter			 = !empty($config_frontend['login_parameter']) ? $config_frontend['login_parameter'] : '';
 	$custom_login_url			 = !empty($config_frontend['custom_login_url']) ? $config_frontend['custom_login_url'] : '';
 	if ($login_parameter)

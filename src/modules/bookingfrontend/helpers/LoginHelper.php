@@ -4,11 +4,66 @@ namespace App\modules\bookingfrontend\helpers;
 
 use App\modules\phpgwapi\security\Sessions;
 use App\modules\phpgwapi\services\Config;
+use App\modules\phpgwapi\services\Cache;
 use Sanitizer;
 
 class LoginHelper
 {
-	public static function process()
+	
+	public static function organization()
+	{
+
+		if(self::login())
+		{
+			require_once SRC_ROOT_PATH . '/helpers/LegacyObjectHandler.php';
+			/**
+			 * Pick up the external login-info
+			 */
+			$bouser = CreateObject('bookingfrontend.bouser');
+			$bouser->log_in();
+
+			$redirect =	json_decode(Cache::session_get('bookingfrontend', 'redirect'), true);
+
+			if (!empty($config['debug_local_login']))
+			{
+				echo "<p>redirect:</p>";
+
+				_debug_array($redirect);
+				die();
+			}
+
+			if (is_array($redirect) && count($redirect))
+			{
+				$redirect_data = array();
+				foreach ($redirect as $key => $value)
+				{
+					$redirect_data[$key] = Sanitizer::clean_value($value);
+				}
+
+				$redirect_data['second_redirect'] = true;
+
+				$sessid = Sanitizer::get_var('sessionid', 'string', 'GET');
+				if ($sessid)
+				{
+					$redirect_data['sessionid'] = $sessid;
+					$redirect_data['kp3'] = Sanitizer::get_var('kp3', 'string', 'GET');
+				}
+
+				Cache::session_clear('bookingfrontend', 'redirect');
+				\phpgw::redirect_link('/bookingfrontend/', $redirect_data);
+			}
+
+			$after = str_replace('&amp;', '&', urldecode(Sanitizer::get_var('after', 'raw')));
+			if (!$after)
+			{
+				$after = array();
+			}
+			\phpgw::redirect_link('/bookingfrontend/', $after);
+			exit;
+		}
+	}
+
+	private static function login()
 	{
 
 		$sessions = Sessions::getInstance();
@@ -84,5 +139,13 @@ HTML;
 				$phpgwapi_common->phpgw_exit(True);
 			}
 		}
+		else
+		{
+			return true;
+		}
+	}	
+	public static function process()
+	{
+		self::login();
 	}
 }

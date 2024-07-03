@@ -40,7 +40,7 @@ class bookingfrontend_hook_helper
 
 	public function __construct()
 	{
-		$script_path = dirname(Sanitizer::get_var('SCRIPT_FILENAME', 'string', 'SERVER'));
+		$script_path = Sanitizer::get_var('REDIRECT_URL', 'string', 'SERVER');
 
 		if (preg_match('/bookingfrontend/', $script_path))
 		{
@@ -114,14 +114,13 @@ HTML;
 
 		if ($orgs)
 		{
+			$base = 'bookingfrontend/';
 			if (isset($_GET) && $_GET)
 			{
-				$base = 'bookingfrontend/';
 				$oArgs = json_encode($_GET);
 			}
 			else
 			{
-				$base = 'bookingfrontend/index.php';
 				$oArgs = '{}';
 			}
 
