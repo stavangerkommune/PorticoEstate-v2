@@ -1,5 +1,6 @@
 <?php
 
+use App\modules\phpgwapi\services\Settings;
 use App\modules\phpgwapi\services\Translation;
 
 /**
@@ -67,5 +68,58 @@ function get_phpgw_session_url()
 	$base_url	= phpgw::link('/', array(), true);
 	$url_parts = parse_url($base_url);
 	return $url_parts['query'];
+}
+
+
+/**
+ * Get global phpgw_info from XSLT templates
+ * @param string $key on the format 'user|preferences|common|dateformat'
+ * @return array or string depending on if param is representing a node
+ */
+
+function get_phpgw_info($key)
+{
+	$_keys = explode('|', $key);
+
+	$settings = Settings::getInstance($_keys[0]);
+	//reduce the array by one
+	$stack = (array)array_shift($_keys);
+
+	$ret = null;
+	foreach ($stack as $needle)
+	{
+		if (isset($settings[$needle]))
+		{
+			$ret = $settings[$needle];
+		}
+	}
+	return $ret;
+}
+
+/**
+ * Get global phpgw_link from XSLT templates
+ * @param string $path on the format 'index.php'
+ * @param string $params on the format 'param1:value1,param2:value2'
+ * @param boolean $redirect  want '&';rather than '&amp;'; 
+ * @param boolean $external is the resultant link being used as external access (i.e url in emails..)
+ * @param boolean $force_backend if the resultant link is being used to reference resources in the api
+ * @return string containing url
+ */
+function get_phpgw_link($path, $params, $redirect = true, $external = false, $force_backend = false)
+{
+	$path = '/' . ltrim($path, '/');
+	$link_data = array();
+
+	$_param_sets = explode(',', $params);
+	foreach ($_param_sets as $_param_set)
+	{
+		$__param_set = explode(':', $_param_set);
+		if (isset($__param_set[1]) && $__param_set[1])
+		{
+			$link_data[trim($__param_set[0])] = trim($__param_set[1]);
+		}
+	}
+
+	return phpgw::link($path, $link_data, $redirect, $external, $force_backend); //redirect: want '&';rather than '&amp;'; 
 }
 

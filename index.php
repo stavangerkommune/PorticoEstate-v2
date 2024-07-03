@@ -19,7 +19,7 @@ define('ACL_CUSTOM_3', 256);
 
 $containerBuilder = new ContainerBuilder();
 
-require_once SRC_ROOT_PATH . '/helpers/Translation.php';
+require_once SRC_ROOT_PATH . '/helpers/CommonFunctions.php';
 require_once SRC_ROOT_PATH . '/helpers/Sanitizer.php';
 require_once SRC_ROOT_PATH . '/helpers/phpgw.php';
 require_once SRC_ROOT_PATH . '/helpers/DebugArray.php';
