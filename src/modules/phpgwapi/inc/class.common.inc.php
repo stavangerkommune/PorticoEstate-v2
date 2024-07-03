@@ -51,6 +51,33 @@ class phpgwapi_common
 		$this->flags = Settings::getInstance()->get('flags');
 		$webserver_url = isset($this->serverSettings['webserver_url']) ? $this->serverSettings['webserver_url'] : '/';
 		$this->webserver_url = str_replace("//", "/", $webserver_url . PHPGW_MODULES_PATH);
+
+		if (!defined('PHPGW_TEMPLATE_DIR'))
+		{
+			$this->loadConfig();
+		}
+	}
+
+	public function loadConfig()
+	{
+		define('PHPGW_TEMPLATE_DIR', self::get_tpl_dir( 'phpgwapi'));
+		define('PHPGW_IMAGES_DIR', $this->get_image_path('phpgwapi'));
+		define('PHPGW_IMAGES_FILEDIR', $this->get_image_dir('phpgwapi'));
+		define('PHPGW_APP_ROOT', $this->get_app_dir());
+		define('PHPGW_APP_INC', $this->get_inc_dir());
+		define('PHPGW_APP_TPL', self::get_tpl_dir());
+		define('PHPGW_IMAGES', $this->get_image_path());
+		define('PHPGW_APP_IMAGES_DIR', $this->get_image_dir());
+
+		$this->serverSettings = Settings::getInstance()->get('server');
+
+		/************************************************************************\
+		 * Load the menuaction                                                    *
+		\*********************************************************************** */
+		if (Sanitizer::get_var('menuaction', 'bool'))
+		{
+			Settings::getInstance()->set('menuaction', Sanitizer::get_var('menuaction', 'string'));
+		}
 	}
 
 	/**
@@ -762,13 +789,14 @@ HTML;
 		{
 			$appname = $this->flags['currentapp'];
 		}
-		if (empty($this->serverSettings['template_set']))
+		$serverSettings = Settings::getInstance()->get('server');
+		if (empty($serverSettings['template_set']))
 		{
-			$this->serverSettings['template_set'] = 'base';
-			Settings::getInstance()->set('server', $this->serverSettings);
+			$serverSettings['template_set'] = 'base';
+			Settings::getInstance()->set('server', $serverSettings);
 		}
 
-		$imagedir			= PHPGW_SERVER_ROOT . '/' . $appname . '/templates/' . $this->serverSettings['template_set'] . '/images';
+		$imagedir			= PHPGW_SERVER_ROOT . '/' . $appname . '/templates/' . $serverSettings['template_set'] . '/images';
 		$imagedir_default	= PHPGW_SERVER_ROOT . '/' . $appname . '/templates/base/images';
 
 		if ($this->is_image_dir($imagedir))
@@ -798,18 +826,19 @@ HTML;
 			$appname = $this->flags['currentapp'];
 		}
 
-		if (empty($this->serverSettings['template_set']))
+		$serverSettings = Settings::getInstance()->get('server');
+		if (empty($serverSettings['template_set']))
 		{
-			$this->serverSettings['template_set'] = 'simple';
-			Settings::getInstance()->set('server', $this->serverSettings);
+			$serverSettings['template_set'] = 'simple';
+			Settings::getInstance()->set('server', $serverSettings);
 		}
 
-		$imagedir			= PHPGW_SERVER_ROOT . '/' . $appname . '/templates/' . $this->serverSettings['template_set'] . '/images';
+		$imagedir			= PHPGW_SERVER_ROOT . '/' . $appname . '/templates/' . $serverSettings['template_set'] . '/images';
 		$imagedir_default	= PHPGW_SERVER_ROOT . '/' . $appname . '/templates/base/images';
 
 		if ($this->is_image_dir($imagedir))
 		{
-			return $this->webserver_url . '/' . $appname . '/templates/' . $this->serverSettings['template_set'] . '/images';
+			return $this->webserver_url . '/' . $appname . '/templates/' . $serverSettings['template_set'] . '/images';
 		}
 		elseif ($this->is_image_dir($imagedir_default))
 		{
@@ -975,7 +1004,9 @@ HTML;
 		}
 		$called = true;
 
-		$tpl_name = $this->serverSettings['template_set'];
+		$serverSettings = Settings::getInstance()->get('server');
+		$tpl_name = $serverSettings['template_set'];
+
 		if (
 			!is_dir(PHPGW_INCLUDE_ROOT . "/phpgwapi/templates/{$tpl_name}/")
 			|| !is_readable(PHPGW_INCLUDE_ROOT . "/phpgwapi/templates/{$tpl_name}/head.inc.php")
