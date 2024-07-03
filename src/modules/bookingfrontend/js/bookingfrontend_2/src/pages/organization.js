@@ -15,7 +15,10 @@ ko.bindingHandlers.groupsDisplay = {
         var groupTexts = groups.map(function (group) {
             if (hasWritePermission) {
                 // language=HTML
-                return `<a href="#"
+                return `<a href="${phpGWLink('bookingfrontend/', {
+                    menuaction: 'bookingfrontend.uigroup.show',
+                    id: group.id
+                })}"
                            class="pe-btn  pe-btn--transparent pe-btn-text-primary pe-btn-text-overline p-0">${group.name}</a>`;
             } else {
                 return group.name;
@@ -25,7 +28,7 @@ ko.bindingHandlers.groupsDisplay = {
             // language=HTML
             groupTexts.push(`
                 <a href="${phpGWLink('bookingfrontend/', {
-                    menuaction: 'bookingfrontend.uigroup.add',
+                    menuaction: 'bookingfrontend.uigroup.edit',
                     organization_id: organization_id
                 })}" class="pe-btn  pe-btn--transparent pe-btn-text-secondary pe-btn-text-overline  p-0">
                     + ${trans('booking', 'new group')}
