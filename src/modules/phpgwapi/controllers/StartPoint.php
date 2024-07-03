@@ -143,7 +143,7 @@ class StartPoint
 			{
 				$this->log->message(array(
 					'text' => 'W-BadmenuactionVariable, attempted to access private method: %1 from %2',
-					'p1'   => $this->method,
+					'p1'   => "{$this->class}::{$this->method}",
 					'p2' => Sanitizer::get_ip_address(),
 					'line' => __LINE__,
 					'file' => __FILE__
@@ -287,7 +287,7 @@ HTML;
 			$phpgwapi_common->phpgw_exit(True);
 		}
 
-
+		$message = 'Welcome to Portico';
 
 		$Object = CreateObject("{$this->app}.{$this->class}");
 
@@ -348,6 +348,7 @@ HTML;
 		}
 		else
 		{
+			$message = 'W-BadmenuactionVariable, menuaction missing or corrupt: %1';
 			//FIXME make this handle invalid data better
 			if (!$this->app || !$this->class || !$this->method)
 			{
@@ -366,9 +367,10 @@ HTML;
 				&& $this->method
 			)
 			{
+				$message = 'W-BadmenuactionVariable, attempted to access private method: %1 from %2';
 				$this->log->message(array(
 					'text' => 'W-BadmenuactionVariable, attempted to access private method: %1 from %2',
-					'p1'   => $this->method,
+					'p1'   => "{$this->class}::{$this->method}",
 					'p2' => Sanitizer::get_ip_address(),
 					'line' => __LINE__,
 					'file' => __FILE__
@@ -376,13 +378,11 @@ HTML;
 			}
 			$this->log->commit();
 
-			// phpgw::redirect_link('/home/');
 		}
-		//   $phpgwapi_common->phpgw_footer();
 
 		register_shutdown_function(array($phpgwapi_common, 'phpgw_final'));
 
-		$response_str = json_encode(['message' => 'Welcome to Portico API']);
+		$response_str = json_encode(['message' => $message]);
 		$response->getBody()->write($response_str);
 		return $response->withHeader('Content-Type', 'application/json');
 	}
