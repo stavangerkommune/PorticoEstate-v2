@@ -116,6 +116,23 @@ $app->post('/login', function (Request $request, Response $response)
 })
 	->addMiddleware(new App\modules\phpgwapi\middleware\LoginMiddleware($container, $settings));
 
+$app->get('/refreshsession[/{params:.*}]', function (Request $request, Response $response)
+{
+	$sessions = \App\modules\phpgwapi\security\Sessions::getInstance();
+	if (!$sessions->verify())
+	{
+		$response_str = json_encode(['message' => 'Du er ikke logget inn']);
+		$response->getBody()->write($response_str);
+		return $response->withHeader('Content-Type', 'application/json');
+	}
+	else
+	{
+		$session_id = $sessions->get_session_id();
+		$response_str = json_encode(['session_id' => $session_id, 'fullname' => $sessions->get_user()['fullname']]);
+		$response->getBody()->write($response_str);
+		return $response->withHeader('Content-Type', 'application/json');
+	}
+});
 
 $app->get('/logout[/{params:.*}]', function (Request $request, Response $response)
 {
