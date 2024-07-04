@@ -85,11 +85,7 @@
                     <!--                    <span class="slidedown__toggler__info__separator">-->
                     <!--                        <i class="fa-solid fa-circle"></i>-->
                     <!--                    </span>-->
-                    <span class="d-flex gap-1 text-overline align-items-center">
-                        <span class=""><xsl:value-of select="php:function('lang', 'Groups (2018)')"/>:
-                        </span>
-                        <span class="d-flex gap-1" data-bind="groupsDisplay: groups"></span>
-                    </span>
+                        <span class="d-flex gap-1 flex-wrap align-items-center text-overline" data-bind="groupsDisplay: groups"></span>
                     <!--                    <span class="slidedown__toggler__info__separator">-->
                     <!--                        <i class="fa-solid fa-circle"></i>-->
                     <!--                    </span>-->

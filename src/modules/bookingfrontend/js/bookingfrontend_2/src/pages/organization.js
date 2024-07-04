@@ -24,6 +24,7 @@ ko.bindingHandlers.groupsDisplay = {
                 return group.name;
             }
         });
+
         if (hasWritePermission) {
             // language=HTML
             groupTexts.push(`
@@ -36,7 +37,8 @@ ko.bindingHandlers.groupsDisplay = {
             `);
         }
 
-        element.innerHTML = joinWithDot(groupTexts);
+        element.innerHTML = `<span class="">${trans('booking', 'groups (2018)')}:
+                        </span>` + joinWithDot(groupTexts);
     }
 };
 
