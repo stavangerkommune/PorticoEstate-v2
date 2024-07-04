@@ -31,7 +31,8 @@ class Bra5Controller
 	{
 
 		//property/inc/soap_client/bra5/soap.php?domain=default&location_id=303&section=BraArkivFDV&bygningsnr=139276655
-		
+
+		Settings::getInstance()->update('flags', ['session_name' => 'soapclientsession']);
 
 		$sessions = Sessions::getInstance();
 
@@ -39,7 +40,6 @@ class Bra5Controller
 
 		$this->db =	Db::getInstance();
 		$this->userSettings = Settings::getInstance()->get('user');
-		Settings::getInstance()->update('flags', ['session_name' => 'soapclientsession']);
 		//		Settings::getInstance()->update('server', ['usecookies' => false]);
 
 		$location_id = Sanitizer::get_var('location_id', 'int');

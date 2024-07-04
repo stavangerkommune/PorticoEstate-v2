@@ -108,7 +108,7 @@ class sms_menu
 			$menus['preferences'] = array(
 				array(
 					'text' => $translation->translate('Preferences', array(), true),
-					'url' => phpgw::link('/preferences/preferences.php', array(
+					'url' => phpgw::link('/preferences/section', array(
 						'appname' => 'sms',
 						'type' => 'user'
 					))
