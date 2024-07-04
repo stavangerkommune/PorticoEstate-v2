@@ -252,6 +252,9 @@
 
 
             <div class="row">
+                <div class="col-12 mb-4">
+                    <h3><xsl:value-of select="php:function('lang', 'organization_calendar')"/></h3>
+                </div>
                 <div class="col-12 col-md-4 mb-4 d-flex flex-column align-items-center">
                     <label class="input-icon w-100" aria-labelledby="input-text-icon">
                         <span class="far fa-calendar-alt icon" aria-hidden="true"></span>
@@ -262,21 +265,23 @@
                             <xsl:attribute name="placeholder">
                                 <xsl:value-of select="php:function('lang', 'add_date')"/>
                             </xsl:attribute>
-                            <!--                                                    Velg dato-->
-
                         </input>
                     </label>
                 </div>
             </div>
 
             <div id="search-result" class="pt-3">
+                <!-- ko if: resources().length > 0 -->
                 <div data-bind="foreach: {{ data: resources, as: 'resource' }}">
                     <resource-info-card
-                            params="{{ resource: resource, buildings: $parent.getBuildingsFromResource(resource.id), towns: $parent.getTownFromBuilding($parent.getBuildingsFromResource(resource.id)), lang: null, towns_data: $parent.towns_data, date: $parent.searchDate, disableText: true, static: true, filterGroups: $parent.groupIds }}"></resource-info-card>
+                        params="{{ resource: resource, buildings: $parent.getBuildingsFromResource(resource.id), towns: $parent.getTownFromBuilding($parent.getBuildingsFromResource(resource.id)), lang: null, towns_data: $parent.towns_data, date: $parent.searchDate, disableText: true, static: true, filterGroups: $parent.groupIds }}"></resource-info-card>
                 </div>
-                <!--                <button data-bind="visible: result_shown() < result().length, click: showMoreResults"-->
-                <!--                        class="btn btn-primary mt-3">Show More-->
-                <!--                </button>-->
+                <!-- /ko -->
+                <!-- ko if: resources().length === 0 -->
+                <div class="alert alert-info col-md-4">
+                    <xsl:value-of select="php:function('lang', 'no_resources_found')"/>
+                </div>
+                <!-- /ko -->
             </div>
 
 
