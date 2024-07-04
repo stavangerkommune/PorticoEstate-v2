@@ -145,12 +145,13 @@ class pswinController
 	public function process($request, $response, $args)
 	{
 		$functions = array();
-		$functions[] = 'App\modules\sms\controllers\pswinController::hello';
-		$functions[] = 'App\modules\sms\controllers\pswinController::ReceiveSMSMessage';
-		$functions[] = 'App\modules\sms\controllers\pswinController::ReceiveMMSMessage';
-		$functions[] = 'App\modules\sms\controllers\pswinController::ReceiveDeliveryReport';
+		$functions[] = self::class . '::hello';
+		$functions[] = self::class . '::ReceiveSMSMessage';
+		$functions[] = self::class . '::ReceiveMMSMessage';
+		$functions[] = self::class . '::ReceiveDeliveryReport';
 
-		$this->server->addFunction($functions);
+	//	$this->server->addFunction($functions);
+		$this->server->setClass(self::class);
 
 		$request_xml = implode(" ", file('php://input'));
 
