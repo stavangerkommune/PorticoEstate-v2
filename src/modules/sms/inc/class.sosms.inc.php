@@ -68,7 +68,7 @@ class sms_sosms
 		{
 			$query = $this->db->db_addslashes($query);
 
-			$querymethod = " $where in_sender $this->like '%$query%' OR in_msg $this->like '%$query%'";
+			$querymethod = " $where in_sender {$this->like} '%$query%' OR in_msg $this->like '%{$query}%'";
 
 			$where = 'AND';
 		}

@@ -374,7 +374,8 @@ class sms_uicommand
 
 	function log()
 	{
-		Settings::getInstance()->update('flags', ['xslt_app' => true, 'menu_selection' => 'sms::log']);
+		Settings::getInstance()->update('flags', ['xslt_app' => true, 'menu_selection' => 'sms::command::log']);
+
 
 		if (!$this->acl->check($this->acl_location, ACL_READ, 'sms'))
 		{

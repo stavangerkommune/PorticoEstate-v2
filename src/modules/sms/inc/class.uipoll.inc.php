@@ -63,7 +63,7 @@ class sms_uipoll
 
 		$this->db = Db::getInstance();
 		$this->db2 = new Db2();
-		Settings::getInstance()->set('menu_selection', 'sms::poll');
+		Settings::getInstance()->update('flags', ['menu_selection' => 'sms::poll']);
 	}
 
 	function save_sessiondata()
