@@ -139,7 +139,7 @@ HTML;
 			{
 				$userSettings = Settings::getInstance()->get('user');
 
-				$url = phpgw::link('/login.php', array('logindomain' => $userSettings['domain']), false, true);
+				$url = phpgw::link('/login_ui', array('logindomain' => $userSettings['domain']), false, true);
 			}
 
 			$body = <<<HTML

@@ -254,7 +254,7 @@ class registration_bopending
 		//_debug_array($process_approval);die();
 		unset($reg_id);
 
-		$url = phpgw::link('/login.php', array('logindomain' => $this->userSettings['domain']), false, true);
+		$url = phpgw::link('/login_ui', array('logindomain' => $this->userSettings['domain']), false, true);
 
 		if ($this->config['support_email'])
 		{

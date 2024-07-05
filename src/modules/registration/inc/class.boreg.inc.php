@@ -22,7 +22,7 @@ use App\modules\phpgwapi\services\Cache;
 use App\Database\Db;
 
 
-class boreg
+class registration_boreg
 {
 
 	var $template;
