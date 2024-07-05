@@ -67,121 +67,16 @@ class ReturnValue
 	public $Reference;
 }
 
-
-class pswinController
+class pswinFunctions
 {
-
-	private $db;
-	private $acl;
-	private $userSettings;
-	private $phpgwapi_common;
-	private $server;
 	private static $errors = [];
 
-	public function __construct(ContainerInterface $container)
+	function __construct($errors = [])
 	{
-
-
-		if (!isset($_GET['domain']) || !$_GET['domain'])
-		{
-			self::$errors[] = 'domain not given as input';
-		}
-		else
-		{
-
-			// Add your settings to the container
-			$database_settings = require SRC_ROOT_PATH . '/helpers/FilterDatabaseConfig.php';
-
-			$_domain_info = isset($database_settings['domain']) && $database_settings['domain'] == $_GET['domain'];
-			if (!$_domain_info)
-			{
-				echo "not a valid domain\n";
-				die();
-			}
-		}
-
-		Settings::getInstance()->update('flags', ['session_name' => 'soapclientsession']);
-
-		$sessions = Sessions::getInstance();
-
-		$this->phpgwapi_common = new \phpgwapi_common();
-
-		$this->userSettings = Settings::getInstance()->get('user');
-		$location_obj = new Locations();
-
-		$c = CreateObject('admin.soconfig', $location_obj->get_id('sms', 'run'));
-
-		$login = $c->config_data['common']['anonymous_user'];
-		$passwd = $c->config_data['common']['anonymous_pass'];
-
-		$_POST['submitit'] = "";
-
-		$session_id = $sessions->create($login, $passwd);
-
-		if (!$session_id)
-		{
-			$lang_denied = lang('Anonymous access not correctly configured');
-			self::$errors[] = $lang_denied;
-		}
-
-		$wsdl = PHPGW_SERVER_ROOT . '/sms/inc/plugin/gateway/pswin/Receive.wsdl';
-		if (isset($_GET['wsdl']))
-		{
-			header('Content-Type: text/xml');
-			readfile($wsdl);
-			$this->phpgwapi_common->phpgw_exit();
-		}
-
-		$options = array(
-			'uri' => "http://test-uri/", # the name space of the SOAP service
-			'soap_version' => SOAP_1_2,
-			'encoding' => "UTF-8", # the encoding name
-		);
-
-		ini_set("soap.wsdl_cache_enabled", "0");
-		$this->server = new SoapServer($wsdl, $options);
+		self::$errors = $errors;
 	}
-
-	public function process($request, $response, $args)
-	{
-		$functions = array();
-		$functions[] = self::class . '::hello';
-		$functions[] = self::class . '::ReceiveSMSMessage';
-		$functions[] = self::class . '::ReceiveMMSMessage';
-		$functions[] = self::class . '::ReceiveDeliveryReport';
-
-	//	$this->server->addFunction($functions);
-		$this->server->setClass(self::class);
-
-		$request_xml = implode(" ", file('php://input'));
-
-		if ($_SERVER["REQUEST_METHOD"] == "POST")
-		{
-			/*
-		  $filename = '/tmp/test_soap.txt';
-		  $fp = fopen($filename, "wb");
-		  fwrite($fp,serialize($request_xml));
-		  fclose($fp);
-		 */
-			$this->server->handle($request_xml);
-		}
-		else
-		{
-			if (self::$errors)
-			{
-				$error = 'Error(s): ' . implode(' ## AND ## ', self::$errors);
-				echo $error;
-				$this->phpgwapi_common->phpgw_exit(True);
-			}
-
-			echo "This SOAP server can handle following functions: ";
-
-			_debug_array($functions = $this->server->getFunctions());
-		}
-		$this->phpgwapi_common->phpgw_exit();
-	}
-
-	public static function hello($someone)
+	
+	public function hello($someone)
 	{
 		if ($error = self::check_error())
 		{
@@ -192,7 +87,7 @@ class pswinController
 	}
 
 
-	static function check_error()
+	private static function check_error()
 	{
 		if (self::$errors)
 		{
@@ -201,7 +96,7 @@ class pswinController
 		}
 	}
 
-	static function ReceiveSMSMessage($ReceiveSMSMessage)
+	public function ReceiveSMSMessage($ReceiveSMSMessage)
 	{
 		if ($error = self::check_error())
 		{
@@ -248,7 +143,7 @@ class pswinController
 		return $ReceiveSMSMessageResponse;
 	}
 
-	static function ReceiveMMSMessage($ReceiveMMSMessage)
+	public function ReceiveMMSMessage($ReceiveMMSMessage)
 	{
 		if ($error = self::check_error())
 		{
@@ -281,7 +176,7 @@ class pswinController
 		return $ReceiveMMSMessageResponse;
 	}
 
-	static function ReceiveDeliveryReport($DeliveryReport)
+	public function ReceiveDeliveryReport($DeliveryReport)
 	{
 		if ($error = self::check_error())
 		{
@@ -313,4 +208,114 @@ class pswinController
 
 		return $ReceiveDeliveryReportResponse;
 	}
+}
+
+class pswinController
+{
+
+	private $db;
+	private $acl;
+	private $userSettings;
+	private $phpgwapi_common;
+	private $server;
+	private static $errors = [];
+
+	public function __construct(ContainerInterface $container)
+	{
+
+
+		if (!isset($_GET['domain']) || !$_GET['domain'])
+		{
+			self::$errors[] = 'domain not given as input';
+		}
+		else
+		{
+
+			// Add your settings to the container
+			$database_settings = require SRC_ROOT_PATH . '/helpers/FilterDatabaseConfig.php';
+
+			$_domain_info = isset($database_settings['domain']) && $database_settings['domain'] == $_GET['domain'];
+			if (!$_domain_info)
+			{
+				echo "not a valid domain\n";
+				die();
+			}
+		}
+
+		Settings::getInstance()->update('flags', ['session_name' => 'soapclientsession']);
+
+		$sessions = Sessions::getInstance();
+
+		$this->phpgwapi_common = new \phpgwapi_common();
+
+		$this->userSettings = Settings::getInstance()->get('user');
+		$location_obj = new Locations();
+		$location_id = $location_obj->get_id('sms', 'run');
+		$c = CreateObject('admin.soconfig', $location_id);
+
+		$login = $c->config_data['common']['anonymous_user'];
+		$passwd = $c->config_data['common']['anonymous_pass'];
+
+		$_POST['submitit'] = "";
+
+		$session_id = $sessions->create($login, $passwd);
+
+		if (!$session_id)
+		{
+			$lang_denied = lang('Anonymous access not correctly configured');
+			self::$errors[] = $lang_denied;
+		}
+
+		$wsdl = PHPGW_SERVER_ROOT . '/sms/inc/plugin/gateway/pswin/Receive.wsdl';
+		if (isset($_GET['wsdl']))
+		{
+			header('Content-Type: text/xml');
+			readfile($wsdl);
+			$this->phpgwapi_common->phpgw_exit();
+		}
+
+		$options = array(
+			'uri' => "http://test-uri/", # the name space of the SOAP service
+			'soap_version' => SOAP_1_2,
+			'encoding' => "UTF-8", # the encoding name
+		);
+
+		ini_set("soap.wsdl_cache_enabled", "0");
+		$this->server = new SoapServer($wsdl, $options);
+	}
+
+	public function process($request, $response, $args)
+	{
+
+		$pswinFunctions = new pswinFunctions(self::$errors);
+		$this->server->setObject($pswinFunctions);
+	
+		$request_xml = implode(" ", file('php://input'));
+
+		if ($_SERVER["REQUEST_METHOD"] == "POST")
+		{
+			/*
+		  $filename = '/tmp/test_soap.txt';
+		  $fp = fopen($filename, "wb");
+		  fwrite($fp,serialize($request_xml));
+		  fclose($fp);
+		 */
+			$this->server->handle($request_xml);
+		}
+		else
+		{
+			if (self::$errors)
+			{
+				$error = 'Error(s): ' . implode(' ## AND ## ', self::$errors);
+				echo $error;
+				$this->phpgwapi_common->phpgw_exit(True);
+			}
+
+			echo "This SOAP server can handle following functions: ";
+
+			_debug_array($this->server->getFunctions());
+		}
+		$this->phpgwapi_common->phpgw_exit();
+	}
+
 }
