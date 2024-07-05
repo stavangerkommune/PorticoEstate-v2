@@ -6,6 +6,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\modules\phpgwapi\services\Log;
 use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\Config;
+use App\modules\phpgwapi\security\Acl;
+
 use Sanitizer;
 
 class StartPoint
@@ -34,7 +37,6 @@ class StartPoint
 		{
 			Settings::getInstance()->set('menuaction', Sanitizer::get_var('menuaction', 'string'));
 		}
-
 	}
 
 
@@ -191,7 +193,7 @@ class StartPoint
 
 	public function bookingfrontend(Request $request, Response $response)
 	{
-	//	_debug_array($response);
+		//	_debug_array($response);
 
 		// Make sure we're always logged in
 		$sessions = \App\modules\phpgwapi\security\Sessions::getInstance();
@@ -311,10 +313,6 @@ HTML;
 				$response_str = json_encode($return_data);
 				$response->getBody()->write($response_str);
 				return $response->withHeader('Content-Type', 'application/json');
-
-				//                $flags['nofooter'] = true;
-				//               Settings::getInstance()->set('flags', $flags);    
-				//           $phpgwapi_common->phpgw_exit();
 			}
 			else
 			{
@@ -377,7 +375,6 @@ HTML;
 				));
 			}
 			$this->log->commit();
-
 		}
 
 		register_shutdown_function(array($phpgwapi_common, 'phpgw_final'));
@@ -385,5 +382,137 @@ HTML;
 		$response_str = json_encode(['message' => $message]);
 		$response->getBody()->write($response_str);
 		return $response->withHeader('Content-Type', 'application/json');
+	}
+
+	function registration(Request $request, Response $response)
+	{
+		$phpgwapi_common = new \phpgwapi_common();
+		$log = new Log();
+
+		/* * ***********************************************************************\
+	 * Verify that the users session is still active otherwise kick them out   *
+	  \************************************************************************ */
+	  $flags = Settings::getInstance()->get('flags');
+		if ($flags['currentapp'] != 'home' && $flags['currentapp'] != 'about')
+		{
+			$acl = Acl::getInstance();
+
+			if (!$acl->check('run', ACL_READ, $flags['currentapp']))
+			{
+				$phpgwapi_common->phpgw_header(true);
+				$log->write(array(
+					'text' => 'W-Permissions, Attempted to access %1 from %2',
+					'p1' => $flags['currentapp'],
+					'p2' => Sanitizer::get_ip_address()
+				));
+
+				$lang_denied = lang('Access not permitted');
+				echo <<<HTML
+					<div class="error">$lang_denied</div>
+
+HTML;
+				$phpgwapi_common->phpgw_exit(True);
+			}
+		}
+
+		register_shutdown_function(array($phpgwapi_common, 'phpgw_final'));
+		$config = (new Config('registration'))->read();
+
+		if (isset($_GET['menuaction']))
+		{
+			list($app, $class, $method) = explode('.', $_GET['menuaction']);
+		}
+		else
+		{
+			$app = 'registration';
+			if ($config['username_is'] != 'email')
+			{
+				$class = 'uireg';
+				$method = 'step1';
+			}
+			else
+			{
+				$class = 'boreg';
+				$method = 'step1';
+			}
+		}
+		$Object = CreateObject("{$app}.{$class}");
+
+		$invalid_data = false;
+
+		$legal_anonymous_access = array(
+			'registration' => array(
+				'uireg' => array(
+					'step1' => true,
+					'tos' => true,
+					'ready_to_activate' => true,
+					'lostpw1' => true,
+					'email_sent_lostpw' => true
+				),
+				'boreg' => array(
+					'step1' => true,
+					'step2' => true,
+					'step4' => true,
+					'lostpw1' => true,
+					'lostpw2' => true,
+					'lostpw3' => true,
+					'get_locations' => true
+				)
+			)
+		);
+
+		if (!isset($legal_anonymous_access[$app][$class][$method]))
+		{
+			$invalid_data = true;
+
+			$log->message(array(
+				'text' => "W-BadmenuactionVariable, attempted to access private method as anonymous: {$app}.{$class}.{$method} from %1",
+				'p1' => Sanitizer::get_ip_address(),
+				'line' => __LINE__,
+				'file' => __FILE__
+			));
+			$log->commit();
+			$message =  "This method is not alloved from this application as anonymous: {$app}.{$class}.{$method}";
+			$phpgwapi_common->phpgw_footer();
+			$response_str = json_encode(['message' => $message]);
+			$response->getBody()->write($response_str);
+			return $response->withHeader('Content-Type', 'application/json');
+
+		}
+
+		if (!$invalid_data && is_object($Object) && isset($Object->public_functions) && is_array($Object->public_functions) && isset($Object->public_functions[$method]) && $Object->public_functions[$method])
+		{
+			if (
+				Sanitizer::get_var('X-Requested-With', 'string', 'SERVER') == 'XMLHttpRequest'
+				// deprecated
+				|| Sanitizer::get_var('phpgw_return_as', 'string', 'GET') == 'json'
+			)
+			{
+				// comply with RFC 4627
+				Settings::getInstance()->update('flags', ['nofooter' => true]);
+				$return_data = $Object->$method();
+				$response_str = json_encode($return_data);
+				$response->getBody()->write($response_str);
+				return $response->withHeader('Content-Type', 'application/json');
+			}
+			else
+			{
+				$Object->$method();
+
+				if (!empty(Settings::getInstance()->get('flags')['xslt_app']))
+				{
+					$return_data =  \phpgwapi_xslttemplates::getInstance()->parse();
+				}
+				else
+				{
+					$return_data = '';
+				}
+
+				register_shutdown_function(array($phpgwapi_common, 'phpgw_final'));
+
+				$response->getBody()->write($return_data);
+				return $response->withHeader('Content-Type', 'text/html');
+			}
+		}
 	}
 }

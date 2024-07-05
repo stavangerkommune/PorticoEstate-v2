@@ -77,9 +77,14 @@ class SessionsMiddleware implements MiddlewareInterface
 		}
 		else if (!$sessions->verify())
 		{
-			if($currentApp == 'bookingfrontend')
+			if ($currentApp == 'bookingfrontend')
 			{
 				\App\modules\bookingfrontend\helpers\LoginHelper::process();
+				return $handler->handle($request);
+			}
+			if ($currentApp == 'registration')
+			{
+				\App\modules\registration\helpers\LoginHelper::process();
 				return $handler->handle($request);
 			}
 			else if($second_pass)

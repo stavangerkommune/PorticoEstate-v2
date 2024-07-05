@@ -131,7 +131,7 @@
 				),
 				'new_user' => array(
 					'text' => lang('new user'),
-					'url' => phpgw::link('/registration/main.php', array()),
+					'url' => phpgw::link('/registration/', array()),
 					'image' => array('user', 'navbar'),
 				)
 		);

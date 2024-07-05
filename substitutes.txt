@@ -86,6 +86,10 @@ $log = new Log();
 
 use App\modules\phpgwapi\controllers\Accounts\Accounts;
 
+
+use App\modules\phpgwapi\controllers\Accounts\phpgwapi_group;
+use App\modules\phpgwapi\controllers\Accounts\phpgwapi_user;
+
 use App\modules\phpgwapi\services\Hooks;
 
 $GLOBALS['phpgw']->strip_html
@@ -109,3 +113,7 @@ $sessions = Sessions::getInstance();
 
 use App\modules\phpgwapi\services\AsyncService;
 $asyncservice = AsyncService::getInstance();
+
+
+use App\helpers\Template;
+$template = Template::getInstance(PHPGW_TEMPLATE_DIR);

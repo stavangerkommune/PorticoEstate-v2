@@ -1,14 +1,15 @@
 <?php
-	/**
-	 * registration - Hook helper
-	 *
-	 * @author Sigurd Nes <sigurdne@online.no>
-	 * @copyright Copyright (C) 2012 Free Software Foundation, Inc. http://www.fsf.org/
-	 * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
-	 * @package registration
-	 * @version $Id: class.hook_helper.inc.php 9104 2012-04-04 09:47:47Z sigurdne $
-	 */
-	/*
+
+/**
+ * registration - Hook helper
+ *
+ * @author Sigurd Nes <sigurdne@online.no>
+ * @copyright Copyright (C) 2012 Free Software Foundation, Inc. http://www.fsf.org/
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
+ * @package registration
+ * @version $Id: class.hook_helper.inc.php 9104 2012-04-04 09:47:47Z sigurdne $
+ */
+/*
 	  This program is free software: you can redistribute it and/or modify
 	  it under the terms of the GNU General Public License as published by
 	  the Free Software Foundation, either version 2 of the License, or
@@ -23,33 +24,36 @@
 	  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
+use App\Database\Db;
+
+/**
+ * Hook helper
+ *
+ * @package registration
+ */
+class registration_hook_helper
+{
+
 	/**
-	 * Hook helper
+	 * Clear reg_accounts either as part of a cron-job or logout hook
 	 *
-	 * @package registration
+	 * @return void
 	 */
-	class registration_hook_helper
+	public function clear_reg_accounts()
 	{
+		$c = createobject('phpgwapi.config', 'registration');
+		$c->read();
+		$db = Db::getInstance();
 
-		/**
-		 * Clear reg_accounts either as part of a cron-job or logout hook
-		 *
-		 * @return void
-		 */
-		public function clear_reg_accounts()
+		if ($c->config_data['activate_account'] == 'pending_approval')
 		{
-			$c = createobject('phpgwapi.config', 'registration');
-			$c->read();
-
-			if ($c->config_data['activate_account'] == 'pending_approval')
-			{
-				$GLOBALS['phpgw']->db->query("DELETE FROM phpgw_reg_accounts WHERE reg_dla <= '"
-					. (time() - 7200) . "' AND reg_info IS NULL", __LINE__, __FILE__);
-			}
-			else
-			{
-				$GLOBALS['phpgw']->db->query("DELETE FROM phpgw_reg_accounts WHERE reg_dla <= '"
-					. (time() - 7200) . "'", __LINE__, __FILE__);
-			}
+			$db->query("DELETE FROM phpgw_reg_accounts WHERE reg_dla <= '"
+				. (time() - 7200) . "' AND reg_info IS NULL", __LINE__, __FILE__);
+		}
+		else
+		{
+			$db->query("DELETE FROM phpgw_reg_accounts WHERE reg_dla <= '"
+				. (time() - 7200) . "'", __LINE__, __FILE__);
 		}
 	}
+}

@@ -33,4 +33,4 @@ INSERT INTO phpgw_config VALUES ('phpgwapi','smtp_port','25');
 The URI's you can use for linking:
 
 Registration: <a href="http://yoursite.com/registration/" target="_NEW">http://yoursite.com/registration/</a>
-Password Retrieval: <a href="http://yoursite.com/registration/main.php?menuaction=registration.boreg.lostpw1" target="_NEW">http://yoursite.com/registration/main.php?menuaction=registration.boreg.lostpw1</a>
+Password Retrieval: <a href="http://yoursite.com/registration/?menuaction=registration.boreg.lostpw1" target="_NEW">http://yoursite.com/registration/?menuaction=registration.boreg.lostpw1</a>
