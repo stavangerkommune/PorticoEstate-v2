@@ -16,6 +16,7 @@ Follow these steps to get started:
 	- Set the `INSTALL_XDEBUG` environment variable and build your Docker image:
 	  ```bash
 	  export INSTALL_XDEBUG=true
+	  export INSTALL_MSSQL=true
 	  docker compose build
 	  ```
 
