@@ -13,13 +13,14 @@ use PDOException;
  */
 class Db2 extends Db
 {
+	static $db2;
 
-	function __construct($dsn= null, $username = null, $password = null, $options = null)
+	function __construct($dsn = null, $username = null, $password = null, $options = null)
 	{
 		$config = Db::getInstance()->get_config();
 		if (is_null($dsn))
 		{
-			$dsn = parent::CreateDsn($config);
+			$dsn2 = parent::CreateDsn($config);
 			$username = $config['db_user'];
 			$password = $config['db_pass'];
 			$options = [
@@ -28,15 +29,25 @@ class Db2 extends Db
 				PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
 			];
 		}
-		
-		try
+		else
 		{
-			$this->db = new PDO($dsn, $username, $password, $options);
+			$dsn2 = $dsn;
 		}
-		catch (PDOException $e)
+
+		if (is_null(self::$db2) || !is_null($dsn))
 		{
-			throw new Exception($e->getMessage());
+			try
+			{
+				self::$db2 = new PDO($dsn2, $username, $password, $options);
+			}
+			catch (PDOException $e)
+			{
+				throw new Exception($e->getMessage());
+			}
 		}
+
+		$this->db = self::$db2;
+
 		$this->set_config($config);
 		//not the paren, just this one
 		register_shutdown_function(array(&$this, 'disconnect'));
@@ -52,4 +63,8 @@ class Db2 extends Db
 		return $this->config;
 	}
 
+	public function disconnect()
+	{
+		self::$db2 = null;
+	}
 }
