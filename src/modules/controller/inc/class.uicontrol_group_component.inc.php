@@ -227,7 +227,7 @@
 
 				foreach ($cat_list as $category)
 				{
-					$location_id = $GLOBALS['phpgw']->locations->get_id('property', ".entity.{$category['entity_id']}.{$category['id']}");
+					$location_id = $this->locations->get_id('property', ".entity.{$category['entity_id']}.{$category['id']}");
 
 					$component_arr['location_id'] = $location_id;
 					$component_arr['name'] = $category['name'];
@@ -270,7 +270,7 @@
 
 		public function get_component_types_by_category()
 		{
-			$category = Sanitizer::get_var('ifc');
+			$ifc = Sanitizer::get_var('ifc');
 			if ($ifc != null)
 			{
 				if ($ifc = 1)

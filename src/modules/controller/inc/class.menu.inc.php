@@ -321,7 +321,7 @@ class controller_menu
 
 				array(
 					'text' => $translation->translate('Preferences', array(), true),
-					'url' => phpgw::link('/preferences/preferences.php', array(
+					'url'	 => phpgw::link('/preferences/section', array(
 						'appname' => 'controller',
 						'type' => 'user'
 					))

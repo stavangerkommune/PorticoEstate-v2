@@ -28,10 +28,7 @@
 
 use App\modules\phpgwapi\services\Settings;
 use App\modules\phpgwapi\controllers\Applications;
-
-use App\modules\phpgwapi\security\Acl;
 use App\modules\phpgwapi\controllers\Locations;
-use App\modules\phpgwapi\services\Translation;
 
 include_class('controller', 'check_list', 'inc/model/');
 include_class('controller', 'check_item', 'inc/model/');
