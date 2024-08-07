@@ -14,7 +14,8 @@
 use App\modules\phpgwapi\services\Hooks;
 use App\modules\phpgwapi\services\Settings;
 use App\helpers\Template;
-
+use lebedevsergey\ODT2XHTML\Helpers\FilesHelper;
+use lebedevsergey\ODT2XHTML\ODT2XHTML;
 
 /**
  * Manual Renderer
@@ -215,8 +216,6 @@ HTML;
 		$this->phpgwapi_common->phpgw_header();
 		if ($navbar)
 		{
-	//		$GLOBALS['phpgw']->help->currentapp = $app;
-	//		$GLOBALS['phpgw']->help->section = $section;
 			$this->hooks->process('help', array('manual'));
 			parse_navbar();
 		}
@@ -230,13 +229,24 @@ HTML;
 		{
 			$frontend = '/'; # directory where file odt to converse
 			$root = $this->serverSettings['temp_dir'];
+			$ODTHTMLPath = $root . '/odt_html';
 
-			$odt2xhtml = CreateObject('phpgwapi.odt2xhtml', $root, $frontend, $odtfile);
-			$odt2xhtml->convert2xhtml();
-			$odt2xhtml->get_elements_html();
-			$odt2xhtml->display_elements_html('css', 0);
-			$odt2xhtml->display_elements_html('body', 1);
-			$odt2xhtml->delete_tmp();
+			FilesHelper::deleteDirRecursive($ODTHTMLPath); // delete previous HTML
+			$converter = new ODT2XHTML();
+			$converter->convert($odtfile, $ODTHTMLPath, true);
+			//"/tmp/location.index.xml"
+//list contend of directory $ODTHTMLPath
+			$dir = opendir($ODTHTMLPath);
+			while ($file = readdir($dir))
+			{
+				if ($file != '.' && $file != '..')
+				{
+					echo $file . '<br>';
+				}
+			} 
+			$html = file_get_contents($ODTHTMLPath);
+			echo $html;
+
 		}
 		else
 		{

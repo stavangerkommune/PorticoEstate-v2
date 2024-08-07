@@ -106,7 +106,8 @@ class phpgwapi_ofphpgwapi extends phpgwapi_object_factory
 				$db_type = ($p2 !== '_UNDEF_') ? $p2 : null;
 				$delay_connect = ($p3 !== '_UNDEF_') ? $p3 : null;
 				return \App\Database\Db::getInstance();
-
+			case 'help_helper':
+				return parent::createObject('manual.help_helper');
 			case 'hooks':
 				$db = ($p1 !== '_UNDEF_') ? $p1 : null;
 				return new \App\modules\phpgwapi\services\Hooks($db);
