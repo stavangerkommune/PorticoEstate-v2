@@ -1,15 +1,16 @@
 <?php
-	/**
-	 * phpGroupWare - messenger
-	 *
-	 * @author Sigurd Nes <sigurdne@online.no>
-	 * @copyright Copyright (C) 2009 Free Software Foundation, Inc. http://www.fsf.org/
-	 * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
-	 * @package messenger
-	 * @subpackage ???
-	 * @version $Id$
-	 */
-	/*
+
+/**
+ * phpGroupWare - messenger
+ *
+ * @author Sigurd Nes <sigurdne@online.no>
+ * @copyright Copyright (C) 2009 Free Software Foundation, Inc. http://www.fsf.org/
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
+ * @package messenger
+ * @subpackage ???
+ * @version $Id$
+ */
+/*
 	  This program is free software: you can redistribute it and/or modify
 	  it under the terms of the GNU General Public License as published by
 	  the Free Software Foundation, either version 2 of the License, or
@@ -24,118 +25,121 @@
 	  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\security\Acl;
+use App\modules\phpgwapi\services\Translation;
+
+/**
+ * Description
+ * @package messenger
+ */
+class messenger_menu
+{
+
 	/**
-	 * Description
-	 * @package messenger
+	 * Get the menus for the messenger
+	 *
+	 * @return array available menus for the current user
 	 */
-	class messenger_menu
+	public function get_menu()
 	{
+		$userSettings = Settings::getInstance()->get('user');
+		$flags = Settings::getInstance()->get('flags');
+		$translation = Translation::getInstance();
 
-		/**
-		 * Get the menus for the messenger
-		 *
-		 * @return array available menus for the current user
-		 */
-		public function get_menu()
+		$incoming_app			 = $flags['currentapp'];
+		Settings::getInstance()->update('flags', ['currentapp' => 'messenger']);
+
+		$acl = Acl::getInstance();
+
+		$menus = array();
+
+		$menus['navbar'] = array(
+			'messenger' => array(
+				'text' => lang('messenger'),
+				'url' => phpgw::link('/index.php', array('menuaction' => "messenger.uimessenger.index")),
+				'image' => array('messenger', 'navbar'),
+				'order' => 35,
+				'group' => 'office'
+			),
+		);
+
+		$menus['toolbar'] = array();
+		if (isset($userSettings['apps']['admin']))
 		{
-			$incoming_app = $GLOBALS['phpgw_info']['flags']['currentapp'];
-			$GLOBALS['phpgw_info']['flags']['currentapp'] = 'messenger';
-			$acl = Acl::getInstance();
-
-			$menus = array();
-
-			$menus['navbar'] = array
-				(
-				'messenger' => array
-					(
-					'text' => lang('messenger'),
-					'url' => phpgw::link('/index.php', array('menuaction' => "messenger.uimessenger.index")),
-					'image' => array('messenger', 'navbar'),
-					'order' => 35,
-					'group' => 'office'
+			$menus['admin'] = array(
+				'index' => array(
+					'text' => lang('Configuration'),
+					'url' => phpgw::link('/index.php', array(
+						'menuaction' => 'admin.uiconfig.index',
+						'appname' => 'messenger'
+					))
 				),
-			);
-
-			$menus['toolbar'] = array();
-			if (isset($GLOBALS['phpgw_info']['user']['apps']['admin']))
-			{
-				$menus['admin'] = array
-					(
-					'index' => array
-						(
-						'text' => lang('Configuration'),
-						'url' => phpgw::link('/index.php', array('menuaction' => 'admin.uiconfig.index',
-							'appname' => 'messenger'))
-					),
-					'acl' => array
-						(
-						'text' => lang('Configure Access Permissions'),
-						'url' => phpgw::link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.list_acl',
-							'acl_app' => 'messenger'))
-					)
-				);
-			}
-
-			if (isset($GLOBALS['phpgw_info']['user']['apps']['preferences']))
-			{
-				$menus['preferences'] = array
-					(
-					array
-						(
-						'text' => $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
-						'url' => phpgw::link('/preferences/preferences.php', array('appname' => 'messenger',
-							'type' => 'user'))
-					),
-					array
-						(
-						'text' => $GLOBALS['phpgw']->translation->translate('Grant Access', array(), true),
-						'url' => phpgw::link('/index.php', array('menuaction' => 'preferences.uiadmin_acl.aclprefs',
-							'acl_app' => 'messenger'))
-					)
-				);
-
-				$menus['toolbar'][] = array
-					(
-					'text' => $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
-					'url' => phpgw::link('/preferences/preferences.php', array('appname' => 'messenger')),
-					'image' => array('messenger', 'preferences')
-				);
-			}
-
-			$menus['navigation'] = array
-				(
-				'inbox' => array
-					(
-					'url' => phpgw::link('/index.php', array('menuaction' => 'messenger.uimessenger.index')),
-					'text' => $GLOBALS['phpgw']->translation->translate('inbox', array(), false, 'messenger'),
-					'image' => array('messenger', 'navbar')
+				'acl' => array(
+					'text' => lang('Configure Access Permissions'),
+					'url' => phpgw::link('/index.php', array(
+						'menuaction' => 'preferences.uiadmin_acl.list_acl',
+						'acl_app' => 'messenger'
+					))
 				)
 			);
-			if ($GLOBALS['phpgw']->acl->check('.compose', ACL_ADD, 'messenger'))
-			{
-				$menus['navigation']['compose'] = array
-					(
-					'url' => phpgw::link('/index.php', array('menuaction' => 'messenger.uimessenger.compose')),
-					'text' => $GLOBALS['phpgw']->translation->translate('compose', array(), false, 'messenger'),
-				);
-			}
-			if ($GLOBALS['phpgw']->acl->check('.compose_groups', ACL_ADD, 'messenger'))
-			{
-				$menus['navigation']['compose_groups'] = array
-					(
-					'url' => phpgw::link('/index.php', array('menuaction' => 'messenger.uimessenger.compose_groups')),
-					'text' => $GLOBALS['phpgw']->translation->translate('compose groups', array(), false, 'messenger'),
-				);
-			}
-			if ($GLOBALS['phpgw']->acl->check('.compose_global', ACL_ADD, 'messenger'))
-			{
-				$menus['navigation']['compose_global'] = array
-					(
-					'url' => phpgw::link('/index.php', array('menuaction' => 'messenger.uimessenger.compose_global')),
-					'text' => $GLOBALS['phpgw']->translation->translate('compose global', array(), false, 'messenger'),
-				);
-			}
-			$GLOBALS['phpgw_info']['flags']['currentapp'] = $incoming_app;
-			return $menus;
 		}
+
+		if (isset($userSettings['apps']['preferences']))
+		{
+			$menus['preferences'] = array(
+				array(
+					'text' => $translation->translate('Preferences', array(), true),
+					'url' => phpgw::link('/preferences/preferences.php', array(
+						'appname' => 'messenger',
+						'type' => 'user'
+					))
+				),
+				array(
+					'text' => $translation->translate('Grant Access', array(), true),
+					'url' => phpgw::link('/index.php', array(
+						'menuaction' => 'preferences.uiadmin_acl.aclprefs',
+						'acl_app' => 'messenger'
+					))
+				)
+			);
+
+			$menus['toolbar'][] = array(
+				'text' => $translation->translate('Preferences', array(), true),
+				'url' => phpgw::link('/preferences/preferences.php', array('appname' => 'messenger')),
+				'image' => array('messenger', 'preferences')
+			);
+		}
+
+		$menus['navigation'] = array(
+			'inbox' => array(
+				'url' => phpgw::link('/index.php', array('menuaction' => 'messenger.uimessenger.index')),
+				'text' => $translation->translate('inbox', array(), false, 'messenger'),
+				'image' => array('messenger', 'navbar')
+			)
+		);
+		if ($acl->check('.compose', ACL_ADD, 'messenger'))
+		{
+			$menus['navigation']['compose'] = array(
+				'url' => phpgw::link('/index.php', array('menuaction' => 'messenger.uimessenger.compose')),
+				'text' => $translation->translate('compose', array(), false, 'messenger'),
+			);
+		}
+		if ($acl->check('.compose_groups', ACL_ADD, 'messenger'))
+		{
+			$menus['navigation']['compose_groups'] = array(
+				'url' => phpgw::link('/index.php', array('menuaction' => 'messenger.uimessenger.compose_groups')),
+				'text' => $translation->translate('compose groups', array(), false, 'messenger'),
+			);
+		}
+		if ($acl->check('.compose_global', ACL_ADD, 'messenger'))
+		{
+			$menus['navigation']['compose_global'] = array(
+				'url' => phpgw::link('/index.php', array('menuaction' => 'messenger.uimessenger.compose_global')),
+				'text' => $translation->translate('compose global', array(), false, 'messenger'),
+			);
+		}
+		Settings::getInstance()->update('flags', ['currentapp' => $incoming_app]);
+		return $menus;
 	}
+}

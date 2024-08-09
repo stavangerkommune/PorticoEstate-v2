@@ -1,5 +1,5 @@
 <?php
-	/*	 * ************************************************************************\
+/*	 * ************************************************************************\
 	 * phpGroupWare - KnowledgeBase                                             *
 	 * http://www.phpgroupware.org                                              *
 	 *                                                                          *
@@ -15,18 +15,21 @@
 	 *  option) any later version.                                              *
 	  \************************************************************************* */
 
-	/* $Id$ */
+/* $Id$ */
 
-	function restrict_to_group( $config )
+use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
+function restrict_to_group($config)
+{
+	$accounts_obj = new Accounts();
+	$groups = $accounts_obj->get_list('groups', -1, 'ASC', 'account_lid', '', -1);
+
+	$restrict_to_group = isset($config['restrict_to_group']) && $config['restrict_to_group'] ? $config['restrict_to_group'] : array();
+	$out = '';
+	foreach ($groups as $group)
 	{
-		$groups = $GLOBALS['phpgw']->accounts->get_list('groups', -1, 'ASC', 'account_lid', '', -1);
-
-		$restrict_to_group = isset($config['restrict_to_group']) && $config['restrict_to_group'] ? $config['restrict_to_group'] : array();
-		$out = '';
-		foreach ($groups as $group)
-		{
-			$checked = in_array($group->id, $restrict_to_group) ? 'checked = "checked"' : '';
-			$out .= <<<HTML
+		$checked = in_array($group->id, $restrict_to_group) ? 'checked = "checked"' : '';
+		$out .= <<<HTML
 				<tr>
 					<td>
 						{$group->__toString()}
@@ -36,6 +39,6 @@
 					</td>
 				</tr>
 HTML;
-		}
-		return $out;
 	}
+	return $out;
+}
