@@ -20,7 +20,7 @@ use App\modules\phpgwapi\services\Settings;
  *
  * @package addressbook
  */
-class remote
+class addressbook_remote
 {
 	var $servers = array(
 		'BigFoot' => array(

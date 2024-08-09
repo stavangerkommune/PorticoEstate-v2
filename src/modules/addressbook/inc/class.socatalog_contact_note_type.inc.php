@@ -2,7 +2,7 @@
 
 use App\Database\Db;
 
-class socatalog_contact_note_type
+class addressbook_socatalog_contact_note_type
 {
 	var $db;
 	function __construct()

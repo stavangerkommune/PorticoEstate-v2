@@ -25,7 +25,7 @@ use App\modules\phpgwapi\services\Cache;
 phpgw::import_class('phpgwapi.uicommon');
 phpgw::import_class('phpgwapi.datetime');
 
-class uicategorize_contacts extends phpgwapi_uicommon
+class addressbook_uicategorize_contacts extends phpgwapi_uicommon
 {
 	var $public_functions = array(
 		'index' => True,

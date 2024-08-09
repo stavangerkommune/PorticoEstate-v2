@@ -24,7 +24,7 @@ use App\modules\phpgwapi\services\Settings;
 use App\modules\phpgwapi\security\Acl;
 
 
-class soaddressbook
+class addressbook_soaddressbook
 {
 	var $contacts, $grants, $owner, $rights;
 

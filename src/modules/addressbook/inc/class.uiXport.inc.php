@@ -18,7 +18,7 @@ use App\modules\phpgwapi\services\Cache;
 phpgw::import_class('phpgwapi.uicommon');
 phpgw::import_class('phpgwapi.datetime');
 
-class uiXport extends phpgwapi_uicommon
+class addressbook_uiXport extends phpgwapi_uicommon
 {
 	var $template;
 	var $public_functions = array(

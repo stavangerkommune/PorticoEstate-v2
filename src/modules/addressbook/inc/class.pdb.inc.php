@@ -35,7 +35,7 @@
 	//
 	// READ DOES NOT WORK
 	// FORMAT OF FILE IS A DOC, NOT A TRUE PALM ADDRESS BOOK
-	class pdb
+	class addressbook_pdb
 	{
 		var $record_size			= 4096;	// Size of text record
 		var $pdb_header_size		= 78;	// Size of the file header (don't touch!)

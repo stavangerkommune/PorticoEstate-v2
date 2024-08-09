@@ -15,7 +15,7 @@
 
 	phpgw::import_class('phpgwapi.uicommon');
 
-	class uivcard extends phpgwapi_uicommon
+	class addressbook_uivcard extends phpgwapi_uicommon
 	{
 		var $contacts;
 		var $browser;

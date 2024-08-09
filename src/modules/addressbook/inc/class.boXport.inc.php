@@ -15,7 +15,7 @@
 
 use App\modules\phpgwapi\services\Settings;
 
-class boXport
+class addressbook_boXport
 {
 	var $public_functions = array(
 		'import' => True,

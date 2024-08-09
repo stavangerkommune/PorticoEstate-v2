@@ -22,7 +22,7 @@ use App\helpers\Template;
 use App\modules\phpgwapi\services\Settings;
 
 
-class widget_lists
+class addressbook_widget_lists
 {
 	var $title;
 	var $form_name;

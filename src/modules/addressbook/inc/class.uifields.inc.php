@@ -18,7 +18,7 @@ use App\helpers\Template;
 
 phpgw::import_class('phpgwapi.uicommon');
 
-class uifields extends phpgwapi_uicommon
+class addressbook_uifields extends phpgwapi_uicommon
 {
 	var $public_functions = array(
 		'index'  => true,
