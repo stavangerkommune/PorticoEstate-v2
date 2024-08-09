@@ -44,6 +44,11 @@
 			self::set_active_menu("{$this->currentapp}::vcard");
 		}
 
+		function edit()
+		{
+			
+		}
+
 		function in()
 		{
 			$tabs = array();
@@ -67,7 +72,7 @@
 
 			if($nolname || $nofname)
 			{
-				$GLOBALS['phpgw']->common->phpgw_header();
+				$this->phpgwapi_common->phpgw_header();
 				echo parse_navbar();
 			}
 
@@ -229,7 +234,7 @@
 				echo $entry;
 				sleep(1);
 				exit;
-				//$GLOBALS['phpgw']->common->exit;
+				//$this->phpgwapi_common->exit;
 			} /* !nolname && !nofname */
 
 			if($nofname)
@@ -252,7 +257,7 @@
 
 			if($nolname || $nofname)
 			{
-				//$GLOBALS['phpgw']->common->phpgw_footer();
+				//$this->phpgwapi_common->phpgw_footer();
 			}
 		}
 	}

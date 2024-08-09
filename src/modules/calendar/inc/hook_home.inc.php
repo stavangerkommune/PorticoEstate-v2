@@ -28,7 +28,6 @@
 	$GLOBALS['g_year'] = substr($GLOBALS['date'],0,4);
 	$GLOBALS['g_month'] = substr($GLOBALS['date'],4,2);
 	$GLOBALS['g_day'] = substr($GLOBALS['date'],6,2);
-	$GLOBALS['owner'] = $GLOBALS['phpgw_info']['user']['account_id'];
 	$GLOBALS['css'] = "\n<style type=\"text/css\">\n<!--\n"
 		. "@import url('calendar/templates/base/css/base.css')\n-->\n</style>\n";
 

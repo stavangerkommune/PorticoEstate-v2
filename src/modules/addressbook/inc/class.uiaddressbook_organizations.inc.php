@@ -1,4 +1,5 @@
 <?php
+
 /**************************************************************************\
  * phpGroupWare - Addressbook                                               *
  * http://www.phpgroupware.org                                              *
@@ -14,9 +15,14 @@
 
 /* $Id$ */
 
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\controllers\Accounts\Accounts;
+use App\modules\phpgwapi\services\Hooks;
+use App\modules\phpgwapi\services\Cache;
 
-	phpgw::import_class('phpgwapi.uicommon');
-	phpgw::import_class('phpgwapi.datetime');
+
+phpgw::import_class('phpgwapi.uicommon');
+phpgw::import_class('phpgwapi.datetime');
 
 class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 {
@@ -28,14 +34,13 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 	var $abc;
 	var $currentapp;
 	var $fields, $cats, $owner, $tab_main, $tab_main_persons, $tab_main_organizations,
-	$cat_id, $_category_acl;
+		$cat_id, $_category_acl, $accounts_obj;
 
 	var $debug = False;
 	private $receipt = array();
 
 	//Public functions
-	var $public_functions = array
-	(
+	var $public_functions = array(
 		'index'			=> true,
 		'query'			=> true,
 		'view'			=> true,
@@ -53,49 +58,56 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 	{
 		parent::__construct();
 
-		$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('Organizations');
+		Settings::getInstance()->update('flags', ['app_header' => lang('addressbook') . '::' . lang('Organizations')]);
 		$this->bo = createObject('addressbook.boaddressbook');
 		$this->cats = CreateObject('phpgwapi.categories');
 		$this->fields = $this->get_fields();
 		self::set_active_menu("{$this->currentapp}::organizations");
-		$this->owner = $GLOBALS['phpgw_info']['user']['account_id'];
+		$this->owner = $this->userSettings['account_id'];
 		$this->tab_main_persons		= $this->bo->tab_main_persons;
 		$this->tab_main_organizations = $this->bo->tab_main_organizations;
+		$this->accounts_obj = new Accounts();
 	}
 
 	private function _get_filters()
 	{
 		$combos = array();
-		
+
 		$filter_obj = array(
 			array('id' => 'none', 'name' => lang('Show all')),
 			array('id' => 'yours', 'name' => lang('Only yours')),
 			array('id' => 'private', 'name' => lang('private'))
 		);
-					
-		$combos[] = array('type' => 'filter',
+
+		$combos[] = array(
+			'type' => 'filter',
 			'name' => 'access',
 			'extra' => '',
 			'text' => lang('access'),
 			'list' => $filter_obj
 		);
-		
+
 		$qfield = array(
 			array('id' => 'org', 'name' => 'Organization Data'),
-			array('id' => 'comms', 'name' => 'Communications Data'), 
-			array('id' => 'location', 'name' => 'Locations Data'), 
-			array('id' => 'other', 'name' => 'Other Data')		
+			array('id' => 'comms', 'name' => 'Communications Data'),
+			array('id' => 'location', 'name' => 'Locations Data'),
+			array('id' => 'other', 'name' => 'Other Data')
 		);
-		
-		$combos[] = array('type' => 'filter',
+
+		$combos[] = array(
+			'type' => 'filter',
 			'name' => 'qfield',
 			'extra' => '',
 			'text' => lang('type'),
 			'list' => $qfield
 		);
-		
-		$categories = $this->cats->formatted_xslt_list(array('format' => 'filter',
-				'selected' => $this->cat_id, 'globals' => true, 'use_acl' => $this->_category_acl));
+
+		$categories = $this->cats->formatted_xslt_list(array(
+			'format' => 'filter',
+			'selected' => $this->cat_id,
+			'globals' => true,
+			'use_acl' => $this->_category_acl
+		));
 		$default_value = array('cat_id' => '', 'name' => lang('all'));
 		array_unshift($categories['cat_list'], $default_value);
 
@@ -105,25 +117,26 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 			$_categories[] = array('id' => $_category['cat_id'], 'name' => $_category['name']);
 		}
 
-		$combos[] = array('type' => 'filter',
+		$combos[] = array(
+			'type' => 'filter',
 			'name' => 'category',
 			'extra' => '',
 			'text' => lang('category'),
 			'list' => $_categories
 		);
-		
+
 		return $combos;
 	}
-	
+
 	function _get_fields()
 	{
 		$columns_to_display = $this->bo->get_columns_to_display($this->tab_main_organizations);
 		$values = array();
-		
+
 		if (is_array($columns_to_display) && count($columns_to_display) > 0)
 		{
 			$values[] = array('key' => 'contact_id', 'label' => lang('contact id'), 'sortable' => true, 'hidden' => true);
-			
+
 			foreach ($columns_to_display as $field => $field_info)
 			{
 				$values[] = array(
@@ -133,19 +146,19 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 					'hidden' => false
 				);
 			}
-			
-			$values[] = array('key' => 'owner', 'label' => lang('owner'), 'sortable' => true, 'hidden' => false);			
+
+			$values[] = array('key' => 'owner', 'label' => lang('owner'), 'sortable' => true, 'hidden' => false);
 		}
-		else 
+		else
 		{
 			foreach ($this->fields as $field => $field_info)
 			{
-				if($field_info['action'] & ACL_READ)
+				if ($field_info['action'] & ACL_READ)
 				{
-					$label = !empty($field_info['translated_label'])  ? $field_info['translated_label'] :'';
-					if(!$label)
+					$label = !empty($field_info['translated_label'])  ? $field_info['translated_label'] : '';
+					if (!$label)
 					{
-						$label =!empty($field_info['label']) ? lang($field_info['label']) : $field;
+						$label = !empty($field_info['label']) ? lang($field_info['label']) : $field;
 					}
 
 					$data = array(
@@ -155,7 +168,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 						'hidden' => !empty($field_info['hidden']) ? true : false,
 					);
 
-					if(!empty($field_info['formatter']))
+					if (!empty($field_info['formatter']))
 					{
 						$data['formatter'] = $field_info['formatter'];
 					}
@@ -164,45 +177,48 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				}
 			}
 		}
-		
+
 		return $values;
 	}
-	
+
 	function _get_columns()
 	{
 		$columns_to_display = $this->bo->get_columns_to_display($this->tab_main_organizations);
-		
+
 		if (!is_array($columns_to_display) || count($columns_to_display) == 0)
 		{
 			foreach ($this->fields as $field => $field_info)
 			{
 				$columns_to_display[$field] = 1;
-			}			
+			}
 		}
-		
+
 		return $columns_to_display;
 	}
-	
+
 	function get_fields($debug = true)
 	{
 		$fields = array(
-			'contact_id' => array('action'=> ACL_READ | ACL_ADD | ACL_EDIT,
+			'contact_id' => array(
+				'action' => ACL_READ | ACL_ADD | ACL_EDIT,
 				'type' => 'int',
 				'label' => 'id',
-				'sortable'=> true,
+				'sortable' => true,
 				'hidden' => false,
 				'public' => false,
 				'group' => 'org_data'
-				),
-			'access' => array('action'=> ACL_ADD | ACL_EDIT,
+			),
+			'access' => array(
+				'action' => ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'access',
 				'sortable' => false,
 				'query' => true,
 				'public' => true,
 				'group' => 'org_data'
-				),			
-			'org_name' => array('action'=> ACL_READ | ACL_ADD | ACL_EDIT,
+			),
+			'org_name' => array(
+				'action' => ACL_READ | ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'org name',
 				'sortable' => false,
@@ -210,116 +226,129 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				'public' => true,
 				'required' => true,
 				'group' => 'org_data'
-				),
-			'owner' => array('action'=> ACL_READ | ACL_ADD | ACL_EDIT,
+			),
+			'owner' => array(
+				'action' => ACL_READ | ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'owner',
 				'sortable' => false,
 				'query' => true,
 				'public' => true,
 				'group' => 'org_data'
-				),
-			'addr_id' => array('action'=> ACL_ADD | ACL_EDIT,
+			),
+			'addr_id' => array(
+				'action' => ACL_ADD | ACL_EDIT,
 				'type' => 'int',
 				'label' => 'addr id',
 				'sortable' => false,
 				'query' => true,
 				'public' => true,
 				'group' => 'addr_data'
-				),
-			'addr_add1' => array('action'=> ACL_ADD | ACL_EDIT,
+			),
+			'addr_add1' => array(
+				'action' => ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'address 1',
 				'sortable' => false,
 				'query' => true,
 				'public' => true,
 				'group' => 'addr_data'
-				),
-			'addr_add2' => array('action'=> ACL_ADD | ACL_EDIT,
+			),
+			'addr_add2' => array(
+				'action' => ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'address 2',
 				'sortable' => false,
 				'query' => true,
 				'public' => true,
 				'group' => 'addr_data'
-				),
-			'addr_city' => array('action'=> ACL_ADD | ACL_EDIT,
+			),
+			'addr_city' => array(
+				'action' => ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'city',
 				'sortable' => false,
 				'query' => true,
 				'public' => true,
 				'group' => 'addr_data'
-				),
-			'addr_state' => array('action'=> ACL_ADD | ACL_EDIT,
+			),
+			'addr_state' => array(
+				'action' => ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'state',
 				'sortable' => false,
 				'query' => true,
 				'public' => true,
 				'group' => 'addr_data'
-				),
-			'addr_postal_code' => array('action'=> ACL_ADD | ACL_EDIT,
+			),
+			'addr_postal_code' => array(
+				'action' => ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'postal code',
 				'sortable' => false,
 				'query' => true,
 				'public' => true,
 				'group' => 'addr_data'
-				),
-			'addr_country' => array('action'=> ACL_ADD | ACL_EDIT,
+			),
+			'addr_country' => array(
+				'action' => ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'country',
 				'sortable' => false,
 				'query' => true,
 				'public' => true,
 				'group' => 'addr_data'
-				),
-			'addr_type' => array('action'=> ACL_ADD | ACL_EDIT,
+			),
+			'addr_type' => array(
+				'action' => ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'type',
 				'sortable' => false,
 				'query' => true,
 				'public' => true,
 				'group' => 'addr_data'
-				),
-			'current_persons' => array('action'=> ACL_ADD | ACL_EDIT,
+			),
+			'current_persons' => array(
+				'action' => ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'persons',
 				'sortable' => false,
 				'query' => true,
 				'public' => true,
 				'group' => ''
-				),
-			'current_categories' => array('action'=> ACL_ADD | ACL_EDIT,
+			),
+			'current_categories' => array(
+				'action' => ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'categories',
 				'sortable' => false,
 				'query' => true,
 				'public' => true,
 				'group' => ''
-				),
-			'comm_data' => array('action'=> ACL_ADD | ACL_EDIT,
+			),
+			'comm_data' => array(
+				'action' => ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'comm_data',
 				'sortable' => false,
 				'query' => true,
 				'public' => true,
 				'group' => ''
-				),
-			'preferred_comm_data' => array('action'=> ACL_ADD | ACL_EDIT,
+			),
+			'preferred_comm_data' => array(
+				'action' => ACL_ADD | ACL_EDIT,
 				'type' => 'string',
 				'label' => 'preferred_comm_data',
 				'sortable' => false,
 				'query' => true,
 				'public' => true,
 				'group' => ''
-				)
+			)
 		);
 
 		return $fields;
 	}
-	
+
 	function index()
 	{
 		if (Sanitizer::get_var('phpgw_return_as') == 'json')
@@ -331,8 +360,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 			'datatable_name' => lang('addressbook'),
 			'form' => array(
 				'toolbar' => array(
-					'item' => array(
-					)
+					'item' => array()
 				)
 			),
 			'datatable' => array(
@@ -354,7 +382,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 		{
 			array_unshift($data['form']['toolbar']['item'], $filter);
 		}
-		
+
 		$parameters = array(
 			'parameter' => array(
 				array(
@@ -364,8 +392,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 			)
 		);
 
-		$data['datatable']['actions'][] = array
-			(
+		$data['datatable']['actions'][] = array(
 			'my_name' => 'categorize',
 			'text' => lang('Categorize'),
 			'type' => 'custom',
@@ -376,9 +403,8 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 			'className' => '',
 			'parameters' => json_encode(array())
 		);
-	
-		$data['datatable']['actions'][] = array
-			(
+
+		$data['datatable']['actions'][] = array(
 			'my_name' => 'import_contacts',
 			'text' => lang('Import contacts'),
 			'type' => 'custom',
@@ -389,9 +415,8 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 			'className' => '',
 			'parameters' => json_encode(array())
 		);
-			
-		$data['datatable']['actions'][] = array
-			(
+
+		$data['datatable']['actions'][] = array(
 			'my_name' => 'export_contacts',
 			'text' => lang('Export contacts'),
 			'type' => 'custom',
@@ -403,46 +428,38 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 			'parameters' => json_encode(array())
 		);
 
-		$data['datatable']['actions'][] = array
-			(
+		$data['datatable']['actions'][] = array(
 			'my_name' => 'view',
 			'text' => lang('view'),
-			'action' => phpgw::link('/index.php', array
-				(
+			'action' => phpgw::link('/index.php', array(
 				'menuaction' => "{$this->currentapp}.uiaddressbook_organizations.view"
 			)),
 			'parameters' => json_encode($parameters)
 		);
-			
-		$data['datatable']['actions'][] = array
-			(
+
+		$data['datatable']['actions'][] = array(
 			'my_name' => 'copy',
 			'text' => lang('copy'),
-			'action' => phpgw::link('/index.php', array
-				(
+			'action' => phpgw::link('/index.php', array(
 				'menuaction' => "{$this->currentapp}.uiaddressbook_organizations.copy"
 			)),
 			'parameters' => json_encode($parameters)
 		);
-				
-		$data['datatable']['actions'][] = array
-			(
+
+		$data['datatable']['actions'][] = array(
 			'my_name' => 'edit',
 			'text' => lang('edit'),
-			'action' => self::link(array
-				(
+			'action' => self::link(array(
 				'menuaction' => "{$this->currentapp}.uiaddressbook_organizations.edit"
 			)),
 			'parameters' => json_encode($parameters)
 		);
 
-		$data['datatable']['actions'][] = array
-			(
+		$data['datatable']['actions'][] = array(
 			'my_name' => 'delete',
 			'text' => lang('delete'),
 			'confirm_msg' => lang('do you really want to delete this entry'),
-			'action' => phpgw::link('/index.php', array
-				(
+			'action' => phpgw::link('/index.php', array(
 				'menuaction' => "{$this->currentapp}.uiaddressbook_organizations.delete"
 			)),
 			'parameters' => json_encode($parameters)
@@ -467,7 +484,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 		$query = $search['value'];
 		$ordering = $columns[$order[0]['column']]['data'];
 		$sort = $order[0]['dir'];
-			
+
 		switch ($access)
 		{
 			case 'yours':
@@ -479,7 +496,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 			default:
 				$_access = PHPGW_CONTACTS_ALL;
 		}
-		
+
 		if ($category)
 		{
 			$category_filter = $category;
@@ -493,9 +510,9 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 
 		unset($columns_to_display['comm_types']);
 		$fields = array_keys($columns_to_display);
-		
-		$fields['owner']='owner';
-		$fields['contact_id']='contact_id';
+
+		$fields['owner'] = 'owner';
+		$fields['contact_id'] = 'contact_id';
 
 		$fields_search = $fields;
 
@@ -504,10 +521,10 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 		$criteria = $this->bo->criteria_contacts($_access, $category_filter, $qfield, $query, $fields_search);
 		$total_all_persons = $this->bo->get_count_orgs($criteria);
 		$entries = $this->bo->get_orgs($fields, $start, $results, $ordering, $sort, '', $criteria);
-	
+
 		foreach ($entries as &$entry)
 		{
-			$entry['owner'] = $GLOBALS['phpgw']->accounts->id2name($entry['owner']);
+			$entry['owner'] = $this->accounts_obj->id2name($entry['owner']);
 			$entry['addr_type'] = $this->bo->search_location_type_id($entry['addr_type']);
 		}
 
@@ -516,17 +533,17 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 
 		$result_data['total_records'] = $total_all_persons;
 		$result_data['draw'] = $draw;
-			
+
 		return $this->jquery_results($result_data);
 	}
-	
+
 	function add()
 	{
-		if(!$this->bo->check_add('', $this->owner))
+		if (!$this->bo->check_add('', $this->owner))
 		{
 			phpgw::no_access();
 		}
-		
+
 		$this->edit();
 	}
 
@@ -534,14 +551,14 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 	{
 		$this->edit(array(), $mode = 'view');
 	}
-	
-	public function edit( $values = array(), $mode = 'edit' )
+
+	public function edit($values = array(), $mode = 'edit')
 	{
 		$vcard = Sanitizer::get_var('vcard', 'int', 'REQUEST', 0);
-		
+
 		$id = !empty($values['org_data']['contact_id']) ? $values['org_data']['contact_id'] : Sanitizer::get_var('ab_id', 'int');
-		
-		if(!$this->bo->check_edit($id, $this->owner))
+
+		if (!$this->bo->check_edit($id, $this->owner))
 		{
 			phpgw::no_access();
 		}
@@ -551,21 +568,21 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 			$organizations_data = $values['org_data'];
 			$comm_data = $this->_get_comm_data($id, $values);
 			$addr_data = $values['addr_data'];
-			
+
 			$_current_person = $values['persons'];
 			$_current_cats = $values['categories'];
 		}
 		else
-		{	
+		{
 			$organizations_data = $this->_get_organizations_data($id);
 			$person_orgs_data = $this->_get_person_orgs_data($id);
 			$comm_data = $this->_get_comm_data($id, array());
 			$addr_data = $this->_get_addr_data($id);
-			
+
 			$_current_person = $person_orgs_data['my_person'];
 			$_current_cats = $organizations_data['my_cats'];
-			
-			$organizations_data['owner_name'] = $GLOBALS['phpgw']->accounts->id2name($organizations_data['owner']);
+
+			$organizations_data['owner_name'] = $this->accounts_obj->id2name($organizations_data['owner']);
 		}
 
 		$tabs = array();
@@ -573,7 +590,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 			'label' => lang('Org Data'),
 			'link' => '#org_data'
 		);
-		
+
 		if ($mode == 'edit')
 		{
 			$tabs['persons'] = array(
@@ -593,7 +610,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				'link' => '#address',
 				'function' => "set_tab('address')"
 			);
-			
+
 			if ($id > 0)
 			{
 				$tabs['others'] = array(
@@ -603,51 +620,50 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 			}
 		}
 		$active_tab = 'org_data';
-		
+
 		$persons = $this->_get_persons();
-		
+
 		$current_persons = array();
 		$all_persons = array();
-		
+
 		if ($persons)
 		{
 			foreach ($persons as $k => $v)
 			{
 				if (is_array($_current_person) && in_array($v['contact_id'], $_current_person))
 				{
-					$current_persons[] = array('id'=> $v['contact_id'], 'name' => $v['per_full_name'], 'selected' => 0);
+					$current_persons[] = array('id' => $v['contact_id'], 'name' => $v['per_full_name'], 'selected' => 0);
 				}
 				else
 				{
-					$all_persons[] = array('id'=> $v['contact_id'], 'name' => $v['per_full_name']);
+					$all_persons[] = array('id' => $v['contact_id'], 'name' => $v['per_full_name']);
 				}
 			}
 		}
-		
+
 		$cats = $this->_get_cats();
 		$current_cats = array();
 		$all_cats = array();
-		
+
 		foreach ($cats as $k => $v)
 		{
 			if (is_array($_current_cats) && in_array($v['id'], $_current_cats))
 			{
-				$current_cats[] = array('id'=> $v['id'], 'name' => $v['name'], 'selected' => 0);
+				$current_cats[] = array('id' => $v['id'], 'name' => $v['name'], 'selected' => 0);
 			}
 			else
 			{
-				$all_cats[] = array('id'=> $v['id'], 'name' => $v['name']);
+				$all_cats[] = array('id' => $v['id'], 'name' => $v['name']);
 			}
 		}
-		
+
 		$addr_type = $this->_get_addr_type($addr_data['addr_type']);
-		
+
 		$datatable_def = array();
-		
+
 		if ($mode == 'edit'  && $id)
 		{
-			$tabletools[] = array
-				(
+			$tabletools[] = array(
 				'my_name' => 'delete',
 				'text' => lang('delete'),
 				'type' => 'custom',
@@ -657,17 +673,21 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 					'contact_id' => $id,
 					'phpgw_return_as' => 'json'
 				)) . ";
-					var parameters = " . json_encode(array('parameter' => array(array('name' => 'other_id',
-							'source' => 'id')))) . ";
+					var parameters = " . json_encode(array('parameter' => array(array(
+					'name' => 'other_id',
+					'source' => 'id'
+				)))) . ";
 					deleteOthersData(oArgs, parameters);
 				"
 			);
 
-			$datatable_def[] = array
-				(
+			$datatable_def[] = array(
 				'container' => 'datatable-container_0',
-				'requestUrl' => json_encode(self::link(array('menuaction' => "{$this->currentapp}.uiaddressbook_organizations.get_others_data",
-						'contact_id' => $id, 'phpgw_return_as' => 'json'))),
+				'requestUrl' => json_encode(self::link(array(
+					'menuaction' => "{$this->currentapp}.uiaddressbook_organizations.get_others_data",
+					'contact_id' => $id,
+					'phpgw_return_as' => 'json'
+				))),
 				'data' => json_encode(array()),
 				'ColumnDefs' => array(
 					array('key' => 'name', 'label' => lang('Description'), 'className' => '', 'sortable' => false, 'hidden' => false),
@@ -679,13 +699,13 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				)
 			);
 		}
-	
+
 		$_others_data = array();
 		if ($mode == 'view' && $id)
 		{
 			$_others_data = $this->bo->get_others_contact_data($id);
 		}
-		
+
 		$data = array(
 			'datatable_def' => $datatable_def,
 			'form_action' => self::link(array('menuaction' => "{$this->currentapp}.uiaddressbook_organizations.save")),
@@ -698,7 +718,7 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 			'all_persons' => array('options' => $all_persons),
 			'current_persons' => array('options' => $current_persons),
 			'all_cats' => array('options' => $all_cats),
-			'current_cats' => array('options' => $current_cats),					
+			'current_cats' => array('options' => $current_cats),
 			'addr_type' => array('options' => $addr_type),
 			'lang_descr' => lang('Please enter a description'),
 			'lang_selected' => lang('No record selected'),
@@ -706,28 +726,28 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 			'tabs' => phpgwapi_jquery::tabview_generate($tabs, $active_tab),
 			'value_active_tab' => $active_tab
 		);
-		
+
 		phpgwapi_jquery::formvalidator_generate(array('date', 'security', 'file'));
 		self::add_javascript('addressbook', 'base', 'addressbook_organizations.edit.js');
 		self::render_template_xsl(array('organizations', 'datatable_inline'), array($mode => $data));
 	}
-	
-	private function _populate( $data = array() )
-	{	
+
+	private function _populate($data = array())
+	{
 		$fields = $this->get_fields();
-		
+
 		foreach ($fields as $field	=> $field_info)
 		{
-			if(($field_info['action'] & ACL_ADD) ||  ($field_info['action'] & ACL_EDIT))
+			if (($field_info['action'] & ACL_ADD) ||  ($field_info['action'] & ACL_EDIT))
 			{
 				$value = Sanitizer::get_var($field, $field_info['type']);
-				
+
 				if ($field_info['required'] && (($value !== '0' && empty($value)) || empty($value)))
 				{
 					$this->receipt['error'][] = array('msg' => lang("Field %1 is required", lang($field_info['label'])));
 				}
-				
-				switch ($field_info['group']) 
+
+				switch ($field_info['group'])
 				{
 					case 'org_data':
 						$values['org_data'][$field] = $value;
@@ -740,22 +760,22 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				}
 			}
 		}
-		
+
 		$values['org_data']['owner'] = $this->owner;
 
 		$values['org_data']['access'] = ($values['org_data']['access']) ? 'private' : 'public';
 		$values['org_data']['ispublic'] = $values['org_data']['access'];
-		
+
 		$values['persons'] = $values['current_persons'];
 		$values['categories'] = $values['current_categories'];
 
 		return $values;
 	}
-	
+
 	public function save($ajax = false)
 	{
 		$id = Sanitizer::get_var('contact_id', 'int');
-		
+
 		if (!$_POST)
 		{
 			return $this->edit();
@@ -771,10 +791,10 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 			$values['action'] = 'edit';
 		}
 		else
-		{ 
+		{
 			$values['action'] = 'add';
 		}
-		
+
 		if ($this->receipt['error'])
 		{
 			self::message_set($this->receipt);
@@ -792,150 +812,148 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				{
 					Cache::message_set($e->getMessage(), 'error');
 					$this->edit($values);
-					return;					
+					return;
 				}
 			}
 
 			$this->receipt['message'][] = array('msg' => lang('Orgs has been saved'));
-			
+
 			self::message_set($this->receipt);
 			self::redirect(array('menuaction' => "{$this->currentapp}.uiaddressbook_organizations.edit", 'ab_id' => $id));
 		}
 	}
-	
+
 	function _get_organizations_data($id)
 	{
 		$data = ($id) ? $this->bo->get_principal_organizations_data($id) : array();
-		
+
 		return $data;
 	}
-	
+
 	function _get_person_orgs_data($id)
 	{
 		$data = ($id) ? $this->bo->get_person_orgs_data($id) : array();
-		
+
 		return $data;
 	}
-	
+
 	function _get_comm_data($id, $values)
 	{
 		if (count($values))
 		{
-			foreach($values['comm_data'] as $key => $value)
-			{						
+			foreach ($values['comm_data'] as $key => $value)
+			{
 				if ($value != '')
 				{
 					$_comm_data['comm_data'][$key] = $value;
 					$_comm_data['preferred'] = ($values['preferred_comm_data'] == $key) ? $values['preferred_comm_data'] : '';
 				}
-			}			
-		} 
-		else 
+			}
+		}
+		else
 		{
-			$data = ($id) ? $this->bo->get_comm_contact_data($id,'',True) : array();
+			$data = ($id) ? $this->bo->get_comm_contact_data($id, '', True) : array();
 
-			foreach($data as $key => $value)
-			{						
+			foreach ($data as $key => $value)
+			{
 				$_comm_data['comm_data'][$value['comm_description']] = $value['comm_data'];
-				if ( $value['comm_preferred'] == 'Y' )
+				if ($value['comm_preferred'] == 'Y')
 				{
 					$_comm_data['preferred'] = $value['comm_description'];
 				}
-			}			
+			}
 		}
 
-		foreach($this->bo->comm_descr as $key => $value)
+		foreach ($this->bo->comm_descr as $key => $value)
 		{
-			$comm_data[] = array
-			(
+			$comm_data[] = array(
 				'comm_description' => $value['comm_description'],
 				'comm_data' => isset($_comm_data['comm_data'][$value['comm_description']]) ? $_comm_data['comm_data'][$value['comm_description']] : '',
 				'preferred' => isset($_comm_data['preferred']) && $_comm_data['preferred'] == $value['comm_description'] ? 'Y' : 'N'
 			);
 		}
-		
+
 		return $comm_data;
 	}
-	
+
 	function _get_persons()
 	{
 		$fields_to_search = array('contact_id', 'per_full_name');
-		$criteria = $this->bo->criteria_contacts(PHPGW_CONTACTS_ALL,PHPGW_CONTACTS_CATEGORIES_ALL,array(),'',$fields_to_search);
-		$persons = $this->bo->get_persons($fields_to_search,'','','last_name','','',$criteria);
-	
+		$criteria = $this->bo->criteria_contacts(PHPGW_CONTACTS_ALL, PHPGW_CONTACTS_CATEGORIES_ALL, array(), '', $fields_to_search);
+		$persons = $this->bo->get_persons($fields_to_search, '', '', 'last_name', '', '', $criteria);
+
 		return $persons;
 	}
-	
+
 	function get_others_data()
 	{
 		$contact_id = Sanitizer::get_var('contact_id', 'int');
-		
+
 		if (!$contact_id)
 		{
 			return array();
 		}
-		
+
 		$_others_data = $this->bo->get_others_contact_data($contact_id);
 		$others_data = array();
-		
-		foreach($_others_data as $key => $value)
+
+		foreach ($_others_data as $key => $value)
 		{
 			$others_data[] = array('id' => $value['key_other_id'], 'name' => $value['other_name'], 'value' => $value['other_value']);
 		}
 
 		$total_records = count($others_data);
 
-		return array
-			(
+		return array(
 			'data' => $others_data,
 			'draw' => Sanitizer::get_var('draw', 'int'),
 			'recordsTotal' => $total_records,
 			'recordsFiltered' => $total_records
 		);
 	}
-	
-	function _get_addr_type($id=0)
+
+	function _get_addr_type($id = 0)
 	{
 		$addr_type = array();
 		$selected = 0;
-		
+
 		if (is_array($this->bo->addr_type))
 		{
-			foreach($this->bo->addr_type as $key => $value)
+			foreach ($this->bo->addr_type as $key => $value)
 			{
 				$selected = ($id == $value['addr_type_id']) ? '1' : '0';
 				$addr_type[] = array('id' => $value['addr_type_id'], 'name' => $value['addr_description'], 'selected' => $selected);
 			}
 		}
-		
+
 		return $addr_type;
 	}
-	
+
 	function _get_cats()
 	{
 		$cats = $this->cats->return_array('all', 0, false, '', '', '', true);
-		
+
 		return $cats;
 	}
-	
+
 	function _get_addr_data($id)
 	{
 		if (empty($id))
 		{
 			return array();
 		}
-		
+
 		$addr_data = $this->bo->get_addr_contact_data($id);
-		
+
 		return $addr_data[0];
 	}
-	
+
 	function delete_others()
 	{
 		$other_id = Sanitizer::get_var('other_id');
-		
+
 		$result = array();
-		
+
 		if (count($other_id) > 0)
 		{
 			foreach ($other_id as $id)
@@ -944,78 +962,83 @@ class addressbook_uiaddressbook_organizations extends phpgwapi_uicommon
 				$result['message'][] = array('msg' => lang('record has been deleted'));
 			}
 		}
-		
+
 		return $result;
 	}
-	
+
 	function add_others()
 	{
 		$contact_id = Sanitizer::get_var('contact_id');
 		$owner = $this->owner;
-		
+
 		$value = Sanitizer::get_var('value');
 		$description = Sanitizer::get_var('description');
-		
-		$field = array('action'=>'insert', 'other_name'=>$description, 'other_value'=>$value, 
-			'key_other_id'=>0, 'other_owner'=>$owner);
+
+		$field = array(
+			'action' => 'insert',
+			'other_name' => $description,
+			'other_value' => $value,
+			'key_other_id' => 0,
+			'other_owner' => $owner
+		);
 		$resp = $this->bo->get_insert_others($contact_id, $field, PHPGW_SQL_RUN_SQL);
-		
+
 		$result = array();
 		$result['message'][] = array('msg' => lang('record has been saved'));
-		
+
 		return $result;
 	}
-	
+
 	function delete()
 	{
 		$person_id = Sanitizer::get_var('ab_id');
-		
-		if(!$this->bo->check_delete($person_id, $this->owner))
+
+		if (!$this->bo->check_delete($person_id, $this->owner))
 		{
 			return lang('no permission to delete');
 		}
-		
+
 		return $this->delete_contact($person_id, $this->tab_main_organizations);
 	}
-	
-	function delete_contact($contact_id='', $contact_type='')
+
+	function delete_contact($contact_id = '', $contact_type = '')
 	{
 		$result = array();
+		$hooks = new Hooks();
 
-		$response = $GLOBALS['phpgw']->hooks->process(array('location' => 'delete_addressbook', 'contact_id' => $contact_id ));
+		$response = $hooks->process(array('location' => 'delete_addressbook', 'contact_id' => $contact_id));
 
-		if(!$this->bo->can_delete_hooks($response))
+		if (!$this->bo->can_delete_hooks($response))
 		{
 			$result[] = lang("The following application(s) have requested for this contact to be protected from deletion:");
-			
-			foreach($this->bo->negative_responses as $appname => $reason)
+
+			foreach ($this->bo->negative_responses as $appname => $reason)
 			{
-				$result[] = $appname.' '. lang($reason);
+				$result[] = $appname . ' ' . lang($reason);
 			}
 
 			return implode("<br>", $result);
 		}
 
 		$this->bo->delete($contact_id, $contact_type);
-		
+
 		$result[] = lang('Organization has been deleted');
-		
+
 		return implode("<br>", $result);
 	}
-	
+
 	function copy()
 	{
 		$contact_id = Sanitizer::get_var('ab_id');
 
 		$new_contact_id = $this->bo->copy_contact($contact_id);
-		
+
 		Cache::message_set('Organization has been copied', 'message');
-		
-		phpgw::redirect_link('/index.php', array
-				(
-					'menuaction'	=> "{$this->currentapp}.uiaddressbook_organizations.view",
-					'ab_id'		=> $new_contact_id,
-					'vcard' => 1
-				));
+
+		phpgw::redirect_link('/index.php', array(
+			'menuaction'	=> "{$this->currentapp}.uiaddressbook_organizations.view",
+			'ab_id'		=> $new_contact_id,
+			'vcard' => 1
+		));
 	}
 }

@@ -50,8 +50,7 @@
 			$translation = Translation::getInstance();
 			
 			$incoming_app			 = $flags['currentapp'];
-			$flags['currentapp']	 = 'property';
-			Settings::getInstance()->set('flags', $flags);
+			Settings::getInstance()->update('flags', ['currentapp' => 'property']);
 			$acl					 =	Acl::getInstance();
 			$menus					 = array();
 

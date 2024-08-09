@@ -19,7 +19,7 @@ use App\helpers\Template;
  * 
  * @package preferences
  */
-class uicategories
+class preferences_uicategories
 {
 	var $nextmatchs, $account, $user;
 	/**
@@ -82,7 +82,7 @@ class uicategories
 	 */
 	function __construct()
 	{
-		$cats_app			= get_var('cats_app', array('GET', 'POST'));
+		$cats_app			= Sanitizer::get_var('cats_app');
 
 		$this->bo			= CreateObject('preferences.bocategories', $cats_app);
 		$this->nextmatchs	= CreateObject('phpgwapi.nextmatchs');
@@ -161,10 +161,10 @@ class uicategories
 	 */
 	function index()
 	{
-		$cats_app    = get_var('cats_app', array('GET', 'POST'));
-		$extra       = get_var('extra', array('GET', 'POST'));
-		$global_cats = get_var('global_cats', array('GET', 'POST'));
-		$cats_level  = get_var('cats_level', array('GET', 'POST'));
+		$cats_app    = Sanitizer::get_var('cats_app');
+		$extra       = Sanitizer::get_var('extra');
+		$global_cats = Sanitizer::get_var('global_cats');
+		$cats_level  = Sanitizer::get_var('cats_level');
 
 		$link_data = array(
 			'menuaction'  => 'preferences.uicategories.index',
@@ -347,10 +347,10 @@ class uicategories
 	 */
 	function add()
 	{
-		$cats_app    = get_var('cats_app', array('GET', 'POST'));
-		$extra       = get_var('extra', array('GET', 'POST'));
-		$global_cats = get_var('global_cats', array('GET', 'POST'));
-		$cats_level  = get_var('cats_level', array('GET', 'POST'));
+		$cats_app    = Sanitizer::get_var('cats_app');
+		$extra       = Sanitizer::get_var('extra');
+		$global_cats = Sanitizer::get_var('global_cats');
+		$cats_level  = Sanitizer::get_var('cats_level');
 
 		$link_data = array(
 			'menuaction'  => 'preferences.uicategories.add',
@@ -458,11 +458,11 @@ class uicategories
 
 	function edit()
 	{
-		$cats_app    = get_var('cats_app', array('GET', 'POST'));
-		$extra       = get_var('extra', array('GET', 'POST'));
-		$global_cats = get_var('global_cats', array('GET', 'POST'));
-		$cats_level  = get_var('cats_level', array('GET', 'POST'));
-		$cat_id      = get_var('cat_id', array('GET', 'POST'));
+		$cats_app    = Sanitizer::get_var('cats_app');
+		$extra       = Sanitizer::get_var('extra');
+		$global_cats = Sanitizer::get_var('global_cats');
+		$cats_level  = Sanitizer::get_var('cats_level');
+		$cat_id      = Sanitizer::get_var('cat_id');
 
 		$link_data = array(
 			'menuaction'	=> 'preferences.uicategories.index',
@@ -599,11 +599,11 @@ class uicategories
 
 	function delete()
 	{
-		$cats_app    = get_var('cats_app', array('GET', 'POST'));
-		$extra       = get_var('extra', array('GET', 'POST'));
-		$global_cats = get_var('global_cats', array('GET', 'POST'));
-		$cats_level  = get_var('cats_level', array('GET', 'POST'));
-		$cat_id      = get_var('cat_id', array('GET', 'POST'));
+		$cats_app    = Sanitizer::get_var('cats_app');
+		$extra       = Sanitizer::get_var('extra');
+		$global_cats = Sanitizer::get_var('global_cats');
+		$cats_level  = Sanitizer::get_var('cats_level');
+		$cat_id      = Sanitizer::get_var('cat_id');
 
 		$link_data = array(
 			'menuaction'  => 'preferences.uicategories.index',

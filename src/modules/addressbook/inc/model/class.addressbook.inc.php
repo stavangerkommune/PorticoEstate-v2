@@ -62,8 +62,6 @@
 
 		public static function get_fields($debug = true)
 		{
-			$currentapp = $GLOBALS['phpgw_info']['flags']['currentapp'];
-				
 			$fields = array(
 				'contact_id' => array('action'=> ACL_READ,
 					'type' => 'int',
