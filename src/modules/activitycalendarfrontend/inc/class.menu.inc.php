@@ -1,29 +1,36 @@
 <?php
 
-	class activitycalendarfrontend_menu
+
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\security\Acl;
+
+class activitycalendarfrontend_menu
+{
+
+	function get_menu()
 	{
+		$flags = Settings::getInstance()->get('flags');
 
-		function get_menu()
+		$incoming_app			 = $flags['currentapp'];
+		Settings::getInstance()->update('flags', ['currentapp' => 'activitycalendarfrontend']);
+		$acl					 =	Acl::getInstance();
+
+		$menus = array();
+
+		if ($acl->check('run', Acl::READ, 'admin') || $acl->check('admin', Acl::ADD, 'activitycalendarfrontend'))
 		{
-			$incoming_app = $GLOBALS['phpgw_info']['flags']['currentapp'];
-			$GLOBALS['phpgw_info']['flags']['currentapp'] = 'activitycalendarfrontend';
-
-			$menus = array();
-
-			if ($GLOBALS['phpgw']->acl->check('run', Acl::READ, 'admin') || $GLOBALS['phpgw']->acl->check('admin', Acl::ADD, 'activitycalendarfrontend'))
-			{
-				$menus['admin'] = array
-					(
-					'index' => array
-						(
-						'text' => lang('Configuration'),
-						'url' => phpgw::link('/index.php', array('menuaction' => 'admin.uiconfig.index',
-							'appname' => 'activitycalendarfrontend'))
-					),
-				);
-			}
-
-			$GLOBALS['phpgw_info']['flags']['currentapp'] = $incoming_app;
-			return $menus;
+			$menus['admin'] = array(
+				'index' => array(
+					'text' => lang('Configuration'),
+					'url' => phpgw::link('/index.php', array(
+						'menuaction' => 'admin.uiconfig.index',
+						'appname' => 'activitycalendarfrontend'
+					))
+				),
+			);
 		}
+
+		Settings::getInstance()->update('flags', ['currentapp' => $incoming_app]);
+		return $menus;
 	}
+}

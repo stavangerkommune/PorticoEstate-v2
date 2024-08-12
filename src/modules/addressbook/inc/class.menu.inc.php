@@ -48,7 +48,7 @@ class addressbook_menu
 		$translation = Translation::getInstance();
 
 		$incoming_app			 = $flags['currentapp'];
-		Settings::getInstance()->update('flags', ['currentapp' => 'property']);
+		Settings::getInstance()->update('flags', ['currentapp' => 'addressbook']);
 		$acl					 =	Acl::getInstance();
 		$menus					 = array();
 

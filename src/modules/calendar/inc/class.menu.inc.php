@@ -1,15 +1,16 @@
 <?php
-	/**
-	 * Calendar - Menus
-	 *
-	 * @author Dave Hall <skwashd@phpgroupware.org>
-	 * @copyright Copyright (C) 2007 Free Software Foundation, Inc. http://www.fsf.org/
-	 * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
-	 * @package calendar 
-	 * @version $Id$
-	 */
 
-	/*
+/**
+ * Calendar - Menus
+ *
+ * @author Dave Hall <skwashd@phpgroupware.org>
+ * @copyright Copyright (C) 2007 Free Software Foundation, Inc. http://www.fsf.org/
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
+ * @package calendar 
+ * @version $Id$
+ */
+
+/*
 	   This program is free software: you can redistribute it and/or modify
 	   it under the terms of the GNU General Public License as published by
 	   the Free Software Foundation, either version 2 of the License, or
@@ -24,209 +25,184 @@
 	   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\Translation;
 
+/**
+ * Menus
+ *
+ * @package calendar
+ */
+class calendar_menu
+{
 	/**
-	 * Menus
+	 * Get the menus for the calendar
 	 *
-	 * @package calendar
-	 */	
-	class calendar_menu
+	 * @return array available menus for the current user
+	 */
+	function get_menu()
 	{
-		/**
-		 * Get the menus for the calendar
-		 *
-		 * @return array available menus for the current user
-		 */
-		function get_menu()
+		$userSettings = Settings::getInstance()->get('user');
+		$flags = Settings::getInstance()->get('flags');
+		$translation = Translation::getInstance();
+
+		$incoming_app			 = $flags['currentapp'];
+		Settings::getInstance()->update('flags', ['currentapp' => 'calendar']);
+		$menus = array();
+
+		$menus['navbar'] = array(
+			'calendar'	=> array(
+				'text'	=> $translation->translate('Calendar', array(), true),
+				'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.index')),
+				'image'	=> array('calendar', 'navbar'),
+				'order'	=> 4,
+				'group'	=> 'office'
+			)
+		);
+
+		$menus['toolbar'] = array(
+			array(
+				'text'	=> $translation->translate('New', array(), true),
+				'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.add')),
+				'image'	=> array('calendar', 'new')
+
+			),
+			array(
+				'text'	=> $translation->translate('Today', array(), true),
+				'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.day')),
+				'image'	=> array('calendar', 'today')
+			),
+			array(
+				'text'	=> $translation->translate('Week', array(), true),
+				'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.week')),
+				'image'	=> array('calendar', 'week')
+			),
+			array(
+				'text'	=> $translation->translate('Week Detailed', array(), true),
+				'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.week_new')),
+				'image'	=> array('calendar', 'week_detailed')
+			),
+			array(
+				'text'	=> $translation->translate('Month', array(), true),
+				'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.month')),
+				'image'	=> array('calendar', 'month')
+			),
+			array(
+				'text'	=> $translation->translate('Year', array(), true),
+				'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.year')),
+				'image'	=> array('calendar', 'year')
+			),
+			array(
+				'text'	=> $translation->translate('Group Planner', array(), true),
+				'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.planner')),
+				'image'	=> array('calendar', 'planner')
+			),
+			array(
+				'text'	=> $translation->translate('Busy/Free', array(), true),
+				'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.matrixselect')),
+				'image'	=> array('calendar', 'busy_free')
+			),
+			array(
+				'text'	=> $translation->translate('Import', array(), true),
+				'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uiicalendar.import')),
+				'image'	=> array('calendar', 'import')
+			)
+		);
+
+		if (isset($userSettings['apps']['admin']))
 		{
-			$menus = array();
-
-			$menus['navbar'] = array
-			(
-				'calendar'	=> array
-				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Calendar', array(), true),
-					'url'	=> phpgw::link('/index.php', array('menuaction'=> 'calendar.uicalendar.index') ),
-					'image'	=> array('calendar', 'navbar'),
-					'order'	=> 4,
-					'group'	=> 'office'
+			$menus['admin'] = array(
+				'index'	=> array(
+					'text'	=> $translation->translate('Site Configuration', array(), true),
+					'url'	=> phpgw::link('/index.php', array('menuaction'	=> 'admin.uiconfig.index', 'appname'	=> 'calendar'))
+				),
+				'custom'	=> array(
+					'text'	=> $translation->translate('Custom fields and sorting', array(), true),
+					'url'	=> phpgw::link('/index.php', array('menuaction'	=> 'calendar.uicustom_fields.index'))
+				),
+				'holiday'	=> array(
+					'text'	=> $translation->translate('Calendar Holiday Management', array(), true),
+					'url'	=> phpgw::link('/index.php', array('menuaction'	=> 'calendar.uiholiday.admin'))
+				),
+				'categories'	=> array(
+					'text'	=> $translation->translate('Global Categories', array(), true),
+					'url'	=> phpgw::link('/index.php', array('menuaction'	=> 'admin.uicategories.index', 'appname'	=> 'calendar'))
 				)
 			);
-
-			$menus['toolbar'] = array
-			(
-				array
-				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('New', array(), true),
-					'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.add')),
-					'image'	=> array('calendar', 'new')
-
-				),
-				array
-				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Today', array(), true),
-					'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.day')),
-					'image'	=> array('calendar', 'today')
-				),
-				array
-				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Week', array(), true),
-					'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.week')),
-					'image'	=> array('calendar', 'week')
-				),
-				array
-				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Week Detailed', array(), true),
-					'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.week_new')),
-					'image'	=> array('calendar', 'week_detailed')
-				),
-				array
-				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Month', array(), true),
-					'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.month')),
-					'image'	=> array('calendar', 'month')
-				),
-				array
-				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Year', array(), true),
-					'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.year')),
-					'image'	=> array('calendar', 'year')
-				),
-				array
-				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Group Planner', array(), true),
-					'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.planner')),
-					'image'	=> array('calendar', 'planner')
-				),
-				array
-				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Busy/Free', array(), true),
-					'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.matrixselect')),
-					'image'	=> array('calendar', 'busy_free')
-				),
-				array
-				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Import', array(), true),
-					'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uiicalendar.import')),
-					'image'	=> array('calendar', 'import')
-				)
-			);
-
-			if ( isset($GLOBALS['phpgw_info']['user']['apps']['admin']) )
-			{
-				$menus['admin'] = array
-				(
-					'index'	=> array
-					(
-						'text'	=> $GLOBALS['phpgw']->translation->translate('Site Configuration', array(), true),
-						'url'	=> phpgw::link('/index.php', array('menuaction'	=> 'admin.uiconfig.index', 'appname'	=> 'calendar') )
-					),
-					'custom'	=> array
-					(
-						'text'	=> $GLOBALS['phpgw']->translation->translate('Custom fields and sorting', array(), true),
-						'url'	=> phpgw::link('/index.php', array('menuaction'	=> 'calendar.uicustom_fields.index') )
-					),
-					'holiday'	=> array
-					(
-						'text'	=> $GLOBALS['phpgw']->translation->translate('Calendar Holiday Management', array(), true),
-						'url'	=> phpgw::link('/index.php', array('menuaction'	=> 'calendar.uiholiday.admin') )
-					),
-					'categories'	=> array
-					(
-						'text'	=> $GLOBALS['phpgw']->translation->translate('Global Categories', array(), true),
-						'url'	=> phpgw::link('/index.php', array('menuaction'	=> 'admin.uicategories.index', 'appname'	=> 'calendar') )
-					)
-				);
-			}
-
-			if ( isset($GLOBALS['phpgw_info']['user']['apps']['preferences']) )
-			{
-				$menus['preferences'] = array
-				(
-					'preferences'	=> array
-					(
-						'text'	=> $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
-						'url'	=> phpgw::link('/preferences/preferences.php', array('appname'	=> 'calendar'))
-					),
-					'acls'	=> array
-					(
-						'text'	=> $GLOBALS['phpgw']->translation->translate('Grant Access', array(), true),
-						'url'	=> phpgw::link('/index.php',array('menuaction'	=> 'preferences.uiaclprefs.index', 'acl_app'	=> 'calendar') )
-					),
-					'categories'	=> array
-					(
-						'text'	=> $GLOBALS['phpgw']->translation->translate('Edit Categories', array(), true),
-						'url'	=> phpgw::link('/index.php', array('menuaction'	=> 'preferences.uicategories.index', 'cats_app'	=> 'calendar', 'cats_level'	=> 1, 'global_cats'	=> true))
-					)
-				);
-				$menus['toolbar'][] = array
-				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Preferences', array(), true),
-					'url'	=> phpgw::link('/preferences/preferences.php', array('appname'	=> 'calendar')),
-					'image'	=> array('calendar', 'preferences')
-				);
-			}
-
-			$menus['navigation'] = array
-			(
-				array
-				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('New', array(), true),
-					'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.add'))
-				),
-				array
-				(
-					'text'		=> $GLOBALS['phpgw']->translation->translate('view', array(), true),
-					'url'		=> '#',
-					'children'	=> array
-					(
-						array
-						(
-							'text'	=> $GLOBALS['phpgw']->translation->translate('Today', array(), true),
-							'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.day'))
-						),
-						array
-						(
-							'text'	=> $GLOBALS['phpgw']->translation->translate('Week', array(), true),
-							'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.week'))
-						),
-						array
-						(
-							'text'	=> $GLOBALS['phpgw']->translation->translate('Week Detailed', array(), true),
-							'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.week_new'))
-						),
-						array
-						(
-							'text'	=> $GLOBALS['phpgw']->translation->translate('Month', array(), true),
-							'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.month'))
-						),
-						array
-						(
-							'text'	=> $GLOBALS['phpgw']->translation->translate('Year', array(), true),
-							'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.year'))
-						),
-						array
-						(
-							'text'	=> $GLOBALS['phpgw']->translation->translate('Group Planner', array(), true),
-							'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.planner'))
-						),
-						array
-						(
-							'text'	=> $GLOBALS['phpgw']->translation->translate('Daily Matrix View', array(), true),
-							'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.matrixselect'))
-						)
-					)
-				),
-				array
-				(
-					'text'	=> $GLOBALS['phpgw']->translation->translate('Import', array(), true),
-					'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uiicalendar.import'))
-				)
-
-			);
-
-			$menus['folders'] = phpgwapi_menu::get_categories('calendar');
-
-			return $menus;
 		}
+
+		if (isset($userSettings['apps']['preferences']))
+		{
+			$menus['preferences'] = array(
+				'preferences'	=> array(
+					'text'	=> $translation->translate('Preferences', array(), true),
+					'url'	=> phpgw::link('/preferences/preferences.php', array('appname'	=> 'calendar'))
+				),
+				'acls'	=> array(
+					'text'	=> $translation->translate('Grant Access', array(), true),
+					'url'	=> phpgw::link('/index.php', array('menuaction'	=> 'preferences.uiaclprefs.index', 'acl_app'	=> 'calendar'))
+				),
+				'categories'	=> array(
+					'text'	=> $translation->translate('Edit Categories', array(), true),
+					'url'	=> phpgw::link('/index.php', array('menuaction'	=> 'preferences.uicategories.index', 'cats_app'	=> 'calendar', 'cats_level'	=> 1, 'global_cats'	=> true))
+				)
+			);
+			$menus['toolbar'][] = array(
+				'text'	=> $translation->translate('Preferences', array(), true),
+				'url'	=> phpgw::link('/preferences/preferences.php', array('appname'	=> 'calendar')),
+				'image'	=> array('calendar', 'preferences')
+			);
+		}
+
+		$menus['navigation'] = array(
+			array(
+				'text'	=> $translation->translate('New', array(), true),
+				'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.add'))
+			),
+			array(
+				'text'		=> $translation->translate('view', array(), true),
+				'url'		=> '#',
+				'children'	=> array(
+					array(
+						'text'	=> $translation->translate('Today', array(), true),
+						'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.day'))
+					),
+					array(
+						'text'	=> $translation->translate('Week', array(), true),
+						'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.week'))
+					),
+					array(
+						'text'	=> $translation->translate('Week Detailed', array(), true),
+						'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.week_new'))
+					),
+					array(
+						'text'	=> $translation->translate('Month', array(), true),
+						'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.month'))
+					),
+					array(
+						'text'	=> $translation->translate('Year', array(), true),
+						'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.year'))
+					),
+					array(
+						'text'	=> $translation->translate('Group Planner', array(), true),
+						'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.planner'))
+					),
+					array(
+						'text'	=> $translation->translate('Daily Matrix View', array(), true),
+						'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uicalendar.matrixselect'))
+					)
+				)
+			),
+			array(
+				'text'	=> $translation->translate('Import', array(), true),
+				'url'	=> phpgw::link('/index.php', array('menuaction' => 'calendar.uiicalendar.import'))
+			)
+
+		);
+
+		$menus['folders'] = phpgwapi_menu::get_categories('calendar');
+		Settings::getInstance()->update('flags', ['currentapp' => $incoming_app]);
+
+		return $menus;
 	}
+}
