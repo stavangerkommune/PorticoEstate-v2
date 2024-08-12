@@ -76,11 +76,11 @@
 				unset($params['filters']['active']);
 			}
 			$values =  rental_somovein::get_instance()->read($params);
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
 			foreach ($values['results'] as &$entry)
 			{
-					$entry['created'] = date($dateformat, $entry['created']);//$GLOBALS['phpgw']->common->show_date($entry['created']);
-					$entry['modified'] = date($dateformat, $entry['modified']);//$GLOBALS['phpgw']->common->show_date($entry['modified']);
+					$entry['created'] = date($dateformat, $entry['created']);
+					$entry['modified'] = date($dateformat, $entry['modified']);
 			}
 			return $values;
 		}

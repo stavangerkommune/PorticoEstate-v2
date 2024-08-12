@@ -67,7 +67,7 @@
 		protected function update( $object )
 		{
 			$this->db->transaction_begin();
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
 			$lang_active = lang('active');
 			$lang_inactive = lang('inactive');
 
@@ -83,7 +83,7 @@
 					(
 						'email_out_id'	=> $object->get_id(),
 						'time'		=> time(),
-						'author'	=> $GLOBALS['phpgw_info']['user']['fullname'],
+						'author'	=> $this->userSettings['fullname'],
 						'comment'	=> $label . ':: ' . lang('old value') . ': ' . $this->db->db_addslashes($old_value) . ', ' .lang('new value') . ': ' . $this->db->db_addslashes($new_value),
 						'type'	=> 'history',
 					);
@@ -223,7 +223,7 @@
 			}
 			if($valueset)
 			{
-				return $GLOBALS['phpgw']->db->insert($sql, $valueset, __LINE__, __FILE__);
+				return $this->db->insert($sql, $valueset, __LINE__, __FILE__);
 			}
 		}
 

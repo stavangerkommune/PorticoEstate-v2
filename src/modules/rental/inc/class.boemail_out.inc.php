@@ -38,6 +38,7 @@
 
 		public function __construct()
 		{
+			parent::__construct();
 			$this->fields = rental_email_out::get_fields();
 			$this->acl_location = rental_email_out::acl_location;
 		}
@@ -76,12 +77,12 @@
 			}
 			$values =  rental_soemail_out::get_instance()->read($params);
 	//		$status_text = rental_email_out::get_status_list();
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
 			foreach ($values['results'] as &$entry)
 			{
 	//				$entry['status'] = $status_text[$entry['status']];
-					$entry['created'] = $GLOBALS['phpgw']->common->show_date($entry['created']);
-					$entry['modified'] = $GLOBALS['phpgw']->common->show_date($entry['modified']);
+					$entry['created'] = $this->phpgwapi_common->show_date($entry['created']);
+					$entry['modified'] = $this->phpgwapi_common->show_date($entry['modified']);
 			}
 			return $values;
 		}
@@ -127,10 +128,9 @@
 			$content = $email_out->content;
 			phpgw::import_class('rental.soparty');
 			$email_validator = CreateObject('phpgwapi.EmailAddressValidator');
-			if (!is_object($GLOBALS['phpgw']->send))
-			{
-				$GLOBALS['phpgw']->send = CreateObject('phpgwapi.send');
-			}
+
+			$send = CreateObject('phpgwapi.send');
+
 
 			$cc ='';
 			$bcc = '';
@@ -148,7 +148,7 @@
 
 				try
 				{
-					$rcpt = $GLOBALS['phpgw']->send->msg('email', $to_email, $subject, stripslashes($content), '', $cc, $bcc, $from_email, $from_name, 'html');
+					$rcpt = $send->msg('email', $to_email, $subject, stripslashes($content), '', $cc, $bcc, $from_email, $from_name, 'html');
 					rental_soemail_out::get_instance()->set_status($id, $party_id, rental_email_out::STATUS_SENT);
 				}
 				catch (Exception $exc)

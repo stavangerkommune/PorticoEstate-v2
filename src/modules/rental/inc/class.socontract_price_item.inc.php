@@ -392,7 +392,7 @@
 			$this->db->query('UPDATE rental_contract_price_item SET ' . join(',', $values) . " WHERE id=$id", __LINE__, __FILE__);
 
 			$receipt['id'] = $id;
-			$receipt['message'][] = array('msg' => lang('Entity %1 has been updated', $entry['id']));
+			$receipt['message'][] = array('msg' => lang('Entity %1 has been updated', $id));
 			return $receipt;
 		}
 
@@ -400,7 +400,7 @@
 		 * Select total sum of all "active" price-items on a contract.
 		 *
 		 * @param $contract_id	the id of the contract to generate total price on
-		 * @return total_price	the total price
+		 * @return float the total price
 		 */
 		public function get_total_price( $contract_id )
 		{

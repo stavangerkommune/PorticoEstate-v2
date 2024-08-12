@@ -14,6 +14,11 @@
 		protected $billing_terms; // Used for caching the billing terms
 		public $vfs;
 
+		public function __construct()
+		{
+			parent::__construct();
+		}
+
 		/**
 		 * Get a static reference to the storage object associated with this model object
 		 * 
@@ -449,7 +454,7 @@
 		public function generate_customer_export( $billing_id )
 		{
 
-			$file = PHPGW_SERVER_ROOT . "/rental/inc/export/{$GLOBALS['phpgw_info']['user']['domain']}/customer.php";
+			$file = PHPGW_SERVER_ROOT . "/rental/inc/export/{$this->userSettings['domain']}/customer.php";
 			if (is_file($file))
 			{
 				include $file;

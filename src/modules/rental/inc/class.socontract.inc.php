@@ -38,6 +38,14 @@
 		protected $fields_of_responsibility; // Used for caching the values
 
 		/**
+		 * Constructor
+		 */
+		public function __construct()
+		{
+			parent::__construct();
+		}
+
+		/**
 		 * Get a static reference to the storage object associated with this model object
 		 *
 		 * @return rental_socontract the storage object
@@ -702,7 +710,7 @@
 		 */
 		public function last_edited_by( $contract_id )
 		{
-			$account_id = $GLOBALS['phpgw_info']['user']['account_id']; // current user
+			$account_id = $this->userSettings['account_id']; // current user
 			$ts_now = strtotime('now');
 
 			$sql_has_edited_before = "SELECT account_id FROM rental_contract_last_edited WHERE contract_id = $contract_id AND account_id = $account_id";
@@ -831,7 +839,7 @@
 			$cols[] = 'created';
 			$cols[] = 'created_by';
 			$values[] = strtotime('now');
-			$values[] = $GLOBALS['phpgw_info']['user']['account_id'];
+			$values[] = $this->userSettings['account_id'];
 
 
 			$cols[] = 'service_id';

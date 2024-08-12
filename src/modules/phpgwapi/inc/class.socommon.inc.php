@@ -57,7 +57,7 @@ abstract class phpgwapi_socommon
 	var $dateformat;
 	var $acl_location;
 	var $global_lock;
-	protected $location_obj, $serverSettings, $userSettings, $flags;
+	protected $location_obj, $serverSettings, $userSettings, $flags, $phpgwapi_common;
 
 	public function __construct($table_name, $fields)
 	{
@@ -79,6 +79,8 @@ abstract class phpgwapi_socommon
 		$this->acl = Acl::getInstance();
 		$this->account = (int)$this->userSettings['account_id'];
 		$this->location_obj = new Locations();
+		$this->phpgwapi_common = new \phpgwapi_common();
+
 
 	}
 

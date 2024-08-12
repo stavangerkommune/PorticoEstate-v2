@@ -15,9 +15,9 @@
 
 		public function query()
 		{
-			if ($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] > 0)
+			if ($this->userSettings['preferences']['common']['maxmatchs'] > 0)
 			{
-				$user_rows_per_page = $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
+				$user_rows_per_page = $this->userSettings['preferences']['common']['maxmatchs'];
 			}
 			else
 			{
