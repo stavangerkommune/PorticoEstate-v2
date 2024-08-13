@@ -102,4 +102,4 @@ Login to setup (rebuilt but looks the same as before):
     http://localhost/setup/
     (Two different ones, maybe not quite finished...)
 
-In general, all routes are registered from a common method that traverses all src/modules/<module>/routes/Routes.php.
+In general, all routes are registered from a common method that traverses all ```src/modules/<module>/routes/Routes.php```.
