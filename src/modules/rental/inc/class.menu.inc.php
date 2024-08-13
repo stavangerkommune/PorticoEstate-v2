@@ -299,9 +299,11 @@ class rental_menu
 		$menus['preferences'] = array(
 			array(
 				'text' => lang('Preferences'),
-				'url' => phpgw::link('/preferences/preferences.php', array(
-					'appname' => 'rental',
-					'type' => 'user'
+				'url'	 => phpgw::link(
+					'/preferences/section',
+					array(
+						'appname'	 => 'rental',
+						'type'		 => 'user'
 				))
 			),
 			array(
