@@ -17,14 +17,14 @@
 			$this->date_str = date('Ymd', $billing_job->get_timestamp_stop());
 			$this->lines = null;
 			/*
-			  $dh = @opendir(PHPGW_SERVER_ROOT . "/rental/inc/export/{$GLOBALS['phpgw_info']['user']['domain']}");
+			  $dh = @opendir(PHPGW_SERVER_ROOT . "/rental/inc/export/{$this->userSettings['domain']}");
 			  $myfilearray = array();
 
 			  // For each entry in directory...
 			  while($file = readdir($dh))
 			  {
 			  // ...ignore files beginning with "."
-			  if(substr($file, 0, 1) != '.' && is_file(PHPGW_SERVER_ROOT . "/rental/inc/export/{$GLOBALS['phpgw_info']['user']['domain']}/{$file}"))
+			  if(substr($file, 0, 1) != '.' && is_file(PHPGW_SERVER_ROOT . "/rental/inc/export/{$this->userSettings['domain']}/{$file}"))
 			  {
 			  $myfilearray[] = $file;
 			  }

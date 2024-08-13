@@ -223,8 +223,8 @@
 		 */
 		public function serialize()
 		{
-			$currency_prefix = $GLOBALS['phpgw_info']['user']['preferences']['common']['currency'];
-			$date_format = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$currency_prefix = $this->userSettings['preferences']['common']['currency'];
+			$date_format = $this->userSettings['preferences']['common']['dateformat'];
 			//$date_format="Y/m/d";
 			return array(
 				'id' => $this->get_id(),

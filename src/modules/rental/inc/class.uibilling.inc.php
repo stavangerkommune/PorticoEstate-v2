@@ -11,8 +11,6 @@ include_class('rental', 'contract', 'inc/model/');
 include_class('rental', 'billing', 'inc/model/');
 
 
-require_once PHPGW_API_INC . '/flysystem3/vendor/autoload.php';
-
 use League\Flysystem\Filesystem;
 use League\Flysystem\PhpseclibV3\SftpConnectionProvider;
 use League\Flysystem\PhpseclibV3\SftpAdapter;

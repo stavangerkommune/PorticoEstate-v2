@@ -20,9 +20,9 @@
 
 		public function query()
 		{
-			if ($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] > 0)
+			if ($this->userSettings['preferences']['common']['maxmatchs'] > 0)
 			{
-				$user_rows_per_page = $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'];
+				$user_rows_per_page = $this->userSettings['preferences']['common']['maxmatchs'];
 			}
 			else
 			{
@@ -67,7 +67,7 @@
 					$result_count = rental_sonotification::get_instance()->get_count($search_for, $search_type, $filters);
 					break;
 				case 'notifications_for_user':
-					$filters = array('account_id' => $GLOBALS['phpgw_info']['user']['account_id']);
+					$filters = array('account_id' => $this->userSettings['account_id']);
 					$result_objects = rental_soworkbench_notification::get_instance()->get($start_index, $num_of_objects, $sort_field, $sort_ascending, $search_for, $search_type, $filters);
 					$result_count = rental_soworkbench_notification::get_instance()->get_count($search_for, $search_type, $filters);
 					break;

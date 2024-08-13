@@ -25,6 +25,7 @@
 
 		public function __construct( int $decimals, int $id, int $invoice_id, string $title, string $agresso_id, bool $is_area, float $price_per_type, float $area, int $count, int $timestamp_start, int $timestamp_end, int $price_type_id )
 		{
+			parent::__construct($id);
 			$this->decimals = (int)$decimals;
 			$this->id = (int)$id;
 			$this->invoice_id = (int)$invoice_id;
@@ -289,7 +290,7 @@
 
 		public function serialize()
 		{
-			$date_format = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$date_format = $this->userSettings['preferences']['common']['dateformat'];
 			return array
 				(
 				'title' => $this->get_title(),

@@ -43,6 +43,7 @@
 		 */
 		public function __construct( $id = 0 )
 		{
+			parent::__construct($id);
 			$this->id = $id;
 			$this->is_area = true;
 		}

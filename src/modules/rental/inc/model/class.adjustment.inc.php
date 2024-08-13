@@ -159,7 +159,7 @@
 
 		public function serialize()
 		{
-			$date_format = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$date_format = $this->userSettings['preferences']['common']['dateformat'];
 			return array(
 				'id' => $this->get_id(),
 				'price_item_id' => $this->get_price_item_id(),

@@ -16,6 +16,7 @@
 
 		public function __construct( int $id = null, int $billing_id = null, $location_id = null, int $billing_term = null, int $year = null, int $month = null )
 		{
+			parent::__construct($id);
 			$this->id = $id;
 			$this->billing_id = $billing_id;
 			$this->location_id = $location_id;

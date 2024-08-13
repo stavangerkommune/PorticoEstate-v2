@@ -102,7 +102,7 @@ class frontend_bofrontend
 	 * Checks to see if a user with a given username exist
 	 * 
 	 * @param string $username the username to check
-	 * @return the user id if the user exist, false otherwise
+	 * @return mixed user id if the user exist, false otherwise
 	 */
 	public static function delegate_exist(string $username)
 	{
