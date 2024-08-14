@@ -69,7 +69,7 @@ class frontend_menu
 		$tabs = array();
 		foreach ($locations as $key => $entry)
 		{
-			$name = $entry['name'];
+			$name = strtolower($entry['name']);
 			$location = $entry['location'];
 
 			if ($acl->check($location, ACL_READ, 'frontend'))

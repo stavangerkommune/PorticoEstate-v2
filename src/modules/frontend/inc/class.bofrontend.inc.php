@@ -30,7 +30,7 @@ use App\modules\phpgwapi\controllers\Accounts\Accounts;
 use App\modules\phpgwapi\controllers\Accounts\phpgwapi_group;
 use App\modules\phpgwapi\controllers\Accounts\phpgwapi_user;
 use App\modules\phpgwapi\controllers\Locations;
-use App\Database\Db2;
+use App\Database\Db;
 use App\modules\phpgwapi\services\Log;
 
 
@@ -125,7 +125,7 @@ class frontend_bofrontend
 			$location_id = self::get_location_obj()->get_id('frontend', '.');
 			$sql = "SELECT data FROM phpgw_account_delegates WHERE account_id = {$account_id} AND location_id = {$location_id}";
 
-			$db = new Db2;
+			$db = Db::getInstance();
 			$db->query($sql, __LINE__, __FILE__);
 
 			while ($db->next_record())
@@ -278,7 +278,7 @@ class frontend_bofrontend
 			return array();
 		}
 
-		$db = new Db2;
+		$db = Db::getInstance();
 		$db->query($sql, __LINE__, __FILE__);
 
 		$delegates = array();
@@ -322,7 +322,7 @@ class frontend_bofrontend
 			$location_id = self::get_location_obj()->get_id('frontend', '.');;
 
 			// Database query
-			$db = new Db2;
+			$db = Db::getInstance();
 			$db->Halt_On_Error = 'no';
 
 			$sql = "INSERT INTO phpgw_account_delegates (account_id,owner_id,location_id,data,created_on,created_by) VALUES ({$account_id},{$owner_id},{$location_id},'{$org_unit_id}',{$timestamp},{$owner_id}) ";
@@ -396,7 +396,7 @@ class frontend_bofrontend
 		}
 
 
-		$db = new Db2;
+		$db = Db::getInstance();
 		$db->Halt_On_Error = 'no';
 		$result = $db->query($sql, __LINE__, __FILE__);
 

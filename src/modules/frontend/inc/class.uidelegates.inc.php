@@ -1,178 +1,183 @@
 <?php
-	phpgw::import_class('frontend.uicommon');
 
-	class frontend_uidelegates extends frontend_uicommon
+use App\modules\phpgwapi\services\Cache;
+use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
+phpgw::import_class('frontend.uicommon');
+
+class frontend_uidelegates extends frontend_uicommon
+{
+
+	public $public_functions = array(
+		'index'				 => true,
+		'remove_delegate'	 => true,
+		'query'				 => true,
+		'search_user'		 => true
+	);
+
+	public $accounts_obj;
+	public function __construct()
 	{
+		parent::__construct();
+		$this->accounts_obj = new Accounts();
+		Cache::session_set('frontend', 'tab', $this->locations->get_id('frontend', '.delegates'), $this->userSettings['account_id']);
+	}
 
-		public $public_functions = array
-			(
-			'index'				 => true,
-			'remove_delegate'	 => true,
-			'query'				 => true,
-			'search_user'		 => true
-		);
-
-		public function __construct()
+	public function search_user()
+	{
+		$config = CreateObject('phpgwapi.config', 'rental')->read();
+		$use_fellesdata = $config['use_fellesdata'];
+		$username = Sanitizer::get_var('username');
+		$result = array();
+		if (!isset($username))
 		{
-			Cache::session_set('frontend', 'tab', $GLOBALS['phpgw']->locations->get_id('frontend', '.delegates'), $GLOBALS['phpgw_info']['user']['account_id']);
-			parent::__construct();
+			$result['error']['msg'] = lang('lacking_username');
 		}
-
-		public function search_user()
+		else
 		{
-			$config = CreateObject('phpgwapi.config', 'rental')->read();
-			$use_fellesdata = $config['use_fellesdata'];
-			$username = Sanitizer::get_var('username');
-			$result = array();
-			if (!isset($username))
+			$account_id = frontend_bofrontend::delegate_exist($username);
+			if ($account_id)
 			{
-				$result['error']['msg'] = lang('lacking_username');
+				$search_result = frontend_bofrontend::get_account_info($account_id);
+				$msg = lang('user_found_in_PE');
 			}
-			else
+			else if ($use_fellesdata)
 			{
-				$account_id = frontend_bofrontend::delegate_exist($username);
-				if ($account_id)
-				{
-					$search_result = frontend_bofrontend::get_account_info($account_id);
-					$msg = lang('user_found_in_PE');
-				}
-				else if($use_fellesdata)
-				{
-					$search_result = frontend_bofellesdata::get_instance()->get_user($username);
-					$msg = lang('user_found_in_Fellesdata');
-				}
+				$search_result = frontend_bofellesdata::get_instance()->get_user($username);
+				$msg = lang('user_found_in_Fellesdata');
+			}
 
-				if ($search_result)
+			if ($search_result)
+			{
+				if ($search_result['username'] == $this->userSettings['account_lid'])
 				{
-					if ($search_result['username'] == $GLOBALS['phpgw_info']['user']['account_lid'])
-					{
-						$result['error']['msg'] = lang('searching_for_self');
-						$search_result['firstname'] = '';
-						$search_result['lastname'] = '';
-						$search_result['email'] = '';
-						$search_result['account_id'] = '';
-					}
-					else
-					{
-						$result['message']['msg'] = $msg;
-					}
-					$result['data'] = $search_result;
+					$result['error']['msg'] = lang('searching_for_self');
+					$search_result['firstname'] = '';
+					$search_result['lastname'] = '';
+					$search_result['email'] = '';
+					$search_result['account_id'] = '';
 				}
 				else
 				{
-					$result['error']['msg'] = lang('no_hits');
+					$result['message']['msg'] = $msg;
+				}
+				$result['data'] = $search_result;
+			}
+			else
+			{
+				$result['error']['msg'] = lang('no_hits');
+			}
+		}
+
+		return $result;
+	}
+	public function index()
+	{
+		$config = CreateObject('phpgwapi.config', 'rental');
+		$config->read();
+		$use_fellesdata = $config->config_data['use_fellesdata'];
+		//			if (isset($_POST['search']))
+		//			{
+		//				$username = Sanitizer::get_var('username');
+		//				if (empty($username))
+		//				{
+		//					$msglog['error'][] = array('msg' => lang('lacking_username'));
+		//				}
+		//				else if ($username == $this->userSettings['account_lid'])
+		//				{
+		//					$msglog['error'][] = array('msg' => lang('searching_for_self'));
+		//				}
+		//				else
+		//				{
+		//					$account_id = frontend_bofrontend::delegate_exist($username);
+		//					if ($account_id)
+		//					{
+		//						$search = frontend_bofrontend::get_account_info($account_id);
+		//						$msglog['message'][] = array('msg' => lang('user_found_in_PE'));
+		//					}
+		//					else
+		//					{
+		//						$msglog['error'][] = array('msg' => lang('user_not_found_in_PE'));
+		//						if ($use_fellesdata)
+		//						{
+		//							$fellesdata_user = frontend_bofellesdata::get_instance()->get_user($username);
+		//
+		//							if ($fellesdata_user)
+		//							{
+		//								$search = $fellesdata_user;
+		//								$msglog['message'][] = array('msg' => lang('user_found_in_Fellesdata'));
+		//							}
+		//						}
+		//						else
+		//						{
+		//							$msglog['error'][] = array('msg' => lang('no_hits'));
+		//						}
+		//					}
+		//				}
+		//			}
+		//			else
+		if (isset($_POST['add']))
+		{
+			$account_id = Sanitizer::get_var('account_id');
+			$success = false;
+			if ($use_fellesdata && !empty($account_id))
+			{
+				$org_units = frontend_bofellesdata::get_instance()->get_result_units($this->userSettings['account_lid']);
+				//Parameter to delegate access to only a single organisational unit
+				$org_unit_id = $this->header_state['selected_org_unit'];
+
+				foreach ($org_units as $org_unit)
+				{
+					if ($org_unit_id == 'all' || $org_unit['ORG_UNIT_ID'] == $org_unit_id)
+					{
+						//$curr_success = true;
+						$res = $this->add_delegate($account_id, $org_unit['ORG_UNIT_ID'], $org_unit['ORG_NAME']);
+						if ($res)
+						{
+							//$mail_contents[] = $res;
+							$org_unit_names[] = $org_unit['ORG_NAME'];
+						}
+						else
+						{
+							$msglog['error'][] = array('msg' => lang('error_delegating_unit', $org_unit['ORG_NAME']));
+						}
+
+						$success = $success && $res;
+					}
 				}
 			}
-
-			return $result;
-		}
-		public function index()
-		{
-			$config = CreateObject('phpgwapi.config', 'rental');
-			$config->read();
-			$use_fellesdata = $config->config_data['use_fellesdata'];
-//			if (isset($_POST['search']))
-//			{
-//				$username = Sanitizer::get_var('username');
-//				if (empty($username))
-//				{
-//					$msglog['error'][] = array('msg' => lang('lacking_username'));
-//				}
-//				else if ($username == $GLOBALS['phpgw_info']['user']['account_lid'])
-//				{
-//					$msglog['error'][] = array('msg' => lang('searching_for_self'));
-//				}
-//				else
-//				{
-//					$account_id = frontend_bofrontend::delegate_exist($username);
-//					if ($account_id)
-//					{
-//						$search = frontend_bofrontend::get_account_info($account_id);
-//						$msglog['message'][] = array('msg' => lang('user_found_in_PE'));
-//					}
-//					else
-//					{
-//						$msglog['error'][] = array('msg' => lang('user_not_found_in_PE'));
-//						if ($use_fellesdata)
-//						{
-//							$fellesdata_user = frontend_bofellesdata::get_instance()->get_user($username);
-//
-//							if ($fellesdata_user)
-//							{
-//								$search = $fellesdata_user;
-//								$msglog['message'][] = array('msg' => lang('user_found_in_Fellesdata'));
-//							}
-//						}
-//						else
-//						{
-//							$msglog['error'][] = array('msg' => lang('no_hits'));
-//						}
-//					}
-//				}
-//			}
-//			else
-			if (isset($_POST['add']))
+			if ($success)
 			{
-				$account_id = Sanitizer::get_var('account_id');
-				$success = false;
-				if ($use_fellesdata && !empty($account_id))
+				//Retrieve the usernames
+				$user_account = $this->accounts_obj->get($account_id);
+				$owner_account = $this->accounts_obj->get($this->userSettings['account_id']);
+				$user_name = $user_account->__get('lid');
+				$owner_name = $owner_account->__get('lid');
+				$org_name_string = implode(',', $org_unit_names);
+
+				//If the usernames are set retrieve account data from Fellesdata
+				if (isset($user_name) && $user_name != '' && $owner_name && $owner_name != '')
 				{
-					$org_units = frontend_bofellesdata::get_instance()->get_result_units($GLOBALS['phpgw_info']['user']['account_lid']);
-					//Parameter to delegate access to only a single organisational unit
-					$org_unit_id = $this->header_state['selected_org_unit'];
+					$fellesdata_user = frontend_bofellesdata::get_instance()->get_user($user_name);
+					$fellesdata_owner = frontend_bofellesdata::get_instance()->get_user($owner_name);
 
-					foreach ($org_units as $org_unit)
+					if ($fellesdata_user && $fellesdata_owner)
 					{
-						if ($org_unit_id == 'all' || $org_unit['ORG_UNIT_ID'] == $org_unit_id)
+						//Send email notification to delegate
+						$email = $fellesdata_user['email'];
+						if (isset($email) && $email != '')
 						{
-							//$curr_success = true;
-							$res = $this->add_delegate($account_id, $org_unit['ORG_UNIT_ID'], $org_unit['ORG_NAME']);
-							if ($res)
-							{
-								//$mail_contents[] = $res;
-								$org_unit_names[] = $org_unit['ORG_NAME'];
-							}
-							else
-							{
-								$msglog['error'][] = array('msg' => lang('error_delegating_unit', $org_unit['ORG_NAME']));
-							}
 
-							$success = $success && $res;
+							$title = lang('email_add_delegate_title');
+							$message = lang('email_add_delegate_message', $fellesdata_user['firstname'], $fellesdata_user['lastname'], $fellesdata_owner['firstname'], $fellesdata_owner['lastname'], $org_name_string);
+							frontend_bofrontend::send_system_message($email, $title, $message);
 						}
 					}
 				}
-				if ($success)
-				{
-					//Retrieve the usernames
-					$user_account = $GLOBALS['phpgw']->accounts->get($account_id);
-					$owner_account = $GLOBALS['phpgw']->accounts->get($GLOBALS['phpgw_info']['user']['account_id']);
-					$user_name = $user_account->__get('lid');
-					$owner_name = $owner_account->__get('lid');
-					$org_name_string = implode(',', $org_unit_names);
-
-					//If the usernames are set retrieve account data from Fellesdata
-					if (isset($user_name) && $user_name != '' && $owner_name && $owner_name != '')
-					{
-						$fellesdata_user = frontend_bofellesdata::get_instance()->get_user($user_name);
-						$fellesdata_owner = frontend_bofellesdata::get_instance()->get_user($owner_name);
-
-						if ($fellesdata_user && $fellesdata_owner)
-						{
-							//Send email notification to delegate
-							$email = $fellesdata_user['email'];
-							if (isset($email) && $email != '')
-							{
-
-								$title = lang('email_add_delegate_title');
-								$message = lang('email_add_delegate_message', $fellesdata_user['firstname'], $fellesdata_user['lastname'], $fellesdata_owner['firstname'], $fellesdata_owner['lastname'], $org_name_string);
-								frontend_bofrontend::send_system_message($email, $title, $message);
-							}
-						}
-					}
-					$msglog['message'][] = array('msg' => lang('delegation_successful'));
-					/*
+				$msglog['message'][] = array('msg' => lang('delegation_successful'));
+				/*
 					  //send e-mail to user
-					  $user_account = $GLOBALS['phpgw']->accounts->get($account_id);
+					  $user_account = $this->accounts_obj->get($account_id);
 					  $user_name = $user_account->__get('lid');
 					  $fellesdata_user = frontend_bofellesdata::get_instance()->get_user($user_name);
 					  if($fellesdata_user)
@@ -185,125 +190,126 @@
 					  frontend_bofrontend::send_system_message($email,$title,$mail_content);
 					  }
 					  } */
-				}
-				else
-				{
-					$msglog['error'][] = array('msg' => lang('delegation_error'));
-				}
 			}
-			else if (isset($_POST['remove']))
+			else
 			{
-				$account_id = Sanitizer::get_var('account_id');
-				$result = frontend_bofrontend::remove_delegate($account_id, 0, 0);
-				if ($result)
-				{
-					$msglog['message'][] = array('msg' => lang('remove_delegate_successful'));
-				}
-				else
-				{
-					$msglog['error'][] = array('msg' => lang('remove_delegate_error'));
-				}
+				$msglog['error'][] = array('msg' => lang('delegation_error'));
 			}
-			else if (isset($_POST['remove_specific']))
-			{
-				$account_id = Sanitizer::get_var('account_id');
-				//Parameter to delegate access to only a single organisational unit
-				$org_unit_id = $this->header_state['selected_org_unit'];
-				$result = frontend_bofrontend::remove_delegate($account_id, 0, $org_unit_id);
-				if ($result)
-				{
-					$msglog['message'][] = array('msg' => lang('remove_delegate_successful'));
-				}
-				else
-				{
-					$msglog['error'][] = array('msg' => lang('remove_delegate_error'));
-				}
-			}
-
-			$form_action = phpgw::link('/index.php', array('menuaction' => 'frontend.uidelegates.index',
-				'location_id' => $this->location_id));
-			$delegates_per_org_unit = frontend_bofrontend::get_delegates($this->header_state['selected_org_unit']);
-			$delegates_per_user = frontend_bofrontend::get_delegates(null, true);
-
-			$number_of_delegates = count($delegates_per_org_unit);
-			$number_of_user_delegates = count($delegates_per_user);
-
-			$config = CreateObject('phpgwapi.config', 'frontend');
-			$config->read();
-
-			$delegateLimit = $config->config_data['delegate_limit'];
-			if (!is_numeric($delegateLimit))
-				$delegateLimit = 3;
-			$error_message = lang('max %1 delegates', $delegateLimit);
-
-			//$msglog = Cache::session_get('frontend','msgbox');
-			Cache::session_clear('frontend', 'msgbox');
-			self::add_javascript('frontend', 'jquery', 'resultunit.edit.js');
-
-			$data = array(
-				'header' => $this->header_state,
-				'section' => array(
-					'form_action' => $form_action,
-					'tab_selected' => $this->tab_selected,
-					'delegate' => $delegates_per_org_unit,
-					'user_delegate' => $delegates_per_user,
-					'number_of_delegates' => isset($number_of_delegates) ? $number_of_delegates : 0,
-					'number_of_user_delegates' => isset($number_of_user_delegates) ? $number_of_user_delegates : 0,
-					'search' => isset($search) ? $search : array(),
-					'msgbox_data' => $GLOBALS['phpgw']->common->msgbox($GLOBALS['phpgw']->common->msgbox_data($msglog)),
-					'delegate_limit' => $delegateLimit,
-					'error_message' => $error_message,
-					'tabs' => $this->tabs,
-					'tabs_content' => $this->tabs_content
-				)
-			);
-
-			self::render_template_xsl(array('delegate', 'datatable_inline', 'frontend'), $data);
 		}
-
-		public function query()
-		{
-
-		}
-
-		public function add_delegate( int $account_id, $org_unit_id, $org_name )
-		{
-			$config = CreateObject('phpgwapi.config', 'rental');
-			$config->read();
-
-			$use_fellesdata = $config->config_data['use_fellesdata'];
-			if (!$use_fellesdata)
-			{
-				return;
-			}
-			if (!isset($account_id) || $account_id == '')
-			{
-				//User is only registered in Fellesdata
-				$username = Sanitizer::get_var('username');
-				$firstname = Sanitizer::get_var('firstname');
-				$lastname = Sanitizer::get_var('lastname');
-//				$password = 'TEst1234';
-				$password = 'PEre' . mt_rand(100, mt_getrandmax()) . '&';
-
-				$account_id = frontend_bofrontend::create_delegate_account($username, $firstname, $lastname, $password);
-
-				if (isset($account_id) && !is_numeric($account_id))
-				{
-					return false;
-				}
-			}
-
-			$owner_id = (int) $GLOBALS['phpgw_info']['user']['account_id'];
-
-			return frontend_bofrontend::add_delegate($account_id, $owner_id, $org_unit_id, $org_name);
-		}
-
-		public function remove_delegate()
+		else if (isset($_POST['remove']))
 		{
 			$account_id = Sanitizer::get_var('account_id');
-			$owner_id = (int)Sanitizer::get_var('owner_id');
-
-			frontend_bofrontend::remove_delegate($account_id, $owner_id, 0);
-			phpgw::redirect_link('/index.php', array('menuaction' => 'frontend.uidelegates.index'));
+			$result = frontend_bofrontend::remove_delegate($account_id, 0, 0);
+			if ($result)
+			{
+				$msglog['message'][] = array('msg' => lang('remove_delegate_successful'));
+			}
+			else
+			{
+				$msglog['error'][] = array('msg' => lang('remove_delegate_error'));
+			}
 		}
+		else if (isset($_POST['remove_specific']))
+		{
+			$account_id = Sanitizer::get_var('account_id');
+			//Parameter to delegate access to only a single organisational unit
+			$org_unit_id = $this->header_state['selected_org_unit'];
+			$result = frontend_bofrontend::remove_delegate($account_id, 0, $org_unit_id);
+			if ($result)
+			{
+				$msglog['message'][] = array('msg' => lang('remove_delegate_successful'));
+			}
+			else
+			{
+				$msglog['error'][] = array('msg' => lang('remove_delegate_error'));
+			}
+		}
+
+		$form_action = phpgw::link('/index.php', array(
+			'menuaction' => 'frontend.uidelegates.index',
+			'location_id' => $this->location_id
+		));
+		$delegates_per_org_unit = frontend_bofrontend::get_delegates($this->header_state['selected_org_unit']);
+		$delegates_per_user = frontend_bofrontend::get_delegates(null, true);
+
+		$number_of_delegates = count($delegates_per_org_unit);
+		$number_of_user_delegates = count($delegates_per_user);
+
+		$config = CreateObject('phpgwapi.config', 'frontend');
+		$config->read();
+
+		$delegateLimit = $config->config_data['delegate_limit'];
+		if (!is_numeric($delegateLimit))
+			$delegateLimit = 3;
+		$error_message = lang('max %1 delegates', $delegateLimit);
+
+		//$msglog = Cache::session_get('frontend','msgbox');
+		Cache::session_clear('frontend', 'msgbox');
+		self::add_javascript('frontend', 'jquery', 'resultunit.edit.js');
+
+		$data = array(
+			'header' => $this->header_state,
+			'section' => array(
+				'form_action' => $form_action,
+				'tab_selected' => $this->tab_selected,
+				'delegate' => $delegates_per_org_unit,
+				'user_delegate' => $delegates_per_user,
+				'number_of_delegates' => isset($number_of_delegates) ? $number_of_delegates : 0,
+				'number_of_user_delegates' => isset($number_of_user_delegates) ? $number_of_user_delegates : 0,
+				'search' => isset($search) ? $search : array(),
+				'msgbox_data' => $this->phpgwapi_common->msgbox($this->phpgwapi_common->msgbox_data($msglog)),
+				'delegate_limit' => $delegateLimit,
+				'error_message' => $error_message,
+				'tabs' => $this->tabs,
+				'tabs_content' => $this->tabs_content
+			)
+		);
+
+		self::render_template_xsl(array('delegate', 'datatable_inline', 'frontend'), $data);
 	}
+
+	public function query()
+	{
+	}
+
+	public function add_delegate(int $account_id, $org_unit_id, $org_name)
+	{
+		$config = CreateObject('phpgwapi.config', 'rental');
+		$config->read();
+
+		$use_fellesdata = $config->config_data['use_fellesdata'];
+		if (!$use_fellesdata)
+		{
+			return;
+		}
+		if (!isset($account_id) || $account_id == '')
+		{
+			//User is only registered in Fellesdata
+			$username = Sanitizer::get_var('username');
+			$firstname = Sanitizer::get_var('firstname');
+			$lastname = Sanitizer::get_var('lastname');
+			//				$password = 'TEst1234';
+			$password = 'PEre' . mt_rand(100, mt_getrandmax()) . '&';
+
+			$account_id = frontend_bofrontend::create_delegate_account($username, $firstname, $lastname, $password);
+
+			if (isset($account_id) && !is_numeric($account_id))
+			{
+				return false;
+			}
+		}
+
+		$owner_id = (int) $this->userSettings['account_id'];
+
+		return frontend_bofrontend::add_delegate($account_id, $owner_id, $org_unit_id, $org_name);
+	}
+
+	public function remove_delegate()
+	{
+		$account_id = Sanitizer::get_var('account_id');
+		$owner_id = (int)Sanitizer::get_var('owner_id');
+
+		frontend_bofrontend::remove_delegate($account_id, $owner_id, 0);
+		phpgw::redirect_link('/index.php', array('menuaction' => 'frontend.uidelegates.index'));
+	}
+}

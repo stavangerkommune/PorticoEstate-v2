@@ -25,6 +25,7 @@
 
 use App\modules\phpgwapi\services\Cache;
 use App\Database\Db;
+use App\Database\Db2;
 use App\modules\phpgwapi\services\Settings;
 use App\modules\phpgwapi\services\Log;
 
@@ -103,23 +104,26 @@ class rental_bofellesdata
 			return false;
 		}
 
-		//			$db = createObject('phpgwapi.db', null, null, true);
-		/*
-			 * pdo for oracle is deprecated for php7 - switch to oci8/adodb
-			 */
-		$db = createObject('phpgwapi.db_adodb', null, null, true);
+		$dsn = Db2::CreateDsn([
+			'db_type' => $config->config_data['external_db_type'],
+			'db_host' => $config->config_data['external_db_host'],
+			'db_port' => $config->config_data['external_db_port'],
+			'db_name' => $config->config_data['external_db_name']
+		]);
 
-		$db->debug = !!$config->config_data['external_db_debug'];
-		$db->Host = $config->config_data['external_db_host'];
-		$db->Port = $config->config_data['external_db_port'];
-		$db->Type = $config->config_data['external_db_type'];
-		$db->Database = $config->config_data['external_db_name'];
-		$db->User = $config->config_data['external_db_user'];
-		$db->Password = $config->config_data['external_db_password'];
+		$db = new Db2($dsn, $config->config_data['external_db_user'], $config->config_data['external_db_password'], [
+			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+			PDO::ATTR_EMULATE_PREPARES => false,
+			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+		]);
 
 		try
 		{
-			$db->connect();
+			$db = new Db2($dsn, $config->config_data['external_db_user'], $config->config_data['external_db_password'], [
+				PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+				PDO::ATTR_EMULATE_PREPARES => false,
+				PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+			]);
 			$this->connected = true;
 		}
 		catch (Exception $e)

@@ -43,7 +43,8 @@
 		 */
 		public function auto_addaccount()
 		{
-			$account_lid = $GLOBALS['hook_values']['account_lid'];
+			$hook_values = Settings::getInstance()->get('hook_values');
+			$account_lid = $hook_values['account_lid'];
 
 			if (!$GLOBALS['phpgw']->accounts->exists($account_lid))
 			{

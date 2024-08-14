@@ -8,7 +8,7 @@
 	 * @package eventplanner
 	 * @version $Id: class.hook_helper.inc.php 14726 2016-02-11 20:07:07Z sigurdne $
 	 */
-	/*
+/*
 	  This program is free software: you can redistribute it and/or modify
 	  it under the terms of the GNU General Public License as published by
 	  the Free Software Foundation, either version 2 of the License, or
@@ -23,6 +23,7 @@
 	  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
+use App\modules\phpgwapi\services\Settings;
 	/**
 	 * Hook helper
 	 *
@@ -261,7 +262,9 @@ JS;
 				return;
 			}
 
-			$account_id = (int)$GLOBALS['hook_values']['account_id'];
+			$hook_values = Settings::getInstance()->get('hook_values');
+
+			$account_id = (int)$hook_values['account_id'];
 
 			$GLOBALS['phpgw']->db->query("SELECT account_id FROM phpgw_accounts_data WHERE account_id = {$account_id}",__LINE__,__FILE__);
 			if ($GLOBALS['phpgw']->db->next_record())

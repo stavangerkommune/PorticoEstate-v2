@@ -8,6 +8,7 @@ $serverSettings = Settings::getInstance()->get('server');
 $userSettings = Settings::getInstance()->get('user');
 $flags = Settings::getInstance()->get('flags');
 $apps = Settings::getInstance()->get('apps');
+$hook_values = Settings::getInstance()->get('hook_values');
 
 Settings::getInstance()->set('flags', $this->flags);
 
@@ -85,6 +86,7 @@ use App\modules\phpgwapi\services\Log;
 $log = new Log();
 
 use App\modules\phpgwapi\controllers\Accounts\Accounts;
+$accounts_obj = new Accounts();
 
 
 use App\modules\phpgwapi\controllers\Accounts\phpgwapi_group;

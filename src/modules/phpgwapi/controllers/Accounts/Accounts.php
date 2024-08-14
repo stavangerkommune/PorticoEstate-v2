@@ -725,10 +725,11 @@ abstract class Accounts_
 			@rename("{$basedir}{$group->old_loginid}", "{$basedir}/{$group->lid}");
 		}
 
-		$GLOBALS['hook_values'] = array(
+		$hook_values = array(
 			'account_id'	=> $group->id,
 			'account_lid'	=> $group->lid,
 		);
+		Settings::getInstance()->set('hook_values', $hook_values);
 
 		(new \App\modules\phpgwapi\services\Hooks())->process('editgroup');
 
@@ -875,11 +876,13 @@ abstract class Accounts_
 			$this->add_user2Group($member, $group->id);
 		}
 
-		$GLOBALS['hook_values'] = array(
+		$hook_values = array(
 			'account_id'	=> $group->id,
 			'account_lid'	=> $group->lid,
 		);
 
+		Settings::getInstance()->set('hook_values', $hook_values);
+		
 		(new \App\modules\phpgwapi\services\Hooks())->process('addgroup');
 
 		return $group->id;
