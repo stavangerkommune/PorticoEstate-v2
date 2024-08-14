@@ -1,17 +1,18 @@
 <?php
-	/**
-	 * phpGroupWare
-	 *
-	 * @author Sigurd Nes <sigurdne@online.no>
-	 * @copyright Copyright (C) 2016 Free Software Foundation http://www.fsf.org/
-	 * @license http://www.gnu.org/licenses/gpl.html GNU General Public License v2 or later
-	 * @internal
-	 * @package helpdesk
-	 * @subpackage email_out
-	 * @version $Id:$
-	 */
 
-	/*
+/**
+ * phpGroupWare
+ *
+ * @author Sigurd Nes <sigurdne@online.no>
+ * @copyright Copyright (C) 2016 Free Software Foundation http://www.fsf.org/
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License v2 or later
+ * @internal
+ * @package helpdesk
+ * @subpackage email_out
+ * @version $Id:$
+ */
+
+/*
 	   This program is free software: you can redistribute it and/or modify
 	   it under the terms of the GNU General Public License as published by
 	   the Free Software Foundation, either version 2 of the License, or
@@ -26,166 +27,167 @@
 	   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
-	phpgw::import_class('phpgwapi.bocommon');
-	phpgw::import_class('helpdesk.soemail_out');
+phpgw::import_class('phpgwapi.bocommon');
+phpgw::import_class('helpdesk.soemail_out');
 
-	include_class('helpdesk', 'email_out', 'inc/model/');
+include_class('helpdesk', 'email_out', 'inc/model/');
 
-	class helpdesk_boemail_out extends phpgwapi_bocommon
+class helpdesk_boemail_out extends phpgwapi_bocommon
+{
+	protected static $bo;
+
+	public function __construct()
 	{
-		protected static $bo;
+		parent::__construct();
+		$this->fields = helpdesk_email_out::get_fields();
+		$this->acl_location = helpdesk_email_out::acl_location;
+	}
 
-		public function __construct()
+	/**
+	 * Implementing classes must return an instance of itself.
+	 *
+	 * @return the class instance.
+	 */
+	public static function get_instance()
+	{
+		if (self::$bo == null)
 		{
-			$this->fields = helpdesk_email_out::get_fields();
-			$this->acl_location = helpdesk_email_out::acl_location;
+			self::$bo = new helpdesk_boemail_out();
+		}
+		return self::$bo;
+	}
+
+	public function store($object)
+	{
+		$this->store_pre_commit($object);
+		$ret = helpdesk_soemail_out::get_instance()->store($object);
+		$this->store_post_commit($object);
+		return $ret;
+	}
+
+	public function read($params)
+	{
+		if (empty($params['filters']['active']))
+		{
+			$params['filters']['active'] = 1;
+		}
+		else
+		{
+			unset($params['filters']['active']);
+		}
+		$values =  helpdesk_soemail_out::get_instance()->read($params);
+		//		$status_text = helpdesk_email_out::get_status_list();
+		$dateformat = $this->userSettings['preferences']['common']['dateformat'];
+		foreach ($values['results'] as &$entry)
+		{
+			//				$entry['status'] = $status_text[$entry['status']];
+			$entry['created'] = $this->phpgwapi_common->show_date($entry['created']);
+			$entry['modified'] = $this->phpgwapi_common->show_date($entry['modified']);
+		}
+		return $values;
+	}
+
+	public function read_single($id, $return_object = true)
+	{
+		if ($id)
+		{
+			$values = helpdesk_soemail_out::get_instance()->read_single($id, $return_object);
+		}
+		else
+		{
+			$values = new helpdesk_email_out();
 		}
 
-		/**
-		 * Implementing classes must return an instance of itself.
-		 *
-		 * @return the class instance.
-		 */
-		public static function get_instance()
+		return $values;
+	}
+
+	public function get_recipient_candidates($recipient_set_id, $email_out_id)
+	{
+		return helpdesk_soemail_out::get_instance()->get_recipient_candidates($recipient_set_id, $email_out_id);
+	}
+
+	function set_candidates($id, $ids)
+	{
+		return helpdesk_soemail_out::get_instance()->set_candidates($id, $ids);
+	}
+
+	function delete_recipients($id, $ids)
+	{
+		return helpdesk_soemail_out::get_instance()->delete_recipients($id, $ids);
+	}
+
+	public function get_recipients($email_out_id)
+	{
+		return helpdesk_soemail_out::get_instance()->get_recipients($email_out_id);
+	}
+
+	public function send_email($id, $ids = array())
+	{
+		$email_out = $this->read_single($id);
+		$subject = $email_out->subject;
+		$content = nl2br($email_out->content);
+		$sogeneric = CreateObject('helpdesk.sogeneric', 'email_recipient_list');
+		$email_validator = CreateObject('phpgwapi.EmailAddressValidator');
+
+		$send = CreateObject('phpgwapi.send');
+
+
+		$vfs = CreateObject('phpgwapi.vfs');
+		$vfs->override_acl = 1;
+
+		$class_info = explode('_', get_class($email_out), 2);
+
+		$files = (array)$vfs->ls(array(
+			'string' => "/{$class_info[0]}/{$class_info[1]}/{$id}",
+			'checksubdirs'	=> false,
+			'relatives' => array(RELATIVE_NONE)
+		));
+
+		$vfs->override_acl = 0;
+
+		$attachments	 = CreateObject('property.bofiles')->get_attachments(array_column($files, 'file_id'));
+		$_attachment_log = array();
+		foreach ($attachments as $_attachment)
 		{
-			if (self::$bo == null)
-			{
-				self::$bo = new helpdesk_boemail_out();
-			}
-			return self::$bo;
+			$_attachment_log[] = $_attachment['name'];
+		}
+		$attachment_log = ' ' . lang('attachments') . ' : ' . implode(', ', $_attachment_log);
+
+		$config	= CreateObject('phpgwapi.config', 'helpdesk')->read();
+		$cc = '';
+		$bcc = '';
+		$from_email = $config['from_email'];
+		$from_address_arr = explode('<', $from_email);
+
+		if (!empty($from_address_arr[1]))
+		{
+			$from_name = trim($from_address_arr[0]);
+		}
+		else
+		{
+			$from_name = $config['from_email'];
 		}
 
-		public function store($object)
+		foreach ($ids as $recipient_id)
 		{
-			$this->store_pre_commit($object);
-			$ret = helpdesk_soemail_out::get_instance()->store($object);
-			$this->store_post_commit($object);
-			return $ret;
-		}
+			$recipient = $sogeneric->read_single(array('id' => $recipient_id));
 
-		public function read($params)
-		{
-			if(empty($params['filters']['active']))
+			$to_email = $recipient['email'];
+			if (!$email_validator->check_email_address($to_email))
 			{
-				$params['filters']['active'] = 1;
-			}
-			else
-			{
-				unset($params['filters']['active']);
-			}
-			$values =  helpdesk_soemail_out::get_instance()->read($params);
-	//		$status_text = helpdesk_email_out::get_status_list();
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
-			foreach ($values['results'] as &$entry)
-			{
-	//				$entry['status'] = $status_text[$entry['status']];
-					$entry['created'] = $GLOBALS['phpgw']->common->show_date($entry['created']);
-					$entry['modified'] = $GLOBALS['phpgw']->common->show_date($entry['modified']);
-			}
-			return $values;
-		}
-
-		public function read_single($id, $return_object = true)
-		{
-			if ($id)
-			{
-				$values = helpdesk_soemail_out::get_instance()->read_single($id, $return_object);
-			}
-			else
-			{
-				$values = new helpdesk_email_out();
+				helpdesk_soemail_out::get_instance()->set_status($id, $recipient_id, helpdesk_email_out::STATUS_ERROR);
+				continue;
 			}
 
-			return $values;
-		}
-
-		public function get_recipient_candidates( $recipient_set_id, $email_out_id)
-		{
-			return helpdesk_soemail_out::get_instance()->get_recipient_candidates($recipient_set_id, $email_out_id);
-		}
-
-		function set_candidates($id, $ids)
-		{
-			return helpdesk_soemail_out::get_instance()->set_candidates($id, $ids);
-		}
-
-		function delete_recipients($id, $ids)
-		{
-			return helpdesk_soemail_out::get_instance()->delete_recipients($id, $ids);
-		}
-
-		public function get_recipients( $email_out_id )
-		{
-			return helpdesk_soemail_out::get_instance()->get_recipients($email_out_id);
-		}
-
-		public function send_email( $id, $ids = array() )
-		{
-			$email_out = $this->read_single($id);
-			$subject = $email_out->subject;
-			$content = nl2br($email_out->content);
-			$sogeneric = CreateObject('helpdesk.sogeneric','email_recipient_list');
-			$email_validator = CreateObject('phpgwapi.EmailAddressValidator');
-			if (!is_object($GLOBALS['phpgw']->send))
+			try
 			{
-				$GLOBALS['phpgw']->send = CreateObject('phpgwapi.send');
+				$rcpt = $send->msg('email', $to_email, $subject, stripslashes($content), '', $cc, $bcc, $from_email, $from_name, 'html', '', $attachments);
+				helpdesk_soemail_out::get_instance()->set_status($id, $recipient_id, helpdesk_email_out::STATUS_SENT);
 			}
-
-			$vfs = CreateObject('phpgwapi.vfs');
-			$vfs->override_acl = 1;
-
-			$class_info = explode('_', get_class($email_out), 2);
-
-			$files = (array)$vfs->ls (array(
-				'string' => "/{$class_info[0]}/{$class_info[1]}/{$id}",
-				'checksubdirs'	=> false,
-				'relatives' => array(RELATIVE_NONE)));
-
-			$vfs->override_acl = 0;
-
-			$attachments	 = CreateObject('property.bofiles')->get_attachments(array_column($files, 'file_id'));
-			$_attachment_log = array();
-			foreach ($attachments as $_attachment)
+			catch (Exception $exc)
 			{
-				$_attachment_log[] = $_attachment['name'];
-			}
-			$attachment_log = ' ' . lang('attachments') . ' : ' . implode(', ', $_attachment_log);
-
-			$config	= CreateObject('phpgwapi.config','helpdesk')->read();
-			$cc ='';
-			$bcc = '';
-			$from_email = $config['from_email'];
-			$from_address_arr = explode('<', $from_email);
-
-			if(!empty($from_address_arr[1]))
-			{
-				$from_name = trim($from_address_arr[0]);
-			}
-			else
-			{
-				$from_name = $config['from_email'];
-			}
-
-			foreach ($ids as $recipient_id)
-			{
-				$recipient = $sogeneric->read_single(array('id' => $recipient_id));
-
-				$to_email = $recipient['email'];
-				if (!$email_validator->check_email_address($to_email) )
-				{
-					helpdesk_soemail_out::get_instance()->set_status($id, $recipient_id, helpdesk_email_out::STATUS_ERROR);
-					continue;
-				}
-
-				try
-				{
-					$rcpt = $GLOBALS['phpgw']->send->msg('email', $to_email, $subject, stripslashes($content), '', $cc, $bcc, $from_email, $from_name, 'html', '', $attachments);
-					helpdesk_soemail_out::get_instance()->set_status($id, $recipient_id, helpdesk_email_out::STATUS_SENT);
-				}
-				catch (Exception $exc)
-				{
-					helpdesk_soemail_out::get_instance()->set_status($id, $recipient_id, helpdesk_email_out::STATUS_ERROR);
-				}
+				helpdesk_soemail_out::get_instance()->set_status($id, $recipient_id, helpdesk_email_out::STATUS_ERROR);
 			}
 		}
 	}
+}

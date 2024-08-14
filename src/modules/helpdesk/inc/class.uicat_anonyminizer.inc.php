@@ -1,199 +1,195 @@
 <?php
-	/**
-	 * phpGroupWare - property: a Facilities Management System.
-	 *
-	 * @author Sigurd Nes <sigurdne@online.no>
-	 * @copyright Copyright (C) 2018 Free Software Foundation, Inc. http://www.fsf.org/
-	 * This file is part of phpGroupWare.
-	 *
-	 * phpGroupWare is free software; you can redistribute it and/or modify
-	 * it under the terms of the GNU General Public License as published by
-	 * the Free Software Foundation; either version 2 of the License, or
-	 * (at your option) any later version.
-	 *
-	 * phpGroupWare is distributed in the hope that it will be useful,
-	 * but WITHOUT ANY WARRANTY; without even the implied warranty of
-	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	 * GNU General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU General Public License
-	 * along with phpGroupWare; if not, write to the Free Software
-	 * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-	 *
-	 * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
-	 * @internal Development of this application was funded by http://www.bergen.kommune.no/bbb_/ekstern/
-	 * @package property
-	 * @subpackage helpdesk
-	 * @version $Id$
-	 */
-	/**
-	 * Description
-	 * @package property
-	 */
-	phpgw::import_class('phpgwapi.uicommon');
 
-	class helpdesk_uicat_anonyminizer extends phpgwapi_uicommon
+/**
+ * phpGroupWare - property: a Facilities Management System.
+ *
+ * @author Sigurd Nes <sigurdne@online.no>
+ * @copyright Copyright (C) 2018 Free Software Foundation, Inc. http://www.fsf.org/
+ * This file is part of phpGroupWare.
+ *
+ * phpGroupWare is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * phpGroupWare is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with phpGroupWare; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
+ * @internal Development of this application was funded by http://www.bergen.kommune.no/bbb_/ekstern/
+ * @package property
+ * @subpackage helpdesk
+ * @version $Id$
+ */
+/**
+ * Description
+ * @package property
+ */
+
+use App\modules\phpgwapi\services\Settings;
+
+phpgw::import_class('phpgwapi.uicommon');
+
+class helpdesk_uicat_anonyminizer extends phpgwapi_uicommon
+{
+
+	var $public_functions = array(
+		'edit'			=> true,
+	);
+
+	protected
+		$acl_location,
+		$acl_read,
+		$acl_add,
+		$acl_edit,
+		$acl_delete,
+		$bo,
+		$cats,
+		$receipt;
+
+	public function __construct()
 	{
+		parent::__construct();
 
-		var $public_functions = array
-		(
-			'edit'			=> true,
+		self::set_active_menu("admin::helpdesk::cat_anonyminizer");
+
+		Settings::getInstance()->update('flags', ['app_header' => lang('helpdesk') . '::' . lang('category anonyminizer')]);
+
+		$this->bo			= CreateObject('helpdesk.bocat_anonyminizer');
+		$this->cats			= $this->bo->cats;
+		$this->acl_location = '.ticket';
+		$this->acl_read = $this->acl->check($this->acl_location, ACL_READ, $this->currentapp);
+		$this->acl_add = $this->acl->check($this->acl_location, ACL_ADD, $this->currentapp);
+		$this->acl_edit = $this->acl->check($this->acl_location, ACL_EDIT, $this->currentapp);
+		$this->acl_delete = $this->acl->check($this->acl_location, ACL_DELETE, $this->currentapp);
+	}
+
+	public function add()
+	{
+		if (!$this->acl_add)
+		{
+			phpgw::no_access();
+		}
+
+		$this->edit();
+	}
+
+	public function view()
+	{
+		if (!$this->acl_read)
+		{
+			phpgw::no_access();
+		}
+
+		/**
+		 * Do not allow save / send here
+		 */
+		if (Sanitizer::get_var('save', 'bool') || Sanitizer::get_var('send', 'bool') || Sanitizer::get_var('init_preview', 'bool'))
+		{
+			phpgw::no_access();
+		}
+		$this->edit(array(), 'view');
+	}
+
+
+	public function edit($values = array(), $mode = 'edit', $error = false)
+	{
+		if (!$this->acl_add || !$this->acl_edit)
+		{
+			phpgw::no_access();
+		}
+
+
+		if (!$error && (Sanitizer::get_var('save', 'bool') || Sanitizer::get_var('send', 'bool')))
+		{
+			$this->save();
+		}
+
+
+		$categories = $this->cats->return_sorted_array(0, false);
+		$cat_anonyminizer = $this->bo->read();
+		//			_debug_array($cat_anonyminizer);die();
+
+		$cat_header[] = array(
+			'lang_name'				=> lang('name'),
+			'lang_status'			=> lang('status'),
+			'lang_edit'				=> lang('edit'),
 		);
 
-		protected
-			$acl_location,
-			$acl_read,
-			$acl_add,
-			$acl_edit,
-			$acl_delete,
-			$bo,
-			$cats,
-			$receipt;
-
-		public function __construct()
+		$content = array();
+		foreach ($categories as $cat)
 		{
-			parent::__construct();
+			$level		= $cat['level'];
+			$cat_name	= phpgw::strip_html($cat['name']);
 
-			self::set_active_menu("admin::helpdesk::cat_anonyminizer");
-			
-			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('category anonyminizer');
-
-			$this->bo			= CreateObject('helpdesk.bocat_anonyminizer');
-			$this->cats			= $this->bo->cats;
-			$this->acl = Acl::getInstance();
-			$this->acl_location = '.ticket';
-			$this->acl_read = $this->acl->check($this->acl_location, ACL_READ, $this->currentapp);
-			$this->acl_add = $this->acl->check($this->acl_location, ACL_ADD, $this->currentapp);
-			$this->acl_edit = $this->acl->check($this->acl_location, ACL_EDIT, $this->currentapp);
-			$this->acl_delete = $this->acl->check($this->acl_location, ACL_DELETE, $this->currentapp);
-
-		}
-
-		public function add()
-		{
-			if(!$this->acl_add)
+			$main = 'yes';
+			if ($level > 0)
 			{
-				phpgw::no_access();
+				continue;
 			}
 
-			$this->edit();
-		}
-
-		public function view()
-		{
-			if(!$this->acl_read)
-			{
-				phpgw::no_access();
-			}
-
-			/**
-			 * Do not allow save / send here
-			 */
-			if(Sanitizer::get_var('save', 'bool') || Sanitizer::get_var('send', 'bool') || Sanitizer::get_var('init_preview', 'bool'))
-			{
-				phpgw::no_access();
-			}
-			$this->edit(array(), 'view');
-		}
-
-
-		public function edit( $values = array(), $mode = 'edit' , $error = false)
-		{
-			if(!$this->acl_add || !$this->acl_edit)
-			{
-				phpgw::no_access();
-			}
-
-
-			if(!$error && (Sanitizer::get_var('save', 'bool') || Sanitizer::get_var('send', 'bool')))
-			{
-				$this->save();
-			}
-
-
-			$categories = $this->cats->return_sorted_array(0, false);
-			$cat_anonyminizer = $this->bo->read();
-//			_debug_array($cat_anonyminizer);die();
-
-			$cat_header[] = array
-			(
-				'lang_name'				=> lang('name'),
-				'lang_status'			=> lang('status'),
-				'lang_edit'				=> lang('edit'),
+			$content[] = array(
+				'cat_id'					=> $cat['id'],
+				'name'						=> $cat_name,
+				'active'					=> $cat_anonyminizer[$cat['id']]['active'],
+				'limit_days'				=> $cat_anonyminizer[$cat['id']]['limit_days'],
+				'main'						=> $main,
+				'status'					=> $cat['active'],
+				'status_text'				=> $cat['active'] == 1 ? 'active' : 'disabled',
 			);
-
-			$content = array();
-			foreach ($categories as $cat)
-			{
-				$level		= $cat['level'];
-				$cat_name	= phpgw::strip_html($cat['name']);
-
-				$main = 'yes';
-				if ($level > 0)
-				{
-					continue;
-				}
-
-				$content[] = array
-				(
-					'cat_id'					=> $cat['id'],
-					'name'						=> $cat_name,
-					'active'					=> $cat_anonyminizer[$cat['id']]['active'],
-					'limit_days'				=> $cat_anonyminizer[$cat['id']]['limit_days'],
-					'main'						=> $main,
-					'status'					=> $cat['active'],
-					'status_text'				=> $cat['active'] == 1 ? 'active' : 'disabled',
-				);
-			}
-
-			$link_data['menuaction'] = 'helpdesk.uicat_anonyminizer.edit';
-
-			$cat_add[] = array
-			(
-				'lang_add'				=> lang('add'),
-				'lang_add_statustext'	=> lang('add a category'),
-				'action_url'			=> phpgw::link('/index.php',$link_data),
-				'lang_done'				=> lang('done'),
-				'lang_done_statustext'	=> lang('return to admin mainscreen')
-			);
-			$data = array
-			(
-				'form_action'	=> self::link(array('menuaction' => "{$this->currentapp}.uicat_anonyminizer.edit")),
-				'edit_action' => self::link(array('menuaction' => "{$this->currentapp}.uicat_anonyminizer.edit")),
-				'cancel_url' => self::link(array('menuaction' => "{$this->currentapp}.uitts.index")),
-				'cat_header'	=> $cat_header,
-				'cat_data'		=> $content,
-				'cat_add'		=> $cat_add
-			);
-
-			$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang($mode);
-
-			self::render_template_xsl(array('cat_anonyminizer'), array('edit' => $data));
-
 		}
 
-		public function save($init_preview = null )
-		{
-			$values = Sanitizer::get_var('values', 'int');
-			
-			try
-			{
-				$receipt = $this->bo->save($values);
-				$id = $receipt['id'];
-			}
-			catch (Exception $e)
-			{
-				if ($e)
-				{
-					Cache::message_set($e->getMessage(), 'error');
-					$this->edit($values, 'edit', $error = true);
-					return;
-				}
-			}
+		$link_data['menuaction'] = 'helpdesk.uicat_anonyminizer.edit';
 
-			$this->receipt['message'][] = array('msg' => lang('category anonyminizer settings has been saved'));
+		$cat_add[] = array(
+			'lang_add'				=> lang('add'),
+			'lang_add_statustext'	=> lang('add a category'),
+			'action_url'			=> phpgw::link('/index.php', $link_data),
+			'lang_done'				=> lang('done'),
+			'lang_done_statustext'	=> lang('return to admin mainscreen')
+		);
+		$data = array(
+			'form_action'	=> self::link(array('menuaction' => "{$this->currentapp}.uicat_anonyminizer.edit")),
+			'edit_action' => self::link(array('menuaction' => "{$this->currentapp}.uicat_anonyminizer.edit")),
+			'cancel_url' => self::link(array('menuaction' => "{$this->currentapp}.uitts.index")),
+			'cat_header'	=> $cat_header,
+			'cat_data'		=> $content,
+			'cat_add'		=> $cat_add
+		);
 
-			self::message_set($this->receipt);
-			self::redirect(array('menuaction' => "{$this->currentapp}.uicat_anonyminizer.edit"));
-		}
+		Settings::getInstance()->update('flags', ['app_header' => lang('helpdesk') . '::' . lang('category anonyminizer') . '::' . lang($mode)]);
+
+		self::render_template_xsl(array('cat_anonyminizer'), array('edit' => $data));
 	}
+
+	public function save($init_preview = null)
+	{
+		$values = Sanitizer::get_var('values', 'int');
+
+		try
+		{
+			$receipt = $this->bo->save($values);
+			$id = $receipt['id'];
+		}
+		catch (Exception $e)
+		{
+			if ($e)
+			{
+				Cache::message_set($e->getMessage(), 'error');
+				$this->edit($values, 'edit', $error = true);
+				return;
+			}
+		}
+
+		$this->receipt['message'][] = array('msg' => lang('category anonyminizer settings has been saved'));
+
+		self::message_set($this->receipt);
+		self::redirect(array('menuaction' => "{$this->currentapp}.uicat_anonyminizer.edit"));
+	}
+}
