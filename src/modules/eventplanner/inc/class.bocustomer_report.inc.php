@@ -131,9 +131,10 @@
 
 		function column_list( $selected = '', $allrows = '' )
 		{
+			$userSettings = Settings::getInstance()->get('user');
 			if (!$selected)
 			{
-				$selected = (array)$GLOBALS['phpgw_info']['user']['preferences']['eventplanner']['customer_report_columns'];
+				$selected = (array)$userSettings['preferences']['eventplanner']['customer_report_columns'];
 			}
 			$filter = array('list' => ''); // translates to "list IS NULL"
 			$columns = createObject('phpgwapi.custom_fields')->find('eventplanner', $this->acl_location, 0, '', '', '', true, false, $filter);

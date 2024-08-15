@@ -55,6 +55,14 @@ abstract class phpgwapi_model
 		$this->acl = Acl::getInstance();
 	}
 
+	// Implementing __debugInfo to exclude $userSettings
+	public function __debugInfo()
+	{
+		$properties = get_object_vars($this);
+		unset($properties['userSettings']);
+		return $properties;
+	}
+
 	public function __set($name, $value)
 	{
 		$this->$name = $value;

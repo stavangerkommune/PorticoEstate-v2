@@ -33,6 +33,8 @@
  */
 
 use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\Cache;
+
 
 phpgw::import_class('phpgwapi.uicommon');
 
@@ -60,7 +62,6 @@ class helpdesk_uicat_respond_messages extends phpgwapi_uicommon
 
 		$this->bo			= CreateObject('helpdesk.bocat_respond_messages');
 		$this->cats			= $this->bo->cats;
-		$this->acl = Acl::getInstance();
 		$this->acl_location = '.ticket';
 		$this->acl_read = $this->acl->check($this->acl_location, ACL_READ, $this->currentapp);
 		$this->acl_add = $this->acl->check($this->acl_location, ACL_ADD, $this->currentapp);

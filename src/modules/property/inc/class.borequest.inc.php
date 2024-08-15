@@ -213,7 +213,8 @@
 		{
 			if (!$selected)
 			{
-				$selected = isset($this->userSettings['preferences']['property']['request_columns']) ? $this->userSettings['preferences']['property']['request_columns'] : '';
+				$userSettings = Settings::getInstance()->get('user');
+				$selected = isset($userSettings['preferences']['property']['request_columns']) ? $userSettings['preferences']['property']['request_columns'] : '';
 			}
 
 			$columns = $this->get_column_list();

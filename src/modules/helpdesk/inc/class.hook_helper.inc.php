@@ -37,7 +37,7 @@ phpgw::import_class('frontend.bofellesdata');
 class helpdesk_hook_helper
 {
 
-	private $config, $accounts_obj;
+	protected $config, $accounts_obj;
 
 	public function __construct()
 	{

@@ -176,7 +176,7 @@ class helpdesk_menu
 			$menus['preferences'] = array(
 				array(
 					'text'	=> $translation->translate('Preferences', array(), true),
-					'url'	=> phpgw::link('/preferences/preferences.php', array('appname' => 'helpdesk', 'type' => 'user'))
+					'url'	=> phpgw::link('/preferences/section', array('appname' => 'helpdesk', 'type' => 'user'))
 				),
 				array(
 					'text'	=> $translation->translate('Grant Access', array(), true),
@@ -186,7 +186,7 @@ class helpdesk_menu
 
 			$menus['toolbar'][] = array(
 				'text'	=> $translation->translate('Preferences', array(), true),
-				'url'	=> phpgw::link('/preferences/preferences.php', array('appname'	=> 'helpdesk')),
+				'url'	=> phpgw::link('/preferences/section', array('appname'	=> 'helpdesk')),
 				'image'	=> array('helpdesk', 'preferences')
 			);
 		}

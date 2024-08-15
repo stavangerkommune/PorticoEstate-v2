@@ -54,6 +54,14 @@
 				// delete any char not allowed in XML element names
 				$key = preg_replace('/[^a-z0-9\-\_\.\:]/i', '', $key);
 
+				/*
+				 * Should not happen... If the key is empty, replace it with 'anon' (anonymous)
+				 */
+				if(empty($key))
+				{
+					$key = 'anon';
+				}
+
 				// if there is another array found recrusively call this function
 				if ( is_array( $value ) )
 				{

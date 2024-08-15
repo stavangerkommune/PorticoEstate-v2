@@ -142,7 +142,8 @@
 		{
 			if (!$selected)
 			{
-				$selected = $this->userSettings['preferences'][$this->location_info['acl_app']]["generic_columns_{$this->type}_{$this->type_id}"];
+				$userSettings = Settings::getInstance()->get('user');
+				$selected = $userSettings['preferences'][$this->location_info['acl_app']]["generic_columns_{$this->type}_{$this->type_id}"];
 			}
 
 			$filter			 = array('list' => ''); // translates to "list IS NULL"

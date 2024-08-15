@@ -209,9 +209,11 @@ class helpdesk_botts
 
 	function column_list($selected = array())
 	{
+		$userSettings = Settings::getInstance()->get('user');
+
 		if (!$selected)
 		{
-			$selected = isset($this->userSettings['preferences']['helpdesk']['ticket_columns']) ? $this->userSettings['preferences']['helpdesk']['ticket_columns'] : '';
+			$selected = isset($userSettings['preferences']['helpdesk']['ticket_columns']) ? $userSettings['preferences']['helpdesk']['ticket_columns'] : array();
 		}
 		$_columns = $this->get_columns();
 

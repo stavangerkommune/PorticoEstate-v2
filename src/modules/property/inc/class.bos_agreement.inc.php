@@ -440,7 +440,8 @@
 		{
 			if (!$selected)
 			{
-				$selected = $this->userSettings['preferences']['property']['s_agreement_columns'];
+				$userSettings = Settings::getInstance()->get('user');
+				$selected = $userSettings['preferences']['property']['s_agreement_columns'];
 			}
 
 			$filter	 = array('list' => ''); // translates to "list IS NULL"

@@ -33,6 +33,8 @@
  */
 
 use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\Cache;
+
 
 phpgw::import_class('phpgwapi.uicommon');
 

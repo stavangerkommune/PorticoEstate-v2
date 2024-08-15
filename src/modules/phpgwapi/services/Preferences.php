@@ -187,7 +187,6 @@ class Preferences
 
 			$this->data['common']['tz_offset'] = (int)$dateTimeZone_pref->getOffset($dateTime_utc) / 3600;
 		}
-
 		return $this->data;
 	}
 
@@ -572,7 +571,7 @@ class Preferences
 			$sessions = Sessions::getInstance();
 			$sessions->read_repositories(false);
 		}
-
+		Settings::getInstance()->update('user', ['preferences' => $this->data]);
 		return $this->data;
 	}
 }
