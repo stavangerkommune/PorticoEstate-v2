@@ -54,17 +54,8 @@
 
 			self::set_active_menu('activitycalendar');
 
-			$this->acl = Acl::getInstance();
-			$this->locations = & $GLOBALS['phpgw']->locations;
 
-			/* 			$this->type_of_user = array(
-			  MANAGER => $this->isManager(),
-			  EXECUTIVE_OFFICER => $this->isExecutiveOfficer(),
-			  ADMINISTRATOR => $this->isAdministrator()
-			  ); */
-			$GLOBALS['phpgw_info']['flags']['app_header'] = lang($GLOBALS['phpgw_info']['flags']['currentapp']);
-
-			$this->user_rows_per_page = ($GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs']) ? $GLOBALS['phpgw_info']['user']['preferences']['common']['maxmatchs'] : 10;
+			$this->user_rows_per_page = ($this->userSettings['preferences']['common']['maxmatchs']) ? $this->userSettings['preferences']['common']['maxmatchs'] : 10;
 		}
 
 		/**

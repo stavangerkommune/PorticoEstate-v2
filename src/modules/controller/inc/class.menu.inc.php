@@ -41,7 +41,7 @@ class controller_menu
 
 	function __construct()
 	{
-		$script_path = dirname(Sanitizer::get_var('SCRIPT_FILENAME', 'string', 'SERVER'));
+		$script_path = Sanitizer::get_var('REDIRECT_URL', 'string', 'SERVER');
 
 		if (preg_match('/mobilefrontend/', $script_path))
 		{
