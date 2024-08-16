@@ -116,7 +116,8 @@ class phpgwapi_ofphpgwapi extends phpgwapi_object_factory
 			case 'mapping':
 				$auth_info = ($p1 !== '_UNDEF_') ? $p1 : null;
 				return new \App\modules\phpgwapi\security\Sso\Mapping($auth_info);
-
+			case 'pdf':
+				return new Cezpdf('a4', 'portrait');
 			case 'preferences':
 				$account_id = ($p1 !== '_UNDEF_') ? $p1 : null;
 				$Preferences = App\modules\phpgwapi\services\Preferences::getInstance();

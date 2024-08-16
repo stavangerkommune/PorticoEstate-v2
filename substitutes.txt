@@ -62,6 +62,9 @@ phpgwapi_css::getInstance()->
 $GLOBALS['phpgw']->js->
 phpgwapi_js::getInstance()->
 
+phpgwapi_js::getInstance()->add_code('', $code);
+
+
 
 $GLOBALS['phpgw']->xslttpl->add_file
 phpgwapi_xslttemplates::getInstance()->add_file

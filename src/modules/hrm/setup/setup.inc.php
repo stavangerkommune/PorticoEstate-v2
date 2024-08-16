@@ -69,10 +69,8 @@
 	/* The hooks this app includes, needed for hooks registration */
 	$setup_info['hrm']['hooks'] = array
 	(
-//		'add_def_pref',
 		'manual',
 		'settings',
-		'preferences',
 		'help',
 		'menu'	=> 'hrm.menu.get_menu'
 	);
