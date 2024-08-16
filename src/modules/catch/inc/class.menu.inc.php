@@ -137,7 +137,7 @@ class catch_menu
 			$menus['preferences'] = array(
 				array(
 					'text'	=> $translation->translate('Preferences', array(), true),
-					'url'	=> phpgw::link('/preferences/preferences.php', array('appname' => 'catch', 'type' => 'user'))
+					'url'	=> phpgw::link('/preferences/section', array('appname' => 'catch', 'type' => 'user'))
 				),
 				array(
 					'text'	=> $translation->translate('Grant Access', array(), true),
@@ -147,7 +147,7 @@ class catch_menu
 
 			$menus['toolbar'][] = array(
 				'text'	=> $translation->translate('Preferences', array(), true),
-				'url'	=> phpgw::link('/preferences/preferences.php', array('appname'	=> 'catch')),
+				'url'	=> phpgw::link('/preferences/section', array('appname'	=> 'catch')),
 				'image'	=> array('catch', 'preferences')
 			);
 		}

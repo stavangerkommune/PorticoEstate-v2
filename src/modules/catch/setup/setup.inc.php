@@ -71,7 +71,7 @@
 	$setup_info['catch']['hooks'] = array
 	(
 		'manual',
-		'preferences',
+//		'preferences',
 		'admin',
 		'help',
 		'menu'	=> 'catch.menu.get_menu'
