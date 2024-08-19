@@ -34,6 +34,7 @@
  */
 class ipc_notes extends ipc_
 {
+	var $bonotes;
 	/**
 	 * Constructor
 	 *

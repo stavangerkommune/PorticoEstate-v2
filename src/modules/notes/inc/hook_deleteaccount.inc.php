@@ -1,14 +1,15 @@
 <?php
-	/**
-	* Notes
-	* @author Mark Peters <skeeter@phpgroupware.org>
-	* @copyright Copyright (C) 2000-2002,2005 Free Software Foundation, Inc. http://www.fsf.org/
-	* @license http://www.gnu.org/licenses/gpl.html GNU General Public License
-	* @package notes
-	* @version $Id$
-	*/
 
-	/*
+/**
+ * Notes
+ * @author Mark Peters <skeeter@phpgroupware.org>
+ * @copyright Copyright (C) 2000-2002,2005 Free Software Foundation, Inc. http://www.fsf.org/
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
+ * @package notes
+ * @version $Id$
+ */
+
+/*
 		This program is free software; you can redistribute it and/or modify
 		it under the terms of the GNU General Public License as published by
 		the Free Software Foundation; either version 3 of the License, or
@@ -23,17 +24,19 @@
 		along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-	// Delete all records for a user
-	$db = Db::getInstance();
-	$db->lock(array('phpgw_notes'));
+use App\Database\Db;
 
-	if ( (int) $_POST['new_owner'] == 0 )
-	{
-		$db->query('DELETE FROM phpgw_notes WHERE note_owner='. (int) $_POST['account_id'], __LINE__, __FILE__);
-	}
-	else
-	{
-		$db->query('UPDATE phpgw_notes SET note_owner=' . (int) $_POST['new_owner']
-			. ' WHERE note_owner=' . (int) $_POST['account_id'], __LINE__, __FILE__);
-	}
-	$db->unlock();
+// Delete all records for a user
+$db = Db::getInstance();
+$db->transaction_begin();
+
+if ((int) $_POST['new_owner'] == 0)
+{
+	$db->query('DELETE FROM phpgw_notes WHERE note_owner=' . (int) $_POST['account_id'], __LINE__, __FILE__);
+}
+else
+{
+	$db->query('UPDATE phpgw_notes SET note_owner=' . (int) $_POST['new_owner']
+		. ' WHERE note_owner=' . (int) $_POST['account_id'], __LINE__, __FILE__);
+}
+$db->transaction_commit();
