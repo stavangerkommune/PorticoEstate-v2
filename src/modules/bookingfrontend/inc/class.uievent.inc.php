@@ -653,7 +653,6 @@ class bookingfrontend_uievent extends booking_uievent
         }
         $allowedFields = [
             'id',
-            'name',
             'building_name',
             'from_',
             'to_',
@@ -663,13 +662,12 @@ class bookingfrontend_uievent extends booking_uievent
         ];
 
         if ($event['is_public'] == 1) {
-            array_push($allowedFields,
+            $allowedFields = array_merge($allowedFields, [
                 'description',
                 'organizer',
                 'homepage',
-                'name',
-                'comments'
-            );
+                'name'
+            ]);
         }
 
         $filteredEvent = array_intersect_key($event, array_flip($allowedFields));
