@@ -175,7 +175,7 @@
 			}
 			else
 			{
-				$cols .= "* ";
+				$cols = "* ";
 			}
 
 			$dir = $ascending ? 'ASC' : 'DESC';

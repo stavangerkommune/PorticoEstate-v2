@@ -44,7 +44,7 @@
 
 		protected function add( &$object )
 		{
-			$user_id = $GLOBALS['phpgw_info']['user']['id'];
+			$user_id = $this->userSettings['id'];
 			$now = time();
 			$location_id = $object->get_location_id();
 			$cust_attribute_id = $object->get_cust_attribute_id();

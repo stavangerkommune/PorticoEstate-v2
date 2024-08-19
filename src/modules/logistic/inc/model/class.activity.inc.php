@@ -227,7 +227,7 @@
 
 		public function serialize()
 		{
-			$date_format = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$date_format = $this->userSettings['preferences']['common']['dateformat'];
 			$project_name = $this->get_so()->get_project_name($this->get_project_id());
 			$responsible_user = $this->get_so()->get_responsible_user($this->get_responsible_user_id());
 
@@ -263,7 +263,7 @@
 			}
 			$this->set_project_id(Sanitizer::get_var('project_id', 'POST', 'int'));
 
-			$user_id = $GLOBALS['phpgw_info']['user']['id'];
+			$user_id = $this->userSettings['id'];
 			$this->set_update_user($user_id);
 
 			if ($this->get_id() == '' | $this->get_id() == 0)

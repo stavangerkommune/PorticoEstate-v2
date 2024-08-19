@@ -1,7 +1,10 @@
 <?php
 
-	//Create groups, users, add users to groups and set preferences
-	$GLOBALS['phpgw']->locations->add('.', 'Topp', 'logistic');
-	$GLOBALS['phpgw']->locations->add('.project', 'Prosjekt', 'logistic');
-	$GLOBALS['phpgw']->locations->add('.activity', 'Aktivitet', 'logistic');
-	
+use App\modules\phpgwapi\controllers\Locations;
+
+$location_obj = new Locations();
+
+//Create groups, users, add users to groups and set preferences
+$location_obj->add('.', 'Topp', 'logistic');
+$location_obj->add('.project', 'Prosjekt', 'logistic');
+$location_obj->add('.activity', 'Aktivitet', 'logistic');
