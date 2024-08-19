@@ -102,7 +102,7 @@
 		{
 			$this->db->transaction_begin();
 	//		$status_text = eventplanner_customer::get_status_list();
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
 			$lang_active = lang('active');
 			$lang_inactive = lang('inactive');
 
@@ -131,7 +131,7 @@
 					(
 						'customer_id'	=> $object->get_id(),
 						'time'		=> time(),
-						'author'	=> $GLOBALS['phpgw_info']['user']['fullname'],
+						'author'	=> $this->userSettings['fullname'],
 						'comment'	=> $label . ':: ' . lang('old value') . ': ' . $this->db->db_addslashes($old_value) . ', ' .lang('new value') . ': ' . $this->db->db_addslashes($new_value),
 						'type'	=> 'history',
 					);

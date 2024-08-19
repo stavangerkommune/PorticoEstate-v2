@@ -11,7 +11,7 @@
 	 * @version $Id:$
 	 */
 
-	/*
+/*
 	   This program is free software: you can redistribute it and/or modify
 	   it under the terms of the GNU General Public License as published by
 	   the Free Software Foundation, either version 2 of the License, or
@@ -26,6 +26,7 @@
 	   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
+use App\modules\phpgwapi\services\Cache;
 	phpgw::import_class('phpgwapi.bocommon');
 	phpgw::import_class('eventplanner.socalendar');
 
@@ -76,13 +77,13 @@
 				unset($params['filters']['active']);
 			}
 			$values =  eventplanner_socalendar::get_instance()->read($params);
-			$dateformat = $GLOBALS['phpgw_info']['user']['preferences']['common']['dateformat'];
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
 			foreach ($values['results'] as &$entry)
 			{
-				$entry['created'] = $GLOBALS['phpgw']->common->show_date($entry['created']);
-				$entry['modified'] = $GLOBALS['phpgw']->common->show_date($entry['modified']);
-				$entry['from_'] = $GLOBALS['phpgw']->common->show_date($entry['from_']);
-				$entry['to_'] = $GLOBALS['phpgw']->common->show_date($entry['to_']);
+				$entry['created'] = $this->phpgwapi_common->show_date($entry['created']);
+				$entry['modified'] = $this->phpgwapi_common->show_date($entry['modified']);
+				$entry['from_'] = $this->phpgwapi_common->show_date($entry['from_']);
+				$entry['to_'] = $this->phpgwapi_common->show_date($entry['to_']);
 				$entry['status'] = $status_text[$entry['active']];
 			}
 			return $values;
@@ -206,8 +207,8 @@
 				$location = $booking->location;
 
 				$calendar = createObject('eventplanner.bocalendar')->read_single($calendar_id, true, $relaxe_acl = true);
-				$from_ = $GLOBALS['phpgw']->common->show_date($calendar->from_);
-				$to_ = $GLOBALS['phpgw']->common->show_date($calendar->to_);
+				$from_ = $this->phpgwapi_common->show_date($calendar->from_);
+				$to_ = $this->phpgwapi_common->show_date($calendar->to_);
 
 				$application = createObject('eventplanner.boapplication')->read_single($calendar->application_id, true, $relaxe_acl = true);
 	//			_debug_array($application);
@@ -406,7 +407,7 @@ HTML;
 					Cache::message_set($e->getMessage(), 'error');
 				}
 
-				Cache::message_set("Email: $to_email, $cc", 'message');
+				Cache::message_set("Email: {$entry['to_email']}, {$entry['cc']}", 'message');
 			}
 		}
 

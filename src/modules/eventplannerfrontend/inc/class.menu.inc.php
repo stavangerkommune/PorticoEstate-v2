@@ -111,7 +111,7 @@ class eventplannerfrontend_menu
 
 			$menus['toolbar'][] = array(
 				'text' => $translation->translate('Preferences', array(), true),
-				'url' => phpgw::link('/preferences/preferences.php', array('appname' => 'eventplanner')),
+				'url' => phpgw::link('/preferences/section', array('appname' => 'eventplanner')),
 				'image' => array('eventplanner', 'preferences')
 			);
 		}

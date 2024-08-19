@@ -131,7 +131,7 @@
 					(
 						'booking_id'	=> $object->get_id(),
 						'time'		=> time(),
-						'author'	=> $GLOBALS['phpgw_info']['user']['fullname'],
+						'author'	=> $this->userSettings['fullname'],
 						'comment'	=> $label . ':: ' . lang('old value') . ': ' . $this->db->db_addslashes($old_value) . ', ' .lang('new value') . ': ' . $this->db->db_addslashes($new_value),
 						'type'	=> 'history',
 					);
