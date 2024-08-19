@@ -294,8 +294,8 @@ class bookingfrontend_uievent extends booking_uievent
         $event['from_2'] = date("H:i", phpgwapi_datetime::date_to_timestamp($event['from_']));
         $event['to_2'] = date("H:i", phpgwapi_datetime::date_to_timestamp($event['to_']));
 
-		$jqcal2 = createObject('phpgwapi.jqcal2');
-		$jqcal2->add_listener('from_', 'time');
+        $jqcal2 = createObject('phpgwapi.jqcal2');
+        $jqcal2->add_listener('from_', 'time');
         $jqcal2->add_listener('to_', 'time');
 
         phpgwapi_jquery::load_widget('datepicker');
@@ -617,10 +617,9 @@ class bookingfrontend_uievent extends booking_uievent
                 continue; // Skip if the event is not found
             }
 
-            if ($event['is_public'] == 0) {
-                $event = $this->redactSensitiveInformation($event);
-            }
+            $event = $this->filterEventForPublic($event);
 
+            $event['type'] = 'event';
             $event['info_resource_info'] = $this->calculate_resource_info($event['resources']);
             $event['info_org'] = $this->info_get_org_info($event['customer_organization_number']);
             $event['info_when'] = $this->info_format_event_time($event['from_'], $event['to_']);
@@ -646,24 +645,44 @@ class bookingfrontend_uievent extends booking_uievent
     }
 
 
-    function redactSensitiveInformation($event)
+    function filterEventForPublic($event)
     {
         $bouser = CreateObject('bookingfrontend.bouser');
         if ($bouser->is_logged_in() && $this->_is_event_owner($event, $bouser)) {
             return $event;
         }
-        $redactedEvent = $event;
-        $fieldsToRedact = array('organizer', 'homepage', 'description', 'contact_name',
-            'contact_email', 'contact_phone', 'customer_organization_name',
-            'customer_identifier_type', 'customer_ssn', 'customer_organization_number', 'secret', 'name');
-        $redactedEvent['comments'] = array();
-        foreach ($fieldsToRedact as $field) {
-            if (isset($redactedEvent[$field])) {
-                $redactedEvent[$field] = 'PRIVATE';
-            }
+        $allowedFields = [
+            'id',
+            'building_name',
+            'from_',
+            'to_',
+            'is_public',
+            'activity_name',
+            'resources',
+        ];
+
+        if ($event['is_public'] == 1) {
+            $allowedFields = array_merge($allowedFields, [
+                'description',
+                'organizer',
+                'homepage',
+                'name'
+            ]);
         }
 
-        return $redactedEvent;
+        $filteredEvent = array_intersect_key($event, array_flip($allowedFields));
+
+        // Additional safety check for description field
+        if (isset($filteredEvent['description'])) {
+            $filteredEvent['description'] = strip_tags($filteredEvent['description']);
+        }
+
+        // Ensure resources only contains IDs
+        if (isset($filteredEvent['resources'])) {
+            $filteredEvent['resources'] = array_map('intval', $filteredEvent['resources']);
+        }
+
+        return $filteredEvent;
     }
 
     private function info_get_org_info($customer_organization_number)
