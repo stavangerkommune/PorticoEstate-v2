@@ -33,10 +33,10 @@
 use App\modules\phpgwapi\services\Settings;
 use App\modules\phpgwapi\services\Cache;
 
-phpgw::import_class('logistic.sorequirement');
-phpgw::import_class('logistic.sorequirement_resource_allocation');
+//phpgw::import_class('logistic.sorequirement');
+//phpgw::import_class('logistic.sorequirement_resource_allocation');
 phpgw::import_class('phpgwapi.uicommon_jquery');
-phpgw::import_class('logistic.soactivity');
+//phpgw::import_class('logistic.soactivity');
 phpgw::import_class('phpgwapi.jquery');
 
 include_class('logistic', 'actvity');

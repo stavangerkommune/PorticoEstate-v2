@@ -196,7 +196,7 @@ class logistic_soactivity extends logistic_socommon
 		}
 		else
 		{
-			$cols .= "* ";
+			$cols = "* ";
 		}
 
 		$dir = $ascending ? 'ASC' : 'DESC';
@@ -219,7 +219,7 @@ class logistic_soactivity extends logistic_socommon
 	 * @return array of objects. May return an empty
 	 * array, never null. The array keys are the respective index numbers.
 	 */
-	public function get(int $start_index, int $num_of_objects, string $sort_field, bool $ascending, string $search_for, string $search_type, array $filters, $allrows)
+	public function get(int $start_index, int $num_of_objects, string $sort_field, bool $ascending, string $search_for, string $search_type, array $filters, $allrows = '')
 	{
 		if ($sort_field == null || $sort_field == 'id' || $sort_field == '')
 		{

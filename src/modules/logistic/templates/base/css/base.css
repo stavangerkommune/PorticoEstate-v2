@@ -228,11 +228,12 @@ label.toolbar_element_label {
   padding-right: .50em;
   vertical-align: middle;
 }
+/*
 #toolbar input[type="text"] {
   font-size: 120%;
   margin: auto .25em;
 }
-
+*/
 dl.proplist dd.address,
 dl.proplist-col dd.address {
   white-space: pre;
@@ -773,6 +774,7 @@ dl.proplist, dl.proplist-col {
   margin: 20px 0 0 20px;
 }
 
+/*
 #toolbar {
   display: inline-block;
   padding: 10px 0;
@@ -787,7 +789,7 @@ dl.proplist, dl.proplist-col {
   padding:0 8px;
   margin-top:0;
 }
-
+*/
 .yui-button.yui-link-button.new_button{
   margin-left:30px;	
 }
