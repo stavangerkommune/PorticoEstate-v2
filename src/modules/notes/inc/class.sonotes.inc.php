@@ -116,12 +116,12 @@ class notes_sonotes
 		}
 		elseif ($filter == 'yours')
 		{
-			$filtermethod = $where ." note_owner='" . $this->account . "'";
+			$filtermethod = $where . " note_owner='" . $this->account . "'";
 			$where = 'AND';
 		}
 		else
 		{
-			$filtermethod = $where ." note_owner='" . $this->account . "' AND note_access='private'";
+			$filtermethod = $where . " note_owner='" . $this->account . "' AND note_access='private'";
 			$where = 'AND';
 		}
 
@@ -146,11 +146,14 @@ class notes_sonotes
 			$lastmod = (int) $lastmod;
 			$filtermethod .= " AND note_lastmod > $lastmod ";
 		}
-
-		$this->db->query("SELECT count(*) as cnt FROM phpgw_notes"
+		$sql = "SELECT DISTINCT phpgw_notes.note_id FROM phpgw_notes"
 			. " {$this->join} phpgw_accounts ON ( {$table}.note_owner = phpgw_accounts.account_id)"
 			. " {$this->join} phpgw_group_map ON (phpgw_accounts.account_id = phpgw_group_map.account_id)"
-			. " {$app_filter} {$filtermethod} {$querymethod}", __LINE__, __FILE__);
+			. " {$filtermethod} {$querymethod}";
+
+		$sql2 = "SELECT count(*) as cnt FROM ({$sql}) as t";
+
+		$this->db->query($sql2, __LINE__, __FILE__);
 
 		$this->db->next_record();
 		$this->total_records = $this->db->f('cnt');
@@ -159,12 +162,11 @@ class notes_sonotes
 		$sql = "SELECT DISTINCT phpgw_notes.* FROM phpgw_notes"
 			. " {$this->join} phpgw_accounts ON ( {$table}.note_owner = phpgw_accounts.account_id)"
 			. " {$this->join} phpgw_group_map ON (phpgw_accounts.account_id = phpgw_group_map.account_id)"
-			. " WHERE $filtermethod $querymethod";
+			. " $filtermethod $querymethod";
 
-		if ($start)
-		{
-			$this->db->limit_query($sql . $ordermethod, $start, __LINE__, __FILE__);
-		}
+
+		$this->db->limit_query($sql . $ordermethod, $start, __LINE__, __FILE__);
+
 		$phpgwapi_common = new \phpgwapi_common();
 		$notes = array();
 		while ($this->db->next_record())
@@ -180,6 +182,7 @@ class notes_sonotes
 				'content'	=> $this->db->f('note_content', true),
 			);
 		}
+
 		return $notes;
 	}
 
