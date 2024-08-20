@@ -42,7 +42,7 @@ switch ($serverSettings['account_repository'])
 {
 	case 'ldap':
 		include_once SRC_ROOT_PATH . '/modules/phpgwapi/security/Sso/MappingLdap.php';
-
+		break;
 	default:
 		include_once SRC_ROOT_PATH . '/modules/phpgwapi/security/Sso/MappingSql.php';
 }

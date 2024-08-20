@@ -28,7 +28,6 @@ class Mapping extends Mapping_
 	 * constructor, sets up variables
 	 *
 	 **/
-	#[\Override]
 	function __construct($auth_info = [])
 	{
 		parent::__construct($auth_info);
