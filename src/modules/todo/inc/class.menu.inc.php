@@ -83,7 +83,7 @@ class todo_menu
 			$menus['preferences'] = array(
 				array(
 					'text'	=> $translation->translate('Preferences', array(), true),
-					'url'	=> phpgw::link('/preferences/preferences.php', array('appname'	=> 'todo')),
+					'url'	=> phpgw::link('/preferences/section', array('appname'	=> 'todo')),
 				),
 				array(
 					'text'	=> $translation->translate('Grant Access', array(), true),
@@ -97,7 +97,7 @@ class todo_menu
 
 			$menus['toolbar'][] = array(
 				'text'	=> $translation->translate('Preferences', array(), true),
-				'url'	=> phpgw::link('/preferences/preferences.php', array('appname'	=> 'todo')),
+				'url'	=> phpgw::link('/preferences/section', array('appname'	=> 'todo')),
 				'image'	=> array('todo', 'preferences')
 			);
 		}

@@ -28,6 +28,7 @@ class phpgwapi_historylog
 	protected $location_id;
 	var $template;
 	var $nextmatchs;
+	var $phpgwapi_common;
 	var $types = array(
 		'C' => 'Created',
 		'D' => 'Deleted',
@@ -47,6 +48,8 @@ class phpgwapi_historylog
 		$location_id = $locations_obj->get_id($appname, $location);
 		$this->location_id = (int) $location_id;
 		$this->db      = Db::getInstance();
+		$this->phpgwapi_common = new \phpgwapi_common();
+
 	}
 
 	function delete($record_id)

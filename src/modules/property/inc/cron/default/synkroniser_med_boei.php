@@ -56,6 +56,7 @@ class synkroniser_med_boei extends property_cron_parent
 		$this->join		 = $this->db->join;
 		$this->like		 = $this->db->like;
 		$this->left_join = " LEFT JOIN ";
+		$this->db2		 = new Db2();
 
 		$external_db = Settings::getInstance()->get('external_db');
 
@@ -80,7 +81,6 @@ class synkroniser_med_boei extends property_cron_parent
 		}
 
 		$this->db_boei2	 = clone ($this->db_boei);
-		$this->db2		 = new Db2();
 
 /*		echo "db\n";
 		_debug_array($this->db->get_config());
