@@ -75,6 +75,8 @@ class SetupController
 		$htmlText = '<p>Status: Logged out</p>';
 		$htmlText .= '<p><a href="/setup/">Click here to login to setup</a></p>';
 		$htmlText .= '<p><a href="/setup/manageheader">Click here to login to Manageheader</a></p>';
+		$htmlText .= '<p><a href="/login_ui">Click here to login to UI</a></p>';
+		$htmlText .= '<p><a href="/login">Click here to login to API</a></p>';
 
 		$response = new \Slim\Psr7\Response();
 		$response->getBody()->write($htmlText);

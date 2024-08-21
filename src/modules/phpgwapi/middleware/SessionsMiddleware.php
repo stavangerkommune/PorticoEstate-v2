@@ -2,14 +2,12 @@
 
 namespace App\modules\phpgwapi\middleware;
 
-use App\modules\bookingfrontend\helpers\LoginHelper;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Psr7\Response;
 use Slim\Routing\RouteContext;
 use App\modules\phpgwapi\security\Sessions;
 use App\modules\phpgwapi\security\Login;
-use App\modules\phpgwapi\services\Cache;
 use App\modules\phpgwapi\services\Settings;
 use Psr\Http\Server\MiddlewareInterface;
 use Sanitizer;
@@ -110,8 +108,8 @@ class SessionsMiddleware implements MiddlewareInterface
 						unset($_GET['kp3']);
 						$cookietime = time() + 60;
 						$sessions->phpgw_setcookie('redirect', json_encode($_GET), $cookietime);
-						\phpgw::redirect_link('/login_ui');
 					}
+					\phpgw::redirect_link('/login_ui');
 				}
 				$response = new Response();
 				return $response->withHeader('Content-Type', 'text/html');
