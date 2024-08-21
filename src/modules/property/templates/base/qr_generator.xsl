@@ -1,8 +1,10 @@
 <!-- $Id: condition_survey.xsl 10560 2012-11-30 13:52:18Z sigurdne $ -->
 
 <!-- import -->
-<xsl:template match="data" xmlns:formvalidator="http://www.w3.org/TR/html4/" xmlns:php="http://php.net/xsl">
-	
+<xsl:template match="data"
+	xmlns:formvalidator="http://www.w3.org/TR/html4/"
+	xmlns:php="http://php.net/xsl">
+
 	<xsl:variable name="action_url">
 		<xsl:value-of select="php:function('get_phpgw_link', '/index.php', 'menuaction:property.uiqr_generator.index')" />
 	</xsl:variable>
@@ -71,9 +73,11 @@
 </xsl:template>
 
 
-<xsl:template name="import_step_1" xmlns:formvalidator="http://www.w3.org/TR/html4/" xmlns:php="http://php.net/xsl">
+<xsl:template name="import_step_1"
+	xmlns:formvalidator="http://www.w3.org/TR/html4/"
+	xmlns:php="http://php.net/xsl">
 	<div id="step_1">
-		<div class="pure-control-group" >
+		<div class="pure-control-group">
 			<label for="name">
 				<xsl:value-of select="php:function('lang', 'upload file')"/>
 			</label>
@@ -97,10 +101,12 @@
 </xsl:template>
 
 
-<xsl:template name="import_step_2" xmlns:formvalidator="http://www.w3.org/TR/html4/" xmlns:php="http://php.net/xsl">
+<xsl:template name="import_step_2"
+	xmlns:formvalidator="http://www.w3.org/TR/html4/"
+	xmlns:php="http://php.net/xsl">
 	<div id="step_1"></div>
 	<div id="step_2">
-		<div class="pure-control-group" >
+		<div class="pure-control-group">
 			<label>
 				<xsl:value-of select="php:function('lang', 'sheet')" />
 			</label>
@@ -114,11 +120,12 @@
 	<div id="step_5"></div>
 </xsl:template>
 
-<xsl:template name="import_step_3" xmlns:php="http://php.net/xsl">
+<xsl:template name="import_step_3"
+	xmlns:php="http://php.net/xsl">
 	<div id="step_1"></div>
 	<div id="step_2"></div>
 	<div id="step_3">
-		<div class="pure-control-group" >
+		<div class="pure-control-group">
 
 			<label for="status">
 				<xsl:value-of select="php:function('lang', 'sheet')" />
@@ -129,7 +136,7 @@
 				</xsl:if>
 			</xsl:for-each>
 		</div>
-		<div class="pure-control-group" >
+		<div class="pure-control-group">
 			<xsl:value-of disable-output-escaping="yes" select="html_table"/>
 		</div>
 	</div>
@@ -138,12 +145,13 @@
 
 </xsl:template>
 
-<xsl:template name="import_step_4" xmlns:php="http://php.net/xsl">
+<xsl:template name="import_step_4"
+	xmlns:php="http://php.net/xsl">
 	<div id="step_1"></div>
 	<div id="step_2"></div>
 	<div id="step_3"></div>
 	<div id="step_4">
-		<div class="pure-control-group" >
+		<div class="pure-control-group">
 			<label>
 				<xsl:value-of select="php:function('lang', 'sheet')" />
 			</label>
@@ -153,13 +161,13 @@
 				</xsl:if>
 			</xsl:for-each>
 		</div>
-		<div class="pure-control-group" >
+		<div class="pure-control-group">
 			<label>
 				<xsl:value-of select="php:function('lang', 'line')" />
 			</label>
 			<xsl:value-of select="start_line"/>
 		</div>
-		<div class="pure-control-group" >
+		<div class="pure-control-group">
 			<label>
 				<xsl:value-of select="php:function('lang', 'columns')" />
 			</label>
@@ -169,18 +177,23 @@
 	<div id="step_5"></div>
 </xsl:template>
 
-<xsl:template name="convert_data" xmlns:php="http://php.net/xsl">
+<xsl:template name="convert_data"
+	xmlns:php="http://php.net/xsl">
 	<xsl:for-each select="convert_data">
 		<tr>
 			<td align="left">
 				<xsl:value-of disable-output-escaping="yes" select="qr_input"/>
 			</td>
 			<td align="center">
-				<img src="{encoded_text}"/>
+				<img>
+					<xsl:attribute name="src">
+						<xsl:value-of disable-output-escaping="yes" select="encoded_text"/>
+					</xsl:attribute>
+				</img>
 			</td>
 		</tr>
 	</xsl:for-each>
-	
+
 </xsl:template>
 
 

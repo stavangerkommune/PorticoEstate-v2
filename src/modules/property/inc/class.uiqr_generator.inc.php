@@ -398,6 +398,9 @@ class property_uiqr_generator extends phpgwapi_uicommon_jquery
 
 	private function _get_qr(&$convert_data)
 	{
+
+//		$QRCode = new chillerlan\QRCode\QRCode();
+
 		foreach ($convert_data as &$entry)
 		{
 			$entry['qr_input']		 = nl2br($entry['qr_input']);
@@ -405,6 +408,7 @@ class property_uiqr_generator extends phpgwapi_uicommon_jquery
 			$filename				 = $this->serverSettings['temp_dir'] . '/' . md5($code_text) . '.png';
 			QRcode::png($code_text, $filename);
 			$entry['encoded_text']	 = 'data:image/png;base64,' . base64_encode(file_get_contents($filename));
+//			$entry['encoded_text']	 =  $QRCode->render($code_text);
 			unlink($filename);
 		}
 	}
