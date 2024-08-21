@@ -347,7 +347,7 @@ class property_uiqr_generator extends phpgwapi_uicommon_jquery
 			$rows	 = $rows ? $rows : 1;
 
 
-			for ($i = $start_line + 1; $i <= $rows; $i++)
+			for ($i = $start_line; $i <= $rows; $i++)
 			{
 				$_result = array();
 
