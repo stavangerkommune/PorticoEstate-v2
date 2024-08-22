@@ -33,12 +33,9 @@ use App\modules\phpgwapi\services\Log;
  *
  * Don't instanstiate this class
  *
- * Simply use a reference to
- * $GLOBALS['phpgw']->js
+ * Simply use a reference to this class in your code like so
  *
- * Lke so
- *
- * $js =& $GLOBALS['phpgw']->js;
+ * $js =& phpgwapi_js::getInstance();
  *
  * This way a theme can see if this is a defined object and include the data,
  * while the is_object() wrapper prevents whiping out existing data held in
@@ -194,7 +191,7 @@ class phpgwapi_js
 		if (ini_get('suhosin.get.max_value_length') && ini_get('suhosin.get.max_value_length') < 2000)
 		{
 			$combine = false;
-			if (isset($GLOBALS['phpgw_info']['user']['apps']['admin']))
+			if (isset(Settings::getInstance()->get('user')['apps']['admin']))
 			{
 				$message = 'Speed could be gained from setting suhosin.get.max_value_length = 2000 in php.ini';
 				\App\modules\phpgwapi\services\Cache::message_set($message, 'error');

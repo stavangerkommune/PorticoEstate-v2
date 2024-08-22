@@ -40,7 +40,7 @@
 	if (isset(Settings::getInstance()->get('user')['apps']['admin']) && DEBUG_TIMER)
 	{
 		$debug_timer_stop = perfgetmicrotime();
-		echo '<p class="api_timer">' . lang('page prepared in %1 seconds.', $debug_timer_stop - $GLOBALS['debug_timer_start'] ) . "<p>\n";
+		echo '<p class="api_timer">' . lang('page prepared in %1 seconds.', $debug_timer_stop - DEBUG_TIMER_START ) . "<p>\n";
 	}
 
 	if(function_exists('parse_navbar_end'))

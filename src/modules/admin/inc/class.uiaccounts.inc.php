@@ -2037,7 +2037,7 @@ class admin_uiaccounts extends phpgwapi_uicommon_jquery
 		phpgwapi_xslttemplates::getInstance()->set_root(PHPGW_APP_TPL);
 		phpgwapi_xslttemplates::getInstance()->add_file('confirm_delete');
 		$this->flags['app_header'] = lang('administration') . ': ' . lang('Sync Account-Contact');
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 		$data = array(
 			'form_action'				=> phpgw::link('/index.php', array(
@@ -2100,7 +2100,7 @@ class admin_uiaccounts extends phpgwapi_uicommon_jquery
 
 		$this->flags['app_header'] = lang('administration');
 
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 		$data = array(
 			'value_message'		=> Cache::system_get('phpgwapi', 'phpgw_global_message'),
@@ -2165,7 +2165,7 @@ class admin_uiaccounts extends phpgwapi_uicommon_jquery
 		);
 
 		//			phpgwapi_jquery::init_quill('message');
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 		phpgwapi_xslttemplates::getInstance()->add_file('home_screen_message');
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('home_screen_message' => $data));
@@ -2260,7 +2260,7 @@ HTML;
 		phpgwapi_xslttemplates::getInstance()->set_root(PHPGW_APP_TPL);
 		phpgwapi_xslttemplates::getInstance()->add_file('confirm_delete');
 		$this->flags['app_header'] = lang('administration') . ': ' . lang('clear cache');
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 		$data = array(
 			'form_action'				=> phpgw::link('/index.php', array(

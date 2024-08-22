@@ -197,10 +197,12 @@ class Locations
 		// if there is a table and the user wants it dropped we drop it
 		//FIXME: this should be done in a schema_proc
 		/*
-		if ($tbl && $drop_table) {
+		if ($tbl && $drop_table)
+		{
+			$serverSettings = Settings::getInstance()->get('server');
 			$oProc = createObject(
 				'phpgwapi.schema_proc',
-				$GLOBALS['phpgw_info']['server']['db_type']
+				$serverSettings['db_type']
 			);
 
 			$oProc->m_odb = &$this->_db;

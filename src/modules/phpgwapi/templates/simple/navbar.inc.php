@@ -134,7 +134,6 @@ function parse_navbar($force = False)
 
 	$hooks->process('after_navbar');
 
-//	unset($GLOBALS['phpgw_info']['navbar']);
 }
 
 

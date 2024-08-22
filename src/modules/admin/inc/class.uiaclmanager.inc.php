@@ -239,7 +239,7 @@ class admin_uiaclmanager
 		$msg = lang('Check items to <b>%1</b> to %2 for %3', $acl_manager['name'], $acl_app, $afn);
 		$this->_template->set_var('lang_message', $msg);
 		$link_values = array(
-			'menuaction' => 'admin._boaclmanager.submit',
+			'menuaction' => 'admin.boaclmanager.submit',
 			'acl_app'    => $acl_app,
 			'location'   => Sanitizer::get_var('location', 'string'),
 			'account_id' => $account_id

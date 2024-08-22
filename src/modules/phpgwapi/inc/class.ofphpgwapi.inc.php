@@ -111,6 +111,8 @@ class phpgwapi_ofphpgwapi extends phpgwapi_object_factory
 			case 'hooks':
 				$db = ($p1 !== '_UNDEF_') ? $p1 : null;
 				return new \App\modules\phpgwapi\services\Hooks($db);
+			case 'jscalendar'://deprecated
+				return parent::createObject('phpgwapi.jqcal2');
 			case 'locations':
 				return new	\App\modules\phpgwapi\controllers\Locations();
 			case 'mapping':

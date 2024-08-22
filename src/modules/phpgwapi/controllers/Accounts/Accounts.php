@@ -919,7 +919,6 @@ abstract class Accounts_
 		Settings::getInstance()->set('hook_values', $hook_values);
 
 		//FIXME
-		//$GLOBALS['pref'] = CreateObject('phpgwapi.preferences', $user->id);
 		$Preferences = \App\modules\phpgwapi\services\Preferences::getInstance($user->id);
 		$Hooks = new \App\modules\phpgwapi\services\Hooks();
 		$Hooks->process('addaccount');
@@ -956,7 +955,6 @@ abstract class Accounts_
 			$max = !empty($this->serverSettings['account_max_id']) ? (int) $this->serverSettings['account_max_id'] : 2147483647;
 		}
 
-		//	$nextid = (int) $GLOBALS['phpgw']->common->last_id($type, $min, $max);
 		$nextid = (int) $this->db->next_id('phpgw_nextid', array('appname' => $type), $min, $max);
 		/* Loop until we find a free id */
 
@@ -968,7 +966,6 @@ abstract class Accounts_
 			//echo '<br />calling search for id: '.$nextid;
 			if ($this->exists($nextid))
 			{
-				//		$nextid = (int) $GLOBALS['phpgw']->common->next_id($type, $min, $max);
 				$nextid = (int) $this->db->next_id('phpgw_nextid', array('appname' => $type), $min, $max);
 			}
 			else

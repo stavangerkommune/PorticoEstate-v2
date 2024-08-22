@@ -37,6 +37,7 @@ use App\modules\phpgwapi\controllers\Accounts\Accounts_;
 use App\modules\phpgwapi\controllers\Accounts\phpgwapi_group;
 use App\modules\phpgwapi\controllers\Accounts\phpgwapi_user;
 use App\modules\phpgwapi\controllers\Accounts\phpgwapi_account;
+use App\modules\phpgwapi\services\Hooks;
 use PDO;
 
 /**
@@ -239,16 +240,16 @@ class Accounts extends Accounts_
 			// Delete all ACLs
 			$acl = Acl::getInstance();
 			$acl->delete_repository('%%', '%%', $account_id);
-
+			$hooks = new Hooks();
 			if (get_class($acct) == phpgwapi_account::CLASS_TYPE_GROUP)
 			{
 				$stmt = $this->db->prepare('DELETE FROM phpgw_group_map WHERE group_id = :account_id');
-				$GLOBALS['phpgw']->hooks->process('deletegroup');
+				$hooks->process('deletegroup');
 			}
 			else
 			{
 				$stmt = $this->db->prepare('DELETE FROM phpgw_group_map WHERE account_id = :account_id');
-				$GLOBALS['phpgw']->hooks->process('deleteaccount');
+				$hooks->process('deleteaccount');
 			}
 
 			// The cached object is needed for the hooks

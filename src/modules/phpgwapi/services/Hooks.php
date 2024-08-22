@@ -1,6 +1,7 @@
 <?php
 
 namespace App\modules\phpgwapi\services;
+
 /**
  * Allows applications to "hook" into each other
  * @author Dan Kuykendall <seek3r@phpgroupware.org>
@@ -33,7 +34,9 @@ namespace App\modules\phpgwapi\services;
  * @subpackage application
  */
 
-  use PDO;
+use App\modules\phpgwapi\controllers\Applications;
+use PDO;
+
 class Hooks
 {
 	var $found_hooks = array();
@@ -68,7 +71,8 @@ class Hooks
 
 		$this->found_hooks = array();
 
-		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
 			$this->found_hooks[$row['hook_appname']][$row['hook_location']] = $row['hook_filename'];
 		}
 
@@ -91,14 +95,16 @@ class Hooks
 	public function process($args, $order = '', $no_permission_check = False)
 	{
 		//echo "<p>hooks::process("; print_r($args); echo ")</p>\n";
-		if ($order == '') {
+		if ($order == '')
+		{
 			$order = is_array($args) && isset($args['order']) ? $args['order'] :
 				array($this->flags['currentapp']);
 		}
 
 		$results = array();
 		/* First include the ordered apps hook file */
-		foreach ($order as $appname) {
+		foreach ($order as $appname)
+		{
 			$results[$appname] = $this->single($args, $appname, $no_permission_check);
 
 			if (!isset($results[$appname]))	// happens if th methode hook has no return-value
@@ -109,20 +115,27 @@ class Hooks
 
 		/* Then add the rest */
 		$apps = array();
-		if ($no_permission_check) {
+		if ($no_permission_check)
+		{
 			$apps = $this->apps;
-		} else if (isset($this->user['apps'])) {
+		}
+		else if (isset($this->user['apps']))
+		{
 			$apps = $this->user['apps'];
 		}
 
 		// Run any API hooks first
 		$results['phpgwapi'] = $this->single($args, 'phpgwapi', false);
 
-		if (is_array($apps)) {
-			foreach ($apps as $app) {
-				if (isset($app['name']) && $app['name']) {
+		if (is_array($apps))
+		{
+			foreach ($apps as $app)
+			{
+				if (isset($app['name']) && $app['name'])
+				{
 					$appname = $app['name'];
-					if (!isset($results[$appname])) {
+					if (!isset($results[$appname]))
+					{
 						$results[$appname] = $this->single($args, $appname, $no_permission_check);
 					}
 				}
@@ -146,36 +159,46 @@ class Hooks
 	public function single($args, $appname = '', $no_permission_check = False, $try_unregistered = False)
 	{
 		//echo "<p>hooks::single("; print_r($args); echo ",'$appname','$no_permission_check','$try_unregistered')</p>\n";
-		if (is_array($args)) {
+		if (is_array($args))
+		{
 			$location = $args['location'];
-		} else {
+		}
+		else
+		{
 			$location = $args;
 		}
-		if (!$appname) {
+		if (!$appname)
+		{
 			$appname = is_array($args) && isset($args['appname']) ? $args['appname'] : $this->flags['currentapp'];
 		}
 
 		/* First include the ordered apps hook file */
-		if (isset($this->found_hooks[$appname][$location]) || $try_unregistered) {
+		if (isset($this->found_hooks[$appname][$location]) || $try_unregistered)
+		{
 			$parts = array();
-			if (isset($this->found_hooks[$appname][$location])) {
+			if (isset($this->found_hooks[$appname][$location]))
+			{
 				$parts = explode('.', $method = $this->found_hooks[$appname][$location]);
 			}
 
-			if (count($parts) != 3 || ($parts[1] == 'inc' && $parts[2] == 'php')) {
-				if ($try_unregistered && empty($methode)) {
+			if (count($parts) != 3 || ($parts[1] == 'inc' && $parts[2] == 'php'))
+			{
+				if ($try_unregistered && empty($methode))
+				{
 					$method = 'hook_' . $location . '.inc.php';
 				}
-				$f = SRC_ROOT_PATH . "/modules/" . $appname ."/inc/{$method}";
+				$f = SRC_ROOT_PATH . "/modules/" . $appname . "/inc/{$method}";
 				if (((isset($this->user['apps'][$appname]) && $this->user['apps'][$appname])
 						|| (($no_permission_check || $location == 'config' || $appname == 'phpgwapi') && $appname))
 					&& file_exists($f)
-				) {
+				)
+				{
 					include_once($f);
 					return true;
 				}
 				return false;
-			} else	// new style method-hook
+			}
+			else	// new style method-hook
 			{
 				return ExecMethod($method, $args);
 			}
@@ -189,8 +212,10 @@ class Hooks
 	public function count($location)
 	{
 		$count = 0;
-		foreach ($this->user['apps'] as $appname => $data) {
-			if (isset($this->found_hooks[$appname][$location])) {
+		foreach ($this->user['apps'] as $appname => $data)
+		{
+			if (isset($this->found_hooks[$appname][$location]))
+			{
 				++$count;
 			}
 		}
@@ -205,7 +230,8 @@ class Hooks
 	 */
 	public function register_hooks($appname, $hooks = '')
 	{
-		if (!$appname) {
+		if (!$appname)
+		{
 			return false;
 		}
 
@@ -217,12 +243,15 @@ class Hooks
 		{
 			return true;
 		}
-		foreach ($hooks as $key => $hook) {
+		foreach ($hooks as $key => $hook)
+		{
 			if (!is_numeric($key)) // new method based hook
 			{
 				$location = $key;
 				$filename = $hook;
-			} else {
+			}
+			else
+			{
 				$location = $hook;
 				$filename = "hook_$hook.inc.php";
 			}
@@ -241,19 +270,24 @@ class Hooks
 	 */
 	public function register_all_hooks()
 	{
-		if (!isset($this->apps) || !is_array($this->apps)) {
-			$GLOBALS['phpgw']->applications->read_installed_apps();
+		if (!isset($this->apps) || !is_array($this->apps))
+		{
+			$applications = new Applications();
+			$this->apps = $applications->read_installed_apps();
 		}
 
 		$app_list = array_keys($this->apps);
 		$app_list[] = 'phpgwapi';
 
-		foreach ($app_list as $appname) {
-			$f = SRC_ROOT_PATH . "/$appname/setup/setup.inc.php";
-			if (file_exists($f)) {
+		foreach ($app_list as $appname)
+		{
+			$f = PHPGW_SERVER_ROOT . "/$appname/setup/setup.inc.php";
+			if (file_exists($f))
+			{
 				//DO NOT USE include_once here it breaks API hooks - skwashd dec07
 				include $f;
-				if (isset($setup_info[$appname]['hooks'])) {
+				if (isset($setup_info[$appname]['hooks']))
+				{
 					$this->register_hooks($appname, $setup_info[$appname]['hooks']);
 				}
 			}

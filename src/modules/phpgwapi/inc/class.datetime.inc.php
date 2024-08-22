@@ -15,7 +15,7 @@
  */
 
 
- use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\Settings;
 /*
 	   This program is free software: you can redistribute it and/or modify
 	   it under the terms of the GNU Lesser General Public License as published by
@@ -36,6 +36,7 @@
 	 *
 	 * Everything in phpGroupWare is based on UTC, so lets set it here
 	 */
+
 date_default_timezone_set('UTC');
 
 /**
@@ -226,10 +227,9 @@ class phpgwapi_datetime
 	public static function getntpoffset()
 	{
 		$error_occured = False;
-		if (!isset($GLOBALS['phpgw']->network) || !is_object($GLOBALS['phpgw']->network))
-		{
-			$GLOBALS['phpgw']->network = createObject('phpgwapi.network');
-		}
+
+		$network = createObject('phpgwapi.network');
+
 		$server_time = time();
 
 		$ip = gethostbyname('pool.ntp.org');
@@ -238,10 +238,10 @@ class phpgwapi_datetime
 			$ip = '129.6.15.28';
 		}
 
-		if ($GLOBALS['phpgw']->network->open_port($ip, 13, 5))
+		if ($network->open_port($ip, 13, 5))
 		{
-			$line = $GLOBALS['phpgw']->network->bs_read_port(64);
-			$GLOBALS['phpgw']->network->close_port();
+			$line = $network->bs_read_port(64);
+			$network->close_port();
 
 			$array = explode(' ', $line);
 			// host: 129.6.15.28
@@ -284,13 +284,8 @@ class phpgwapi_datetime
 	public static function gethttpoffset()
 	{
 		$error_occured = false;
-		if (
-			!isset($GLOBALS['phpgw']->network)
-			|| !is_object($GLOBALS['phpgw']->network)
-		)
-		{
-			$GLOBALS['phpgw']->network = createObject('phpgwapi.network');
-		}
+		$network = createObject('phpgwapi.network');
+
 		$server_time = time();
 
 		$ip = gethostbyname('nist.time.gov');
@@ -300,7 +295,7 @@ class phpgwapi_datetime
 		}
 
 		$filename = "http://{$ip}/timezone.cgi?UTC/s/0";
-		$file = $GLOBALS['phpgw']->network->gethttpsocketfile($filename);
+		$file = $network->gethttpsocketfile($filename);
 		if (!$file)
 		{
 			return self::getbestguess();
@@ -769,18 +764,19 @@ class phpgwapi_datetime
 	 */
 	public static function localdates($localtime)
 	{
+		$phpgwapi_common = new \phpgwapi_common();
 		$date = array('raw', 'day', 'month', 'year', 'full', 'dow', 'dm', 'bd');
 		$date['raw'] = $localtime;
-		$date['year'] = (int) $GLOBALS['phpgw']->common->show_date($date['raw'], 'Y');
-		$date['month'] = (int) $GLOBALS['phpgw']->common->show_date($date['raw'], 'm');
-		$date['day'] = (int) $GLOBALS['phpgw']->common->show_date($date['raw'], 'd');
-		$date['full'] = (int) $GLOBALS['phpgw']->common->show_date($date['raw'], 'Ymd');
+		$date['year'] = (int) $phpgwapi_common->show_date($date['raw'], 'Y');
+		$date['month'] = (int) $phpgwapi_common->show_date($date['raw'], 'm');
+		$date['day'] = (int) $phpgwapi_common->show_date($date['raw'], 'd');
+		$date['full'] = (int) $phpgwapi_common->show_date($date['raw'], 'Ymd');
 		$date['bd'] = mktime(13, 0, 0, $date['month'], $date['day'], $date['year']);
-		$date['dm'] = (int) $GLOBALS['phpgw']->common->show_date($date['raw'], 'dm');
+		$date['dm'] = (int) $phpgwapi_common->show_date($date['raw'], 'dm');
 		$date['dow'] = self::day_of_week($date['year'], $date['month'], $date['day']);
-		$date['hour'] = (int) $GLOBALS['phpgw']->common->show_date($date['raw'], 'H');
-		$date['minute'] = (int) $GLOBALS['phpgw']->common->show_date($date['raw'], 'i');
-		$date['second'] = (int) $GLOBALS['phpgw']->common->show_date($date['raw'], 's');
+		$date['hour'] = (int) $phpgwapi_common->show_date($date['raw'], 'H');
+		$date['minute'] = (int) $phpgwapi_common->show_date($date['raw'], 'i');
+		$date['second'] = (int) $phpgwapi_common->show_date($date['raw'], 's');
 
 		return $date;
 	}

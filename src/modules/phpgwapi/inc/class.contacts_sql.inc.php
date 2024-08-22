@@ -2519,9 +2519,7 @@
 		{
 			if (!is_array($people))
 			{
-//					echo "There is no any person to add in your array";
-//					This must be a critical error to stop everything?
-//					$GLOBALS['phpgw']->exit();
+
 				return;
 			}
 

@@ -219,7 +219,7 @@ HTML;
 
 	if (DEBUG_TIMER)
 	{
-		$GLOBALS['debug_timer_start'] = perfgetmicrotime();
+		define('DEBUG_TIMER_START', perfgetmicrotime());
 	}
 
 	// **************************************************************************

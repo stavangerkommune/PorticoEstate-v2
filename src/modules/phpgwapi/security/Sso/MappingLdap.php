@@ -45,7 +45,8 @@ class Mapping extends Mapping_
 		{
 			$this->serverSettings['mapping_field'] = 'uid';
 		}
-		$ds = $GLOBALS['phpgw']->common->ldapConnect();
+		$phpgwapi_common = new \phpgwapi_common();
+		$ds = $phpgwapi_common->ldapConnect();
 		$user_context  = $this->serverSettings['ldap_context'];
 		if (!$ds) return '';
 		$sri = ldap_search($ds, $user_context, '(' . $this->serverSettings['mapping_field'] . '=' . $ext_user . ')');

@@ -1,14 +1,15 @@
 <?php
-	/**
-	* Authentication based on SQL, with optional SSL authentication
-	* @author Andreas 'Count' Kotes <count@flatline.de>
-	* @copyright Copyright (C) 200x Andreas 'Count' Kotes <count@flatline.de>
-	* @copyright Portions Copyright (C) 2004-2008 Free Software Foundation, Inc. http://www.fsf.org/
-	* @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
-	* @package phpgwapi
-	* @subpackage accounts
-	* @version $Id$
-	*/
+
+/**
+ * Authentication based on SQL, with optional SSL authentication
+ * @author Andreas 'Count' Kotes <count@flatline.de>
+ * @copyright Copyright (C) 200x Andreas 'Count' Kotes <count@flatline.de>
+ * @copyright Portions Copyright (C) 2004-2008 Free Software Foundation, Inc. http://www.fsf.org/
+ * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
+ * @package phpgwapi
+ * @subpackage accounts
+ * @version $Id$
+ */
 
 /*
 	   This program is free software: you can redistribute it and/or modify
@@ -25,7 +26,10 @@
 	   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	 */
 
-	namespace App\modules\phpgwapi\security\Auth;
+namespace App\modules\phpgwapi\security\Auth;
+
+use App\modules\phpgwapi\controllers\Accounts\Accounts;
+use App\modules\phpgwapi\services\Settings;
 
 /**
  * Authentication based on SQL table
@@ -63,7 +67,8 @@ class phpgwapi_auth_sql extends Auth_ // wait for it...
 			. " AND account_status = 'A'";
 
 		$this->db->query($sql, __LINE__, __FILE__);
-		if (!$this->db->next_record()) {
+		if (!$this->db->next_record())
+		{
 			return false;
 		}
 
@@ -83,12 +88,20 @@ class phpgwapi_auth_sql extends Auth_ // wait for it...
 	{
 		$account_id = (int) $account_id;
 		// Don't allow passwords changes for other accounts when using XML-RPC
-		if (!$account_id) {
-			$account_id = $GLOBALS['phpgw_info']['user']['account_id'];
+		if (!$account_id)
+		{
+			$userSettings = Settings::getInstance()->get('user');
+
+			$account_id = $userSettings['account_id'];
 		}
 
-		if ($GLOBALS['phpgw_info']['flags']['currentapp'] == 'login') {
-			if (!$this->authenticate($GLOBALS['phpgw']->accounts->id2lid($account_id), $old_passwd)) {
+		$flags = Settings::getInstance()->get('flags');
+
+		if ($flags['currentapp'] == 'login')
+		{
+			$accounts_obj = new Accounts();
+			if (!$this->authenticate($accounts_obj->id2lid($account_id), $old_passwd))
+			{
 				return '';
 			}
 		}
@@ -101,7 +114,8 @@ class phpgwapi_auth_sql extends Auth_ // wait for it...
 			. " SET account_pwd = '{$hash_safe}', account_lastpwd_change = {$now}"
 			. " WHERE account_id = {$account_id}";
 
-		if (!!$this->db->query($sql, __LINE__, __FILE__)) {
+		if (!!$this->db->query($sql, __LINE__, __FILE__))
+		{
 			return $hash;
 		}
 		return '';
@@ -127,46 +141,46 @@ class phpgwapi_auth_sql extends Auth_ // wait for it...
 		$this->db->query($sql, __LINE__, __FILE__);
 	}
 }
+/**
+ * Authentication based on SQL, with optional SSL authentication
+ *
+ * @package phpgwapi
+ * @subpackage accounts
+ */
+class Auth extends phpgwapi_auth_sql
+{
+
 	/**
-	* Authentication based on SQL, with optional SSL authentication
-	*
-	* @package phpgwapi
-	* @subpackage accounts
-	*/
-	class Auth extends phpgwapi_auth_sql
+	 * Constructor
+	 */
+	private $db;
+
+	public function __construct($db)
 	{
-
-		/**
-		* Constructor
-		*/
-		private $db;
-
-		public function __construct($db)
-		{
-			parent::__construct($db);
-			$this->db = $db;
-		}
-
-		/**
-		* Authenticate a user
-		*
-		* @param string $username the login to authenticate
-		* @param string $passwd the password supplied by the user
-		* @return bool did the user authenticate?
-		* @return bool did the user sucessfully authenticate
-		*/
-		public function authenticate($username, $passwd)
-		{
-			if ( isset($_SERVER['SSL_CLIENT_S_DN']) )
-			{
-				$username = $this->db->db_addslashes($username);
-
-				$sql = 'SELECT account_lid FROM phpgw_accounts'
-					. " WHERE account_lid = '{$username}'"
-						. " AND account_status = 'A'";
-				$this->db->query($sql, __LINE__, __FILE__);
-				return $this->db->next_record();
-			}
-			return parent::authenticate($username, $passwd);
-		}
+		parent::__construct($db);
+		$this->db = $db;
 	}
+
+	/**
+	 * Authenticate a user
+	 *
+	 * @param string $username the login to authenticate
+	 * @param string $passwd the password supplied by the user
+	 * @return bool did the user authenticate?
+	 * @return bool did the user sucessfully authenticate
+	 */
+	public function authenticate($username, $passwd)
+	{
+		if (isset($_SERVER['SSL_CLIENT_S_DN']))
+		{
+			$username = $this->db->db_addslashes($username);
+
+			$sql = 'SELECT account_lid FROM phpgw_accounts'
+				. " WHERE account_lid = '{$username}'"
+				. " AND account_status = 'A'";
+			$this->db->query($sql, __LINE__, __FILE__);
+			return $this->db->next_record();
+		}
+		return parent::authenticate($username, $passwd);
+	}
+}

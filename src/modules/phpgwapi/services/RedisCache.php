@@ -37,6 +37,9 @@
  */
 
 namespace App\modules\phpgwapi\services;
+
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\Log;
 use Exception;
 use Redis;
 
@@ -48,12 +51,14 @@ class RedisCache
 	private $redis = null;
 	private static $error_connect = null;
 	private static $is_connected = null;
+	private $serverSettings;
 
 	/**
 	 * Constructor
 	 */
 	function __construct()
 	{
+		$this->serverSettings = Settings::getInstance()->get('server');
 
 		if (!$this->redis && !self::$error_connect && $this->is_enabled())
 		{
@@ -68,7 +73,8 @@ class RedisCache
 
 	private function log_this($msg, $line)
 	{
-		$GLOBALS['phpgw']->log->error(array(
+		$log = new Log();
+		$log->error(array(
 			'text'	=> 'data som feiler for phpgwapi_redis::connect(). Error: %1',
 			'p1'	=> $msg,
 			'line'	=> $line,
@@ -82,8 +88,8 @@ class RedisCache
 		$this->redis = new Redis();
 		//			$host = 'redis';// docker...
 		//			$host = '127.0.0.1';// local
-		$host = $GLOBALS['phpgw_info']['server']['redis_host'];
-		$redis_database = (int)$GLOBALS['phpgw_info']['server']['redis_database'];
+		$host = $this->serverSettings['redis_host'];
+		$redis_database = (int)$this->serverSettings['redis_database'];
 		$port = 6379;
 
 		if (!$host)
@@ -189,7 +195,7 @@ class RedisCache
 			return $enabled;
 		}
 
-		if (isset($GLOBALS['phpgw_info']['server']['redis_enable']) && $GLOBALS['phpgw_info']['server']['redis_enable'])
+		if (isset($this->serverSettings['redis_enable']) && $this->serverSettings['redis_enable'])
 		{
 			$checked = true;
 			$enabled = extension_loaded('redis');

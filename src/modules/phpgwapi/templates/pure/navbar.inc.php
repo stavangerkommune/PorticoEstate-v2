@@ -83,11 +83,12 @@ HTML;
 
 	if (isset($userSettings['apps']['manual']))
 	{
+		$apps = Settings::getInstance()->get('apps');
 		$help_url = "javascript:openwindow('"
 			. phpgw::link('/index.php', array(
 				'menuaction' => 'manual.uimanual.help',
 				'app' => $flags['currentapp'],
-				'section' => isset($GLOBALS['phpgw_info']['apps']['manual']['section']) ? $GLOBALS['phpgw_info']['apps']['manual']['section'] : '',
+				'section' => isset($apps['manual']['section']) ? $apps['manual']['section'] : '',
 				'referer' => Sanitizer::get_var('menuaction')
 			)) . "','700','600')";
 

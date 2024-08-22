@@ -359,7 +359,7 @@ HTML;
 
 			<ul id="menutree" class="nav flex-column">
 HTML;
-	if (false) // $GLOBALS['phpgw']->acl->check('run', ACL_READ, 'preferences') )
+	if (false)
 	{
 		$preferences_url = phpgw::link('/preferences/index.php');
 		$preferences_text = lang('preferences');
@@ -551,7 +551,7 @@ function parse_footer_end()
 	}
 
 	$var = array(
-		'powered_by'	=> lang('Powered by phpGroupWare version %1', $serverSettings['versions']['phpgwapi']),
+		'powered_by'	=> lang('Powered by Portico version %1', $serverSettings['versions']['phpgwapi']),
 		'site_title'	=> "{$serverSettings['site_title']}",
 		'javascript_end' => $phpgwapi_common->get_javascript_end($cache_refresh_token)
 	);

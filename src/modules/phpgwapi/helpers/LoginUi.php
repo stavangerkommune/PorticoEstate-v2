@@ -498,7 +498,7 @@ JS;
 				isset($this->serverSettings['site_title']) ? $this->serverSettings['site_title'] : 'PorticoEstate'
 			);
 
-			$this->tmpl->set_var('template_set', $GLOBALS['phpgw_info']['login_template_set']);
+			$this->tmpl->set_var('template_set', Settings::getInstance()->get('login_template_set'));
 
 			$responsive_css		 = "{$webserver_url}/phpgwapi/templates/pure/css/version_3/pure-min.css";
 			$responsive_grid_css = "{$webserver_url}/phpgwapi/templates/pure/css/version_3/grids-responsive-min.css";
@@ -560,8 +560,8 @@ HTML;
 			}
 			else
 			{
-				$this->tmpl->set_var('login_left_message', $GLOBALS['phpgw_info']['login_left_message']);
-				$this->tmpl->set_var('login_right_message', $GLOBALS['phpgw_info']['login_right_message']);
+				$this->tmpl->set_var('login_left_message', Settings::getInstance()->get('login_left_message'));
+				$this->tmpl->set_var('login_right_message', Settings::getInstance()->get('login_right_message'));
 				$this->tmpl->parse('header_blocks', 'header_block');
 				$this->tmpl->parse('instruction_blocks', 'instruction_block');
 				if (empty($variables['lang_firstname']))

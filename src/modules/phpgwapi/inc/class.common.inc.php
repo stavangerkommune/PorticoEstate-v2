@@ -666,13 +666,6 @@ HTML;
 			if (!in_array($entry, $ignore_list) && $file->isDir())
 			{
 				$list[$entry]['title'] = $entry;
-
-				$f = "{$dirname}/{$entry}/details.inc.php";
-				if (file_exists($f))
-				{
-					require_once $f;
-					$list[$entry]['title'] = lang('Use %s interface', $GLOBALS['phpgw_info']['template'][$entry]['title']);
-				}
 			}
 		}
 		ksort($list);
@@ -682,7 +675,7 @@ HTML;
 	/**
 	 * Get template dir of an application
 	 *
-	 * @param string $appname application name optional can be derived from $GLOBALS['phpgw_info']['flags']['currentapp'];
+	 * @param string $appname application name optional can be derived from $flags['currentapp'];
 	 * @param string? $layout optional can force the template set to a specific layout
 	 */
 	public static function get_tpl_dir($appname = '', $layout = '')
@@ -1348,26 +1341,8 @@ HTML;
 	 */
 	public function create_emailpreferences($prefs = '', $accountid = '')
 	{
-		return $GLOBALS['phpgw']->preferences->create_email_preferences($accountid);
-		// Create the email Message Class if needed
-		if (is_object($GLOBALS['phpgw']->msg))
-		{
-			$do_free_me = False;
-		}
-		else
-		{
-			$GLOBALS['phpgw']->msg = createObject('email.mail_msg');
-			$do_free_me = True;
-		}
-
-		// this sets the preferences into the phpgw_info structure
-		$GLOBALS['phpgw']->msg->create_email_preferences();
-
-		// cleanup and return
-		if ($do_free_me)
-		{
-			unset($GLOBALS['phpgw']->msg);
-		}
+		$preferences = createObject('phpgwapi.preferences');
+		return $preferences->create_email_preferences($accountid);
 	}
 
 	/**
@@ -1719,8 +1694,6 @@ HTML;
 			phpgwapi_xslttemplates::getInstance()->add_file('msgbox', $this->get_tpl_dir('phpgwapi', 'base'));
 		}
 
-		//	$prev_helper = $GLOBALS['phpgw']->translation->translator_helper;
-		//	$GLOBALS['phpgw']->translation->translator_helper = '';
 
 		$data = array();
 		if (is_array($text))
@@ -1772,8 +1745,6 @@ HTML;
 				'msgbox_class'				=> $class
 			);
 		}
-
-		//	$GLOBALS['phpgw']->translation->translator_helper = $prev_helper;
 
 		if ($base)
 		{

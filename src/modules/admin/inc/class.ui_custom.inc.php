@@ -318,7 +318,7 @@ class admin_ui_custom extends phpgwapi_uicommon_jquery
 		$function_msg	= lang('list custom attribute');
 
 		$this->flags['app_header'] = lang('admin') . ' - ' . lang('attribute') . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('list_attribute' => $data));
 		$this->save_sessiondata();
@@ -550,7 +550,7 @@ class admin_ui_custom extends phpgwapi_uicommon_jquery
 		$appname	= lang($this->appname);
 
 		$this->flags['app_header'] = lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit_attrib' => $data));
 	}
@@ -739,7 +739,7 @@ class admin_ui_custom extends phpgwapi_uicommon_jquery
 		$function_msg	= lang('list custom function');
 
 		$this->flags['app_header'] = lang('admin') . ' - ' . lang('custom function') . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('list_custom_function' => $data));
 		$this->save_sessiondata();
@@ -871,7 +871,7 @@ class admin_ui_custom extends phpgwapi_uicommon_jquery
 
 
 		$this->flags['app_header'] = lang('admin') . ' - ' . lang('custom function') . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit_custom_function' => $data));
 	}
@@ -939,7 +939,7 @@ class admin_ui_custom extends phpgwapi_uicommon_jquery
 		$function_msg	= lang('delete entity type');
 
 		$this->flags['app_header'] = lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 	}
@@ -1008,7 +1008,7 @@ class admin_ui_custom extends phpgwapi_uicommon_jquery
 		$appname										 = $this->appname;
 		$function_msg									 = lang('list entity attribute group');
 		$this->flags['app_header']	 = $appname . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 
 		$data = array(
@@ -1353,7 +1353,7 @@ class admin_ui_custom extends phpgwapi_uicommon_jquery
 
 
 		$this->flags['app_header'] = lang($appname) . ' - ' . $location . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit_attrib_group' => $data));
 	}

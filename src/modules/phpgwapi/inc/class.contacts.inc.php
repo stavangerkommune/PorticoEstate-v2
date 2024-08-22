@@ -7,7 +7,6 @@
 	* @subpackage contacts
 	*/
 
-	//print_debug('Contact Repository:',"'".$GLOBALS['phpgw_info']['server']['contact_repository']."'",'api'); 
 	/**
 	* Include SQL handler
 	*/

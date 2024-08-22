@@ -71,7 +71,8 @@ class Sessions
 	private $_history_id;
 
 	private static $instance;
-
+	private static $sort_by;
+	private static $order_by;
 
 	private function __construct()
 	{
@@ -273,7 +274,6 @@ class Sessions
 
 		$this->_account_id = $accounts->name2id($this->_account_lid);
 
-		//	$GLOBALS['phpgw_info']['user']['account_id'] = $this->_account_id;
 		Settings::getInstance()->setAccountId($this->_account_id);
 		$accounts->set_account($this->_account_id);
 
@@ -335,9 +335,6 @@ class Sessions
 			$this->cd_reason = 2;
 			return false;
 		}
-
-		//$GLOBALS['phpgw_info']['user']  = $this->_data;
-		//		$GLOBALS['phpgw_info']['hooks'] = $this->hooks;
 
 		Cache::session_set('phpgwapi', 'password', base64_encode($this->_passwd));
 
@@ -464,7 +461,6 @@ class Sessions
 
 		$this->update_dla();
 
-		//	$this->_account_id = $GLOBALS['phpgw']->accounts->name2id($this->_account_lid);
 		$accounts = new Accounts();
 		$this->_account_id = $accounts->name2id($this->_account_lid);
 
@@ -475,9 +471,7 @@ class Sessions
 			return false;
 		}
 
-		//	$GLOBALS['phpgw_info']['user']['account_id'] = $this->_account_id;
 		Settings::getInstance()->setAccountId($this->_account_id);
-
 
 		/* init the crypto object before appsession call below */
 		//$this->_key = md5($this->_sessionid . $this->serverSetting['encryptkey']); //Sigurd: not good for permanent data
@@ -515,13 +509,9 @@ class Sessions
 			return false;
 		}
 
-		//		$GLOBALS['phpgw_info']['user']  = $this->_data;
-		//		$GLOBALS['phpgw_info']['hooks'] = $this->hooks;
 
 		$user_info  = Settings::getInstance()->get('user');
 
-		//		$GLOBALS['phpgw_info']['user']['session_ip'] = $session['session_ip'];
-		//		$GLOBALS['phpgw_info']['user']['passwd']     = Cache::session_get('phpgwapi', 'password');
 		$user_info['session_ip'] = $session['session_ip'];
 		$user_info['passwd']     = Cache::session_get('phpgwapi', 'password');
 		$user_info['sessionid']  = $this->_sessionid;
@@ -626,12 +616,6 @@ class Sessions
 				return false;
 			}
 		}
-		/*
-			$GLOBALS['phpgw']->acl->set_account_id($this->_account_id);
-			$GLOBALS['phpgw']->accounts->set_account($this->_account_id);
-			$GLOBALS['phpgw']->preferences->set_account_id($this->_account_id);
-			$GLOBALS['phpgw']->applications->set_account_id($this->_account_id);
-*/
 
 		Translation::getInstance()->populate_cache();
 
@@ -1075,8 +1059,9 @@ class Sessions
 			return $data;
 		}
 
-		//		$GLOBALS['phpgw']->session->sort_by = $sort;
-		//		$GLOBALS['phpgw']->session->sort_order = $order;
+
+		self::$sort_by = $sort;
+		self::$order_by = $order;
 
 		uasort($data, array($this, 'session_sort'));
 
@@ -1092,7 +1077,7 @@ class Sessions
 		return array_slice($data, $start, $maxmatches);
 	}
 	/**
-	 * Get userinfo to pass into $GLOBALS['phpgw_info']['user'] for asyncservice
+	 * Get userinfo to pass into Settings for ['user'] for asyncservice
 	 *
 	 * @return array user
 	 */
@@ -1194,8 +1179,8 @@ class Sessions
 	 */
 	public static function session_sort($a, $b)
 	{
-		$sort_by = &$GLOBALS['phpgw']->session->sort_by;
-		$sign = strcasecmp($GLOBALS['phpgw']->session->sort_order, 'ASC') ? 1 : -1;
+		$sort_by = self::$sort_by;
+		$sign = strcasecmp(self::$order_by, 'ASC') ? 1 : -1;
 
 		return strcasecmp($a[$sort_by], $b[$sort_by]) * $sign;
 	}

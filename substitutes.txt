@@ -122,3 +122,7 @@ $asyncservice = AsyncService::getInstance();
 
 use App\helpers\Template;
 $template = Template::getInstance(PHPGW_TEMPLATE_DIR);
+
+Note:
+
+bytt ut: phpgwapi.jscalendar

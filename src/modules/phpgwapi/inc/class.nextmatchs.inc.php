@@ -400,7 +400,7 @@ class phpgwapi_nextmatchs extends phpgwapi_nextmatchs_xslt
 			'order_value'  => $order,
 			'sort_value'   => $sort,
 			'query_value'  => $query,
-			'th_bg'        => '', //$GLOBALS['phpgw_info']['theme']['th_bg'],
+			'th_bg'        => '', //Settings::getInstance()->get('theme')['th_bg'],
 			'search'       => $this->search($search_obj),
 			'filter'       => ($filter_obj ? $this->filter($filter_obj, $yours) : '')
 		);
@@ -432,7 +432,7 @@ class phpgwapi_nextmatchs extends phpgwapi_nextmatchs_xslt
 			'order_value'   => $order,
 			'sort_value'    => $sort,
 			'query_value'   => $query,
-			'th_bg'         => $GLOBALS['phpgw_info']['theme']['th_bg'],
+			'th_bg'         => Settings::getInstance()->get('theme')['th_bg'],
 			'search'        => $this->search($search_obj),
 			'filter'        => ($filter_obj ? $this->filter($filter_obj, $yours) : '')
 		);
@@ -545,7 +545,7 @@ class phpgwapi_nextmatchs extends phpgwapi_nextmatchs_xslt
 		{
 			if ($filter_obj == 1)
 			{
-				//$user_groups = $GLOBALS['phpgw']->accounts->membership($this->userSettings['account_id']);
+				//$user_groups = createObject('phpgwapi.accounts')->membership($this->userSettings['account_id']);
 				//$indexlimit = count($user_groups);
 				$indexlimit = 0;
 

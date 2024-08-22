@@ -463,7 +463,7 @@ class Translation
 
 				$raw = array();
 
-				// this populates $GLOBALS['phpgw_info']['apps']
+				// this populates Settings/apps
 
 				// Visit each app/setup dir, look for a phpgw_lang file
 				// get apps from database instead of filesystem

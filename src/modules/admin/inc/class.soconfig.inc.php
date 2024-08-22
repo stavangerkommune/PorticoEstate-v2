@@ -36,6 +36,7 @@ class admin_soconfig
 		$this->left_join	= $this->db->left_join;
 		$this->like			= $this->db->like;
 
+
 		if ($location_id)
 		{
 			$this->set_location($location_id);
@@ -321,7 +322,8 @@ class admin_soconfig
 					$value = '****';
 					break;
 				case 'date':
-					$value = $GLOBALS['phpgw']->common->show_date($this->db->f('value'), $dateformat);
+					$phpgwapi_common = new \phpgwapi_common();
+					$value = $phpgwapi_common->show_date($this->db->f('value'), $dateformat);
 					break;
 				default:
 					$value = $this->db->f('value', true);

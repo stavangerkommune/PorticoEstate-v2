@@ -10,6 +10,8 @@
 	* @version $Id$
 	*/
 	namespace App\modules\phpgwapi\services\Vfs;
+	use App\modules\phpgwapi\controllers\Accounts\Accounts;
+
 	/**
 	* Enables debug output for this class
 	*/
@@ -85,9 +87,12 @@
 		*
 		 */
 
+		public $accounts_obj;
 		function __construct()
 		{
 			parent::__construct();
+			$this->accounts_obj = new Accounts();
+
 			/*
 			   File/dir attributes, each corresponding to a database field.  Useful for use in loops
 			   If an attribute was added to the table, add it here and possibly add it to
@@ -500,7 +505,7 @@
 			}
 
 			/* Check if they're in the group */
-			$memberships = $GLOBALS['phpgw']->accounts->membership ($user_id);
+			$memberships = $this->accounts_obj->membership ($user_id);
 			$group_ok=0;
 			if (is_array ($memberships))
 			{
@@ -822,7 +827,7 @@
 			$location = $this->glue_url($parsed_url);
 
 			header( 'Location: '.$location, true);
-			$GLOBALS['phpgw']->common->phpgw_exit();
+			(new \phpgwapi_common())->phpgw_exit();
 		}
 		
 		/*
@@ -1704,17 +1709,17 @@ $this->debug('cp : success '.$result);
 			}
 			if (isset($data['attributes']['owner_id']) && $id=$data['attributes']['owner_id'])
 			{
-				$dav_properties['dc:publisher'] = (string) $GLOBALS['phpgw']->accounts->get($id);
+				$dav_properties['dc:publisher'] = (string) $this->accounts_obj->get($id);
 				$dav_properties['publisher_id'] = $id;
 			}
 			if (isset($data['attributes']['createdby_id']) && $id=$data['attributes']['createdby_id'])
 			{
-				$dav_properties['dc:creator'] = (string) $GLOBALS['phpgw']->accounts->get($id);
+				$dav_properties['dc:creator'] = (string) $this->accounts_obj->get($id);
 				$dav_properties['creator_id'] = $id;
 			}
 			if (isset($data['attributes']['modifiedby_id']) && $id=$data['attributes']['modifiedby_id'])
 			{
-				$dav_properties['dc:contributor'] = (string) $GLOBALS['phpgw']->accounts->get($id);
+				$dav_properties['dc:contributor'] = (string) $this->accounts_obj->get($id);
 				$dav_properties['contributor_id'] = $id;
 			}
 			if (isset($data['attributes']['app']) && $id=$data['attributes']['app'])

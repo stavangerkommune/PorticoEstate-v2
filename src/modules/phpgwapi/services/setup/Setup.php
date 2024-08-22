@@ -62,7 +62,7 @@
 
 
 		/*
-		varanter av $Globals
+		varianter av $Globals
 		$GLOBALS['phpgw_info']['apps']
 		$GLOBALS['phpgw_info']['server']
 		$GLOBALS['phpgw_info']['setup']

@@ -57,8 +57,7 @@ class admin_uiconfig2
 		$this->serverSettings = Settings::getInstance()->get('server');
 		$this->userSettings = Settings::getInstance()->get('user');
 		$this->flags = Settings::getInstance()->get('flags');
-		$this->flags['xslt_app'] = true;
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['xslt_app' => true]);
 		$this->nextmatchs			= CreateObject('phpgwapi.nextmatchs');
 		$this->account				= $this->userSettings['account_id'];
 		$this->bo					= CreateObject('admin.boconfig', true);
@@ -73,13 +72,8 @@ class admin_uiconfig2
 		$this->sort					= $this->bo->sort;
 		$this->order				= $this->bo->order;
 		$this->allrows				= $this->bo->allrows;
-		$this->flags['menu_selection'] = "navbar#{$this->location_id}";
-		$this->flags['app_header'] = "{$this->currentapp}::{$this->acl_location}::";
-		Settings::getInstance()->set('flags', $this->flags);
-
+		Settings::getInstance()->update('flags', ['menu_selection' => "navbar#{$this->location_id}"]);
 		$this->phpgwapi_common = new phpgwapi_common();
-
-
 	}
 
 	function save_sessiondata()
@@ -211,8 +205,7 @@ class admin_uiconfig2
 		$appname	= lang('config');
 		$function_msg	= lang('list section');
 
-		$this->flags['app_header'] .= lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => "{$this->currentapp}::{$this->acl_location}::" . lang('admin') . ' - ' . $appname . ': ' . $function_msg]);
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('list_section' => $data));
 		$this->save_sessiondata();
 	}
@@ -311,8 +304,7 @@ class admin_uiconfig2
 
 		$appname					= lang('config');
 
-		$this->flags['app_header'] .= lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => "{$this->currentapp}::{$this->acl_location}::" . lang('admin') . ' - ' . $appname . ': ' . $function_msg]);
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit_section' => $data));
 	}
 
@@ -353,8 +345,7 @@ class admin_uiconfig2
 
 		$appname					= lang('config');
 
-		$this->flags['app_header'] .= lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => "{$this->currentapp}::{$this->acl_location}::" . lang('admin') . ' - ' . $appname . ': ' . $function_msg]);
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('view_section' => $data));
 	}
 
@@ -474,8 +465,7 @@ class admin_uiconfig2
 		$appname	= lang('config');
 		$function_msg	= lang('list attribute');
 
-		$this->flags['app_header'] .= lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => "{$this->currentapp}::{$this->acl_location}::" . lang('admin') . ' - ' . $appname . ': ' . $function_msg]);
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('list_attrib' => $data));
 		$this->save_sessiondata();
 	}
@@ -601,8 +591,7 @@ class admin_uiconfig2
 
 		$appname	= lang('config');
 
-		$this->flags['app_header'] .= lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => "{$this->currentapp}::{$this->acl_location}::" . lang('admin') . ' - ' . $appname . ': ' . $function_msg]);
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit_attrib' => $data));
 	}
 
@@ -733,8 +722,7 @@ class admin_uiconfig2
 		$appname	= lang('config');
 		$function_msg	= lang('list values');
 
-		$this->flags['app_header'] .= lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => "{$this->currentapp}::{$this->acl_location}::" . lang('admin') . ' - ' . $appname . ': ' . $function_msg]);
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('list_value' => $data));
 		$this->save_sessiondata();
 	}
@@ -871,8 +859,7 @@ class admin_uiconfig2
 
 		$appname	= lang('config');
 
-		$this->flags['app_header'] .= lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => "{$this->currentapp}::{$this->acl_location}::" . lang('admin') . ' - ' . $appname . ': ' . $function_msg]);
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('edit_value' => $data));
 	}
 
@@ -914,8 +901,7 @@ class admin_uiconfig2
 		$appname	= lang('config');
 		$function_msg	= lang('delete section');
 
-		$this->flags['app_header'] .= lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => "{$this->currentapp}::{$this->acl_location}::" . lang('admin') . ' - ' . $appname . ': ' . $function_msg]);
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 	}
 
@@ -958,8 +944,7 @@ class admin_uiconfig2
 		$appname	= lang('config');
 		$function_msg	= lang('delete attribute');
 
-		$this->flags['app_header'] .= lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => "{$this->currentapp}::{$this->acl_location}::" . lang('admin') . ' - ' . $appname . ': ' . $function_msg]);
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 	}
 
@@ -1006,8 +991,7 @@ class admin_uiconfig2
 		$appname	= lang('config');
 		$function_msg	= lang('delete value');
 
-		$this->flags['app_header'] .= lang('admin') . ' - ' . $appname . ': ' . $function_msg;
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => "{$this->currentapp}::{$this->acl_location}::" . lang('admin') . ' - ' . $appname . ': ' . $function_msg]);
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('delete' => $data));
 	}
 
@@ -1030,8 +1014,7 @@ class admin_uiconfig2
 
 		$msg	= lang('No access');
 
-		$this->flags['app_header'] .= lang('admin') . ' - ' . $msg;
-		Settings::getInstance()->set('flags', $this->flags);
+		Settings::getInstance()->update('flags', ['app_header' => "{$this->currentapp}::{$this->acl_location}::" . lang('admin') . ' - ' . $appname . ': ' . $function_msg]);
 		phpgwapi_xslttemplates::getInstance()->set_var('phpgw', array('no_access' => $data));
 	}
 }

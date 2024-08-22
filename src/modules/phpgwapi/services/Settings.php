@@ -143,10 +143,6 @@ class Settings
  
     public function set($name, $value)
     {
-		if($name == 'apps')
-		{
-//			_debug_array($value);
-		}
         $this->settings = array_merge($this->settings, array($name => $value));
     }
 

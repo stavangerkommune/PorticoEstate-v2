@@ -302,7 +302,7 @@ class Acl
 	 */
 	public function read()
 	{
-		if (count($this->_data[$this->_account_id]) == 0)
+		if (!isset($this->_data[$this->_account_id]) || count($this->_data[$this->_account_id]) == 0)
 		{
 			$this->_read_repository();
 		}
