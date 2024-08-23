@@ -193,6 +193,16 @@ class StartPoint
 
 	public function bookingfrontend(Request $request, Response $response)
 	{
+		return $this->execute($request, $response, 'bookingfrontend');
+	}
+
+	public function eventplannerfrontend(Request $request, Response $response)
+	{
+		return $this->execute($request, $response, 'eventplannerfrontend');
+	}
+
+	public function execute(Request $request, Response $response, $app)
+	{
 		//	_debug_array($response);
 
 		// Make sure we're always logged in
@@ -219,14 +229,14 @@ class StartPoint
 			}
 
 			$sessions->phpgw_setcookie('redirect', false, 0);
-			\phpgw::redirect_link('/bookingfrontend/index.php', $redirect_data);
+			\phpgw::redirect_link("/{$app}/", $redirect_data);
 			unset($redirect);
 			unset($redirect_data);
 			unset($sessid);
 		}
 
 		$flags = Settings::getInstance()->get('flags');
-		$flags['currentapp'] = 'bookingfrontend';
+		$flags['currentapp'] = $app;
 		Settings::getInstance()->set('flags', $flags);
 
 		$selected_lang = Sanitizer::get_var('selected_lang', 'string', 'COOKIE');
@@ -242,19 +252,27 @@ class StartPoint
 
 		\App\modules\phpgwapi\services\Translation::getInstance()->set_userlang($userlang, true);
 
-		$template_set = Sanitizer::get_var('template_set', 'string', 'COOKIE');
-
-		switch ($template_set)
+		if ($app == 'bookingfrontend')
 		{
-			case 'bookingfrontend':
-			case 'bookingfrontend_2':
-				$userSettings['preferences']['common']['template_set'] = $template_set;
-				break;
-			default: // respect the global setting
-				break;
-		}
+			$template_set = Sanitizer::get_var('template_set', 'string', 'COOKIE');
 
-		Settings::getInstance()->set('user', $userSettings);
+			switch ($template_set)
+			{
+				case 'bookingfrontend':
+				case 'bookingfrontend_2':
+					$userSettings['preferences']['common']['template_set'] = $template_set;
+					break;
+				default: // respect the global setting
+					break;
+			}
+
+			Settings::getInstance()->set('user', $userSettings);
+		}
+		else if ($app == 'eventplannerfrontend')
+		{
+			$userSettings['preferences']['common']['template_set'] = 'frontend';
+			Settings::getInstance()->set('user', $userSettings);
+		}
 		/*
 		* This one is needed to set the correct template set, defined on first run
 		*/
@@ -264,14 +282,25 @@ class StartPoint
 
 		if (!$this->app || !$this->class || !$this->method)
 		{
-			$this->app = 'bookingfrontend';
+			$this->app = $app;
 			$this->class = 'uisearch';
+
+			if($app == 'bookingfrontend')
+			{
+				$this->class = 'uisearch';
+			}
+			else
+			{
+				$this->class = 'uievents';
+				\phpgw::redirect_link('/eventplannerfrontend/home/');
+
+			}
 			$this->method = 'index';
 			$this->invalid_data = false;
 		}
 
 
-		if ($this->app != 'bookingfrontend')
+		if ($this->app != $app)
 		{
 			$this->invalid_data = true;
 			$phpgwapi_common->phpgw_header(true);
@@ -392,7 +421,7 @@ HTML;
 		/* * ***********************************************************************\
 	 * Verify that the users session is still active otherwise kick them out   *
 	  \************************************************************************ */
-	  $flags = Settings::getInstance()->get('flags');
+		$flags = Settings::getInstance()->get('flags');
 		if ($flags['currentapp'] != 'home' && $flags['currentapp'] != 'about')
 		{
 			$acl = Acl::getInstance();
@@ -477,7 +506,6 @@ HTML;
 			$response_str = json_encode(['message' => $message]);
 			$response->getBody()->write($response_str);
 			return $response->withHeader('Content-Type', 'application/json');
-
 		}
 
 		if (!$invalid_data && is_object($Object) && isset($Object->public_functions) && is_array($Object->public_functions) && isset($Object->public_functions[$method]) && $Object->public_functions[$method])

@@ -43,6 +43,7 @@ class eventplanner_bocustomer_report extends phpgwapi_bocommon
 
 	public function __construct()
 	{
+		parent::__construct();
 		$this->fields = eventplanner_customer_report::get_fields();
 		$this->acl_location = eventplanner_customer_report::acl_location;
 		$this->cats = CreateObject('phpgwapi.categories', -1, 'eventplanner', $this->acl_location);

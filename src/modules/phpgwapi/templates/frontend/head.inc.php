@@ -197,8 +197,9 @@ $site_url	= phpgw::link("/{$app}/", array());
 $home_text		= lang('home');
 $manual_text = lang('manual');
 
+$script_path = Sanitizer::get_var('REDIRECT_URL', 'string', 'SERVER');
 
-if (preg_match('/home/$/i', $_SERVER['SCRIPT_NAME']))
+if (preg_match('/\/home/', $script_path))
 {
 	$home_text	= '';
 }
@@ -208,13 +209,13 @@ $user = $accounts_obj->get($userSettings['id']);
 if ($user && isset($_SESSION['phpgw_session']['session_flags']) && $_SESSION['phpgw_session']['session_flags'] == 'N')
 {
 	$login_text = $user->__toString() . ' :: ' . lang('Logout');
-	$login_url = 'logout.php';
+	$login_url = "/{$app}/logout";
 }
 else
 {
 	$login_text_org = '';
 	$login_text = lang('Login');
-	$login_url = 'logout.php?login=1&after=' . $_GET['menuaction'];
+	$login_url = "/{$app}/logout?login=1&after=" . $_GET['menuaction'];
 	$login_parameter = !empty($config_frontend['login_parameter']) ? $config_frontend['login_parameter'] : '';
 	$custom_login_url = !empty($config_frontend['custom_login_url']) ? $config_frontend['custom_login_url'] : '';
 	if ($login_parameter)

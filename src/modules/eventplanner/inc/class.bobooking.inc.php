@@ -41,6 +41,7 @@ class eventplanner_bobooking extends phpgwapi_bocommon
 
 	public function __construct()
 	{
+		parent::__construct();
 		$this->fields = eventplanner_booking::get_fields();
 		$this->acl_location = eventplanner_booking::acl_location;
 	}

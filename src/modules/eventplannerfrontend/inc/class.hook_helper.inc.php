@@ -111,12 +111,12 @@ class eventplannerfrontend_hook_helper
 			return;
 		}
 
-		$uicommon = CreateObject('phpgwapi.uicommon');
+		phpgw::import_class('phpgwapi.uicommon');
 
 		$data = array(
 			'config' => CreateObject('phpgwapi.config', 'eventplannerfrontend')->read(),
 		);
-		$uicommon->render_template_xsl(array('home'), array('view' => $data));
+		phpgwapi_uicommon::render_template_xsl(array('home'), array('view' => $data));
 	}
 
 	public function after_navbar()

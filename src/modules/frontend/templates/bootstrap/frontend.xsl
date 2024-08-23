@@ -176,7 +176,7 @@
 					</button>
 					<div class="dropdown-menu">
 						<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#myProfile">Min profil</a>
-						<a class="dropdown-item" href="logout.php" >
+						<a class="dropdown-item" href="logout" >
 							<xsl:value-of select="php:function('lang', 'logout')"/>
 						</a>
 					</div>

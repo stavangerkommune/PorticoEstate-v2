@@ -80,6 +80,12 @@ class SessionsMiddleware implements MiddlewareInterface
 				\App\modules\bookingfrontend\helpers\LoginHelper::process();
 				return $handler->handle($request);
 			}
+			if ($currentApp == 'eventplannerfrontend')
+			{
+				\App\modules\eventplannerfrontend\helpers\LoginHelper::process();
+				return $handler->handle($request);
+			}
+			
 			if ($currentApp == 'registration')
 			{
 				\App\modules\registration\helpers\LoginHelper::process();

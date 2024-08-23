@@ -316,8 +316,8 @@ class Log
 				$call_footer = false;
 			}
 			//		\App\modules\phpgwapi\services\Cache::message_set($message, 'error');
-			$phpgwapi_common = new \phpgwapi_common();
-			$phpgwapi_common->phpgw_exit($call_footer);
+	//		$phpgwapi_common = new \phpgwapi_common();
+	//		$phpgwapi_common->phpgw_exit($call_footer);
 
 		}
 	}

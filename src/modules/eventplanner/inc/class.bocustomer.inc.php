@@ -39,6 +39,7 @@ class eventplanner_bocustomer extends phpgwapi_bocommon
 
 	public function __construct()
 	{
+		parent::__construct();
 		$this->fields = eventplanner_customer::get_fields();
 		$this->acl_location = eventplanner_customer::acl_location;
 	}

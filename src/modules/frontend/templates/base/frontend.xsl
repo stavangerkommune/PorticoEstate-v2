@@ -32,7 +32,7 @@
 						</a>
 					</li>
 					<li>
-						<a href="logout.php"  class="header_link">
+						<a href="logout"  class="header_link">
 							<em>
 								<img src="frontend/templates/base/images/16x16/door_out.png" class="list_image"/>
 							</em>

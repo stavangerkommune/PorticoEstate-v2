@@ -146,7 +146,7 @@ class eventplanner_uiapplication extends phpgwapi_uicommon
 			$message = '';
 			if ($this->currentapp == 'eventplannerfrontend')
 			{
-				phpgw::redirect_link('login.php', array('after' => 'eventplannerfrontend.uiapplication.index'));
+				phpgw::redirect_link('login/', array('after' => 'eventplannerfrontend.uiapplication.index'));
 				$message = lang('you need to log in to access this page.');
 			}
 			phpgw::no_access(false, $message);
@@ -230,7 +230,7 @@ class eventplanner_uiapplication extends phpgwapi_uicommon
 		{
 			if ($this->currentapp == 'eventplannerfrontend')
 			{
-				phpgw::redirect_link('login.php', array('after' => 'eventplannerfrontend.uiapplication.add'));
+				phpgw::redirect_link('login/', array('after' => 'eventplannerfrontend.uiapplication.add'));
 			}
 		}
 
