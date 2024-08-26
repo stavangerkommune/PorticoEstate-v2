@@ -3,146 +3,293 @@
 namespace App\modules\bookingfrontend\models;
 //use App\modules\phpgwapi\services\Settings;
 use App\modules\bookingfrontend\traits\SerializableTrait;
+use OpenApi\Annotations as OA;
 
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="bb_building")
+ * @OA\Schema(
+ *      schema="Building",
+ *      type="object",
+ *      title="Building",
+ *      description="Building model",
+ * )
  * @Exclude
  */
 class Building
 {
     use SerializableTrait;
+
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      * @Expose
+     * @OA\Property(
+     *      description="Unique identifier for the building",
+     *      type="integer"
+     * )
      */
     public $id;
 
     /**
      * @ORM\Column(type="string", length=150)
      * @Expose
+     * @OA\Property(
+     *      description="Name of the building",
+     *      type="string",
+     *      maxLength=150
+     * )
      */
     public $name;
 
     /**
      * @ORM\Column(type="text")
-     * @Exclude
+     * @Expose
+     * @OA\Property(
+     *      description="Homepage of the building",
+     *      type="string",
+     *      nullable=true
+     * )
      */
     public $homepage;
 
     /**
      * @ORM\Column(type="string", length=50)
+     * @Expose
+     * @OA\Property(
+     *      description="Contact phone number",
+     *      type="string",
+     *      maxLength=50
+     * )
      */
     public $phone;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Expose
+     * @OA\Property(
+     *      description="Contact email",
+     *      type="string",
+     *      maxLength=255,
+     *      nullable=true
+     * )
      */
     public $email;
 
     /**
      * @ORM\Column(type="integer", options={"default" : 1})
+     * @Expose
+     * @OA\Property(
+     *      description="Status of the building, 1 for active, 0 for inactive",
+     *      type="integer"
+     * )
      */
     public $active;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Expose
+     * @OA\Property(
+     *      description="Street address of the building",
+     *      type="string",
+     *      maxLength=255
+     * )
      */
     public $street;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Expose
+     * @OA\Property(
+     *      description="Zip code of the building",
+     *      type="string",
+     *      maxLength=255
+     * )
      */
     public $zip_code;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Expose
+     * @OA\Property(
+     *      description="City where the building is located",
+     *      type="string",
+     *      maxLength=255
+     * )
      */
     public $city;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Expose
+     * @OA\Property(
+     *      description="District or part of town",
+     *      type="string",
+     *      maxLength=255
+     * )
      */
     public $district;
 
     /**
      * @ORM\Column(type="text", nullable=true)
+     * @OA\Property(
+     *      description="Location code of the building",
+     *      type="string",
+     *      nullable=true
+     * )
      */
     public $location_code;
 
     /**
      * @ORM\Column(type="integer", options={"default" : 0})
+     * @Expose
+     * @OA\Property(
+     *      description="Whether the calendar is deactivated, 0 or 1",
+     *      type="integer"
+     * )
      */
     public $deactivate_calendar;
 
     /**
      * @ORM\Column(type="integer", options={"default" : 0})
+     * @Expose
+     * @OA\Property(
+     *      description="Whether applications are deactivated, 0 or 1",
+     *      type="integer"
+     * )
      */
     public $deactivate_application;
 
     /**
      * @ORM\Column(type="integer", options={"default" : 0})
+     * @Expose
+     * @OA\Property(
+     *      description="Whether sending messages is deactivated, 0 or 1",
+     *      type="integer"
+     * )
      */
     public $deactivate_sendmessage;
 
     /**
      * @ORM\Column(type="string", length=50, nullable=true)
+     * @OA\Property(
+     *      description="Name of the inspector",
+     *      type="string",
+     *      maxLength=50,
+     *      nullable=true
+     * )
      */
     public $tilsyn_name;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @OA\Property(
+     *      description="Email of the inspector",
+     *      type="string",
+     *      maxLength=255,
+     *      nullable=true
+     * )
      */
     public $tilsyn_email;
 
     /**
      * @ORM\Column(type="string", length=50, nullable=true)
+     * @OA\Property(
+     *      description="Phone number of the inspector",
+     *      type="string",
+     *      maxLength=50,
+     *      nullable=true
+     * )
      */
     public $tilsyn_phone;
 
     /**
      * @ORM\Column(type="string", length=50, nullable=true)
-     * @Expose(groups={"admin"})
+     * @Expose
+     * @OA\Property(
+     *      description="Text for the calendar",
+     *      type="string",
+     *      maxLength=50,
+     *      nullable=true
+     * )
      */
     public $calendar_text;
 
     /**
      * @ORM\Column(type="string", length=50, nullable=true)
+     * @OA\Property(
+     *      description="Second name of the inspector",
+     *      type="string",
+     *      maxLength=50,
+     *      nullable=true
+     * )
      */
     public $tilsyn_name2;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @OA\Property(
+     *      description="Second email of the inspector",
+     *      type="string",
+     *      maxLength=255,
+     *      nullable=true
+     * )
      */
     public $tilsyn_email2;
 
     /**
      * @ORM\Column(type="string", length=50, nullable=true)
+     * @OA\Property(
+     *      description="Second phone number of the inspector",
+     *      type="string",
+     *      maxLength=50,
+     *      nullable=true
+     * )
      */
     public $tilsyn_phone2;
 
     /**
      * @ORM\Column(type="integer", options={"default" : 0})
+     * @OA\Property(
+     *      description="Whether there is an extra calendar, 0 or 1",
+     *      type="integer"
+     * )
      */
     public $extra_kalendar;
 
     /**
      * @ORM\Column(type="integer")
+     * @OA\Property(
+     *      description="Activity ID associated with the building",
+     *      type="integer"
+     * )
      */
     public $activity_id;
 
     /**
      * @ORM\Column(type="text", nullable=true)
+     * @Expose
+     * @OA\Property(
+     *      description="Opening hours of the building",
+     *      type="string",
+     *      nullable=true
+     * )
      */
     public $opening_hours;
 
     /**
      * @ORM\Column(type="json", nullable=true)
+     * @Expose
+     * @OA\Property(
+     *      description="Description in JSON format",
+     *      type="object",
+     *      nullable=true
+     * )
      */
     public $description_json;
+
 
     public function __construct($data = [])
     {

@@ -9,7 +9,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Exception;
 use App\modules\phpgwapi\services\Settings;
 use App\Database\Db;
-
+use OpenApi\Annotations as OA;
 
 
 class BuildingController
@@ -28,6 +28,18 @@ class BuildingController
         return $this->userSettings['groups'] ?? [];
     }
 
+    /**
+     * @OA\Get(
+     *     path="/bookingfrontend/buildings",
+     *     summary="Get a list of all buildings",
+     *     tags={"Buildings"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="A list of buildings",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Building"))
+     *     )
+     * )
+     */
     public function index(Request $request, Response $response): Response
     {
         $maxMatches = isset($this->userSettings['preferences']['common']['maxmatchs']) ? (int)$this->userSettings['preferences']['common']['maxmatchs'] : 15;
@@ -64,6 +76,30 @@ class BuildingController
         }
     }
 
+
+    /**
+     * @OA\Get(
+     *     path="/bookingfrontend/buildings/{id}",
+     *     summary="Get a specific building by ID",
+     *     tags={"Buildings"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID of the building to fetch",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Building details",
+     *         @OA\JsonContent(ref="#/components/schemas/Building")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Building not found"
+     *     )
+     * )
+     */
     public function show(Request $request, Response $response, array $args): Response
     {
         $buildingId = $args['id'];
