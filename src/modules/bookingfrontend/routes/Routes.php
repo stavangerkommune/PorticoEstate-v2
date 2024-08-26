@@ -2,6 +2,7 @@
 
 use Slim\Routing\RouteCollectorProxy;
 use App\modules\bookingfrontend\controllers\DataStore;
+use App\modules\bookingfrontend\controllers\BuildingController;
 use App\modules\phpgwapi\controllers\StartPoint;
 use App\modules\phpgwapi\middleware\SessionsMiddleware;
 use App\modules\bookingfrontend\helpers\LangHelper;
@@ -10,6 +11,10 @@ use App\modules\bookingfrontend\helpers\LogoutHelper;
 
 $app->group('/bookingfrontend', function (RouteCollectorProxy $group) {
     $group->get('/searchdataall[/{params:.*}]', DataStore::class . ':SearchDataAll');
+    $group->group('/buildings', function (RouteCollectorProxy $group) {
+        $group->get('', BuildingController::class . ':index');
+        $group->get('/{id}', BuildingController::class . ':show');
+    });
 });
 
 $settings = [
