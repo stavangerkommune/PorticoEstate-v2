@@ -146,10 +146,8 @@ class SessionsMiddleware implements MiddlewareInterface
 
 	private function read_initial_settings($currentApp = '')
 	{
-
-		$flags = [
-			'currentapp' => $currentApp
-		];
+		$flags = Settings::getInstance()->get('flags');
+		$flags['currentapp'] = $currentApp;
 
 		if (isset($this->settings['session_name'][$currentApp]))
 		{
