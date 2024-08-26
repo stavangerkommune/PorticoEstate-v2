@@ -21,7 +21,7 @@ abstract class rental_socommon
 
 	public function __construct()
 	{
-		$this->db = Db::getInstance();
+		$this->db = clone(Db::getInstance());
 		$this->like = $this->db->like;
 		$this->join = $this->db->join;
 		$this->left_join = $this->db->left_join;
@@ -272,7 +272,7 @@ abstract class rental_socommon
 
 
 		// test-input for break on ordered queries
-		$db2 = clone ($this->db);
+		$db2 = new Db2();
 
 		$sql = $this->get_query($sort_field, $ascending, $search_for, $search_type, $filters, false);
 		$sql_parts = explode('1=1', $sql); // Split the query to insert extra condition on test for break
