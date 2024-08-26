@@ -85,6 +85,12 @@ class SessionsMiddleware implements MiddlewareInterface
 				\App\modules\eventplannerfrontend\helpers\LoginHelper::process();
 				return $handler->handle($request);
 			}
+
+			if ($currentApp == 'activitycalendarfrontend')
+			{
+				\App\modules\activitycalendarfrontend\helpers\LoginHelper::process();
+				return $handler->handle($request);
+			}
 			
 			if ($currentApp == 'registration')
 			{

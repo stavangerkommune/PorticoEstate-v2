@@ -139,7 +139,7 @@ class eventplanner_uiapplication extends phpgwapi_uicommon
 	}
 	public function index()
 	{
-		self::set_active_menu("{$this->currentapp}::vendor::application");
+		self::set_active_menu("{$this->currentapp}::application");
 		if (empty($this->permissions[ACL_READ]))
 		{
 

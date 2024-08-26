@@ -201,6 +201,12 @@ class StartPoint
 		return $this->execute($request, $response, 'eventplannerfrontend');
 	}
 
+	public function activitycalendarfrontend(Request $request, Response $response)
+	{
+		return $this->execute($request, $response, 'activitycalendarfrontend');
+	}
+
+
 	public function execute(Request $request, Response $response, $app)
 	{
 		//	_debug_array($response);
@@ -268,9 +274,9 @@ class StartPoint
 
 			Settings::getInstance()->set('user', $userSettings);
 		}
-		else if ($app == 'eventplannerfrontend')
+		else if (in_array ($app, ['eventplannerfrontend', 'activitycalendarfrontend']))
 		{
-			$userSettings['preferences']['common']['template_set'] = 'frontend';
+			$userSettings['preferences']['common']['template_set'] = 'bookingfrontend_2';
 			Settings::getInstance()->set('user', $userSettings);
 		}
 		/*
@@ -284,18 +290,23 @@ class StartPoint
 		{
 			$this->app = $app;
 			$this->class = 'uisearch';
+			$this->method = 'index';
 
-			if($app == 'bookingfrontend')
+			if ($app == 'bookingfrontend')
 			{
 				$this->class = 'uisearch';
 			}
-			else
+			else if ($app == 'activitycalendarfrontend')
+			{
+				$this->class = 'uiactivity';
+				$this->method = 'add';
+			}
+			else //eventplannerfrontend
 			{
 				$this->class = 'uievents';
 				\phpgw::redirect_link('/eventplannerfrontend/home/');
 
 			}
-			$this->method = 'index';
 			$this->invalid_data = false;
 		}
 
