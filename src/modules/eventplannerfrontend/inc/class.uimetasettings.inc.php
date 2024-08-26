@@ -67,7 +67,6 @@ class eventplannerfrontend_uimetasettings extends phpgwapi_uicommon
 			phpgw::no_access();
 		}
 
-		$GLOBALS['phpgw_info']['flags']['app_header'] .= '::' . lang('metasettings');
 		Settings::getInstance()->update('flags', ['app_header' => lang('eventplannerfrontend') . '::' . lang('metasettings')]);
 		$this->fields = eventplanner_metasettings::get_fields();
 		$this->permissions = eventplanner_metasettings::get_instance()->get_permission_array();

@@ -153,7 +153,6 @@ class admin_uiaclmanager
 
 		$this->_template->set_var('lang_header', lang('ACL Manager'));
 
-		//while (is_array($GLOBALS['acl_manager']) && list($app, $locations) = each($GLOBALS['acl_manager']))
 		if (is_array($GLOBALS['acl_manager']))
 		{
 			foreach ($GLOBALS['acl_manager'] as $app => $locations)
