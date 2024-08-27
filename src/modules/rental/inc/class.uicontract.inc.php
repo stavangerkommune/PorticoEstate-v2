@@ -2186,7 +2186,7 @@ JS;
 			'movein' => $movein
 		);
 
-		Settings::getInstance()->update('flags', ['app_header' => lang('rental') . '::' . lang('contracts')] . '::' . lang('view'));
+		Settings::getInstance()->update('flags', ['app_header' => lang('rental') . '::' . lang('contracts') . '::' . lang('view')]);
 
 
 		self::add_javascript('rental', 'base', 'contract.view.js');
@@ -2241,7 +2241,7 @@ JS;
 	 */
 	public function edit($values = array(), $mode = 'edit')
 	{
-		Settings::getInstance()->update('flags', ['app_header' => lang('rental') . '::' . lang('contracts')] . '::' . lang('edit'));
+		Settings::getInstance()->update('flags', ['app_header' => lang('rental') . '::' . lang('contracts') . '::' . lang('edit')]);
 
 
 		$contract_id = (int)Sanitizer::get_var('id');
