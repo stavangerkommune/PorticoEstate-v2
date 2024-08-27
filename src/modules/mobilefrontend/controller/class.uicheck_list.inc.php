@@ -1,51 +1,55 @@
 <?php
-	/**
-	 * phpGroupWare - controller: a part of a Facilities Management System.
-	 *
-	 * @author Erik Holm-Larsen <erik.holm-larsen@bouvet.no>
-	 * @author Torstein Vadla <torstein.vadla@bouvet.no>
-	 * @copyright Copyright (C) 2011,2012 Free Software Foundation, Inc. http://www.fsf.org/
-	 * This file is part of phpGroupWare.
-	 *
-	 * phpGroupWare is free software; you can redistribute it and/or modify
-	 * it under the terms of the GNU General Public License as published by
-	 * the Free Software Foundation; either version 2 of the License, or
-	 * (at your option) any later version.
-	 *
-	 * phpGroupWare is distributed in the hope that it will be useful,
-	 * but WITHOUT ANY WARRANTY; without even the implied warranty of
-	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	 * GNU General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU General Public License
-	 * along with phpGroupWare; if not, write to the Free Software
-	 * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-	 *
-	 * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
-	 * @internal Development of this application was funded by http://www.bergen.kommune.no/
-	 * @package property
-	 * @subpackage controller
-	 * @version $Id$
-	 */
-	phpgw::import_class('controller.uicheck_list');
 
-	class mobilefrontend_uicheck_list extends controller_uicheck_list
+/**
+ * phpGroupWare - controller: a part of a Facilities Management System.
+ *
+ * @author Erik Holm-Larsen <erik.holm-larsen@bouvet.no>
+ * @author Torstein Vadla <torstein.vadla@bouvet.no>
+ * @copyright Copyright (C) 2011,2012 Free Software Foundation, Inc. http://www.fsf.org/
+ * This file is part of phpGroupWare.
+ *
+ * phpGroupWare is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * phpGroupWare is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with phpGroupWare; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
+ * @internal Development of this application was funded by http://www.bergen.kommune.no/
+ * @package property
+ * @subpackage controller
+ * @version $Id$
+ */
+
+use App\modules\phpgwapi\services\Settings;
+
+phpgw::import_class('controller.uicheck_list');
+
+class mobilefrontend_uicheck_list extends controller_uicheck_list
+{
+
+	public function __construct()
 	{
-
-		public function __construct()
-		{
-			parent::__construct();
-			$GLOBALS['phpgw_info']['flags']['nonavbar'] = true;
-			//FIXME
+		parent::__construct();
+		Settings::getInstance()->update('flags', ['nonavbar' => true]);
+		//FIXME
 		//	phpgwapi_css::getInstance()->add_external_file('controller/templates/mobilefrontend/css/base.css');
-		}
-		/**
-		 * Public function for displaying the edit check list form
-		 *
-		 * @param HTTP:: check list id
-		 * @return data array
-		 */
-		/*
+	}
+	/**
+	 * Public function for displaying the edit check list form
+	 *
+	 * @param HTTP:: check list id
+	 * @return data array
+	 */
+	/*
 		  function edit_check_list( $check_list = null ){
 		  if($check_list == null)
 		  {
@@ -123,9 +127,10 @@
 		  'cases_view'                      => 'add_case'
 		  );
 
-		  $GLOBALS['phpgw']->jqcal->add_listener('planned_date');
-		  $GLOBALS['phpgw']->jqcal->add_listener('completed_date');
-		  $GLOBALS['phpgw']->jqcal->add_listener('deadline_date');
+		  $jqcal = createObject('phpgwapi.jqcal');
+		  $jqcal->add_listener('planned_date');
+		  $jqcal->add_listener('completed_date');
+		  $jqcal->add_listener('deadline_date');
 
 		  self::add_javascript('controller', 'controller', 'custom_ui.js');
 		  self::add_javascript('controller', 'controller', 'ajax.js');
@@ -136,4 +141,4 @@
 		  'check_list/fragments/select_buildings_on_property'), $data);
 		  }
 		 */
-	}
+}
