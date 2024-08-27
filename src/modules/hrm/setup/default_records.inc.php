@@ -19,7 +19,6 @@ use App\Database\Db;
  * @package hrm
  */
 $db = Db::getInstance();
-//	$app_id = $GLOBALS['phpgw']->applications->name2id('hrm');
 $db->query("SELECT app_id FROM phpgw_applications WHERE app_name = 'hrm'");
 $db->next_record();
 $app_id = $db->f('app_id');
