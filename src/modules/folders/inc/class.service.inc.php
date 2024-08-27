@@ -8,8 +8,9 @@
  * @subpackage services
  * @version $Id$
  */
- 
 
+use App\Database\Db;
+use App\modules\phpgwapi\services\Settings;
 
 /**
 * folders services
@@ -30,8 +31,11 @@ class folders_service
 		
 		*/
 
+
+		$userSettings = Settings::getInstance()->get('user');
+
 		/* Workaround for phpgw.categories.return_sorted_array */
-		$db = $GLOBALS['phpgw']->db;
+		$db = Db::getInstance();
 		$sql = (
 		'SELECT ' .
 			'cat_id AS id, ' .
@@ -43,7 +47,7 @@ class folders_service
 			'cat_appname AS target, ' .
 			'cat_description AS description '.
 		'FROM phpgw_categories ' .
-		'WHERE ( cat_owner='.$GLOBALS['phpgw_info']['user']['account_id'].' or cat_access = \'public\' ) '
+		'WHERE ( cat_owner='.$userSettings['account_id'].' or cat_access = \'public\' ) '
 		);
 		/* End of workaround */
 
@@ -60,7 +64,7 @@ class folders_service
 			{
 				$module = $db->f('target');
 			}
-			$tpl_set = $GLOBALS['phpgw_info']['user']['preferences']['common']['template_set'];
+			$tpl_set = $userSettings['preferences']['common']['template_set'];
 			
 			$return[$db->f('id')]['parent_id'] = $db->f('parent_id');
 			$return[$db->f('id')]['text']      = $db->f('text');

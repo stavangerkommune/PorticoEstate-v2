@@ -8,6 +8,8 @@
  * @version $Id$
  */
 
+use App\modules\phpgwapi\services\Hooks;
+
 	/**
 	* Include phplayersmenu - phplib template class
 	*/
@@ -86,7 +88,8 @@
 
 		function buildFolders($menuname)
 		{
-			$hookContent = $GLOBALS['phpgw']->hooks->process('getFolderContent');
+			$hooks = new Hooks();
+			$hookContent = $hooks->process('getFolderContent');
 
 			$folderContent = array();
 			//while(list($key, $value) = each($hookContent))

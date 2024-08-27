@@ -9,6 +9,10 @@
  * @version $Id$
  */
 
+	use App\modules\phpgwapi\services\Cache;
+	use App\modules\phpgwapi\services\Settings;
+	use App\modules\phpgwapi\services\Hooks;
+
 	/**
 	 * Folders user interface
 	 *
@@ -50,8 +54,9 @@
 		 */
 		function enableFolders()
 		{
-			$GLOBALS['phpgw']->session->appsession('mode', 'folders', 'enabled');
-			Header('Location: '.$GLOBALS['phpgw']->session->appsession('link', 'folders'));
+			Cache::session_set('folders', 'mode', 'enabled');
+			$url = Cache::session_get('folders', 'link');
+			Header('Location: '. $url);
 		}
 
 		/**
@@ -59,8 +64,9 @@
 		 */
 		function disableFolders()
 		{
-			$GLOBALS['phpgw']->session->appsession('mode', 'folders', 'disabled');
-			Header('Location: '.$GLOBALS['phpgw']->session->appsession('link', 'folders'));
+			Cache::session_set('folders', 'mode', 'disabled');
+			$url = Cache::session_get('folders', 'link');
+			Header('Location: '. $url);
 		}
 
 		/**
@@ -68,6 +74,8 @@
 		 */
 		function showFolders()
 		{
+			$serverSettings = Settings::getInstance()->get('server');
+
 			$this->t->set_root(PHPGW_SERVER_ROOT . '/folders/templates/base/'); // hardcoded path :-(
 			$this->t->set_file(array('folders_t' => 'folders.tpl'));
 
@@ -75,7 +83,10 @@
 			$this->bofolders->buildFolders('menuname');
 
 			$this->t->set_var('folders', $this->bofolders->parseFolders('menuname'));
-			$this->t->set_var('wwwRoot', $GLOBALS['phpgw_info']['server']['webserver_url'] );
+
+			$webserver_url = isset($serverSettings['webserver_url']) ? $serverSettings['webserver_url'] . PHPGW_MODULES_PATH : PHPGW_MODULES_PATH;
+
+			$this->t->set_var('wwwRoot', $webserver_url );
 
 			$this->t->pparse('out','folders_t');
 		}
@@ -97,7 +108,9 @@
 				$parameters[$param_name] = $param_value;
 			}
 
-			$hookAppLinkData = $GLOBALS['phpgw']->hooks->process('getFolderLinkData');
+			$hooks = new Hooks();
+			$hookAppLinkData = $hooks->process('getFolderLinkData');
+
 			//while(list($app_name, $app_linkdata) = each($hookAppLinkData))
 			foreach($hookAppLinkData as $app_name => $app_linkdata)
 			{
@@ -128,17 +141,17 @@
 		function get_switchlink()
 		{
 			$httpMode = (isset($_SERVER['HTTPS']) ? 'https://' : 'http://');
-			$GLOBALS['phpgw']->session->appsession('link', 'folders', $httpMode.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']); 
+			Cache::session_set('folders', 'link', $httpMode.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
 			/* end of workaround */
 			
 			$this->t->set_root(PHPGW_SERVER_ROOT . '/folders/templates/base/'); // hardcoded path :-(
 			$this->t->set_file(array('helpers_t' => 'helpers.tpl'));
 			$this->t->set_block('helpers_t','link');
-			
-			if (substr($GLOBALS['phpgw']->session->appsession('mode', 'folders'),0,7) == 'enabled')
+
+			if (substr(Cache::session_get('folders', 'mode'), 0, 7) == 'enabled')
 			{
-				$logouturl    = $GLOBALS['phpgw_info']['navbar']['logout']['url'];
-				$logouttitle  = $GLOBALS['phpgw_info']['navbar']['logout']['title'];
+				$logouturl    = phpgw::link('/logout_ui');
+				$logouttitle  = lang('logout');
 				$logoutbutton = '<input type="button" id="logoutlink" value="'.$logouttitle.'" onClick="self.location.href=\''.$logouturl.'\'">&nbsp;&nbsp;';
 				$var['logoutbutton'] = $logoutbutton;
 				
@@ -164,7 +177,7 @@
 		 */
 		function get_folderMode()
 		{
-			if ( substr($GLOBALS['phpgw']->session->appsession('mode', 'folders'),0,7) == 'enabled' )
+			if (substr(Cache::session_get('folders', 'mode'), 0, 7) == 'enabled')
 			{
 				return 'enabled';
 			}
