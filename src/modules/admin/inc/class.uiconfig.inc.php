@@ -187,7 +187,7 @@ HTML;
 		$t->set_block('config', 'body', 'body');
 
 
-		$c = new Config();
+		$c = new Config($config_appname);
 
 		$c->read();
 
