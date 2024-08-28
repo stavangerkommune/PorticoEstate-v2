@@ -1,0 +1,21 @@
+.expandCollapseButton {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  margin-left: -0.875rem;
+  //background-color: green!important;
+  padding-right : 0.875rem;
+  //width: 2rem;
+  height: 2rem;
+
+  .expandCollapseIcon {
+    transition: 300ms;
+    transform: rotate(180deg);
+
+
+    &.open {
+      transform: rotate(0deg);
+    }
+  }
+}

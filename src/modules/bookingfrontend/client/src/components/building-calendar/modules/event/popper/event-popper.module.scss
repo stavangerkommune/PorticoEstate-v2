@@ -1,0 +1,78 @@
+@import "../../../../../styles/colors";
+
+.eventPopper {
+  background-color: $grey-24;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 1.5rem;
+  max-width: 300px;
+  min-width: 300px;
+  .eventPopperFooter {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+  }
+
+  .eventPopperHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .eventPopperContent {
+    margin-bottom: 16px;
+
+
+
+
+
+  }
+
+  .eventPopperActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+
+  .time {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+  }
+
+}
+.resourcesList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  .resourceItem {
+    width: max-content;
+    //padding: 0.25rem 0.75rem;
+    border-radius: 5rem;
+    //border: 1px solid $black-80;
+
+    &.gray {
+      border-color: $grey;
+    }
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    max-width: 100%; /* Prevent the container from expanding beyond its parent */
+    flex-wrap: nowrap; /* Prevent children from wrapping to the next line */
+
+    .resourceName {
+      display: inline-block;
+      max-width: 100%; /* Ensure the span does not exceed its container */
+      white-space: nowrap; /* Prevent text wrapping */
+      overflow: hidden; /* Hide overflowing text */
+      text-overflow: ellipsis; /* Add the ellipsis */
+      vertical-align: middle; /* Align the text vertically */
+      flex-shrink: 1; /* Allow the text to shrink if necessary */
+      flex-grow: 1; /* Grow to fill available space */
+      min-width: 0; /* Ensures the ellipsis works in flexbox */
+    }
+
+  }
+}

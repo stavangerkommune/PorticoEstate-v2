@@ -1,0 +1,24 @@
+.buttonGroup {
+  display: flex;
+
+  :first-child {
+    //first button
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  :last-child {
+    //last button
+
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+  }
+
+ :not(:first-child):not(:last-child) {
+    //middle buttons
+
+    border-right: none;
+    border-left: none;
+    border-radius: 0;
+  }
+}
