@@ -1136,7 +1136,7 @@ HTML;
 				$my_controls[] = array(
 					$control['location_code'],
 					'location',
-					$controls_at_location
+					array($control)
 				);
 			}
 		}
