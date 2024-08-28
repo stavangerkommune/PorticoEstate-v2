@@ -56,7 +56,7 @@ $app->get('/login[/{params:.*}]', function (Request $request, Response $response
 	}
 
 	$sectionOptions =	"<option value=\"\">None</option>";
-	$sections = ['activitycalendarfrontend', 'bookingfrontend', 'eventplannerfrontend'];
+	$sections = ['activitycalendarfrontend', 'bookingfrontend', 'eventplannerfrontend', 'mobilefrontend'];
 	foreach ($sections as $section)
 	{
 		$sectionOptions .= "<option value=\"$section\">$section</option>";
@@ -103,6 +103,16 @@ $app->get('/login[/{params:.*}]', function (Request $request, Response $response
 	return $response;
 });
 
+
+$settings = [
+	'session_name' => [
+		'mobilefrontend' => 'mobilefrontendsession',
+		'bookingfrontend' => 'bookingfrontendsession',
+		'eventplannerfrontend' => 'eventplannerfrontendsession',
+		'activitycalendarfrontend' => 'activitycalendarfrontendsession'
+	]
+	// Add more settings as needed
+];
 $app->post('/login', function (Request $request, Response $response)
 {
 	// Get the session ID

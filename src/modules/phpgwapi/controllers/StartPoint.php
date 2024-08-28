@@ -39,7 +39,141 @@ class StartPoint
 		}
 	}
 
+	public function mobilefrontend(Request $request, Response $response)
+	{
+		Settings::getInstance()->update('flags', ['custom_frontend' => 'mobilefrontend']);
+		$this->validate_object_method();
+		$phpgwapi_common = new \phpgwapi_common();
 
+		$this->api_requested = false;
+		if ($this->app == 'phpgwapi')
+		{
+			$this->app = 'home';
+			$this->api_requested = true;
+		}
+
+
+		if ($this->app == 'home' && !$this->api_requested)
+		{
+			\phpgw::redirect_link('/home/');
+		}
+
+		if ($this->api_requested)
+		{
+			$this->app = 'phpgwapi';
+		}
+
+		if ($this->app == 'phpgwapi')
+		{
+			$Object = CreateObject("{$this->app}.{$this->class}");
+		}
+		else if (is_file(PHPGW_SERVER_ROOT . "/mobilefrontend/inc/class.{$this->class}.inc.php"))
+		{
+			$Object = CreateObject("{$this->app}.{$this->class}");
+		}
+		else
+		{
+			include_class('mobilefrontend', $this->class, "{$this->app}/");
+			$_class = "mobilefrontend_{$this->class}";
+			$Object = new $_class;
+		}
+
+		if (
+			!$this->invalid_data
+			&& is_object($Object)
+			&& isset($Object->public_functions)
+			&& is_array($Object->public_functions)
+			&& isset($Object->public_functions[$this->method])
+			&& $Object->public_functions[$this->method]
+		)
+		{
+			if (
+				Sanitizer::get_var('X-Requested-With', 'string', 'SERVER') == 'XMLHttpRequest'
+				// deprecated
+				|| Sanitizer::get_var('phpgw_return_as', 'string', 'GET') == 'json'
+			)
+			{
+				$return_data = $Object->{$this->method}();
+				$response_str = json_encode($return_data);
+				$response->getBody()->write($response_str);
+				return $response->withHeader('Content-Type', 'application/json');
+
+				//                $flags['nofooter'] = true;
+				//               Settings::getInstance()->set('flags', $flags);    
+				//           $phpgwapi_common->phpgw_exit();
+			}
+			else
+			{
+				if (Sanitizer::get_var('phpgw_return_as', 'string', 'GET') == 'noframes')
+				{
+					$flags = Settings::getInstance()->get('flags');
+					$flags['noframework'] = true;
+					$flags['headonly'] = true;
+					Settings::getInstance()->set('flags', $flags);
+				}
+				$Object->{$this->method}();
+
+				if (!empty(Settings::getInstance()->get('flags')['xslt_app']))
+				{
+					$return_data =  \phpgwapi_xslttemplates::getInstance()->parse();
+				}
+				else
+				{
+					$return_data = '';
+				}
+
+				register_shutdown_function(array($phpgwapi_common, 'phpgw_final'));
+
+				$response->getBody()->write($return_data);
+				return $response->withHeader('Content-Type', 'text/html');
+			}
+			unset($this->app);
+			unset($this->class);
+			unset($this->method);
+			unset($this->invalid_data);
+			unset($this->api_requested);
+		}
+		else
+		{
+			//FIXME make this handle invalid data better
+			if (!$this->app || !$this->class || !$this->method)
+			{
+				$this->log->message(array(
+					'text' => 'W-BadmenuactionVariable, menuaction missing or corrupt: %1',
+					'p1'   => Sanitizer::get_var('menuaction', 'string'),
+					'line' => __LINE__,
+					'file' => __FILE__
+				));
+			}
+
+			if ((!isset($Object->public_functions)
+					|| !is_array($Object->public_functions)
+					|| !isset($Object->public_functions[$this->method])
+					|| !$Object->public_functions[$this->method])
+				&& $this->method
+			)
+			{
+				$this->log->message(array(
+					'text' => 'W-BadmenuactionVariable, attempted to access private method: %1 from %2',
+					'p1'   => "{$this->class}::{$this->method}",
+					'p2' => Sanitizer::get_ip_address(),
+					'line' => __LINE__,
+					'file' => __FILE__
+				));
+			}
+			$this->log->commit();
+
+			// phpgw::redirect_link('/home/');
+		}
+
+		//   $phpgwapi_common->phpgw_footer();
+
+		register_shutdown_function(array($phpgwapi_common, 'phpgw_final'));
+
+		$response_str = json_encode(['message' => 'Welcome to Portico API']);
+		$response->getBody()->write($response_str);
+		return $response->withHeader('Content-Type', 'application/json');
+	}
 
 	public function run(Request $request, Response $response)
 	{
@@ -75,7 +209,6 @@ class StartPoint
 			&& isset($Object->public_functions[$this->method])
 			&& $Object->public_functions[$this->method]
 		)
-
 		{
 			if (
 				Sanitizer::get_var('X-Requested-With', 'string', 'SERVER') == 'XMLHttpRequest'
@@ -274,7 +407,7 @@ class StartPoint
 
 			Settings::getInstance()->set('user', $userSettings);
 		}
-		else if (in_array ($app, ['eventplannerfrontend', 'activitycalendarfrontend']))
+		else if (in_array($app, ['eventplannerfrontend', 'activitycalendarfrontend']))
 		{
 			$userSettings['preferences']['common']['template_set'] = 'bookingfrontend_2';
 			Settings::getInstance()->set('user', $userSettings);
@@ -305,7 +438,6 @@ class StartPoint
 			{
 				$this->class = 'uievents';
 				\phpgw::redirect_link('/eventplannerfrontend/home/');
-
 			}
 			$this->invalid_data = false;
 		}
