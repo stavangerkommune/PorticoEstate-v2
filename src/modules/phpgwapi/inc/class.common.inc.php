@@ -49,6 +49,11 @@ class phpgwapi_common
 		$this->serverSettings = Settings::getInstance()->get('server');
 		$this->userSettings = Settings::getInstance()->get('user');
 		$this->flags = Settings::getInstance()->get('flags');
+		if(isset($this->flags['template_set']))
+		{
+			$this->userSettings['preferences']['common']['template_set'] = $this->flags['template_set'];
+			Settings::getInstance()->set('user', $this->userSettings);
+		}
 		$webserver_url = isset($this->serverSettings['webserver_url']) ? $this->serverSettings['webserver_url'] : '/';
 		$this->webserver_url = str_replace("//", "/", $webserver_url . PHPGW_MODULES_PATH);
 

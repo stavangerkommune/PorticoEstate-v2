@@ -13,6 +13,7 @@ use App\modules\phpgwapi\services\Translation;
 use App\modules\phpgwapi\services\Preferences;
 use App\modules\phpgwapi\controllers\Applications;
 
+
 class HomeHelper
 {
 	private $serverSettings;
@@ -30,7 +31,6 @@ class HomeHelper
 		$flags['currentapp']           = 'home';
 		$flags['template_set']           = 'mobilefrontend';
 		$flags['custom_frontend']           = 'mobilefrontend';
-		
 
 		Settings::getInstance()->set('flags', $flags);
 		require_once SRC_ROOT_PATH . '/helpers/LegacyObjectHandler.php';
@@ -41,8 +41,7 @@ class HomeHelper
 		$this->hooks = new Hooks();
 		$this->phpgwapi_common = new \phpgwapi_common();
 		\phpgw::import_class('phpgwapi.jquery');
-		\phpgw::import_class('phpgwapi.js');
-		\phpgw::import_class('phpgwapi.css');
+
 
 	}
 
@@ -91,7 +90,6 @@ class HomeHelper
 			$this->userSettings['preferences']['common']['default_app'] = $this->serverSettings['force_default_app'];
 		}
 
-		\phpgw::import_class('phpgwapi.jquery');
 		\phpgwapi_jquery::load_widget('core');
 		$this->phpgwapi_common->phpgw_header();
 		echo parse_navbar();
@@ -102,20 +100,20 @@ class HomeHelper
 			echo '<div class="msg">' . lang('mainscreen_message') . '</div>';
 		}
 
-
+		$preferences = createObject('phpgwapi.preferences');
 		// This initializes the users portal_order preference if it does not exist.
 		if ((!isset($this->userSettings['preferences']['portal_order']) || !is_array($this->userSettings['preferences']['portal_order'])) && $this->apps)
 		{
-			$GLOBALS['phpgw']->preferences->delete('portal_order');
+			$preferences->delete('portal_order');
 			$order = 0;
 			foreach ($this->apps as $p)
 			{
 				if (isset($this->userSettings['apps'][$p['name']]) && $this->userSettings['apps'][$p['name']])
 				{
-					$GLOBALS['phpgw']->preferences->add('portal_order', ++$order, $p['id']);
+					$preferences->add('portal_order', ++$order, $p['id']);
 				}
 			}
-			$this->userSettings['preferences'] = $GLOBALS['phpgw']->preferences->save_repository();
+			$this->userSettings['preferences'] = $preferences->save_repository();
 		}
 
 		if (isset($this->userSettings['preferences']['portal_order']) && is_array($this->userSettings['preferences']['portal_order']))
@@ -137,12 +135,12 @@ class HomeHelper
 
 		if (isset($GLOBALS['portal_order']) && is_array($GLOBALS['portal_order']))
 		{
-			$GLOBALS['phpgw']->preferences->delete('portal_order');
+			$preferences->delete('portal_order');
 			foreach ($GLOBALS['portal_order'] as $app_order => $app_id)
 			{
-				$GLOBALS['phpgw']->preferences->add('portal_order', $app_order, $app_id);
+				$preferences->add('portal_order', $app_order, $app_id);
 			}
-			$GLOBALS['phpgw']->preferences->save_repository();
+			$preferences->save_repository();
 		}
 		if (Cache::system_get('phpgwapi', 'phpgw_home_screen_message'))
 		{

@@ -60,12 +60,13 @@ class Login
 			$session_name = $this->flags['session_name'];
 		}
 
-		$this->flags = array(
+		$this->flags = array_merge($this->flags, array(
 			'disable_template_class' => true,
 			'login'                  => true,
 			'currentapp'             => 'login',
 			'noheader'               => true
-		);
+		));
+		//		Settings::getInstance()->update('flags', ['noheader' => true, 'login' => true, 'currentapp' => 'login', 'disable_template_class' => true]);
 		if (!empty($session_name))
 		{
 			$this->flags['session_name'] = $session_name;

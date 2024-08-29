@@ -9,7 +9,7 @@ class Settings
     private static $instance;
     private $settings;
     private $db;
-    private $config_data;
+    private $config_data = [];
 	private $account_id; 
 
     private function __construct($account_id = null)
@@ -56,7 +56,7 @@ class Settings
         } 
 
 		$settings = require $rootDir . '/config/header.inc.php';
-		$this->config_data = $settings['phpgw_info'];
+		$this->config_data = array_merge($this->config_data, $settings['phpgw_info']);
 		$this->config_data['external_db'] = $settings['external_db'];
 		
 		//$this->config_data  = require_once SRC_ROOT_PATH . '/../config/config.php';
