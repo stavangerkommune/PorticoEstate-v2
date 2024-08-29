@@ -25,7 +25,7 @@ $app->post('/mobilefrontend/', StartPoint::class . ':mobilefrontend')->add(new S
 $app->get('/mobilefrontend/home/', HomeHelper::class . ':processHome')->add(new SessionsMiddleware($app->getContainer(), $settings));
 
 
-
+/*
 Settings::getInstance()->set(
 	'flags',
 	[
@@ -33,7 +33,7 @@ Settings::getInstance()->set(
 		'custom_frontend' => 'mobilefrontend'
 	]
 );
-
+*/
 $app->get('/mobilefrontend/login_ui[/{params:.*}]', LoginHelper::class . ':processLogin');
 $app->post('/mobilefrontend/login_ui[/{params:.*}]', LoginHelper::class . ':processLogin');
 
