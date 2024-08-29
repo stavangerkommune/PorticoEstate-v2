@@ -1,0 +1,22 @@
+.resourceColorIndicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  min-width: 12px;
+  //margin-left: 2px;
+  //margin-right: 2px;
+  &.small {
+    width: 12px;
+    height: 12px;
+    min-width: 12px;
+
+  }
+  &.medium {
+    width: 16px;
+    height: 16px;
+    min-width:16px;
+
+  }
+  //margin-left: 10px;
+}
