@@ -1,0 +1,74 @@
+@import "../../../styles/colors";
+
+
+.resourceToggleContainer {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+
+  grid-column: 1;
+  grid-row-start: 2;
+  grid-row-end: 4;
+  &.hidden {
+    //border: 5px;
+    display: none;
+  }
+}
+
+.toggleAllContainer {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 1;
+}
+
+.toggleAllButton {
+  width: 100%;
+  padding: 5px;
+  //background-color: #f0f0f0;
+  //border: 1px solid #ccc;
+  //border-radius: 4px;
+  //cursor: pointer;
+  //
+  //&:hover {
+  //  background-color: #e0e0e0;
+  //}
+}
+
+.resourceItem {
+  user-select: none;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  &.active {
+    background-color: $purple-24;
+  }
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.resourceCheckbox {
+  margin-right: 10px;
+  display: flex;
+  flex-grow: 1;
+  >label {
+    flex-grow: 1;
+    >span {
+      flex-grow: 1;
+    }
+  }
+}
+
+.resourceLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  flex-grow: 1;
+}
+

@@ -3,6 +3,9 @@
 # export INSTALL_XDEBUG=true
 # docker compose build
 
+x-common-variables: &common-variables
+    NEXT_ENV: ${NEXT_ENV:-production}
+
 volumes:
     logs:
         driver: local
@@ -18,10 +21,32 @@ services:
                 INSTALL_XDEBUG: ${INSTALL_XDEBUG}
         working_dir: /var/www/html
         environment:
+            <<: *common-variables
             docker: "true"
         ports:
             - "8088:80"
         volumes:
             - .:/var/www/html
             - ./logs:/var/log/apache2
- 
+        networks:
+            - internal
+
+    nextjs:
+        build:
+            context: ./src/modules/bookingfrontend/client
+            dockerfile: Dockerfile.nextjs
+            args:
+                - NEXT_ENV=${NEXT_ENV:-production}
+        environment:
+            <<: *common-variables
+        volumes:
+            - ./src/modules/bookingfrontend/client:/app
+            - /app/node_modules
+            - /app/.next
+        command: ["npm", "run", "start:${NEXT_ENV:-production}"]
+        networks:
+            - internal
+
+networks:
+    internal:
+        driver: bridge

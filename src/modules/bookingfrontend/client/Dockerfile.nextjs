@@ -1,0 +1,19 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+RUN corepack enable
+RUN yarn install --frozen-lockfile
+
+# Copy source files
+COPY . .
+
+# Build the app if in production mode
+ARG NEXT_ENV=development
+RUN if [ "$NEXT_ENV" = "production" ]; then npm run build; fi
+
+EXPOSE 3000
+
+CMD ["npm", "run", "start:${NEXT_ENV:-development}"]

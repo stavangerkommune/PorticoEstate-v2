@@ -119,82 +119,80 @@ class bookingfrontend_uibooking extends booking_uibooking
 		return $freetime;
 	}
 
-	public function building_schedule_pe()
-	{
-		$dates = Sanitizer::get_var('dates');
-		$dates_csv = Sanitizer::get_var('dates_csv', 'string');
-		if ($dates_csv)
-		{
-			$dates = explode(',', $dates_csv);
-		}
-		elseif (!$dates || !is_array($dates))
-		{
-			$dates = array(Sanitizer::get_var('date'));
-		}
+    public function building_schedule_pe()
+    {
+        $dates = Sanitizer::get_var('dates');
+        $dates_csv = Sanitizer::get_var('dates_csv', 'string', 'REQUEST', '');
 
-		// Initialize arrays for results, resources, and seasons
-		$results = array();
-		$allResources = array();
-		$allSeasons = array();
+        if (!empty($dates_csv)) {
+            // Split the comma-separated string into an array
+            $dates = explode(',', $dates_csv);
+        } elseif (!$dates || !is_array($dates)) {
+            $dates = array(Sanitizer::get_var('date', 'string', 'REQUEST', ''));
+        }
 
-		// Filter out dates to ensure one fetch per week
-		$uniqueWeeks = array();
-		foreach ($dates as $date)
-		{
-			$_date = new DateTime($date);
-			// Adjust to the start of the week, considering Monday as the first day of the week
-			$_date->modify('Monday this week');
-			$weekStart = $_date->format('Y-m-d');
-			if (!in_array($weekStart, $uniqueWeeks))
-			{
-				$uniqueWeeks[] = $weekStart;
-			}
-		}
 
-		// Process each unique week
-		foreach ($uniqueWeeks as $weekStart)
-		{
-			$_date = new DateTime($weekStart);
-			$bookings = $this->bo->building_schedule_pe(Sanitizer::get_var('building_id', 'int'), $_date);
-			if (isset($bookings['results']['schedule']) && is_array($bookings['results']['schedule']))
-			{
-				$results = array_merge($results, $bookings['results']['schedule']);
-			}
-			if (isset($bookings['results']['resources']) && is_array($bookings['results']['resources']))
-			{
-				foreach ($bookings['results']['resources'] as $id => $resource)
-				{
-					$allResources[$id] = $resource;
-				}
-			}
-			if (isset($bookings['results']['seasons']) && is_array($bookings['results']['seasons']))
-			{
-				foreach ($bookings['results']['seasons'] as $season)
-				{
-					$uniqueKey = sprintf('%s-%d-%s-%s', $season['id'], $season['wday'], $season['from_'], $season['to_']);
-					$allSeasons[$uniqueKey] = $season;
-				}
-			}
-		}
+        // Remove any empty values
+        $dates = array_filter($dates);
 
-		// Prepare the final data structure
-		$data = array(
-			'dates' => $uniqueWeeks,
-			'ResultSet' => array(
-				"totalResultsAvailable" => count($results),
-				"Result" => array(
-					"total_records" => count($results),
-					"results" => array(
-						"schedule" => $results,
-						"resources" => $allResources,
-						"seasons" => array_values($allSeasons)
-					)
-				)
-			)
-		);
+        // Initialize arrays for results, resources, and seasons
+        $results = array();
+        $allResources = array();
+        $allSeasons = array();
 
-		return $data;
-	}
+        // Filter out dates to ensure one fetch per week
+        $uniqueWeeks = array();
+        foreach ($dates as $date) {
+            $date = trim($date); // Trim any whitespace
+            if (!empty($date)) {
+                $_date = new DateTime($date);
+                // Adjust to the start of the week, considering Monday as the first day of the week
+                $_date->modify('Monday this week');
+                $weekStart = $_date->format('Y-m-d');
+                if (!in_array($weekStart, $uniqueWeeks)) {
+                    $uniqueWeeks[] = $weekStart;
+                }
+            }
+        }
+
+        // Process each unique week
+        foreach ($uniqueWeeks as $weekStart) {
+            $_date = new DateTime($weekStart);
+            $bookings = $this->bo->building_schedule_pe(Sanitizer::get_var('building_id', 'int'), $_date);
+            if (isset($bookings['results']['schedule']) && is_array($bookings['results']['schedule'])) {
+                $results = array_merge($results, $bookings['results']['schedule']);
+            }
+            if (isset($bookings['results']['resources']) && is_array($bookings['results']['resources'])) {
+                foreach ($bookings['results']['resources'] as $id => $resource) {
+                    $allResources[$id] = $resource;
+                }
+            }
+            if (isset($bookings['results']['seasons']) && is_array($bookings['results']['seasons'])) {
+                foreach ($bookings['results']['seasons'] as $season) {
+                    $uniqueKey = sprintf('%s-%d-%s-%s', $season['id'], $season['wday'], $season['from_'], $season['to_']);
+                    $allSeasons[$uniqueKey] = $season;
+                }
+            }
+        }
+
+        // Prepare the final data structure
+        $data = array(
+            'dates' => $uniqueWeeks,
+            'ResultSet' => array(
+                "totalResultsAvailable" => count($results),
+                "Result" => array(
+                    "total_records" => count($results),
+                    "results" => array(
+                        "schedule" => $results,
+                        "resources" => $allResources,
+                        "seasons" => array_values($allSeasons)
+                    )
+                )
+            )
+        );
+
+        return $data;
+    }
 
 
 

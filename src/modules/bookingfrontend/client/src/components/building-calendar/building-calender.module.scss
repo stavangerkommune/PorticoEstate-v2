@@ -1,0 +1,79 @@
+@import "../../styles/colors";
+//
+//
+//.dayHeader {
+//  display: flex;
+//  flex-direction: column;
+//  justify-content: center;
+//  align-items: center;
+//  height: 3em;
+//  font-weight: bold;
+//  background-color: #F5F5F5;
+//  border-right: 1px solid #dadce0;
+//
+//  &:last-child {
+//    border-right: none;
+//  }
+//
+//  div:first-child {
+//    font-weight: normal;
+//    font-size: 0.8rem;
+//  }
+//
+//  div:last-child {
+//    font-size: 1.2rem;
+//  }
+//}
+
+
+.calendar {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  grid-template-rows: auto auto 1fr;
+  gap: 0.875rem 0.875rem;
+  transition: 300ms;
+  &.closed {
+    gap: 0.875rem 0;
+    grid-template-columns: 0px 1fr
+  }
+
+  :global .fc {
+    grid-row: 3;
+    grid-column-start: 2;
+    grid-column-end: 4;
+  }
+
+}
+
+.event {
+  background-color: $grey-light;
+  border-left: 0.5rem solid;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  //border-top-left-radius: 8px;
+  //border-bottom-left-radius: 8px;
+  &-allocation {
+    border-left-color: #7D7D7D;
+  }
+
+  &-booking {
+    border-left-color:#999EC1;
+  }
+
+  &-event {
+    border-left-color: $blue;
+    color: white;
+  }
+
+  &-temporary {
+    border-left-color: #800080;
+    opacity: 85%;
+  }
+}
+
+
+
+.closedHours {
+  --fc-bg-event-color:  rgba(211, 211, 211);
+}
