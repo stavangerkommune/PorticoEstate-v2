@@ -2,6 +2,7 @@
 
 use App\modules\phpgwapi\services\Translation;
 use App\modules\phpgwapi\services\Cache;
+use App\modules\bookingfrontend\helpers\UserHelper;
 
 phpgw::import_class('booking.uiorganization');
 
@@ -42,7 +43,7 @@ class bookingfrontend_uiorganization extends booking_uiorganization
 		/**
 		 * check external login - and return here
 		 */
-		$bouser = CreateObject('bookingfrontend.bouser');
+		$bouser = new UserHelper();
 
 		$external_login_info = $bouser->validate_ssn_login(array(
 			'menuaction' => 'bookingfrontend.uiorganization.add'
@@ -157,7 +158,7 @@ class bookingfrontend_uiorganization extends booking_uiorganization
 	public function edit()
 	{
 
-		$bouser = CreateObject('bookingfrontend.bouser', true);
+		$bouser = new UserHelper(true);
 
 		$id = Sanitizer::get_var('id', 'int');
 		$session_org_id = Sanitizer::get_var('session_org_id', 'bool') ? Sanitizer::get_var('session_org_id') :  $bouser->orgnr;
@@ -182,7 +183,7 @@ class bookingfrontend_uiorganization extends booking_uiorganization
 
 	public function show()
 	{
-		$bouser = CreateObject('bookingfrontend.bouser', true);
+		$bouser = new UserHelper(true);
 		$config = CreateObject('phpgwapi.config', 'booking');
 		$config->read();
 		$id = Sanitizer::get_var('id', 'int');

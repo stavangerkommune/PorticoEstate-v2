@@ -1,6 +1,7 @@
 <?php
 
 use App\modules\phpgwapi\services\Cache;
+use App\modules\bookingfrontend\helpers\UserHelper;
 
 phpgw::import_class('booking.bocommon_authorized');
 
@@ -52,7 +53,7 @@ class booking_bouser extends booking_bocommon_authorized
 		if ($this->current_app() == 'bookingfrontend')
 		{
 
-			$bouser = CreateObject('bookingfrontend.bouser');
+			$bouser = new UserHelper();
 
 			$external_login_info = $bouser->validate_ssn_login(array(
 				'menuaction' => 'bookingfrontend.uiuser.edit'
@@ -159,7 +160,6 @@ class booking_bouser extends booking_bocommon_authorized
 
 		if (is_file($file))
 		{
-			phpgw::import_class('bookingfrontend.bouser');
 			require_once $file;
 			$external_user = new bookingfrontend_external_user_name();
 		}

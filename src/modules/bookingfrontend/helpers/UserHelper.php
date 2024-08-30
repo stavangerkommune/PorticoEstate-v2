@@ -1,11 +1,14 @@
 <?php
 
+namespace App\modules\bookingfrontend\helpers;
+
 use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\Config;
 use App\modules\phpgwapi\services\Cache;
 use App\Database\Db;
 
 
-class bookingfrontend_bouser
+class UserHelper
 {
 
 	const ORGNR_SESSION_KEY = 'orgnr';
@@ -43,8 +46,9 @@ class bookingfrontend_bouser
 		$this->set_module();
 		$this->orgnr = $this->get_user_orgnr_from_session();
 		$this->org_id = $this->get_user_org_id_from_session();
+		require_once(PHPGW_SERVER_ROOT . '/booking/inc/vendor/symfony/validator/bootstrap.php');
 
-		$session_org_id = Sanitizer::get_var('session_org_id', 'int', 'GET');
+		$session_org_id = \Sanitizer::get_var('session_org_id', 'int', 'GET');
 		//			if($get_external_login_info && $this->is_logged_in())
 		if ($session_org_id && $this->is_logged_in())
 		{
@@ -62,13 +66,14 @@ class bookingfrontend_bouser
 							$session_org_nr = $org['orgnr'];
 						}
 					}
-					$org_number = createObject('booking.sfValidatorNorwegianOrganizationNumber')->clean($session_org_nr);
+
+					$org_number = (new \sfValidatorNorwegianOrganizationNumber)->clean($session_org_nr);
 					if ($org_number)
 					{
 						$this->change_org($session_org_id);
 					}
 				}
-				catch (sfValidatorError $e)
+				catch (\sfValidatorError $e)
 				{
 					$session_org_id = -1;
 				}
@@ -78,7 +83,7 @@ class bookingfrontend_bouser
 		}
 
 		$this->orgname = $this->get_orgname_from_db($this->orgnr, $this->ssn);
-		$this->config = CreateObject('phpgwapi.config', 'bookingfrontend');
+		$this->config = new Config('bookingfrontend');
 		$this->config->read();
 		if (!empty($this->config->config_data['debug']))
 		{
@@ -147,19 +152,19 @@ class bookingfrontend_bouser
 
 		if (!$authentication_method)
 		{
-			throw new LogicException('authentication_method not chosen');
+			throw new \LogicException('authentication_method not chosen');
 		}
 
 		$file = PHPGW_SERVER_ROOT . "/bookingfrontend/inc/custom/default/{$authentication_method}";
 
 		if (!is_file($file))
 		{
-			throw new LogicException("authentication method \"{$authentication_method}\" not available");
+			throw new \LogicException("authentication method \"{$authentication_method}\" not available");
 		}
 
 		require_once $file;
 
-		$external_user = new bookingfrontend_external_user();
+		$external_user = new \bookingfrontend_external_user();
 
 		$orginfo = $external_user->get_user_orginfo();
 		$this->orgnr = $orginfo['orgnr'];
@@ -279,9 +284,9 @@ class bookingfrontend_bouser
 			return in_array($organization_number, $orgs_map);
 		}
 
-		$so = CreateObject('booking.soorganization', true);
-		$organization = $so->read_single($organization_id);
-		$customer_ssn = $organization['customer_ssn'];
+		$organization_info = $this->get_organization_info($organization_id);
+
+		$customer_ssn = $organization_info['customer_ssn'];
 
 		if ($organization_id && $customer_ssn)
 		{
@@ -289,12 +294,22 @@ class bookingfrontend_bouser
 			return $customer_ssn == $external_login_info['ssn'];
 		}
 
-		if ($organization['organization_number'] == '')
+		if ($organization_info['organization_number'] == '')
 		{
 			return false;
 		}
 
 		return $organization_id == $this->org_id;
+	}
+
+	private function get_organization_info($organization_id)
+	{
+		$sql = "SELECT customer_ssn, organization_number FROM bb_organization WHERE id = :organization_id";
+		$sth = $this->db->prepare($sql);
+		$sth->execute(array(':organization_id' => $organization_id));
+		$organization = $sth->fetch();
+
+		return $organization;
 	}
 
 	public function is_group_admin($group_id = null)
@@ -309,16 +324,24 @@ class bookingfrontend_bouser
 		{
 			//return false;
 		}
-		$so = CreateObject('booking.sogroup');
-		$group = $so->read_single($group_id);
+		$group = $this->get_group_info($group_id);
 		return $this->is_organization_admin($group['organization_id']);
 	}
 
+	private function get_group_info($group_id)
+	{
+		$sql = "SELECT organization_id FROM bb_group WHERE id = :group_id";
+		$sth = $this->db->prepare($sql);
+		$sth->execute(array(':group_id' => $group_id));
+		$group = $sth->fetch();
+
+		return $group;
+	}
 	protected function write_user_orgnr_to_session()
 	{
 		if (!$this->is_logged_in())
 		{
-			throw new LogicException('Cannot write orgnr to session unless user is logged on');
+			throw new \LogicException('Cannot write orgnr to session unless user is logged on');
 		}
 
 		Cache::session_set($this->get_module(), self::ORGNR_SESSION_KEY, $this->get_user_orgnr());
@@ -349,9 +372,9 @@ class bookingfrontend_bouser
 	{
 		try
 		{
-			return createObject('booking.sfValidatorNorwegianOrganizationNumber')->clean(Cache::session_get($this->get_module(), self::ORGNR_SESSION_KEY));
+			return (new \sfValidatorNorwegianOrganizationNumber)->clean(Cache::session_get($this->get_module(), self::ORGNR_SESSION_KEY));
 		}
-		catch (sfValidatorError $e)
+		catch (\sfValidatorError $e)
 		{
 			return null;
 		}
@@ -405,26 +428,27 @@ class bookingfrontend_bouser
 			return $ret;
 		}
 
-		$configfrontend	= CreateObject('phpgwapi.config', 'bookingfrontend')->read();
+		$configfrontend = (new Config('bookingfrontend'))->read();
 
 		try
 		{
-			$sf_validator = createObject('booking.sfValidatorNorwegianSSN', array(), array(
+			$sf_validator = new \sfValidatorNorwegianSSN(array(), array(
 				'invalid' => 'ssn is invalid'
 			));
+
 			$sf_validator->setOption('required', true);
 			$sf_validator->clean($ssn);
 		}
-		catch (sfValidatorError $e)
+		catch (\sfValidatorError $e)
 		{
 			if ($skip_redirect)
 			{
 				return array();
 			}
 
-			if (Sanitizer::get_var('second_redirect', 'bool'))
+			if (\Sanitizer::get_var('second_redirect', 'bool'))
 			{
-				phpgw::no_access($this->current_app(), 'Du må logge inn via ID-porten');
+				\phpgw::no_access($this->current_app(), 'Du må logge inn via ID-porten');
 			}
 
 			Cache::session_set('bookingfrontend', 'redirect', json_encode($redirect));
@@ -452,7 +476,7 @@ class bookingfrontend_bouser
 			}
 			else
 			{
-				phpgw::redirect_link('/bookingfrontend/login.php');
+				\phpgw::redirect_link('/bookingfrontend/login.php');
 			}
 		}
 
@@ -474,7 +498,7 @@ class bookingfrontend_bouser
 			{
 				$external_user->get_name_from_external_service($ret);
 			}
-			catch (Exception $exc)
+			catch (\Exception $exc)
 			{
 			}
 		}

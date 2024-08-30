@@ -194,7 +194,6 @@ class booking_gi_arkiv
 
 	private function get_person($ssn)
 	{
-		phpgw::import_class('bookingfrontend.bouser');
 
 		$data = array(
 			'ssn' => $ssn

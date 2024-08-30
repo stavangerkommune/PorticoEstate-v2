@@ -1,4 +1,6 @@
 <?php
+
+use App\modules\bookingfrontend\helpers\UserHelper;
 	phpgw::import_class('booking.uiuser');
 
 	class bookingfrontend_uiuser extends booking_uiuser
@@ -21,7 +23,7 @@
 			/**
 			 * check external login
 			 */
-			$bouser = CreateObject('bookingfrontend.bouser');
+			$bouser = new UserHelper();
 
 			$this->external_login_info = $bouser->validate_ssn_login(array(	'menuaction' => 'bookingfrontend.uiuser.show'));
 

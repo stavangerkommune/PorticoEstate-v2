@@ -4,6 +4,8 @@ use App\modules\phpgwapi\services\Settings;
 use App\modules\phpgwapi\services\Cache;
 use App\helpers\Template;
 use App\modules\phpgwapi\services\Translation;
+use App\modules\bookingfrontend\helpers\UserHelper;
+
 
 $serverSettings = Settings::getInstance()->get('server');
 $flags = Settings::getInstance()->get('flags');
@@ -478,7 +480,7 @@ $tpl_vars = array(
 
 
 
-$bouser	 = CreateObject('bookingfrontend.bouser', true);
+$bouser	 = new UserHelper(true);
 
 /**
  * Might be set wrong in the ui-class

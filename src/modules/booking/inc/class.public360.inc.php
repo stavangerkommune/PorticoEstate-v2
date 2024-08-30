@@ -182,7 +182,6 @@ class booking_public360
 
 	public function add_update_person($application, $person_data)
 	{
-		phpgw::import_class('bookingfrontend.bouser');
 
 		$data = array(
 			'ssn'	=> $application['customer_ssn'],

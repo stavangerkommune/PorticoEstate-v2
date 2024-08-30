@@ -1,4 +1,6 @@
 <?php
+
+use App\modules\bookingfrontend\helpers\UserHelper;
 	phpgw::import_class('booking.uigroup');
 
 	class bookingfrontend_uigroup extends booking_uigroup
@@ -35,7 +37,7 @@
 			$edit_self_link = self::link(array('menuaction' => 'bookingfrontend.uigroup.edit',
 					'id' => $group['id']));
 
-			$bouser = CreateObject('bookingfrontend.bouser');
+			$bouser = new UserHelper();
 			$auth_forward = "?redirect_menuaction={$this->module}.uigroup.show&redirect_id={$group['id']}";
 			$group['login_link'] = 'login.php' . $auth_forward;
 			$group['logoff_link'] = 'logoff.php' . $auth_forward;
@@ -48,7 +50,7 @@
 				phpgw::no_access();
 			}
 
-			self::render_template_xsl('group', array('group' => $group, 'loggedin' => $loggedin,
+			self::render_template_xsl('group', array('group' => $group, 'loggedin' => $group['logged_on'],
 				'edit_self_link' => $edit_self_link));
 		}
 

@@ -33,7 +33,7 @@
  * @package phpgroupware
  * @subpackage bookingfrontend
  */
-
+use App\modules\bookingfrontend\helpers\UserHelper;
 use App\modules\phpgwapi\services\Settings;
 use App\modules\phpgwapi\services\Cache;
 use App\Database\Db;
@@ -42,7 +42,7 @@ use App\modules\phpgwapi\services\Log;
 /**
  * START WRAPPER
  */
-class bookingfrontend_external_user extends bookingfrontend_bouser
+class bookingfrontend_external_user extends UserHelper
 {
 
 	public function __construct()
@@ -96,7 +96,7 @@ class bookingfrontend_external_user extends bookingfrontend_bouser
 
 		try
 		{
-			$orgnr = createObject('booking.sfValidatorNorwegianOrganizationNumber')->clean($external_user->login);
+			$orgnr = (new sfValidatorNorwegianOrganizationNumber())->clean($external_user->login);
 			return array(
 				'ssn'	 => $fodselsnr,
 				'org_id' => $bregorgs[0]['org_id'],

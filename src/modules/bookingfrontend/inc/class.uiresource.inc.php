@@ -3,6 +3,7 @@
 use App\modules\phpgwapi\services\Translation;
 use App\modules\phpgwapi\services\Cache;
 use App\modules\phpgwapi\security\Sessions;
+use App\modules\bookingfrontend\helpers\UserHelper;
 
 
 	phpgw::import_class('booking.uicommon');
@@ -124,7 +125,7 @@ use App\modules\phpgwapi\security\Sessions;
 				$buildinginfo['link'] = $building_link;
 			}
 
-			$bouser = CreateObject('bookingfrontend.bouser');
+			$bouser = new UserHelper();
 			$user_data = Cache::session_get($bouser->get_module(), $bouser::USERARRAY_SESSION_KEY);
 			
 			if($user_data['ssn'])

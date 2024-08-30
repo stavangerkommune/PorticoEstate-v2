@@ -1,4 +1,6 @@
 <?php
+
+use App\modules\bookingfrontend\helpers\UserHelper;
 	phpgw::import_class('booking.uidelegate');
 
 	class bookingfrontend_uidelegate extends booking_uidelegate
@@ -35,14 +37,16 @@
 			$edit_self_link = self::link(array('menuaction' => 'bookingfrontend.uidelegate.edit',
 					'id' => $delegate['id']));
 
-			$bouser = CreateObject('bookingfrontend.bouser');
+			$bouser = new UserHelper();
 			$auth_forward = "?redirect_menuaction={$this->module}.uidelegate.show&redirect_id={$delegate['id']}";
 			$delegate['login_link'] = 'login.php' . $auth_forward;
 			$delegate['logoff_link'] = 'logoff.php' . $auth_forward;
 			if ($bouser->is_organization_admin())
+			{
 				$delegate['logged_on'] = true;
+			}
 
-			self::render_template_xsl('delegate', array('delegate' => $delegate, 'loggedin' => $loggedin,
+			self::render_template_xsl('delegate', array('delegate' => $delegate, 'loggedin' => $delegate['logged_on'],
 				'edit_self_link' => $edit_self_link));
 		}
 		public function index()

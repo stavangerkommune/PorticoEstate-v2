@@ -1,5 +1,7 @@
 <?php
-	phpgw::import_class('booking.bocommon_authorized');
+use App\modules\bookingfrontend\helpers\UserHelper;
+
+phpgw::import_class('booking.bocommon_authorized');
 
 	require_once "schedule.php";
 
@@ -347,7 +349,7 @@
 		{
 			if ($this->current_app() == 'bookingfrontend')
 			{
-				$bouser = CreateObject('bookingfrontend.bouser');
+				$bouser = new UserHelper();
 
 				$group_id = is_array($for_object) ? $for_object['group_id'] : (!is_null($for_object) ? $for_object : null);
 

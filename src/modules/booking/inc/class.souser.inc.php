@@ -1,4 +1,6 @@
 <?php
+
+use App\modules\bookingfrontend\helpers\UserHelper;
 	phpgw::import_class('booking.socommon');
 
 	class booking_souser extends booking_socommon
@@ -40,7 +42,7 @@
 
 		function get_validate_orgnr()
 		{
-			$bouser = CreateObject('bookingfrontend.bouser');
+			$bouser = new UserHelper();
 
 			$organization_number = $bouser->orgnr ? $bouser->orgnr : -1;
 			if($organization_number == '000000000')
@@ -53,7 +55,7 @@
 
 		function get_validate_org_id()
 		{
-			$bouser = CreateObject('bookingfrontend.bouser');
+			$bouser = new UserHelper();
 
 			return $bouser->org_id ? $bouser->org_id : -1;
 		}

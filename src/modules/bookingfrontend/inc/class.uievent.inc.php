@@ -1,6 +1,8 @@
 <?php
 
 use App\modules\phpgwapi\services\Cache;
+use App\modules\bookingfrontend\helpers\UserHelper;
+
 phpgw::import_class('booking.uievent');
 phpgw::import_class('booking.uiapplication');
 
@@ -68,7 +70,7 @@ class bookingfrontend_uievent extends booking_uievent
         $building_info = $this->bo->so->get_building_info($id);
         $event['building_id'] = $building_info['id'];
         $event['building_name'] = $building_info['name'];
-        $bouser = CreateObject('bookingfrontend.bouser');
+        $bouser = new UserHelper();
         $config = CreateObject('phpgwapi.config', 'booking');
         $config->read();
         $errors = array();
@@ -326,7 +328,7 @@ class bookingfrontend_uievent extends booking_uievent
         }
 
         $from_org = Sanitizer::get_var('from_org', 'boolean', 'REQUEST', false);
-        $bouser = CreateObject('bookingfrontend.bouser');
+        $bouser = new UserHelper();
         $errors = array();
 
         date_default_timezone_set("Europe/Oslo");
@@ -553,7 +555,7 @@ class bookingfrontend_uievent extends booking_uievent
             $when = pretty_timestamp($event['from_']) . ' - ' . $end->format('H:i');
         }
         $event['when'] = $when;
-        $bouser = CreateObject('bookingfrontend.bouser');
+        $bouser = new UserHelper();
         if ($this->_is_event_owner($event, $bouser, true)) {
             if ($event['from_'] > Date('Y-m-d H:i:s')) {
                 $event['edit_link'] = self::link(array('menuaction' => 'bookingfrontend.uievent.edit',
@@ -647,7 +649,7 @@ class bookingfrontend_uievent extends booking_uievent
 
     function filterEventForPublic($event)
     {
-        $bouser = CreateObject('bookingfrontend.bouser');
+        $bouser = new UserHelper();
         if ($bouser->is_logged_in() && $this->_is_event_owner($event, $bouser)) {
             return $event;
         }
@@ -740,7 +742,7 @@ class bookingfrontend_uievent extends booking_uievent
 
     private function info_determine_edit_link($event)
     {
-        $bouser = CreateObject('bookingfrontend.bouser');
+        $bouser = new UserHelper();
 
         if ($bouser->is_logged_in() && $this->_is_event_owner($event, $bouser) && $event['from_'] > Date('Y-m-d H:i:s')) {
             return self::link([
@@ -755,7 +757,7 @@ class bookingfrontend_uievent extends booking_uievent
 
     private function info_determine_cancel_link($event, $user_can_delete_events)
     {
-        $bouser = CreateObject('bookingfrontend.bouser');
+        $bouser = new UserHelper();
 
         if ($bouser->is_logged_in() && $this->_is_event_owner($event, $bouser) && $event['from_'] > Date('Y-m-d H:i:s') && $user_can_delete_events) {
             return self::link([
@@ -853,7 +855,7 @@ class bookingfrontend_uievent extends booking_uievent
         $event['get_participants_link'] = $get_participants_link;
 
         $datatable_def = array();
-        if (CreateObject('bookingfrontend.bouser')->is_logged_in()) {
+        if ((new UserHelper())->is_logged_in()) {
             $datatable_def[] = array
             (
                 'container' => 'datatable-container_0',

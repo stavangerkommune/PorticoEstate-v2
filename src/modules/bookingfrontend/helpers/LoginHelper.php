@@ -5,6 +5,7 @@ namespace App\modules\bookingfrontend\helpers;
 use App\modules\phpgwapi\security\Sessions;
 use App\modules\phpgwapi\services\Config;
 use App\modules\phpgwapi\services\Cache;
+use App\modules\bookingfrontend\helpers\UserHelper;
 use Sanitizer;
 
 class LoginHelper
@@ -19,7 +20,7 @@ class LoginHelper
 			/**
 			 * Pick up the external login-info
 			 */
-			$bouser = CreateObject('bookingfrontend.bouser');
+			$bouser = new UserHelper();
 			$bouser->log_in();
 
 			$redirect =	json_decode(Cache::session_get('bookingfrontend', 'redirect'), true);

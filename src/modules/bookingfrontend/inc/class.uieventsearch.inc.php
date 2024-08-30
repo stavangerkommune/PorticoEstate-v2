@@ -1,8 +1,10 @@
 <?php
+
+use App\modules\bookingfrontend\helpers\UserHelper;
+
 phpgw::import_class("booking.uicommon");
 phpgw::import_class('bookingfrontend.bosearch');
 phpgw::import_class('booking.bobooking');
-phpgw::import_class('bookingfrontend.bouser');
 phpgw::import_class('booking.boorganization');
 phpgw::import_class('booking.bobuilding');
 phpgw::import_class('booking.soorganization');
@@ -75,7 +77,7 @@ class bookingfrontend_uieventsearch extends booking_uicommon
 
 	public function get_orgs_if_logged_in()
 	{
-		$bouser = new bookingfrontend_bouser();
+		$bouser = new UserHelper();
 
 		if ($bouser->is_logged_in())
 		{

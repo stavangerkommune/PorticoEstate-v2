@@ -2,6 +2,7 @@
 
 namespace App\modules\bookingfrontend\helpers;
 
+use App\modules\bookingfrontend\helpers\UserHelper;
 use App\modules\phpgwapi\security\Sessions;
 use App\modules\phpgwapi\services\Hooks;
 use Sanitizer;
@@ -29,7 +30,7 @@ class LogoutHelper
 			$bookingfrontend_host = rtrim($bookingfrontend_host, '/');
 			$external_logout = isset($config->config_data['external_logout']) && $config->config_data['external_logout'] ? $config->config_data['external_logout'] : '';
 
-			$frontend_user = CreateObject('bookingfrontend.bouser');
+			$frontend_user = new UserHelper();
 			$frontend_user->log_off();
 
 			execMethod('phpgwapi.menu.clear');

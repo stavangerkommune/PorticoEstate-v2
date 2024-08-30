@@ -5,6 +5,7 @@
 	phpgw::import_class('booking.boapplication');
 
 	use Kigkonsult\Icalcreator\Vcalendar;
+	use App\modules\bookingfrontend\helpers\UserHelper;
 	use App\modules\phpgwapi\services\Cache;
 
 	class bookingfrontend_uiallocation extends booking_uiallocation
@@ -498,7 +499,7 @@
 
 		private function info_determine_add_link($allocation)
 		{
-			$bouser = CreateObject('bookingfrontend.bouser');
+			$bouser = new UserHelper();
 			if ($bouser->is_logged_in() &&  $bouser->is_organization_admin($allocation['organization_id']))
 			{
 				return self::link([
@@ -516,7 +517,7 @@
 
 		private function info_determine_cancel_link($allocation, $user_can_delete_allocations)
 		{
-			$bouser = CreateObject('bookingfrontend.bouser');
+			$bouser = new UserHelper();
 
 			// Assuming a similar permission check as your prior implementation
 			if ($bouser->is_logged_in() && $user_can_delete_allocations == 1)
@@ -540,7 +541,7 @@
 
 		private function info_determine_edit_link($allocation)
 		{
-			$bouser = CreateObject('bookingfrontend.bouser');
+			$bouser = new UserHelper();
 
 			if (!$bouser->is_logged_in())
 			{
@@ -653,7 +654,7 @@
 				'menuaction' => 'bookingfrontend.uiorganization.show',
 				'id'		 => $allocation['organization_id']
 			));
-			$bouser						 = CreateObject('bookingfrontend.bouser');
+			$bouser						 = new UserHelper();
 
 			$from_org = Sanitizer::get_var('from_org', 'boolean', "GET", false);
 			if ($bouser->is_organization_admin($allocation['organization_id']))
@@ -755,7 +756,7 @@
 				'menuaction' => 'bookingfrontend.uiorganization.show',
 				'id'		 => $allocation['organization_id']
 			));
-			$bouser						 = CreateObject('bookingfrontend.bouser');
+			$bouser						 = new UserHelper();
 			if ($bouser->is_organization_admin($allocation['organization_id']))
 			{
 				$allocation['add_link']		 = self::link(array(
@@ -828,7 +829,7 @@
 			$allocation['get_participants_link'] = $get_participants_link;
 
 			$datatable_def	 = array();
-			if (CreateObject('bookingfrontend.bouser')->is_logged_in())
+			if ((new UserHelper())->is_logged_in())
 			{
 				$datatable_def[] = array(
 					'container'	 => 'datatable-container_0',

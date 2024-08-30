@@ -1,6 +1,8 @@
 <?php
 
 use App\modules\phpgwapi\services\Cache;
+use App\modules\bookingfrontend\helpers\UserHelper;
+
 	phpgw::import_class('booking.uiapplication');
 	phpgw::import_class('booking.boapplication');
 	phpgw::import_class('booking.soapplication');
@@ -36,7 +38,7 @@ use App\modules\phpgwapi\services\Cache;
 			/**
 			 * check external login - and return here
 			 */
-			$bouser = CreateObject('bookingfrontend.bouser');
+			$bouser = new UserHelper();
 
 			$external_login_info = $bouser->validate_ssn_login(
 				array

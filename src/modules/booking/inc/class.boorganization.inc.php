@@ -1,4 +1,6 @@
 <?php
+
+use App\modules\bookingfrontend\helpers\UserHelper;
 	phpgw::import_class('booking.bocommon_authorized');
 
 	class booking_boorganization extends booking_bocommon_authorized
@@ -24,7 +26,7 @@
 		{
 			if ($this->current_app() == 'bookingfrontend')
 			{
-				$bouser = CreateObject('bookingfrontend.bouser');
+				$bouser = new UserHelper();
 
 				$org_id = is_array($for_object) ? $for_object['id'] : (!is_null($for_object) ? $for_object : null);
 				

@@ -3,6 +3,7 @@
 use App\modules\phpgwapi\services\Cache;
 use App\modules\phpgwapi\services\Settings;
 use App\modules\phpgwapi\services\Log;
+use App\modules\bookingfrontend\helpers\UserHelper;
 
 	phpgw::import_class('booking.uiparticipant');
 	phpgw::import_class('phpgwapi.datetime');
@@ -521,7 +522,7 @@ ICAL;
 		{
 			$results = array();
 
-			if(CreateObject('bookingfrontend.bouser')->is_logged_in())
+			if((new UserHelper())->is_logged_in())
 			{
 				$_REQUEST['filter_reservation_id'] = Sanitizer::get_var('filter_reservation_id', 'int', 'REQUEST', -1);
 				$participants = $this->bo->read();

@@ -6,6 +6,7 @@ use App\modules\phpgwapi\security\Sessions;
 use App\modules\phpgwapi\services\Cache;
 use App\Database\Db;
 use App\modules\phpgwapi\security\Acl;
+use App\modules\bookingfrontend\helpers\UserHelper;
 
 
 phpgw::import_class('booking.uicommon');
@@ -1045,7 +1046,7 @@ class booking_uiapplication extends booking_uicommon
 			self::redirect(array('menuaction' => 'bookingfrontend.uiresource.show', 'id' => $resource_id, 'building_id' => $building_id, 'simple' => true));
 		}
 
-		$bouser = CreateObject('bookingfrontend.bouser');
+		$bouser = new UserHelper();
 
 		$errors = array();
 		$user_data = Cache::session_get($bouser->get_module(), $bouser::USERARRAY_SESSION_KEY);
@@ -1806,7 +1807,7 @@ class booking_uiapplication extends booking_uicommon
 		/**
 		 * check external login - and return here
 		 */
-		$bouser = CreateObject('bookingfrontend.bouser');
+		$bouser = new UserHelper();
 
 		$external_login_info = $bouser->validate_ssn_login(array(), true);
 
@@ -2099,7 +2100,7 @@ class booking_uiapplication extends booking_uicommon
 		/**
 		 * check external login - and return here
 		 */
-		$bouser = CreateObject('bookingfrontend.bouser');
+		$bouser = new UserHelper();
 
 		$external_login_info = $bouser->validate_ssn_login(array(
 			'menuaction' => 'bookingfrontend.uiapplication.add_contact'

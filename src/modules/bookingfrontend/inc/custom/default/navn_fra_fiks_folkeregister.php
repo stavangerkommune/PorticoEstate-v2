@@ -34,12 +34,13 @@
  * @subpackage bookingfrontend
  */
 
+use App\modules\bookingfrontend\helpers\UserHelper;
 use App\modules\phpgwapi\services\Settings;
 
 /**
  * START WRAPPER
  */
-class bookingfrontend_external_user_name extends bookingfrontend_bouser
+class bookingfrontend_external_user_name extends UserHelper
 {
 
 	public function __construct()

@@ -3,6 +3,7 @@
 use App\modules\phpgwapi\services\Settings;
 use App\modules\phpgwapi\services\Cache;
 use Kigkonsult\Icalcreator\Vcalendar;
+use App\modules\bookingfrontend\helpers\UserHelper;
 
 
 phpgw::import_class('booking.uibooking');
@@ -1671,7 +1672,7 @@ class bookingfrontend_uibooking extends booking_uibooking
 			'id' => $booking['group']['id']
 		));
 
-		$bouser = CreateObject('bookingfrontend.bouser');
+		$bouser = new UserHelper();
 		if ($bouser->is_group_admin($booking['group_id']))
 		{
 			if ($booking['from_'] > Date('Y-m-d H:i:s'))
@@ -2019,7 +2020,7 @@ class bookingfrontend_uibooking extends booking_uibooking
 		$booking['get_participants_link'] = $get_participants_link;
 
 		$datatable_def	 = array();
-		if (CreateObject('bookingfrontend.bouser')->is_logged_in())
+		if ((new UserHelper())->is_logged_in())
 		{
 			$datatable_def[] = array(
 				'container'	 => 'datatable-container_0',

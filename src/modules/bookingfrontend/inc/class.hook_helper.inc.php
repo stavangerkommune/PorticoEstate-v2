@@ -26,6 +26,7 @@
 
 use App\modules\phpgwapi\services\Cache;
 use App\modules\phpgwapi\services\Settings;
+use App\modules\bookingfrontend\helpers\UserHelper;
 
 
 /**
@@ -79,7 +80,7 @@ class bookingfrontend_hook_helper
 
 		$orgs = array();
 
-		$bouser = CreateObject('bookingfrontend.bouser');
+		$bouser = new UserHelper();
 
 		if ($bouser->is_logged_in())
 		{
