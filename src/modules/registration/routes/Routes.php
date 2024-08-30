@@ -9,14 +9,5 @@ use App\modules\bookingfrontend\helpers\LoginHelper;
 use App\modules\bookingfrontend\helpers\LogoutHelper;
 
 
-$settings = [
-	'session_name' => [
-		'bookingfrontend' => 'bookingfrontendsession',
-		'eventplannerfrontend' => 'eventplannerfrontendsession',
-		'activitycalendarfrontend' => 'activitycalendarfrontendsession',
-		'registration' => 'registrationsession',
-	]
-	// Add more settings as needed
-];
-$app->get('/registration/', StartPoint::class . ':registration')->add(new SessionsMiddleware($app->getContainer(), $settings));
-$app->post('/registration/', StartPoint::class . ':registration')->add(new SessionsMiddleware($app->getContainer(), $settings));
+$app->get('/registration/', StartPoint::class . ':registration')->add(new SessionsMiddleware($app->getContainer()));
+$app->post('/registration/', StartPoint::class . ':registration')->add(new SessionsMiddleware($app->getContainer()));

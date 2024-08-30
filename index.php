@@ -1,4 +1,5 @@
 <?php
+
 use Slim\Factory\AppFactory;
 use DI\ContainerBuilder;
 use App\providers\DatabaseServiceProvider;
@@ -27,7 +28,21 @@ require_once SRC_ROOT_PATH . '/helpers/DebugArray.php';
 // Add your settings to the container
 $database_settings = require_once SRC_ROOT_PATH . '/helpers/FilterDatabaseConfig.php';
 
-$containerBuilder->addDefinitions(['settings' => ['db' => $database_settings]]);
+$session_name = [
+	'activitycalendarfrontend' => 'activitycalendarfrontendsession',
+	'bookingfrontend' => 'bookingfrontendsession',
+	'eventplannerfrontend' => 'eventplannerfrontendsession',
+	'mobilefrontend' => 'mobilefrontendsession',
+	'registration' => 'registrationsession',
+];
+
+
+$containerBuilder->addDefinitions([
+	'settings' => [
+		'db' => $database_settings,
+		'session_name' => $session_name
+	]
+]);
 
 // Build PHP-DI Container instance
 $container = $containerBuilder->build();

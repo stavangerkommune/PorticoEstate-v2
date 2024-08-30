@@ -18,9 +18,9 @@ class SessionsMiddleware implements MiddlewareInterface
 	private $routePath;
 	private $settings;
 
-	public function __construct($container,  $settings = [])
+	public function __construct($container)
 	{
-		$this->settings = $settings;
+		$this->settings = $container->get('settings');
 	}
 
 	public function process(Request $request, RequestHandler $handler): Response
@@ -91,13 +91,13 @@ class SessionsMiddleware implements MiddlewareInterface
 				\App\modules\activitycalendarfrontend\helpers\LoginHelper::process();
 				return $handler->handle($request);
 			}
-			
+
 			if ($currentApp == 'registration')
 			{
 				\App\modules\registration\helpers\LoginHelper::process();
 				return $handler->handle($request);
 			}
-			else if($second_pass)
+			else if ($second_pass)
 			{
 				$sessions->phpgw_setcookie('login_second_pass', false);
 				return $this->sendErrorResponse(['msg' => 'A valid session could not be found'], 401);
@@ -105,7 +105,7 @@ class SessionsMiddleware implements MiddlewareInterface
 			else
 			{
 				$process_login = new Login();
-				if($process_login->login())
+				if ($process_login->login())
 				{
 					return $handler->handle($request);
 				}
@@ -125,7 +125,6 @@ class SessionsMiddleware implements MiddlewareInterface
 				}
 				$response = new Response();
 				return $response->withHeader('Content-Type', 'text/html');
-
 			}
 		}
 

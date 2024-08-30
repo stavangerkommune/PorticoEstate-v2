@@ -104,15 +104,6 @@ $app->get('/login[/{params:.*}]', function (Request $request, Response $response
 });
 
 
-$settings = [
-	'session_name' => [
-		'mobilefrontend' => 'mobilefrontendsession',
-		'bookingfrontend' => 'bookingfrontendsession',
-		'eventplannerfrontend' => 'eventplannerfrontendsession',
-		'activitycalendarfrontend' => 'activitycalendarfrontendsession'
-	]
-	// Add more settings as needed
-];
 $app->post('/login', function (Request $request, Response $response)
 {
 	// Get the session ID
@@ -124,7 +115,7 @@ $app->post('/login', function (Request $request, Response $response)
 	$response->getBody()->write($json);
 	return $response;
 })
-	->addMiddleware(new App\modules\phpgwapi\middleware\LoginMiddleware($container, $settings));
+	->addMiddleware(new App\modules\phpgwapi\middleware\LoginMiddleware($container));
 
 $app->get('/refreshsession[/{params:.*}]', function (Request $request, Response $response)
 {

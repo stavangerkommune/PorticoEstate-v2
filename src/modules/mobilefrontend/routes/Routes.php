@@ -5,37 +5,18 @@ use App\modules\phpgwapi\controllers\StartPoint;
 use App\modules\phpgwapi\middleware\SessionsMiddleware;
 use App\modules\mobilefrontend\helpers\HomeHelper;
 use App\modules\phpgwapi\helpers\LoginHelper;
-use App\modules\phpgwapi\services\Settings;
+use App\modules\mobilefrontend\middleware\LoginMiddleware;
 
 
 
+$app->get('/mobilefrontend/', StartPoint::class . ':mobilefrontend')->add(new SessionsMiddleware($app->getContainer()));
+$app->post('/mobilefrontend/', StartPoint::class . ':mobilefrontend')->add(new SessionsMiddleware($app->getContainer()));
 
-$settings = [
-	'session_name' => [
-		'mobilefrontend' => 'mobilefrontendsession',
-		'bookingfrontend' => 'bookingfrontendsession',
-		'eventplannerfrontend' => 'eventplannerfrontendsession',
-		'activitycalendarfrontend' => 'activitycalendarfrontendsession'
-	]
-	// Add more settings as needed
-];
-$app->get('/mobilefrontend/', StartPoint::class . ':mobilefrontend')->add(new SessionsMiddleware($app->getContainer(), $settings));
-$app->post('/mobilefrontend/', StartPoint::class . ':mobilefrontend')->add(new SessionsMiddleware($app->getContainer(), $settings));
-
-$app->get('/mobilefrontend/home/', HomeHelper::class . ':processHome')->add(new SessionsMiddleware($app->getContainer(), $settings));
+$app->get('/mobilefrontend/home/', HomeHelper::class . ':processHome')->add(new SessionsMiddleware($app->getContainer()));
 
 
-/*
-Settings::getInstance()->set(
-	'flags',
-	[
-		'session_name' => 'mobilefrontendsession',
-		'custom_frontend' => 'mobilefrontend'
-	]
-);
-*/
-$app->get('/mobilefrontend/login_ui[/{params:.*}]', LoginHelper::class . ':processLogin');
-$app->post('/mobilefrontend/login_ui[/{params:.*}]', LoginHelper::class . ':processLogin');
+$app->get('/mobilefrontend/login_ui[/{params:.*}]', LoginHelper::class . ':processLogin')->add(new LoginMiddleware());
+$app->post('/mobilefrontend/login_ui[/{params:.*}]', LoginHelper::class . ':processLogin')->add(new LoginMiddleware());
 
 
 $app->get('/mobilefrontend/logout.php', function ()

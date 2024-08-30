@@ -19,21 +19,12 @@ $app->group('/bookingfrontend', function (RouteCollectorProxy $group) {
 
 
 
-
-$settings = [
-	'session_name' => [
-		'bookingfrontend' => 'bookingfrontendsession',
-		'eventplannerfrontend' => 'eventplannerfrontendsession',
-		'activitycalendarfrontend' => 'activitycalendarfrontendsession'
-	]
-	// Add more settings as needed
-];
-$app->get('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer(), $settings));
-$app->post('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer(), $settings));
+$app->get('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer()));
+$app->post('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer()));
 
 $app->get('/bookingfrontend/lang', LangHelper::class . ':process')->addMiddleware(new SessionsMiddleware($container));
-$app->get('/bookingfrontend/login/', LoginHelper::class . ':organization')->add(new SessionsMiddleware($app->getContainer(), $settings));
-$app->get('/bookingfrontend/logout[/{params:.*}]', LogoutHelper::class . ':process')->add(new SessionsMiddleware($app->getContainer(), $settings));
+$app->get('/bookingfrontend/login/', LoginHelper::class . ':organization')->add(new SessionsMiddleware($app->getContainer()));
+$app->get('/bookingfrontend/logout[/{params:.*}]', LogoutHelper::class . ':process')->add(new SessionsMiddleware($app->getContainer()));
 $app->get('/bookingfrontend/client[/{params:.*}]', function ($request, $response) {
     $response = $response->withHeader('Location', '/bookingfrontend/client/');
     return $response;
