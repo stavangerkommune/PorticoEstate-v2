@@ -493,7 +493,7 @@ class UserHelper
 		if (is_file($file))
 		{
 			require_once $file;
-			$external_user = new bookingfrontend_external_user_name();
+			$external_user = new \bookingfrontend_external_user_name();
 			try
 			{
 				$external_user->get_name_from_external_service($ret);
