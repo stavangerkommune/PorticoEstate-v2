@@ -398,7 +398,6 @@
 			'email' => 'varchar'
 			);
 
-		$datatype_text[$datatype];
 
 		$GLOBALS['phpgw_setup']->oProc->query("SELECT count(*) as cnt FROM fm_location_type");
 		$GLOBALS['phpgw_setup']->oProc->next_record();
@@ -6435,7 +6434,6 @@
 				'created_on'	=> $GLOBALS['phpgw_setup']->oProc->f('created_on'),
 				'created_by'	=> $GLOBALS['phpgw_setup']->oProc->f('created_by')
 			);
-			$i++;
 		}
 
 		foreach($roles as $role)
@@ -7811,7 +7809,7 @@
 						$cols = array_merge($primary_keys, array('p_num'));
 						$records = array();
 						$i = 0;
-						$GLOBALS['phpgw_setup']->oProc->query("SELECT " . implode(',', $cols) . " FROM {$table} WHERE p_entity_id = '{$category[entity_id]}' AND p_cat_id = '{$category[cat_id]}'");
+						$GLOBALS['phpgw_setup']->oProc->query("SELECT " . implode(',', $cols) . " FROM {$table} WHERE p_entity_id = '{$category['entity_id']}' AND p_cat_id = '{$category['cat_id']}'");
 
 						while($GLOBALS['phpgw_setup']->oProc->next_record())
 						{
