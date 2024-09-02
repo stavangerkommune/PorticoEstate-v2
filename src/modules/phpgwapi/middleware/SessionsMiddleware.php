@@ -38,6 +38,7 @@ class SessionsMiddleware implements MiddlewareInterface
 		}
 
 		//get the route path
+		$currentApp = '';
 
 		if (isset($_GET['menuaction']) || isset($_POST['menuaction']))
 		{
@@ -50,14 +51,14 @@ class SessionsMiddleware implements MiddlewareInterface
 				list($currentApp, $class, $method) = explode('.', $_POST['menuaction']);
 			}
 		}
-		else
-		{
-			$this->routePath = $route->getPattern();
-			$routePath_arr = explode('/', $this->routePath);
-			$currentApp = trim($routePath_arr[1], '[');
-		}
+		
+		
+		$this->routePath = $route->getPattern();
+		$routePath_arr = explode('/', $this->routePath);
+		$_currentApp = trim($routePath_arr[1], '[');
+		$currentApp = $currentApp ? $currentApp : $_currentApp;		
 
-		$this->read_initial_settings($currentApp);
+		$this->read_initial_settings($currentApp, $_currentApp);
 		$sessions = Sessions::getInstance();
 		if ($currentApp == 'login' && isset($_POST['login']) && isset($_POST['passwd']))
 		{
@@ -96,6 +97,18 @@ class SessionsMiddleware implements MiddlewareInterface
 			{
 				\App\modules\registration\helpers\LoginHelper::process();
 				return $handler->handle($request);
+			}
+
+			if ($currentApp == 'mobilefrontend')
+			{
+				$custom_frontend = 'mobilefrontend';
+				Settings::getInstance()->update(
+					'flags',
+					[
+						'custom_frontend' => $custom_frontend,
+						'session_name' => $this->settings['session_name'][$custom_frontend]
+					]
+				);
 			}
 			else if ($second_pass)
 			{
@@ -139,18 +152,20 @@ class SessionsMiddleware implements MiddlewareInterface
 	 * Read the initial settings
 	 *
 	 * @param string $currentApp
+	 * @param string $_currentApp custom frontend
 	 *
 	 * @return void
 	 */
 
-	private function read_initial_settings($currentApp = '')
+	private function read_initial_settings($currentApp = '', $custom_frontend = '')
 	{
 		$flags = Settings::getInstance()->get('flags');
 		$flags['currentapp'] = $currentApp;
 
-		if (isset($this->settings['session_name'][$currentApp]))
+		if (isset($this->settings['session_name'][$custom_frontend]))
 		{
-			$flags['session_name'] = $this->settings['session_name'][$currentApp];
+			$flags['session_name'] = $this->settings['session_name'][$custom_frontend];
+			$flags['custom_frontend'] = $custom_frontend;
 		}
 
 		Settings::getInstance()->set('flags', $flags);

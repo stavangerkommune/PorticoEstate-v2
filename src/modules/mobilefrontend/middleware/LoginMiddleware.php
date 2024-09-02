@@ -10,14 +10,23 @@ use App\modules\phpgwapi\services\Settings;
 
 class LoginMiddleware implements MiddlewareInterface
 {
-	public function __construct()
+	private $settings;
+	public function __construct($container)
 	{
+		$this->settings = $container->get('settings');
 	}
 
 	public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
 	{
-		Settings::getInstance()->update('flags', ['custom_frontend' => 'mobilefrontend']);
+		$custom_frontend = 'mobilefrontend';
+		Settings::getInstance()->update(
+			'flags',
+			[
+				'custom_frontend' => $custom_frontend,
+				'session_name' => $this->settings['session_name'][$custom_frontend]
+			]
+		);
+
 		return $handler->handle($request);
 	}
-
 }

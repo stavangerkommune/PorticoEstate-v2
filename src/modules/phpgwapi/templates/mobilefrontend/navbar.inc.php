@@ -59,7 +59,7 @@ function parse_navbar($force = False)
 	$movein_text = Translation::getInstance()->translate('movein', array(), false, 'rental');
 	$moveout_url = phpgw::link('/index.php', array('menuaction' => 'rental.uimoveout.index'));
 	$moveout_text = Translation::getInstance()->translate('moveout', array(), false, 'rental');
-	$logout_url	= phpgw::link('/logout.php');
+	$logout_url	= phpgw::link('/logout');
 
 	$acl = Acl::getInstance();
 	$anonymous = $acl->check('anonymous', 1, 'phpgwapi');
