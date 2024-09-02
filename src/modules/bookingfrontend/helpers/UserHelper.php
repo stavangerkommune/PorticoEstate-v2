@@ -42,11 +42,11 @@ class UserHelper
 
 	public function __construct($get_external_login_info = null)
 	{
+		require_once(PHPGW_SERVER_ROOT . '/booking/inc/vendor/symfony/validator/bootstrap.php');
 		$this->db = Db::getInstance();
 		$this->set_module();
 		$this->orgnr = $this->get_user_orgnr_from_session();
 		$this->org_id = $this->get_user_org_id_from_session();
-		require_once(PHPGW_SERVER_ROOT . '/booking/inc/vendor/symfony/validator/bootstrap.php');
 
 		$session_org_id = \Sanitizer::get_var('session_org_id', 'int', 'GET');
 		//			if($get_external_login_info && $this->is_logged_in())
