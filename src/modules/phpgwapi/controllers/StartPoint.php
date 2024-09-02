@@ -43,7 +43,6 @@ class StartPoint
 	{
 		Settings::getInstance()->update('flags', ['custom_frontend' => 'mobilefrontend']);
 		$this->validate_object_method();
-		$phpgwapi_common = new \phpgwapi_common();
 
 		$this->api_requested = false;
 		if ($this->app == 'phpgwapi')
@@ -62,6 +61,12 @@ class StartPoint
 		{
 			$this->app = 'phpgwapi';
 		}
+
+		$userSettings = Settings::getInstance()->get('user');
+		$userSettings['preferences']['common']['template_set'] = 'mobilefrontend';
+		Settings::getInstance()->set('user', $userSettings);
+
+		$phpgwapi_common = new \phpgwapi_common();
 
 		if ($this->app == 'phpgwapi')
 		{
@@ -111,6 +116,7 @@ class StartPoint
 					$flags['headonly'] = true;
 					Settings::getInstance()->set('flags', $flags);
 				}
+
 				$Object->{$this->method}();
 
 				if (!empty(Settings::getInstance()->get('flags')['xslt_app']))

@@ -1741,7 +1741,7 @@ JS;
 				$values['origin_data'][0]['descr']		 = $interlink->get_location_name($origin);
 				$values['origin_data'][0]['data'][]		 = array(
 					'id'	 => $origin_id,
-					'link'	 => $interlink->get_relation_link(array('location' => $origin), $origin_id),
+					'link'	 => $interlink->get_relation_link(array('location' => $origin, 'appname' => 'property'), $origin_id),
 				);
 			}
 		}
