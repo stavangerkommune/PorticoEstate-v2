@@ -18,11 +18,10 @@ $app->group('/bookingfrontend', function (RouteCollectorProxy $group) {
 });
 
 
-
 $app->get('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer()));
 $app->post('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer()));
 
-$app->get('/bookingfrontend/lang', LangHelper::class . ':process')->addMiddleware(new SessionsMiddleware($container));
+$app->get('/bookingfrontend/lang[/{lang}]', LangHelper::class . ':process');
 $app->get('/bookingfrontend/login/', LoginHelper::class . ':organization')->add(new SessionsMiddleware($app->getContainer()));
 $app->get('/bookingfrontend/logout[/{params:.*}]', LogoutHelper::class . ':process')->add(new SessionsMiddleware($app->getContainer()));
 $app->get('/bookingfrontend/client[/{params:.*}]', function ($request, $response) {

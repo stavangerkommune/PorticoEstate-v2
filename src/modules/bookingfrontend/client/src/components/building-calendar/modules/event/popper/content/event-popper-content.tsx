@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {usePopperData, usePopperGlobalInfo} from "@/service/api/event-info";
+import {usePopperGlobalInfo} from "@/service/api/event-info";
 import {FCallEvent} from "@/components/building-calendar/building-calendar.types";
 import styles from "@/components/building-calendar/modules/event/popper/event-popper.module.scss";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -8,6 +8,7 @@ import {formatEventTime} from "@/service/util";
 import {faUser, faUsers} from "@fortawesome/free-solid-svg-icons";
 import ColourCircle from "@/components/building-calendar/modules/colour-circle/colour-circle";
 import {Button} from "@digdir/designsystemet-react";
+import {useTrans} from "@/app/i18n/ClientTranslationProvider";
 
 interface EventPopperContentProps {
     event: FCallEvent
@@ -17,7 +18,8 @@ interface EventPopperContentProps {
 const EventPopperContent: FC<EventPopperContentProps> = (props) => {
     const {event, onClose} = props
     const {data: popperInfo, isLoading} = usePopperGlobalInfo(event.extendedProps.type, event.id);
-    if(!popperInfo) {
+    const t = useTrans();
+    if (!popperInfo) {
         return null;
     }
 
@@ -49,7 +51,7 @@ const EventPopperContent: FC<EventPopperContentProps> = (props) => {
                 {(popperInfo?.info_participant_limit || 0) > 0 && (
                     <p className={styles.participantLimit}>
                         <FontAwesomeIcon className={'text-small'}
-                                         icon={faUsers}/> Max {popperInfo?.info_participant_limit} participants
+                                         icon={faUsers}/>{t('bookingfrontend.max_participants', { count: popperInfo?.info_participant_limit || 0 })}
                     </p>
                 )}
             </div>
@@ -63,12 +65,13 @@ const EventPopperContent: FC<EventPopperContentProps> = (props) => {
                 {popperInfo?.info_edit_link && userCanEdit() && (
                     <a href={popperInfo?.info_edit_link} target="_blank" rel="noopener noreferrer"
                        className={styles.actionButton}>
-                        Edit Event
+                        {t(`bookingfrontend.edit ${event.extendedProps.type}`)}
                     </a>
                 )}
             </div>
             <div className={styles.eventPopperFooter}>
-                <Button onClick={onClose} variant="tertiary" className={'default'} size={'sm'}>Ok</Button>
+                <Button onClick={onClose} variant="tertiary" className={'default'} size={'sm'}
+                        style={{textTransform: 'capitalize'}}>{t('common.ok').toLowerCase()}</Button>
             </div>
         </div>
     );

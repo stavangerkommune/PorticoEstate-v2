@@ -32,6 +32,7 @@ import {
 import CalendarProvider from "@/components/building-calendar/calendar-context";
 import EventContentTemp from "@/components/building-calendar/modules/event/content/event-content-temp";
 import {IBuilding} from "@/service/types/Building";
+import {useTrans} from "@/app/i18n/ClientTranslationProvider";
 
 interface BuildingCalendarProps {
     events: IEvent[];
@@ -46,7 +47,7 @@ Settings.defaultLocale = "nb";
 
 
 const BuildingCalendar: FC<BuildingCalendarProps> = (props) => {
-
+    const t = useTrans();
     const {events} = props;
     const [currentDate, setCurrentDate] = useState<DateTime>(props.initialDate);
     const [calendarEvents, setCalendarEvents] = useState<FCallEvent[]>([]);
@@ -110,7 +111,7 @@ const BuildingCalendar: FC<BuildingCalendarProps> = (props) => {
             return;
         }
         // console.log(enabledResources, props.resources);
-        const title = 'New Application';
+        const title = t('bookingfrontend.new application');
 
         const newEvent: FCallTempEvent = {
             id: `temp-${Date.now()}`,

@@ -1,0 +1,56 @@
+'use client'
+import React, {createContext, useContext, useEffect, useState} from 'react';
+import {getTranslation} from '@/app/i18n';
+import {LanguageType} from '@/app/i18n/settings';
+
+interface TranslationContextType {
+    t: (key: string, options?: any) => string;
+    i18n: any;
+}
+
+const TranslationContext = createContext<TranslationContextType | null>(null);
+
+export const useClientTranslation = () => {
+    const context = useContext(TranslationContext);
+    if (!context) {
+        throw new Error('useClientTranslation must be used within a TranslationProvider');
+    }
+    return context;
+};
+export const useTrans = () => {
+    const context = useClientTranslation();
+    return context.t;
+};
+
+interface TranslationProviderProps {
+    children: React.ReactNode;
+    lang: LanguageType;
+}
+
+const TranslationProvider: React.FC<TranslationProviderProps> = ({children, lang}) => {
+    const [translationLoaded, setTranslationLoaded] = useState(false);
+    const [translationContext, setTranslationContext] = useState<TranslationContextType | null>(null);
+
+    useEffect(() => {
+        const loadTranslations = async () => {
+            const {t, i18n} = await getTranslation(lang);
+            setTranslationContext({t, i18n});
+            setTranslationLoaded(true);
+            console.log(i18n.getDataByLanguage('no'))
+        };
+
+        loadTranslations();
+    }, [lang]);
+
+    if (!translationLoaded) {
+        return <div>Loading translations...</div>;
+    }
+
+    return (
+        <TranslationContext.Provider value={translationContext}>
+            {children}
+        </TranslationContext.Provider>
+    );
+};
+
+export default TranslationProvider;

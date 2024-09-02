@@ -1,9 +1,9 @@
 import {FC, useMemo} from 'react';
 import DatePicker from "react-datepicker";
-import {vi} from "date-fns/locale";
 import "react-datepicker/dist/react-datepicker.css";
 import {DateTime} from "luxon";
 import {Button} from "@digdir/designsystemet-react";
+import {useTrans} from "@/app/i18n/ClientTranslationProvider";
 
 interface CalendarDatePickerProps {
     currentDate: Date;
@@ -14,6 +14,7 @@ interface CalendarDatePickerProps {
 
 
 const CalendarDatePicker: FC<CalendarDatePickerProps> = (props) => {
+    const trans = useTrans();
     const {currentDate, view, onDateChange} = props;
 
     // const dateFormat = useMemo(() => {
@@ -62,7 +63,7 @@ const CalendarDatePicker: FC<CalendarDatePickerProps> = (props) => {
                 </div>
 
             )}
-            todayButton="Today"
+            todayButton={trans('common.today')}
             showMonthYearPicker={view === 'dayGridMonth'}
             showWeekNumbers={true}
             showWeekPicker={view === 'timeGridWeek' || view === 'listWeek'}

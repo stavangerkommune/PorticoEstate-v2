@@ -6,6 +6,7 @@ import TempEventPopperContent
     from "@/components/building-calendar/modules/event/popper/content/temp-event-popper-content";
 import EventPopperContent from "@/components/building-calendar/modules/event/popper/content/event-popper-content";
 import {FC} from "react";
+import {phpGWLink} from "@/service/util";
 
 interface EventPopperProps {
     event: FCallEvent | FCallTempEvent | null;
@@ -19,7 +20,13 @@ const EventPopper: FC<EventPopperProps> = ({event, onClose, anchor, placement}) 
         return null;
     }
 
+    const url = phpGWLink(
+        ["bookingfrontend", 'buildings', 10],
+        null,
+        true,
 
+    );
+    console.log(url)
     return (
         <ClickAwayListener onClickAway={onClose}>
             <Popper open={Boolean(event)} anchorEl={anchor}

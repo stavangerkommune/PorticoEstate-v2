@@ -27,6 +27,10 @@ export function phpGWLink(
         newURL += strURL;
     }
 
+
+
+    // $app->get('/bookingfrontend/lang[/{lang}]', LangHelper::class . ':process')
+    //     ->addMiddleware(new SessionsMiddleware($container));
     if (useOldStructure) {
         newURL += '?';
 

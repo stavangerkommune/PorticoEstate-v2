@@ -3,6 +3,7 @@ import styles from './calender-resource-filter.module.scss';
 import ColourCircle from "@/components/building-calendar/modules/colour-circle/colour-circle";
 import {Checkbox, Button} from "@digdir/designsystemet-react";
 import {useTempEvents} from "@/components/building-calendar/calendar-context";
+import {useTrans} from "@/app/i18n/ClientTranslationProvider";
 
 export interface CalendarResourceFilterOption {
     value: string;
@@ -25,6 +26,7 @@ const CalendarResourceFilter: FC<CalendarResourceFilterProps> = ({
                                                                      onToggleAll,
                                                                      hidden
                                                                  }) => {
+    const t = useTrans();
     const {tempEvents} = useTempEvents();
 
     return (
@@ -37,11 +39,12 @@ const CalendarResourceFilter: FC<CalendarResourceFilterProps> = ({
                     variant={'tertiary'}
                     size={'sm'}
                 >
-                    {enabledResources.size === resourceOptions.length ? 'Deselect All' : 'Select All'}
+                    {enabledResources.size === resourceOptions.length ? t('bookingfrontend.deselect_all') : t('common.select all')}
                 </Button>
             </div>
             {resourceOptions.map(resource => (
-                <div key={resource.value} className={`${styles.resourceItem} ${enabledResources.has(resource.value) ? styles.active: ''}`}>
+                <div key={resource.value}
+                     className={`${styles.resourceItem} ${enabledResources.has(resource.value) ? styles.active : ''}`}>
                     <Checkbox
                         value={`${resource.value}`}
                         id={`resource-${resource.value}`}
