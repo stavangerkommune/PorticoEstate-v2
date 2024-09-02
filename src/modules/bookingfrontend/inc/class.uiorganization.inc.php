@@ -158,7 +158,7 @@ class bookingfrontend_uiorganization extends booking_uiorganization
 	public function edit()
 	{
 
-		$bouser = new UserHelper(true);
+		$bouser = new UserHelper();
 
 		$id = Sanitizer::get_var('id', 'int');
 		$session_org_id = Sanitizer::get_var('session_org_id', 'bool') ? Sanitizer::get_var('session_org_id') :  $bouser->orgnr;
@@ -183,7 +183,7 @@ class bookingfrontend_uiorganization extends booking_uiorganization
 
 	public function show()
 	{
-		$bouser = new UserHelper(true);
+		$bouser = new UserHelper();
 		$config = CreateObject('phpgwapi.config', 'booking');
 		$config->read();
 		$id = Sanitizer::get_var('id', 'int');

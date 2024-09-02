@@ -512,7 +512,7 @@ $tpl_vars = array(
 	'nav'					 => empty($flags['noframework']) ? $nav : ''
 );
 
-$bouser	 = new UserHelper(true);
+$bouser	 = new UserHelper();
 
 /**
  * Might be set wrong in the ui-class

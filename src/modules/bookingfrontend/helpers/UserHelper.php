@@ -40,7 +40,7 @@ class UserHelper
 	public $debug = false;
 	var $db;
 
-	public function __construct($get_external_login_info = null)
+	public function __construct()
 	{
 		require_once(PHPGW_SERVER_ROOT . '/booking/inc/vendor/symfony/validator/bootstrap.php');
 		$this->db = Db::getInstance();
@@ -49,7 +49,6 @@ class UserHelper
 		$this->org_id = $this->get_user_org_id_from_session();
 
 		$session_org_id = \Sanitizer::get_var('session_org_id', 'int', 'GET');
-		//			if($get_external_login_info && $this->is_logged_in())
 		if ($session_org_id && $this->is_logged_in())
 		{
 			$orgs = Cache::session_get($this->get_module(), self::ORGARRAY_SESSION_KEY);

@@ -480,7 +480,7 @@ $tpl_vars = array(
 
 
 
-$bouser	 = new UserHelper(true);
+$bouser	 = new UserHelper();
 
 /**
  * Might be set wrong in the ui-class
