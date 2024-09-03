@@ -79,6 +79,11 @@ class property_botts
 		$vendor_id, $ecodimb, $b_account, $building_part, $branch_id, $order_dim1, $p_num, $uicols,
 		$send, $order_sent_adress, $userSettings, $flags, $phpgwapi_common, $accounts_obj, $locations_obj, $serverSettings;
 
+	/**
+	 * @var property_botts reference to singleton instance
+	 */
+	private static $instance = null;
+
 	function __construct()
 	{
 		$this->userSettings = Settings::getInstance()->get('user');
@@ -191,6 +196,18 @@ class property_botts
 		$this->branch_id		 = Sanitizer::get_var('branch_id', 'int');
 		$this->order_dim1		 = Sanitizer::get_var('order_dim1', 'int');
 		$this->p_num			 = Sanitizer::get_var('p_num');
+	}
+
+	/**
+	 * Gets the instance via lazy initialization (created on first usage)
+	 */
+	public static function getInstance(): property_botts
+	{
+		if (self::$instance === null)
+		{
+			self::$instance = new self();
+		}
+		return self::$instance;
 	}
 
 	function column_list($selected = array())

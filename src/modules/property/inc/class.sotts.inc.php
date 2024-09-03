@@ -67,6 +67,10 @@ class property_sotts
 
 	var $db, $join, $left_join, $like, $account, $historylog;
 	var $custom, $dateformat, $userSettings, $serverSettings, $location_obj, $acl, $account_obj;
+	/**
+	 * @var property_sotts reference to singleton instance
+	 */
+	private static $instance = null;
 
 	function __construct()
 	{
@@ -86,6 +90,17 @@ class property_sotts
 		$this->acl			 = Acl::getInstance();
 	}
 
+	/**
+	 * Gets the instance via lazy initialization (created on first usage)
+	 */
+	public static function getInstance(): property_sotts
+	{
+		if (self::$instance === null)
+		{
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
 	function list_methods($_type = 'xmlrpc')
 	{
 		/*

@@ -46,9 +46,15 @@ phpgw::import_class('phpgwapi.custom_fields');
  * @package phpgroupware
  * @subpackage phpgwapi
  */
+
 class property_custom_fields extends phpgwapi_custom_fields
 {
 	var $_db2, $contacts, $userSettings, $phpgwapi_common, $accounts;
+	/**
+	 * @var property_custom_fields reference to singleton instance
+	 */
+	private static $instance = null;
+
 	/**
 	 * Constructor
 	 *
@@ -71,6 +77,17 @@ class property_custom_fields extends phpgwapi_custom_fields
 		$this->accounts = new Accounts();
 	}
 
+	/**
+	 * Gets the instance via lazy initialization (created on first usage)
+	 */
+	public static function getInstance($appname = null): property_custom_fields
+	{
+		if (self::$instance === null)
+		{
+			self::$instance = new self($appname);
+		}
+		return self::$instance;
+	}
 	/**
 	 * Prepare custom attributes for ui
 	 *
@@ -115,7 +132,9 @@ class property_custom_fields extends phpgwapi_custom_fields
 			$attributes['location_id'] = $location_id;
 			$attributes['datatype_text'] = $this->translate_datatype($attributes['datatype']);
 			$attributes['help_url']		 = $attributes['helpmsg'] ? phpgw::link('/index.php', array(
-				'menuaction' => 'manual.uimanual.attrib_help', 'appname'	 => $appname, 'location'	 => $location,
+				'menuaction' => 'manual.uimanual.attrib_help',
+				'appname'	 => $appname,
+				'location'	 => $location,
 				'id'		 => $attributes['id']
 			)) : '';
 
@@ -196,7 +215,9 @@ JS;
 				if ($attributes['value'])
 				{
 					$contact_data				 = $this->contacts->read_single_entry($attributes['value'], array(
-						'fn', 'tel_work', 'email'
+						'fn',
+						'tel_work',
+						'email'
 					));
 					$attributes['contact_name']	 = $contact_data[0]['fn'];
 					$attributes['contact_email'] = $contact_data[0]['email'];
@@ -449,7 +470,8 @@ JS;
 				{
 					$lookup_link = phpgw::link('/index.php', array(
 						'menuaction'	 => 'property.uilookup.phpgw_user',
-						'column'		 => $attributes['name'], 'clear_state'	 => 1
+						'column'		 => $attributes['name'],
+						'clear_state'	 => 1
 					));
 
 					$lookup_functions[$m]['name']	 = 'lookup_' . $attributes['name'] . '()';
