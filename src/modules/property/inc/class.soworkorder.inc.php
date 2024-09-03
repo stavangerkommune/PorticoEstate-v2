@@ -51,6 +51,11 @@ class property_soworkorder
 	var $db, $db2, $join, $left_join, $like, $account, $bocommon;
 	var $interlink, $acl, $grants, $uicols, $userSettings, $account_obj, $config, $locations;
 
+	/**
+	 * @var property_soworkorder reference to singleton instance
+	 */
+	private static $instance = null;
+
 	function __construct()
 	{
 		$this->userSettings = Settings::getInstance()->get('user');
@@ -71,6 +76,18 @@ class property_soworkorder
 		$this->locations	 = new Locations();
 		$this->config		 = createObject('phpgwapi.config', 'property');
 		$this->config->read();
+	}
+
+	/**
+	 * Gets the instance via lazy initialization (created on first usage)
+	 */
+	public static function getInstance(): property_soworkorder
+	{
+		if (self::$instance === null)
+		{
+			self::$instance = new self();
+		}
+		return self::$instance;
 	}
 
 	function next_id()

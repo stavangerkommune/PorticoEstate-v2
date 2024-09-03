@@ -46,9 +46,17 @@ class property_ofproperty extends phpgwapi_object_factory
 				include_class($appname, $classname);
 				return \property_botts::getInstance();
 
-			case 'sotts_':
+			case 'sotts':
 				include_class($appname, $classname);
 				return \property_sotts::getInstance();
+
+			case 'soproject':
+				include_class($appname, $classname);
+				return \property_soproject::getInstance();
+
+			case 'soworkorder':
+				include_class($appname, $classname);
+				return \property_soworkorder::getInstance();
 
 			default:
 				return parent::createObject(
