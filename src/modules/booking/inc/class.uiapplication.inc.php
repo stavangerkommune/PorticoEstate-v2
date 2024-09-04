@@ -153,15 +153,21 @@ class booking_uiapplication extends booking_uicommon
 
 			$url_acl = self::link(array(
 				'menuaction' => 'preferences.uiadmin_acl.list_acl',
-				'acl_app' => 'booking', 'module' => $location, 'cat_id' => 'groups'
+				'acl_app' => 'booking',
+				'module' => $location,
+				'cat_id' => 'groups'
 			));
 			$url_groups = self::link(array(
 				'menuaction' => 'admin.ui_custom.list_attribute_group',
-				'appname' => 'booking', 'location' => $location, 'menu_selection' => 'booking::settings::custom_field_groups'
+				'appname' => 'booking',
+				'location' => $location,
+				'menu_selection' => 'booking::settings::custom_field_groups'
 			));
 			$url_fields = self::link(array(
 				'menuaction' => 'admin.ui_custom.list_attribute',
-				'appname' => 'booking', 'location' => $location, 'menu_selection' => 'booking::settings::custom_field_groups'
+				'appname' => 'booking',
+				'location' => $location,
+				'menu_selection' => 'booking::settings::custom_field_groups'
 			));
 
 			if (count($organized_fields) > 1)
@@ -619,7 +625,12 @@ class booking_uiapplication extends booking_uicommon
 			if (strstr($application['building_name'], "%"))
 			{
 				$search = array(
-					'%2C', '%C3%85', '%C3%A5', '%C3%98', '%C3%B8', '%C3%86',
+					'%2C',
+					'%C3%85',
+					'%C3%A5',
+					'%C3%98',
+					'%C3%B8',
+					'%C3%86',
 					'%C3%A6'
 				);
 				$replace = array(',', 'Å', 'å', 'Ø', 'ø', 'Æ', 'æ');
@@ -689,7 +700,8 @@ class booking_uiapplication extends booking_uicommon
 			));
 			$association['dellink'] = $case_officer ? self::link(array(
 				'menuaction' => 'booking.ui' . $association['type'] . '.delete',
-				'id' => $association['id'], 'application_id' => $association['application_id']
+				'id' => $association['id'],
+				'application_id' => $association['application_id']
 			)) : '';
 			$association['type'] = lang($association['type']);
 		}
@@ -786,9 +798,16 @@ class booking_uiapplication extends booking_uicommon
 		{
 			$payment		 = $this->bo->so->get_payment($payment_id);
 			$payment_method = $payment['payment_method'];
-			$remote_order_id = $payment['remote_id'];
-			$payment_helper = createObject("bookingfrontend.{$payment_method}_helper");
-			$payment_helper->cancel_payment($remote_order_id);
+			if ($payment_method == 'Etterfakturering')
+			{
+				Cache::message_set('Kansellering av etterfakturering er ikke implementert', 'error');
+			}
+			else
+			{
+				$remote_order_id = $payment['remote_id'];
+				$payment_helper = createObject("bookingfrontend.{$payment_method}_helper");
+				$payment_helper->cancel_payment($remote_order_id);
+			}
 			$comment_text = "Cancel: {$payment['amount']}";
 			$this->add_comment($application, $comment_text);
 			$this->bo->update($application);
@@ -1161,8 +1180,15 @@ class booking_uiapplication extends booking_uicommon
 				}
 				// Application contains only event details. Use dummy values for contact fields
 				$dummyfields_string = array(
-					'contact_name', 'contact_phone', 'responsible_city',
-					'responsible_street', 'name', 'organizer', 'homepage', 'description', 'equipment'
+					'contact_name',
+					'contact_phone',
+					'responsible_city',
+					'responsible_street',
+					'name',
+					'organizer',
+					'homepage',
+					'description',
+					'equipment'
 				);
 				foreach ($dummyfields_string as $field)
 				{
@@ -1231,7 +1257,8 @@ class booking_uiapplication extends booking_uicommon
 					$repost_add_application = 	Cache::session_get('booking', 'repost_add_application');
 					$application = $this->bo->read_single($repost_add_application);
 					self::redirect(array(
-						'menuaction' => $this->url_prefix . '.show', 'id' => $repost_add_application,
+						'menuaction' => $this->url_prefix . '.show',
+						'id' => $repost_add_application,
 						'secret' => $application['secret']
 					));
 				}
@@ -1250,7 +1277,8 @@ class booking_uiapplication extends booking_uicommon
 				$resources = $this->resource_bo->so->read(array(
 					'sort'    => 'sort',
 					'results' => 'all',
-					'filters' => array('id' => $application['resources']), 'results' => 'all'
+					'filters' => array('id' => $application['resources']),
+					'results' => 'all'
 				));
 
 				foreach ($resources['results'] as $resource)
@@ -1391,7 +1419,8 @@ class booking_uiapplication extends booking_uicommon
 
 					Cache::session_set('booking', 'repost_add_application', $receipt['id']);
 					self::redirect(array(
-						'menuaction' => $this->url_prefix . '.show', 'id' => $receipt['id'],
+						'menuaction' => $this->url_prefix . '.show',
+						'id' => $receipt['id'],
 						'secret' => $application['secret']
 					));
 				}
@@ -1605,7 +1634,9 @@ class booking_uiapplication extends booking_uicommon
 
 			self::add_javascript('booking', 'base', 'application.js');
 			phpgwapi_jquery::formvalidator_generate(array(
-				'location', 'date', 'security',
+				'location',
+				'date',
+				'security',
 				'file'
 			), 'application_form');
 		}
@@ -1944,10 +1975,17 @@ class booking_uiapplication extends booking_uicommon
 				else
 				{
 					$partial2_fields = array(
-						'contact_email', 'contact_name', 'contact_phone',
-						'customer_identifier_type', 'customer_organization_number', 'customer_organization_id',
-						'customer_organization_name', 'customer_ssn',
-						'responsible_city', 'responsible_street', 'responsible_zip_code'
+						'contact_email',
+						'contact_name',
+						'contact_phone',
+						'customer_identifier_type',
+						'customer_organization_number',
+						'customer_organization_id',
+						'customer_organization_name',
+						'customer_ssn',
+						'responsible_city',
+						'responsible_street',
+						'responsible_zip_code'
 					);
 					foreach ($partials['results'] as &$application)
 					{
@@ -1978,7 +2016,8 @@ class booking_uiapplication extends booking_uicommon
 						$resources = $this->resource_bo->so->read(array(
 							'sort'    => 'sort',
 							'results' => 'all',
-							'filters' => array('id' => $application['resources']), 'results' => 'all'
+							'filters' => array('id' => $application['resources']),
+							'results' => 'all'
 						));
 
 						$direct_booking = false;
@@ -2124,7 +2163,8 @@ class booking_uiapplication extends booking_uicommon
 			$resources = $this->resource_bo->so->read(array(
 				'sort'		 => 'sort',
 				'results'	 => 'all',
-				'filters'	 => array('id' => $application['resources']), 'results'	 => 'all'
+				'filters'	 => array('id' => $application['resources']),
+				'results'	 => 'all'
 			));
 
 			$activate_prepayment = 0;
@@ -2173,7 +2213,8 @@ class booking_uiapplication extends booking_uicommon
 					$resources = $this->resource_bo->so->read(array(
 						'sort'    => 'sort',
 						'results' => 'all',
-						'filters' => array('id' => $application['resources']), 'results' => 'all'
+						'filters' => array('id' => $application['resources']),
+						'results' => 'all'
 					));
 
 					$direct_booking = false;
@@ -2791,7 +2832,9 @@ class booking_uiapplication extends booking_uicommon
 			self::add_javascript('booking', 'base', 'application.js');
 			$associations = $this->assoc_bo->so->read(array(
 				'filters' => array('application_id' => $application['id']),
-				'sort' => 'from_', 'dir' => 'asc', 'results' => 'all'
+				'sort' => 'from_',
+				'dir' => 'asc',
+				'results' => 'all'
 			));
 
 			self::add_javascript('phpgwapi', 'dateformatter', 'dateformatter.js');
@@ -2816,7 +2859,9 @@ class booking_uiapplication extends booking_uicommon
 		}
 
 		phpgwapi_jquery::formvalidator_generate(array(
-			'location', 'date', 'security',
+			'location',
+			'date',
+			'security',
 			'file'
 		), 'application_form');
 
@@ -2864,10 +2909,23 @@ class booking_uiapplication extends booking_uicommon
 		$event[] = array('application_id', $application['id']);
 		$event[] = array('reminder', '0');
 		$copy = array(
-			'activity_id', 'name', 'organizer', 'homepage', 'description', 'equipment', 'contact_name',
-			'contact_email', 'contact_phone', 'activity_id', 'building_id', 'building_name',
-			'customer_identifier_type', 'customer_ssn', 'customer_organization_number',
-			'customer_organization_id',	'customer_organization_name'
+			'activity_id',
+			'name',
+			'organizer',
+			'homepage',
+			'description',
+			'equipment',
+			'contact_name',
+			'contact_email',
+			'contact_phone',
+			'activity_id',
+			'building_id',
+			'building_name',
+			'customer_identifier_type',
+			'customer_ssn',
+			'customer_organization_number',
+			'customer_organization_id',
+			'customer_organization_name'
 		);
 		foreach ($copy as $f)
 		{
@@ -3425,7 +3483,9 @@ class booking_uiapplication extends booking_uicommon
 
 		$application['schedule_link'] = self::link(array(
 			'menuaction' => 'bookingfrontend.uibuilding.schedule',
-			'id' => $building_info['id'], 'backend' => true, 'date' => $cal_date
+			'id' => $building_info['id'],
+			'backend' => true,
+			'date' => $cal_date
 		));
 
 		//manipulating the link. we want to use the frontend module instead of backend for displaying the schedule
@@ -3474,7 +3534,9 @@ class booking_uiapplication extends booking_uicommon
 		// Check if any bookings, allocations or events are associated with this application
 		$associations = $this->assoc_bo->so->read(array(
 			'filters' => array('application_id' => $application['id']),
-			'sort' => 'from_', 'dir' => 'asc', 'results' => 'all'
+			'sort' => 'from_',
+			'dir' => 'asc',
+			'results' => 'all'
 		));
 
 		$from = array();
@@ -3607,7 +3669,8 @@ JS;
 				$resources				 = $this->resource_bo->so->read(array(
 					'sort'		 => 'sort',
 					'results'	 => 'all',
-					'filters'	 => array('id' => $partial['resources']), 'results'	 => 'all'
+					'filters'	 => array('id' => $partial['resources']),
+					'results'	 => 'all'
 				));
 				foreach ($resources['results'] as $resource)
 				{
