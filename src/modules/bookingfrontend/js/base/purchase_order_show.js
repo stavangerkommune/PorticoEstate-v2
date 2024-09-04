@@ -8,14 +8,13 @@ $(document).ready(function ()
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
 		const menuaction = urlParams.get('menuaction');
-
 		var oArgs;
 		var url;
 
 		/*
 		 * Frontend
 		 */
-		if(menuaction.search("bookingfrontend") > 0)
+		if(menuaction.includes("bookingfrontend"))
 		{
 			oArgs = {
 				menuaction: 'bookingfrontend.uiarticle_mapping.get_articles',

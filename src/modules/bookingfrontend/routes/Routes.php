@@ -21,6 +21,9 @@ $app->group('/bookingfrontend', function (RouteCollectorProxy $group) {
 
 $app->get('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer()));
 $app->post('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer()));
+//legacy routes
+$app->get('/bookingfrontend/index.php', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer()));
+$app->post('/bookingfrontend/index.php', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer()));
 
 $app->get('/bookingfrontend/lang', LangHelper::class . ':process')->addMiddleware(new SessionsMiddleware($container));
 $app->get('/bookingfrontend/login/', LoginHelper::class . ':organization')->add(new SessionsMiddleware($app->getContainer()));

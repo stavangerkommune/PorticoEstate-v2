@@ -1089,7 +1089,7 @@
 			}
 
 			//uigeneric
-			if(typeof(table_url.searchObject.type) != 'undefined' && menuaction.search("uigeneric") > 0)
+			if(typeof(table_url.searchObject.type) != 'undefined' && menuaction.includes("uigeneric"))
 			{
 				menuaction += '_type_' + table_url.searchObject.type;
 			}
