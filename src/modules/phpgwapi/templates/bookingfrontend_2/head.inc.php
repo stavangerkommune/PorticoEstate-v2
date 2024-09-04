@@ -112,7 +112,7 @@ $template->set_var('contact', $contact);
 $executiveofficer = lang('executiveofficer');
 $template->set_var('executiveofficer', $executiveofficer);
 
-$executiveofficer_url = phpgw::link("/", array('menuaction' => 'booking.uiapplication.index'));
+$executiveofficer_url = phpgw::link("/", array('menuaction' => 'booking.uiapplication.index'), false, true, true);
 $template->set_var('executiveofficer_url', $executiveofficer_url);
 
 $municipality = $site_title;
