@@ -225,7 +225,14 @@ class booking_async_task_send_access_request extends booking_async_task
 									$found_reservation	 = false;
 									foreach ($status_arr as $status)
 									{
+										$id_arr = explode('::', $status['custom_id']);
+										if ((int)$reservation['id'] !== (int)$id_arr[0])
+										{
+											continue;
+										}
+
 										$custom_id = "{$reservation['id']}::{$resource['id']}::{$e_lock['e_lock_system_id']}::{$e_lock['e_lock_resource_id']}";
+
 										if (isset($status_call_ids[$custom_id]))
 										{
 											continue;

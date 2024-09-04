@@ -2254,7 +2254,17 @@ class booking_uiapplication extends booking_uicommon
 						}
 					}
 
-					if ($direct_booking)
+					/**
+					 * End Direct booking, check for collision
+					 */
+					if ($collision_dates && $direct_booking)
+					{
+						Cache::message_set('Det er desverre opptatt', 'error');
+						Db::getInstance()->transaction_abort();
+						$this->delete_partial($application['id']);
+						self::redirect(array());
+					}
+					else if ($direct_booking)
 					{
 						$application['status'] = 'ACCEPTED';
 						$receipt = $this->bo->update($application);
@@ -2318,16 +2328,6 @@ class booking_uiapplication extends booking_uicommon
 								Cache::message_set($error_values, 'error');
 							}
 						}
-					}
-					/**
-					 * End Direct booking, check for collision
-					 */
-					else if ($collision_dates)
-					{
-						Cache::message_set('Det er desverre opptatt', 'error');
-						Db::getInstance()->transaction_abort();
-						$this->delete_partial($application['id']);
-						self::redirect(array());
 					}
 					else
 					{
