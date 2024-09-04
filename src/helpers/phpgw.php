@@ -77,7 +77,7 @@ class phpgw
 		{
 			$custom_frontend = isset($flags['custom_frontend']) && $flags['custom_frontend'] ? $flags['custom_frontend'] : '';
 
-			if ($custom_frontend && substr($url, 0, 4) != 'http')
+			if ($custom_frontend && substr($url, 0, 4) != 'http' && strpos($url, "/{$custom_frontend}/") === false)
 			{
 				$url = '/' . $custom_frontend . '/' . ltrim($url, '/');
 			}
