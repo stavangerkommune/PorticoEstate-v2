@@ -89,7 +89,7 @@ $tpl->set_var(array(
 	'javascript'	=> $phpgwapi_common->get_javascript(),
 	'img_icon'      => PHPGW_IMAGES_DIR . '/favicon.ico',
 	'img_shortcut'  => PHPGW_IMAGES_DIR . '/favicon.ico',
-	'str_base_url'	=> phpgw::link('/', array(), true),
+	'str_base_url'	=> phpgw::link('/', array(), true, false, true),
 	'userlang'		=> $userSettings['preferences']['common']['lang'],
 	'website_title'	=> $serverSettings['site_title'] . $app,
 	'win_on_events'	=> $phpgwapi_common->get_on_events(),

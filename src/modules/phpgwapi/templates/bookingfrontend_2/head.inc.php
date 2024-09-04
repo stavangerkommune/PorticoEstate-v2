@@ -497,7 +497,7 @@ $tpl_vars = array(
 	'css'					 => $phpgwapi_common->get_css($cache_refresh_token),
 	'javascript'			 => $phpgwapi_common->get_javascript($cache_refresh_token),
 	'img_icon'				 => $phpgwapi_common->find_image('phpgwapi', 'favicon.ico'),
-	'str_base_url'			 => phpgw::link('/', array(), true),
+	'str_base_url'			 => phpgw::link('/', array(), true, false, true),
 	'dateformat_backend'	 => $userSettings['preferences']['common']['dateformat'],
 	'site_url'				 => phpgw::link($site_base, array()),
 	'eventsearch_url'		 => phpgw::link('/bookingfrontend/', array('menuaction' => 'bookingfrontend.uieventsearch.show')),
