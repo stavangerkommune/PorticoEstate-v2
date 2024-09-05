@@ -70,11 +70,11 @@
 		{oldver}.<br>
 		{automatic}
 		{backupwarn}<br>
-		<form method="POST" action="/setup">
+		<form method="POST" action="/setup" class="pure-form">
 		<input type="hidden" name="oldversion" value="{oldver}">
 		<input type="hidden" name="useglobalconfigsettings">
 		<input type="hidden" name="action" value="Upgrade">
-		<input type="submit" name="label" value="{upgrade}"><br>
+		<button type="submit" name="label"> {upgrade}</button><br>
 		</form>
 
 		<form method="POST" action="/setup">
@@ -85,15 +85,15 @@
 		</form>
 		<hr>
 {dont_touch_my_data}.&nbsp;&nbsp;{goto}:
-		<form method="POST" action="config">
+		<form method="POST" action="/setup/config">
         <input type="hidden" name="action" value="Dont touch my data">
 		<input type="submit" name="label" value="{configuration}">
         </form>
-		<form method="POST" action="lang">
+		<form method="POST" action="/setup/lang">
         <input type="hidden" name="action" value="Dont touch my data">
 		<input type="submit" name="label" value="{language_management}">
         </form>
-		<form method="POST" action="applications">
+		<form method="POST" action="/setup/applications">
         <input type="hidden" name="action" value="Dont touch my data">
 		<input type="submit" name="label" value="{applications}">
 		</form>

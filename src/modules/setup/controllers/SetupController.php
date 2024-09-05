@@ -193,6 +193,12 @@ class SetupController
 
 		));
 
+		if (is_file(dirname(__DIR__, 2) . "/phpgwapi/templates/pure/css/version_3/pure-min.css"))
+		{
+			$css = file_get_contents(dirname(__DIR__, 2) . "/phpgwapi/templates/pure/css/version_3/pure-min.css");
+			$setup_tpl->set_var('css', $css);
+		}
+
 		$setup_tpl->set_block('T_login_stage_header', 'B_multi_domain', 'V_multi_domain');
 		$setup_tpl->set_block('T_login_stage_header', 'B_single_domain', 'V_single_domain');
 
@@ -463,7 +469,7 @@ class SetupController
 				$setup_tpl->set_var('V_db_filled_block', $db_filled_block);
 				break;
 			case 4:
-				print_r($setup_info['phpgwapi']);
+//				print_r($setup_info['phpgwapi']);
 				$setup_tpl->set_var('oldver', $this->setup->lang('You appear to be running version %1 of phpGroupWare', $setup_info['phpgwapi']['currentver']));
 				$setup_tpl->set_var('automatic', $this->setup->lang('We will automatically update your tables/records to %1', $setup_info['phpgwapi']['version']));
 				$setup_tpl->set_var('backupwarn', $this->setup->lang('backupwarn'));

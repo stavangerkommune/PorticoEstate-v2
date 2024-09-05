@@ -10,6 +10,8 @@
  * @internal $Source$
  */
 
+use App\modules\phpgwapi\services\Settings;
+
 // Must be running 0.9.14.007 or later in order to upgrade to 0.9.18
 $test[] = '0.9.14.007';
 function phpgwapi_upgrade0_9_14_007()
@@ -3917,5 +3919,33 @@ function phpgwapi_upgrade0_9_17_566()
 	{
 		$GLOBALS['setup_info']['phpgwapi']['currentver'] = '0.9.17.567';
 		return $GLOBALS['setup_info']['phpgwapi']['currentver'];
+	}
+}
+
+/**
+ * Remove old bookmarks in order to avoid errors when moving to SLIM4
+ */
+
+$test[] = '0.9.17.567';
+function phpgwapi_upgrade0_9_17_567($oProc)
+{
+	$oProc->m_odb->transaction_begin();
+
+	$accounts_obj = new App\modules\phpgwapi\controllers\Accounts\Accounts();
+	$accounts = $accounts_obj->get_list('accounts');
+
+
+	foreach ($accounts as $account)
+	{
+		$account_id = $account->id;
+		App\modules\phpgwapi\services\Cache::user_clear('phpgwapi', "bookmark_menu", $account_id);
+	}
+
+	if ($oProc->m_odb->transaction_commit())
+	{
+		$currentver = '0.9.17.568';
+		Settings::getInstance()->update('setup_info', ['booking' => ['currentver' => $currentver]]);
+		return $currentver;
+
 	}
 }
