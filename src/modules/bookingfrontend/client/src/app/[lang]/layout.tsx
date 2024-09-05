@@ -6,10 +6,11 @@ import {Inter} from "next/font/google";
 import '@digdir/designsystemet-css';
 import '@digdir/designsystemet-theme';
 import "../globals.scss";
-import Providers from "@/app/providers";
+import ReactQueryProvider from "@/app/providers";
 import {FC, PropsWithChildren} from "react";
 import ClientTranslationProvider from "@/app/i18n/ClientTranslationProvider";
-import ServerTranslationWrapper from "@/app/i18n/ServerTranslationWrapper";
+import {LoadingProvider} from "@/components/loading-wrapper/LoadingContext";
+import LoadingIndicationWrapper from "@/components/loading-wrapper/LoadingIndicationWrapper";
 
 export async function generateStaticParams() {
     return languages.map((lng) => ({lng}))
@@ -32,14 +33,19 @@ interface RootLayoutProps extends PropsWithChildren {
 }
 
 const RootLayout: FC<RootLayoutProps> = (props) => {
+
     return (
         <html lang={props.params.lang} dir={dir(props.params.lang)}>
         <body className={inter.className}>
-        <ClientTranslationProvider lang={props.params.lang as LanguageType}>
-        {/*<ClientTranslationProvider>*/}
-            <Providers>{props.children}</Providers>
-        {/*</ClientTranslationProvider>*/}
-        </ClientTranslationProvider>
+        <LoadingProvider>
+            <ClientTranslationProvider lang={props.params.lang as LanguageType}>
+                <ReactQueryProvider>
+                    <LoadingIndicationWrapper>
+                        {props.children}
+                    </LoadingIndicationWrapper>
+                </ReactQueryProvider>
+            </ClientTranslationProvider>
+        </LoadingProvider>
         </body>
         </html>
     );

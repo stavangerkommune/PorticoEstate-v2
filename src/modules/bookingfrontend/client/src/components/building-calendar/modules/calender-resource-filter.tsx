@@ -1,9 +1,13 @@
-import React, {FC} from 'react';
+import React, {FC, useState} from 'react';
 import styles from './calender-resource-filter.module.scss';
 import ColourCircle from "@/components/building-calendar/modules/colour-circle/colour-circle";
 import {Checkbox, Button} from "@digdir/designsystemet-react";
 import {useTempEvents} from "@/components/building-calendar/calendar-context";
 import {useTrans} from "@/app/i18n/ClientTranslationProvider";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faLayerGroup} from "@fortawesome/free-solid-svg-icons";
+import MobileDialog from "@/components/dialog/mobile-dialog";
+import {Chip} from "@mui/material";
 
 export interface CalendarResourceFilterOption {
     value: string;
@@ -17,6 +21,7 @@ interface CalendarResourceFilterProps {
     enabledResources: Set<string>;
     onToggle: (resourceId: string) => void;
     onToggleAll: () => void;
+    isMobile: boolean;
 }
 
 const CalendarResourceFilter: FC<CalendarResourceFilterProps> = ({
@@ -24,23 +29,42 @@ const CalendarResourceFilter: FC<CalendarResourceFilterProps> = ({
                                                                      enabledResources,
                                                                      onToggle,
                                                                      onToggleAll,
-                                                                     hidden
+                                                                     hidden,
+                                                                     isMobile
                                                                  }) => {
+    const [open, setOpen] = useState<boolean>(false);
+
     const t = useTrans();
     const {tempEvents} = useTempEvents();
 
-    return (
+
+    const content = (
         <div className={`${styles.resourceToggleContainer} ${hidden ? styles.hidden : ''}`}
         >
             <div className={styles.toggleAllContainer}>
-                <Button
-                    onClick={onToggleAll}
-                    className={styles.toggleAllButton}
-                    variant={'tertiary'}
-                    size={'sm'}
+                {/*<Button*/}
+                {/*    onClick={onToggleAll}*/}
+                {/*    className={styles.toggleAllButton}*/}
+                {/*    variant={'tertiary'}*/}
+                {/*    size={'sm'}*/}
+                {/*>*/}
+                {/*    {enabledResources.size === resourceOptions.length ? t('bookingfrontend.deselect_all') : t('common.select all')}*/}
+                {/*</Button>*/}
+                <Checkbox
+                    value={'choose_all'}
+                    id={`resource-all`}
+                    checked={enabledResources.size === resourceOptions.length}
+                    onChange={onToggleAll}
+                    className={styles.resourceCheckbox}
+                    disabled={Object.values(tempEvents).length > 1}
                 >
-                    {enabledResources.size === resourceOptions.length ? t('bookingfrontend.deselect_all') : t('common.select all')}
-                </Button>
+                    <label
+                        htmlFor={`resource-all`}
+                        className={styles.resourceLabel}
+                    >
+                        {t('common.select all')} {t('bookingfrontend.resources').toLowerCase()}
+                    </label>
+                </Checkbox>
             </div>
             {resourceOptions.map(resource => (
                 <div key={resource.value}
@@ -66,6 +90,23 @@ const CalendarResourceFilter: FC<CalendarResourceFilterProps> = ({
             ))}
         </div>
     );
+
+    if (isMobile) {
+        return (
+            <div style={{display: "flex", flexDirection: 'column'}}>
+                <Button variant={'secondary'} size={'sm'}
+                    // className={'captialize'}
+
+                        onClick={() => setOpen(true)}><FontAwesomeIcon
+                    icon={faLayerGroup}/>{t('booking.select')} {t('bookingfrontend.resources')}
+                    <Chip color="error" size="small" label={enabledResources.size}/>
+                </Button>
+                <MobileDialog open={open} onClose={() => setOpen(false)}>{content}</MobileDialog>
+            </div>
+        )
+    }
+
+    return content
 };
 
 export default CalendarResourceFilter;

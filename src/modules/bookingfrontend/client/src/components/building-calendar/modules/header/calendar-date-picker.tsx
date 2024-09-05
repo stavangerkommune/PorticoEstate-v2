@@ -4,6 +4,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import {DateTime} from "luxon";
 import {Button} from "@digdir/designsystemet-react";
 import {useTrans} from "@/app/i18n/ClientTranslationProvider";
+import styles from './calendar-date-picker.module.scss'
 
 interface CalendarDatePickerProps {
     currentDate: Date;
@@ -56,8 +57,8 @@ const CalendarDatePicker: FC<CalendarDatePickerProps> = (props) => {
             onChange={onDateChange}
             // dateFormat={dateFormat}
             customInput={(
-                <div style={{backgroundColor: 'white', borderRadius: 5}}>
-                    <Button variant="tertiary" size="sm" style={{minWidth: '20rem', justifyContent: 'start'}}>
+                <div className={styles.datePicker}>
+                    <Button variant="tertiary" size="sm" className={styles.datePickerButton}>
                         {formatSelectedDate()}
                     </Button>
                 </div>

@@ -6,7 +6,7 @@ export const languages = [fallbackLng, 'en', 'nn'] as const;
 export type LanguageType = typeof languages[number];
 
 export const defaultNS = 'translation';
-export const cookieName = 'i18next';
+export const cookieName = 'selected_lang';
 
 export function getOptions(lng: LanguageType = fallbackLng, ns: string | string[] = defaultNS): InitOptions {
     return {

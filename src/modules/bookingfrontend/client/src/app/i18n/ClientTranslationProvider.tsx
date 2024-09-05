@@ -2,6 +2,7 @@
 import React, {createContext, useContext, useEffect, useState} from 'react';
 import {getTranslation} from '@/app/i18n';
 import {LanguageType} from '@/app/i18n/settings';
+import {useLoadingContext} from "@/components/loading-wrapper/LoadingContext";
 
 interface TranslationContextType {
     t: (key: string, options?: any) => string;
@@ -28,23 +29,22 @@ interface TranslationProviderProps {
 }
 
 const TranslationProvider: React.FC<TranslationProviderProps> = ({children, lang}) => {
-    const [translationLoaded, setTranslationLoaded] = useState(false);
+    const {setLoadingState} = useLoadingContext();
     const [translationContext, setTranslationContext] = useState<TranslationContextType | null>(null);
-
     useEffect(() => {
+        setLoadingState('translation', true, 'hard')
+    }, [setLoadingState]);
+    useEffect(() => {
+        console.trace("translation provider Eff", new Date().getTime());
         const loadTranslations = async () => {
             const {t, i18n} = await getTranslation(lang);
             setTranslationContext({t, i18n});
-            setTranslationLoaded(true);
-            console.log(i18n.getDataByLanguage('no'))
+            setLoadingState('translation', false, 'hard')
         };
 
         loadTranslations();
-    }, [lang]);
+    }, [lang, setLoadingState]);
 
-    if (!translationLoaded) {
-        return <div>Loading translations...</div>;
-    }
 
     return (
         <TranslationContext.Provider value={translationContext}>

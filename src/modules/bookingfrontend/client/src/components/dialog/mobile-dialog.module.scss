@@ -1,0 +1,32 @@
+@import "../../styles/colors";
+
+.dialogContainer {
+    min-height: 100vh;
+    background-color: $grey-24 !important;
+    display: flex;
+    flex-direction: column;
+
+    .dialogHeader {
+        background-color: $grey-24 !important;
+        position: sticky;
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 4px;
+        margin-bottom: 4px;
+        top: 0;
+        z-index: 1000;
+        transition: box-shadow 0.3s ease; /* Smooth transition for the shadow */
+        &.scrolled {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    //
+    //.dialogContent{
+    //    display: flex;
+    //    flex-direction: column;
+    //    flex-grow: 1;
+    //}
+}

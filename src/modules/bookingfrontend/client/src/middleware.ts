@@ -79,6 +79,7 @@ export function middleware(req: NextRequest): NextResponse {
     ) {
         // Redirect to the language-specific path if the language is not supported
         const redirectUrl = new URL(`${basePath}/${lng}${pathname}`, req.url);
+        redirectUrl.search = req.nextUrl.search; // Preserve query parameters
         return NextResponse.redirect(redirectUrl);
     }
 

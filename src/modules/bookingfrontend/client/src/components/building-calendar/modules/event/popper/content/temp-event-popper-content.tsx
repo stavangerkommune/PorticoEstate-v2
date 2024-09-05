@@ -8,6 +8,8 @@ import ColourCircle from "@/components/building-calendar/modules/colour-circle/c
 import {Button, Checkbox} from "@digdir/designsystemet-react";
 import {useAvailableResources, useTempEvents} from "@/components/building-calendar/calendar-context";
 import {useTrans} from "@/app/i18n/ClientTranslationProvider";
+import PopperContentSharedWrapper
+    from "@/components/building-calendar/modules/event/popper/content/popper-content-shared-wrapper";
 
 interface TempEventPopperProps {
     event: FCallTempEvent;
@@ -57,7 +59,7 @@ const TempEventPopperContent: FC<TempEventPopperProps> = (props) => {
     }
 
     return (
-        <div className={styles.eventPopper}>
+        <PopperContentSharedWrapper onClose={props.onClose}>
             <div className={styles.eventPopperContent}>
                         <span className={`${styles.time} text-overline`}>
                             <FontAwesomeIcon className={'text-label'} icon={faClock}/>
@@ -86,8 +88,7 @@ const TempEventPopperContent: FC<TempEventPopperProps> = (props) => {
                 <Button onClick={removeTempEvent} variant="tertiary" className={'default'} color={"danger"}
                         size={'sm'}>{t('common.delete')}</Button>
             </div>
-        </div>
-    );
+        </PopperContentSharedWrapper>);
 };
 
 export default TempEventPopperContent;

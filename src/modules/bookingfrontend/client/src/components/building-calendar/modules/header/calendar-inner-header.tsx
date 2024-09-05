@@ -18,7 +18,7 @@ const CalendarInnerHeader: FC<CalendarInnerHeaderProps> = (props) => {
     const t = useTrans();
     const {resourcesHidden, setResourcesHidden, view} = props
     return (
-        <div style={{gridColumn: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+        <div className={styles.innerHeader}>
             <Button size={'sm'} icon={true} variant='tertiary'
                     style={{}}
                     className={styles.expandCollapseButton}

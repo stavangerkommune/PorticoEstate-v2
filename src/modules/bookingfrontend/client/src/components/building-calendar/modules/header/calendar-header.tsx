@@ -69,7 +69,7 @@ const CalendarHeader: FC<CalendarHeaderProps> = (props) => {
         <div className={styles.customHeader}>
 
             {/*<ButtonGroup aria-label="outlined primary button group">*/}
-            <ButtonGroup>
+            <ButtonGroup className={styles.modeSelect}>
                 <Button variant={view === 'timeGridDay' ? 'primary' : 'secondary'} size={'sm'}
                         className={'captialize'}
 

@@ -1,0 +1,15 @@
+@import "../../../../styles/util.module";
+
+.datePicker {
+    background-color: white;
+    border-radius: 5rem;
+    .datePickerButton {
+        justify-content: start;
+        display: flex;
+
+        @include desktop {
+            min-width: 20rem;
+
+        }
+    }
+}
