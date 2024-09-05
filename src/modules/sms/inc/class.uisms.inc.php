@@ -465,11 +465,8 @@ class sms_uisms
 					$receipt = $this->bo->send_sms($values);
 					$sms_id = $receipt['sms_id'];
 
-					if ($values['save'])
-					{
-						Cache::session_set('sms_send_receipt', 'session_data', $receipt);
-						phpgw::redirect_link('/index.php', array('menuaction' => 'sms.uisms.' . $from));
-					}
+					Cache::session_set('sms_send_receipt', 'session_data', $receipt);
+					phpgw::redirect_link('/index.php', array('menuaction' => 'sms.uisms.' . $from));
 				}
 			}
 			else
