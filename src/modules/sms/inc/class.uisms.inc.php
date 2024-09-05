@@ -439,7 +439,7 @@ class sms_uisms
 
 		if (is_array($values))
 		{
-			$values['p_num_text'] = get_var('p_num_text', array('POST'));
+			$values['p_num_text'] = Sanitizer::get_var('p_num_text', 'string', 'POST');
 			$values['message'] = Sanitizer::get_var('message');
 			$values['msg_flash'] = Sanitizer::get_var('msg_flash', 'bool', 'POST');
 			$values['msg_unicode'] = Sanitizer::get_var('msg_unicode', 'bool', 'POST');
@@ -461,6 +461,7 @@ class sms_uisms
 				if (!$receipt['error'])
 				{
 					$from = 'outbox';
+					$values['p_num_text'] = explode(',', $p_num);
 					$receipt = $this->bo->send_sms($values);
 					$sms_id = $receipt['sms_id'];
 
