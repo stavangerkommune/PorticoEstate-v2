@@ -2028,7 +2028,7 @@ class controller_uicheck_list extends phpgwapi_uicommon_jquery
 		$ok = true;
 
 		$required_actual_hours = isset($config->config_data['required_actual_hours']) && $config->config_data['required_actual_hours'] ? $config->config_data['required_actual_hours'] : false;
-		if ($check_list_status == controller_check_list::STATUS_DONE && $required_actual_hours && (int)$check_list->get_billable_hours() == 0)
+		if ($check_list_status == controller_check_list::STATUS_DONE && $required_actual_hours && (float)$check_list->get_billable_hours() == 0)
 		{
 			Cache::message_set(lang("Please enter billable hours"), 'error');
 			$ok = false;
