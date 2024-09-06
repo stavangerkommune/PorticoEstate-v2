@@ -74,16 +74,19 @@ class booking_menu
 						'text' => lang('Allocations'),
 						'url' => phpgw::link('/index.php', array('menuaction' => 'booking.uiallocation.index')),
 						'image' => array('property', 'project_request'),
+						'icon' => 'fas fa-2x fa-file-alt'
 					),
 					'bookings' => array(
 						'text' => lang('Bookings'),
 						'url' => phpgw::link('/index.php', array('menuaction' => 'booking.uibooking.index')),
 						'image' => array('property', 'project_request'),
+						'icon' => 'fas fa-2x fa-file-alt'
 					),
 					'events' => array(
 						'text' => lang('Events'),
 						'url' => phpgw::link('/index.php', array('menuaction' => 'booking.uievent.index')),
 						'image' => array('property', 'project_request'),
+						'icon' => 'fas fa-2x fa-file-alt'
 					),
 					'massbookings' => array(
 						'text' => lang('Bookings and allocations'),
@@ -108,6 +111,7 @@ class booking_menu
 						'text' => lang('Documents'),
 						'url' => phpgw::link('/index.php', array('menuaction' => 'booking.uidocument_building.index')),
 						'image' => array('property', 'documentation'),
+						'icon' => 'fas fa-2x fa-file-alt'
 					),
 					'permissions' => array(
 						'text' => lang('Permissions'),
@@ -128,6 +132,7 @@ class booking_menu
 								'text' => lang('Documents'),
 								'url' => phpgw::link('/index.php', array('menuaction' => 'booking.uidocument_resource.index')),
 								'image' => array('property', 'documentation'),
+								'icon' => 'fas fa-2x fa-file-alt'
 							),
 							'permissions' => array(
 								'text' => lang('Permissions'),
