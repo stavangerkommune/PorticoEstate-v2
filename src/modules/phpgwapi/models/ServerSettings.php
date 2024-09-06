@@ -1,0 +1,372 @@
+<?php
+
+namespace App\modules\phpgwapi\models;
+
+use App\traits\SerializableTrait;
+
+/**
+ * @OA\Schema(
+ *     schema="ServerSettings",
+ *     type="object",
+ *     title="ServerSettings",
+ *     description="Comprehensive Server Settings model"
+ * )
+ * @Exclude
+ */
+class ServerSettings
+{
+    use SerializableTrait;
+
+    /**
+     * @OA\Property(type="integer")
+     */
+    public $account_max_id;
+
+    /**
+     * @OA\Property(type="integer")
+     */
+    public $account_min_id;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $account_repository;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $acl_default;
+
+    /**
+     * @OA\Property(type="integer")
+     */
+    public $addressmaster;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $asyncservice;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $auth_type;
+
+    /**
+     * @OA\Property(type="integer")
+     */
+    public $auto_create_expire;
+
+    /**
+     * @OA\Property(type="string")
+     * @Expose
+     */
+    public $bakcground_image;
+
+    /**
+     * @OA\Property(type="integer")
+     */
+    public $block_time;
+
+    /**
+     * @OA\Property(type="integer")
+     */
+    public $cache_refresh_token;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $cookie_domain;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $daytime_port;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $Debugoutput;
+
+    /**
+     * @OA\Property(type="boolean")
+     */
+    public $disable_autoload_langfiles;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $encryption_type;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $encryptkey;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $file_repository;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $files_dir;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $file_store_contents;
+
+    /**
+     * @OA\Property(type="integer")
+     */
+    public $group_max_id;
+
+    /**
+     * @OA\Property(type="integer")
+     */
+    public $group_min_id;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $hostname;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $install_id;
+
+    /**
+     * @OA\Property(type="object")
+     */
+    public $lang_ctimes;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $ldap_account_home;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $ldap_account_shell;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $ldap_encryption_type;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $ldap_host;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $ldap_root_pw;
+
+    /**
+     * @OA\Property(type="object")
+     */
+    public $log_levels;
+
+    /**
+     * @OA\Property(type="string")
+     * @Expose
+     */
+    public $logo_url;
+
+    /**
+     * @OA\Property(type="string")
+     * @Expose
+     */
+    public $logo_title;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $mapping;
+
+    /**
+     * @OA\Property(type="integer")
+     */
+    public $max_access_log_age;
+
+    /**
+     * @OA\Property(type="integer")
+     */
+    public $max_history;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $mcrypt_algo;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $mcrypt_mode;
+
+    /**
+     * @OA\Property(type="integer")
+     */
+    public $num_unsuccessful_id;
+
+    /**
+     * @OA\Property(type="integer")
+     */
+    public $num_unsuccessful_ip;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $password_level;
+
+    /**
+     * @OA\Property(type="integer")
+     */
+    public $sessions_app_timeout;
+
+    /**
+     * @OA\Property(type="integer")
+     */
+    public $sessions_timeout;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $showpoweredbyon;
+
+    /**
+     * @OA\Property(type="string")
+     * @Expose
+     */
+    public $site_title;
+
+    /**
+     * @OA\Property(type="integer")
+     */
+    public $SMTPDebug;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $smtp_server;
+
+    /**
+     * @OA\Property(type="string")
+     * @Expose
+     */
+    public $support_address;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $temp_dir;
+
+    /**
+     * @OA\Property(type="boolean")
+     */
+    public $usecookies;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $useframes;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    public $webserver_url;
+
+    /**
+     * Default values for settings from head.inc.php
+     */
+    private $defaults = [
+        'site_title' => 'please set a site name in admin > siteconfig',
+        'support_address' => 'support@aktivkommune.no',
+        'logo_title' => 'Logo'
+    ];
+
+    public function __construct(array $data = [])
+    {
+        $this->populate($data); // Populate first to set the initial values
+        $this->setDefaults();   // Then set defaults for properties that were not set in populate
+    }
+
+    private function setDefaults()
+    {
+        foreach ($this->defaults as $key => $value) {
+            if (property_exists($this, $key) && $this->$key === null) {
+                // Only set the default if the property is currently null
+                if ($key === 'logo_url') {
+                    $this->$key = $this->getDefaultLogoUrl();
+                } else {
+                    $this->$key = $value;
+
+                }
+            }
+        }
+    }
+
+
+    public function populate(array $data)
+    {
+        foreach ($data as $key => $value) {
+            if (property_exists($this, $key)) {
+                switch ($key) {
+                    case 'account_max_id':
+                    case 'account_min_id':
+                    case 'addressmaster':
+                    case 'auto_create_expire':
+                    case 'block_time':
+                    case 'cache_refresh_token':
+                    case 'group_max_id':
+                    case 'group_min_id':
+                    case 'max_access_log_age':
+                    case 'max_history':
+                    case 'num_unsuccessful_id':
+                    case 'num_unsuccessful_ip':
+                    case 'sessions_app_timeout':
+                    case 'sessions_timeout':
+                    case 'SMTPDebug':
+                        $this->$key = (int)$value;
+                        break;
+                    case 'disable_autoload_langfiles':
+                    case 'usecookies':
+                    case 'no_jscombine':
+                        $this->$key = $value === 'True' || $value === true;
+                        break;
+                    case 'lang_ctimes':
+                    case 'log_levels':
+                        $this->$key = is_array($value) ? $value : $this->safeUnserialize($value);
+                        break;
+                    case 'webserver_url':
+                        $this->$key = $value ?: PHPGW_MODULES_PATH;
+                        break;
+                    default:
+                        $this->$key = $value;
+                }
+            }
+        }
+    }
+
+    private function safeUnserialize($value)
+    {
+        if (is_string($value)) {
+            $unserialized = @unserialize($value);
+            return $unserialized !== false ? $unserialized : $value;
+        }
+        return $value;
+    }
+
+    private function getDefaultLogoUrl()
+    {
+        $webserver_url = $this->webserver_url ?: PHPGW_MODULES_PATH;
+        return $webserver_url . "/phpgwapi/templates/bookingfrontend_2/img/Aktiv-kommune-footer-logo.png";
+    }
+
+}

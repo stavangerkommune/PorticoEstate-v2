@@ -1,6 +1,6 @@
 <?php
 
-namespace App\modules\bookingfrontend\traits;
+namespace App\traits;
 
 trait SerializableTrait
 {

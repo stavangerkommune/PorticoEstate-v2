@@ -1,8 +1,7 @@
 <?php
 
 namespace App\modules\bookingfrontend\models;
-//use App\modules\phpgwapi\services\Settings;
-use App\modules\bookingfrontend\traits\SerializableTrait;
+use App\traits\SerializableTrait;
 use OpenApi\Annotations as OA;
 
 

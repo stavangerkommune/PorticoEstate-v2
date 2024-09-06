@@ -369,3 +369,5 @@ fatal error	common	no	Fatal feil
 column search	common	no	Kolonnesøk
 choose language	common	no	Velg språk
 which language do you want?	common	no	Hvilket språk ønsker du?
+which language do you want?	common	no	Hvilket språk ønsker du?
+error_report_system	common	no	Feilmelding (om systemet)

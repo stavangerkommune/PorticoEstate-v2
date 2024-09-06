@@ -1,13 +1,13 @@
 <?php
 
-use Slim\Routing\RouteCollectorProxy;
-use App\modules\bookingfrontend\controllers\DataStore;
 use App\modules\bookingfrontend\controllers\BuildingController;
-use App\modules\phpgwapi\controllers\StartPoint;
-use App\modules\phpgwapi\middleware\SessionsMiddleware;
+use App\modules\bookingfrontend\controllers\DataStore;
 use App\modules\bookingfrontend\helpers\LangHelper;
 use App\modules\bookingfrontend\helpers\LoginHelper;
 use App\modules\bookingfrontend\helpers\LogoutHelper;
+use App\modules\phpgwapi\controllers\StartPoint;
+use App\modules\phpgwapi\middleware\SessionsMiddleware;
+use Slim\Routing\RouteCollectorProxy;
 
 $app->group('/bookingfrontend', function (RouteCollectorProxy $group) {
     $group->get('/searchdataall[/{params:.*}]', DataStore::class . ':SearchDataAll');

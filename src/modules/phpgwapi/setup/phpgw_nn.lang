@@ -348,3 +348,4 @@ fatal error	common	nn	Fatal feil
 column search	common	nn	Kolonnesøk
 choose language	common	nn	Byt språk
 which language do you want?	common	nn	Kva for språk ynskjer du?
+error_report_system	common	nn	Feilmelding (om systemet)
