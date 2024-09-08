@@ -43,6 +43,10 @@ class RunHelper
 
 		define('PSI_APP_ROOT', SRC_ROOT_PATH . '/modules/phpsysinfo');
 
+		//Read css file
+		$css = file_get_contents(PSI_APP_ROOT . '/templates/phpsysinfo.css');
+		echo '<style>' . $css . '</style>';
+
 		if (!extension_loaded("pcre"))
 		{
 			die("phpSysInfo requires the pcre extension to php in order to work properly.");
