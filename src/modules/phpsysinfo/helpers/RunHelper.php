@@ -46,16 +46,27 @@ class RunHelper
 			die();
 		}
 
-		ob_start();
-		$webpage = new \WebpageXSLT();
-		$webpage->run();
+		$format = 'html';
+		
+		if($format == 'html')
+		{
+			ob_start();
+			$webpage = new \WebpageXSLT();
+			$webpage->run();
+			$output = ob_get_clean();
+			//Read css file
+			$css = file_get_contents(PSI_APP_ROOT . '/templates/phpsysinfo.css');
 
-		$output = ob_get_clean();
-		//Read css file
-		$css = file_get_contents(PSI_APP_ROOT . '/templates/phpsysinfo.css');
-
-		//Add css to the output
-		$output = str_replace(array('@import url("templates/phpsysinfo.css");', 'gfx/images'), array($css, 'phpsysinfo/gfx/images'), $output);
+			//Add css to the output
+			$output = str_replace(array('@import url("templates/phpsysinfo.css");', 'gfx/images'), array($css, 'phpsysinfo/gfx/images'), $output);
+		}
+		else
+		{
+			$webpage = new \WebpageXML("complete");
+			$json = $webpage->getJsonString();
+			// format json as html
+			$output = '<pre>' . json_encode(json_decode($json), JSON_PRETTY_PRINT) . '</pre>';
+		}
 
 		echo '<iframe id="contentFrame" srcdoc="' . htmlspecialchars($output, ENT_QUOTES, 'UTF-8') . '" style="width:100%; height:500px;"></iframe>';
 		echo 
