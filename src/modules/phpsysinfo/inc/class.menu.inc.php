@@ -48,7 +48,7 @@ class phpsysinfo_menu
 		$translation = Translation::getInstance();
 
 		$incoming_app			 = $flags['currentapp'];
-		Settings::getInstance()->update('flags', ['currentapp' => 'phpsysinfo']);
+		Settings::getInstance()->update('flags', ['currentapp' => 'admin']);
 
 		$menus = array();
 
