@@ -3944,7 +3944,7 @@ function phpgwapi_upgrade0_9_17_567($oProc)
 	if ($oProc->m_odb->transaction_commit())
 	{
 		$currentver = '0.9.17.568';
-		Settings::getInstance()->update('setup_info', ['booking' => ['currentver' => $currentver]]);
+		Settings::getInstance()->update('setup_info', ['phpgwapi' => ['currentver' => $currentver]]);
 		return $currentver;
 
 	}

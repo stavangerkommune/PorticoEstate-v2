@@ -1,5 +1,7 @@
 <?php
 
+use App\modules\phpgwapi\services\Settings;
+
 	 /* Update Controller from v 0.1 to 0.1.1 */
 
 	$test[] = '0.1';
@@ -1665,3 +1667,22 @@
 			return $GLOBALS['setup_info']['controller']['currentver'];
 		}
 	}
+
+$test[] = '0.1.73';
+function controller_upgrade0_1_73($oProc)
+{
+	$oProc->m_odb->transaction_begin();
+	$oProc->AddColumn('controller_check_list', 'dispatched', array(
+		'type' => 'int',
+		'precision' => 8,
+		'nullable' => True
+	));
+	if ($oProc->m_odb->transaction_commit())
+	{
+		$currentver = '0.1.74';
+		Settings::getInstance()->update('setup_info', ['controller' => ['currentver' => $currentver]]);
+		return $currentver;
+	}
+}
+
+

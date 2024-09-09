@@ -86,7 +86,8 @@ class booking_soresource extends booking_socommon
 				  'column' 	=> 'district'
 				  )), */
 				'activity_name' => array(
-					'type' => 'string', 'query' => true,
+					'type' => 'string',
+					'query' => true,
 					'join' => array(
 						'table' => 'bb_activity',
 						'fkey' => 'activity_id',
@@ -95,7 +96,8 @@ class booking_soresource extends booking_socommon
 					)
 				),
 				'rescategory_name' => array(
-					'type' => 'string', 'query' => true,
+					'type' => 'string',
+					'query' => true,
 					'join' => array(
 						'table' => 'bb_rescategory',
 						'fkey' => 'rescategory_id',
@@ -131,7 +133,8 @@ class booking_soresource extends booking_socommon
 					)
 				),
 				'buildings' => array(
-					'type' => 'int', 'required' => true,
+					'type' => 'int',
+					'required' => true,
 					'manytomany' => array(
 						'table' => 'bb_building_resource',
 						'key' => 'resource_id',
@@ -477,13 +480,12 @@ class booking_soresource extends booking_socommon
 		);
 		//check for duplicate
 
-		$sql = "SELECT resource_id FROM bb_resource_e_lock"
-			. " WHERE resource_id = ? AND e_lock_system_id = ? AND e_lock_resource_id = ?";
-		$condition =  array((int)$resource_id, (int)$e_lock_system_id,  $e_lock_resource_id);
+		// Prepare the SELECT statement
+		$sql = "SELECT resource_id FROM bb_resource_e_lock WHERE resource_id = ? AND e_lock_system_id = ? AND e_lock_resource_id = ?";
+		$selectStmt = $this->db->prepare($sql);
+		$selectStmt->execute([(int)$resource_id, (int)$e_lock_system_id, $e_lock_resource_id]);
 
-		$this->db->select($sql, $condition, __LINE__, __FILE__);
-
-		if ($this->db->next_record())
+		if ($selectStmt->fetch(PDO::FETCH_ASSOC))
 		{
 			$update_sql = "UPDATE bb_resource_e_lock SET e_lock_name = ?, access_code_format = ?, access_instruction = ?, modified_on = ?, modified_by = ? WHERE resource_id = ? AND e_lock_system_id = ? AND e_lock_resource_id = ?";
 			if ($this->db->insert($update_sql, $insert_update, __LINE__, __FILE__))
@@ -647,11 +649,12 @@ class booking_soresource extends booking_socommon
 
 		$sql = "SELECT resource_id FROM bb_participant_limit"
 			. " WHERE resource_id = ? AND from_ = ?";
-		$condition =  array((int)$resource_id, $limit_from);
+		$condition = array((int)$resource_id, $limit_from);
 
-		$this->db->select($sql, $condition, __LINE__, __FILE__);
+		$statement = $this->db->prepare($sql);
+		$statement->execute($condition);
 
-		if ($this->db->next_record())
+		if ($statement->fetch(PDO::FETCH_ASSOC))
 		{
 			$update_sql = "UPDATE bb_participant_limit SET quantity = ?, modified_on = ?, modified_by = ? WHERE resource_id = ? AND from_ = ?";
 			if ($this->db->insert($update_sql, $insert_update, __LINE__, __FILE__))

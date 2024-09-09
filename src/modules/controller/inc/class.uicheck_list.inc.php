@@ -2141,7 +2141,8 @@ class controller_uicheck_list extends phpgwapi_uicommon_jquery
 			/**
 			 * Sigurd: in case ticket alert in not sufficient - some extra magic, not implemented so far
 			 */
-			/**
+
+			 /*
 				  $location		 = array();
 				  $_location_arr	 = explode('-', $data['location_code']);
 				  $i				 = 1;
@@ -4166,7 +4167,7 @@ HTML;
 
 	function render_report($report_data, $return_as_file = false)
 	{
-		$xslttemplates = CreateObject('phpgwapi.xslttemplates');
+		$xslttemplates = CreateObject('phpgwapi.xslttemplates', PHPGW_SERVER_ROOT . '/controller/templates/base');
 		$xslttemplates->add_file(array(PHPGW_SERVER_ROOT . '/controller/templates/base/report'));
 		$xslttemplates->set_var('phpgw', array('report' => $report_data));
 

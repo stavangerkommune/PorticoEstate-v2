@@ -119,19 +119,20 @@ class controller_sosettings
 			return array();
 		}
 
-		$sql = "SELECT * FROM controller_control_user_role WHERE control_id = ? AND part_of_town_id = ?";
-		$condition =  array((int)$control_id, (int)$part_of_town_id);
+		$sql = "SELECT * FROM controller_control_user_role WHERE control_id = :control_id AND part_of_town_id = :part_of_town_id";
 
-		$this->db->select($sql, $condition, __LINE__, __FILE__);
+		$statement = $this->db->prepare($sql);
+		$statement->bindValue(':control_id', (int)$control_id, PDO::PARAM_INT);
+		$statement->bindValue(':part_of_town_id', (int)$part_of_town_id, PDO::PARAM_INT);
+		$statement->execute();
 
 		$values = array();
 
-		while ($this->db->next_record())
+		while ($row = $statement->fetch(PDO::FETCH_ASSOC))
 		{
-			$user_id = $this->db->f('user_id');
-			$values[$user_id] = $this->db->f('roles');
+			$user_id = $row['user_id'];
+			$values[$user_id] = $row['roles'];
 		}
-
 		return $values;
 	}
 
@@ -265,10 +266,15 @@ class controller_sosettings
 
 		$loc1 = $location_arr[0];
 
-		$this->db->select("SELECT part_of_town_id FROM fm_location1 WHERE loc1 = ?", array($loc1), __LINE__, __FILE__);
-		$this->db->next_record();
-		$part_of_town_id = $this->db->f('part_of_town_id');
+		$sql = "SELECT part_of_town_id FROM fm_location1 WHERE loc1 = ?";
+		$statement = $this->db->prepare($sql);
+		$statement->execute([$loc1]);
 
+		$part_of_town_id = null;
+		if ($row = $statement->fetch(PDO::FETCH_ASSOC))
+		{
+			$part_of_town_id = $row['part_of_town_id'];
+		}
 		return $part_of_town_id;
 	}
 
@@ -288,17 +294,18 @@ class controller_sosettings
 		/**
 		 * Bitwise operator on 2 (inspector)
 		 */
-		$sql = "SELECT user_id FROM controller_control_user_role WHERE control_id = ? AND part_of_town_id = ? AND (roles & ?) > 0;";
-		$condition =  array((int)$control_id, $part_of_town_id,  (int)$role);
+		$sql = "SELECT user_id, roles FROM controller_control_user_role WHERE control_id = ? AND part_of_town_id = ? AND (roles & ?) > 0;";
+		$condition = array((int)$control_id, $part_of_town_id, (int)$role);
 
-		$this->db->select($sql, $condition, __LINE__, __FILE__);
+		$statement = $this->db->prepare($sql);
+		$statement->execute($condition);
 
 		$users = array();
-		while ($this->db->next_record())
+		while ($row = $statement->fetch(PDO::FETCH_ASSOC))
 		{
 			$users[] = array(
-				'user_id' => $this->db->f('user_id'),
-				'roles'  => $this->db->f('roles')
+				'user_id' => $row['user_id'],
+				'roles' => $row['roles']
 			);
 		}
 
@@ -323,43 +330,42 @@ class controller_sosettings
 
 	public function get_inspectors($check_list_id)
 	{
-
 		$sql = "SELECT control_id, controller_check_list_inspector.user_id, location_code FROM controller_check_list "
 			. " $this->left_join controller_check_list_inspector ON controller_check_list.id = controller_check_list_inspector.check_list_id"
-			. " WHERE controller_check_list.id = ?";
+			. " WHERE controller_check_list.id = :check_list_id";
 
-		$condition =  array((int)$check_list_id);
-
-		$this->db->select($sql, $condition, __LINE__, __FILE__);
+		$statement = $this->db->prepare($sql);
+		$statement->bindValue(':check_list_id', (int)$check_list_id, PDO::PARAM_INT);
+		$statement->execute();
 
 		$_inspectors = array();
-		while ($this->db->next_record())
+		while ($row = $statement->fetch(PDO::FETCH_ASSOC))
 		{
-			$location_code = $this->db->f('location_code');
-			$control_id = $this->db->f('control_id');
-			$user_id = $this->db->f('user_id');
+			$location_code = $row['location_code'];
+			$control_id = $row['control_id'];
+			$user_id = $row['user_id'];
 			if ($user_id)
 			{
 				$_inspectors[] = $user_id;
 			}
 		}
-
 		$part_of_town_id = $this->get_part_of_town($location_code);
 
 		/**
 		 * Bitwise operator on 2 (inspector)
 		 */
-		$sql = "SELECT user_id FROM controller_control_user_role WHERE control_id = ? AND part_of_town_id = ? AND(roles & 2) > 0;";
-		$condition =  array((int)$control_id, (int)$part_of_town_id);
+		$sql = "SELECT user_id FROM controller_control_user_role WHERE control_id = ? AND part_of_town_id = ? AND (roles & 2) > 0;";
+		$condition = array((int)$control_id, (int)$part_of_town_id);
 
-		$this->db->select($sql, $condition, __LINE__, __FILE__);
+		$statement = $this->db->prepare($sql);
+		$statement->execute($condition);
 
 		$inspectors = array();
 		$__inspectors = array();
 
-		while ($this->db->next_record())
+		while ($row = $statement->fetch(PDO::FETCH_ASSOC))
 		{
-			$__inspectors[] = $this->db->f('user_id');
+			$__inspectors[] = $row['user_id'];
 		}
 
 		$___inspectors = array_unique(array_merge($_inspectors, $__inspectors));

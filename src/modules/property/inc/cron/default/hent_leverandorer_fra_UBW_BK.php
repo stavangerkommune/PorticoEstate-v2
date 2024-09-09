@@ -1,99 +1,100 @@
 <?php
-	/**
-	 * phpGroupWare - property: a Facilities Management System.
-	 *
-	 * @author Sigurd Nes <sigurdne@online.no>
-	 * @copyright Copyright (C) 2003,2004,2005,2006,2007 Free Software Foundation, Inc. http://www.fsf.org/
-	 * This file is part of phpGroupWare.
-	 *
-	 * phpGroupWare is free software; you can redistribute it and/or modify
-	 * it under the terms of the GNU General Public License as published by
-	 * the Free Software Foundation; either version 2 of the License, or
-	 * (at your option) any later version.
-	 *
-	 * phpGroupWare is distributed in the hope that it will be useful,
-	 * but WITHOUT ANY WARRANTY; without even the implied warranty of
-	 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	 * GNU General Public License for more details.
-	 *
-	 * You should have received a copy of the GNU General Public License
-	 * along with phpGroupWare; if not, write to the Free Software
-	 * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-	 *
-	 * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
-	 * @internal Development of this application was funded by http://www.bergen.kommune.no/bbb_/ekstern/
-	 * @package property
-	 * @subpackage cron
-	 * @version $Id$
-	 */
-	/**
-	 * Description
-	 * example cron : /usr/local/bin/php -q /var/www/html/phpgroupware/property/inc/cron/cron.php default hent_leverandorer_fra_UBW_BK
-	 * @package property
-	 */
-	include_class('property', 'cron_parent', 'inc/cron/');
 
-	class hent_leverandorer_fra_UBW_BK extends property_cron_parent
+/**
+ * phpGroupWare - property: a Facilities Management System.
+ *
+ * @author Sigurd Nes <sigurdne@online.no>
+ * @copyright Copyright (C) 2003,2004,2005,2006,2007 Free Software Foundation, Inc. http://www.fsf.org/
+ * This file is part of phpGroupWare.
+ *
+ * phpGroupWare is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * phpGroupWare is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with phpGroupWare; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
+ * @internal Development of this application was funded by http://www.bergen.kommune.no/bbb_/ekstern/
+ * @package property
+ * @subpackage cron
+ * @version $Id$
+ */
+/**
+ * Description
+ * example cron : /usr/bin/php -q /var/www/Api/src/modules/property/inc/cron/cron.php default hent_leverandorer_fra_UBW_BK
+ * @package property
+ */
+include_class('property', 'cron_parent', 'inc/cron/');
+
+class hent_leverandorer_fra_UBW_BK extends property_cron_parent
+{
+
+	var $b_accounts = array();
+	var $join;
+	var $username, $password;
+
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->function_name = get_class($this);
+		$this->sub_location	 = lang('property');
+		$this->function_msg	 = 'Hent leverandører fra UBW (Agresso) til Portico';
+		$this->join			 = $this->db->join;
+
+		$config = CreateObject('admin.soconfig', $this->location_obj->get_id('property', '.admin'));
+		$this->username	 = $config->config_data['UBW']['username'];
+		$this->password	 = $config->config_data['UBW']['password'];
+	}
+
+	function execute()
+	{
+		$start = time();
+
+		set_time_limit(120);
+
+		require_once PHPGW_SERVER_ROOT . '/property/inc/soap_client/agresso/autoload.php';
+
+		$this->update_vendor();
+
+
+		$msg						 = 'Tidsbruk: ' . (time() - $start) . ' sekunder';
+		$this->cron_log($msg);
+		echo "$msg\n";
+		$this->receipt['message'][]	 = array('msg' => $msg);
+	}
+
+	function cron_log($receipt = '')
 	{
 
-		var $b_accounts = array();
-		var $join;
-		var $username, $password;
+		$insert_values = array(
+			$this->cron,
+			date($this->db->datetime_format()),
+			$this->function_name,
+			$receipt
+		);
 
-		public function __construct()
+		$insert_values = $this->db->validate_insert($insert_values);
+
+		$sql = "INSERT INTO fm_cron_log (cron,cron_date,process,message) "
+			. "VALUES ($insert_values)";
+		$this->db->query($sql, __LINE__, __FILE__);
+	}
+
+	function update_vendor()
+	{
+		$metadata = $this->db->metadata('fm_vendor_temp');
+		if (!$metadata)
 		{
-			parent::__construct();
-
-			$this->function_name = get_class($this);
-			$this->sub_location	 = lang('property');
-			$this->function_msg	 = 'Hent leverandører fra UBW (Agresso) til Portico';
-			$this->join			 = $this->db->join;
-
-			$config = CreateObject('admin.soconfig', $this->location_obj->get_id('property', '.admin'));
-			$this->username	 = $config->config_data['UBW']['username'];
-			$this->password	 = $config->config_data['UBW']['password'];
-		}
-
-		function execute()
-		{
-			$start = time();
-
-			set_time_limit(120);
-
-			require_once PHPGW_SERVER_ROOT . '/property/inc/soap_client/agresso/autoload.php';
-
-			$this->update_vendor();
-
-
-			$msg						 = 'Tidsbruk: ' . (time() - $start) . ' sekunder';
-			$this->cron_log($msg);
-			echo "$msg\n";
-			$this->receipt['message'][]	 = array('msg' => $msg);
-		}
-
-		function cron_log( $receipt = '' )
-		{
-
-			$insert_values = array(
-				$this->cron,
-				date($this->db->datetime_format()),
-				$this->function_name,
-				$receipt
-			);
-
-			$insert_values = $this->db->validate_insert($insert_values);
-
-			$sql = "INSERT INTO fm_cron_log (cron,cron_date,process,message) "
-				. "VALUES ($insert_values)";
-			$this->db->query($sql, __LINE__, __FILE__);
-		}
-
-		function update_vendor()
-		{
-			$metadata = $this->db->metadata('fm_vendor_temp');
-			if (!$metadata)
-			{
-				$sql_table = <<<SQL
+			$sql_table = <<<SQL
 				CREATE TABLE fm_vendor_temp
 				(
 				  id integer NOT NULL,
@@ -109,53 +110,53 @@
 				  CONSTRAINT fm_vendor_temp_pkey PRIMARY KEY (id)
 				);
 SQL;
-				$this->db->query($sql_table, __LINE__, __FILE__);
-			}
-			else if (empty($metadata['email']))
-			{
-				$this->db->query('ALTER TABLE public.fm_vendor_temp ADD COLUMN email character varying(64)', __LINE__, __FILE__);
-			}
+			$this->db->query($sql_table, __LINE__, __FILE__);
+		}
+		else if (empty($metadata['email']))
+		{
+			$this->db->query('ALTER TABLE public.fm_vendor_temp ADD COLUMN email character varying(64)', __LINE__, __FILE__);
+		}
 
-			$this->db->query('DELETE FROM fm_vendor_temp', __LINE__, __FILE__);
+		$this->db->query('DELETE FROM fm_vendor_temp', __LINE__, __FILE__);
 
-			$error = false;
+		$error = false;
 
-			$values = array();
-			try
-			{
-				$values = $this->get_vendors();
-			}
-			catch (Exception $exc)
-			{
-				$error = true;
-				_debug_array($exc->getMessage());
-				echo $exc->getTraceAsString();
-				throw $exc;
-			}
+		$values = array();
+		try
+		{
+			$values = $this->get_vendors();
+		}
+		catch (Exception $exc)
+		{
+			$error = true;
+			_debug_array($exc->getMessage());
+			echo $exc->getTraceAsString();
+			throw $exc;
+		}
 
-			$this->db->transaction_begin();
+		$this->db->transaction_begin();
 
-			$sql = 'INSERT INTO fm_vendor_temp (id, status, navn, adresse, postnummer, sted, organisasjonsnr, bankkontonr, aktiv, email)'
-				. ' VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+		$sql = 'INSERT INTO fm_vendor_temp (id, status, navn, adresse, postnummer, sted, organisasjonsnr, bankkontonr, aktiv, email)'
+			. ' VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
-			/**
-			 * remove duplicates
-			 */
-			if (empty($values[0]->apar_id))
-			{
-				_debug_array($values);
-				$error = true;
-			}
-			$vendors = array();
-			foreach ($values as $value)
-			{
-				$vendors[(string)$value->apar_id] = $value;
-			}
+		/**
+		 * remove duplicates
+		 */
+		if (empty($values[0]->apar_id))
+		{
+			_debug_array($values);
+			$error = true;
+		}
+		$vendors = array();
+		foreach ($values as $value)
+		{
+			$vendors[(string)$value->apar_id] = $value;
+		}
 
-			unset($value);
+		unset($value);
 
 
-			/*
+		/*
 			  [_recno] => 0
 			  [_section] => D
 			  [tab] => A
@@ -170,72 +171,61 @@ SQL;
 			  [status] => N
 			 */
 
-			$valueset = array();
+		$valueset = array();
 
-			foreach ($vendors as $key => $entry)
-			{
-				$email_arr	 = explode(';', (string)$entry->e_mail);
-				$valueset[]	 = array
-					(
-					1	 => array
-						(
-						'value'	 => (int)$entry->apar_id,
-						'type'	 => PDO::PARAM_INT
-					),
-					2	 => array
-						(
-						'value'	 => (string)$entry->status,
-						'type'	 => PDO::PARAM_STR
-					),
-					3	 => array
-						(
-						'value'	 => (string)$entry->apar_name,
-						'type'	 => PDO::PARAM_STR
-					),
-					4	 => array
-						(
-						'value'	 => (string)$entry->address,
-						'type'	 => PDO::PARAM_STR
-					),
-					5	 => array
-						(
-						'value'	 => (string)$entry->zip_code,
-						'type'	 => PDO::PARAM_STR
-					),
-					6	 => array
-						(
-						'value'	 => (string)$entry->place,
-						'type'	 => PDO::PARAM_STR
-					),
-					7	 => array
-						(
-						'value'	 => (string)$entry->comp_reg_no,
-						'type'	 => PDO::PARAM_STR
-					),
-					8	 => array
-						(
-						'value'	 => (string)$entry->bank_account,
-						'type'	 => PDO::PARAM_STR
-					),
-					9	 => array
-						(
-						'value'	 => (string)$entry->status == 'N' ? 1 : 0,
-						'type'	 => PDO::PARAM_INT
-					),
-					10	 => array
-						(
-						'value'	 => $email_arr[0],
-						'type'	 => PDO::PARAM_STR
-					),
-				);
-			}
+		foreach ($vendors as $key => $entry)
+		{
+			$email_arr	 = explode(';', (string)$entry->e_mail);
+			$valueset[]	 = array(
+				1	 => array(
+					'value'	 => (int)$entry->apar_id,
+					'type'	 => PDO::PARAM_INT
+				),
+				2	 => array(
+					'value'	 => (string)$entry->status,
+					'type'	 => PDO::PARAM_STR
+				),
+				3	 => array(
+					'value'	 => (string)$entry->apar_name,
+					'type'	 => PDO::PARAM_STR
+				),
+				4	 => array(
+					'value'	 => (string)$entry->address,
+					'type'	 => PDO::PARAM_STR
+				),
+				5	 => array(
+					'value'	 => (string)$entry->zip_code,
+					'type'	 => PDO::PARAM_STR
+				),
+				6	 => array(
+					'value'	 => (string)$entry->place,
+					'type'	 => PDO::PARAM_STR
+				),
+				7	 => array(
+					'value'	 => (string)$entry->comp_reg_no,
+					'type'	 => PDO::PARAM_STR
+				),
+				8	 => array(
+					'value'	 => (string)$entry->bank_account,
+					'type'	 => PDO::PARAM_STR
+				),
+				9	 => array(
+					'value'	 => (string)$entry->status == 'N' ? 1 : 0,
+					'type'	 => PDO::PARAM_INT
+				),
+				10	 => array(
+					'value'	 => $email_arr[0],
+					'type'	 => PDO::PARAM_STR
+				),
+			);
+		}
 
-			if ($valueset && !$error)
-			{
-				$this->db->insert($sql, $valueset, __LINE__, __FILE__);
-			}
+		if ($valueset && !$error)
+		{
+			$this->db->insert($sql, $valueset, __LINE__, __FILE__);
+		}
 
-			/*
+		/*
 			  [leverandornummer] => 9906
 			  [status] => N
 			  [navn] => Bergen Vann KF (BV)
@@ -246,221 +236,220 @@ SQL;
 			  [bankkontoNr] => 52020801786
 			  [aktiv] => 1
 			 */
-//			_debug_array($valueset);die();
+		//			_debug_array($valueset);die();
 
 
-			$sql = "SELECT fm_vendor_temp.*"
-				. " FROM fm_vendor RIGHT OUTER JOIN fm_vendor_temp ON (fm_vendor.id = fm_vendor_temp.id)"
-				. " WHERE fm_vendor.id IS NULL";
+		$sql = "SELECT fm_vendor_temp.*"
+			. " FROM fm_vendor RIGHT OUTER JOIN fm_vendor_temp ON (fm_vendor.id = fm_vendor_temp.id)"
+			. " WHERE fm_vendor.id IS NULL";
 
-			$this->db->query($sql, __LINE__, __FILE__);
-			$vendors = array();
-			while ($this->db->next_record())
-			{
-				$vendors[] = array(
-					1	 => array(
-						'value'	 => (int)$this->db->f('id'),
-						'type'	 => PDO::PARAM_INT
-					),
-					2	 => array(
-						'value'	 => $this->db->f('navn'),
-						'type'	 => PDO::PARAM_STR
-					),
-					3	 => array(
-						'value'	 => 1,
-						'type'	 => PDO::PARAM_INT
-					),
-					4	 => array(
-						'value'	 => 6,
-						'type'	 => PDO::PARAM_INT
-					),
-					5	 => array(
-						'value'	 => (int)$this->db->f('aktiv'),
-						'type'	 => PDO::PARAM_INT
-					),
-					6	 => array(
-						'value'	 => $this->db->f('adresse'),
-						'type'	 => PDO::PARAM_STR
-					),
-					7	 => array(
-						'value'	 => $this->db->f('postnummer'),
-						'type'	 => PDO::PARAM_STR
-					),
-					8	 => array(
-						'value'	 => $this->db->f('sted'),
-						'type'	 => PDO::PARAM_STR
-					),
-					9	 => array(
-						'value'	 => $this->db->f('organisasjonsnr'),
-						'type'	 => PDO::PARAM_STR
-					),
-					10	 => array(
-						'value'	 => $this->db->f('bankkontonr'),
-						'type'	 => PDO::PARAM_STR
-					),
-					11	 => array(
-						'value'	 => $this->db->f('email'),
-						'type'	 => PDO::PARAM_STR
-					)
-				);
-			}
-			$sql = 'INSERT INTO fm_vendor (id, org_name,category, owner_id, active, adresse, postnr, poststed, org_nr, konto_nr, email)'
-				. ' VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+		$this->db->query($sql, __LINE__, __FILE__);
+		$vendors = array();
+		while ($this->db->next_record())
+		{
+			$vendors[] = array(
+				1	 => array(
+					'value'	 => (int)$this->db->f('id'),
+					'type'	 => PDO::PARAM_INT
+				),
+				2	 => array(
+					'value'	 => $this->db->f('navn'),
+					'type'	 => PDO::PARAM_STR
+				),
+				3	 => array(
+					'value'	 => 1,
+					'type'	 => PDO::PARAM_INT
+				),
+				4	 => array(
+					'value'	 => 6,
+					'type'	 => PDO::PARAM_INT
+				),
+				5	 => array(
+					'value'	 => (int)$this->db->f('aktiv'),
+					'type'	 => PDO::PARAM_INT
+				),
+				6	 => array(
+					'value'	 => $this->db->f('adresse'),
+					'type'	 => PDO::PARAM_STR
+				),
+				7	 => array(
+					'value'	 => $this->db->f('postnummer'),
+					'type'	 => PDO::PARAM_STR
+				),
+				8	 => array(
+					'value'	 => $this->db->f('sted'),
+					'type'	 => PDO::PARAM_STR
+				),
+				9	 => array(
+					'value'	 => $this->db->f('organisasjonsnr'),
+					'type'	 => PDO::PARAM_STR
+				),
+				10	 => array(
+					'value'	 => $this->db->f('bankkontonr'),
+					'type'	 => PDO::PARAM_STR
+				),
+				11	 => array(
+					'value'	 => $this->db->f('email'),
+					'type'	 => PDO::PARAM_STR
+				)
+			);
+		}
+		$sql = 'INSERT INTO fm_vendor (id, org_name,category, owner_id, active, adresse, postnr, poststed, org_nr, konto_nr, email)'
+			. ' VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
-			if ($valueset && !$error)
-			{
-				$this->db->insert($sql, $vendors, __LINE__, __FILE__);
+		if ($valueset && !$error)
+		{
+			$this->db->insert($sql, $vendors, __LINE__, __FILE__);
 
-				$this->db->query("UPDATE fm_vendor SET active = 0 WHERE category != 2", __LINE__, __FILE__); // intern leverandør
+			$this->db->query("UPDATE fm_vendor SET active = 0 WHERE category != 2", __LINE__, __FILE__); // intern leverandør
 
-				$this->db->query("UPDATE fm_vendor SET"
-					. " active = 1,"
-					. " org_name = fm_vendor_temp.navn,"
-					. " adresse = fm_vendor_temp.adresse,"
-					. " postnr = fm_vendor_temp.postnummer,"
-					. " poststed = fm_vendor_temp.sted,"
-					. " org_nr = fm_vendor_temp.organisasjonsnr"
-					. " FROM fm_vendor_temp WHERE fm_vendor.id = fm_vendor_temp.id", __LINE__, __FILE__);
+			$this->db->query("UPDATE fm_vendor SET"
+				. " active = 1,"
+				. " org_name = fm_vendor_temp.navn,"
+				. " adresse = fm_vendor_temp.adresse,"
+				. " postnr = fm_vendor_temp.postnummer,"
+				. " poststed = fm_vendor_temp.sted,"
+				. " org_nr = fm_vendor_temp.organisasjonsnr"
+				. " FROM fm_vendor_temp WHERE fm_vendor.id = fm_vendor_temp.id", __LINE__, __FILE__);
 
-				$this->db->query("UPDATE fm_vendor SET"
-					. " email = fm_vendor_temp.email"
-					. " FROM fm_vendor_temp"
-					. " WHERE fm_vendor.id = fm_vendor_temp.id"
-					. " AND length(fm_vendor_temp.email) !=0  AND (fm_vendor.email IS NULL OR length(fm_vendor.email) = 0)", __LINE__, __FILE__);
-			}
-
-			$this->db->transaction_commit();
+			$this->db->query("UPDATE fm_vendor SET"
+				. " email = fm_vendor_temp.email"
+				. " FROM fm_vendor_temp"
+				. " WHERE fm_vendor.id = fm_vendor_temp.id"
+				. " AND length(fm_vendor_temp.email) !=0  AND (fm_vendor.email IS NULL OR length(fm_vendor.email) = 0)", __LINE__, __FILE__);
 		}
 
-		function get_vendors()
+		$this->db->transaction_commit();
+	}
+
+	function get_vendors()
+	{
+		static $first_connect	 = false;
+		//			$username				 = 'WEBSER';
+		//			$password				 = 'wser10';
+		$username				 = $this->username;
+		$password				 = $this->password;
+		$client					 = 'BY';
+		$TemplateId				 = '6039'; //Spørring på leverandører
+
+		$context = stream_context_create([
+			'ssl' => [
+				// set some SSL/TLS specific options
+				'verify_peer' => false,
+				'verify_peer_name' => false,
+				'allow_self_signed' => true
+			]
+		]);
+
+		$options = array(
+			'location' => 'https://agrpweb.adm.bgo/UBW-webservices/service.svc?QueryEngineService/QueryEngineV201101',
+			'trace' => 1,
+			'stream_context' => $context
+		);
+
+		$service	 = new \QueryEngineV201101($options);
+		$Credentials = new \WSCredentials();
+		$Credentials->setUsername($username);
+		$Credentials->setPassword($password);
+		$Credentials->setClient($client);
+
+		// Get the default settings for a template (templateId)
+		try
 		{
-			static $first_connect	 = false;
-//			$username				 = 'WEBSER';
-//			$password				 = 'wser10';
-			$username				 = $this->username;
-			$password				 = $this->password;
-			$client					 = 'BY';
-			$TemplateId				 = '6039'; //Spørring på leverandører
-
-			$context = stream_context_create([
-				'ssl' => [
-					// set some SSL/TLS specific options
-					'verify_peer' => false,
-					'verify_peer_name' => false,
-					'allow_self_signed' => true
-				]
-			]);
-
-			$options = array(
-				'location' => 'https://agrpweb.adm.bgo/UBW-webservices/service.svc?QueryEngineService/QueryEngineV201101',
-				'trace' => 1,
-				'stream_context' => $context
-				);
-
-			$service	 = new \QueryEngineV201101($options);
-			$Credentials = new \WSCredentials();
-			$Credentials->setUsername($username);
-			$Credentials->setPassword($password);
-			$Credentials->setClient($client);
-
-			// Get the default settings for a template (templateId)
-			try
-			{
-				$searchProp = $service->GetSearchCriteria(new \GetSearchCriteria($TemplateId, true, $Credentials));
-				if (!$first_connect && $this->debug)
-				{
-					echo "SOAP HEADERS:\n" . $service->__getLastRequestHeaders() . PHP_EOL;
-					echo "SOAP REQUEST:\n" . $service->__getLastRequest() . PHP_EOL;
-				}
-				$first_connect = true;
-			}
-			catch (SoapFault $fault)
-			{
-				$msg = "SOAP Fault:\n faultcode: {$fault->faultcode},\n faultstring: {$fault->faultstring}";
-				echo $msg . PHP_EOL;
-				trigger_error(nl2br($msg), E_USER_ERROR);
-			}
-
-			//Kriterier
-			//apar_id
-			$searchProp->getGetSearchCriteriaResult()->getSearchCriteriaPropertiesList()->getSearchCriteriaProperties()[3]->setRestrictionType("!=");
-			$searchProp->getGetSearchCriteriaResult()->getSearchCriteriaPropertiesList()->getSearchCriteriaProperties()[3]->setFromValue(1017011)->setToValue(1017011);
-
-			//apar_gr_id
-//			$searchProp->getGetSearchCriteriaResult()->getSearchCriteriaPropertiesList()->getSearchCriteriaProperties()[1]->setRestrictionType("=");
-//			$searchProp->getGetSearchCriteriaResult()->getSearchCriteriaPropertiesList()->getSearchCriteriaProperties()[1]->setFromValue(1)->setToValue(1);
-
-//			_debug_array($searchProp->getGetSearchCriteriaResult()->getSearchCriteriaPropertiesList()->getSearchCriteriaProperties());
-
-			// Create the InputForTemplateResult class and set values
-			$input									 = new InputForTemplateResult($TemplateId);
-			$options								 = $service->GetTemplateResultOptions(new \GetTemplateResultOptions($Credentials));
-			$options->RemoveHiddenColumns			 = true;
-			$options->ShowDescriptions				 = true;
-			$options->Aggregated					 = false;
-			$options->OverrideAggregation			 = false;
-			$options->CalculateFormulas				 = false;
-			$options->FormatAlternativeBreakColumns	 = false;
-			$options->FirstRecord					 = false;
-			$options->LastRecord					 = false;
-
-			$input->setTemplateResultOptions($options);
-			// Get new values to SearchCriteria (if that’s what you want to do
-			$input->setSearchCriteriaPropertiesList($searchProp->getGetSearchCriteriaResult()->getSearchCriteriaPropertiesList());
-			//Retrieve result
-
-			$result = $service->GetTemplateResultAsDataSet(new \GetTemplateResultAsDataSet($input, $Credentials));
-
-			$data = $result->getGetTemplateResultAsDataSetResult()->getTemplateResult()->getAny();
-			if($this->debug)
+			$searchProp = $service->GetSearchCriteria(new \GetSearchCriteria($TemplateId, true, $Credentials));
+			if (!$first_connect && $this->debug)
 			{
 				echo "SOAP HEADERS:\n" . $service->__getLastRequestHeaders() . PHP_EOL;
 				echo "SOAP REQUEST:\n" . $service->__getLastRequest() . PHP_EOL;
 			}
-
-			$ret = array();
-			try
-			{
-				$sxe = new SimpleXMLElement($data);
-
-				$sxe->registerXPathNamespace('diffgr', 'urn:schemas-microsoft-com:xml-diffgram-v1');
-				$ret = $sxe->xpath('//diffgr:diffgram/Agresso/AgressoQE');
-
-			}
-			catch (Exception $ex)
-			{
-				throw $ex;
-			}
-
-			if ($ret)
-			{
-				$count	 = count($ret);
-				if($this->debug)
-				{
-					_debug_array($ret);
-				}
-				_debug_array("{$count} leverandører funnet" . PHP_EOL);
-			}
-			else
-			{
-				_debug_array("Leverandører IKKE funnet" . PHP_EOL);
-			}
-
-			return $ret;
+			$first_connect = true;
+		}
+		catch (SoapFault $fault)
+		{
+			$msg = "SOAP Fault:\n faultcode: {$fault->faultcode},\n faultstring: {$fault->faultstring}";
+			echo $msg . PHP_EOL;
+			trigger_error(nl2br($msg), E_USER_ERROR);
 		}
 
-		function get_vendors_ny()
-		{
-			//Data, connection, auth
-//			$soapUser		 = "WEBSER";  //  username
-//			$soapPassword	 = "wser10"; // password
-			$soapUser		 = $this->username;
-			$soapPassword	 = $this->password;
-			$CLIENT			 = 'BY';
-			$TemplateId		 = '6039'; //Spørring bilag_Portico ordrer
-			// xml post structure
+		//Kriterier
+		//apar_id
+		$searchProp->getGetSearchCriteriaResult()->getSearchCriteriaPropertiesList()->getSearchCriteriaProperties()[3]->setRestrictionType("!=");
+		$searchProp->getGetSearchCriteriaResult()->getSearchCriteriaPropertiesList()->getSearchCriteriaProperties()[3]->setFromValue(1017011)->setToValue(1017011);
 
-			$soap_request = <<<XML
+		//apar_gr_id
+		//			$searchProp->getGetSearchCriteriaResult()->getSearchCriteriaPropertiesList()->getSearchCriteriaProperties()[1]->setRestrictionType("=");
+		//			$searchProp->getGetSearchCriteriaResult()->getSearchCriteriaPropertiesList()->getSearchCriteriaProperties()[1]->setFromValue(1)->setToValue(1);
+
+		//			_debug_array($searchProp->getGetSearchCriteriaResult()->getSearchCriteriaPropertiesList()->getSearchCriteriaProperties());
+
+		// Create the InputForTemplateResult class and set values
+		$input									 = new InputForTemplateResult($TemplateId);
+		$options								 = $service->GetTemplateResultOptions(new \GetTemplateResultOptions($Credentials));
+		$options->RemoveHiddenColumns			 = true;
+		$options->ShowDescriptions				 = true;
+		$options->Aggregated					 = false;
+		$options->OverrideAggregation			 = false;
+		$options->CalculateFormulas				 = false;
+		$options->FormatAlternativeBreakColumns	 = false;
+		$options->FirstRecord					 = false;
+		$options->LastRecord					 = false;
+
+		$input->setTemplateResultOptions($options);
+		// Get new values to SearchCriteria (if that’s what you want to do
+		$input->setSearchCriteriaPropertiesList($searchProp->getGetSearchCriteriaResult()->getSearchCriteriaPropertiesList());
+		//Retrieve result
+
+		$result = $service->GetTemplateResultAsDataSet(new \GetTemplateResultAsDataSet($input, $Credentials));
+
+		$data = $result->getGetTemplateResultAsDataSetResult()->getTemplateResult()->getAny();
+		if ($this->debug)
+		{
+			echo "SOAP HEADERS:\n" . $service->__getLastRequestHeaders() . PHP_EOL;
+			echo "SOAP REQUEST:\n" . $service->__getLastRequest() . PHP_EOL;
+		}
+
+		$ret = array();
+		try
+		{
+			$sxe = new SimpleXMLElement($data);
+
+			$sxe->registerXPathNamespace('diffgr', 'urn:schemas-microsoft-com:xml-diffgram-v1');
+			$ret = $sxe->xpath('//diffgr:diffgram/Agresso/AgressoQE');
+		}
+		catch (Exception $ex)
+		{
+			throw $ex;
+		}
+
+		if ($ret)
+		{
+			$count	 = count($ret);
+			if ($this->debug)
+			{
+				_debug_array($ret);
+			}
+			_debug_array("{$count} leverandører funnet" . PHP_EOL);
+		}
+		else
+		{
+			_debug_array("Leverandører IKKE funnet" . PHP_EOL);
+		}
+
+		return $ret;
+	}
+
+	function get_vendors_ny()
+	{
+		//Data, connection, auth
+		//			$soapUser		 = "WEBSER";  //  username
+		//			$soapPassword	 = "wser10"; // password
+		$soapUser		 = $this->username;
+		$soapPassword	 = $this->password;
+		$CLIENT			 = 'BY';
+		$TemplateId		 = '6039'; //Spørring bilag_Portico ordrer
+		// xml post structure
+
+		$soap_request = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://services.agresso.com/QueryEngineService/QueryEngineV201101">
 	<SOAP-ENV:Body>
@@ -618,64 +607,63 @@ SQL;
 </SOAP-ENV:Envelope>
 XML;
 
-			$headers = array(
-				"POST /UBW-webservices/service.svc HTTP/1.1",
-				"Host: agrpweb.adm.bgo",
-				"Accept: text/xml",
-				"Cache-Control: no-cache",
-				"User-Agent: PHP-SOAP/7.1.15-1+ubuntu16.04.1+deb.sury.org+2",
-				"Content-Type: text/xml; charset=utf-8",
-				"SOAPAction: http://services.agresso.com/QueryEngineService/QueryEngineV201101/GetTemplateResultAsDataSet",
-				"Content-length: " . strlen($soap_request)
-			);
+		$headers = array(
+			"POST /UBW-webservices/service.svc HTTP/1.1",
+			"Host: agrpweb.adm.bgo",
+			"Accept: text/xml",
+			"Cache-Control: no-cache",
+			"User-Agent: PHP-SOAP/7.1.15-1+ubuntu16.04.1+deb.sury.org+2",
+			"Content-Type: text/xml; charset=utf-8",
+			"SOAPAction: http://services.agresso.com/QueryEngineService/QueryEngineV201101/GetTemplateResultAsDataSet",
+			"Content-length: " . strlen($soap_request)
+		);
 
-//			$soapUrl = "https://10.19.14.242/UBW-webservices/service.svc?QueryEngineService/QueryEngineV201101"; // asmx URL of WSDL
-			$soapUrl = "https://agrpweb.adm.bgo/UBW-webservices/service.svc?QueryEngineService/QueryEngineV201101";
+		//			$soapUrl = "https://10.19.14.242/UBW-webservices/service.svc?QueryEngineService/QueryEngineV201101"; // asmx URL of WSDL
+		$soapUrl = "https://agrpweb.adm.bgo/UBW-webservices/service.svc?QueryEngineService/QueryEngineV201101";
 
-			$ch = curl_init($soapUrl);
+		$ch = curl_init($soapUrl);
 
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $soap_request);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $soap_request);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 
-			$response	 = curl_exec($ch);
-			$httpCode	 = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-			curl_close($ch);
+		$response	 = curl_exec($ch);
+		$httpCode	 = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		curl_close($ch);
 
-			$result = array();
-			try
-			{
-				$sxe = new SimpleXMLElement($response);
+		$result = array();
+		try
+		{
+			$sxe = new SimpleXMLElement($response);
 
-				$sxe->registerXPathNamespace('diffgr', 'urn:schemas-microsoft-com:xml-diffgram-v1');
-				$result = $sxe->xpath('//diffgr:diffgram/Agresso/AgressoQE');
-				
-			}
-			catch (Exception $ex)
-			{
-				throw $ex;
-			}
-
-			if ($result)
-			{
-				$count	 = count($result);
-				//	if($this->debug)
-				{
-					_debug_array("{$count} leverandører funnet" . PHP_EOL);
-				}
-			}
-			else
-			{
-				//	if($this->debug)
-				{
-					_debug_array("Leverandører IKKE funnet" . PHP_EOL);
-				}
-			}
-
-			return $result;
+			$sxe->registerXPathNamespace('diffgr', 'urn:schemas-microsoft-com:xml-diffgram-v1');
+			$result = $sxe->xpath('//diffgr:diffgram/Agresso/AgressoQE');
 		}
+		catch (Exception $ex)
+		{
+			throw $ex;
+		}
+
+		if ($result)
+		{
+			$count	 = count($result);
+			//	if($this->debug)
+			{
+				_debug_array("{$count} leverandører funnet" . PHP_EOL);
+			}
+		}
+		else
+		{
+			//	if($this->debug)
+			{
+				_debug_array("Leverandører IKKE funnet" . PHP_EOL);
+			}
+		}
+
+		return $result;
 	}
+}
