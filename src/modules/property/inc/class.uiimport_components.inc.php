@@ -728,7 +728,6 @@ HTML;
 		$step	 = Sanitizer::get_var('step', 'int', 'REQUEST');
 		$save	 = Sanitizer::get_var('save', 'int', 'REQUEST');
 
-		phpgw::import_class('phpgwapi.phpspreadsheet');
 
 		if ($step == 1)
 		{

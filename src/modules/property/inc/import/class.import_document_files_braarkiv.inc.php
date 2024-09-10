@@ -323,7 +323,6 @@ class import_document_files
 
 	function get_data($path)
 	{
-		phpgw::import_class('phpgwapi.phpspreadsheet');
 
 		$accepted_file_formats = array('xls', 'xlsx', 'ods', 'csv');
 

@@ -1046,7 +1046,6 @@
 		function excel_out( $data, $names, $descr, $input_type = array(), $filename = '' )
 		{
 			$condition_survey = $data['condition_survey'];
-			phpgw::import_class('phpgwapi.phpspreadsheet');
 
 			if ($filename)
 			{
@@ -1405,7 +1404,6 @@
 			}
 			else if ($cached_file)
 			{
-				phpgw::import_class('phpgwapi.phpspreadsheet');
 
 				try
 				{

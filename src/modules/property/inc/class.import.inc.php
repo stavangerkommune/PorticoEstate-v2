@@ -133,7 +133,6 @@
 
 			$this->uicols2 = $uicols2;
 
-			phpgw::import_class('phpgwapi.phpspreadsheet');
 
 			$inputFileType	 = \PhpOffice\PhpSpreadsheet\IOFactory::identify($importfile);
 			$reader			 = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);

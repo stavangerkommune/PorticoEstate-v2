@@ -1055,7 +1055,6 @@ class property_uidocument2 extends phpgwapi_uicommon_jquery
 		}
 		else if ($cached_file)
 		{
-			phpgw::import_class('phpgwapi.phpspreadsheet');
 
 			try
 			{

@@ -3687,7 +3687,6 @@ HTML;
 
 	protected function getexceldata($path)
 	{
-		phpgw::import_class('phpgwapi.phpspreadsheet');
 
 		$inputFileType	 = \PhpOffice\PhpSpreadsheet\IOFactory::identify($path);
 		$reader			 = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);

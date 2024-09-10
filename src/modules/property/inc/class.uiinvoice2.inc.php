@@ -1006,7 +1006,6 @@ class property_uiinvoice2 extends phpgwapi_uicommon_jquery
 
 	protected function getexceldata($path)
 	{
-		phpgw::import_class('phpgwapi.phpspreadsheet');
 
 		$inputFileType	 = \PhpOffice\PhpSpreadsheet\IOFactory::identify($path);
 		$reader			 = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
