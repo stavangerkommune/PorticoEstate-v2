@@ -62,3 +62,70 @@ const MobileDialog: FC<DialogProps> = (props) => {
 export default MobileDialog
 
 
+//
+// interface DialogProps {
+//     /** Boolean to control the visibility of the modal */
+//     open: boolean;
+//     /** Function to close the modal */
+//     onClose: () => void;
+// }
+//
+// /**
+//  * MobileDialog Component
+//  *
+//  * This component renders a fullscreen modal that slides in from the bottom.
+//  * It uses the `<dialog>` HTML element and SCSS modules for styling.
+//  *
+//  * @param open - Controls whether the modal is open or closed
+//  * @param onClose - Callback function to close the modal
+//  */
+// const MobileDialog: React.FC<DialogProps> = ({ open, onClose }) => {
+//     const dialogRef = useRef<HTMLDialogElement>(null);
+//     const [show, setShow] = useState<boolean>(false);
+//
+//     // Handle body scroll and opening/closing animation
+//     useEffect(() => {
+//         const dialog = dialogRef.current;
+//
+//         if (open) {
+//             // Show dialog and disable body scroll
+//             if (dialog) {
+//                 dialog.showModal();  // Show the <dialog>
+//                 setTimeout(() => {
+//                     // dialog.classList.add(styles.show);
+//                     setShow(true); // Add animation class
+//                 }, 10);  // Delay to ensure the transition takes effect
+//             }
+//             document.body.style.overflow = 'hidden';  // Disable body scroll
+//         } else {
+//             // Close dialog and enable body scroll
+//             if (dialog) {
+//                 // dialog.classList.remove(styles.show);
+//                 setShow(false); // Remove animation class
+//
+//                 setTimeout(() => {
+//                     dialog.close();  // Close the <dialog> after animation
+//
+//                 }, 300);  // Match the animation duration
+//             }
+//             document.body.style.overflow = 'auto';  // Enable body scroll
+//         }
+//
+//         // Cleanup to ensure body scroll is restored if component unmounts
+//         return () => {
+//             document.body.style.overflow = 'auto';
+//         };
+//     }, [open]);
+//
+//     return (
+//         <dialog ref={dialogRef} className={`${show ? styles.show : ''} ${styles.modal}`}>
+//             <div className={styles.modalContent}>
+//                 <h2>Fullscreen Modal</h2>
+//                 <p>This is a fullscreen modal that slides in from the bottom.</p>
+//                 <button onClick={onClose}>Close Modal</button>
+//             </div>
+//         </dialog>
+//     );
+// };
+//
+// export default MobileDialog;
