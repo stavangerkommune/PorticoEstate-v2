@@ -1,5 +1,6 @@
 <?php
 
+use App\modules\phpgwapi\controllers\ServerSettingsController;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\modules\phpgwapi\controllers\StartPoint;
@@ -7,6 +8,7 @@ use App\modules\phpgwapi\middleware\SessionsMiddleware;
 use App\modules\preferences\helpers\PreferenceHelper;
 use App\modules\phpgwapi\helpers\HomeHelper;
 use App\modules\phpgwapi\helpers\LoginHelper;
+use Slim\Routing\RouteCollectorProxy;
 
 
 $app->get('/', StartPoint::class . ':run')->add(new SessionsMiddleware($app->getContainer()));
@@ -40,6 +42,8 @@ $app->get('/swagger[/{params:.*}]', function (Request $request, Response $respon
 	$response->getBody()->write($json);
 	return $response;
 });
+
+
 
 $app->get('/login_ui[/{params:.*}]', LoginHelper::class . ':processLogin');
 $app->post('/login_ui[/{params:.*}]', LoginHelper::class . ':processLogin');
@@ -165,3 +169,9 @@ $app->get('/logout_ui[/{params:.*}]', function (Request $request, Response $resp
 	}
 	phpgw::redirect_link('/login_ui', array('cd' => 1, 'logout' => 1));
 });
+
+$app->group('/api', function (RouteCollectorProxy $group)
+{
+    $group->get('/server-settings', ServerSettingsController::class . ':index');
+});
+

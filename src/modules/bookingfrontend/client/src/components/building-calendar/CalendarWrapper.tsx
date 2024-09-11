@@ -9,6 +9,7 @@ import {IBuildingResource, IEvent, Season} from "@/service/pecalendar.types";
 import {DatesSetArg} from "@fullcalendar/core";
 import {Modal, Spinner} from '@digdir/designsystemet-react'
 import {IBuilding} from "@/service/types/Building";
+import {useLoadingContext} from "@/components/loading-wrapper/LoadingContext";
 
 interface CalendarWrapperProps {
     initialSchedule: IEvent[];
@@ -30,7 +31,7 @@ const CalendarWrapper: React.FC<CalendarWrapperProps> = ({
                                                              building
                                                          }) => {
     const [freeTime, setFreeTime] = useState(initialFreeTime);
-    const [isLoading, setIsLoading] = useState(false);
+    const {setLoadingState} = useLoadingContext();
     const modalRef = useRef<HTMLDialogElement>(null);
 
     const prioritizeEvents = useCallback((events: IEvent[]): IEvent[] => {
@@ -45,7 +46,7 @@ const CalendarWrapper: React.FC<CalendarWrapperProps> = ({
     const [schedule, setSchedule] = useState<IEvent[]>(prioritizeEvents(initialSchedule));
 
     const fetchData = useCallback(async (start: DateTime, end?: DateTime) => {
-        setIsLoading(true);
+        setLoadingState('building', true);
         try {
             const firstDay = start.startOf('week');
             const lastDay = (end || DateTime.now()).endOf('week');
@@ -77,7 +78,8 @@ const CalendarWrapper: React.FC<CalendarWrapperProps> = ({
             console.error('Error fetching data:', error);
             // Handle error (e.g., show error message to user)
         } finally {
-            setIsLoading(false);
+            setLoadingState('building', false);
+
         }
     }, [buildingId, prioritizeEvents]);
 
@@ -91,20 +93,7 @@ const CalendarWrapper: React.FC<CalendarWrapperProps> = ({
     };
     return (
         <div>
-            {isLoading &&
-                <div style={{
-                    position: 'absolute',
-                    zIndex: 103,
-                    backgroundColor: 'white',
-                    borderRadius: '50%',
-                    border: 'white 5px solid',
-                    opacity: '75%',
-                    top: 5,
-                    right: 5
-                }}>
-                    <Spinner title='Henter kaffi' size='sm'/>
-                </div>
-            }
+
             <BuildingCalendar
                 initialDate={DateTime.fromJSDate(initialDate)}
                 events={schedule}

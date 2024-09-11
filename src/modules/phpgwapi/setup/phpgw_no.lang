@@ -203,6 +203,7 @@ new account	login	no	Registrer ny bruker
 new mapping and login	login	no	Registrer ny kobling, og logg inn
 sorry, your login has expired	login	no	Beklager, din bruker er utgått
 sorry, your session has expired	login	no	Beklager, sesjonen din er utløpt
+today	common	no	I dag
 todays date, eg. %1	common	no	Dagens dato, %1
 use cookies	login	no	use cookies
 username	common	no	Brukernavn
@@ -368,3 +369,5 @@ fatal error	common	no	Fatal feil
 column search	common	no	Kolonnesøk
 choose language	common	no	Velg språk
 which language do you want?	common	no	Hvilket språk ønsker du?
+which language do you want?	common	no	Hvilket språk ønsker du?
+error_report_system	common	no	Feilmelding (om systemet)

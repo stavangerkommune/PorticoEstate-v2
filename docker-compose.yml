@@ -5,6 +5,8 @@
 
 x-common-variables: &common-variables
     NEXT_ENV: ${NEXT_ENV:-production}
+    NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost}
+    NEXT_INTERNAL_API_URL: ${NEXT_INTERNAL_API_URL:-http://slim}
 
 volumes:
     logs:

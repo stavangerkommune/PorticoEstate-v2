@@ -1,7 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    basePath: '/bookingfrontend/client',
-    assetPrefix: '/bookingfrontend/client/',
+    basePath: process.env.NEXT_PUBLIC_BASE_PATH,
+    assetPrefix: process.env.NEXT_PUBLIC_BASE_PATH,
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: '*',
+            },
+        ],
+    },
 };
 
 export default nextConfig;

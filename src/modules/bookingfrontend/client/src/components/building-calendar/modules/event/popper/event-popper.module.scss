@@ -1,78 +1,107 @@
 @import "../../../../../styles/colors";
+@import "../../../../../styles/util.module";
 
 .eventPopper {
-  background-color: $grey-24;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 1.5rem;
-  max-width: 300px;
-  min-width: 300px;
-  .eventPopperFooter {
     display: flex;
-    flex-direction: row-reverse;
-    justify-content: space-between;
-  }
+    flex-direction: column;
+    background-color: $grey-24;
+    flex-grow: 1;
 
-  .eventPopperHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
+    @include desktop {
+        max-width: 300px;
+        border-radius: 4px;
+        padding-bottom: 1.5rem;
+        padding-top: 1.5rem;
+        border: 1px solid #ccc;
+    }
 
-  .eventPopperContent {
-    margin-bottom: 16px;
+    //@include mobile {
+    //    min-height: 100vh;
+    //    max-height: 100vh;
+    //}
+    min-width: 300px;
+    //padding: 0;
+
+    .eventPopperContent, .eventPopperFooter, .eventPopperActions {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+
+    .eventPopperFooter {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        @include mobile {
+            padding-bottom: 1.5rem;
+        }
+    }
+
+    //.eventPopperHeader {
+    //    display: flex;
+    //    flex-direction: row-reverse;
+    //    justify-content: space-between;
+    //    align-items: center;
+    //    margin-bottom: 8px;
+    //
+    //}
+
+    .eventPopperContent {
+
+        @include mobile {
+            flex-grow: 1;
+        }
+        margin-bottom: 16px;
 
 
+    }
+
+    .eventPopperActions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+    }
 
 
-
-  }
-
-  .eventPopperActions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-  }
-
-
-  .time {
-    display: flex;
-    gap: 0.5em;
-    align-items: center;
-  }
+    .time {
+        display: flex;
+        gap: 0.5em;
+        align-items: center;
+    }
 
 }
+
 .resourcesList {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  .resourceItem {
-    width: max-content;
-    //padding: 0.25rem 0.75rem;
-    border-radius: 5rem;
-    //border: 1px solid $black-80;
-
-    &.gray {
-      border-color: $grey;
-    }
     display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    max-width: 100%; /* Prevent the container from expanding beyond its parent */
-    flex-wrap: nowrap; /* Prevent children from wrapping to the next line */
+    flex-direction: column;
+    gap: 0.25rem;
 
-    .resourceName {
-      display: inline-block;
-      max-width: 100%; /* Ensure the span does not exceed its container */
-      white-space: nowrap; /* Prevent text wrapping */
-      overflow: hidden; /* Hide overflowing text */
-      text-overflow: ellipsis; /* Add the ellipsis */
-      vertical-align: middle; /* Align the text vertically */
-      flex-shrink: 1; /* Allow the text to shrink if necessary */
-      flex-grow: 1; /* Grow to fill available space */
-      min-width: 0; /* Ensures the ellipsis works in flexbox */
+    .resourceItem {
+        width: max-content;
+        //padding: 0.25rem 0.75rem;
+        border-radius: 5rem;
+        //border: 1px solid $black-80;
+
+        &.gray {
+            border-color: $grey;
+        }
+
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        max-width: 100%; /* Prevent the container from expanding beyond its parent */
+        flex-wrap: nowrap; /* Prevent children from wrapping to the next line */
+
+        .resourceName {
+            display: inline-block;
+            max-width: 100%; /* Ensure the span does not exceed its container */
+            white-space: nowrap; /* Prevent text wrapping */
+            overflow: hidden; /* Hide overflowing text */
+            text-overflow: ellipsis; /* Add the ellipsis */
+            vertical-align: middle; /* Align the text vertically */
+            flex-shrink: 1; /* Allow the text to shrink if necessary */
+            flex-grow: 1; /* Grow to fill available space */
+            min-width: 0; /* Ensures the ellipsis works in flexbox */
+        }
+
     }
-
-  }
 }

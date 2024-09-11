@@ -195,6 +195,7 @@ login	login	nn	Login
 password	login	nn	Passord
 sorry, your login has expired	login	nn	Beklager, din bruker er utgått på tid
 sorry, your session has expired	login	nn	Beklager, sesjonen din er utgått
+today	common	nn	I dag
 todays date, eg. %1	common	nn	Dagens dato, %1
 use cookies	login	nn	use cookies
 username	common	nn	Brukernavn
@@ -347,3 +348,4 @@ fatal error	common	nn	Fatal feil
 column search	common	nn	Kolonnesøk
 choose language	common	nn	Byt språk
 which language do you want?	common	nn	Kva for språk ynskjer du?
+error_report_system	common	nn	Feilmelding (om systemet)

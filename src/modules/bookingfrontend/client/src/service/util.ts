@@ -1,7 +1,9 @@
 import {DateTime} from "luxon";
 import {EventImpl} from "@fullcalendar/core/internal";
 import {FCallEvent, FCallTempEvent} from "@/components/building-calendar/building-calendar.types";
-const strBaseURL = `${typeof window === 'undefined' ? 'http://slim' : window.location.origin}/?click_history=165dde2af0dd4b589e3a3c8e26f0da86`;
+
+const strBaseURL = `${typeof window === 'undefined' ? process.env.NEXT_INTERNAL_API_URL : process.env.NEXT_PUBLIC_API_URL}/?click_history=165dde2af0dd4b589e3a3c8e26f0da86`;
+
 export function phpGWLink(
     strURL: string | (string | number)[],
     oArgs: Record<string, string | number | (string | number)[]> | null = {},
@@ -10,7 +12,7 @@ export function phpGWLink(
 ): string {
     const useOldStructure = oArgs && 'menuaction' in oArgs;
 
-    if(typeof window !== 'undefined' ) {
+    if (typeof window !== 'undefined') {
     }
 
     if (baseURL) {
@@ -27,6 +29,9 @@ export function phpGWLink(
         newURL += strURL;
     }
 
+
+    // $app->get('/bookingfrontend/lang[/{lang}]', LangHelper::class . ':process')
+    //     ->addMiddleware(new SessionsMiddleware($container));
     if (useOldStructure) {
         newURL += '?';
 
@@ -41,10 +46,12 @@ export function phpGWLink(
             }
         }
 
-        if (urlParts[1]) {
-            newURL += urlParts[1];
+        // if (urlParts[1]) {
+        //     newURL += urlParts[1];
+        // }
+        if (newURL.endsWith('&')) {
+            newURL = newURL.substring(0, newURL.length - 1)
         }
-
         if (bAsJSON) {
             newURL += '&phpgw_return_as=json';
         }

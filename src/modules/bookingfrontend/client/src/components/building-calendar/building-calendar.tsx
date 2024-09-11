@@ -32,6 +32,7 @@ import {
 import CalendarProvider from "@/components/building-calendar/calendar-context";
 import EventContentTemp from "@/components/building-calendar/modules/event/content/event-content-temp";
 import {IBuilding} from "@/service/types/Building";
+import {useTrans} from "@/app/i18n/ClientTranslationProvider";
 
 interface BuildingCalendarProps {
     events: IEvent[];
@@ -46,7 +47,7 @@ Settings.defaultLocale = "nb";
 
 
 const BuildingCalendar: FC<BuildingCalendarProps> = (props) => {
-
+    const t = useTrans();
     const {events} = props;
     const [currentDate, setCurrentDate] = useState<DateTime>(props.initialDate);
     const [calendarEvents, setCalendarEvents] = useState<FCallEvent[]>([]);
@@ -56,7 +57,8 @@ const BuildingCalendar: FC<BuildingCalendarProps> = (props) => {
     const [selectedEvent, setSelectedEvent] = useState<FCallEvent | FCallTempEvent | null>(null);
     const [popperAnchorEl, setPopperAnchorEl] = useState<HTMLElement | null>(null);
     const calendarRef = useRef<FullCalendar | null>(null);
-    const [view, setView] = useState<string>('timeGridWeek');
+    const [view, setView] = useState<string>(window.innerWidth < 601 ? 'timeGridDay' : 'timeGridWeek');
+    const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 601);
     const [resourcesHidden, setSResourcesHidden] = useState<boolean>(false);
     const [resourcesContainerRendered, setResourcesContainerRendered] = useState<boolean>(true)
     const [lastCalendarView, setLastCalendarView] = useState<string>('timeGridWeek');
@@ -110,7 +112,7 @@ const BuildingCalendar: FC<BuildingCalendarProps> = (props) => {
             return;
         }
         // console.log(enabledResources, props.resources);
-        const title = 'New Application';
+        const title = t('bookingfrontend.new application');
 
         const newEvent: FCallTempEvent = {
             id: `temp-${Date.now()}`,
@@ -282,8 +284,31 @@ const BuildingCalendar: FC<BuildingCalendarProps> = (props) => {
             setResourcesContainerRendered(false);
         }
     };
+    // Function to handle window resize
+    const handleResize = () => {
+        const width = window.innerWidth;
+        setIsMobile(width < 601);
+        if(width < 601) {
+            // const newView = whichView(window.innerWidth);
+            const calendarApi = calendarRef.current?.getApi(); // Access calendar API
 
+            if (calendarApi && 'timeGridDay' !== view) {
+                setView('timeGridDay')
+                // calendarApi.changeView(newView); // Change view dynamically
+            }
+        }
 
+    };
+
+    // Effect hook to initialize calendar and add resize listener
+    useEffect(() => {
+        // setCalendarView(whichView(window.innerWidth)); // Set initial view
+        // handleResize();
+        window.addEventListener('resize', handleResize); // Add resize listener
+        return () => {
+            window.removeEventListener('resize', handleResize); // Cleanup on unmount
+        };
+    }, []);
     function renderEventContent(eventInfo: FCEventContentArg<FCallBaseEvent>) {
         const type = eventInfo.event.extendedProps.type;
         if(type === 'background') {
@@ -307,6 +332,7 @@ const BuildingCalendar: FC<BuildingCalendarProps> = (props) => {
                     enabledResources={enabledResources}
                     onToggle={handleResourceToggle}
                     onToggleAll={handleToggleAll}
+                    isMobile={isMobile}
                 />
                 <CalendarInnerHeader view={view} resourcesHidden={resourcesHidden}
                                      setResourcesHidden={setResourcesHidden} setView={(v) => setView(v)}
@@ -374,6 +400,7 @@ const BuildingCalendar: FC<BuildingCalendarProps> = (props) => {
                 />
 
                 <EventPopper
+                    isMobile={isMobile}
                     event={selectedEvent}
                     placement={
                         popperPlacement()

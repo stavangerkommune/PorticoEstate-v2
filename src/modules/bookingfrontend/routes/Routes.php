@@ -1,13 +1,14 @@
 <?php
 
-use Slim\Routing\RouteCollectorProxy;
-use App\modules\bookingfrontend\controllers\DataStore;
 use App\modules\bookingfrontend\controllers\BuildingController;
-use App\modules\phpgwapi\controllers\StartPoint;
-use App\modules\phpgwapi\middleware\SessionsMiddleware;
+use App\modules\bookingfrontend\controllers\DataStore;
+use App\modules\bookingfrontend\controllers\BookingUserController;
 use App\modules\bookingfrontend\helpers\LangHelper;
 use App\modules\bookingfrontend\helpers\LoginHelper;
 use App\modules\bookingfrontend\helpers\LogoutHelper;
+use App\modules\phpgwapi\controllers\StartPoint;
+use App\modules\phpgwapi\middleware\SessionsMiddleware;
+use Slim\Routing\RouteCollectorProxy;
 
 $app->group('/bookingfrontend', function (RouteCollectorProxy $group) {
     $group->get('/searchdataall[/{params:.*}]', DataStore::class . ':SearchDataAll');
@@ -19,13 +20,21 @@ $app->group('/bookingfrontend', function (RouteCollectorProxy $group) {
 
 
 
+
 $app->get('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer()));
 $app->post('/bookingfrontend/', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer()));
 //legacy routes
 $app->get('/bookingfrontend/index.php', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer()));
 $app->post('/bookingfrontend/index.php', StartPoint::class . ':bookingfrontend')->add(new SessionsMiddleware($app->getContainer()));
 
-$app->get('/bookingfrontend/lang', LangHelper::class . ':process')->addMiddleware(new SessionsMiddleware($container));
+
+$app->group('/bookingfrontend', function (RouteCollectorProxy $group) {
+    $group->get('/user', BookingUserController::class . ':index');
+})->add(new SessionsMiddleware($app->getContainer()));
+
+
+
+$app->get('/bookingfrontend/lang[/{lang}]', LangHelper::class . ':process');
 $app->get('/bookingfrontend/login/', LoginHelper::class . ':organization')->add(new SessionsMiddleware($app->getContainer()));
 $app->get('/bookingfrontend/logout[/{params:.*}]', LogoutHelper::class . ':process')->add(new SessionsMiddleware($app->getContainer()));
 $app->get('/bookingfrontend/client[/{params:.*}]', function ($request, $response) {

@@ -98,5 +98,12 @@ $current-time-color: #ea4335;
     font-size: 1rem;
     //border: 1px solid #FFF;
   }
+
+    .fc-list-event {
+        //border-left-width: 5px;
+        .fc-list-event-time {
+            color: black;
+        }
+    }
 }
 

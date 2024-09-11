@@ -1,4 +1,5 @@
 @import "../../styles/colors";
+@import "../../styles/util.module";
 //
 //
 //.dayHeader {
@@ -27,53 +28,59 @@
 
 
 .calendar {
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  grid-template-rows: auto auto 1fr;
-  gap: 0.875rem 0.875rem;
-  transition: 300ms;
-  &.closed {
-    gap: 0.875rem 0;
-    grid-template-columns: 0px 1fr
-  }
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas: "header header header" "filter inner-header inner-header" "filter calendar-body calendar-body";
+    gap: 0.875rem 0.875rem;
+    transition: 300ms;
 
-  :global .fc {
-    grid-row: 3;
-    grid-column-start: 2;
-    grid-column-end: 4;
-  }
+    &.closed {
+        gap: 0.875rem 0;
+        grid-template-columns: 0px 1fr
+    }
+
+    :global .fc {
+        grid-area: calendar-body;
+    }
+
+    @include mobile {
+        display: grid;
+        grid-template-rows: 1fr;
+        grid-template-columns: auto;
+        grid-template-areas: "filter" "header"  "calendar-body";
+    }
 
 }
 
 .event {
-  background-color: $grey-light;
-  border-left: 0.5rem solid;
-  border-top: none;
-  border-right: none;
-  border-bottom: none;
-  //border-top-left-radius: 8px;
-  //border-bottom-left-radius: 8px;
-  &-allocation {
-    border-left-color: #7D7D7D;
-  }
+    background-color: $grey-light;
+    border-left: 0.5rem solid;
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+    //border-top-left-radius: 8px;
+    //border-bottom-left-radius: 8px;
+    &-allocation {
+        border-left-color: #7D7D7D;
+    }
 
-  &-booking {
-    border-left-color:#999EC1;
-  }
+    &-booking {
+        border-left-color: #999EC1;
+    }
 
-  &-event {
-    border-left-color: $blue;
-    color: white;
-  }
+    &-event {
+        border-left-color: $blue;
+        color: white;
+    }
 
-  &-temporary {
-    border-left-color: #800080;
-    opacity: 85%;
-  }
+    &-temporary {
+        border-left-color: #800080;
+        opacity: 85%;
+    }
 }
 
 
-
 .closedHours {
-  --fc-bg-event-color:  rgba(211, 211, 211);
+    --fc-bg-event-color: rgba(211, 211, 211);
 }

@@ -6,6 +6,7 @@ import CalendarDatePicker from "@/components/building-calendar/modules/header/ca
 import {Button} from "@digdir/designsystemet-react";
 import {ArrowLeftIcon, ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon, PlusCircleIcon} from "@navikt/aksel-icons";
 import ButtonGroup from "@/components/button-group/button-group";
+import {useTrans} from "@/app/i18n/ClientTranslationProvider";
 
 // const CalendarHeader = () => ({
 //     left: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek today',
@@ -22,6 +23,7 @@ interface CalendarHeaderProps {
 
 const CalendarHeader: FC<CalendarHeaderProps> = (props) => {
     const {calendarRef, setView, view} = props;
+    const t = useTrans();
     const c = calendarRef.current;
     if (!c) {
         return null;
@@ -67,13 +69,18 @@ const CalendarHeader: FC<CalendarHeaderProps> = (props) => {
         <div className={styles.customHeader}>
 
             {/*<ButtonGroup aria-label="outlined primary button group">*/}
-            <ButtonGroup>
+            <ButtonGroup className={styles.modeSelect}>
                 <Button variant={view === 'timeGridDay' ? 'primary' : 'secondary'} size={'sm'}
-                        onClick={() => customButtons.dayView.click()}>Day</Button>
+                        className={'captialize'}
+
+                        onClick={() => customButtons.dayView.click()}>{t('bookingfrontend.day')}</Button>
                 <Button variant={view === 'timeGridWeek' ? 'primary' : 'secondary'} size={'sm'}
-                        onClick={() => customButtons.weekView.click()}>Week</Button>
+                        className={'captialize'}
+                        onClick={() => customButtons.weekView.click()}>{t('bookingfrontend.week')}</Button>
                 <Button variant={view === 'dayGridMonth' ? 'primary' : 'secondary'} size={'sm'}
-                        onClick={() => customButtons.monthView.click()}>Month</Button>
+                        className={'captialize'}
+
+                        onClick={() => customButtons.monthView.click()}>{t('bookingfrontend.month')}</Button>
 
             </ButtonGroup>
             {/*</ButtonGroup>*/}

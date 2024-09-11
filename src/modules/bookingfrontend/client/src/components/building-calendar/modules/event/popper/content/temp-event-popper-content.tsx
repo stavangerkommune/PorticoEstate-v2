@@ -7,6 +7,9 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import ColourCircle from "@/components/building-calendar/modules/colour-circle/colour-circle";
 import {Button, Checkbox} from "@digdir/designsystemet-react";
 import {useAvailableResources, useTempEvents} from "@/components/building-calendar/calendar-context";
+import {useTrans} from "@/app/i18n/ClientTranslationProvider";
+import PopperContentSharedWrapper
+    from "@/components/building-calendar/modules/event/popper/content/popper-content-shared-wrapper";
 
 interface TempEventPopperProps {
     event: FCallTempEvent;
@@ -16,11 +19,12 @@ interface TempEventPopperProps {
 const TempEventPopperContent: FC<TempEventPopperProps> = (props) => {
     const availableResources = useAvailableResources();
     const {tempEvents, setTempEvents} = useTempEvents();
+    const t = useTrans();
 
     const event = tempEvents[props.event.id];
 
-    if(!event) {
-        return ;
+    if (!event) {
+        return;
     }
     const removeTempEvent = () => {
         setTempEvents(tempEvents => {
@@ -55,7 +59,7 @@ const TempEventPopperContent: FC<TempEventPopperProps> = (props) => {
     }
 
     return (
-        <div className={styles.eventPopper}>
+        <PopperContentSharedWrapper onClose={props.onClose}>
             <div className={styles.eventPopperContent}>
                         <span className={`${styles.time} text-overline`}>
                             <FontAwesomeIcon className={'text-label'} icon={faClock}/>
@@ -79,11 +83,12 @@ const TempEventPopperContent: FC<TempEventPopperProps> = (props) => {
                 </div>
             </div>
             <div className={styles.eventPopperFooter}>
-                <Button onClick={props.onClose} variant="tertiary" className={'default'} size={'sm'}>Close</Button>
-                <Button onClick={removeTempEvent} variant="tertiary" className={'default'} color={"danger"} size={'sm'}>Remove</Button>
+                <Button onClick={props.onClose} variant="tertiary" className={'default'}
+                        size={'sm'}>{t('booking.close')}</Button>
+                <Button onClick={removeTempEvent} variant="tertiary" className={'default'} color={"danger"}
+                        size={'sm'}>{t('common.delete')}</Button>
             </div>
-        </div>
-    );
+        </PopperContentSharedWrapper>);
 };
 
 export default TempEventPopperContent;
