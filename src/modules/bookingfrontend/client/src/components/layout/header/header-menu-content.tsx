@@ -5,7 +5,7 @@ interface HeaderMenuContentProps {
 }
 
 const HeaderMenuContent: FC<HeaderMenuContentProps> = (props) => {
-    const [drawerOpen, setDrawerOpen] = useState<>();
+    const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
 
     return (

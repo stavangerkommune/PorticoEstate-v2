@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 
 interface RootLayoutProps extends PropsWithChildren {
     params: {
-        lang: string;
+        lang: LanguageType;
     }
 
 }

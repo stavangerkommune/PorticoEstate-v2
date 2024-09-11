@@ -2,7 +2,7 @@ import { InitOptions } from 'i18next';
 import {phpGWLink} from "@/service/util";
 
 export const fallbackLng = 'no';
-export const languages = [fallbackLng, 'en', 'nn'] as const;
+export const languages = [fallbackLng, 'en', 'nn'];
 export type LanguageType = typeof languages[number];
 
 export const defaultNS = 'translation';

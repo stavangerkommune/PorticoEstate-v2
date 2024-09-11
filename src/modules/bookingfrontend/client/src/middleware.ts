@@ -14,7 +14,7 @@ const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''; // Default to empty st
 //         // Add other exclusions here if needed
 //     ],};
 
-export function middleware(req: NextRequest): NextResponse {
+export function middleware(req: NextRequest): NextResponse | undefined {
     // console.log(config.matcher, req.url, basePath)
     const acutalPath = req.nextUrl.pathname.split(basePath);
     const re = new RegExp("\/((api|_next\/static|_next\/image|img\/|favicon.ico).*)")
@@ -30,9 +30,9 @@ export function middleware(req: NextRequest): NextResponse {
     const domain = forwardedHost || req.headers.get('host') || req.nextUrl.hostname;
     // Extract the language from the cookie if it exists
     if (req.cookies.has(cookieName)) {
-        const cookieValue = req.cookies.get(cookieName)?.value;
+        const cookieValue = req.cookies.get(cookieName as any)?.value;
         if (cookieValue) {
-            lng = acceptLanguage.get(cookieValue);
+            lng = acceptLanguage.get(cookieValue) || undefined;
         }
     }
 
@@ -40,7 +40,7 @@ export function middleware(req: NextRequest): NextResponse {
     if (!lng) {
         const acceptLanguageHeader = req.headers.get('Accept-Language');
         if (acceptLanguageHeader) {
-            lng = acceptLanguage.get(acceptLanguageHeader);
+            lng = acceptLanguage.get(acceptLanguageHeader) || undefined;
         }
     }
 

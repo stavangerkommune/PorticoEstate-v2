@@ -17,7 +17,7 @@ import PrefetchWrapper from "@/components/loading-wrapper/PrefetchWrapper";
 
 interface RootLayoutProps extends PropsWithChildren {
     params: {
-        lang: string;
+        lang: LanguageType
     }
 
 }
