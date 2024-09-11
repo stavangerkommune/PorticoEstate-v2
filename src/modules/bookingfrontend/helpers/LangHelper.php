@@ -26,6 +26,10 @@ class LangHelper
         elseif ($request->getQueryParams()['lang'] ?? false) {
             $selected_lang = $request->getQueryParams()['lang'];
         }
+        // If not in route or GET parameter, and cookie is not set, set it to "no"
+        elseif (!$selected_lang) {
+            $selected_lang = "no";
+        }
 
         if ($selected_lang) {
             $sessions = Sessions::getInstance();
