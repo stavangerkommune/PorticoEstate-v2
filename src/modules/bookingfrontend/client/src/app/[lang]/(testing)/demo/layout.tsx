@@ -13,7 +13,7 @@ import LoadingIndicationWrapper from "@/components/loading-wrapper/LoadingIndica
 
 interface RootLayoutProps extends PropsWithChildren {
     params: {
-        lang: string;
+        lang: LanguageType;
     }
 
 }

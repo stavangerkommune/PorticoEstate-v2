@@ -1,6 +1,5 @@
 import {DateTime} from "luxon";
 import {phpGWLink} from "@/service/util";
-import {ex} from "@fullcalendar/core/internal-common";
 import {IBookingUser, IServerSettings} from "@/service/types/api.types";
 
 const BOOKING_MONTH_HORIZON = 2;

@@ -47,7 +47,7 @@ const MobileDialog: FC<DialogProps> = (props) => {
         >
             <div className={`${styles.dialogHeader} ${scrolled ? styles.scrolled : ''}`}>
                 <Tooltip content={t('booking.close')}>
-                    <Button icon={true} color='second' variant='tertiary' aria-label='Tertiary med ikon'
+                    <Button icon={true} variant='tertiary' aria-label='Tertiary med ikon'
                             onClick={props.onClose} className={'default'} size={'sm'}>
                         <FontAwesomeIcon icon={faXmark} size={'lg'}/>
                     </Button>

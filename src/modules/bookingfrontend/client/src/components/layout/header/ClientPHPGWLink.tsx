@@ -5,7 +5,7 @@ import {phpGWLink} from "@/service/util";
 
 interface ClientPHPGWLinkProps extends PropsWithChildren, AnchorHTMLAttributes<HTMLAnchorElement> {
     strURL: string | (string | number)[];
-    oArgs: Record<string, string | number | (string | number)[]> | null;
+    oArgs?: Record<string, string | number | (string | number)[]>;
     bAsJSON?: boolean;
     baseURL?: string;
 

@@ -3,9 +3,10 @@ import {fetchServerSettings} from "@/service/api/api-utils";
 import {getTranslation} from "@/app/i18n";
 import Link from "next/link";
 import FooterUser from "@/components/layout/footer/footer-user";
+import {LanguageType} from "@/app/i18n/settings";
 
 interface FooterProps {
-    lang: string
+    lang: LanguageType
 }
 
 const Footer = async (props: FooterProps) => {
