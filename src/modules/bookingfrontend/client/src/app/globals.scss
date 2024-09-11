@@ -1,6 +1,10 @@
 @import "../components/building-calendar/building-calender.global";
 @import "../styles/colors";
+@import "../styles/effects/effects";
 @import "../styles/typography";
+@import "../styles/link/link";
+
+@import "../components/digdir@next/badge/badge.global";
 
 :root {
   background-color: $grey-light-64;
@@ -131,6 +135,12 @@
 /*    color-scheme: dark;*/
 /*  }*/
 /*}*/
+
+.list-unstyled {
+    padding-left: 0;
+    list-style: none;
+}
+
 
 .react-datepicker-popper {
   z-index: 102 !important;

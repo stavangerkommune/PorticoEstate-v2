@@ -35,7 +35,6 @@ const TranslationProvider: React.FC<TranslationProviderProps> = ({children, lang
         setLoadingState('translation', true, 'hard')
     }, [setLoadingState]);
     useEffect(() => {
-        console.trace("translation provider Eff", new Date().getTime());
         const loadTranslations = async () => {
             const {t, i18n} = await getTranslation(lang);
             setTranslationContext({t, i18n});

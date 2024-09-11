@@ -8,6 +8,7 @@ import {FCallEvent, FCallTempEvent, FCEventContentArg} from "@/components/buildi
 import ColourCircle from "@/components/building-calendar/modules/colour-circle/colour-circle";
 import { PopperInfoType } from "@/service/api/event-info";
 import popperStyles from '../popper/event-popper.module.scss'
+import {useTrans} from "@/app/i18n/ClientTranslationProvider";
 
 interface EventContentTempProps {
     eventInfo: FCEventContentArg<FCallTempEvent>;
@@ -21,6 +22,7 @@ const resourceItemGap = 4;
 
 const EventContentTemp: FC<EventContentTempProps> = (props) => {
     const {eventInfo} = props;
+    const t = useTrans();
     const eventRef = useRef<HTMLDivElement>(null);
 
     const [visibleResources, setVisibleResources] = useState<number>(0);
@@ -106,7 +108,7 @@ const EventContentTemp: FC<EventContentTempProps> = (props) => {
                 )}
                 {remainingCount > 1 && (
                     <div className={`${popperStyles.resourceItem} ${popperStyles.gray}`}>
-                        <span className={popperStyles.resourceName}>+{remainingCount} more</span>
+                        <span className={popperStyles.resourceName}>+{remainingCount} {t('bookingfrontend.more')}</span>
                     </div>
                 )}
             </>

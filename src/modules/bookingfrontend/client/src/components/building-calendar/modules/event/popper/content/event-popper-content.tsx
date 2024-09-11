@@ -11,6 +11,7 @@ import {Button, Tooltip} from "@digdir/designsystemet-react";
 import {useTrans} from "@/app/i18n/ClientTranslationProvider";
 import PopperContentSharedWrapper
     from "@/components/building-calendar/modules/event/popper/content/popper-content-shared-wrapper";
+import Link from "next/link";
 
 interface EventPopperContentProps {
     event: FCallEvent
@@ -66,10 +67,10 @@ const EventPopperContent: FC<EventPopperContentProps> = (props) => {
                 {/*    </a>*/}
                 {/*)}*/}
                 {popperInfo?.info_edit_link && userCanEdit() && (
-                    <a href={popperInfo?.info_edit_link} target="_blank" rel="noopener noreferrer"
+                    <Link href={popperInfo?.info_edit_link} target="_blank" rel="noopener noreferrer"
                        className={styles.actionButton}>
                         {t(`bookingfrontend.edit ${event.extendedProps.type}`)}
-                    </a>
+                    </Link>
                 )}
             </div>
             <div className={styles.eventPopperFooter}>

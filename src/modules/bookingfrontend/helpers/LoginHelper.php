@@ -10,7 +10,7 @@ use Sanitizer;
 
 class LoginHelper
 {
-	
+
 	public static function organization()
 	{
 
@@ -54,13 +54,46 @@ class LoginHelper
 				\phpgw::redirect_link('/bookingfrontend/', $redirect_data);
 			}
 
-			$after = str_replace('&amp;', '&', urldecode(Sanitizer::get_var('after', 'raw')));
-			if (!$after)
-			{
-				$after = array();
-			}
-			\phpgw::redirect_link('/bookingfrontend/', $after);
-			exit;
+            // Decode the 'after' parameter
+            $after = urldecode(Sanitizer::get_var('after', 'raw', 'GET'));
+
+            // If 'after' contains a '/', treat it as a URI (e.g., /this/page?with=params)
+            if (strpos($after, '/') !== false || strpos($after, '?') !== false)
+            {
+                // Parse the URL to extract the path and query parameters
+                $parsed_url = parse_url($after);
+                $path = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+                $query = isset($parsed_url['query']) ? $parsed_url['query'] : '';
+
+                // Convert the query string into an array
+                $query_params = [];
+                if (!empty($query))
+                {
+                    parse_str($query, $query_params);
+                }
+
+                // Sanitize and validate the path
+                if (filter_var($path, FILTER_SANITIZE_URL))
+                {
+                    // Redirect to the extracted path with query parameters
+                    \phpgw::redirect_link('/bookingfrontend' . $path, $query_params);
+                    exit;
+                }
+            }
+            else if (!empty($after))
+            {
+                // If 'after' doesn't look like a URI, treat it as query params
+                $redirect_data = [];
+                parse_str($after, $redirect_data);
+
+                // Redirect to /bookingfrontend/ with the provided query params
+                \phpgw::redirect_link('/bookingfrontend/', $redirect_data);
+                exit;
+            }
+
+            // If 'after' is not provided or invalid, redirect to a default path
+            \phpgw::redirect_link('/bookingfrontend/');
+            exit;
 		}
 	}
 
@@ -144,7 +177,7 @@ HTML;
 		{
 			return true;
 		}
-	}	
+	}
 	public static function process()
 	{
 		self::login();

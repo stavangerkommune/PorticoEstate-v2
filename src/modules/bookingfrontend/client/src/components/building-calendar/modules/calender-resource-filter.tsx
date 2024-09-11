@@ -7,7 +7,7 @@ import {useTrans} from "@/app/i18n/ClientTranslationProvider";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faLayerGroup} from "@fortawesome/free-solid-svg-icons";
 import MobileDialog from "@/components/dialog/mobile-dialog";
-import {Chip} from "@mui/material";
+import {Badge} from "@/components/digdir@next/badge/badge";
 
 export interface CalendarResourceFilterOption {
     value: string;
@@ -99,7 +99,7 @@ const CalendarResourceFilter: FC<CalendarResourceFilterProps> = ({
 
                         onClick={() => setOpen(true)}><FontAwesomeIcon
                     icon={faLayerGroup}/>{t('booking.select')} {t('bookingfrontend.resources')}
-                    <Chip color="error" size="small" label={enabledResources.size}/>
+                    <Badge count={enabledResources.size} size={"md"} color={"danger"}></Badge>
                 </Button>
                 <MobileDialog open={open} onClose={() => setOpen(false)}>{content}</MobileDialog>
             </div>

@@ -1,0 +1,70 @@
+@import '../../../styles/colors';
+@import '../../../styles/effects/effects';
+@import '../../../styles/util.module';
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: $box-shadow-large;
+    background: $white;
+    padding: 1rem 2rem;
+    border-radius: $rounded-large;
+
+    .logo {
+        .logoImg {
+            width: 100%;
+            flex: none;
+            max-width: 12rem;
+
+            @include desktop {
+                display: none;
+            }
+
+            &.logoImgDesktop {
+                display: none;
+                max-width: 5rem;
+
+                @include desktop {
+                    display: flex;
+                }
+            }
+        }
+    }
+
+    &__section {
+        display: flex;
+        flex: 1;
+        align-items: center;
+
+        &--right {
+            justify-content: end;
+        }
+
+        &__language-selector {
+            margin-right: 1.5rem;
+            display: flex;
+            align-items: center;
+
+            .icon {
+                margin-left: 0.5rem;
+            }
+        }
+
+        &__links {
+            display: flex;
+            margin-bottom: 0;
+
+            li {
+                margin-right: 2.75rem;
+
+                a {
+                    text-decoration: none;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
+        }
+    }
+}

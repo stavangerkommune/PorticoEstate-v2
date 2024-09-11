@@ -1,5 +1,7 @@
 import {DateTime} from "luxon";
 import {phpGWLink} from "@/service/util";
+import {ex} from "@fullcalendar/core/internal-common";
+import {IBookingUser, IServerSettings} from "@/service/types/api.types";
 
 const BOOKING_MONTH_HORIZON = 2;
 
@@ -27,6 +29,20 @@ export async function fetchFreeTimeSlots(building_id: number, instance?: string)
         start_date: currDate.toFormat('dd/LL-yyyy'),
         end_date: maxEndDate.toFormat('dd/LL-yyyy'),
     }, true, instance);
+    const response = await fetch(url);
+    const result = await response.json();
+    return result;
+}
+
+
+export async function fetchServerSettings(): Promise<IServerSettings> {
+    const url = phpGWLink(['api', 'server-settings']);
+    const response = await fetch(url);
+    const result = await response.json();
+    return result;
+}
+export async function fetchBookingUser(): Promise<IBookingUser> {
+    const url = phpGWLink(['bookingfrontend', 'user']);
     const response = await fetch(url);
     const result = await response.json();
     return result;
