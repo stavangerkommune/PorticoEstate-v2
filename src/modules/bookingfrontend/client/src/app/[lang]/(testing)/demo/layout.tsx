@@ -1,4 +1,3 @@
-import {dir} from 'i18next'
 import {LanguageType} from "@/app/i18n/settings";
 
 import '@digdir/designsystemet-css';

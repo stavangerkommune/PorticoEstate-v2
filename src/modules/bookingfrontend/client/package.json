@@ -8,7 +8,7 @@
         "start": "next start",
         "lint": "next lint",
         "start:development": "next dev",
-        "start:production": "node start.js"
+        "start:production": "next start"
     },
     "dependencies": {
         "@digdir/designsystemet-css": "^1.0.0-next.32",
