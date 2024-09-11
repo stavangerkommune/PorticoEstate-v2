@@ -10,6 +10,7 @@ import {fetchBuilding} from "@/service/api/building";
 interface CalendarPageProps {
     searchParams: { building_id?: string };
 }
+export const dynamic = 'force-dynamic'
 
 const CalendarPage = async ({ searchParams }: CalendarPageProps) => {
     if (!searchParams.building_id) {
