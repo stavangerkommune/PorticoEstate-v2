@@ -244,7 +244,7 @@ class bookingfrontend_uiorganization extends booking_uiorganization
 		$auth_forward .= '&orgnr=' . $organization['organization_number'];
 		// END EVIL HACK
 
-		$organization['login_link'] = 'login.php' . $auth_forward;
+		$organization['login_link'] = 'login/' . $auth_forward;
 		$organization['logoff_link'] = 'logoff.php' . $auth_forward;
 		$organization['new_group_link'] = self::link(array(
 			'menuaction' => $this->module . '.uigroup.edit',

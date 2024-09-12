@@ -39,7 +39,7 @@ use App\modules\bookingfrontend\helpers\UserHelper;
 
 			$bouser = new UserHelper();
 			$auth_forward = "?redirect_menuaction={$this->module}.uidelegate.show&redirect_id={$delegate['id']}";
-			$delegate['login_link'] = 'login.php' . $auth_forward;
+			$delegate['login_link'] = 'login/' . $auth_forward;
 			$delegate['logoff_link'] = 'logoff.php' . $auth_forward;
 			if ($bouser->is_organization_admin())
 			{

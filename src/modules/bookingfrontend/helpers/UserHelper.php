@@ -475,7 +475,7 @@ class UserHelper
 			}
 			else
 			{
-				\phpgw::redirect_link('/bookingfrontend/login.php');
+				\phpgw::redirect_link('/bookingfrontend/login/');
 			}
 		}
 

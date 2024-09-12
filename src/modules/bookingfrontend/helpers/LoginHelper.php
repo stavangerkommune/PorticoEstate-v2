@@ -7,6 +7,8 @@ use App\modules\phpgwapi\services\Config;
 use App\modules\phpgwapi\services\Cache;
 use App\modules\bookingfrontend\helpers\UserHelper;
 use Sanitizer;
+use Slim\Psr7\Response;
+
 
 class LoginHelper
 {
@@ -95,6 +97,7 @@ class LoginHelper
             \phpgw::redirect_link('/bookingfrontend/');
             exit;
 		}
+		\phpgw::redirect_link('/bookingfrontend/');
 	}
 
 	private static function login()
