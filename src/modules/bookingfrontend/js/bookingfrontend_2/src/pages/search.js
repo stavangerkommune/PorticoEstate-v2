@@ -111,8 +111,12 @@ class Search {
                     return response.json();
                 }),
             ...remote_search.map(remote => {
+                const remoteUrl = phpGWLink('bookingfrontend/', {
+                    menuaction: 'bookingfrontend.uisearch.get_search_data_all',
+                    length: -1,
+                }, true, remote.webservicehost);
                 // const remoteUrl = phpGWLink('bookingfrontend/searchdataall', {}, true, remote.webservicehost);
-                const remoteUrl = remote.webservicehost;
+                // const remoteUrl = remote.webservicehost;
                 return fetch(remoteUrl, {
                     signal: AbortSignal.timeout(2500)
 
