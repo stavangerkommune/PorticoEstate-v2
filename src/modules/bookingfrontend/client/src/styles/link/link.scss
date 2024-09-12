@@ -105,6 +105,9 @@ a:not(.pe-btn):not([class^="fc-"]) {
     &-white {
       color: $white;
     }
+    &-unset {
+      color: unset;
+    }
 
   }
 

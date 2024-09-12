@@ -33,6 +33,7 @@ import CalendarProvider from "@/components/building-calendar/calendar-context";
 import EventContentTemp from "@/components/building-calendar/modules/event/content/event-content-temp";
 import {IBuilding} from "@/service/types/Building";
 import {useTrans} from "@/app/i18n/ClientTranslationProvider";
+import {Placement} from "@floating-ui/utils";
 
 interface BuildingCalendarProps {
     events: IEvent[];
@@ -46,7 +47,7 @@ interface BuildingCalendarProps {
 Settings.defaultLocale = "nb";
 
 
-const BuildingCalendar: FC<BuildingCalendarProps> = (props) => {
+const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
     const t = useTrans();
     const {events} = props;
     const [currentDate, setCurrentDate] = useState<DateTime>(props.initialDate);
@@ -232,10 +233,10 @@ const BuildingCalendar: FC<BuildingCalendarProps> = (props) => {
 
     const tempEventArr = useMemo(() => Object.values(tempEvents), [tempEvents])
 
-    const popperPlacement = () => {
+    const popperPlacement = (): Placement => {
         switch (calendarRef.current?.getApi().view.type) {
             case 'timeGridDay':
-                return 'auto';
+                return 'bottom-start';
             case 'listWeek':
                 return 'bottom-start';
             default:
@@ -415,4 +416,4 @@ const BuildingCalendar: FC<BuildingCalendarProps> = (props) => {
     );
 }
 
-export default BuildingCalendar;
+export default BuildingCalendarClient;

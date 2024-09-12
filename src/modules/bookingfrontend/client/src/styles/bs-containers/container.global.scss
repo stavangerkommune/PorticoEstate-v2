@@ -1,0 +1,66 @@
+// Custom container SCSS
+
+// Variables
+$container-padding-x: 1rem; // Padding for the container (adjustable)
+$container-max-widths: (    // Maximum widths for each breakpoint
+    sm: 540px,
+    md: 720px,
+    lg: 960px,
+    xl: 1140px,
+    xxl: 1320px // Added for 'xxl' screens
+);
+$grid-breakpoints: (        // Define your breakpoints
+    xs: 0,
+    sm: 576px,
+    md: 768px,
+    lg: 992px,
+    xl: 1200px,
+    xxl: 1400px // Breakpoint for 'xxl' screens
+);
+
+// Mixin to apply media queries for responsive containers
+@mixin media-breakpoint-up($name, $breakpoints: $grid-breakpoints) {
+    $min: map-get($breakpoints, $name);
+
+    @if $min != null {
+        @media (min-width: $min) {
+            @content;
+        }
+    }
+}
+
+// Mixin to generate container with max-widths at breakpoints
+@mixin make-container-max($max-widths: $container-max-widths) {
+    width: 100%;
+    padding-right: $container-padding-x;
+    padding-left: $container-padding-x;
+    margin-right: auto;
+    margin-left: auto;
+
+    @each $breakpoint, $container-max-width in $max-widths {
+        @include media-breakpoint-up($breakpoint) {
+            max-width: $container-max-width;
+        }
+    }
+}
+
+// Container classes
+.container {
+    @include make-container-max();
+}
+
+// XXL container for larger screens
+.container-xxl {
+    @include media-breakpoint-up(xxl) {
+        max-width: map-get($container-max-widths, xxl);
+    }
+}
+
+// Fluid container (always 100% width)
+.container-fluid {
+    width: 100%;
+    padding-right: $container-padding-x;
+    padding-left: $container-padding-x;
+    margin-right: auto;
+    margin-left: auto;
+}

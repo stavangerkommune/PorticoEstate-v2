@@ -2,7 +2,7 @@ import {NextRequest, NextResponse} from 'next/server';
 import acceptLanguage from 'accept-language';
 import {fallbackLng, languages, cookieName} from './app/i18n/settings';
 
-acceptLanguage.languages(languages);
+acceptLanguage.languages(languages.map(e => e.key));
 
 // Retrieve basePath from environment variables
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''; // Default to empty string if not set
@@ -46,7 +46,7 @@ export function middleware(req: NextRequest): NextResponse | undefined {
 
     // Default to the fallback language if no language was determined
     if (!lng) {
-        lng = fallbackLng;
+        lng = fallbackLng.key;
     }
 
 
@@ -54,7 +54,7 @@ export function middleware(req: NextRequest): NextResponse | undefined {
     const pathname = req.nextUrl.pathname.replace(basePath, '');
 
     // Check if the pathname starts with a supported language and set it as preferred language
-    const pathLang = languages.find((loc) => pathname.startsWith(`/${loc}`));
+    const pathLang = languages.find((loc) => pathname.startsWith(`/${loc.key}`));
 
     const response = NextResponse.next();
 
@@ -74,7 +74,7 @@ export function middleware(req: NextRequest): NextResponse | undefined {
 
     // Redirect if the language in the path is not supported
     if (
-        !languages.some((loc) => pathname.startsWith(`/${loc}`)) &&
+        !languages.some((loc) => pathname.startsWith(`/${loc.key}`)) &&
         !pathname.startsWith(`/_next`)
     ) {
         // Redirect to the language-specific path if the language is not supported
@@ -88,7 +88,7 @@ export function middleware(req: NextRequest): NextResponse | undefined {
         const referer = req.headers.get('referer');
         if (referer) {
             const refererUrl = new URL(referer);
-            const lngInReferer = languages.find((l) => refererUrl.pathname.startsWith(`/${l}`));
+            const lngInReferer = languages.find((l) => refererUrl.pathname.startsWith(`/${l.key}`));
             if (lngInReferer) {
                 // Set the cookie with an expiration date of 1 month
                 const expires = new Date();

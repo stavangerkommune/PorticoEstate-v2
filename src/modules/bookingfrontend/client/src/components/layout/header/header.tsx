@@ -1,9 +1,9 @@
-import {FC} from 'react';
 import styles from './header.module.scss'
 import {fetchServerSettings} from "@/service/api/api-utils";
 import {phpGWLink} from "@/service/util";
 import ClientPHPGWLink from "@/components/layout/header/ClientPHPGWLink";
 import HeaderMenuContent from "@/components/layout/header/header-menu-content";
+import DialogTest from "@/components/dialog/DialogTest";
 
 interface HeaderProps {
 }
@@ -20,7 +20,7 @@ const Header = async (props: HeaderProps) => {
                      className={`${styles.logoImg} ${styles.logoImgDesktop}`}/>
             </ClientPHPGWLink>
 
-
+            <DialogTest />
             <HeaderMenuContent>
 
 

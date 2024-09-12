@@ -1,4 +1,4 @@
-import {LanguageType} from "@/app/i18n/settings";
+import {ILanguage} from "@/app/i18n/settings";
 
 import '@digdir/designsystemet-css';
 import '@digdir/designsystemet-theme';
@@ -12,7 +12,7 @@ import LoadingIndicationWrapper from "@/components/loading-wrapper/LoadingIndica
 
 interface RootLayoutProps extends PropsWithChildren {
     params: {
-        lang: LanguageType;
+        lang: string;
     }
 
 }
@@ -22,7 +22,7 @@ const RootLayout: FC<RootLayoutProps> = (props) => {
     return (
 
         <LoadingProvider>
-            <ClientTranslationProvider lang={props.params.lang as LanguageType}>
+            <ClientTranslationProvider lang={props.params.lang}>
                 <ReactQueryProvider>
                     <LoadingIndicationWrapper>
                         {props.children}
