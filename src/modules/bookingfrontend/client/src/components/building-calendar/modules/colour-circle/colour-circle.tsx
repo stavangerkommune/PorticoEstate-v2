@@ -11,7 +11,7 @@ interface ColourCircleProps {
 const ColourCircle: FC<ColourCircleProps> = (props) => {
     const resourceToIds = useResourceToId();
     const colours = useColours();
-    const colour = colours? colours[resourceToIds[props.resourceId] % colours.length] : 'gray';
+    const colour = colours ? colours[resourceToIds[props.resourceId] % colours.length] : 'gray';
     return (
         <span
             className={`${styles.resourceColorIndicator} ${typeof props.size === 'string' ? styles[props.size] : ''} ${props.className || ''}`}
