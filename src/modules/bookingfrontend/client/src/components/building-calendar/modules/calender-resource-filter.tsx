@@ -8,6 +8,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faLayerGroup} from "@fortawesome/free-solid-svg-icons";
 import MobileDialog from "@/components/dialog/mobile-dialog";
 import {Badge} from "@/components/digdir@next/badge/badge";
+import {useIsMobile} from "@/service/hooks/is-mobile";
 
 export interface CalendarResourceFilterOption {
     value: string;
@@ -21,7 +22,6 @@ interface CalendarResourceFilterProps {
     enabledResources: Set<string>;
     onToggle: (resourceId: string) => void;
     onToggleAll: () => void;
-    isMobile: boolean;
 }
 
 const CalendarResourceFilter: FC<CalendarResourceFilterProps> = ({
@@ -30,10 +30,9 @@ const CalendarResourceFilter: FC<CalendarResourceFilterProps> = ({
                                                                      onToggle,
                                                                      onToggleAll,
                                                                      hidden,
-                                                                     isMobile
                                                                  }) => {
     const [open, setOpen] = useState<boolean>(false);
-
+    const isMobile = useIsMobile();
     const t = useTrans();
     const {tempEvents} = useTempEvents();
 

@@ -1,131 +1,103 @@
-import {FC, PropsWithChildren, useEffect, useRef, useState} from 'react';
-import DialogTransition from "@/components/dialog/DialogTransistion";
-import {Dialog} from "@mui/material";
-import styles from "@/components/dialog/mobile-dialog.module.scss";
-import {Button, Tooltip} from "@digdir/designsystemet-react";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faXmark} from "@fortawesome/free-solid-svg-icons";
-import {useTrans} from "@/app/i18n/ClientTranslationProvider";
+import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
+import styles from "./mobile-dialog.module.scss";
+import { useTrans } from "@/app/i18n/ClientTranslationProvider";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { Button, Tooltip } from "@digdir/designsystemet-react";
 
 interface DialogProps extends PropsWithChildren {
+    /** Boolean to control the visibility of the modal */
     open: boolean;
+    /** Function to close the modal */
     onClose: () => void;
+    /** Boolean to control whether the default header is shown */
+    showDefaultHeader?: boolean;
 }
 
-const MobileDialog: FC<DialogProps> = (props) => {
+/**
+ * Dialog Component
+ *
+ * This component renders a modal that is fullscreen on mobile and windowed on desktop.
+ * It uses the `<dialog>` HTML element and SCSS modules for styling.
+ *
+ * @param open - Controls whether the modal is open or closed
+ * @param onClose - Callback function to close the modal
+ * @param showDefaultHeader - Controls whether the default header is shown (default: true)
+ */
+const Dialog: React.FC<DialogProps> = ({
+                                           open,
+                                           onClose,
+                                           showDefaultHeader = true,
+                                           children
+                                       }) => {
+    const dialogRef = useRef<HTMLDialogElement | null>(null);
+    const [show, setShow] = useState<boolean>(false);
     const t = useTrans();
     const [scrolled, setScrolled] = useState<boolean>(false);
-    const modalRef = useRef<HTMLDivElement | null>(null)
-
 
     useEffect(() => {
-        if (!modalRef.current) {
-            return;
-        }
-        const child = modalRef.current!.getElementsByClassName(styles.dialogContainer)?.[0]
-        if (!child) {
-            return;
-        }
+        const dialog = dialogRef.current;
+        if (!dialog) return;
+
         const onScroll = () => {
-            setScrolled(child.scrollTop > 5)
-            // console.log(child.scrollTop)
+            setScrolled(dialog.scrollTop > 5)
         }
-        // console.log(child)
-        child.addEventListener('scroll', onScroll); // Add scroll listener
+        dialog.addEventListener('scroll', onScroll);
         return () => {
-            child.removeEventListener('scroll', onScroll); // Cleanup on unmount
+            dialog.removeEventListener('scroll', onScroll);
         };
-    }, [modalRef.current]);
+    }, [dialogRef.current]);
+
+    useEffect(() => {
+        const dialog = dialogRef.current;
+
+        if (open) {
+            if (dialog) {
+                dialog.showModal();
+                setTimeout(() => setShow(true), 10);
+            }
+            document.body.style.overflow = 'hidden';
+        } else {
+            if (dialog) {
+                setShow(false);
+                setTimeout(() => dialog.close(), 300);
+            }
+            document.body.style.overflow = 'auto';
+        }
+
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, [open]);
+
     return (
-        <Dialog
-            ref={modalRef}
-            fullScreen
-            open={props.open}
-            onClose={props.onClose}
-            TransitionComponent={DialogTransition}
-            classes={{paperFullScreen: styles.dialogContainer}}
+        <dialog
+            ref={dialogRef}
+            className={`${show ? styles.show : ''} ${styles.modal}`}
         >
-            <div className={`${styles.dialogHeader} ${scrolled ? styles.scrolled : ''}`}>
-                <Tooltip content={t('booking.close')}>
-                    <Button icon={true} variant='tertiary' aria-label='Tertiary med ikon'
-                            onClick={props.onClose} className={'default'} size={'sm'}>
-                        <FontAwesomeIcon icon={faXmark} size={'lg'}/>
-                    </Button>
-                </Tooltip>
+            <div className={styles.dialogContainer}>
+                {showDefaultHeader && (
+                    <div className={`${styles.dialogHeader} ${scrolled ? styles.scrolled : ''}`}>
+                        <Tooltip content={t('booking.close')}>
+                            <Button
+                                icon={true}
+                                variant='tertiary'
+                                aria-label='Close dialog'
+                                onClick={onClose}
+                                className={'default'}
+                                size={'sm'}
+                            >
+                                <FontAwesomeIcon icon={faXmark} size={'lg'}/>
+                            </Button>
+                        </Tooltip>
+                    </div>
+                )}
+                <div className={styles.dialogContent}>
+                    {children}
+                </div>
             </div>
-            {props.children}
-
-        </Dialog>
+        </dialog>
     );
-}
+};
 
-export default MobileDialog
-
-
-//
-// interface DialogProps {
-//     /** Boolean to control the visibility of the modal */
-//     open: boolean;
-//     /** Function to close the modal */
-//     onClose: () => void;
-// }
-//
-// /**
-//  * MobileDialog Component
-//  *
-//  * This component renders a fullscreen modal that slides in from the bottom.
-//  * It uses the `<dialog>` HTML element and SCSS modules for styling.
-//  *
-//  * @param open - Controls whether the modal is open or closed
-//  * @param onClose - Callback function to close the modal
-//  */
-// const MobileDialog: React.FC<DialogProps> = ({ open, onClose }) => {
-//     const dialogRef = useRef<HTMLDialogElement>(null);
-//     const [show, setShow] = useState<boolean>(false);
-//
-//     // Handle body scroll and opening/closing animation
-//     useEffect(() => {
-//         const dialog = dialogRef.current;
-//
-//         if (open) {
-//             // Show dialog and disable body scroll
-//             if (dialog) {
-//                 dialog.showModal();  // Show the <dialog>
-//                 setTimeout(() => {
-//                     // dialog.classList.add(styles.show);
-//                     setShow(true); // Add animation class
-//                 }, 10);  // Delay to ensure the transition takes effect
-//             }
-//             document.body.style.overflow = 'hidden';  // Disable body scroll
-//         } else {
-//             // Close dialog and enable body scroll
-//             if (dialog) {
-//                 // dialog.classList.remove(styles.show);
-//                 setShow(false); // Remove animation class
-//
-//                 setTimeout(() => {
-//                     dialog.close();  // Close the <dialog> after animation
-//
-//                 }, 300);  // Match the animation duration
-//             }
-//             document.body.style.overflow = 'auto';  // Enable body scroll
-//         }
-//
-//         // Cleanup to ensure body scroll is restored if component unmounts
-//         return () => {
-//             document.body.style.overflow = 'auto';
-//         };
-//     }, [open]);
-//
-//     return (
-//         <dialog ref={dialogRef} className={`${show ? styles.show : ''} ${styles.modal}`}>
-//             <div className={styles.modalContent}>
-//                 <h2>Fullscreen Modal</h2>
-//                 <p>This is a fullscreen modal that slides in from the bottom.</p>
-//                 <button onClick={onClose}>Close Modal</button>
-//             </div>
-//         </dialog>
-//     );
-// };
-//
-// export default MobileDialog;
+export default Dialog;

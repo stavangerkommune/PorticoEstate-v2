@@ -76,6 +76,7 @@ const CalendarHeader: FC<CalendarHeaderProps> = (props) => {
                         onClick={() => customButtons.dayView.click()}>{t('bookingfrontend.day')}</Button>
                 <Button variant={view === 'timeGridWeek' ? 'primary' : 'secondary'} size={'sm'}
                         className={'captialize'}
+
                         onClick={() => customButtons.weekView.click()}>{t('bookingfrontend.week')}</Button>
                 <Button variant={view === 'dayGridMonth' ? 'primary' : 'secondary'} size={'sm'}
                         className={'captialize'}

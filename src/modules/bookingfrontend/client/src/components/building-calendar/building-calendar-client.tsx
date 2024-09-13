@@ -33,6 +33,8 @@ import CalendarProvider from "@/components/building-calendar/calendar-context";
 import EventContentTemp from "@/components/building-calendar/modules/event/content/event-content-temp";
 import {IBuilding} from "@/service/types/Building";
 import {useTrans} from "@/app/i18n/ClientTranslationProvider";
+import {Placement} from "@floating-ui/utils";
+import {useIsMobile} from "@/service/hooks/is-mobile";
 
 interface BuildingCalendarProps {
     events: IEvent[];
@@ -46,7 +48,8 @@ interface BuildingCalendarProps {
 Settings.defaultLocale = "nb";
 
 
-const BuildingCalendar: FC<BuildingCalendarProps> = (props) => {
+const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
+    const isMobile = useIsMobile();
     const t = useTrans();
     const {events} = props;
     const [currentDate, setCurrentDate] = useState<DateTime>(props.initialDate);
@@ -58,7 +61,6 @@ const BuildingCalendar: FC<BuildingCalendarProps> = (props) => {
     const [popperAnchorEl, setPopperAnchorEl] = useState<HTMLElement | null>(null);
     const calendarRef = useRef<FullCalendar | null>(null);
     const [view, setView] = useState<string>(window.innerWidth < 601 ? 'timeGridDay' : 'timeGridWeek');
-    const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 601);
     const [resourcesHidden, setSResourcesHidden] = useState<boolean>(false);
     const [resourcesContainerRendered, setResourcesContainerRendered] = useState<boolean>(true)
     const [lastCalendarView, setLastCalendarView] = useState<string>('timeGridWeek');
@@ -232,10 +234,10 @@ const BuildingCalendar: FC<BuildingCalendarProps> = (props) => {
 
     const tempEventArr = useMemo(() => Object.values(tempEvents), [tempEvents])
 
-    const popperPlacement = () => {
+    const popperPlacement = (): Placement => {
         switch (calendarRef.current?.getApi().view.type) {
             case 'timeGridDay':
-                return 'auto';
+                return 'bottom-start';
             case 'listWeek':
                 return 'bottom-start';
             default:
@@ -284,11 +286,8 @@ const BuildingCalendar: FC<BuildingCalendarProps> = (props) => {
             setResourcesContainerRendered(false);
         }
     };
-    // Function to handle window resize
-    const handleResize = () => {
-        const width = window.innerWidth;
-        setIsMobile(width < 601);
-        if(width < 601) {
+    useEffect(() => {
+        if(isMobile) {
             // const newView = whichView(window.innerWidth);
             const calendarApi = calendarRef.current?.getApi(); // Access calendar API
 
@@ -297,18 +296,7 @@ const BuildingCalendar: FC<BuildingCalendarProps> = (props) => {
                 // calendarApi.changeView(newView); // Change view dynamically
             }
         }
-
-    };
-
-    // Effect hook to initialize calendar and add resize listener
-    useEffect(() => {
-        // setCalendarView(whichView(window.innerWidth)); // Set initial view
-        // handleResize();
-        window.addEventListener('resize', handleResize); // Add resize listener
-        return () => {
-            window.removeEventListener('resize', handleResize); // Cleanup on unmount
-        };
-    }, []);
+    }, [isMobile]);
     function renderEventContent(eventInfo: FCEventContentArg<FCallBaseEvent>) {
         const type = eventInfo.event.extendedProps.type;
         if(type === 'background') {
@@ -332,7 +320,6 @@ const BuildingCalendar: FC<BuildingCalendarProps> = (props) => {
                     enabledResources={enabledResources}
                     onToggle={handleResourceToggle}
                     onToggleAll={handleToggleAll}
-                    isMobile={isMobile}
                 />
                 <CalendarInnerHeader view={view} resourcesHidden={resourcesHidden}
                                      setResourcesHidden={setResourcesHidden} setView={(v) => setView(v)}
@@ -400,7 +387,6 @@ const BuildingCalendar: FC<BuildingCalendarProps> = (props) => {
                 />
 
                 <EventPopper
-                    isMobile={isMobile}
                     event={selectedEvent}
                     placement={
                         popperPlacement()
@@ -415,4 +401,4 @@ const BuildingCalendar: FC<BuildingCalendarProps> = (props) => {
     );
 }
 
-export default BuildingCalendar;
+export default BuildingCalendarClient;

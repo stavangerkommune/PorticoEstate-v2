@@ -1,13 +1,13 @@
 @import "../../styles/colors";
+@import "../../styles/util.module";
 
 .dialogContainer {
-    min-height: 100vh;
-    background-color: $grey-24 !important;
+    background-color: $grey-24;
     display: flex;
     flex-direction: column;
-
+    width: 100%;
     .dialogHeader {
-        background-color: $grey-24 !important;
+        background-color: $grey-24;
         position: sticky;
         display: flex;
         flex-direction: row-reverse;
@@ -17,58 +17,60 @@
         margin-bottom: 4px;
         top: 0;
         z-index: 1000;
-        transition: box-shadow 0.3s ease; /* Smooth transition for the shadow */
+        transition: box-shadow 0.3s ease;
         &.scrolled {
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
     }
 
-    //
-    //.dialogContent{
-    //    display: flex;
-    //    flex-direction: column;
-    //    flex-grow: 1;
-    //}
-}
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 9999;
-    background-color: rgba(0, 0, 0, 0.9);
-    border: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(100%);  /* Start off-screen */
-    transition: transform 0.3s ease, opacity 0.3s ease;
-    min-width: 100vw;
-    min-height: 100vh;
-    &::backdrop {
-        background-color: rgba(0, 0, 0, 0.7);
+    .dialogContent {
+        flex-grow: 1;
+        overflow-y: auto;
     }
 }
 
-.modalContent {
-    width: 100%;
-    height: 100%;
-    background-color: white;
+.modal {
+    position: fixed;
+    z-index: 9999;
+    background-color: $grey-24;
+    padding: 0;
+    margin: 0;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+
+    &::backdrop {
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    @include mobile {
+        min-width: 100vw;
+        min-height: 100vh;
+        transform: translateY(100%);
+    }
+
+    @include desktop {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        max-width: 90vw;
+        max-height: 90vh;
+        border-radius: 8px;
+        min-width: 640px;
+        min-height: 480px;
+    }
 }
 
 .show {
     pointer-events: all;
     opacity: 1;
-    transform: translateY(0);  /* Slide into view */
+
+    @include mobile {
+        transform: translateY(0);
+    }
+
+    @include desktop {
+        transform: translate(-50%, -50%) scale(1);
+    }
 }

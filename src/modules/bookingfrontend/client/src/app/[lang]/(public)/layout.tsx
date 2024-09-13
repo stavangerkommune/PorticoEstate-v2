@@ -1,8 +1,5 @@
-import {dir} from 'i18next'
-import {languages, LanguageType} from "@/app/i18n/settings";
+import {ILanguage} from "@/app/i18n/settings";
 
-import type {Metadata} from "next";
-import {Roboto} from "next/font/google";
 import '@digdir/designsystemet-css';
 import '@digdir/designsystemet-theme';
 import "@/app/globals.scss";
@@ -15,25 +12,23 @@ import Footer from "@/components/layout/footer/footer";
 import Header from "@/components/layout/header/header";
 import PrefetchWrapper from "@/components/loading-wrapper/PrefetchWrapper";
 
-interface RootLayoutProps extends PropsWithChildren {
+interface PublicLayoutProps extends PropsWithChildren {
     params: {
-        lang: LanguageType
+        lang: string
     }
 
 }
 
-const RootLayout: FC<RootLayoutProps> = (props) => {
-
+const PublicLayout: FC<PublicLayoutProps> = (props) => {
     return (
-
         <LoadingProvider>
-            <ClientTranslationProvider lang={props.params.lang as LanguageType}>
+            <ClientTranslationProvider lang={props.params.lang}>
                 <ReactQueryProvider>
                     <PrefetchWrapper>
                         <LoadingIndicationWrapper>
-                            <Header></Header>
+                            <Header />
                             {props.children}
-                            <Footer lang={props.params.lang}></Footer>
+                            <Footer lang={props.params.lang}/>
                         </LoadingIndicationWrapper>
                     </PrefetchWrapper>
                 </ReactQueryProvider>
@@ -41,4 +36,4 @@ const RootLayout: FC<RootLayoutProps> = (props) => {
         </LoadingProvider>
     );
 }
-export default RootLayout
+export default PublicLayout

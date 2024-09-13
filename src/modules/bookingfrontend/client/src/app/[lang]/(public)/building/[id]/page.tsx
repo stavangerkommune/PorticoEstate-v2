@@ -1,4 +1,5 @@
 import {FC} from 'react';
+import BuildingCalendar from "@/components/building-calendar";
 interface BuildingShowParams {
     id: string;
 }
@@ -8,7 +9,7 @@ interface BuildingShowProps {
 
 const BuildingShow: FC<BuildingShowProps> = (props) => {
     return (
-        <div>{props.params.id}</div>
+        <BuildingCalendar building_id={props.params.id}/>
     );
 }
 

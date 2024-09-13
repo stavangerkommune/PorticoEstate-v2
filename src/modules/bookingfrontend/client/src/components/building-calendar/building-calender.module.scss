@@ -54,6 +54,7 @@
 }
 
 .event {
+    user-select: none;
     background-color: $grey-light;
     border-left: 0.5rem solid;
     border-top: none;

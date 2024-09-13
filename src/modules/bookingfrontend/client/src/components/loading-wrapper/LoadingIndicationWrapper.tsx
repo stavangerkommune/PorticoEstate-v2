@@ -18,7 +18,7 @@ const LoadingIndicationWrapper: FC<LoadingIndicationWrapperProps> = (props) => {
     return <>
         {isSoftLoading &&
             <div style={{
-                position: 'absolute',
+                position: 'fixed',
                 zIndex: 103,
                 backgroundColor: 'white',
                 borderRadius: '50%',
