@@ -2847,8 +2847,9 @@
 				'statustext' => lang('cancel'),
 				'text'		 => lang('cancel'),
 				'custom_code'	 => 'window.open("' . self::link(array(
-					'menuaction' => 'property.uiadmin_entity.category',
+					'menuaction' => 'property.uiadmin_entity.list_attribute',
 					'entity_id'	 => $entity_id,
+					'cat_id'	 => $cat_id,
 					'type'		 => $this->type
 					)
 				) . '", "_self");',
