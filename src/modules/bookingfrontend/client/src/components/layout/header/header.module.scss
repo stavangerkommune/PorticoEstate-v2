@@ -11,7 +11,11 @@
     border-radius: $rounded-large;
     margin-bottom: 2rem;
     margin-top: 3rem;
+    @include mobile {
+        margin-top: 0;
+    }
     .logo {
+        display: flex;
         .logoImg {
             width: 100%;
             flex: none;

@@ -34,6 +34,7 @@ import EventContentTemp from "@/components/building-calendar/modules/event/conte
 import {IBuilding} from "@/service/types/Building";
 import {useTrans} from "@/app/i18n/ClientTranslationProvider";
 import {Placement} from "@floating-ui/utils";
+import {useIsMobile} from "@/service/hooks/is-mobile";
 
 interface BuildingCalendarProps {
     events: IEvent[];
@@ -48,6 +49,7 @@ Settings.defaultLocale = "nb";
 
 
 const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
+    const isMobile = useIsMobile();
     const t = useTrans();
     const {events} = props;
     const [currentDate, setCurrentDate] = useState<DateTime>(props.initialDate);
@@ -59,7 +61,6 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
     const [popperAnchorEl, setPopperAnchorEl] = useState<HTMLElement | null>(null);
     const calendarRef = useRef<FullCalendar | null>(null);
     const [view, setView] = useState<string>(window.innerWidth < 601 ? 'timeGridDay' : 'timeGridWeek');
-    const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 601);
     const [resourcesHidden, setSResourcesHidden] = useState<boolean>(false);
     const [resourcesContainerRendered, setResourcesContainerRendered] = useState<boolean>(true)
     const [lastCalendarView, setLastCalendarView] = useState<string>('timeGridWeek');
@@ -285,11 +286,8 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
             setResourcesContainerRendered(false);
         }
     };
-    // Function to handle window resize
-    const handleResize = () => {
-        const width = window.innerWidth;
-        setIsMobile(width < 601);
-        if(width < 601) {
+    useEffect(() => {
+        if(isMobile) {
             // const newView = whichView(window.innerWidth);
             const calendarApi = calendarRef.current?.getApi(); // Access calendar API
 
@@ -298,18 +296,7 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
                 // calendarApi.changeView(newView); // Change view dynamically
             }
         }
-
-    };
-
-    // Effect hook to initialize calendar and add resize listener
-    useEffect(() => {
-        // setCalendarView(whichView(window.innerWidth)); // Set initial view
-        // handleResize();
-        window.addEventListener('resize', handleResize); // Add resize listener
-        return () => {
-            window.removeEventListener('resize', handleResize); // Cleanup on unmount
-        };
-    }, []);
+    }, [isMobile]);
     function renderEventContent(eventInfo: FCEventContentArg<FCallBaseEvent>) {
         const type = eventInfo.event.extendedProps.type;
         if(type === 'background') {
@@ -333,7 +320,6 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
                     enabledResources={enabledResources}
                     onToggle={handleResourceToggle}
                     onToggleAll={handleToggleAll}
-                    isMobile={isMobile}
                 />
                 <CalendarInnerHeader view={view} resourcesHidden={resourcesHidden}
                                      setResourcesHidden={setResourcesHidden} setView={(v) => setView(v)}
@@ -401,7 +387,6 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
                 />
 
                 <EventPopper
-                    isMobile={isMobile}
                     event={selectedEvent}
                     placement={
                         popperPlacement()

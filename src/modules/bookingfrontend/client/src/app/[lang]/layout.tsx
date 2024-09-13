@@ -8,13 +8,14 @@ import '@digdir/designsystemet-theme';
 import "@/app/globals.scss";
 import {FC, PropsWithChildren} from "react";
 
-
 export async function generateStaticParams() {
     return languages.map((lng) => ({lng}))
 }
 
 
 const inter = Roboto({weight: ['100', '300', '400', '500', '700', '900'], subsets: ['latin']});
+
+export const revalidate = 120;
 
 export const metadata: Metadata = {
     title: "Create Next App",
@@ -34,7 +35,7 @@ const RootLayout: FC<RootLayoutProps> = (props) => {
     return (
         <html lang={props.params.lang} dir={dir(props.params.lang)}>
         <body className={inter.className}>
-        <div className={'container-fluid container-xxl'}>
+        <div className={'container-xxl container-fluid'}>
             {props.children}
         </div>
         </body>

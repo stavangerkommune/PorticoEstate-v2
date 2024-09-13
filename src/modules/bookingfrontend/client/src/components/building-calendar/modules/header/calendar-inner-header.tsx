@@ -21,7 +21,7 @@ const CalendarInnerHeader: FC<CalendarInnerHeaderProps> = (props) => {
         <div className={styles.innerHeader}>
             <Button size={'sm'} icon={true} variant='tertiary'
                     style={{}}
-                    className={styles.expandCollapseButton}
+                    className={`${styles.expandCollapseButton} ${resourcesHidden ? styles.closed : styles.open}`}
                     onClick={() => setResourcesHidden(!resourcesHidden)}>
 
                 <ChevronLeftFirstIcon
@@ -30,14 +30,14 @@ const CalendarInnerHeader: FC<CalendarInnerHeaderProps> = (props) => {
                 {props.building.name}
 
             </Button>
-            <div style={{display: 'flex', gap: '1rem'}}>
-                <Button variant={view !== 'listWeek' ? 'primary' : 'secondary'} onClick={() => {
-                    props.setLastCalendarView()
-                }}>{t('bookingfrontend.calendar_view')}</Button>
-                <Button variant={view === 'listWeek' ? 'primary' : 'secondary'} onClick={() => {
-                    props.setView('listWeek')
-                }}>{t('bookingfrontend.list_view')}</Button>
-            </div>
+            {/*<div style={{display: 'flex', gap: '1rem'}}>*/}
+            {/*    <Button variant={view !== 'listWeek' ? 'primary' : 'secondary'} onClick={() => {*/}
+            {/*        props.setLastCalendarView()*/}
+            {/*    }}>{t('bookingfrontend.calendar_view')}</Button>*/}
+            {/*    <Button variant={view === 'listWeek' ? 'primary' : 'secondary'} onClick={() => {*/}
+            {/*        props.setView('listWeek')*/}
+            {/*    }}>{t('bookingfrontend.list_view')}</Button>*/}
+            {/*</div>*/}
         </div>
     );
 }

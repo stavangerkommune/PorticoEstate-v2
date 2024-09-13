@@ -3,19 +3,19 @@ import { useFloating, autoUpdate, offset, flip, shift, arrow, Placement } from '
 import { FCallEvent, FCallTempEvent } from "@/components/building-calendar/building-calendar.types";
 import TempEventPopperContent from "@/components/building-calendar/modules/event/popper/content/temp-event-popper-content";
 import EventPopperContent from "@/components/building-calendar/modules/event/popper/content/event-popper-content";
-import { phpGWLink } from "@/service/util";
 import MobileDialog from "@/components/dialog/mobile-dialog";
 import { useTrans } from "@/app/i18n/ClientTranslationProvider";
+import {useIsMobile} from "@/service/hooks/is-mobile";
 
 interface EventPopperProps {
     event: FCallEvent | FCallTempEvent | null;
     onClose: () => void;
     anchor: HTMLElement | null;
     placement: Placement;
-    isMobile: boolean;
 }
 
-const EventPopper: FC<EventPopperProps> = ({ event, onClose, anchor, placement, isMobile }) => {
+const EventPopper: FC<EventPopperProps> = ({ event, onClose, anchor, placement }) => {
+    const isMobile = useIsMobile();
     const [open, setOpen] = useState(Boolean(event));
     const t = useTrans();
     const arrowRef = useRef<HTMLDivElement | null>(null);

@@ -1,3 +1,4 @@
+'use client'
 import React, {useState} from 'react';
 import {useClientTranslation} from '@/app/i18n/ClientTranslationProvider';
 import {ILanguage, languages} from '@/app/i18n/settings';
@@ -6,6 +7,8 @@ import {Button} from "@digdir/designsystemet-react";
 import {useParams, usePathname} from "next/navigation";
 import Link from "next/link";
 import ReactCountryFlag from "react-country-flag";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faChevronDown} from "@fortawesome/free-solid-svg-icons";
 
 const LanguageSwitcher: React.FC = () => {
     const pathname = usePathname();
@@ -31,7 +34,7 @@ const LanguageSwitcher: React.FC = () => {
                 color={"neutral"}
             >
                 <ReactCountryFlag countryCode={currentLang.countryCode} svg
-                /> {currentLang.label}
+                /> <FontAwesomeIcon icon={faChevronDown} />
             </Button>
             <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
 
@@ -54,7 +57,9 @@ const LanguageSwitcher: React.FC = () => {
                         >
                             <Button
                                 variant={currentLang.key === lang.key ? "secondary" : "tertiary"}
-                                style={{width: '100%'}}
+                                style={{width: '100%', display: 'flex',
+                                    flexDirection: 'row',
+                                    justifyContent: 'flex-start'}}
                             >
                                 <ReactCountryFlag countryCode={lang.countryCode} svg
                                 /> {lang.label}

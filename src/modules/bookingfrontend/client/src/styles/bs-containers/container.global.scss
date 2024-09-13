@@ -1,3 +1,4 @@
+@import "../util.module";
 // Custom container SCSS
 
 // Variables
@@ -58,9 +59,11 @@ $grid-breakpoints: (        // Define your breakpoints
 
 // Fluid container (always 100% width)
 .container-fluid {
-    width: 100%;
-    padding-right: $container-padding-x;
-    padding-left: $container-padding-x;
-    margin-right: auto;
-    margin-left: auto;
+    @include desktop {
+        width: 100%;
+        padding-right: $container-padding-x;
+        padding-left: $container-padding-x;
+        margin-right: auto;
+        margin-left: auto;
+    }
 }
