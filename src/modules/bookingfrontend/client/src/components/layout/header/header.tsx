@@ -4,6 +4,7 @@ import ClientPHPGWLink from "@/components/layout/header/ClientPHPGWLink";
 import HeaderMenuContent from "@/components/layout/header/header-menu-content";
 import LanguageSwitcher from "@/app/i18n/language-switcher";
 import UserMenu from "@/components/layout/header/user-menu/user-menu";
+import InternalNav from "@/components/layout/header/internal-nav/internal-nav";
 
 interface HeaderProps {
 }
@@ -12,22 +13,26 @@ const Header = async (props: HeaderProps) => {
     const serverSettings = await fetchServerSettings();
     const logoPath = "/phpgwapi/templates/bookingfrontend_2/styleguide/gfx";
     return (
-        <nav className={styles.navbar}>
-            <ClientPHPGWLink strURL={'bookingfrontend/'} className={styles.logo}>
-                <img src={`${serverSettings.webserver_url}${logoPath}/logo_aktiv_kommune_horizontal.png`}
-                     alt="Aktiv kommune logo"
-                     className={styles.logoImg}/>
-                <img src={`${serverSettings.webserver_url}${logoPath}/logo_aktiv_kommune.png`} alt="Aktiv kommune logo"
-                     className={`${styles.logoImg} ${styles.logoImgDesktop}`}/>
-            </ClientPHPGWLink>
+        <>
+            <nav className={styles.navbar}>
+                <ClientPHPGWLink strURL={'bookingfrontend/'} className={styles.logo}>
+                    <img src={`${serverSettings.webserver_url}${logoPath}/logo_aktiv_kommune_horizontal.png`}
+                         alt="Aktiv kommune logo"
+                         className={styles.logoImg}/>
+                    <img src={`${serverSettings.webserver_url}${logoPath}/logo_aktiv_kommune.png`}
+                         alt="Aktiv kommune logo"
+                         className={`${styles.logoImg} ${styles.logoImgDesktop}`}/>
+                </ClientPHPGWLink>
 
-            <HeaderMenuContent>
-                <LanguageSwitcher/>
-                <UserMenu/>
+                <HeaderMenuContent>
+                    <LanguageSwitcher/>
+                    <UserMenu/>
 
 
-            </HeaderMenuContent>
-        </nav>
+                </HeaderMenuContent>
+            </nav>
+            <InternalNav/>
+        </>
     );
 }
 
