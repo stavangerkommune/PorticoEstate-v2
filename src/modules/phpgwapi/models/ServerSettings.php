@@ -264,6 +264,7 @@ class ServerSettings
 
     /**
      * @OA\Property(type="string")
+     * @Expose
      */
     public $temp_dir;
 
