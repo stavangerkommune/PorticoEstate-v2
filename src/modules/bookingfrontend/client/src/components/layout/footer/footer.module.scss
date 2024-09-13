@@ -1,10 +1,18 @@
+@import '../../../styles/util.module';
+
 .footerContainer{
+    margin-top: 2rem;
     margin-bottom: 1.5rem;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
 
+    @include mobile {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem
+    }
     ul {
         margin-top: 0;
         margin-bottom: 0;

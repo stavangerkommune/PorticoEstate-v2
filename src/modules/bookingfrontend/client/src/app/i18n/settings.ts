@@ -1,28 +1,37 @@
-import { InitOptions } from 'i18next';
+import {InitOptions} from 'i18next';
 import {phpGWLink} from "@/service/util";
 
-export const fallbackLng = 'no';
-export const languages = [fallbackLng, 'en', 'nn'];
-export type LanguageType = typeof languages[number];
+export interface ILanguage {
+    key: string;
+    label: string;
+    countryCode: string;
+}
 
+export const fallbackLng: ILanguage = {key: 'no', label: 'Bokmål', countryCode: "no"};
+export const languages: ILanguage[] = [
+    fallbackLng,
+    {key: 'en', label: 'English', countryCode: "gb"},
+    {key: 'nn', label: 'Nynorsk', countryCode: "no"}
+];
 export const defaultNS = 'translation';
 export const cookieName = 'selected_lang';
 
-export function getOptions(lng: LanguageType = fallbackLng, ns: string | string[] = defaultNS): InitOptions {
+export function getOptions(lng: ILanguage = fallbackLng, ns: string | string[] = defaultNS): InitOptions {
     return {
-        supportedLngs: languages,
-        fallbackLng,
-        lng,
+        supportedLngs: languages.map(e => e.key),
+        fallbackLng: fallbackLng.key,
+        lng: lng.key,
         fallbackNS: defaultNS,
-        defaultNS,
-        ns,
-        saveMissing: true, // Must be set to true
+        defaultNS: defaultNS,
+        ns: ns,
+        saveMissing: true,
         parseMissingKeyHandler: (key: string) => {
             return `TRANSLATION MISSING FOR "${key}"`;
         }
-    };
+    }
 }
 
-export const getTranslationURL = (lang: LanguageType): string => {
-    return phpGWLink(["bookingfrontend", 'lang', lang], null, true);
+export const getTranslationURL = (lang: ILanguage): string => {
+    console.log(lang)
+    return phpGWLink(["bookingfrontend", 'lang', lang.key], null, true);
 };

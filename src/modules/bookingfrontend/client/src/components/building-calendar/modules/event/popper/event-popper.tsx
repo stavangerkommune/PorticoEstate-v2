@@ -1,45 +1,62 @@
-import ClickAwayListener from "@mui/material/ClickAwayListener";
-import {Popper} from "@mui/material";
-import {Placement} from "@popperjs/core";
-import {FCallEvent, FCallTempEvent} from "@/components/building-calendar/building-calendar.types";
-import TempEventPopperContent
-    from "@/components/building-calendar/modules/event/popper/content/temp-event-popper-content";
+import React, { FC, useEffect, useState, useRef } from 'react';
+import { useFloating, autoUpdate, offset, flip, shift, arrow, Placement } from '@floating-ui/react';
+import { FCallEvent, FCallTempEvent } from "@/components/building-calendar/building-calendar.types";
+import TempEventPopperContent from "@/components/building-calendar/modules/event/popper/content/temp-event-popper-content";
 import EventPopperContent from "@/components/building-calendar/modules/event/popper/content/event-popper-content";
-import {FC, useEffect, useState} from "react";
-import {phpGWLink} from "@/service/util";
 import MobileDialog from "@/components/dialog/mobile-dialog";
-import {useTrans} from "@/app/i18n/ClientTranslationProvider";
-
-
+import { useTrans } from "@/app/i18n/ClientTranslationProvider";
+import {useIsMobile} from "@/service/hooks/is-mobile";
 
 interface EventPopperProps {
     event: FCallEvent | FCallTempEvent | null;
     onClose: () => void;
     anchor: HTMLElement | null;
     placement: Placement;
-    isMobile: boolean;
 }
 
-
-
-const EventPopper: FC<EventPopperProps> = ({event, onClose, anchor, placement, isMobile}) => {
+const EventPopper: FC<EventPopperProps> = ({ event, onClose, anchor, placement }) => {
+    const isMobile = useIsMobile();
     const [open, setOpen] = useState(Boolean(event));
     const t = useTrans();
+    const arrowRef = useRef<HTMLDivElement | null>(null);
+
+    const { x, y, strategy, refs, middlewareData, update } = useFloating({
+        open,
+        placement,
+        middleware: [
+            offset(10),
+            flip(),
+            shift(),
+            arrow({ element: arrowRef })
+        ],
+        whileElementsMounted: autoUpdate
+    });
+
     useEffect(() => {
         setOpen(Boolean(event));
-    }, [event]);
+        if (anchor) {
+            refs.setReference(anchor);
+            update();
+        }
+    }, [event, anchor, refs, update]);
 
-    if (!event) {
+    useEffect(() => {
+        if (open && anchor) {
+            const handleClickOutside = (event: MouseEvent) => {
+                if (refs.floating.current && !refs.floating.current!.contains(event.target as Node)) {
+                    onClose();
+                }
+            };
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, [open, anchor, onClose, refs.floating]);
+
+    if (!event || !anchor) {
         return null;
     }
-    const url = phpGWLink(
-        ["bookingfrontend", 'buildings', 10],
-        null,
-        true,
-
-    );
-    console.log(url)
-
 
     const content = event.extendedProps.type === 'temporary' ? (
         <TempEventPopperContent event={event as FCallTempEvent} onClose={onClose} />
@@ -50,38 +67,44 @@ const EventPopper: FC<EventPopperProps> = ({event, onClose, anchor, placement, i
     if (isMobile) {
         return (
             <MobileDialog open={open} onClose={onClose}>
-                {/*<AppBar sx={{ position: 'relative' }}>*/}
-                {/*    <Toolbar>*/}
-                {/*        <IconButton*/}
-                {/*            edge="start"*/}
-                {/*            color="inherit"*/}
-                {/*            onClick={onClose}*/}
-                {/*            aria-label="close"*/}
-                {/*        >*/}
-                {/*            <CloseIcon />*/}
-                {/*        </IconButton>*/}
-                {/*        <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">*/}
-                {/*            {event.title}*/}
-                {/*        </Typography>*/}
-                {/*    </Toolbar>*/}
-                {/*</AppBar>*/}
-                {/*<div style={{ padding: '16px' }}>*/}
-                    {content}
-                {/*</div>*/}
+                {content}
             </MobileDialog>
         );
     }
 
+    const { x: arrowX, y: arrowY } = middlewareData.arrow || {};
 
     return (
-        <ClickAwayListener onClickAway={onClose}>
-            <Popper open={Boolean(event)} anchorEl={anchor}
-                    placement={placement}
-                    style={{zIndex: 100}}>
-
-                {content}
-            </Popper>
-        </ClickAwayListener>
+        <>
+            {open && (
+                <div
+                    ref={refs.setFloating}
+                    className="eventPopper"
+                    style={{
+                        position: strategy,
+                        top: y ?? 0,
+                        left: x ?? 0,
+                        zIndex: 100,
+                    }}
+                >
+                    {content}
+                    <div
+                        ref={arrowRef}
+                        className="arrow"
+                        style={{
+                            position: 'absolute',
+                            top: arrowY ?? '',
+                            left: arrowX ?? '',
+                            [placement.split('-')[0]]: '-4px',
+                            width: '8px',
+                            height: '8px',
+                            background: 'inherit',
+                            transform: 'rotate(45deg)',
+                        }}
+                    />
+                </div>
+            )}
+        </>
     );
 };
 

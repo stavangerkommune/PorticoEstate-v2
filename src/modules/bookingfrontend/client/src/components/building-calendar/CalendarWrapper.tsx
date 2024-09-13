@@ -3,7 +3,7 @@
 
 import React, {useState, useCallback, useRef} from 'react';
 import {DateTime, Interval} from "luxon";
-import BuildingCalendar from "@/components/building-calendar/building-calendar";
+import BuildingCalendarClient from "@/components/building-calendar/building-calendar-client";
 import {fetchBuildingSchedule, fetchFreeTimeSlots} from "@/service/api/api-utils";
 import {IBuildingResource, IEvent, Season} from "@/service/pecalendar.types";
 import {DatesSetArg} from "@fullcalendar/core";
@@ -94,7 +94,7 @@ const CalendarWrapper: React.FC<CalendarWrapperProps> = ({
     return (
         <div>
 
-            <BuildingCalendar
+            <BuildingCalendarClient
                 initialDate={DateTime.fromJSDate(initialDate)}
                 events={schedule}
                 onDateChange={handleDateChange}

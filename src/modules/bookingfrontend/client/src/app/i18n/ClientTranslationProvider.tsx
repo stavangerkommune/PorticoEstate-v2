@@ -1,7 +1,7 @@
 'use client'
 import React, {createContext, useContext, useEffect, useState} from 'react';
 import {getTranslation} from '@/app/i18n';
-import {LanguageType} from '@/app/i18n/settings';
+import {ILanguage} from '@/app/i18n/settings';
 import {useLoadingContext} from "@/components/loading-wrapper/LoadingContext";
 
 interface TranslationContextType {
@@ -25,7 +25,7 @@ export const useTrans = () => {
 
 interface TranslationProviderProps {
     children: React.ReactNode;
-    lang: LanguageType;
+    lang: string;
 }
 
 const TranslationProvider: React.FC<TranslationProviderProps> = ({children, lang}) => {

@@ -1,19 +1,11 @@
 'use client'
-import {FC} from 'react';
-import {LangPropsBaseType} from "@/app/[lang]/langPropsBase.types";
-import {useClientTranslation} from "@/app/i18n/ClientTranslationProvider";
+import {redirect} from "next/navigation";
+import {RedirectType} from "next/dist/client/components/redirect";
 
-interface PageProps extends LangPropsBaseType {
-}
 
-const Page: FC<PageProps> = (props) => {
-    const {t} = useClientTranslation()
-    // const t = useTrans();
-    return (
-        <div>Hello lang!!!, {JSON.stringify(props.params)}
-            {t('common.write here...')}
-        </div>
-    );
+
+const Page = () => {
+    redirect('/info', RedirectType.replace)
 }
 
 export default Page
