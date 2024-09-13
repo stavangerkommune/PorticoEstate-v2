@@ -346,7 +346,7 @@ class ServerSettings
                         $this->$key = is_array($value) ? $value : $this->safeUnserialize($value);
                         break;
                     case 'webserver_url':
-                        $this->$key = $value . PHPGW_MODULES_PATH ?: PHPGW_MODULES_PATH;
+                        $this->$key = $value ? $value. PHPGW_MODULES_PATH : PHPGW_MODULES_PATH;
                         break;
                     default:
                         $this->$key = $value;
