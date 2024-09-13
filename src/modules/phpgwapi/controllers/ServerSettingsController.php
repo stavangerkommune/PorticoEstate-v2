@@ -8,6 +8,7 @@ use Exception;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+require_once SRC_ROOT_PATH . '/helpers/LegacyObjectHandler.php';
 
 class ServerSettingsController
 {
@@ -33,6 +34,7 @@ class ServerSettingsController
     public function index(Request $request, Response $response): Response
     {
         try {
+//            $config_backend = CreateObject('phpgwapi.config', 'booking')->read();
             $serverSettings = $this->settings->get('server');
             $model = new ServerSettings($serverSettings);
             $serialized = $model->serialize();
