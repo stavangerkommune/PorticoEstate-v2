@@ -98,6 +98,7 @@ class LoginHelper
             exit;
 		}
 		\phpgw::redirect_link('/bookingfrontend/');
+		exit;
 	}
 
 	private static function login()
