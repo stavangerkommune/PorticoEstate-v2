@@ -72,13 +72,13 @@ $mobile: (
 
 
 body {
-  font-family: 'Roboto', sans-serif;
+  //font-family: 'Roboto', sans-serif;
   font-weight: $text-regular;
   @include applyFontProperties('body');
 }
 
 h1, .h1 {
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-poppins);
   font-weight: $text-regular;
   margin-top: 0;
   margin-bottom: 2rem;
@@ -86,7 +86,7 @@ h1, .h1 {
 }
 
 h2, .h2 {
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-poppins);
   font-weight: $text-regular;
   @include applyFontProperties('headline');
 }

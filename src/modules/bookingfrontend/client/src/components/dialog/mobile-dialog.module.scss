@@ -60,6 +60,12 @@
         min-width: 640px;
         min-height: 480px;
     }
+    &.hd {
+        @include desktop {
+            width: 1024px;
+            height: 960px;
+        }
+    }
 }
 
 .show {

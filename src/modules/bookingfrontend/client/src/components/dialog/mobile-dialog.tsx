@@ -1,9 +1,9 @@
 import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
-import styles from "./mobile-dialog.module.scss";
-import { useTrans } from "@/app/i18n/ClientTranslationProvider";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { Button, Tooltip } from "@digdir/designsystemet-react";
+import styles from './mobile-dialog.module.scss';
+import { useTrans } from '@/app/i18n/ClientTranslationProvider';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { Button, Tooltip } from '@digdir/designsystemet-react';
 
 interface DialogProps extends PropsWithChildren {
     /** Boolean to control the visibility of the modal */
@@ -12,6 +12,10 @@ interface DialogProps extends PropsWithChildren {
     onClose: () => void;
     /** Boolean to control whether the default header is shown */
     showDefaultHeader?: boolean;
+    /** Size of the dialog */
+    size?: 'hd';
+    /** Whether to confirm on close */
+    confirmOnClose?: boolean;
 }
 
 /**
@@ -23,30 +27,60 @@ interface DialogProps extends PropsWithChildren {
  * @param open - Controls whether the modal is open or closed
  * @param onClose - Callback function to close the modal
  * @param showDefaultHeader - Controls whether the default header is shown (default: true)
+ * @param confirmOnClose - Prompts the user for confirmation before closing (default: false)
  */
 const Dialog: React.FC<DialogProps> = ({
                                            open,
                                            onClose,
                                            showDefaultHeader = true,
-                                           children
+                                           children,
+                                           size,
+                                           confirmOnClose = false,
                                        }) => {
     const dialogRef = useRef<HTMLDialogElement | null>(null);
     const [show, setShow] = useState<boolean>(false);
     const t = useTrans();
     const [scrolled, setScrolled] = useState<boolean>(false);
 
+    // Attempt to close the dialog, with confirmation if necessary
+    const attemptClose = () => {
+        if (confirmOnClose) {
+            if (window.confirm(t('Are you sure you want to close?'))) {
+                onClose();
+            }
+        } else {
+            onClose();
+        }
+    };
+
+    // Handle backdrop clicks
+    const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
+        if (e.target === dialogRef.current) {
+            attemptClose();
+        }
+    };
+
     useEffect(() => {
         const dialog = dialogRef.current;
         if (!dialog) return;
 
         const onScroll = () => {
-            setScrolled(dialog.scrollTop > 5)
-        }
+            setScrolled(dialog.scrollTop > 5);
+        };
         dialog.addEventListener('scroll', onScroll);
+
+        // Handle Escape key
+        const handleCancel = (e: Event) => {
+            e.preventDefault(); // Prevent default close
+            attemptClose();
+        };
+        dialog.addEventListener('cancel', handleCancel);
+
         return () => {
             dialog.removeEventListener('scroll', onScroll);
+            dialog.removeEventListener('cancel', handleCancel);
         };
-    }, [dialogRef.current]);
+    }, [confirmOnClose]);
 
     useEffect(() => {
         const dialog = dialogRef.current;
@@ -73,7 +107,8 @@ const Dialog: React.FC<DialogProps> = ({
     return (
         <dialog
             ref={dialogRef}
-            className={`${show ? styles.show : ''} ${styles.modal}`}
+            className={`${show ? styles.show : ''} ${styles.modal} ${size ? styles[size] : ''}`}
+            onClick={handleBackdropClick}
         >
             <div className={styles.dialogContainer}>
                 {showDefaultHeader && (
@@ -81,20 +116,18 @@ const Dialog: React.FC<DialogProps> = ({
                         <Tooltip content={t('booking.close')}>
                             <Button
                                 icon={true}
-                                variant='tertiary'
-                                aria-label='Close dialog'
-                                onClick={onClose}
+                                variant="tertiary"
+                                aria-label="Close dialog"
+                                onClick={attemptClose}
                                 className={'default'}
                                 size={'sm'}
                             >
-                                <FontAwesomeIcon icon={faXmark} size={'lg'}/>
+                                <FontAwesomeIcon icon={faXmark} size={'lg'} />
                             </Button>
                         </Tooltip>
                     </div>
                 )}
-                <div className={styles.dialogContent}>
-                    {children}
-                </div>
+                <div className={styles.dialogContent}>{children}</div>
             </div>
         </dialog>
     );

@@ -32,6 +32,5 @@ export function getOptions(lng: ILanguage = fallbackLng, ns: string | string[] =
 }
 
 export const getTranslationURL = (lang: ILanguage): string => {
-    console.log(lang)
     return phpGWLink(["bookingfrontend", 'lang', lang.key], null, true);
 };
