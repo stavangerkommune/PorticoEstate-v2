@@ -109,6 +109,29 @@ class SessionsMiddleware implements MiddlewareInterface
 						'session_name' => $this->settings['session_name'][$custom_frontend]
 					]
 				);
+
+				$process_login = new Login();
+				if ($process_login->login())
+				{
+					return $handler->handle($request);
+				}
+				else
+				{
+					$sessions->phpgw_setcookie('login_second_pass', true, 0);
+					if (Sanitizer::get_var('menuaction', 'string', 'GET')  && Sanitizer::get_var('phpgw_return_as', 'string') != 'json')
+					{
+						unset($_GET['click_history']);
+						unset($_GET['sessionid']);
+						unset($_GET[session_name()]);
+						unset($_GET['kp3']);
+						$cookietime = time() + 60;
+						$sessions->phpgw_setcookie('redirect', json_encode($_GET), $cookietime);
+					}
+					\phpgw::redirect_link('/login_ui');
+				}
+				$response = new Response();
+				return $response->withHeader('Content-Type', 'text/html');
+
 			}
 			else if ($second_pass)
 			{
