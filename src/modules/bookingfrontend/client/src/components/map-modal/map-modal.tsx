@@ -25,7 +25,7 @@ const MapModal: FC<MapModalProps> = (props) => {
             </Button>
             <MobileDialog open={isOpen} onClose={() => setIsOpen(false)} size={'hd'}>
                 <div style={{display: 'flex', justifyContent: 'center', alignItems: 'stretch', width: '100%', height: '100%'}}>
-                    <iframe id="iframeMap" frameBorder="0" scrolling="no" marginHeight="0" marginWidth="0"
+                    <iframe id="iframeMap" frameBorder={0} scrolling="no" marginHeight={0} marginWidth={0}
                             style={{width: '100%'}} src={frameUrl}>
                     </iframe>
                 </div>
