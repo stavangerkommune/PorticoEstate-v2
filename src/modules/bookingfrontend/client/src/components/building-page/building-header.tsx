@@ -16,7 +16,7 @@ const BuildingHeader = async (props: BuildingHeaderProps) => {
         <section className={`${styles.buildingHeader} mx-3`}>
             <div className={styles.buildingName}>
                 <h2>
-                    <FontAwesomeIcon icon={faLocationDot}/>
+                    <FontAwesomeIcon  style={{fontSize: '22px'}} icon={faLocationDot}/>
                     {building.name}
                 </h2>
             </div>
