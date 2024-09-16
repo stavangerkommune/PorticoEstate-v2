@@ -1,11 +1,17 @@
+@import "../styles/spacing.module";
 @import "../components/building-calendar/building-calender.global";
 @import "../styles/colors";
 @import "../styles/effects/effects";
 @import "../styles/typography";
 @import "../styles/link/link";
 @import "../styles/bs-containers/container.global";
+@import "../styles/hr.module";
 
 @import "../components/digdir@next/badge/badge.global";
+
+body {
+    margin: 0;
+}
 
 :root {
   background-color: $grey-light-64;

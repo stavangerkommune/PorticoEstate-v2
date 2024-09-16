@@ -9,11 +9,11 @@
     background: $white;
     padding: 1rem 2rem;
     border-radius: $rounded-large;
-    margin-bottom: 2rem;
-    margin-top: 3rem;
-    @include mobile {
-        margin-top: 0;
-    }
+    //margin-bottom: 2rem;
+    //margin-top: 3rem;
+    //@include mobile {
+    //    margin-top: 0;
+    //}
     .logo {
         display: flex;
         .logoImg {

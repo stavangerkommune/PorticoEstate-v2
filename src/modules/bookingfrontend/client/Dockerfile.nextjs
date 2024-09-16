@@ -1,19 +1,71 @@
-FROM node:20-alpine
+# Base image
+FROM node:18-alpine AS base
 
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Install dependencies
-COPY package*.json ./
-RUN corepack enable
-RUN yarn install --frozen-lockfile
+# Install dependencies based on the preferred package manager
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+RUN \
+  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
+  elif [ -f package-lock.json ]; then npm ci; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
 
-# Copy source files
+# Rebuild the source code only for production
+FROM base AS builder
+ARG NEXT_ENV=production
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build the app if in production mode
-ARG NEXT_ENV=development
-RUN if [ "$NEXT_ENV" = "production" ]; then npm run build; fi
+# Only build in production mode
+RUN \
+  if [ "$NEXT_ENV" = "production" ]; then \
+    if [ -f yarn.lock ]; then yarn run build; \
+    elif [ -f package-lock.json ]; then npm run build; \
+    elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
+    else echo "Lockfile not found." && exit 1; \
+    fi; \
+  else \
+    echo "Skipping build in development mode"; \
+  fi
+
+
+
+
+# Production image, copy all the files and run next
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+# Uncomment the following line in case you want to disable telemetry during runtime.
+# ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+COPY --chown=nextjs:nodejs  ./entrypoint.sh ./entrypoint.sh
+
+# Ensure correct permissions and ownership
+RUN chmod a+x ./entrypoint.sh
+# RUN chown nextjs:nodejs ./entrypoint.sh
+
+# Only copy the .next files for production mode
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start:${NEXT_ENV:-development}"]
+ENV PORT=3000
+ENV NEXT_ENV=${NEXT_ENV:-production}
+
+# Use the script as the entry point
+
+CMD ["node", "server.js"]
