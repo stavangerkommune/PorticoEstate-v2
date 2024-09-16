@@ -11,6 +11,9 @@ import LoadingIndicationWrapper from "@/components/loading-wrapper/LoadingIndica
 import Footer from "@/components/layout/footer/footer";
 import Header from "@/components/layout/header/header";
 import PrefetchWrapper from "@/components/loading-wrapper/PrefetchWrapper";
+import InternalNav from "@/components/layout/header/internal-nav/internal-nav";
+import styles from './layout.module.scss'
+
 
 interface PublicLayoutProps extends PropsWithChildren {
     params: {
@@ -27,7 +30,10 @@ const PublicLayout: FC<PublicLayoutProps> = (props) => {
                     <PrefetchWrapper>
                         <LoadingIndicationWrapper>
                             <Header />
-                            {props.children}
+                            <div className={styles.mainContent}>
+                                <InternalNav/>
+                                {props.children}
+                            </div>
                             <Footer lang={props.params.lang}/>
                         </LoadingIndicationWrapper>
                     </PrefetchWrapper>

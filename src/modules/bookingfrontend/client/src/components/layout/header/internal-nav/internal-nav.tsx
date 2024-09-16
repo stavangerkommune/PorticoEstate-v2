@@ -17,7 +17,7 @@ const InternalNav: FC<InternalNavProps> = (props) => {
         return null;
     }
     return (
-        <div className={styles.internalNavContainer}>
+        <div className={`${styles.internalNavContainer} mx-3`}>
             <Link className={'link-text link-text-primary'} href={phpGWLink('bookingfrontend/', {}, false)}>
                 <FontAwesomeIcon icon={faArrowLeft} />
                 {t('bookingfrontend.home_page')}

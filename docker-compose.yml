@@ -41,11 +41,6 @@ services:
                 - NEXT_ENV=${NEXT_ENV:-production}
         environment:
             <<: *common-variables
-        volumes:
-            - ./src/modules/bookingfrontend/client:/app
-            - /app/node_modules
-            - /app/.next
-        command: ["npm", "run", "start:${NEXT_ENV:-production}"]
         networks:
             - internal
 

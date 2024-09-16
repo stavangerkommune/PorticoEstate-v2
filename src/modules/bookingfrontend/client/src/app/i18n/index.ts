@@ -1,6 +1,6 @@
 import {createInstance, i18n} from 'i18next';
 import {initReactI18next} from 'react-i18next/initReactI18next';
-import {defaultNS, getOptions, getTranslationURL, ILanguage, languages} from './settings';
+import {cookieName, defaultNS, fallbackLng, getOptions, getTranslationURL, ILanguage, languages} from './settings';
 
 const initI18next = async (lng: ILanguage, ns?: string | string[]): Promise<i18n> => {
     const i18nInstance = createInstance();
@@ -19,11 +19,25 @@ const initI18next = async (lng: ILanguage, ns?: string | string[]): Promise<i18n
     return i18nInstance;
 };
 
-export async function getTranslation(lng: string, ns?: string | string[]): Promise<{
+export async function getTranslation(lng?: string, ns?: string | string[]): Promise<{
     t: (key: string) => string,
     i18n: i18n
 }> {
-    const language = languages.find(e => e.key === lng)!;
+    let choosenLngString = lng;
+
+    if(!choosenLngString && typeof window === 'undefined') {
+
+        const cookies = require("next/headers").cookies
+        const cookieStore = cookies();
+        choosenLngString = cookieStore.get(cookieName as any)?.value
+    }
+
+
+    let language = languages.find(e => e.key === choosenLngString);
+
+    if(!language) {
+        language = fallbackLng;
+    }
     const i18nextInstance = await initI18next(language, ns || defaultNS);
     return {
         t: i18nextInstance.getFixedT(language.key as any, (Array.isArray(ns) ? ns[0] : ns) as any),

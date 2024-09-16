@@ -2,7 +2,7 @@ import {dir} from 'i18next'
 import {languages, ILanguage} from "@/app/i18n/settings";
 
 import type {Metadata} from "next";
-import {Roboto} from "next/font/google";
+import {Roboto, Poppins} from "next/font/google";
 import '@digdir/designsystemet-css';
 import '@digdir/designsystemet-theme';
 import "@/app/globals.scss";
@@ -13,7 +13,8 @@ export async function generateStaticParams() {
 }
 
 
-const inter = Roboto({weight: ['100', '300', '400', '500', '700', '900'], subsets: ['latin']});
+const roboto = Roboto({weight: ['100', '300', '400', '500', '700', '900'], subsets: ['latin']});
+const poppins = Poppins({weight: ['100', '300', '400', '500', '700', '900'], subsets: ['latin'], variable: '--font-poppins'});
 
 export const revalidate = 120;
 
@@ -34,7 +35,7 @@ const RootLayout: FC<RootLayoutProps> = (props) => {
 
     return (
         <html lang={props.params.lang} dir={dir(props.params.lang)}>
-        <body className={inter.className}>
+        <body className={`${roboto.className} ${poppins.variable}`}>
         <div className={'container-xxl container-fluid'}>
             {props.children}
         </div>

@@ -4,7 +4,6 @@ import ClientPHPGWLink from "@/components/layout/header/ClientPHPGWLink";
 import HeaderMenuContent from "@/components/layout/header/header-menu-content";
 import LanguageSwitcher from "@/app/i18n/language-switcher";
 import UserMenu from "@/components/layout/header/user-menu/user-menu";
-import InternalNav from "@/components/layout/header/internal-nav/internal-nav";
 
 interface HeaderProps {
 }
@@ -14,7 +13,7 @@ const Header = async (props: HeaderProps) => {
     const logoPath = "/phpgwapi/templates/bookingfrontend_2/styleguide/gfx";
     return (
         <>
-            <nav className={styles.navbar}>
+            <nav className={`${styles.navbar} mt-3 mb-2`}>
                 <ClientPHPGWLink strURL={'bookingfrontend/'} className={styles.logo}>
                     <img src={`${serverSettings.webserver_url}${logoPath}/logo_aktiv_kommune_horizontal.png`}
                          alt="Aktiv kommune logo"
@@ -31,7 +30,6 @@ const Header = async (props: HeaderProps) => {
 
                 </HeaderMenuContent>
             </nav>
-            <InternalNav/>
         </>
     );
 }

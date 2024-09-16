@@ -1,0 +1,11 @@
+@import "colors";
+
+.divider, hr {
+    height: 1px;
+    border: 0px solid rgba($blue, 0.2);
+    border-top-width: 1px;
+
+    &-primary {
+        border-color: rgba($purple, 0.2);
+    }
+}

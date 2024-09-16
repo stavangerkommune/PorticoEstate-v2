@@ -1,0 +1,90 @@
+@import "util.module";
+$spacings: 0.5rem, 1rem, 2rem, 4rem;
+$spacing-names: 1, 2, 3, 4; // Corresponding class name suffixes
+
+// Mixin to generate padding and margin classes
+@mixin generate-spacing-helpers($property, $property-name: null) {
+    $property-name: if($property-name == null, $property, $property-name);
+
+    @each $value, $name in zip($spacings, $spacing-names) {
+        // Axis helpers
+        .#{$property-name}x-#{$name} {
+            #{$property}-left: $value;
+            #{$property}-right: $value;
+        }
+        .#{$property-name}y-#{$name} {
+            #{$property}-top: $value;
+            #{$property}-bottom: $value;
+        }
+        // Side-specific helpers
+        .#{$property-name}t-#{$name} {
+            #{$property}-top: $value;
+        }
+        .#{$property-name}r-#{$name} {
+            #{$property}-right: $value;
+        }
+        .#{$property-name}b-#{$name} {
+            #{$property}-bottom: $value;
+        }
+        .#{$property-name}l-#{$name} {
+            #{$property}-left: $value;
+        }
+        // Full helper
+        .#{$property-name}-#{$name} {
+            #{$property}: $value;
+        }
+
+        // Mobile-only classes
+        @include mobile {
+            .#{$property-name}x-#{$name}-mobile {
+                #{$property}-left: $value;
+                #{$property}-right: $value;
+            }
+            .#{$property-name}y-#{$name}-mobile {
+                #{$property}-top: $value;
+                #{$property}-bottom: $value;
+            }
+            .#{$property-name}-#{$name}-mobile {
+                #{$property}: $value;
+            }
+        }
+
+        // Desktop-only classes
+        @include desktop {
+            .#{$property-name}x-#{$name}-desktop {
+                #{$property}-left: $value;
+                #{$property}-right: $value;
+            }
+            .#{$property-name}y-#{$name}-desktop {
+                #{$property}-top: $value;
+                #{$property}-bottom: $value;
+            }
+            .#{$property-name}-#{$name}-desktop {
+                #{$property}: $value;
+            }
+        }
+    }
+}
+
+// Generate padding and margin classes
+@include generate-spacing-helpers(padding, p);
+@include generate-spacing-helpers(margin, m);
+
+// Generate gap helpers with mobile and desktop support
+@each $value, $name in zip($spacings, $spacing-names) {
+    .gap-#{$name} {
+        gap: $value;
+    }
+
+    @include mobile {
+        .gap-#{$name}-mobile {
+            gap: $value;
+        }
+    }
+
+    @include desktop {
+        .gap-#{$name}-desktop {
+            gap: $value;
+        }
+    }
+}
