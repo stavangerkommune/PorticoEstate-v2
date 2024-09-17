@@ -20,7 +20,13 @@ FROM base AS builder
 ARG NEXT_ENV=production
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY ./src ./src
+COPY ./public ./public
+COPY ./.env ./.env
+COPY ./next.config.mjs ./next.config.mjs
+COPY ./tsconfig.json ./tsconfig.json
+COPY ./yarn.lock ./yarn.lock
+COPY ./package.json ./package.json
 
 # Only build in production mode
 RUN \
