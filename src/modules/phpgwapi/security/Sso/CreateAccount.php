@@ -28,6 +28,7 @@ use App\modules\phpgwapi\controllers\Accounts\phpgwapi_user;
 use App\modules\phpgwapi\helpers\LoginUi;
 
 use Exception;
+use Sanitizer;
 
 class CreateAccount
 {
@@ -64,7 +65,7 @@ class CreateAccount
 				throw new Exception(lang('missing membership: "%1" is not in the list', $default_group_lid));
 			}
 		}
-		else
+		else if (!\Sanitizer::get_var('OIDC_pid', 'bool', 'SERVER'))
 		{
 			throw new Exception(lang('Access denied'));
 		}
@@ -78,8 +79,8 @@ class CreateAccount
 			//reserve fallback
 			if (\Sanitizer::get_var('OIDC_pid', 'bool', 'SERVER'))
 			{
-				throw new Exception('FIX me: OIDC_pid is set, redirect to login_ui?');
-				//phpgw::redirect_link('login_ui', array('skip_remote' => true));
+				//throw new Exception('FIX me: OIDC_pid is set, redirect to login_ui?');
+				\phpgw::redirect_link('login_ui/', array('skip_remote' => true));
 			}
 			//fallback failed
 			throw new Exception(lang('Did not find any username'));

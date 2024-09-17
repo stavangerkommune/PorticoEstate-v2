@@ -146,47 +146,7 @@
 
 		}
 
-		function update_hash($account_id, $ssn)
-		{
-			$ssn_hash = "{SHA}" . base64_encode(self::hex2bin(sha1($ssn)));
-
-			$sql = "SELECT phpgw_accounts.account_id, account_lid FROM phpgw_accounts"
-				. " JOIN phpgw_accounts_data ON phpgw_accounts.account_id = phpgw_accounts_data.account_id"
-				. " WHERE account_data->>'ssn_hash' = :ssn_hash";
-			$stmt = $this->db->prepare($sql);
-			$stmt->execute([':ssn_hash' => $ssn_hash]);
-
-			$row = $stmt->fetch(PDO::FETCH_ASSOC);
-			$old_account_id = $row['account_id'];
-			$old_account_lid = $row['account_lid'];			
-			if($old_account_id && $old_account_id != $account_id)
-			{
-				$Log = new \App\modules\phpgwapi\services\Log();
-				$stmt = $this->db->prepare("SELECT account_lid FROM phpgw_accounts WHERE account_id = :account_id");
-				$stmt->execute([':account_id' => (int)$account_id]);
-
-				$row = $stmt->fetch(PDO::FETCH_ASSOC);
-				$new_account_lid = $row['account_lid'];
-
-					$Log->write(array('text' => 'I-Notification, attempt to register duplicate ssn for old: %1, new: %2',
-					'p1' => $old_account_lid,
-					'p2' => $new_account_lid,
-					));
-
-				return;
-			}
-
-			$stmt = $this->db->prepare("SELECT account_id FROM phpgw_accounts_data WHERE account_id = :account_id");
-			$stmt->execute([':account_id' => (int)$account_id]);
-
-			if (!$stmt->fetch()) {
-				$data = json_encode(array('ssn_hash' => $ssn_hash,'updated' => date('Y-m-d H:i:s')));
-				$sql = "INSERT INTO phpgw_accounts_data (account_id, account_data) VALUES (:account_id, :data)";
-				$stmt = $this->db->prepare($sql);
-				$stmt->execute([':account_id' => $account_id, ':data' => $data]);
-			}
-		}
-
+	
 		/**
 		* Set the user's password to a new value
 		*
