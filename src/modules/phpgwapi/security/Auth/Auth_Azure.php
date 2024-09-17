@@ -135,15 +135,9 @@
 			$stmt->execute([':ssn_hash' => $ssn_hash]);
 
 			$row = $stmt->fetch(PDO::FETCH_ASSOC);
-			$username = $this->db->unmarshal($row['account_lid'], 'string');
-
-			if($username)
-			{
-				return $username;
-			}
+			$username = (string)$this->db->unmarshal($row['account_lid'], 'string');
 
 			return $username;
-
 		}
 
 	
