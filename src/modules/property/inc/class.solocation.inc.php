@@ -2891,7 +2891,7 @@
 
 			if (in_array($field_name,array('id')) || preg_match('/^loc/i', $field_name))
 			{
-				return;
+				return false;
 			}
 
 			$location_id = $this->locations->get_id('property', ".location.{$type_id}");
@@ -2907,9 +2907,9 @@
 			if (in_array($field_name, $cols))
 			{
 				$table = "fm_location{$type_id}";
-				$this->db->query("UPDATE fm_location{$type_id} SET $field_name = '{$value}'"
+				return $this->db->query("UPDATE fm_location{$type_id} SET $field_name = '{$value}'"
 				. " WHERE id = {$id}", __LINE__, __FILE__);
-				return;
+			
 			}
 			else if($field_name == 'contact_phone')
 			{
@@ -2918,8 +2918,15 @@
 				$this->db->next_record();
 				$tenant_id = $this->db->f('tenant_id');
 
-				return $this->db->query("UPDATE fm_tenant SET contact_phone = '{$value}'"
+				if($tenant_id)
+				{
+					return $this->db->query("UPDATE fm_tenant SET contact_phone = '{$value}'"
 						. " WHERE id = {$tenant_id}", __LINE__, __FILE__);
+				}
+				else
+				{
+					return false;
+				}
 			}
 			else if($field_name == 'street_name')
 			{
