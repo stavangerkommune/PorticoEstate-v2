@@ -3,6 +3,7 @@
 use App\modules\bookingfrontend\controllers\BuildingController;
 use App\modules\bookingfrontend\controllers\DataStore;
 use App\modules\bookingfrontend\controllers\BookingUserController;
+use App\modules\bookingfrontend\controllers\ResourceController;
 use App\modules\bookingfrontend\helpers\LangHelper;
 use App\modules\bookingfrontend\helpers\LoginHelper;
 use App\modules\bookingfrontend\helpers\LogoutHelper;
@@ -15,6 +16,11 @@ $app->group('/bookingfrontend', function (RouteCollectorProxy $group) {
     $group->group('/buildings', function (RouteCollectorProxy $group) {
         $group->get('', BuildingController::class . ':index');
         $group->get('/{id}', BuildingController::class . ':show');
+        $group->get('/{id}/resources', ResourceController::class . ':getResourcesByBuilding');
+    });
+    $group->group('/resources', function (RouteCollectorProxy $group) {
+        $group->get('', ResourceController::class . ':index');
+        $group->get('/{id}', ResourceController::class . ':getResource');
     });
 });
 
