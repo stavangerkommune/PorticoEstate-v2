@@ -64,7 +64,7 @@ class sms_sms extends sms_sms_
 
 		$ch = curl_init($url);
 
-		if ($this->serverSettings['proxy_host'])
+		if ($this->pswin_param['proxy_host'])
 		{
 			curl_setopt($ch, CURLOPT_PROXY, "{$this->pswin_param['proxy_host']}:{$this->pswin_param['proxy_port']}");
 		}
