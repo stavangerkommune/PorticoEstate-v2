@@ -8,7 +8,6 @@ class sms_sms extends sms_sms_
 	function __construct()
 	{
 		parent::__construct();
-		$this->sms_config = Settings::getInstance()->get('sms_config');
 		$this->sms_param = $this->sms_config['bergen_kommune'];
 	}
 

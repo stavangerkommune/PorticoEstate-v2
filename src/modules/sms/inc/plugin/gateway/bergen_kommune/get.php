@@ -1,6 +1,8 @@
 <?php
 
 use App\modules\phpgwapi\services\Settings;
+use App\Database\Db;
+
 
 class sms_sms_ extends sms_sms__
 {
@@ -9,8 +11,7 @@ class sms_sms_ extends sms_sms__
 	function __construct()
 	{
 		parent::__construct();
-		$sms_config = Settings::getInstance()->get('sms_config');
-		$this->sms_param = $sms_config['bergen_kommune'];
+		$this->sms_param = $this->sms_config['pswin'];
 	}
 
 	function gw_customcmd()
@@ -62,7 +63,7 @@ class sms_sms_ extends sms_sms__
 			}
 		}
 
-		$datetime_format = phpgwapi_db::datetime_format();
+		$datetime_format = Db::datetime_format();
 
 		foreach ($response as $entry)
 		{

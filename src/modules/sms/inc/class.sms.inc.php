@@ -20,6 +20,7 @@ use App\Database\Db;
 use App\Database\Db2;
 use App\modules\phpgwapi\services\Settings;
 use App\modules\phpgwapi\controllers\Accounts\Accounts;
+use App\modules\phpgwapi\controllers\Locations;
 
 
 $apps_path['base'] = PHPGW_SERVER_ROOT . '/sms';
@@ -29,25 +30,50 @@ $apps_path['inc'] = $apps_path['base'] . '/inc';
 
 $userSettings = Settings::getInstance()->get('user');
 
+$sms_config = array();
 
 // SMS command security parameter
 $feat_command_path['bin'] = "{$apps_path['base']}/bin/{$userSettings['domain']}";
-$sms_config = Settings::getInstance()->get('sms_config');
 
 $sms_config['common']['apps_path'] = $apps_path;
 $sms_config['common']['feat_command_path'] = $feat_command_path;
 
+$location_obj = new Locations();
+$location_id = $location_obj->get_id('sms', 'run');
+$sms_config = CreateObject('admin.soconfig', $location_id)->read();
+$sms_config['common']['apps_path'] = $apps_path;
+$sms_config['common']['feat_command_path'] = $feat_command_path;
 
-Settings::getInstance()->update('sms_config', ['common' => ['apps_path' => $apps_path, 'feat_command_path' => $feat_command_path]]);
+$reserved_codes = array(
+	"PV",
+	"BC",
+	"GET",
+	"PUT",
+	"INFO",
+	"SAVE",
+	"DEL",
+	"LIST",
+	"RETR",
+	"POP3",
+	"SMTP",
+	"BROWSE",
+	"NEW",
+	"SET",
+	"POLL",
+	"VOTE",
+	"REGISTER",
+	"REG",
+	"DO",
+	"USE",
+	"EXECUTE",
+	"EXEC",
+	"RUN",
+	"ACK"
+);
 
-if (!isset($sms_config['common']['gateway_module_get']) || !$sms_config['common']['gateway_module_get'])
-{
-	$path_to_sms = dirname(__FILE__);
 
-	require $path_to_sms . '/config.php';
-	$sms_config = Settings::getInstance()->get('sms_config');
-
-}
+$sms_config['reserved_codes'] = $reserved_codes;
+Settings::getInstance()->set('sms_config', $sms_config);
 
 if ($sms_config['common']['gateway_module_get'] && !$sms_config['common']['gateway_module_send'])
 {

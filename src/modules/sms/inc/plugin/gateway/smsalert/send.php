@@ -9,7 +9,6 @@ class sms_sms extends sms_sms_
 	function __construct()
 	{
 		parent::__construct();
-		$this->sms_config = Settings::getInstance()->get('sms_config');
 		$this->param = $this->sms_config['smsalert'];
 	}
 

@@ -13,8 +13,7 @@ class sms_sms extends sms_sms_
 	function __construct()
 	{
 		parent::__construct();
-		$sms_config = Settings::getInstance()->get('sms_config');
-		$this->pswin_param = $sms_config['pswin'];
+		$this->pswin_param = $this->sms_config['pswin'];
 	}
 
 	function parse_html($s_str)
@@ -53,7 +52,7 @@ class sms_sms extends sms_sms_
 				'MSG'	=> array(
 					'ID'	=> $smslog_id,
 					'TEXT'	=> $sms_msg,
-					'SND'	=> (string)$this->pswin_param['common']['gateway_number'],
+					'SND'	=> (string)$this->sms_config['common']['gateway_number'],
 					'RCV'	=> $sms_to
 				)
 			)
@@ -65,7 +64,7 @@ class sms_sms extends sms_sms_
 
 		$ch = curl_init($url);
 
-		if ($this->pswin_param['proxy_host'])
+		if ($this->serverSettings['proxy_host'])
 		{
 			curl_setopt($ch, CURLOPT_PROXY, "{$this->pswin_param['proxy_host']}:{$this->pswin_param['proxy_port']}");
 		}
