@@ -25,6 +25,7 @@ class Resource
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      * @Expose
+     * @Short
      * @OA\Property(description="Unique identifier for the resource", type="integer")
      */
     public $id;
@@ -32,6 +33,7 @@ class Resource
     /**
      * @ORM\Column(type="string", length=150)
      * @Expose
+     * @Short
      * @OA\Property(description="Name of the resource", type="string", maxLength=150)
      */
     public $name;
@@ -39,6 +41,7 @@ class Resource
     /**
      * @ORM\Column(type="integer", nullable=true)
      * @Expose
+     * @Short
      * @OA\Property(description="Activity ID associated with the resource", type="integer", nullable=true)
      */
     public $activity_id;
@@ -46,6 +49,7 @@ class Resource
     /**
      * @ORM\Column(type="integer")
      * @Expose
+     * @Short
      * @OA\Property(description="Whether the resource is active", type="integer")
      */
     public $active;
@@ -130,6 +134,7 @@ class Resource
     /**
      * @ORM\Column(type="smallint", nullable=true)
      * @Expose
+     * @Short
      * @OA\Property(description="Whether simple booking is enabled", type="integer", nullable=true)
      */
     public $simple_booking;
