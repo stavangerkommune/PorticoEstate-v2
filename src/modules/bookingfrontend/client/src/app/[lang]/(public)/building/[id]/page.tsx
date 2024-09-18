@@ -31,7 +31,6 @@ const BuildingShow = async (props: BuildingShowProps) => {
     return (
         <main>
             <BuildingHeader building={building}/>
-            <hr className={`my-2 mx-2`}/>
             <BuildingDescription building={building}/>
             <hr className={`my-2 mx-2`}/>
             <BuildingCalendar building_id={props.params.id}/>

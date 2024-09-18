@@ -1,11 +1,13 @@
-import {FC} from 'react';
 import {IBuilding} from "@/service/types/Building";
 import {getTranslation} from "@/app/i18n";
 import {fallbackLng} from "@/app/i18n/settings";
+import parse from 'html-react-parser';
+import CollapsibleText from "@/components/collapsable-text/collapsible-text";
 
 interface BuildingDescriptionProps {
     building: IBuilding
 }
+
 /**
  * A dictionary of named HTML entities and their corresponding character representations.
  */
@@ -58,18 +60,22 @@ const BuildingDescription = async (props: BuildingDescriptionProps) => {
     const {t, i18n} = await getTranslation();
     const descriptionJson = JSON.parse(props.building.description_json || '');
     let description = descriptionJson[i18n.language];
-    if(!description) {
+    if (!description) {
         description = descriptionJson[fallbackLng.key];
     }
-    if(!description) {
+    if (!description) {
         return null;
     }
     return (
-        <div>
-            <h3>
-                {t('common.description')}
-            </h3>
-            <div dangerouslySetInnerHTML={{__html: unescapeHTML(description)}}></div>
+        <div className={'mx-3'}>
+
+            <hr className={`my-2`}/>
+            <div>
+                <h3>
+                    {t('common.description')}
+                </h3>
+                <CollapsibleText>{parse(unescapeHTML(description))}</CollapsibleText>
+            </div>
         </div>
     );
 }
