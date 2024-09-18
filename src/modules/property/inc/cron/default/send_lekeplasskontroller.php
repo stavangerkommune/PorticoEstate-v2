@@ -130,7 +130,7 @@ class send_lekeplasskontroller extends property_cron_parent
 
 				foreach ($cases_array as $case)
 				{
-					if ($case->get_status() === 0 )
+					if ($case->get_status() === 0)
 					{
 						$checlists[] = $entry['id'];
 						break 2; // Break out of two levels of nested loops
@@ -241,6 +241,7 @@ class send_lekeplasskontroller extends property_cron_parent
 			$body		 = <<<HTML
 		<p>Vedlegget hører til sak {$saksnr_bk360}.</p>
 		<p>Det jobbes med en integrasjon for direkte levering, men inntil videre kommer rapporten som et vedlegg til denne eposten.</p>
+		<p>Ansvarlig enhet er &laquo;Driftsteknisk avdeling&raquo;.</p> 
 		<p>Link til sak i BK360: <a href="https://bk360.adm.bgo/locator/Common/Search/Everything?searchstring={$saksnr_bk360}">{$saksnr_bk360}</a></p>
 		<p>Med vennlig hilsen</p>
 		<p>Bymiljøetaten</p>

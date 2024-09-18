@@ -31,7 +31,6 @@
 	 * example cron : /usr/local/bin/php -q /var/www/html/phpgroupware/property/inc/cron/cron.php default sjekk_manglende_fakturamottak_BK
 	 * @package property
 	 */
-	require_once PHPGW_API_INC . '/flysystem3/vendor/autoload.php';
 
 	use League\Flysystem\Filesystem;
 	use League\Flysystem\FilesystemException;

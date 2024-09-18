@@ -403,7 +403,7 @@ class phpgwapi_categories
 			if (is_array($this->grants))
 			{
 				$grants = $this->grants;
-				//while(list($user) = each($grants))
+				$public_user_list = array(-1);
 				foreach ($grants as $user => $value)
 				{
 					$public_user_list[] = $user;
