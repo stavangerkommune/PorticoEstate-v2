@@ -6,7 +6,7 @@ trait SerializableTrait
 {
     private static $annotationCache = [];
 
-    public function serialize(array $userRoles = []): array
+    public function serialize(array $userRoles = [], bool $short = false): array
     {
         $reflection = new \ReflectionClass($this);
         $properties = $reflection->getProperties();
@@ -18,9 +18,14 @@ trait SerializableTrait
         foreach ($properties as $property) {
             $exposeAnnotation = $this->parseExposeAnnotation($property);
             $excludeAnnotation = $this->parseExcludeAnnotation($property);
+            $shortAnnotation = $this->parseShortAnnotation($property);
 
             if ($excludeAnnotation) {
                 continue; // Skip this property
+            }
+
+            if ($short && !$shortAnnotation) {
+                continue; // Skip non-short properties when short serialization is requested
             }
 
             if ($exposeAnnotation) {
@@ -83,5 +88,16 @@ trait SerializableTrait
             self::$annotationCache[$className]['properties'][$propertyName]['exclude'] = strpos($docComment, '@Exclude') !== false;
         }
         return self::$annotationCache[$className]['properties'][$propertyName]['exclude'];
+    }
+    private function parseShortAnnotation(\ReflectionProperty $property): bool
+    {
+        $className = $property->getDeclaringClass()->getName();
+        $propertyName = $property->getName();
+
+        if (!isset(self::$annotationCache[$className]['properties'][$propertyName]['short'])) {
+            $docComment = $property->getDocComment();
+            self::$annotationCache[$className]['properties'][$propertyName]['short'] = strpos($docComment, '@Short') !== false;
+        }
+        return self::$annotationCache[$className]['properties'][$propertyName]['short'];
     }
 }

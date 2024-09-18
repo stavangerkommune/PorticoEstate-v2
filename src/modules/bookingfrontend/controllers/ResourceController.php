@@ -54,6 +54,13 @@ class ResourceController
      *         @OA\Schema(type="string")
      *     ),
      *     @OA\Parameter(
+     *          name="short",
+     *          in="query",
+     *          description="If set to 1, returns only a subset of fields",
+     *          required=false,
+     *          @OA\Schema(type="integer", enum={0, 1})
+     *      ),
+     *     @OA\Parameter(
      *         name="dir",
      *         in="query",
      *         description="Sort direction (asc or desc)",
@@ -83,6 +90,7 @@ class ResourceController
         $maxMatches = isset($this->userSettings['preferences']['common']['maxmatchs']) ? (int)$this->userSettings['preferences']['common']['maxmatchs'] : 15;
         $queryParams = $request->getQueryParams();
         $start = isset($queryParams['start']) ? (int)$queryParams['start'] : 0;
+        $short = isset($queryParams['short']) && $queryParams['short'] == '1';
         $perPage = isset($queryParams['results']) ? (int)$queryParams['results'] : $maxMatches;
         $sort = $queryParams['sort'] ?? 'id';
         $dir = $queryParams['dir'] ?? 'asc';
@@ -111,9 +119,9 @@ class ResourceController
             $stmt->execute();
             $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-            $resources = array_map(function($data) {
+            $resources = array_map(function($data) use ($short) {
                 $resource = new Resource($data);
-                return $resource->serialize($this->getUserRoles());
+                return $resource->serialize($this->getUserRoles(), $short);
             }, $results);
 
             $totalCount = $this->getTotalCount();
@@ -214,6 +222,13 @@ class ResourceController
      *         required=false,
      *         @OA\Schema(type="integer")
      *     ),
+     *      @OA\Parameter(
+     *           name="short",
+     *           in="query",
+     *           description="If set to 1, returns only a subset of fields",
+     *           required=false,
+     *           @OA\Schema(type="integer", enum={0, 1})
+     *     ),
      *     @OA\Parameter(
      *         name="sort",
      *         in="query",
@@ -255,6 +270,7 @@ class ResourceController
         $buildingId = (int)$args['id'];
         $maxMatches = isset($this->userSettings['preferences']['common']['maxmatchs']) ? (int)$this->userSettings['preferences']['common']['maxmatchs'] : 15;
         $queryParams = $request->getQueryParams();
+        $short = isset($queryParams['short']) && $queryParams['short'] == '1';
         $start = isset($queryParams['start']) ? (int)$queryParams['start'] : 0;
         $perPage = isset($queryParams['results']) ? (int)$queryParams['results'] : $maxMatches;
         $sort = $queryParams['sort'] ?? 'id';
@@ -297,9 +313,9 @@ class ResourceController
             $stmt->execute();
             $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-            $resources = array_map(function($data) {
+            $resources = array_map(function($data) use ($short) {
                 $resource = new Resource($data);
-                return $resource->serialize($this->getUserRoles());
+                return $resource->serialize($this->getUserRoles(), $short);
             }, $results);
 
             $totalCount = $this->getTotalCountByBuilding($buildingId);
