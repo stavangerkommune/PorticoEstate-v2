@@ -100,7 +100,7 @@ class frontend_bofellesdata
 		catch (Exception $e)
 		{
 			Cache::message_set('Could not connect to backend-server ' . $config->config_data['external_db_host'], 'error');
-			phpgw::redirect_link('/home');
+			phpgw::redirect_link('/home/');
 		}
 		$this->db = $db;
 		return $db;

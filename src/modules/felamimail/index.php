@@ -33,5 +33,5 @@
 	catch(Exception $e)
 	{
 		Cache::message_set($e->getMessage(), 'error');
-		phpgw::redirect_link('/home.php');
+		phpgw::redirect_link('/home/');
 	}
