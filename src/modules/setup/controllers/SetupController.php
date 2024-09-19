@@ -226,7 +226,7 @@ class SetupController
 		$setup_data['stage']['header'] = $this->detection->check_header();
 
 		if ($setup_data['stage']['header'] != '10') {
-			Header('Location: setup/manageheader');
+			Header('Location: ../setup/manageheader');
 			exit;
 		} elseif (!$this->setup->auth('Config')) {
 
