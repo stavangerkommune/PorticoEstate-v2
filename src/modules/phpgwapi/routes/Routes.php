@@ -75,7 +75,7 @@ $app->get('/login[/{params:.*}]', function (Request $request, Response $response
         </head>
         <body>
             <div class="container">
-                <form method="POST" action="/login">
+                <form method="POST" action="../login">
                     <div class="mb-3">
                         <label for="login" class="form-label">Login:</label>
                         <input type="text" class="form-control" id="login" name="login">
