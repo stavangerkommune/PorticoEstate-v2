@@ -25,7 +25,7 @@ function check_all(strTargetAction)
 <!-- END header -->
 
 <!-- BEGIN app_header -->
-<form action="setup/applications" method="post" id="apps">
+<form action="../setup/applications" method="post" id="apps">
 <table id="apps">
 	<thead>
 		<tr>
