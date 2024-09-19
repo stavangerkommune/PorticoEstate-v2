@@ -89,7 +89,7 @@ $app->get('/setup/', function (Request $request, Response $response) use ($phpgw
         <body>
             <div class="container">
                 <h1>Setup</h1>
-                <form method="POST" action="/setup">
+                <form method="POST" action="../setup">
                     <div class="mb-3">
                         <label for="FormDomain">Domain:</label>
                         <select class="form-select" id="FormDomain" name="FormDomain">
