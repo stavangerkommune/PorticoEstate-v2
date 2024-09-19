@@ -405,7 +405,7 @@ HTML;
 				$detected .= $get_max_value_length;
 
 				$supported_db = array();
-				if (extension_loaded('pgsql') || function_exists('pg_connect'))
+				if (extension_loaded('pdo_pgsql'))
 				{
 					$detected .= '<li>' . $this->setup->lang('You appear to have Postgres-DB support enabled') . "</li>\n";
 					$supported_db[]  = 'postgres';
@@ -414,7 +414,7 @@ HTML;
 				{
 					$detected .= '<li class="warn">' . $this->setup->lang('No Postgres-DB support found. Disabling') . "</li>\n";
 				}
-				if (extension_loaded('mysqli'))
+				if (extension_loaded('pdo_mysql'))
 				{
 					$detected .= '<li>' . $this->setup->lang('You appear to have MySQL support enabled') . "</li>\n";
 					$supported_db[] = 'mysql';
@@ -432,22 +432,14 @@ HTML;
 				{
 					$detected .= '<li class="warn">' . $this->setup->lang('No Microsoft SQL Server support found. Disabling') . "</li>\n";
 				}
-				if (extension_loaded('oci8'))
+				if (extension_loaded('pdo_oci'))
 				{
-					$detected .= '<li>' . $this->setup->lang('You appear to have Oracle V8 (OCI) support enabled') . "</li>\n";
+					$detected .= '<li>' . $this->setup->lang('You appear to have Oracle (PDO_OCI) support enabled') . "</li>\n";
 					//				$supported_db[] = 'oracle';
 				}
 				else
 				{
-					if (extension_loaded('oracle'))
-					{
-						$detected .= '<li>' . $this->setup->lang('You appear to have Oracle support enabled') . "</li>\n";
-						//					$supported_db[] = 'oracle';
-					}
-					else
-					{
-						$detected .= '<li class="warn">' . $this->setup->lang('No Oracle-DB support found. Disabling') . "</li>\n";
-					}
+					$detected .= '<li class="warn">' . $this->setup->lang('No Oracle-DB support found. Disabling') . "</li>\n";
 				}
 
 				if (!class_exists('ZipArchive'))
@@ -490,17 +482,6 @@ HTML;
 				{
 					$detected .= '<li class="warn">' . $this->setup->lang('you may need curl for integration capabilities') . "</li>\n";
 				}
-
-				if (extension_loaded('pdo_pgsql'))
-				{
-					$detected .= '<li>' . $this->setup->lang('You appear to have PDO support enabled') . "</li>\n";
-					$supported_db[]  = 'postgres';
-				}
-				else
-				{
-					$detected .= '<li class="warn">' . $this->setup->lang('No PDO support found. Disabling') . "</li>\n";
-				}
-
 
 				if (!count($supported_db))
 				{

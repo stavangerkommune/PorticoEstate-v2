@@ -13,7 +13,8 @@ RUN apt-get update && apt-get install -y software-properties-common \
     less vim-tiny \
     apg \
     sudo \
-    libaio1 locales wget
+    libaio1 locales wget \
+	libmagickwand-dev --no-install-recommends
 
 
 # Configure PEAR
@@ -22,10 +23,13 @@ RUN if [ -n "${http_proxy}" ]; then pear config-set http_proxy ${http_proxy}; fi
 
 # Install PHP extensions
 RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
-    && docker-php-ext-install curl intl xsl pdo_pgsql pdo_mysql gd imap soap zip mbstring ftp calendar
+    && docker-php-ext-install curl intl xsl pdo_pgsql pdo_mysql gd \
+	imap shmop soap zip mbstring ftp calendar
 
 	# Install PECL extensions
 RUN pecl install xdebug apcu && docker-php-ext-enable xdebug apcu
+RUN pecl install redis && docker-php-ext-enable redis
+RUN pecl install imagick && docker-php-ext-enable imagick
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php
