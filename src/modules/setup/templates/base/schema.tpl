@@ -25,7 +25,7 @@
 
 <!-- BEGIN apps -->
   <tr bgcolor="{bg_color}">
-    <td><a href="schematoy.php?detail={appname}"><img src="templates/default/images/{instimg}" alt="{instalt}" border="0"></a></td>
+    <td><a href="schematoy.php?detail={appname}"><img src="../src/modules/phpgwapi/templates/base/images/{instimg}" alt="{instalt}" border="0"></a></td>
     <td>{appinfo}&nbsp;</td>
     <td>{apptitle}&nbsp;</td>
     <td align="center"><select name="version[{appname}]">{select_version}</select></td>
