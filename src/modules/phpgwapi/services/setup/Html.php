@@ -154,7 +154,7 @@
 			}
 			else
 			{
-				$btn_logout = '<a href="setup/logout?FormLogout=' . $logoutfrom . '" class="link">' . $setup->lang('Logout').'</a>';
+				$btn_logout = '<a href="./setup/logout?FormLogout=' . $logoutfrom . '" class="link">' . $setup->lang('Logout').'</a>';
 			}
 
 			$this->setup_tpl->set_var('lang_version', $setup->lang('version'));
