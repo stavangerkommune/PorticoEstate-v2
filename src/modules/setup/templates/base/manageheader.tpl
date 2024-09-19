@@ -111,7 +111,7 @@
 	{formend}
 	<tr>
 		<td colspan="3">
-			<form action="setup/logout" method="post">
+			<form action="../setup/logout" method="post">
 				<br>{lang_finaldescr}<br>
 				<input type="hidden" name="FormLogout"  value="header">
 				<input type="submit" name="junk" value="{lang_continue}">
