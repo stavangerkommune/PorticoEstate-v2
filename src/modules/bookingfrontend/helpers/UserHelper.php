@@ -445,6 +445,9 @@ class UserHelper
 				return array();
 			}
 
+			\phpgw::no_access($this->current_app(), 'Du må logge inn via ID-porten');
+
+			/*
 			if (\Sanitizer::get_var('second_redirect', 'bool'))
 			{
 				\phpgw::no_access($this->current_app(), 'Du må logge inn via ID-porten');
@@ -477,6 +480,7 @@ class UserHelper
 			{
 				\phpgw::redirect_link('/bookingfrontend/login/');
 			}
+*/
 		}
 
 		$ret = array(
