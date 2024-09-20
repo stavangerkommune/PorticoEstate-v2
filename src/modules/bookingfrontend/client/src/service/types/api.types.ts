@@ -61,3 +61,12 @@ export interface IBookingUser {
     org_id: number | null;
     is_logged_in: boolean;
 }
+
+
+export interface IAPIQueryResponse<T> {
+    total_records: number;
+    start: number;
+    sort: string;
+    dir: string;
+    results: T[];
+}

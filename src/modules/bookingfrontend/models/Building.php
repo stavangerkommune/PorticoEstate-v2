@@ -1,6 +1,7 @@
 <?php
 
 namespace App\modules\bookingfrontend\models;
+
 use App\traits\SerializableTrait;
 use OpenApi\Annotations as OA;
 
@@ -292,7 +293,8 @@ class Building
 
     public function __construct($data = [])
     {
-        if (!empty($data)) {
+        if (!empty($data))
+        {
             $this->populate($data);
         }
     }

@@ -9,6 +9,12 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Exception;
 
+/**
+ * @OA\Tag(
+ *     name="User",
+ *     description="API Endpoints for User"
+ * )
+ */
 class BookingUserController
 {
     private $container;
@@ -32,14 +38,16 @@ class BookingUserController
      */
     public function index(Request $request, Response $response): Response
     {
-        try {
+        try
+        {
             $bouser = new UserHelper();
             $userModel = new User($bouser);
             $serialized = $userModel->serialize();
 
             $response->getBody()->write(json_encode($serialized));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-        } catch (Exception $e) {
+        } catch (Exception $e)
+        {
             $error = "Error fetching user details: " . $e->getMessage();
             $response->getBody()->write(json_encode(['error' => $error]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);

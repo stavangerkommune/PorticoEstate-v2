@@ -15,26 +15,32 @@ trait SerializableTrait
 
         $serialized = [];
 
-        foreach ($properties as $property) {
+        foreach ($properties as $property)
+        {
             $exposeAnnotation = $this->parseExposeAnnotation($property);
             $excludeAnnotation = $this->parseExcludeAnnotation($property);
             $shortAnnotation = $this->parseShortAnnotation($property);
 
-            if ($excludeAnnotation) {
+            if ($excludeAnnotation)
+            {
                 continue; // Skip this property
             }
 
-            if ($short && !$shortAnnotation) {
+            if ($short && !$shortAnnotation)
+            {
                 continue; // Skip non-short properties when short serialization is requested
             }
 
-            if ($exposeAnnotation) {
+            if ($exposeAnnotation)
+            {
                 $groups = $exposeAnnotation['groups'] ?? [];
-                if (empty($groups) || array_intersect($groups, $userRoles)) {
+                if (empty($groups) || array_intersect($groups, $userRoles))
+                {
                     $property->setAccessible(true);
                     $serialized[$property->getName()] = $property->getValue($this);
                 }
-            } elseif ($defaultBehavior === 'expose') {
+            } elseif ($defaultBehavior === 'expose')
+            {
                 // If there's no @Expose or @Exclude annotation, and the default is to expose
                 $property->setAccessible(true);
                 $serialized[$property->getName()] = $property->getValue($this);
@@ -47,13 +53,17 @@ trait SerializableTrait
     private function getClassDefaultBehavior(\ReflectionClass $reflection): string
     {
         $className = $reflection->getName();
-        if (!isset(self::$annotationCache[$className]['defaultBehavior'])) {
+        if (!isset(self::$annotationCache[$className]['defaultBehavior']))
+        {
             $docComment = $reflection->getDocComment();
-            if (strpos($docComment, '@Expose') !== false) {
+            if (strpos($docComment, '@Expose') !== false)
+            {
                 self::$annotationCache[$className]['defaultBehavior'] = 'expose';
-            } elseif (strpos($docComment, '@Exclude') !== false) {
+            } elseif (strpos($docComment, '@Exclude') !== false)
+            {
                 self::$annotationCache[$className]['defaultBehavior'] = 'exclude';
-            } else {
+            } else
+            {
                 self::$annotationCache[$className]['defaultBehavior'] = 'expose'; // Default to expose if no annotation is present
             }
         }
@@ -65,13 +75,16 @@ trait SerializableTrait
         $className = $property->getDeclaringClass()->getName();
         $propertyName = $property->getName();
 
-        if (!isset(self::$annotationCache[$className]['properties'][$propertyName]['expose'])) {
+        if (!isset(self::$annotationCache[$className]['properties'][$propertyName]['expose']))
+        {
             $docComment = $property->getDocComment();
-            if (preg_match('/@Expose(\(groups=\{"(.+?)"\}\))?/', $docComment, $matches)) {
+            if (preg_match('/@Expose(\(groups=\{"(.+?)"\}\))?/', $docComment, $matches))
+            {
                 self::$annotationCache[$className]['properties'][$propertyName]['expose'] = [
                     'groups' => isset($matches[2]) ? explode('","', $matches[2]) : []
                 ];
-            } else {
+            } else
+            {
                 self::$annotationCache[$className]['properties'][$propertyName]['expose'] = null;
             }
         }
@@ -83,18 +96,21 @@ trait SerializableTrait
         $className = $property->getDeclaringClass()->getName();
         $propertyName = $property->getName();
 
-        if (!isset(self::$annotationCache[$className]['properties'][$propertyName]['exclude'])) {
+        if (!isset(self::$annotationCache[$className]['properties'][$propertyName]['exclude']))
+        {
             $docComment = $property->getDocComment();
             self::$annotationCache[$className]['properties'][$propertyName]['exclude'] = strpos($docComment, '@Exclude') !== false;
         }
         return self::$annotationCache[$className]['properties'][$propertyName]['exclude'];
     }
+
     private function parseShortAnnotation(\ReflectionProperty $property): bool
     {
         $className = $property->getDeclaringClass()->getName();
         $propertyName = $property->getName();
 
-        if (!isset(self::$annotationCache[$className]['properties'][$propertyName]['short'])) {
+        if (!isset(self::$annotationCache[$className]['properties'][$propertyName]['short']))
+        {
             $docComment = $property->getDocComment();
             self::$annotationCache[$className]['properties'][$propertyName]['short'] = strpos($docComment, '@Short') !== false;
         }

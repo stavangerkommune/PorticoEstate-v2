@@ -11,6 +11,12 @@ use App\modules\phpgwapi\services\Settings;
 use App\Database\Db;
 use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Tag(
+ *     name="Resources",
+ *     description="API Endpoints for Resources"
+ * )
+ */
 class ResourceController
 {
     private $db;
@@ -106,20 +112,24 @@ class ResourceController
                 WHERE active = 1 AND (hidden_in_frontend = 0 OR hidden_in_frontend IS NULL)
                 ORDER BY $sort $dir";
 
-        if ($perPage > 0) {
+        if ($perPage > 0)
+        {
             $sql .= " LIMIT :limit OFFSET :start";
         }
 
-        try {
+        try
+        {
             $stmt = $this->db->prepare($sql);
-            if ($perPage > 0) {
+            if ($perPage > 0)
+            {
                 $stmt->bindParam(':limit', $perPage, \PDO::PARAM_INT);
                 $stmt->bindParam(':start', $start, \PDO::PARAM_INT);
             }
             $stmt->execute();
             $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-            $resources = array_map(function($data) use ($short) {
+            $resources = array_map(function ($data) use ($short)
+            {
                 $resource = new Resource($data);
                 return $resource->serialize($this->getUserRoles(), $short);
             }, $results);
@@ -136,7 +146,8 @@ class ResourceController
 
             $response->getBody()->write(json_encode($responseData));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-        } catch (Exception $e) {
+        } catch (Exception $e)
+        {
             $error = "Error fetching resources: " . $e->getMessage();
             $response->getBody()->write(json_encode(['error' => $error]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -173,13 +184,15 @@ class ResourceController
 
         $sql = "SELECT * FROM bb_resource WHERE id = :id";
 
-        try {
+        try
+        {
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':id', $resourceId, \PDO::PARAM_INT);
             $stmt->execute();
             $result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-            if (!$result) {
+            if (!$result)
+            {
                 $response->getBody()->write(json_encode(['error' => 'Resource not found']));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
             }
@@ -189,7 +202,8 @@ class ResourceController
 
             $response->getBody()->write(json_encode($serializedResource));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-        } catch (Exception $e) {
+        } catch (Exception $e)
+        {
             $error = "Error fetching resource: " . $e->getMessage();
             $response->getBody()->write(json_encode(['error' => $error]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
@@ -281,7 +295,8 @@ class ResourceController
         $buildingStmt = $this->db->prepare($buildingSql);
         $buildingStmt->bindParam(':id', $buildingId, \PDO::PARAM_INT);
         $buildingStmt->execute();
-        if (!$buildingStmt->fetch()) {
+        if (!$buildingStmt->fetch())
+        {
             $response->getBody()->write(json_encode(['error' => 'Building not found']));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
@@ -299,21 +314,25 @@ class ResourceController
                 AND r.active = 1 AND (r.hidden_in_frontend = 0 OR r.hidden_in_frontend IS NULL)
                 ORDER BY r.$sort $dir";
 
-        if ($perPage > 0) {
+        if ($perPage > 0)
+        {
             $sql .= " LIMIT :limit OFFSET :start";
         }
 
-        try {
+        try
+        {
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':building_id', $buildingId, \PDO::PARAM_INT);
-            if ($perPage > 0) {
+            if ($perPage > 0)
+            {
                 $stmt->bindParam(':limit', $perPage, \PDO::PARAM_INT);
                 $stmt->bindParam(':start', $start, \PDO::PARAM_INT);
             }
             $stmt->execute();
             $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-            $resources = array_map(function($data) use ($short) {
+            $resources = array_map(function ($data) use ($short)
+            {
                 $resource = new Resource($data);
                 return $resource->serialize($this->getUserRoles(), $short);
             }, $results);
@@ -330,7 +349,8 @@ class ResourceController
 
             $response->getBody()->write(json_encode($responseData));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-        } catch (Exception $e) {
+        } catch (Exception $e)
+        {
             $error = "Error fetching resources for building: " . $e->getMessage();
             $response->getBody()->write(json_encode(['error' => $error]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);

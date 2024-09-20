@@ -246,15 +246,18 @@ class Resource
 
     public function __construct($data = [])
     {
-        if (!empty($data)) {
+        if (!empty($data))
+        {
             $this->populate($data);
         }
     }
 
     public function populate(array $data)
     {
-        foreach ($data as $key => $value) {
-            if (property_exists($this, $key)) {
+        foreach ($data as $key => $value)
+        {
+            if (property_exists($this, $key))
+            {
                 $this->$key = $value;
             }
         }
@@ -263,7 +266,8 @@ class Resource
     public function toArray()
     {
         $array = [];
-        foreach (get_object_vars($this) as $key => $value) {
+        foreach (get_object_vars($this) as $key => $value)
+        {
             $array[$key] = $value;
         }
         return $array;
