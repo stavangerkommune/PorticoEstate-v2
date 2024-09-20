@@ -4,6 +4,7 @@ import {fetchBuilding, useBuilding} from "@/service/api/building";
 import {notFound} from "next/navigation";
 import BuildingHeader from "@/components/building-page/building-header";
 import BuildingDescription from "@/components/building-page/building-description";
+import BuildingResources from "@/components/building-page/resource-list/building-resources";
 interface BuildingShowParams {
     id: string;
 }
@@ -31,6 +32,7 @@ const BuildingShow = async (props: BuildingShowProps) => {
     return (
         <main>
             <BuildingHeader building={building}/>
+            <BuildingResources building={building}/>
             <BuildingDescription building={building}/>
             <hr className={`my-2 mx-2`}/>
             <BuildingCalendar building_id={props.params.id}/>

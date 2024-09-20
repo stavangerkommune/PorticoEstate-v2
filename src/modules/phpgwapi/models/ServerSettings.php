@@ -300,12 +300,16 @@ class ServerSettings
 
     private function setDefaults()
     {
-        foreach ($this->defaults as $key => $value) {
-            if (property_exists($this, $key) && $this->$key === null) {
+        foreach ($this->defaults as $key => $value)
+        {
+            if (property_exists($this, $key) && $this->$key === null)
+            {
                 // Only set the default if the property is currently null
-                if ($key === 'logo_url') {
+                if ($key === 'logo_url')
+                {
                     $this->$key = $this->getDefaultLogoUrl();
-                } else {
+                } else
+                {
                     $this->$key = $value;
 
                 }
@@ -316,9 +320,12 @@ class ServerSettings
 
     public function populate(array $data)
     {
-        foreach ($data as $key => $value) {
-            if (property_exists($this, $key)) {
-                switch ($key) {
+        foreach ($data as $key => $value)
+        {
+            if (property_exists($this, $key))
+            {
+                switch ($key)
+                {
                     case 'account_max_id':
                     case 'account_min_id':
                     case 'addressmaster':
@@ -346,7 +353,7 @@ class ServerSettings
                         $this->$key = is_array($value) ? $value : $this->safeUnserialize($value);
                         break;
                     case 'webserver_url':
-                        $this->$key = $value ? $value. PHPGW_MODULES_PATH : PHPGW_MODULES_PATH;
+                        $this->$key = $value ? $value . PHPGW_MODULES_PATH : PHPGW_MODULES_PATH;
                         break;
                     default:
                         $this->$key = $value;
@@ -357,7 +364,8 @@ class ServerSettings
 
     private function safeUnserialize($value)
     {
-        if (is_string($value)) {
+        if (is_string($value))
+        {
             $unserialized = @unserialize($value);
             return $unserialized !== false ? $unserialized : $value;
         }

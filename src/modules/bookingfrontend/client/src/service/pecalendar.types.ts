@@ -33,14 +33,7 @@ export interface IEvent {
     is_public?: number
 }
 
-export interface IBuildingResource {
-    active: number
-    id: number
-    activity_id: number
-    activity_name: string
-    name: string
-    simple_booking: 0 | 1
-}
+export type IBuildingResource = Pick<IResource, 'active' | 'name' | 'id' | 'activity_id' | 'simple_booking'>;
 
 export interface IEventDate {
     from_: string

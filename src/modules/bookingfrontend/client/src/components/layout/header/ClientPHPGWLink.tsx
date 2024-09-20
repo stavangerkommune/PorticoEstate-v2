@@ -16,12 +16,12 @@ const ClientPHPGWLink: FC<ClientPHPGWLinkProps> = ({
                                                        strURL,
                                                        oArgs = {},
                                                        baseURL,
-                                                       bAsJSON = true,
+                                                       bAsJSON = false,
                                                        children,
                                                         ...props
                                                    }) => {
     // @ts-ignore
-    return <Link href={phpGWLink(strURL, oArgs, bAsJSON, baseURL)} {...props}>{children}</Link>;
+    return <Link href={phpGWLink(strURL, oArgs, false, baseURL)} {...props}>{children}</Link>;
 }
 
 export default ClientPHPGWLink
