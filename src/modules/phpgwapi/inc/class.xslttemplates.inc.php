@@ -447,7 +447,8 @@ XSLT;
 			}
 			else
 			{
-				$message .= '<br>' . $_SERVER['SERVER_ADDR'] . $_SERVER['SCRIPT_NAME'];
+				$script_path = Sanitizer::get_var('REDIRECT_URL', 'string', 'SERVER');
+				$message .= '<br>' . $_SERVER['SERVER_ADDR'] . $script_path;
 				$message .= isset($_REQUEST['menuaction']) ? "?menuaction={$_REQUEST['menuaction']}" : '';
 				echo '<div class="error">';
 				echo $message;
