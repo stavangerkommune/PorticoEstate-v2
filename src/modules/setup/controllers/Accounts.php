@@ -1,92 +1,93 @@
 <?php
+
+/**
+ * Setup
+ *
+ * @copyright Copyright (C) 2000-2005 Free Software Foundation, Inc. http://www.fsf.org/
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
+ * @package setup
+ * @version $Id$
+ */
+
+namespace App\modules\setup\controllers;
+
+use App\Database\Db;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use App\modules\phpgwapi\services\Settings;
+use App\modules\phpgwapi\services\setup\Setup;
+use App\modules\phpgwapi\services\setup\Detection;
+use App\modules\phpgwapi\services\setup\Process;
+use App\modules\phpgwapi\services\setup\Html;
+use App\helpers\Template2;
+use App\modules\phpgwapi\services\setup\SetupTranslation;
+use App\modules\phpgwapi\services\Sanitizer;
+use App\helpers\DateHelper;
+use PDO;
+use App\modules\phpgwapi\controllers\Accounts\phpgwapi_group;
+use App\modules\phpgwapi\controllers\Accounts\phpgwapi_user;
+use App\modules\phpgwapi\controllers\Accounts\phpgwapi_account;
+use \App\modules\phpgwapi\security\GloballyDenied;
+use Exception;
+
+class Accounts
+{
 	/**
-	* Setup
-	*
-	* @copyright Copyright (C) 2000-2005 Free Software Foundation, Inc. http://www.fsf.org/
-	* @license http://www.gnu.org/licenses/gpl.html GNU General Public License
-	* @package setup
-	* @version $Id$
-	*/
+	 * @var object
+	 */
+	private $db;
+	private $detection;
+	private $process;
+	private $html;
+	private $setup;
+	private $setup_tpl;
+	private $translation;
+	private $serverSettings;
+	private $accounts;
 
-	namespace App\modules\setup\controllers;
-
-	use App\Database\Db;
-	use Psr\Http\Message\ResponseInterface as Response;
-	use Psr\Http\Message\ServerRequestInterface as Request;
-	use App\modules\phpgwapi\services\Settings;
-	use App\modules\phpgwapi\services\setup\Setup;
-	use App\modules\phpgwapi\services\setup\Detection;
-	use App\modules\phpgwapi\services\setup\Process;
-	use App\modules\phpgwapi\services\setup\Html;
-	use App\helpers\Template2;
-	use App\modules\phpgwapi\services\setup\SetupTranslation;
-	use App\modules\phpgwapi\services\Sanitizer;
-    use App\helpers\DateHelper;
-    use PDO;
-	use App\modules\phpgwapi\controllers\Accounts\phpgwapi_group;
-	use App\modules\phpgwapi\controllers\Accounts\phpgwapi_user;
-	use App\modules\phpgwapi\controllers\Accounts\phpgwapi_account;
-	use \App\modules\phpgwapi\security\GloballyDenied;
-	use Exception;
-
-	class Accounts
+	public function __construct()
 	{
-		/**
-		 * @var object
-		 */
-		private $db;
-		private $detection;
-		private $process;
-		private $html;
-		private $setup;
-		private $setup_tpl;
-		private $translation;
-		private $serverSettings;
-		private $accounts;
-		
-		public function __construct()
+
+		//setup_info
+		Settings::getInstance()->set('setup_info', []); //$GLOBALS['setup_info']
+		//setup_data
+		Settings::getInstance()->set('setup', []); //$setup_data
+		//current_config
+		Settings::getInstance()->set('current_config', []); //$current_config
+		$this->serverSettings = Settings::getInstance()->get('server');
+
+		$this->db = Db::getInstance();
+		$this->detection = new Detection();
+		$this->process = new Process();
+		$this->html = new Html();
+		$this->setup = new Setup();
+		$this->translation = new SetupTranslation();
+		$this->accounts = new \App\modules\phpgwapi\controllers\Accounts\Accounts();
+
+		$flags = array(
+			'noheader' 		=> True,
+			'nonavbar'		=> True,
+			'currentapp'	=> 'home',
+			'noapi'			=> True,
+			'nocachecontrol' => True
+		);
+		Settings::getInstance()->set('flags', $flags);
+
+
+		// Check header and authentication
+		if (!$this->setup->auth('Config'))
 		{
-
-			//setup_info
-			Settings::getInstance()->set('setup_info', []); //$GLOBALS['setup_info']
-			//setup_data
-			Settings::getInstance()->set('setup', []); //$setup_data
-            //current_config
-            Settings::getInstance()->set('current_config', []); //$current_config
-			$this->serverSettings = Settings::getInstance()->get('server');
-
-			$this->db = Db::getInstance();
-			$this->detection = new Detection();
-			$this->process = new Process();
-			$this->html = new Html();
-			$this->setup = new Setup();
-            $this->translation = new SetupTranslation();
-			$this->accounts = new \App\modules\phpgwapi\controllers\Accounts\Accounts();
-
-			$flags = array(
-				'noheader' 		=> True,
-				'nonavbar'		=> True,
-				'currentapp'	=> 'home',
-				'noapi'			=> True,
-				'nocachecontrol' => True
-			);
-			Settings::getInstance()->set('flags', $flags);
-
-
-			// Check header and authentication
-			if (!$this->setup->auth('Config')) {
-				Header('Location: ../setup');
-				exit;
-			}
-
-			$tpl_root = $this->html->setup_tpl_dir('setup');
-			$this->setup_tpl = new Template2($tpl_root);
-            $this->setup_tpl->set_unknowns('loose');
-
-
-			$this->html->set_tpl($this->setup_tpl);
-		
+			Header('Location: ../setup');
+			exit;
 		}
+
+		$tpl_root = $this->html->setup_tpl_dir('setup');
+		$this->setup_tpl = new Template2($tpl_root);
+		$this->setup_tpl->set_unknowns('loose');
+
+
+		$this->html->set_tpl($this->setup_tpl);
+	}
 
 	/**
 	 * Add account
@@ -102,7 +103,8 @@
 	function add_account($acct, $type, $groups = array(), $modules = array(), $acls = array())
 	{
 		$person_id = 0;
-		if ($type == 'u') {
+		if ($type == 'u')
+		{
 			$account			= new phpgwapi_user();
 			$account->lid		= $acct['username'];
 			$account->firstname	= $acct['firstname'];
@@ -110,7 +112,9 @@
 			$account->passwd	= $acct['password'];
 			$account->enabled	= true;
 			$account->expires	= -1;
-		} else {
+		}
+		else
+		{
 			$account			= new phpgwapi_group();
 			$account->lid		= $acct['username'];
 			$account->firstname = ucfirst($acct['username']);
@@ -157,10 +161,11 @@
 			)
 		);
 
-		foreach ($defaultprefs as $app => $prefs) {
+		foreach ($defaultprefs as $app => $prefs)
+		{
 			$prefs = json_encode($prefs);
 			$sql = 'INSERT INTO phpgw_preferences(preference_owner, preference_app, preference_json)'
-			. " VALUES({$accountid}, '{$app}', '{$prefs}')";
+				. " VALUES({$accountid}, '{$app}', '{$prefs}')";
 			$this->db->query($sql, __LINE__, __FILE__);
 		}
 	}
@@ -183,20 +188,29 @@
 
 		$errors = array();
 
-		if ($passwd != $passwd2) {
+		if ($passwd != $passwd2)
+		{
 			$errors[] = $this->setup->lang('Passwords did not match, please re-enter');
-		} else {
+		}
+		else
+		{
 			$account	= new phpgwapi_user();
-			try {
+			try
+			{
 				$account->validate_password($passwd);
-			} catch (Exception $e) {
+			}
+			catch (Exception $e)
+			{
 				$errors[] = $e->getMessage();
 			}
 		}
 
-		if (!$username) {
+		if (!$username)
+		{
 			$errors[] = $this->setup->lang('You must enter a username for the admin');
-		} else if (GloballyDenied::user($username)) {
+		}
+		else if (GloballyDenied::user($username))
+		{
 			$errors[] = $this->setup->lang('You can not use %1 as the admin username, please try again with another username', $username);
 			$username = '';
 		}
@@ -204,12 +218,13 @@
 		return $errors;
 	}
 
-		
+
 	public function index()
 	{
-	
-		if (\Sanitizer::get_var('cancel', 'bool', 'POST')) {
-			Header('Location: /setup');
+
+		if (\Sanitizer::get_var('cancel', 'bool', 'POST'))
+		{
+			Header('Location: ../setup');
 			exit;
 		}
 		// set some sane default values
@@ -220,7 +235,8 @@
 		$lname		= 'Administrator';
 
 		$errors = array();
-		if (\Sanitizer::get_var('submit', 'string', 'POST')) {
+		if (\Sanitizer::get_var('submit', 'string', 'POST'))
+		{
 			// set some sane defaults
 			$this->serverSettings['ldap_host']				= '';
 			$this->serverSettings['ldap_context']			= '';
@@ -242,24 +258,25 @@
 
 			// Load up the real config values
 			$sql = 'SELECT config_name,config_value FROM phpgw_config'
-			. " WHERE config_name LIKE 'ldap%' OR config_name LIKE '%_id'"
-			. " OR config_name = 'account_repository'"
-			. " OR config_name = 'auth_type'"
-			. " OR config_name = 'encryption_type'"
-			. " OR config_name = 'encryptkey'"
-			. " OR config_name = 'password_level'"
-			. " OR config_name = 'webserver_url'";
+				. " WHERE config_name LIKE 'ldap%' OR config_name LIKE '%_id'"
+				. " OR config_name = 'account_repository'"
+				. " OR config_name = 'auth_type'"
+				. " OR config_name = 'encryption_type'"
+				. " OR config_name = 'encryptkey'"
+				. " OR config_name = 'password_level'"
+				. " OR config_name = 'webserver_url'";
 
 			$stmt = $this->db->prepare($sql);
 			$stmt->execute();
 
 			$this->serverSettings = array();
-			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+			while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+			{
 				$this->serverSettings[$this->db->unmarshal($row['config_name'], 'string')] = $this->db->unmarshal($row['config_value'], 'string');
 			}
-			Settings::getInstance()->set('server', $this->serverSettings);		
+			Settings::getInstance()->set('server', $this->serverSettings);
 
-	//		$GLOBALS['phpgw']->crypto->init(array(md5(session_id() . $this->serverSettings['encryptkey']), $this->serverSettings['mcrypt_iv']));
+			//		$GLOBALS['phpgw']->crypto->init(array(md5(session_id() . $this->serverSettings['encryptkey']), $this->serverSettings['mcrypt_iv']));
 
 			/* Posted admin data */
 			// We need to reverse the entities or the password can be mangled
@@ -271,18 +288,21 @@
 
 			if (($this->serverSettings['account_repository'] == 'ldap')
 				&& !$this->accounts->connected
-			) {
+			)
+			{
 				echo "<strong>Error: Error connecting to LDAP server {$this->serverSettings['ldap_host']}</strong><br>";
 				exit;
 			}
 
 			$errors = $this->validate_admin($username, $passwd, $passwd2, $fname, $lname);
 
-			if (in_array($username, array('admins', 'default'))) {
+			if (in_array($username, array('admins', 'default')))
+			{
 				$errors[] = $this->setup->lang('That loginid has already been taken');
 			}
 
-			if (!count($errors)) {
+			if (!count($errors))
+			{
 				$admin_acct = array(
 					'username'	=> $username,
 					'firstname'	=> $fname,
@@ -306,25 +326,29 @@
 				$this->db->exec('DELETE FROM phpgw_contact_person');
 				$this->db->exec('DELETE FROM phpgw_contact_org');
 				// Clean out LDAP
-				if ($this->serverSettings['account_repository'] == 'ldap' || $this->serverSettings['account_repository'] = 'sqlldap') {
+				if ($this->serverSettings['account_repository'] == 'ldap' || $this->serverSettings['account_repository'] = 'sqlldap')
+				{
 					$accounts = $this->accounts->get_list('accounts', -1, '', '', '', -1);
 
-					foreach ($accounts as $account) {
+					foreach ($accounts as $account)
+					{
 						$this->accounts->delete($account->id);
 					}
 					$accounts = $this->accounts->get_list('groups', -1, '', '', '', -1);
-					foreach ($accounts as $account) {
+					foreach ($accounts as $account)
+					{
 						$this->accounts->delete($account->id);
 					}
 				}
 
-/* 				$contacts = CreateObject('phpgwapi.contacts');
+				/* 				$contacts = CreateObject('phpgwapi.contacts');
 				if (is_array($contacts_to_delete)) {
 					foreach ($contacts_to_delete as $contact_id) {
 						$contacts->delete($contact_id, '', false);
 					}
 				}
- */				unset($contacts_to_delete);
+ */
+				unset($contacts_to_delete);
 
 				/* Create the groups */
 				// Group perms for the default group
@@ -356,7 +380,7 @@
 				$groups = array($defaultgroupid, $admingroupid);
 
 				$accountid = $this->add_account($admin_acct, 'u', $groups, array('admin'), $acls);
-				Header('Location: /setup');
+				Header('Location: ../setup');
 				exit;
 			}
 		}
@@ -383,18 +407,21 @@
 		$account_repository = $stmt->fetchColumn();
 
 		$account_creation_notice = $this->setup->lang("This will create an admininstrator account");
-		if ($account_repository == 'sql') {
+		if ($account_repository == 'sql')
+		{
 			$stmt = $this->db->prepare('SELECT COUNT(*) AS cnt FROM phpgw_accounts');
 			$stmt->execute();
 			$number_of_accounts = $stmt->fetchColumn();
-			if ($number_of_accounts) {
+			if ($number_of_accounts)
+			{
 				$account_creation_notice .= "\n"
-				. $this->setup->lang('<b>!!!THIS WILL DELETE ALL EXISTING ACCOUNTS!!!</b><br>');
+					. $this->setup->lang('<b>!!!THIS WILL DELETE ALL EXISTING ACCOUNTS!!!</b><br>');
 			}
 		}
 
 		$error_msg = '';
-		if (count($errors)) {
+		if (count($errors))
+		{
 			$error_msg = '<div class="msg">' . implode("<br>\n", $errors) . '</div>';
 		}
 
