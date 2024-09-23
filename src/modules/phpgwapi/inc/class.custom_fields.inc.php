@@ -112,12 +112,7 @@ class phpgwapi_custom_fields
 		}
 
 		$this->_db = Db::getInstance();
-		$db_config = $this->_db->get_config();
-
-		$this->_db2 = new Db2("pgsql:host={$db_config['db_host']};port={$db_config['db_port']};dbname={$db_config['db_name']}", $db_config['db_user'], $db_config['db_pass']);
-		$this->_db2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		$this->_db2->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-		$this->_db2->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+		$this->_db2 = new Db2();
 		
 		$this->_join			= $this->_db->join;
 		$this->_like			= $this->_db->like;

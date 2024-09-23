@@ -65,12 +65,9 @@ class property_custom_fields extends phpgwapi_custom_fields
 	public function __construct($appname = null)
 	{
 		parent::__construct($appname);
-		$db_config = $this->_db->get_config();
 		//create a new pdo  $this->db2 of the database based on the configuration
-		$this->_db2 = new Db2("pgsql:host={$db_config['db_host']};port={$db_config['db_port']};dbname={$db_config['db_name']}", $db_config['db_user'], $db_config['db_pass']);
-		$this->_db2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		$this->_db2->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-		$this->_db2->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+		$this->_db2 = new Db2();
+
 		$this->contacts	 = CreateObject('phpgwapi.contacts', false);
 		$this->userSettings = Settings::getInstance()->get('user');
 		$this->phpgwapi_common = new \phpgwapi_common();

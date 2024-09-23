@@ -69,12 +69,8 @@ class Vfs extends VfsShared
 
 		$this->db = Db::getInstance();
 
-		$db_config = $this->db->get_config();
 		//create a new pdo  $this->db2 of the database based on the configuration
-		$this->db2 = new Db2("pgsql:host={$db_config['db_host']};port={$db_config['db_port']};dbname={$db_config['db_name']}", $db_config['db_user'], $db_config['db_pass']);
-		$this->db2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		$this->db2->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-		$this->db2->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+		$this->db2 = new Db2();
 
 		$this->log = new Log();
 
