@@ -15,6 +15,10 @@ $app->post('/mobilefrontend/index.php', StartPoint::class . ':mobilefrontend')->
 
 $app->get('/mobilefrontend/home/', HomeHelper::class . ':processHome')->add(new SessionsMiddleware($app->getContainer()));
 
+//Legacy support
+$app->get('/mobilefrontend/login.php', LoginHelper::class . ':processLogin')->add(new LoginMiddleware($app->getContainer()));
+$app->post('/mobilefrontend/login.php', LoginHelper::class . ':processLogin')->add(new LoginMiddleware($app->getContainer()));
+
 $app->get('/mobilefrontend/login_ui[/{params:.*}]', LoginHelper::class . ':processLogin')->add(new LoginMiddleware($app->getContainer()));
 $app->post('/mobilefrontend/login_ui[/{params:.*}]', LoginHelper::class . ':processLogin')->add(new LoginMiddleware($app->getContainer()));
 

@@ -127,7 +127,8 @@ class SessionsMiddleware implements MiddlewareInterface
 						$cookietime = time() + 60;
 						$sessions->phpgw_setcookie('redirect', json_encode($_GET), $cookietime);
 					}
-					\phpgw::redirect_link('/login_ui');
+//					\phpgw::redirect_link('/login_ui');
+					\phpgw::redirect_link('/login.php');
 				}
 				$response = new Response();
 				return $response->withHeader('Content-Type', 'text/html');
