@@ -159,7 +159,19 @@ class Html
 		}
 		else
 		{
-			$btn_logout = '<a href="../setup/logout?FormLogout=' . $logoutfrom . '" class="link">' . $setup->lang('Logout') . '</a>';
+			//detect the schript path
+			$script_path = Sanitizer::get_var('REDIRECT_URL', 'string', 'SERVER');
+			//detect if we are in the setup
+			if (preg_match('/setup\//', $script_path))
+			{
+				$prefix = '../';
+			}
+			else
+			{
+				$prefix = '';
+			}
+
+			$btn_logout = '<a href="' . $prefix . 'setup/logout?FormLogout=' . $logoutfrom . '" class="link">' . $setup->lang('Logout') . '</a>';
 		}
 
 		$this->setup_tpl->set_var('lang_version', $setup->lang('version'));
