@@ -395,7 +395,7 @@ HTML;
 
 				$default_lang =  Sanitizer::get_var('ConfigLang', 'string', 'POST', $this->serverSettings['default_lang']);
 
-				$detected .= '<tr><td colspan="2"><form action="../setup/manageheader" method="post">Please Select your language ' . $this->html->lang_select(True) . "</form></td></tr>\n";
+				$detected .= '<tr><td colspan="2"><form action="setup/manageheader" method="post">Please Select your language ' . $this->html->lang_select(True) . "</form></td></tr>\n";
 
 				$manual = '<a href="https://github.com/PorticoEstate/PorticoEstate/blob/master/doc/README.adoc" target="_blank">' . $this->setup->lang('Portico Estate Administration Manual') . '</a>';
 				$detected .= '<tr><td colspan="2"><p><strong>' . $this->setup->lang('Please consult the %1.', $manual) . "</strong></td></tr>\n";
