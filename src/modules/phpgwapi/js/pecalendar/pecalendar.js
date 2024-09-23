@@ -1955,7 +1955,7 @@ if (globalThis['ko']) {
                                         <span class="text-bold"><trans>bookingfrontend:place</trans>:</span>
                                         <a data-bind="attr: { href: infoData.building_link }, text: infoData.building_name"></a>
                                     </div>
-                                    <div>
+                                    <div style="display: flex; flex-direction: row; max-width: 400px;flex-wrap: wrap">
                                         <span class="text-bold"><trans>bookingfrontend:resources</trans>:</span>
                                         <span data-bind="text: infoData.info_resource_info"></span>
                                     </div>
