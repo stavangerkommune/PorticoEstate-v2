@@ -648,8 +648,8 @@ please_accept_terms	bookingfrontend	nn	Ver venleg og godta vilkåra
 organization_calendar	bookingfrontend	nn	Organisasjonskalender
 no_resources_found	bookingfrontend	nn	Ingen ressursar funne for den valde datoen
 no_documents_to_accept	bookingfrontend	nn	Det er ingen dokument å godkjenne for denne søknaden.
-calendar_view	bookingfrontend	nn	Kalendervisning
-list_view	bookingfrontend	nn	Listevisning
+calendar_view	bookingfrontend	nn	Kalender
+list_view	bookingfrontend	nn	Liste
 deselect_all	bookingfrontend	nn	Velg ingen
 max_participants	bookingfrontend	nn	Maks {{count}} deltakarar
 edit_event	bookingfrontend	nn	Rediger arrangement

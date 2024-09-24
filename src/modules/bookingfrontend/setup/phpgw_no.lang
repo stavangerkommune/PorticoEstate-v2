@@ -647,8 +647,8 @@ please_accept_terms	bookingfrontend	no	Vennligst godta vilkårene
 organization_calendar	bookingfrontend	no	Organisasjonskalender
 no_resources_found	bookingfrontend	no	Ingen ressurser funnet for den valgte datoen
 no_documents_to_accept	bookingfrontend	no	Det er ingen dokumenter å godkjenne for denne søknaden.
-calendar_view	bookingfrontend	no	Kalendervisning
-list_view	bookingfrontend	no	Listevisning
+calendar_view	bookingfrontend	no	Kalender
+list_view	bookingfrontend	no	Liste
 deselect_all	bookingfrontend	no	Velg ingen
 max_participants	bookingfrontend	no	Maks {{count}} deltakere
 edit_event	bookingfrontend	no	Rediger arrangement
