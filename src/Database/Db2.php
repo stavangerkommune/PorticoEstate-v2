@@ -24,6 +24,7 @@ class Db2 extends Db
 			$username = $config['db_user'];
 			$password = $config['db_pass'];
 			$options = [
+				PDO::ATTR_PERSISTENT => true, // Enable persistent connections
 				PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 				PDO::ATTR_EMULATE_PREPARES => false,
 				PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
@@ -50,7 +51,7 @@ class Db2 extends Db
 
 		$this->set_config($config);
 		//not the paren, just this one
-		register_shutdown_function(array(&$this, 'disconnect'));
+//		register_shutdown_function(array(&$this, 'disconnect'));
 	}
 
 	public function set_config($config)
