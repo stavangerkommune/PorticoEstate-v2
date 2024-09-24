@@ -648,8 +648,8 @@ please_accept_terms	bookingfrontend	en	Please accept the terms and conditions
 organization_calendar	bookingfrontend	en	Organization Calendar
 no_resources_found	bookingfrontend	en	No resources found for the given date
 no_documents_to_accept	bookingfrontend	en	There are no documents to accept for this application.
-calendar_view	bookingfrontend	en	Calendar View
-list_view	bookingfrontend	en	List View
+calendar_view	bookingfrontend	en	Calendar
+list_view	bookingfrontend	en	List
 deselect_all	bookingfrontend	en	Deselect All
 max_participants	bookingfrontend	en	Max {{count}} participants
 edit_event	bookingfrontend	en	Edit Event
