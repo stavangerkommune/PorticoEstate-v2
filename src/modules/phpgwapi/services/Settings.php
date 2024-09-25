@@ -110,7 +110,7 @@ class Settings
 			if ($this->config_data['server']['versions']['header'] < $setup_info['phpgwapi']['versions']['current_header'])
 			{
 				//check in "/setup" is part of php_self
-				if (!preg_match('/\/setup/', $_SERVER['PHP_SELF']))
+				if (!preg_match('/\/setup/', $_SERVER['REDIRECT_URL']))
 				{
 					$msg =  "You need to port your settings to the new header.inc.php version. <a href='/setup'>Run setup now</a>";
 					echo "<div style='background-color: #FF0000; color: #FFFFFF; padding: 5px; text-align: center; font-weight: bold;'>$msg</div>";

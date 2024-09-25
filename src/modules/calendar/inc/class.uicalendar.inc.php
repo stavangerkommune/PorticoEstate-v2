@@ -1227,7 +1227,7 @@
 
 		function planner()
 		{
-			$home = strstr($_SERVER['PHP_SELF'],'home') !== False;
+			$home = strstr($_SERVER['REDIRECT_URL'],'home') !== False;
 			// generate header and set global/member variables
 			//
 			$this->planner_prepare($home);

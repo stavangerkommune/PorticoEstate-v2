@@ -1,7 +1,7 @@
 $(function ()
 {
 
-	var HomeUrl = phpGWLink('home.php', {}, false);
+	var HomeUrl = phpGWLink('home/', {}, false);
 
 //	The menu
 	$('#menu').mmenu({

@@ -40,7 +40,7 @@
 	    <p>Clickatell API URL: <input type=text size=40 maxlength=250 name=up_send_url value=\"" . $clktl_param['send_url'] . "\"> (No trailing slash \"/\")
 	    <p>Clickatell Incoming Path: <input type=text size=40 maxlength=250 name=up_incoming_path value=\"" . $clktl_param['incoming_path'] . "\"> (No trailing slash \"/\")
 	    <p>Note:<br>
-	    - Your callback URL is <b>http://" . $_SERVER["HTTP_HOST"] . dirname($_SERVER["PHP_SELF"]) . "/plugin/gateway/clickatell/callback.php</b><br>
+	    - Your callback URL is <b>http://" . $_SERVER["HTTP_HOST"] . dirname($_SERVER["REDIRECT_URL"]) . "/plugin/gateway/clickatell/callback.php</b><br>
 	    - If you are using callback URL to receive incoming sms just ignore Clickatell Incoming Path<br>
 	    <!-- <p><input type=checkbox name=up_trn $checked> Send SMS message without footer banner ($username) -->
 	    <p><input type=submit class=button value=Save>

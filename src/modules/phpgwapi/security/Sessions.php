@@ -368,7 +368,7 @@ class Sessions
 		}
 		else
 		{
-			$action = $_SERVER['PHP_SELF'];
+			$action = $_SERVER['REDIRECT_URL'];
 		}
 
 		$_SESSION['phpgw_session']['session_dla'] = time();
@@ -891,7 +891,7 @@ class Sessions
 			'session_ip'		=> $user_ip,
 			'session_logintime'	=> $now,
 			'session_dla'		=> $now,
-			'session_action'	=> $_SERVER['PHP_SELF'],
+			'session_action'	=> $_SERVER['REDIRECT_URL'],
 			'session_flags'		=> $session_flags,
 			'user_agent'		=> md5(\Sanitizer::get_var('HTTP_USER_AGENT', 'string', 'SERVER')),
 			// we need the install-id to differ between serveral installs shareing one tmp-dir

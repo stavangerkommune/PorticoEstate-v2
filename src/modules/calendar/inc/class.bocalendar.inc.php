@@ -198,7 +198,7 @@ class calendar_bocalendar
 		$referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
 		preg_match('/menuaction=([a-zA-Z.]+)/', $referer, $regs);
 		$from = $regs[1];
-		if ((substr($_SERVER['PHP_SELF'], -8) == 'home.php' && substr($this->prefs['calendar']['defaultcalendar'], 0, 7) == 'planner'
+		if ((substr($_SERVER['REDIRECT_URL'], -5) == 'home/' && substr($this->prefs['calendar']['defaultcalendar'], 0, 7) == 'planner'
 				|| (isset($GLOBALS['phpgw_info']['menuaction']) && $GLOBALS['phpgw_info']['menuaction'] == 'calendar.uicalendar.planner')
 				&& $from  != 'calendar.uicalendar.planner' && !$this->save_owner)
 			&& intval($this->prefs['calendar']['planner_start_with_group']) > 0

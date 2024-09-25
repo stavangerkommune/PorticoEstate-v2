@@ -515,7 +515,7 @@
 			{
 				if ($this->debug > 0) { $GLOBALS['phpgw']->msg->dbug->out('email.boaction.delmov ('.__LINE__.'): get_arg_value(what) == unknown_value<br />'); }
 				$error_str = '<p><center><b>'.lang('UNKNOWN ACTION')."<br /> \r\n"
-						.'called from '.$GLOBALS['PHP_SELF'].', delmov()'."<br /> \r\n"
+						.'called from '.$GLOBALS['REDIRECT_URL'].', delmov()'."<br /> \r\n"
 						.'</b></center></p>'."<br /> \r\n";
 				$this->redirect_to = $this->redirect_if_error;
 			}

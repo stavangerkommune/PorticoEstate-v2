@@ -41,7 +41,17 @@ class StartPoint
 
 	public function mobilefrontend(Request $request, Response $response)
 	{
-		Settings::getInstance()->update('flags', ['custom_frontend' => 'mobilefrontend']);
+		$serverSettings = Settings::getInstance()->get('server');
+		$userSettings = Settings::getInstance()->get('user');
+
+		if(!empty($serverSettings['log_levels']['module']['mobilefrontend']) 
+		&& !empty($userSettings['apps']['admin'])
+		&& !Sanitizer::get_var('phpgw_return_as', 'string', 'GET') == 'json')
+		{
+			_debug_array(Settings::getInstance()->get('flags'));
+			_debug_array($_SERVER);
+		}
+		
 		$this->validate_object_method();
 
 		$this->api_requested = false;
@@ -62,7 +72,6 @@ class StartPoint
 			$this->app = 'phpgwapi';
 		}
 
-		$userSettings = Settings::getInstance()->get('user');
 		$userSettings['preferences']['common']['template_set'] = 'mobilefrontend';
 		Settings::getInstance()->set('user', $userSettings);
 
@@ -102,19 +111,12 @@ class StartPoint
 				$response_str = json_encode($return_data);
 				$response->getBody()->write($response_str);
 				return $response->withHeader('Content-Type', 'application/json');
-
-				//                $flags['nofooter'] = true;
-				//               Settings::getInstance()->set('flags', $flags);    
-				//           $phpgwapi_common->phpgw_exit();
 			}
 			else
 			{
 				if (Sanitizer::get_var('phpgw_return_as', 'string', 'GET') == 'noframes')
 				{
-					$flags = Settings::getInstance()->get('flags');
-					$flags['noframework'] = true;
-					$flags['headonly'] = true;
-					Settings::getInstance()->set('flags', $flags);
+					Settings::getInstance()->update('flags', ['headonly' => true, 'noframework' => true]);
 				}
 
 				$Object->{$this->method}();
@@ -173,8 +175,6 @@ class StartPoint
 		}
 
 		//   $phpgwapi_common->phpgw_footer();
-
-		register_shutdown_function(array($phpgwapi_common, 'phpgw_final'));
 
 		$response_str = json_encode(['message' => 'Welcome to Portico API']);
 		$response->getBody()->write($response_str);
@@ -227,9 +227,6 @@ class StartPoint
 				$response->getBody()->write($response_str);
 				return $response->withHeader('Content-Type', 'application/json');
 
-				//                $flags['nofooter'] = true;
-				//               Settings::getInstance()->set('flags', $flags);    
-				//           $phpgwapi_common->phpgw_exit();
 			}
 			else
 			{
@@ -296,8 +293,6 @@ class StartPoint
 		}
 
 		//   $phpgwapi_common->phpgw_footer();
-
-		register_shutdown_function(array($phpgwapi_common, 'phpgw_final'));
 
 		$response_str = json_encode(['message' => 'Welcome to Portico API']);
 		$response->getBody()->write($response_str);
@@ -555,7 +550,6 @@ HTML;
 			$this->log->commit();
 		}
 
-		register_shutdown_function(array($phpgwapi_common, 'phpgw_final'));
 
 		$response_str = json_encode(['message' => $message]);
 		$response->getBody()->write($response_str);
@@ -684,8 +678,6 @@ HTML;
 				{
 					$return_data = '';
 				}
-
-				register_shutdown_function(array($phpgwapi_common, 'phpgw_final'));
 
 				$response->getBody()->write($return_data);
 				return $response->withHeader('Content-Type', 'text/html');

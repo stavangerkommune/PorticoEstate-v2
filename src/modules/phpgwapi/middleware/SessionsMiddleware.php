@@ -101,15 +101,6 @@ class SessionsMiddleware implements MiddlewareInterface
 
 			if ($currentApp == 'mobilefrontend')
 			{
-				$custom_frontend = 'mobilefrontend';
-				Settings::getInstance()->update(
-					'flags',
-					[
-						'custom_frontend' => $custom_frontend,
-						'session_name' => $this->settings['session_name'][$custom_frontend]
-					]
-				);
-
 				$process_login = new Login();
 				if ($process_login->login())
 				{
@@ -181,7 +172,7 @@ class SessionsMiddleware implements MiddlewareInterface
 	 * @return void
 	 */
 
-	private function read_initial_settings($currentApp = '', $custom_frontend = '')
+	private function read_initial_settings($currentApp, $custom_frontend = '')
 	{
 		$flags = Settings::getInstance()->get('flags');
 		$flags['currentapp'] = $currentApp;

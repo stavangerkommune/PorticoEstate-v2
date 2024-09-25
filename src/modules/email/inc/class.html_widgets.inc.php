@@ -1628,7 +1628,7 @@
 			// if NOT supplied a "reload_me" URI then we must figure one out
 			if ($reload_me == '')
 			{
-				if ((stristr($GLOBALS['PHP_SELF'], '/email/index.php'))
+				if ((stristr($_SERVER['REDIRECT_URL'], '/email/'))
 				||  (	((isset($GLOBALS['phpgw']->msg->ref_GET['menuaction']))
 					&& (stristr($GLOBALS['phpgw']->msg->ref_GET['menuaction'], 'email.uiindex.index')))
 					)
@@ -1644,7 +1644,7 @@
 						$reload_me = phpgw::link('/email/index.php');
 					}
 				}
-				elseif (eregi("^.*\/home\.php.*$",$GLOBALS['PHP_SELF']))
+				elseif (eregi("^.*\/home\/.*$",$_SERVER['REDIRECT_URL']))
 				{
 					$reload_me = phpgw::link('/home.php');			
 				}

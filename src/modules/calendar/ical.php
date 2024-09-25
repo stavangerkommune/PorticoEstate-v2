@@ -56,7 +56,7 @@
 		header('WWW-Authenticate: Basic realm="phpGW-iCal"');
 		header('HTTP/1.0 401 Unauthorized');
 		echo '<p>You must call this script using ';
-		list($ignore, $url) = explode('//', $_SERVER['PHP_SELF']);
+		list($ignore, $url) = explode('//', $_SERVER['REDIRECT_URL']);
 		echo  "'[webcal|http]://phpgw_user:password@{$url}' OR '[webcal|http]://{$url}?user=phpgw_user&amp;pass=password'</p>";
 		exit;
 	}

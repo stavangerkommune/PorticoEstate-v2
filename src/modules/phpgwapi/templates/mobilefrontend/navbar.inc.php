@@ -332,15 +332,14 @@ HTML;
 	$flags['menu_selection'] = isset($flags['menu_selection']) ? $flags['menu_selection'] : '';
 	$breadcrumb_selection = !empty($flags['breadcrumb_selection']) ? $flags['breadcrumb_selection'] : $flags['menu_selection'];
 	// breadcrumbs
+//_debug_array($_SERVER['REDIRECT_URL']);
 	$current_url = array(
 		'id'	=> $breadcrumb_selection,
-		'url'	=> 	"{$_SERVER['PHP_SELF']}?" . http_build_query($extra_vars),
+		'url'	=> 	"{$_SERVER['REDIRECT_URL']}?" . http_build_query($extra_vars),
 		'name'	=> $var['current_app_title']
 	);
 	$breadcrumbs = Cache::session_get('phpgwapi', 'breadcrumbs');
 	$breadcrumbs = $breadcrumbs ? $breadcrumbs : array(); // first one
-
-
 
 	if (empty($breadcrumbs) || (isset($breadcrumbs[0]['id']) && $breadcrumbs[0]['id'] != $breadcrumb_selection))
 	{

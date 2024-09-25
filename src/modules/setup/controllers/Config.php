@@ -156,11 +156,10 @@ class Config
 			$current_config['temp_dir'] = '/path/to/temp/dir';
 		}
 		// guessing the phpGW url
-		$parts = explode('/', $_SERVER['PHP_SELF']);
-		unset($parts[count($parts) - 1]); // config.php
+		$parts = explode('/', $_SERVER['REDIRECT_URL']);
+		unset($parts[count($parts) - 1]); // config
 		unset($parts[count($parts) - 1]); // setup
 		$current_config['webserver_url'] = implode('/', $parts);
-
 		// Add some sane defaults for accounts
 		$current_config['account_min_id'] = 1000;
 		$current_config['account_max_id'] = 65535;

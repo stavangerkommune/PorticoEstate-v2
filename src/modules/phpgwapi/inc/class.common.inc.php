@@ -378,7 +378,7 @@ class phpgwapi_common
 			/**
 			 * Not sure about this one
 			 */
-			Db::getInstance()->disconnect();
+//			Db::getInstance()->disconnect();
 
 			$final_called = true;
 		}

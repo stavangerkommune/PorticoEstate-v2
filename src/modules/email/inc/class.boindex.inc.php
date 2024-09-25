@@ -985,7 +985,7 @@
 			if (($args_array['do_login'] == True)
 			&& (!$some_stream))
 			{
-				$GLOBALS['phpgw']->msg->login_error($GLOBALS['PHP_SELF'].', mlist_data()');
+				$GLOBALS['phpgw']->msg->login_error($_SERVER['REDIRECT_URL'].', mlist_data()');
 			}
 			// base http URI on which we will add other stuff down below
 			$this->index_base_link = phpgw::link('/index.php',$GLOBALS['phpgw']->msg->get_arg_value('mlist_menuaction'));

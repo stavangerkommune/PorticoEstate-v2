@@ -57,7 +57,7 @@ $(document).ready(function ()
 function keepAlive()
 {
 	var oArgs = {keep_alive: true};
-	var keep_alive_url = phpGWLink('home.php', oArgs, true);
+	var keep_alive_url = phpGWLink('home/', oArgs, true);
 
 	$.ajax({
 		cache: false,
