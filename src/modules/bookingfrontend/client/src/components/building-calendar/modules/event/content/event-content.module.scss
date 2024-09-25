@@ -1,4 +1,5 @@
 @import "../../../../../styles/colors";
+@import "../../../../../styles/util.module";
 
 .event {
     color: $black;
@@ -20,6 +21,16 @@
 
     &.longEvent {
         gap: 0.5rem
+    }
+
+    &.listEvent {
+        display: grid;
+        grid-template-areas: "time title resources organizer";
+        grid-template-columns: 2fr 4fr 2fr 3fr;
+        @include mobile {
+            display: flex;
+            flex-direction: column;
+        }
     }
 
     .participantLimit {

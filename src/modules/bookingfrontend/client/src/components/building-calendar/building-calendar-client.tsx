@@ -34,6 +34,7 @@ import {IBuilding} from "@/service/types/Building";
 import {useTrans} from "@/app/i18n/ClientTranslationProvider";
 import {Placement} from "@floating-ui/utils";
 import {useIsMobile} from "@/service/hooks/is-mobile";
+import EventContentList from "@/components/building-calendar/modules/event/content/event-content-list";
 
 interface BuildingCalendarProps {
     events: IEvent[];
@@ -299,6 +300,9 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
         }
         if (type === 'temporary') {
             return <EventContentTemp eventInfo={eventInfo as FCEventContentArg<FCallTempEvent>}/>
+        }
+        if (calendarRef.current?.getApi().view.type === 'listWeek') {
+            return <EventContentList eventInfo={eventInfo as FCEventContentArg<FCallEvent>} />;
         }
         return <EventContent eventInfo={eventInfo as FCEventContentArg<FCallEvent>}
         />
