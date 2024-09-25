@@ -64,7 +64,7 @@ $(document).ready(function ()
 		onDropdownHidden: function (event)
 		{
 //			console.log(event);
-			$("#form").submit();
+//			$("#form").submit();
 		}
 	});
 
@@ -90,7 +90,7 @@ $(document).ready(function ()
 		onDropdownHidden: function (event)
 		{
 //			console.log(event);
-			$("#form").submit();
+//			$("#form").submit();
 		}
 	});
 
