@@ -4,7 +4,6 @@ import {FCallTempEvent} from "@/components/building-calendar/building-calendar.t
 
 
 interface CalendarContextType {
-    resourceToIds: { [p: number]: number };
     resources: Record<string, IBuildingResource>;
     tempEvents: Record<string, FCallTempEvent>;
     setTempEvents: (value: (((prevState: Record<string, FCallTempEvent>) => Record<string, FCallTempEvent>) | Record<string, FCallTempEvent>)) => void
@@ -14,11 +13,6 @@ interface CalendarContextType {
 
 const CalendarContext = createContext<CalendarContextType | undefined>(undefined);
 
-
-export const useResourceToId = () => {
-    const ctx = useCalendarContext();
-    return ctx.resourceToIds;
-}
 
 
 export const useTempEvents = () => {
@@ -46,7 +40,7 @@ interface CalendarContextProps extends CalendarContextType{
 
 const CalendarProvider: FC<PropsWithChildren<CalendarContextProps>> = (props) => {
     return (
-        <CalendarContext.Provider value={{resourceToIds: props.resourceToIds, resources: props.resources, setTempEvents: props.setTempEvents, tempEvents: props.tempEvents}}>
+        <CalendarContext.Provider value={{resources: props.resources, setTempEvents: props.setTempEvents, tempEvents: props.tempEvents}}>
             {props.children}
         </CalendarContext.Provider>
     );

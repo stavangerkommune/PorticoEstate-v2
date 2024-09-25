@@ -13,7 +13,6 @@ import {
     EventInput,
 } from "@fullcalendar/core";
 import styles from './building-calender.module.scss'
-import {useColours} from "@/service/hooks/Colours";
 import {FCallEventConverter} from "@/components/building-calendar/util/event-converter";
 import CalendarResourceFilter, {
     CalendarResourceFilterOption
@@ -54,7 +53,6 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
     const {events} = props;
     const [currentDate, setCurrentDate] = useState<DateTime>(props.initialDate);
     const [calendarEvents, setCalendarEvents] = useState<FCallEvent[]>([]);
-    const colours = useColours();
     const [slotMinTime, setSlotMinTime] = useState('00:00:00');
     const [slotMaxTime, setSlotMaxTime] = useState('24:00:00');
     const [selectedEvent, setSelectedEvent] = useState<FCallEvent | FCallTempEvent | null>(null);
@@ -86,10 +84,9 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
     const resourceOptions = useMemo<CalendarResourceFilterOption[]>(() => {
         return Object.values(props.resources).map((resource, index) => ({
             value: resource.id.toString(),
-            label: resource.name,
-            color: colours?.[index % colours.length]
+            label: resource.name
         }));
-    }, [props.resources, colours]);
+    }, [props.resources]);
 
     const [enabledResources, setEnabledResources] = useState<Set<string>>(
         new Set(resourceOptions.map(option => option.value))
@@ -210,12 +207,6 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
         return backgroundEvents;
     }, [currentDate, props.seasons]);
 
-    const resourceToIds = useMemo(() => {
-        return Object.values(props.resources).map(res => res.id).reduce((coll, curr, indx) => {
-            return {[curr]: indx, ...coll}
-        }, {})
-    }, [props.resources])
-
 
     const handleEventResize = useCallback((resizeInfo: EventResizeDoneArg | EventDropArg) => {
         if (resizeInfo.event.extendedProps?.type === 'temporary') {
@@ -247,15 +238,11 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
     }
 
     useEffect(() => {
-        if (!colours || !resourceToIds) {
-            return;
-        }
         const filteredEvents = events
-            .map((e) => FCallEventConverter(e, colours, resourceToIds, enabledResources)!)
+            .map((e) => FCallEventConverter(e, enabledResources)!)
             .filter(e => e);
-        // console.log(events, filteredEvents)
         setCalendarEvents(filteredEvents);
-    }, [events, colours, resourceToIds, enabledResources]);
+    }, [events, enabledResources]);
 
     useEffect(() => {
         calendarRef?.current?.getApi().changeView(view)
@@ -287,7 +274,7 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
         }
     };
     useEffect(() => {
-        if(isMobile) {
+        if (isMobile) {
             // const newView = whichView(window.innerWidth);
             const calendarApi = calendarRef.current?.getApi(); // Access calendar API
 
@@ -297,24 +284,28 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
             }
         }
     }, [isMobile]);
+
     function renderEventContent(eventInfo: FCEventContentArg<FCallBaseEvent>) {
         const type = eventInfo.event.extendedProps.type;
-        if(type === 'background') {
+        if (type === 'background') {
             return null;
         }
-        if(type === 'temporary') {
+        if (type === 'temporary') {
             return <EventContentTemp eventInfo={eventInfo as FCEventContentArg<FCallTempEvent>}/>
         }
         return <EventContent eventInfo={eventInfo as FCEventContentArg<FCallEvent>}
         />
     }
+
     return (
-        <CalendarProvider resourceToIds={resourceToIds} resources={props.resources} tempEvents={tempEvents} setTempEvents={setTempEvents}>
+        <CalendarProvider resources={props.resources} tempEvents={tempEvents}
+                          setTempEvents={setTempEvents}>
             <div className={`${styles.calendar} ${resourcesHidden ? styles.closed : ''} `}
                 // onTransitionStart={handleBeforeTransition}
                  onTransitionEnd={handleAfterTransition}>
-                <CalendarHeader view={view} calendarRef={calendarRef} setView={(v) => setView(v)}/>
+                {/*<CalendarHeader view={view} calendarRef={calendarRef} setView={(v) => setView(v)}/>*/}
                 <CalendarResourceFilter
+                    transparent={resourcesHidden}
                     hidden={!resourcesContainerRendered}
                     resourceOptions={resourceOptions}
                     enabledResources={enabledResources}
@@ -322,7 +313,7 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
                     onToggleAll={handleToggleAll}
                 />
                 <CalendarInnerHeader view={view} resourcesHidden={resourcesHidden}
-                                     setResourcesHidden={setResourcesHidden} setView={(v) => setView(v)}
+                                     setResourcesHidden={setResourcesHidden}  calendarRef={calendarRef}  setView={(v) => setView(v)}
                                      setLastCalendarView={() => setView(lastCalendarView)} building={props.building}/>
                 <FullCalendar
                     ref={calendarRef}
@@ -379,7 +370,7 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
                     dateClick={handleDateClick}
                     events={[...calendarEvents, ...tempEventArr, ...renderBackgroundEvents()] as EventInput[]}
                     // editable={true}
-                    selectOverlap={(stillEvent, movingEvent) => stillEvent?.extendedProps?.type !=='event'}
+                    selectOverlap={(stillEvent, movingEvent) => stillEvent?.extendedProps?.type !== 'event'}
                     eventResize={handleEventResize}
                     eventDrop={handleEventResize}
                     initialDate={currentDate.toJSDate()}

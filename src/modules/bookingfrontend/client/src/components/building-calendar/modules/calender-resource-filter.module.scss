@@ -7,11 +7,21 @@
 
     @include desktop {
         border: 1px solid #ccc;
-        border-radius: 4px;
         overflow-y: auto;
         //margin-bottom: 20px;
         grid-area: filter;
+        margin-top: -0.875rem;
+        border-top: none;
+        border-radius: 0;
+        opacity: 1;
+        transition: opacity 0.2s;
+        min-width: 300px;
+        &.transparent {
+            opacity: 0;
+        }
     }
+
+
     &.hidden {
         //border: 5px;
         display: none;
@@ -24,7 +34,6 @@
 
 .toggleAllContainer {
     padding: 10px;
-    border-bottom: 1px solid #ccc;
     //position: sticky;
     top: 0;
     background-color: white;

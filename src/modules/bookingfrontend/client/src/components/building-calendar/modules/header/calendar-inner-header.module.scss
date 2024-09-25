@@ -6,25 +6,44 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap:0.5rem;
     @include mobile {
         display: none;
     }
 }
 
+.flexBox {
+    display: flex;
+    flex-direction: row;
+    gap:0.5rem;
+
+}
+
+
+
+.datePicker {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 .expandCollapseButton {
-    border-top-left-radius: 0;
+    border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
     margin-left: 0;
+    width: 300px;
+
+    border: 1px solid #eee;
 
     &.open {
-        margin-left: -0.875rem;
+        transform: rotate(0deg);
+        border-bottom: 0;
+
     }
+    //&.open {
+    //    margin-left: -0.875rem;
+    //}
     //background-color: green!important;
-    padding-right: 0.875rem;
-    //width: 2rem;
-    height: 2rem;
 
     .expandCollapseIcon {
         transition: 300ms;

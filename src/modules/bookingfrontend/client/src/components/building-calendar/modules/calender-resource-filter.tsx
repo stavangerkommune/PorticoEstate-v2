@@ -13,7 +13,6 @@ import {useIsMobile} from "@/service/hooks/is-mobile";
 export interface CalendarResourceFilterOption {
     value: string;
     label: string;
-    color?: string;
 }
 
 interface CalendarResourceFilterProps {
@@ -21,6 +20,7 @@ interface CalendarResourceFilterProps {
     resourceOptions: CalendarResourceFilterOption[];
     enabledResources: Set<string>;
     onToggle: (resourceId: string) => void;
+    transparent:  boolean;
     onToggleAll: () => void;
 }
 
@@ -30,6 +30,7 @@ const CalendarResourceFilter: FC<CalendarResourceFilterProps> = ({
                                                                      onToggle,
                                                                      onToggleAll,
                                                                      hidden,
+                                                                 transparent,
                                                                  }) => {
     const [open, setOpen] = useState<boolean>(false);
     const isMobile = useIsMobile();
@@ -38,7 +39,7 @@ const CalendarResourceFilter: FC<CalendarResourceFilterProps> = ({
 
 
     const content = (
-        <div className={`${styles.resourceToggleContainer} ${hidden ? styles.hidden : ''}`}
+        <div className={`${styles.resourceToggleContainer} ${hidden ? styles.hidden : ''}  ${transparent ? styles.transparent : ''}`}
         >
             <div className={styles.toggleAllContainer}>
                 {/*<Button*/}

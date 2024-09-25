@@ -1,73 +1,85 @@
 @import "../../../../../styles/colors";
 
 .event {
-  color: $black;
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-
-  gap: 5px;
-
-  &.shortEvent {
-    justify-content: space-between;
-    align-items: center;
-    align-self: stretch;
-    flex-direction: row;
-  }
-
-  &.mediumEvent {
-  }
-
-  &.longEvent {
-    gap: 0.5rem
-  }
-
-  .participantLimit {
+    color: $black;
     display: flex;
-    gap: 0.5em;
-    align-items: center
-  }
+    width: 100%;
+    flex-direction: column;
 
-  .colorCircles {
-    display: flex;
-    align-items: center;
-    gap: 0.25em
-  }
+    gap: 5px;
 
-  .colorCircle {
-    margin-right: 2px;
-  }
+    &.shortEvent {
+        justify-content: space-between;
+        align-items: center;
+        align-self: stretch;
+        flex-direction: row;
+    }
 
-  .remainingCount {
-    font-size: 0.8em;
-    margin-left: 2px;
-  }
+    &.mediumEvent {
+    }
+
+    &.longEvent {
+        gap: 0.5rem
+    }
+
+    .participantLimit {
+        display: flex;
+        gap: 0.5em;
+        align-items: center
+    }
+
+    .colorCircles {
+        display: flex;
+        align-items: center;
+        gap: 0.25em
+    }
+
+    .colorCircle {
+        margin-right: 2px;
+    }
+
+    .remainingCount {
+        font-size: 0.8em;
+        margin-left: 2px;
+    }
 
 
-  .time {
-    display: flex;
-    gap: 0.5em;
-    align-items: center;
-  }
+    .time {
+        display: flex;
+        gap: 0.5em;
+        align-items: center;
+        overflow: hidden;
+        white-space: nowrap;
+    }
 
-  .title {
-    display: inline-block;
-    max-width: 100%; /* Ensure the span does not exceed its container */
-    white-space: nowrap; /* Prevent text wrapping */
-    overflow: hidden; /* Hide overflowing text */
-    text-overflow: ellipsis; /* Add the ellipsis */
-    vertical-align: middle; /* Align the text vertically */
-    //flex-shrink: 1; /* Allow the text to shrink if necessary */
-    //flex-grow: 1; /* Grow to fill available space */
-    min-width: 0; /* Ensures the ellipsis works in flexbox */
-    font-weight: 500;
-  }
+    .title {
+        display: inline-block;
+        max-width: 100%; /* Ensure the span does not exceed its container */
+        white-space: nowrap; /* Prevent text wrapping */
+        overflow: hidden; /* Hide overflowing text */
+        text-overflow: ellipsis; /* Add the ellipsis */
+        vertical-align: middle; /* Align the text vertically */
+        //flex-shrink: 1; /* Allow the text to shrink if necessary */
+        //flex-grow: 1; /* Grow to fill available space */
+        min-width: 0; /* Ensures the ellipsis works in flexbox */
+        font-weight: 500;
+    }
 
+    .organizer {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
 
-  .resourceIcons {
-    display: flex;
-    gap: 0.5em;
-    align-items: center;
+    .orderNumber {
+        overflow: hidden;
+        white-space: nowrap;
+    }
 
-  }
+    .resourceIcons {
+        display: flex;
+        gap: 0.5em;
+        align-items: center;
+
+    }
 }

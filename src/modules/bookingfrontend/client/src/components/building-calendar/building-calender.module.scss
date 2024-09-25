@@ -30,8 +30,8 @@
 .calendar {
     display: grid;
     grid-template-columns: 300px 1fr;
-    grid-template-rows: auto auto 1fr;
-    grid-template-areas: "header header header" "filter inner-header inner-header" "filter calendar-body calendar-body";
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "inner-header inner-header inner-header" "filter calendar-body calendar-body";
     gap: 0.875rem 0.875rem;
     transition: 300ms;
 
@@ -43,13 +43,14 @@
 
     :global .fc {
         grid-area: calendar-body;
+        background-color: $grey-light-64;
     }
 
     @include mobile {
         display: grid;
         grid-template-rows: 1fr;
         grid-template-columns: auto;
-        grid-template-areas: "filter" "header"  "calendar-body";
+        grid-template-areas: "filter" "inner-header"  "calendar-body";
         //width: 100vw;
     }
 
