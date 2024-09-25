@@ -22,7 +22,7 @@ interface CalendarResourceFilterProps {
     onToggle: (resourceId: string) => void;
     transparent:  boolean;
     onToggleAll: () => void;
-    setOpen: (boolean) => void;
+    setOpen: (open: boolean) => void;
 }
 
 const CalendarResourceFilter: FC<CalendarResourceFilterProps> = ({
