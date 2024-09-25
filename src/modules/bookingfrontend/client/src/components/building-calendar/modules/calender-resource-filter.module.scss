@@ -3,13 +3,13 @@
 
 
 .resourceToggleContainer {
+    grid-area: filter;
 
 
     @include desktop {
         border: 1px solid #ccc;
         overflow-y: auto;
         //margin-bottom: 20px;
-        grid-area: filter;
         margin-top: -0.875rem;
         border-top: none;
         border-radius: 0;
@@ -19,13 +19,14 @@
         &.transparent {
             opacity: 0;
         }
+        &.hidden {
+            //border: 5px;
+            display: none;
+        }
+
     }
 
 
-    &.hidden {
-        //border: 5px;
-        display: none;
-    }
 
     //@include mobile {
     //    display: none;

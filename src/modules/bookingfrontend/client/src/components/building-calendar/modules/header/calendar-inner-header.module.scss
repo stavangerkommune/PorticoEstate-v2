@@ -3,12 +3,49 @@
 
 .innerHeader {
     grid-area: inner-header;
-    display: flex;
-    justify-content: space-between;
+    //justify-content: space-between;
     align-items: center;
     gap:0.5rem;
+
+    display: grid;
+    grid-template-columns:auto 20rem 1fr auto auto;
+    grid-template-rows: auto;
+    grid-template-areas: "resource-button date mode-select-time mode-select order";
+
     @include mobile {
-        display: none;
+        display: grid;
+        grid-template-columns:auto 1fr;
+        grid-template-rows: auto auto;
+        grid-template-areas: "mode-select resource-button" "date date";
+        //display: none;
+    }
+
+    .datePicker {
+        grid-area: date;
+    }
+
+
+    .mobileResourcesButton, .expandCollapseButton {
+        grid-area: resource-button;
+    }
+    .modeSelectTime {
+        display: flex;
+        justify-content: flex-end;
+        grid-area: mode-select-time;
+        @include mobile {
+            //flex-direction: column;
+            display: none;
+        }
+    }
+    .modeSelect {
+        grid-area: mode-select;
+        .modeTitle {
+            @include mobile {
+                //flex-direction: column;
+                display: none;
+            }
+        }
+
     }
 }
 
@@ -22,12 +59,24 @@
 
 
 .datePicker {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
     gap: 0.5rem;
 }
 
+.mobileResourcesButton {
+    grid-area: resource-button;
+
+    @include desktop {
+        display: none;
+    }
+}
+
 .expandCollapseButton {
+    @include mobile {
+        display: none;
+    }
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
     margin-left: 0;

@@ -7,6 +7,7 @@ interface CalendarContextType {
     resources: Record<string, IBuildingResource>;
     tempEvents: Record<string, FCallTempEvent>;
     setTempEvents: (value: (((prevState: Record<string, FCallTempEvent>) => Record<string, FCallTempEvent>) | Record<string, FCallTempEvent>)) => void
+    enabledResources: Set<string>
 
 }
 
@@ -24,6 +25,10 @@ export const useAvailableResources = () => {
     const ctx = useCalendarContext();
     return ctx.resources;
 }
+export const useEnabledResources = () => {
+    const ctx = useCalendarContext();
+    return ctx.enabledResources;
+}
 export const useCalendarContext = () => {
     const context = useContext(CalendarContext);
     if (context === undefined) {
@@ -40,7 +45,7 @@ interface CalendarContextProps extends CalendarContextType{
 
 const CalendarProvider: FC<PropsWithChildren<CalendarContextProps>> = (props) => {
     return (
-        <CalendarContext.Provider value={{resources: props.resources, setTempEvents: props.setTempEvents, tempEvents: props.tempEvents}}>
+        <CalendarContext.Provider value={{resources: props.resources, setTempEvents: props.setTempEvents, tempEvents: props.tempEvents, enabledResources: props.enabledResources}}>
             {props.children}
         </CalendarContext.Provider>
     );

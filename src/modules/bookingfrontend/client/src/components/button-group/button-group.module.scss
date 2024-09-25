@@ -1,6 +1,8 @@
 .buttonGroup {
   display: flex;
-
+ button {
+     align-items: center;
+ }
   :first-child {
     //first button
     border-bottom-right-radius: 0;
