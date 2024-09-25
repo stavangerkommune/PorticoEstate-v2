@@ -1,5 +1,4 @@
 import React, {FC} from 'react';
-import {useResourceToId} from "@/components/building-calendar/calendar-context";
 import {useColours} from "@/service/hooks/Colours";
 import styles from './colour-circle.module.scss';
 
