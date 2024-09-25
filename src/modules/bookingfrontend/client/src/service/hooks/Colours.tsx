@@ -1,5 +1,4 @@
 import {useMemo} from "react";
-
 const colors: string[] = [
     "#FF9999", // Lys rød
     "#D4FFBF", // Lys grønn
@@ -11,8 +10,13 @@ const colors: string[] = [
     "#B8CC99", // Lys olivengrønn
     "#FFDAB9", // Lys oransje
     "#CCFFFF", // Lys aqua
-    "#E8D3C1", // Lys brun
     "#E9FFCC", // Lys gul-grønn
+    "#E6E6FA", // Lys lilla (Light purple)
+    "#FFB6C1", // Lys rosa (Light pink)
+    "#AFEEEE", // Lys turkis (Light turquoise)
+    "#D3D3D3", // Lys grå (Light gray)
+    "#FFFACD", // Lys gull (Light gold)
+    "#C0C0C0", // Lys sølv (Light silver)
     "#FF6666", // Medium rød
     "#A3FF7F", // Medium grønn
     "#6699FF", // Medium blå
@@ -25,6 +29,12 @@ const colors: string[] = [
     "#00FFFF", // Medium aqua
     "#A52A2A", // Medium brun
     "#C2FF8C", // Medium gul-grønn
+    "#9370DB", // Medium lilla (Medium purple)
+    "#FF69B4", // Medium rosa (Medium pink)
+    "#40E0D0", // Medium turkis (Medium turquoise)
+    "#A9A9A9", // Medium grå (Medium gray)
+    "#FFD700", // Medium gull (Medium gold)
+    "#A8A9AD", // Medium sølv (Medium silver)
     "#CC3333", // Mørk rød
     "#66CC4D", // Mørk grønn
     "#3366CC", // Mørk blå
@@ -36,8 +46,19 @@ const colors: string[] = [
     "#0099A4", // Mørk aqua
     "#7B241C", // Mørk brun
     "#99CC33", // Mørk gul-grønn
-    "#CCB833"  // Mørk gul
+    "#CCB833", // Mørk gul
+    "#800080", // Mørk lilla (Dark purple)
+    "#C71585", // Mørk rosa (Dark pink)
+    "#008080", // Mørk turkis (Dark turquoise)
+    "#696969", // Mørk grå (Dark gray)
+    "#B8860B", // Mørk gull (Dark gold)
+    "#6C7A89", // Mørk sølv (Dark silver)
+    "#800000", // Mørk maroon
+    "#000080", // Mørk marineblå (Dark navy blue)
+    "#000000", // Svart (Black)
+    "#FFFFFF"  // Hvit (White)
 ];
+
 export const useColours = (): Array<string> | undefined => {
     return useMemo(() => colors, []);
 }

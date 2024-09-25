@@ -12,7 +12,6 @@ interface FooterProps {
 const Footer = async (props: FooterProps) => {
     const {t} = await getTranslation(props.lang)
     const serverSettings = await fetchServerSettings();
-    console.log(serverSettings)
     return (
         <footer className={styles.footerContainer}>
             <div className={styles.footerLogoContainer}>

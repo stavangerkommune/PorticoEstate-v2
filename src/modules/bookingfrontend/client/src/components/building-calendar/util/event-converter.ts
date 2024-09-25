@@ -4,11 +4,10 @@ import styles from "@/components/building-calendar/building-calender.module.scss
 import {FCallEvent} from "@/components/building-calendar/building-calendar.types";
 
 
-export function FCallEventConverter(event: IEvent, colours: Array<string>, resourceToIds: Record<number, number>, enabledResources: Set<string>): FCallEvent | null {
+export function FCallEventConverter(event: IEvent, enabledResources: Set<string>): FCallEvent | null {
     const is_public = 'is_public' in event ? event.is_public : 1;
     const resourceColours = event.resources
         .filter(resource => enabledResources.has(resource.id.toString()))
-        // .map(a => colours[resourceToIds[a.id] % colours.length]);
 
     // If no enabled resources for this event, return null
     if (resourceColours.length === 0) return null;

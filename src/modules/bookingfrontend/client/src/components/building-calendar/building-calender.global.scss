@@ -103,6 +103,10 @@ $current-time-color: #ea4335;
         //border-left-width: 5px;
         .fc-list-event-time {
             color: black;
+            display: none;
+        }
+        .fc-list-event-graphic {
+            //display: none;
         }
     }
 }

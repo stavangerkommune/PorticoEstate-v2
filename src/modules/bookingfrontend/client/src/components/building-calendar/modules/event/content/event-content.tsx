@@ -141,7 +141,7 @@ const EventContent: FC<EventContentProps> = (props) => {
                     <div className={styles.title}>{eventInfo.event.title}</div>
                 )}
                 {durationInMinutes > 120 && (
-                    <div className={`text-small ${styles.orderNumber}`}># {eventInfo.event.id}</div>
+                    <div className={`text-small ${styles.orderNumber}`}>#{eventInfo.event.id}</div>
                 )}
 
                 {durationInMinutes > 150 && infoData?.organizer && (
