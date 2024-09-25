@@ -107,7 +107,30 @@ use App\modules\phpgwapi\services\Cache;
 			$this->db->query("SELECT column_name FROM phpgw_cust_attribute WHERE location_id = {$location_id} AND column_name = 'geolocation'", __LINE__, __FILE__);
 			if (!$this->db->next_record())
 			{
-				return false;
+				//return false;
+				$boadmin_entity = CreateObject('property.boadmin_entity');
+				$attrib = array(
+					'column_name' => 'geolocation',
+					'input_text' => 'Geolocation',
+					'statustext' => 'Geolocation',
+					'list' => 1,
+					'entity_id' => $entity_id,
+					'cat_id' => $cat_id,
+					'appname' => 'property',
+					'location' => ".{$type}.{$entity_id}.{$cat_id}",
+					'column_info' => array(
+						'type' => 'V',
+						'precision' => 50,
+						'nullable' => "True"
+						)
+				);
+
+				$receipt = $boadmin_entity->save_attrib($attrib);
+				if (!empty($receipt['error']))
+				{
+					return false;
+				}
+
 			}
 
 			if ($category['is_eav'])
