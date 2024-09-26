@@ -57,7 +57,7 @@ class Auth extends Auth_
 	 */
 	public function authenticate($username, $passwd)
 	{
-		$sql = 'SELECT account_pwd FROM phpgw_accounts WHERE account_lid = :username AND account_status = :status';
+		$sql = 'SELECT account_id FROM phpgw_accounts WHERE account_lid = :username AND account_status = :status';
 		$stmt = $this->db->prepare($sql);
 
 		$stmt->execute([
@@ -65,7 +65,10 @@ class Auth extends Auth_
 			':status' => 'A'
 		]);
 
-		return !!$stmt->fetch();
+		$authenticated = !!$stmt->fetch();
+
+		return $authenticated;
+
 	}
 	/* php ping function
 		*/
@@ -80,6 +83,7 @@ class Auth extends Auth_
 	{
 		$headers = getallheaders();
 		$ssn = !empty($headers['uid']) ? $headers['uid'] : false;
+		$ssn = !empty($_SERVER['HTTP_UID']) ? $_SERVER['HTTP_UID'] : $ssn;
 		$upn = !empty($headers['upn']) ? $headers['upn'] : false;
 
 		$remote_user = !empty($headers['REMOTE_USER']) ? $headers['REMOTE_USER'] : $upn;

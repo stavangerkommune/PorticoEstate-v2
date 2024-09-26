@@ -60,6 +60,8 @@ class SessionsMiddleware implements MiddlewareInterface
 
 		$this->read_initial_settings($currentApp, $_currentApp);
 		$sessions = Sessions::getInstance();
+		$flags = Settings::getInstance()->get('flags');
+		$verified = $sessions->verify();
 		if ($currentApp == 'login' && isset($_POST['login']) && isset($_POST['passwd']))
 		{
 			$login = $request->getParsedBody()['login'];
@@ -74,7 +76,11 @@ class SessionsMiddleware implements MiddlewareInterface
 			$response->getBody()->write(json_encode(['session_id' => $sessionid]));
 			return $response->withHeader('Content-Type', 'application/json');
 		}
-		else if (!$sessions->verify())
+		else if ($verified)
+		{
+			return $handler->handle($request);
+		}
+		else if (!$verified)
 		{
 			if ($currentApp == 'bookingfrontend')
 			{
@@ -104,6 +110,7 @@ class SessionsMiddleware implements MiddlewareInterface
 				$process_login = new Login();
 				if ($process_login->login())
 				{
+					Settings::getInstance()->set('flags', $flags);
 					return $handler->handle($request);
 				}
 				else
@@ -135,6 +142,7 @@ class SessionsMiddleware implements MiddlewareInterface
 				$process_login = new Login();
 				if ($process_login->login())
 				{
+					Settings::getInstance()->set('flags', $flags);
 					return $handler->handle($request);
 				}
 				else
@@ -155,9 +163,6 @@ class SessionsMiddleware implements MiddlewareInterface
 				return $response->withHeader('Content-Type', 'text/html');
 			}
 		}
-
-
-
 		// Continue with the next middleware
 		return $handler->handle($request);
 	}
