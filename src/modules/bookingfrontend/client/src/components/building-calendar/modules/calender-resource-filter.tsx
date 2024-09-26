@@ -13,15 +13,16 @@ import {useIsMobile} from "@/service/hooks/is-mobile";
 export interface CalendarResourceFilterOption {
     value: string;
     label: string;
-    color?: string;
 }
 
 interface CalendarResourceFilterProps {
-    hidden: boolean;
+    open: boolean;
     resourceOptions: CalendarResourceFilterOption[];
     enabledResources: Set<string>;
     onToggle: (resourceId: string) => void;
+    transparent:  boolean;
     onToggleAll: () => void;
+    setOpen: (open: boolean) => void;
 }
 
 const CalendarResourceFilter: FC<CalendarResourceFilterProps> = ({
@@ -29,16 +30,17 @@ const CalendarResourceFilter: FC<CalendarResourceFilterProps> = ({
                                                                      enabledResources,
                                                                      onToggle,
                                                                      onToggleAll,
-                                                                     hidden,
+                                                                     open,
+                                                                 transparent,
+                                                                     setOpen
                                                                  }) => {
-    const [open, setOpen] = useState<boolean>(false);
     const isMobile = useIsMobile();
     const t = useTrans();
     const {tempEvents} = useTempEvents();
 
 
     const content = (
-        <div className={`${styles.resourceToggleContainer} ${hidden ? styles.hidden : ''}`}
+        <div className={`${styles.resourceToggleContainer} ${!open ? styles.hidden : ''}  ${transparent ? styles.transparent : ''}`}
         >
             <div className={styles.toggleAllContainer}>
                 {/*<Button*/}
@@ -92,14 +94,7 @@ const CalendarResourceFilter: FC<CalendarResourceFilterProps> = ({
 
     if (isMobile) {
         return (
-            <div style={{display: "flex", flexDirection: 'column'}}>
-                <Button variant={'secondary'} size={'sm'}
-                    // className={'captialize'}
-
-                        onClick={() => setOpen(true)}><FontAwesomeIcon
-                    icon={faLayerGroup}/>{t('booking.select')} {t('bookingfrontend.resources')}
-                    <Badge count={enabledResources.size} size={"md"} color={"danger"}></Badge>
-                </Button>
+            <div className={styles.resourceToggleContainer}>
                 <MobileDialog open={open} onClose={() => setOpen(false)}>{content}</MobileDialog>
             </div>
         )

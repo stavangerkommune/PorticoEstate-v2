@@ -5,6 +5,7 @@ import {notFound} from "next/navigation";
 import BuildingHeader from "@/components/building-page/building-header";
 import BuildingDescription from "@/components/building-page/building-description";
 import BuildingResources from "@/components/building-page/resource-list/building-resources";
+import BuildingContact from "@/components/building-page/building-contact";
 interface BuildingShowParams {
     id: string;
 }
@@ -36,6 +37,7 @@ const BuildingShow = async (props: BuildingShowProps) => {
             <BuildingDescription building={building}/>
             <hr className={`my-2 mx-2`}/>
             <BuildingCalendar building_id={props.params.id}/>
+            <BuildingContact building={building}/>
         </main>
     );
 }

@@ -1,5 +1,4 @@
 import React, {FC} from 'react';
-import {useResourceToId} from "@/components/building-calendar/calendar-context";
 import {useColours} from "@/service/hooks/Colours";
 import styles from './colour-circle.module.scss';
 
@@ -9,9 +8,8 @@ interface ColourCircleProps {
     size?: 'small' | 'medium' | number;
 }
 const ColourCircle: FC<ColourCircleProps> = (props) => {
-    const resourceToIds = useResourceToId();
     const colours = useColours();
-    const colour = colours ? colours[resourceToIds[props.resourceId] % colours.length] : 'gray';
+    const colour = colours ? colours[props.resourceId % colours.length] : 'gray';
     return (
         <span
             className={`${styles.resourceColorIndicator} ${typeof props.size === 'string' ? styles[props.size] : ''} ${props.className || ''}`}
