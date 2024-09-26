@@ -13,6 +13,29 @@ interface BuildingShowProps {
     params: BuildingShowParams
 }
 
+
+export async function generateMetadata(props: BuildingShowProps) {
+    // Convert the id to a number
+    const buildingId = parseInt(props.params.id, 10);
+
+    // Check if the buildingId is a valid number
+    if (isNaN(buildingId)) {
+        // If not a valid number, throw the notFound error
+        return notFound();
+    }
+
+    // Fetch the building
+    const building = await fetchBuilding(buildingId);
+
+    // If building does not exist, throw the notFound error
+    if (!building) {
+        return notFound();
+    }
+    return {
+        title: building.name,
+    }
+}
+
 const BuildingShow = async (props: BuildingShowProps) => {
     // Convert the id to a number
     const buildingId = parseInt(props.params.id, 10);
