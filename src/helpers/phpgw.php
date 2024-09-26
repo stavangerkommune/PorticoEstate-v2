@@ -147,7 +147,7 @@ class phpgw
 
 			if (substr($url, 0, 4) != 'http' && $request_scheme != 'https')
 			{
-				if ($server_port == 80)
+				if ($server_port == 80 || strpos($serverSettings['hostname'], ':') !== false)
 				{
 					$url = "{$request_scheme}://{$serverSettings['hostname']}{$url}";
 				}
