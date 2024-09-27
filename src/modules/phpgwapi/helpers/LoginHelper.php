@@ -9,34 +9,24 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\modules\phpgwapi\security\Login;
 use App\modules\phpgwapi\services\Settings;
-//use App\modules\phpgwapi\services\Hooks;
-//use App\modules\phpgwapi\services\Cache;
 use App\modules\phpgwapi\services\Translation;
-use App\modules\phpgwapi\services\Preferences;
-//use App\modules\phpgwapi\controllers\Applications;
 use App\helpers\Template;
-use App\modules\phpgwapi\security\Acl;
 use App\modules\phpgwapi\security\Sessions;
 use Sanitizer;
 use phpgw;
+use Slim\Routing\RouteContext;
+
 
 class LoginHelper
 {
 
 	private $serverSettings;
-	private $userSettings;
-	private $translations;
-	//private $hooks;
-	private $phpgwapi_common;
-	private $apps;
 	var $tmpl	 = null;
 	var $msg_only = false;
 
 	public function __construct($msg_only = false)
 	{
 		$this->serverSettings = Settings::getInstance()->get('server');
-		$this->userSettings	  = Settings::getInstance()->get('user');
-		$this->translations	  = Translation::getInstance();
 
 		$this->serverSettings['template_set'] = Settings::getInstance()->get('login_template_set');
 		$this->serverSettings['template_dir'] = PHPGW_SERVER_ROOT
@@ -65,6 +55,21 @@ class LoginHelper
 
 	public function processLogin(Request $request, Response $response, array $args)
 	{
+		$routeContext = RouteContext::fromRequest($request);
+		$route = $routeContext->getRoute();
+		$routePath = $route->getPattern();
+		$routePath_arr = explode('/', $routePath);
+		$currentApp = trim($routePath_arr[1], '[');
+
+		//backwards compatibility
+		if (empty($_POST) && $currentApp == 'mobilefrontend' && $routePath_arr[2] == 'login.php')
+		{
+			$process_login = new Login();
+			if ($process_login->login()) //SSO login
+			{
+				phpgw::redirect_link('/home/');
+			}
+		}
 
 		$LoginUi   = new LoginUi($this->msg_only);
 		$variables = array();
