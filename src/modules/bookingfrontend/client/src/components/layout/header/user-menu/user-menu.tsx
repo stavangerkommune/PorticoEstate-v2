@@ -21,7 +21,7 @@ const UserMenu: FC<UserMenuProps> = (props) => {
             placement="bottom-end"
             size="md"
         >
-            <DropdownMenu.Trigger variant={'tertiary'} color={'neutral'} size={'sm'}>
+            <DropdownMenu.Trigger variant={'tertiary'} color={'accent'} size={'sm'}>
                 <FontAwesomeIcon icon={faUser}/> {bookingUser.orgnr}
             </DropdownMenu.Trigger>
             <DropdownMenu.Content>
@@ -53,7 +53,7 @@ const UserMenu: FC<UserMenuProps> = (props) => {
         <Link
             href={phpGWLink(['bookingfrontend', 'login/'], {after: encodeURI(window.location.href.split('bookingfrontend')[1])})}
             className={'link-text link-text-unset'}>
-            <Button variant={'tertiary'} color={'neutral'} size={'sm'}>
+            <Button variant={'tertiary'} color={'accent'} size={'sm'}>
                 <FontAwesomeIcon icon={faSignInAlt}/> {t('common.login')}
             </Button>
         </Link>
