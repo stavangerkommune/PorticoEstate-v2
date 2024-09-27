@@ -67,7 +67,7 @@ export function middleware(req: NextRequest): NextResponse | undefined {
         expires.setMonth(expires.getMonth() + 1);
 
         // Manually set the Set-Cookie header
-        response.headers.set('Set-Cookie', `${cookieName}=${pathLang}; Expires=${expires.toUTCString()}; path=/; domain=${domain}; SameSite=Lax`);
+        response.headers.set('Set-Cookie', `${cookieName}=${pathLang.key}; Expires=${expires.toUTCString()}; path=/; domain=${domain}; SameSite=Lax`);
 
         return response;
     }
