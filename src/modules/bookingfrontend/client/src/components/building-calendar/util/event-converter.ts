@@ -3,7 +3,6 @@ import {DateTime} from "luxon";
 import styles from "@/components/building-calendar/building-calender.module.scss";
 import {FCallEvent} from "@/components/building-calendar/building-calendar.types";
 
-
 export function FCallEventConverter(event: IEvent, enabledResources: Set<string>): FCallEvent | null {
     const is_public = 'is_public' in event ? event.is_public : 1;
     const resourceColours = event.resources
@@ -12,8 +11,18 @@ export function FCallEventConverter(event: IEvent, enabledResources: Set<string>
     // If no enabled resources for this event, return null
     if (resourceColours.length === 0) return null;
 
-    const startDateTime = DateTime.fromISO(`${event.date}T${event.from}`);
-    const endDateTime = DateTime.fromISO(`${event.date}T${event.to}`);
+    let startDateTime: DateTime;
+    let endDateTime: DateTime;
+
+    if (event.dates && event.dates.length > 0) {
+        // If dates array is present, use the first date range
+        startDateTime = DateTime.fromSQL(event.dates[0].from_);
+        endDateTime = DateTime.fromSQL(event.dates[0].to_);
+    } else {
+        // If no dates array, use the top-level from/to/date
+        startDateTime = DateTime.fromISO(`${event.date}T${event.from}`);
+        endDateTime = DateTime.fromISO(`${event.date}T${event.to}`);
+    }
 
     // Calculate the duration of the event in minutes
     const durationMinutes = endDateTime.diff(startDateTime, 'minutes').minutes;
@@ -23,11 +32,10 @@ export function FCallEventConverter(event: IEvent, enabledResources: Set<string>
         ? startDateTime.plus({ minutes: 30 })
         : endDateTime;
 
-
-    return {
+    const ret: FCallEvent = {
         id: event.id,
         title: (is_public === 1 ? event.name : 'Private Event') + ` \n${event.type}`,
-        start: DateTime.fromISO(`${event.date}T${event.from}`).toJSDate(),
+        start: startDateTime.toJSDate(),
         end: displayEndDateTime.toJSDate(),
         className: [`${styles[`event-${event.type}`]} ${styles.event}`],
         extendedProps: {
@@ -38,4 +46,6 @@ export function FCallEventConverter(event: IEvent, enabledResources: Set<string>
             type: event.type
         },
     };
+    // console.log(event, ret)
+    return ret;
 }
