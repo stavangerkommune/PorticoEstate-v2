@@ -335,7 +335,7 @@ HTML;
 //_debug_array($_SERVER['REDIRECT_URL']);
 	$current_url = array(
 		'id'	=> $breadcrumb_selection,
-		'url'	=> 	"{$_SERVER['REDIRECT_URL']}?" . http_build_query($extra_vars),
+		'url'	=> 	"?" . http_build_query($extra_vars),
 		'name'	=> $var['current_app_title']
 	);
 	$breadcrumbs = Cache::session_get('phpgwapi', 'breadcrumbs');
