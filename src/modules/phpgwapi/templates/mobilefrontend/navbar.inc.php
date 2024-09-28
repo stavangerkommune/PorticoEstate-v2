@@ -332,10 +332,10 @@ HTML;
 	$flags['menu_selection'] = isset($flags['menu_selection']) ? $flags['menu_selection'] : '';
 	$breadcrumb_selection = !empty($flags['breadcrumb_selection']) ? $flags['breadcrumb_selection'] : $flags['menu_selection'];
 	// breadcrumbs
-//_debug_array($_SERVER['REDIRECT_URL']);
+
 	$current_url = array(
 		'id'	=> $breadcrumb_selection,
-		'url'	=> 	"?" . http_build_query($extra_vars),
+		'url' => preg_match('/\/home\//', $_SERVER['REDIRECT_URL']) ? '../?' : '?' . http_build_query($extra_vars),
 		'name'	=> $var['current_app_title']
 	);
 	$breadcrumbs = Cache::session_get('phpgwapi', 'breadcrumbs');
