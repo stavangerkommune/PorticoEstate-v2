@@ -114,9 +114,9 @@ class synkroniser_med_boei extends property_cron_parent
 		$this->oppdater_boa_bygg();
 		$this->oppdater_boa_del();
 		$this->oppdater_oppsagtdato();
-		$this->slett_feil_telefon();
 		$this->update_tenant_name();
 		$this->update_tenant_phone();
+		$this->slett_feil_telefon();
 		$this->update_tenant_termination_date();
 		$this->update_obskode();
 		$this->update_hemmelig_adresse();
