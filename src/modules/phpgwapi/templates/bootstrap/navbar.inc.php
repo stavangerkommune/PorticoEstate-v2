@@ -172,8 +172,17 @@ HTML;
 		$history_url = array();
 		for ($i = 0; $i < (count($breadcrumbs) - 1); $i++)
 		{
+			if (preg_match('/\/home\//', $_SERVER['REDIRECT_URL']))
+			{
+				$history_url = str_replace('?', '../?', $breadcrumbs[$i]['url']);
+			}
+			else
+			{
+				$history_url = $breadcrumbs[$i]['url'];
+			}
+
 			$breadcrumb_html .= <<<HTML
-					<li class="breadcrumb-item"><a href="{$breadcrumbs[$i]['url']}">{$breadcrumbs[$i]['name']}</a></li>
+					<li class="breadcrumb-item"><a href="{$history_url}">{$breadcrumbs[$i]['name']}</a></li>
 HTML;
 		}
 
