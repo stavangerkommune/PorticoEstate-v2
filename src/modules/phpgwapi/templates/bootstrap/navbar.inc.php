@@ -87,7 +87,7 @@ HTML;
 	// breadcrumbs
 	$current_url = array(
 		'id'	=> $breadcrumb_selection,
-		'url' => preg_match('/\/home\//', $_SERVER['REDIRECT_URL']) ? '../?' : '?' . http_build_query($extra_vars),
+		'url'	=> 	"?" . http_build_query($extra_vars),
 		'name'	=> $var['current_app_title']
 	);
 	$breadcrumbs = Cache::session_get('phpgwapi', 'breadcrumbs');
