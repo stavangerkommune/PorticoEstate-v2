@@ -17,10 +17,10 @@ define('JASPER_LIBS', PHPGW_API_INC . '/jasper/lib/');
 class phpgwapi_jasper_wrapper
 {
 
-	var $java_classpath, $db_user, $db_pass, $connection_string, $serverSettings;
+	var $java_classpath, $db_user, $db_pass, $connection_string;
 	public function __construct()
 	{
-		$this->serverSettings = Settings::getInstance()->get('server');
+		$serverSettings = Settings::getInstance()->get('server');
 		
 		if (stristr(PHP_OS, 'WIN'))
 		{
@@ -38,8 +38,8 @@ class phpgwapi_jasper_wrapper
 		}
 		$this->java_classpath = $java_classpath;
 
-		$_key = $this->serverSettings['setup_mcrypt_key'];
-		$_iv  = $this->serverSettings['mcrypt_iv'];
+		$_key = $serverSettings['setup_mcrypt_key'];
+		$_iv  = $serverSettings['mcrypt_iv'];
 		$crypto = createObject('phpgwapi.crypto', array($_key, $_iv));
 
 		$db_config = Db::getInstance()->get_config();
@@ -89,8 +89,10 @@ class phpgwapi_jasper_wrapper
 
 		$xml = xmlwriter_output_memory($memory, true);
 
+		$serverSettings = Settings::getInstance()->get('server');
+
 		$jasper_info = array(
-			'config'		=> $this->serverSettings['temp_dir'] . '/' . uniqid('config_') . "{$base_name}.xml",
+			'config'		=> $serverSettings['temp_dir'] . '/' . uniqid('config_') . "{$base_name}.xml",
 			'report_name'	=> $report_name
 		);
 
@@ -151,8 +153,8 @@ class phpgwapi_jasper_wrapper
 
 		$keep_config_file = false;
 		if (
-			!empty($this->serverSettings['log_levels']['module']['booking'])
-			&& $this->serverSettings['log_levels']['module']['booking'] == 'D'
+			!empty($serverSettings['log_levels']['module']['booking'])
+			&& $serverSettings['log_levels']['module']['booking'] == 'D'
 		)
 		{
 			$keep_config_file = true;
