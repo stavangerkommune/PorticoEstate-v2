@@ -74,7 +74,7 @@ class SetupController
 		//write a Html text with status logged out - with link to login
 		$htmlText = '<p>Status: Logged out</p>';
 		$htmlText .= '<p><a href="../setup/">Click here to login to setup</a></p>';
-		$htmlText .= '<p><a href="../setup/manageheader">Click here to login to Manageheader</a></p>';
+		$htmlText .= '<p><a href="../setup">Click here to login to Manageheader</a></p>';
 		$htmlText .= '<p><a href="../login_ui">Click here to login to UI</a></p>';
 		$htmlText .= '<p><a href="../login">Click here to login to API</a></p>';
 
@@ -226,7 +226,7 @@ class SetupController
 		$setup_data['stage']['header'] = $this->detection->check_header();
 
 		if ($setup_data['stage']['header'] != '10') {
-			Header('Location: ../setup/manageheader');
+			Header('Location: ../setup');
 			exit;
 		} elseif (!$this->setup->auth('Config')) {
 

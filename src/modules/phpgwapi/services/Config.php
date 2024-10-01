@@ -27,7 +27,9 @@
 	 */
 
 namespace App\modules\phpgwapi\services;
+
 use PDO;
+
 /**
  * Application configuration in a centralized location
  *
@@ -66,7 +68,8 @@ class Config
 	{
 		$serverFlags = Settings::getInstance()->get('flags');
 
-		if (!$module) {
+		if (!$module)
+		{
 			$module = $serverFlags['currentapp'];
 		}
 		$this->db = \App\Database\Db::getInstance();
@@ -82,7 +85,8 @@ class Config
 
 	public function read()
 	{
-		if (!count($this->config_data)) {
+		if (!count($this->config_data))
+		{
 			$this->read_repository();
 		}
 		return $this->config_data;
@@ -98,7 +102,8 @@ class Config
 	{
 		static $data_cache = array();
 
-		if (!empty($data_cache[$this->module])) {
+		if (!empty($data_cache[$this->module]))
+		{
 			$this->config_data = $data_cache[$this->module];
 			return $this->config_data;
 		}
@@ -108,11 +113,15 @@ class Config
 		$stmt = $this->db->prepare("SELECT * FROM phpgw_config WHERE config_app=:config_app");
 		$stmt->execute([':config_app' => $this->module]);
 
-		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
 			$test = @unserialize($this->db->unmarshal($row['config_value'], 'string'));
-			if ($test) {
+			if ($test)
+			{
 				$this->config_data[$row['config_name']] = $test;
-			} else {
+			}
+			else
+			{
 				$this->config_data[$row['config_name']] = $this->db->unmarshal($row['config_value'], 'string');
 			}
 		}
@@ -128,16 +137,22 @@ class Config
 	{
 		$config_data = $this->config_data;
 
-		if (is_array($config_data) && count($config_data)) {
-			if ($this->db->get_transaction()) {
+		if (is_array($config_data) && count($config_data))
+		{
+			if ($this->db->get_transaction())
+			{
 				$this->global_lock = true;
-			} else {
+			}
+			else
+			{
 				$this->db->transaction_begin();
 			}
 
 			$this->delete_repository();
-			foreach ($config_data as $name => $value) {
-				if (is_array($value)) {
+			foreach ($config_data as $name => $value)
+			{
+				if (is_array($value))
+				{
 					$value = serialize($value);
 				}
 				$stmt = $this->db->prepare("INSERT INTO phpgw_config (config_app,config_name,config_value) VALUES (:config_app, :config_name, :config_value)");
@@ -147,7 +162,8 @@ class Config
 					':config_value' => $value
 				]);
 			}
-			if (!$this->global_lock) {
+			if (!$this->global_lock)
+			{
 				$this->db->transaction_commit();
 			}
 		}
