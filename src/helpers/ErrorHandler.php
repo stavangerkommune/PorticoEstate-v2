@@ -1,6 +1,7 @@
 <?php
 
 namespace App\helpers;
+
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -15,8 +16,10 @@ use App\modules\phpgwapi\services\Settings;
 
 $serverSettings  = Settings::getInstance()->get('server');
 
-if (isset($serverSettings['log_levels']['global_level'])) {
-	switch ($serverSettings['log_levels']['global_level']) {
+if (isset($serverSettings['log_levels']['global_level']))
+{
+	switch ($serverSettings['log_levels']['global_level'])
+	{
 		case 'F': // Fatal
 		case 'E': // Error
 			error_reporting(E_ERROR | E_USER_ERROR | E_PARSE);
@@ -43,7 +46,7 @@ if (isset($serverSettings['log_levels']['global_level'])) {
 			error_reporting(E_ALL);
 			break;
 	}
-}	
+}
 
 
 /**
@@ -70,20 +73,22 @@ class ErrorHandler
 	private $Log;
 	private $db;
 
-    /**
+	/**
 	 * ErrorHandler constructor.
 	 * @param ResponseFactoryInterface $responseFactory
 	 */
 	public function __construct(ResponseFactoryInterface $responseFactory)
 	{
 		$this->responseFactory = $responseFactory;
-		$this->serverSettings  = Settings::getInstance()->get('server');		
+		$this->serverSettings  = Settings::getInstance()->get('server');
 		$this->userSettings  = Settings::getInstance()->get('user');
 		$this->Log = new Log();
-		$this->db = Db::getInstance();		
+		$this->db = Db::getInstance();
+
+		set_error_handler([$this, 'phpgw_handle_error']);
 	}
 
-    /**
+	/**
 	 * @param Request $request
 	 * @param Throwable $exception
 	 * @param bool $displayErrorDetails
@@ -93,18 +98,19 @@ class ErrorHandler
 	{
 
 		$path = $request->getUri()->getPath();
-        $routePath_arr = explode('/', $path);
-        $currentApp = $routePath_arr[1]; 
+		$routePath_arr = explode('/', $path);
+		$currentApp = $routePath_arr[1];
 		$flags = [
 			'currentapp' => $currentApp
 		];
 
-		if(empty(Settings::getInstance()->get('flags')['currentapp']))
+		if (empty(Settings::getInstance()->get('flags')['currentapp']))
 		{
-			Settings::getInstance()->set('flags', $flags);    
-		}	
+			Settings::getInstance()->set('flags', $flags);
+		}
 
- 	   if ($exception instanceof ErrorException && $exception->getSeverity() === E_USER_ERROR) {
+		if ($exception instanceof ErrorException && $exception->getSeverity() === E_USER_ERROR)
+		{
 			// Handle user errors
 			$this->phpgw_handle_error($exception->getSeverity(), $exception->getMessage(), $exception->getFile(), $exception->getLine());
 			// create a response, set the status code, and write the response body
@@ -135,28 +141,30 @@ class ErrorHandler
 		{
 			return true;
 		}
-	
-		if (isset($this->serverSettings['log_levels']['global_level'])) {
-			switch ($this->serverSettings['log_levels']['global_level']) {
+
+		if (isset($this->serverSettings['log_levels']['global_level']))
+		{
+			switch ($this->serverSettings['log_levels']['global_level'])
+			{
 				case 'F': // Fatal
 				case 'E': // Error
 					$error_reporting = E_ERROR | E_USER_ERROR | E_PARSE;
 					break;
-	
+
 				case 'W': // Warn
 				case 'I': // Info
 					$error_reporting = E_ERROR | E_USER_ERROR | E_WARNING | E_USER_WARNING | E_PARSE;
 					break;
-	
+
 				case 'N': // Notice
 				case 'D': // Debug
 					$error_reporting = E_ERROR | E_USER_ERROR | E_WARNING | E_USER_WARNING | E_NOTICE | E_USER_NOTICE | E_PARSE;
 					break;
-	
+
 				case 'S': // Strict
 					$error_reporting = E_STRICT | E_PARSE;
 					break;
-	
+
 				case 'DP': // Deprecated
 					$error_reporting = E_ERROR | E_USER_ERROR | E_DEPRECATED | E_USER_DEPRECATED;
 					break;
@@ -164,35 +172,41 @@ class ErrorHandler
 					$error_reporting = E_ALL;
 					break;
 			}
-	
-			if (!(!!($error_reporting & $error_level))) {
+
+			if (!(!!($error_reporting & $error_level)))
+			{
 				return true;
 			}
 		}
-	
+
 		$log = $this->Log;
-	
-		if (!isset($this->userSettings['apps']['admin'])) {
+
+		if (!isset($this->userSettings['apps']['admin']))
+		{
 			$error_file = str_replace(SRC_ROOT_PATH, '/path/to/portico', $error_file);
 		}
-	
-		$bt = debug_backtrace();
-	
+
+		$bt = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS);
+
 		$log_args = array(
 			'file'	=> $error_file,
 			'line'	=> $error_line,
 			'text'	=> "$error_msg\n" . $this->phpgw_parse_backtrace($bt)
 		);
 		$message = '';
-		switch ($error_level) {
+		switch ($error_level)
+		{
 			case E_USER_ERROR:
 			case E_ERROR:
 				$log_args['severity'] = 'F'; //all "ERRORS" should be fatal
 				$log->fatal($log_args);
-				if (ini_get('display_errors')) {
+				if (ini_get('display_errors'))
+				{
 					echo '<p class="msg">' . lang('ERROR: %1 in %2 at line %3', $error_msg, $error_file, $error_line) . "</p>\n";
 					die('<pre>' . $this->phpgw_parse_backtrace($bt) . "</pre>\n");
-				} else {
+				}
+				else
+				{
 					die('Error');
 				}
 			case E_WARNING:
@@ -202,22 +216,23 @@ class ErrorHandler
 				$message .= '<p class="msg">' . lang('Warning: %1 in %2 at line %3', $error_msg, $error_file, $error_line) . "</p>\n";
 				$message .= '<pre>' . $this->phpgw_parse_backtrace($bt) . "</pre>\n";
 				break;
-	
+
 			case PHPGW_E_INFO:
 				$log_args['severity'] = 'I';
 				$log->info($log_args);
 				break;
-	
+
 			case PHPGW_E_DEBUG:
 				$log_args['severity'] = 'D';
 				$log->info($log_args);
 				break;
-	
+
 			case E_NOTICE:
 			case E_USER_NOTICE:
 				$log_args['severity'] = 'N';
 				$log->notice($log_args);
-				if (isset($this->serverSettings['log_levels']['global_level']) && $this->serverSettings['log_levels']['global_level'] == 'N') {
+				if (isset($this->serverSettings['log_levels']['global_level']) && $this->serverSettings['log_levels']['global_level'] == 'N')
+				{
 					$message .=  '<p>' . lang('Notice: %1 in %2 at line %3', $error_msg, $error_file, $error_line) . "</p>\n";
 					$message .=  '<pre>' . $this->phpgw_parse_backtrace($bt) . "</pre>\n";
 				}
@@ -225,14 +240,15 @@ class ErrorHandler
 			case E_STRICT:
 				$log_args['severity'] = 'S';
 				$log->strict($log_args);
-				if (isset($this->serverSettings['log_levels']['global_level']) && $this->serverSettings['log_levels']['global_level'] == 'S') {
-	
+				if (isset($this->serverSettings['log_levels']['global_level']) && $this->serverSettings['log_levels']['global_level'] == 'S')
+				{
+
 					//  		Will find the messages in the log - no need to print to screen
 					//			echo '<p>' . lang('Strict: %1 in %2 at line %3', $error_msg, $error_file, $error_line) . "</p>\n";
 					//			echo '<pre>' . $this->phpgw_parse_backtrace($bt) . "</pre>\n";
 				}
 				break;
-	
+
 			case E_DEPRECATED:
 			case E_USER_DEPRECATED:
 				$log_args['severity'] = 'DP';
@@ -241,8 +257,9 @@ class ErrorHandler
 				$message .=  '<pre>' . $this->phpgw_parse_backtrace($bt) . "</pre>\n";
 				break;
 		}
-	
-		if (ini_get('display_errors')) {
+
+		if (ini_get('display_errors'))
+		{
 			echo $message;
 		}
 	}
@@ -257,31 +274,38 @@ class ErrorHandler
 	 */
 	function phpgw_parse_backtrace($bt)
 	{
-		if (!is_array($bt)) {
+		if (!is_array($bt))
+		{
 			return '';
 		}
 
 		// we don't need the call to the error handler
 		unset($bt[0]);
-		$bt = array_reverse($bt);
 
 		$trace = '&nbsp;';
 		$i = 0;
-		foreach ($bt as $entry) {
+		foreach ($bt as $entry)
+		{
 			$line = "#{$i}\t";
 
-			if (isset($entry['type']) && isset($entry['class'])) {
+			if (isset($entry['type']) && isset($entry['class']))
+			{
 				$line .= "{$entry['class']}{$entry['type']}{$entry['function']}";
-			} else {
+			}
+			else
+			{
 				$line .= $entry['function'];
 			}
 
 			$line .= '(';
 
-			if (isset($entry['args']) && is_array($entry['args']) && count($entry['args'])) {
+			if (isset($entry['args']) && is_array($entry['args']) && count($entry['args']))
+			{
 				$args_count = count($entry['args']);
-				foreach ($entry['args'] as $anum => $arg) {
-					if (is_array($arg)) {
+				foreach ($entry['args'] as $anum => $arg)
+				{
+					if (is_array($arg))
+					{
 						$line .= 'serialized_value = ' . json_encode($arg, JSON_PRETTY_PRINT);
 						continue;
 					}
@@ -291,33 +315,42 @@ class ErrorHandler
 						$arg == $this->serverSettings['header_admin_password']
 						|| (isset($this->serverSettings['db_pass']) && $arg == $this->serverSettings['db_pass'])
 						|| (isset($this->userSettings['passwd']) && $arg == $this->userSettings['passwd'])
-					) {
+					)
+					{
 						$line .= '***REMOVED_FOR_SECURITY***';
-					} else if (is_object($arg)) {
+					}
+					else if (is_object($arg))
+					{
 						continue;
-					} else {
+					}
+					else
+					{
 						$line .= $arg;
 					}
 
-					if (($anum + 1) != $args_count) {
+					if (($anum + 1) != $args_count)
+					{
 						$line .= ', ';
 					}
 				}
 			}
 
 			$file = 'unknown';
-			if (isset($entry['file'])) {
-				if (!isset($this->userSettings['apps']['admin'])) {
+			if (isset($entry['file']))
+			{
+				if (!isset($this->userSettings['apps']['admin']))
+				{
 					$file = '/path/to/portico/' . substr($entry['file'], strlen(SRC_ROOT_PATH));
-				} else {
+				}
+				else
+				{
 					$file = $entry['file'];
 				}
 			}
 
-			if (isset($entry['line'])) {
-				$file .= ":{$entry['line']}";
-			} else {
-				$file .= ':?';
+			if (isset($entry['line']))
+			{	//	$bt = array_reverse($bt);
+
 			}
 
 			$line .= ") [$file]";
@@ -328,7 +361,7 @@ class ErrorHandler
 		return print_r($trace, true);
 	}
 
-		/**
+	/**
 	 * Last resort exception handler
 	 *
 	 * @param object $e the Exception that was thrown
@@ -340,7 +373,8 @@ class ErrorHandler
 		{
 			$log = $this->Log;
 
-			if ($this->db->get_transaction()) {
+			if ($this->db->get_transaction())
+			{
 				$this->db->transaction_abort();
 			}
 
@@ -352,8 +386,8 @@ class ErrorHandler
 		}
 
 		$userLang = isset($this->userSettings['preferences']['common']['lang'])
-		 ? $this->userSettings['preferences']['common']['lang']
-		  : $this->serverSettings['default_lang'];
+			? $this->userSettings['preferences']['common']['lang']
+			: $this->serverSettings['default_lang'];
 
 		/**
 		 * Friendly message.. in norwegian at least..
