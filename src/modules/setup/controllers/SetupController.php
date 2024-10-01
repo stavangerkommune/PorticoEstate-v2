@@ -37,12 +37,7 @@ class SetupController
 	public function __construct()
 	{
 		ini_set('session.use_cookies', true);
-		
-		//	$loader = new FilesystemLoader(SRC_ROOT_PATH . '/modules/setup/Templates');
-		//	$this->twig = new Environment($loader, [
-		//		'cache' => sys_get_temp_dir() . '/cache',
-		//		'cache' => false, // To disable cache during development
-		//	]);
+
 
 		//setup_info
 		Settings::getInstance()->set('setup_info', []); //$GLOBALS['setup_info']
@@ -82,8 +77,8 @@ class SetupController
 		$response->getBody()->write($htmlText);
 		return $response;
 
-//		Header('Location: /setup');
-//		exit;
+		//		Header('Location: /setup');
+		//		exit;
 	}
 
 
@@ -141,7 +136,7 @@ class SetupController
 		return $response;
 	}
 
-	
+
 
 	public function	Accounts(Request $request, Response $response, $args)
 	{
@@ -225,10 +220,13 @@ class SetupController
 		// Check header and authentication
 		$setup_data['stage']['header'] = $this->detection->check_header();
 
-		if ($setup_data['stage']['header'] != '10') {
+		if ($setup_data['stage']['header'] != '10')
+		{
 			Header('Location: ../setup');
 			exit;
-		} elseif (!$this->setup->auth('Config')) {
+		}
+		elseif (!$this->setup->auth('Config'))
+		{
 
 			$_POST['ConfigLang'] = isset($this->serverSettings['default_lang']) ? $this->serverSettings['default_lang'] : '';
 			$header = $this->html->get_header(lang('Please login'), True);
@@ -253,19 +251,22 @@ class SetupController
 
 		// Database actions
 		$setup_info = $this->detection->get_versions();
-//		_debug_array($setup_info);
+		//		_debug_array($setup_info);
 		$setup_data['stage']['db'] = $this->detection->check_db();
-		if ($setup_data['stage']['db'] != 1) {
+		if ($setup_data['stage']['db'] != 1)
+		{
 			$setup_info = $this->detection->get_db_versions($setup_info);
 			$setup_data['stage']['db'] = $this->detection->check_db();
-			if ($GLOBALS['DEBUG']) {
+			if ($GLOBALS['DEBUG'])
+			{
 				echo '<pre>';
 				print_r($setup_info);
 				echo '</pre>';
 			}
 		}
 
-		if ($GLOBALS['DEBUG']) {
+		if ($GLOBALS['DEBUG'])
+		{
 			echo 'Stage: ' . $setup_data['stage']['db'];
 		}
 		// begin DEBUG code
@@ -280,7 +281,8 @@ class SetupController
 		$subaction = '';
 		$setup_data['stage']['svn'] = 1; //default
 
-		switch (\Sanitizer::get_var('action_svn')) {
+		switch (\Sanitizer::get_var('action_svn'))
+		{
 			case 'check_for_svn_update':
 				$subtitle = $this->setup->lang('check for update');
 				$submsg = $this->setup->lang('At your request, this script is going to attempt to check for updates from the svn server');
@@ -299,7 +301,8 @@ class SetupController
 		$submsg = '';
 		$subaction = '';
 
-		switch (\Sanitizer::get_var('action')) {
+		switch (\Sanitizer::get_var('action'))
+		{
 			case 'Uninstall all applications':
 				$subtitle = $this->setup->lang('Deleting Tables');
 				$submsg = $this->setup->lang('Are you sure you want to delete your existing tables and data?') . '.';
@@ -342,7 +345,8 @@ class SetupController
 		$setup_tpl->set_var('subaction', $subaction);
 
 		// Old PHP
-		if (version_compare(phpversion(), '8.0.0', '<')) {
+		if (version_compare(phpversion(), '8.0.0', '<'))
+		{
 			$this->html->show_header($setup_data['header_msg'], True);
 			$this->html->show_alert_msg(
 				'Error',
@@ -364,14 +368,16 @@ class SetupController
 		$setup_tpl->set_var('img_completed', $completed);
 		$setup_tpl->set_var('db_step_text', $this->setup->lang('Step 1 - Simple Application Management'));
 
-		switch ($setup_data['stage']['svn']) {
+		switch ($setup_data['stage']['svn'])
+		{
 			case 1:
 				$setup_tpl->set_var('sudo_user', $this->setup->lang('sudo user'));
 				$setup_tpl->set_var('sudo_password', $this->setup->lang('password for %1', getenv('APACHE_RUN_USER')));
 				$setup_tpl->set_var('svnwarn', $this->setup->lang('will try to perform a svn status -u'));
 				$setup_tpl->set_var('check_for_svn_update', $this->setup->lang('check update'));
 				$_svn_message = '';
-				if (isset($setup_data['currentver']['phpgwapi']) && $setup_data['currentver']['phpgwapi'] == 'perform_svn_update') {
+				if (isset($setup_data['currentver']['phpgwapi']) && $setup_data['currentver']['phpgwapi'] == 'perform_svn_update')
+				{
 					// $sudo_user		=  \Sanitizer::get_var('sudo_user');
 					// $sudo_password	=  \Sanitizer::get_var('sudo_password');
 
@@ -403,7 +409,8 @@ class SetupController
 				$setup_tpl->set_var('execute', $this->setup->lang('execute'));
 				$setup_tpl->set_var('svnwarn', $this->setup->lang('will try to perform a svn up'));
 				$_svn_message = '';
-				if (isset($setup_data['currentver']['phpgwapi']) && $setup_data['currentver']['phpgwapi'] == 'check_for_svn_update') {
+				if (isset($setup_data['currentver']['phpgwapi']) && $setup_data['currentver']['phpgwapi'] == 'check_for_svn_update')
+				{
 					// $sudo_user		=  \Sanitizer::get_var('sudo_user');
 					// $sudo_password	=  \Sanitizer::get_var('sudo_password');
 
@@ -428,7 +435,8 @@ class SetupController
 		}
 		$db_config = $this->db->get_config();
 
-		switch ($setup_data['stage']['db']) {
+		switch ($setup_data['stage']['db'])
+		{
 			case 1:
 				$setup_tpl->set_var('dbnotexist', $this->setup->lang('Your Database is not working!'));
 				$setup_tpl->set_var('makesure', $this->setup->lang('makesure'));
@@ -437,7 +445,8 @@ class SetupController
 				$setup_tpl->set_var('createdb', $this->setup->lang('Or we can attempt to create the database for you:'));
 				$setup_tpl->set_var('create_database', $this->setup->lang('Create database'));
 
-				switch ($db_config['db_type']) {
+				switch ($db_config['db_type'])
+				{
 					case 'mysql':
 						$setup_tpl->set_var('instr', $this->setup->lang('mysqlinstr %1', $db_config['db_name']));
 						$setup_tpl->set_var('db_root', 'root');
@@ -469,7 +478,7 @@ class SetupController
 				$setup_tpl->set_var('V_db_filled_block', $db_filled_block);
 				break;
 			case 4:
-//				print_r($setup_info['phpgwapi']);
+				//				print_r($setup_info['phpgwapi']);
 				$setup_tpl->set_var('oldver', $this->setup->lang('You appear to be running version %1 of phpGroupWare', $setup_info['phpgwapi']['currentver']));
 				$setup_tpl->set_var('automatic', $this->setup->lang('We will automatically update your tables/records to %1', $setup_info['phpgwapi']['version']));
 				$setup_tpl->set_var('backupwarn', $this->setup->lang('backupwarn'));
@@ -506,12 +515,17 @@ class SetupController
 				//ob_start();
 				$this->db->set_halt_on_error('yes');
 
-				switch ($setup_data['currentver']['phpgwapi']) {
+				switch ($setup_data['currentver']['phpgwapi'])
+				{
 					case 'dbcreate':
-						try {
+						try
+						{
 							$this->db->create_database($_POST['db_root'], $_POST['db_pass']);
-						} catch (\Exception $e) {
-							if ($e) {
+						}
+						catch (\Exception $e)
+						{
+							if ($e)
+							{
 								$setup_tpl->set_var('status', 'Error: ' . $e->getMessage());
 							}
 						}
@@ -566,7 +580,8 @@ class SetupController
 		//$setup_data['stage']['config'] = 10;
 		// end DEBUG code
 
-		switch ($setup_data['stage']['config']) {
+		switch ($setup_data['stage']['config'])
+		{
 			case 1:
 				$setup_tpl->set_var('config_status_img', $incomplete);
 				$setup_tpl->set_var('config_status_alt', $this->setup->lang('not completed'));
@@ -592,28 +607,36 @@ class SetupController
 				$stmt = $this->db->prepare("SELECT config_value FROM phpgw_config WHERE config_app = 'phpgwapi' AND config_name='file_store_contents'");
 				$stmt->execute();
 				$file_store_contents = $stmt->fetchColumn();
-				if ($files_dir && $file_store_contents == 'filesystem') {
-					if (!is_dir($files_dir)) {
+				if ($files_dir && $file_store_contents == 'filesystem')
+				{
+					if (!is_dir($files_dir))
+					{
 						$completed_notice .= '<br /><b>' . $this->setup->lang('files dir %1 is not a directory', $files_dir) . '</b>';
 					}
-					if (!is_readable($files_dir)) {
+					if (!is_readable($files_dir))
+					{
 						$completed_notice .= '<br /><b>' . $this->setup->lang('files dir %1 is not readable', $files_dir) . '</b>';
 					}
-					if (!is_writable($files_dir)) {
+					if (!is_writable($files_dir))
+					{
 						$completed_notice .= '<br /><b>' . $this->setup->lang('files dir %1 is not writeable', $files_dir) . '</b>';
 					}
 				}
 				$stmt = $this->db->prepare("SELECT config_value FROM phpgw_config WHERE config_app = 'phpgwapi' AND config_name='temp_dir'");
 				$stmt->execute();
 				$temp_dir = $stmt->fetchColumn();
-				if ($temp_dir) {
-					if (!is_dir($temp_dir)) {
+				if ($temp_dir)
+				{
+					if (!is_dir($temp_dir))
+					{
 						$completed_notice .= '<br /><b>' . $this->setup->lang('temp dir %1 is not a directory', $temp_dir) . '</b>';
 					}
-					if (!is_readable($temp_dir)) {
+					if (!is_readable($temp_dir))
+					{
 						$completed_notice .= '<br /><b>' . $this->setup->lang('temp dir %1 is not readable', $temp_dir) . '</b>';
 					}
-					if (!is_writable($temp_dir)) {
+					if (!is_writable($temp_dir))
+					{
 						$completed_notice .= '<br /><b>' . $this->setup->lang('temp dir %1 is not writeable', $temp_dir) . '</b>';
 					}
 				}
@@ -627,7 +650,8 @@ class SetupController
 					$completed_notice
 				);
 
-				if ($completed_notice) {
+				if ($completed_notice)
+				{
 					$this->html->show_alert_msg('Error', $completed_notice);
 				}
 
@@ -635,12 +659,14 @@ class SetupController
 				$stmt->execute();
 				$auth_type = $stmt->fetchColumn();
 
-				if ($auth_type == 'ldap') {
+				if ($auth_type == 'ldap')
+				{
 					$stmt = $this->db->prepare("SELECT config_value FROM phpgw_config WHERE config_name='ldap_host'");
 					$stmt->execute();
 					$ldap_host = $stmt->fetchColumn();
 
-					if ($ldap_host != '') {
+					if ($ldap_host != '')
+					{
 						$btn_config_ldap = $this->html->make_frm_btn_simple(
 							$this->setup->lang('LDAP account import/export'),
 							'POST',
@@ -649,7 +675,9 @@ class SetupController
 							$this->setup->lang('Configure LDAP accounts'),
 							''
 						);
-					} else {
+					}
+					else
+					{
 						$btn_config_ldap = '';
 					}
 
@@ -657,7 +685,8 @@ class SetupController
 					$stmt->execute();
 					$webserver_url = $stmt->fetchColumn();
 
-					if ($webserver_url) {
+					if ($webserver_url)
+					{
 						/* NOTE: we assume here ldap doesn't delete accounts */
 						$link_make_accts = $this->html->make_href_link_simple(
 							'<br>',
@@ -665,10 +694,14 @@ class SetupController
 							$this->setup->lang('Setup an Admininstrator account'),
 							$this->setup->lang('and optional demo accounts.')
 						);
-					} else {
+					}
+					else
+					{
 						$link_make_accts = '&nbsp;';
 					}
-				} else {
+				}
+				else
+				{
 					$btn_config_ldap = '';
 
 					$stmt = $this->db->prepare("SELECT config_value FROM phpgw_config WHERE config_name = 'account_repository'");
@@ -677,12 +710,14 @@ class SetupController
 
 					$account_creation_notice = $this->setup->lang('and optional demo accounts.');
 
-					if ($account_repository == 'sql') {
+					if ($account_repository == 'sql')
+					{
 						$stmt = $this->db->prepare("SELECT COUNT(*) as cnt FROM phpgw_accounts");
 						$stmt->execute();
 						$number_of_accounts = (int) $stmt->fetchColumn();
 
-						if ($number_of_accounts > 0) {
+						if ($number_of_accounts > 0)
+						{
 							$account_creation_notice .= $this->setup->lang('<br /><b>This will delete all existing accounts.</b>');
 						}
 					}
@@ -710,7 +745,8 @@ class SetupController
 		//		print_r($setup_data['stage']);  
 		$setup_data = Settings::getInstance()->get('setup');
 
-		switch ($setup_data['stage']['lang']) {
+		switch ($setup_data['stage']['lang'])
+		{
 			case 1:
 				$setup_tpl->set_var('lang_status_img', $incomplete);
 				$setup_tpl->set_var('lang_status_alt', 'not completed');
@@ -728,8 +764,10 @@ class SetupController
 				$langs_list = '';
 				//reset ($setup_data['installed_langs']);
 				//while (list ($key, $value) = each ($setup_data['installed_langs']))
-				foreach ($setup_data['installed_langs'] as $key => $value) {
-					if ($value) {
+				foreach ($setup_data['installed_langs'] as $key => $value)
+				{
+					if ($value)
+					{
 						$langs_list .= ($langs_list ? ', ' : '') . $value;
 					}
 				}
@@ -754,11 +792,13 @@ class SetupController
 		$setup_tpl->set_var('apps_step_text', $this->setup->lang('Step 4 - Advanced Application Management'));
 		//	$setup_data['stage']['apps'] = $this->setup->check_apps();
 
-		if (!isset($setup_data['stage']['db'])) {
+		if (!isset($setup_data['stage']['db']))
+		{
 			$setup_data['stage']['db'] = null;
 		}
 
-		switch ($setup_data['stage']['db']) {
+		switch ($setup_data['stage']['db'])
+		{
 			case 10:
 				$setup_tpl->set_var('apps_status_img', $completed);
 				$setup_tpl->set_var('apps_status_alt', $this->setup->lang('completed'));
@@ -778,7 +818,8 @@ class SetupController
 				$setup_tpl->set_var('apps_table_data', $this->setup->lang('Not ready for this stage yet'));
 		}
 
-		if (!isset($setup_data['header_msg'])) {
+		if (!isset($setup_data['header_msg']))
+		{
 			$setup_data['header_msg'] = '';
 		}
 
