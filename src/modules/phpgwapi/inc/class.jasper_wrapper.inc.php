@@ -150,6 +150,7 @@ class phpgwapi_jasper_wrapper
 		);
 
 		exec($cmd, $cmd_output, $retval);
+		$serverSettings = Settings::getInstance()->get('server');
 
 		$keep_config_file = false;
 		if (
