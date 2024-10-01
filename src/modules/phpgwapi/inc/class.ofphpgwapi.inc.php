@@ -101,6 +101,10 @@ class phpgwapi_ofphpgwapi extends phpgwapi_object_factory
 				$app = ($p1 !== '_UNDEF_') ? $p1 : null;
 				return new \App\modules\phpgwapi\services\Config($app);
 
+			case 'crypto':
+				$_key = ($p1 !== '_UNDEF_') ? $p1 : null;
+				$_iv = ($p2 !== '_UNDEF_') ? $p2 : null;
+				return \App\modules\phpgwapi\services\Crypto::getInstance(array($_key, $_iv));
 			case 'db':
 				$query = ($p1 !== '_UNDEF_') ? $p1 : null;
 				$db_type = ($p2 !== '_UNDEF_') ? $p2 : null;
@@ -137,7 +141,7 @@ class phpgwapi_ofphpgwapi extends phpgwapi_object_factory
 			case 'vfs':
 				return new \App\modules\phpgwapi\services\Vfs\Vfs();
 			case 'xslttemplates':
-				$root = ($p1 !== '_UNDEF_') ? $p1 : null;
+				$root = ($p1 !== '_UNDEF_') ? $p1 : '.';
 				return phpgwapi_xslttemplates::getInstance($root);
 			default:
 				return parent::createObject(
