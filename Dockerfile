@@ -24,7 +24,7 @@ RUN if [ -n "${http_proxy}" ]; then pear config-set http_proxy ${http_proxy}; fi
 # Install PHP extensions
 RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
     && docker-php-ext-install curl intl xsl pdo_pgsql pdo_mysql gd \
-	imap shmop soap zip mbstring ftp calendar
+	imap shmop soap zip mbstring ftp calendar exif
 
 	# Install PECL extensions
 RUN pecl install xdebug apcu && docker-php-ext-enable xdebug apcu
