@@ -1447,6 +1447,7 @@ class property_uiwo_hour extends phpgwapi_uicommon_jquery
 
 			$email_data['use_yui_table'] = false;
 
+			$xslfiles = $this->create_html->get_xslfiles();
 			$this->create_html->xslfiles = array();
 			$this->create_html->add_file(array(PHPGW_SERVER_ROOT . '/property/templates/base/wo_hour'));
 			$this->create_html->add_file(array(PHPGW_SERVER_ROOT . '/property/templates/base/location_view'));
@@ -1468,8 +1469,10 @@ class property_uiwo_hour extends phpgwapi_uicommon_jquery
 			$xsl = new DOMDocument;
 			$data_imported = $xsl->loadXML($this->create_html->xsldata);
 
-			// Configure the transformer
+			//restore xslfiles
+			$this->create_html->xslfiles = $xslfiles;
 
+			// Configure the transformer
 			libxml_use_internal_errors(true);
 			$proc = new XSLTProcessor;
 			$proc->registerPHPFunctions();
