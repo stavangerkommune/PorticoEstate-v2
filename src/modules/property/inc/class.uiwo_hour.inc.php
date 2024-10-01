@@ -1447,6 +1447,7 @@ class property_uiwo_hour extends phpgwapi_uicommon_jquery
 
 			$email_data['use_yui_table'] = false;
 
+			$this->create_html->xslfiles = array();
 			$this->create_html->add_file(array(PHPGW_SERVER_ROOT . '/property/templates/base/wo_hour'));
 			$this->create_html->add_file(array(PHPGW_SERVER_ROOT . '/property/templates/base/location_view'));
 			$this->create_html->add_file(array(PHPGW_SERVER_ROOT . '/property/templates/base/contact_view'));
@@ -1456,26 +1457,34 @@ class property_uiwo_hour extends phpgwapi_uicommon_jquery
 			$email_data['use_yui_table'] = true;
 
 			$this->create_html->set_output('html');
+
 			$this->create_html->xsl_parse();
 			$this->create_html->xml_parse();
 
 			$xml = new DOMDocument;
-			$xml->loadXML($this->create_html->xmldata);
+			$xmldata = mb_ereg_replace('[\x00-\x09\x0B-\x0C\x0E-\x1F\x7F]', '', $this->create_html->xmldata); // remove unsupported characters but keep line breaks
+
+			$xml->loadXML($xmldata);
 			$xsl = new DOMDocument;
-			$xsl->loadXML($this->create_html->xsldata);
+			$data_imported = $xsl->loadXML($this->create_html->xsldata);
 
 			// Configure the transformer
-			$proc	 = new XSLTProcessor;
-			$proc->registerPHPFunctions(); // enable php functions
-			$proc->importStyleSheet($xsl); // attach the xsl rules
-			$css	 = file_get_contents(PHPGW_SERVER_ROOT . "/phpgwapi/templates/pure/css/pure-min.css");
-			$css	 .= file_get_contents(PHPGW_SERVER_ROOT . "/phpgwapi/templates/pure/css/pure-extension.css");
+
+			libxml_use_internal_errors(true);
+			$proc = new XSLTProcessor;
+			$proc->registerPHPFunctions();
+			$xsl_imported = $proc->importStyleSheet($xsl); // attach the xsl rules
+			$css	 = file_get_contents(PHPGW_SERVER_ROOT . "/phpgwapi/templates/pure/css/version_3/pure-min.css");
+//			$css	 .= file_get_contents(PHPGW_SERVER_ROOT . "/phpgwapi/templates/pure/css/pure-extension.css");
 
 			$header = <<<HTML
 <!DOCTYPE HTML>
 <html>
 	<head>
 		<meta charset="utf-8">
+
+		<style>
+			{$css}
 		<style>
 
 			html {
@@ -2016,7 +2025,7 @@ HTML;
 			'value_show_cost'					 => $show_cost,
 			'lang_print_statustext'				 => lang('open this page as printerfrendly'),
 			'print_action'						 => "javascript:openwindow("
-				. "phpGWLink('/index.php', {menuaction: 'property.uiwo_hour.view',"
+				. "phpGWLink('index.php', {menuaction: 'property.uiwo_hour.view',"
 				. " workorder_id:'$workorder_id',"
 				. " show_cost:'$show_cost',"
 				. " show_details:'$show_details',"
@@ -2449,7 +2458,7 @@ HTML;
 		if ($preview)
 		{
 			//	$pdf->print_pdf($document,'order');
-			$pdf->ezStream();
+			$pdf->ezStream(['compress' => 0]);
 		}
 		else
 		{
