@@ -5,7 +5,8 @@ use App\Database\Db;
 
 
 // Java-bin path
-define('JAVA_BIN', '/usr/bin/java');
+//define('JAVA_BIN', '/usr/bin/java');
+define('JAVA_BIN', 'java');
 
 // path to JasperEngine.class
 define('JASPER_BIN', PHPGW_API_INC . '/jasper/bin/');

@@ -29,7 +29,7 @@ RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
 	# Install PECL extensions
 RUN pecl install xdebug apcu && docker-php-ext-enable xdebug apcu
 RUN pecl install redis && docker-php-ext-enable redis
-RUN pecl install imagick && docker-php-ext-enable imagick
+# RUN pecl install imagick && docker-php-ext-enable imagick
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php
@@ -89,6 +89,19 @@ RUN echo 'max_input_vars = 5000' >> /usr/local/etc/php/php.ini
 RUN echo 'error_reporting = E_ALL & ~E_NOTICE' >> /usr/local/etc/php/php.ini
 RUN echo 'post_max_size = 20M' >> /usr/local/etc/php/php.ini
 RUN echo 'upload_max_filesize = 8M' >> /usr/local/etc/php/php.ini
+
+# Download and install OpenJDK
+RUN wget -O /tmp/openjdk.tar.gz https://download.oracle.com/java/21/latest/jdk-21_linux-x64_bin.tar.gz \
+    && mkdir -p /usr/local/java \
+    && tar -xzf /tmp/openjdk.tar.gz -C /usr/local/java \
+    && rm /tmp/openjdk.tar.gz
+
+# Set JAVA_HOME environment variable
+ENV JAVA_HOME /usr/local/java/jdk-21.0.4
+ENV PATH $JAVA_HOME/bin:$PATH
+
+# Verify Java installation
+RUN java -version
 
 # Clean up
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
