@@ -760,10 +760,10 @@ class Vfs extends VfsShared
 				   because ls() calls acl_check(), which would create an infinite loop
 				*/
 			$extraSql = $this->extra_sql(array('query_type' => VFS_SQL_SELECT));
-			$sql = "SELECT owner_id FROM phpgw_vfs WHERE directory = ? AND name = ?" . $extraSql['sql'];
+			$sql = "SELECT owner_id FROM phpgw_vfs WHERE directory = :directory AND name = :name" . $extraSql['sql'];
 
 			$stmt = $this->db->prepare($sql);
-			$params = array($p2->fake_leading_dirs_clean, $p2->fake_name_clean);
+			$params = array(':directory' => $p2->fake_leading_dirs_clean, ':name' => $p2->fake_name_clean);
 			$params = array_merge($params, $extraSql['params']);
 
 			$stmt->execute($params);
