@@ -16,14 +16,12 @@ class overfoer_stroem extends property_boentity
 	protected $config		 = array();
 	protected $status_text	 = array();
 	protected $custom_config;
-	protected $account, $userSettings, $location_obj;
+	protected $account, $location_obj;
 
 	function __construct()
 	{
 		parent::__construct();
 		$this->db		 = Db::getInstance();
-
-		$this->userSettings = Settings::getInstance()->get('user');
 
 		$this->account	 = (int)$this->userSettings['account_id'];
 		$this->location_obj	 = new Locations();
