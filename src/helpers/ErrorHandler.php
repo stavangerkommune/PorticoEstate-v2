@@ -5,7 +5,7 @@ namespace App\helpers;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseFactoryInterface;
-
+use App\modules\phpgwapi\security\Sessions;
 use App\modules\phpgwapi\services\Log;
 use App\Database\Db;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -96,6 +96,8 @@ class ErrorHandler
 	 */
 	public function __invoke(Request $request, Throwable $exception, bool $displayErrorDetails): Response
 	{
+		//Catch the user
+		Sessions::getInstance()->verify();
 
 		$path = $request->getUri()->getPath();
 		$routePath_arr = explode('/', $path);
