@@ -326,7 +326,7 @@ class property_uiimport extends phpgwapi_uicommon_jquery
 				}
 				echo "</ul>";
 			}
-			echo '<a href="' . phpgw::link('/home.php') . '">Home</a>';
+			echo '<a href="' . phpgw::link('/home/') . '">Home</a>';
 			echo '</br><a href="' . phpgw::link('/index.php', array('menuaction' => 'property.uiimport.index')) . '">Import</a>';
 		}
 		else
@@ -380,7 +380,7 @@ HTML;
 				}
 			}
 
-			$home	 = phpgw::link('/home.php');
+			$home	 = phpgw::link('/home/');
 			$action	 = phpgw::link('/index.php', array('menuaction' => 'property.uiimport.index'));
 
 			$debug_checked	 = isset($import_settings['debug']) && $import_settings['debug'] ? 'checked =  "checked"' : '';
@@ -1237,7 +1237,7 @@ HTML;
 				}
 				echo "</ul>";
 			}
-			echo '<a href="' . phpgw::link('/home.php') . '">Home</a>';
+			echo '<a href="' . phpgw::link('/home/') . '">Home</a>';
 			echo '</br><a href="' . phpgw::link('/index.php', array('menuaction' => 'property.uiimport.components')) . '">Import</a>';
 		}
 		else
@@ -1248,7 +1248,7 @@ HTML;
 			Cache::session_clear('property', 'import_message');
 
 
-			$home	 = phpgw::link('/home.php');
+			$home	 = phpgw::link('/home/');
 			$action	 = phpgw::link('/index.php', array('menuaction' => 'property.uiimport.components'));
 
 			//$debug_checked = isset($import_settings['debug']) && $import_settings['debug'] ? 'checked =  "checked"' : '';

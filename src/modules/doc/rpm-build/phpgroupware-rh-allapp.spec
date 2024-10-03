@@ -56,7 +56,7 @@ rm -rf $RPM_BUILD_ROOT
 #%attr(0770,apache,apache) %{prefix}/%{phpgwdirname}/files/home
 %defattr(-,root,root)
 %dir %{prefix}/%{phpgwdirname}
-%{prefix}/%{phpgwdirname}/home.php
+%{prefix}/%{phpgwdirname}/home/
 %{prefix}/%{phpgwdirname}/about.php
 %{prefix}/%{phpgwdirname}/anon_wrapper.php
 %{prefix}/%{phpgwdirname}/notify.php

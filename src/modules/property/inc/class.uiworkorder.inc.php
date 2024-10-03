@@ -3541,7 +3541,7 @@ JS;
 			'vendor_data'							 => $vendor_data,
 			'location_data'							 => $location_data,
 			'location_template_type'				 => $location_template_type,
-			'form_action'							 => $mode == 'edit' ? phpgw::link('/index.php', $link_data) : phpgw::link('/home.php'), //avoid accidents
+			'form_action'							 => $mode == 'edit' ? phpgw::link('/index.php', $link_data) : phpgw::link('/home/'), //avoid accidents
 			'done_action'							 => phpgw::link('/index.php', array(
 				'menuaction' => 'property.uiworkorder.index'
 			)),
