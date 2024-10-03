@@ -2193,9 +2193,10 @@ HTML;
 
 			if (!$_validated)
 			{
-				throw new Exception(lang('order %1 is not approved', $workorder_id));
-				//					phpgw::redirect_link('/index.php', array('menuaction' => 'property.uiwo_hour.view',
-				//						'workorder_id' => $workorder_id, 'from' => Sanitizer::get_var('from')));
+				//throw new Exception(lang('order %1 is not approved', $workorder_id));
+			//	Cache::message_set(lang('order %1 is not approved', $workorder_id), 'error');
+				phpgw::redirect_link('/', array('menuaction' => 'property.uiwo_hour.view',
+							'workorder_id' => $workorder_id, 'from' => Sanitizer::get_var('from')));
 			}
 		}
 
