@@ -60,6 +60,7 @@ if (!$flags['noframework'] && !$flags['nonavbar'])
 	}
 }
 
+$javascripts[] = "/phpgwapi/templates/portico/js/keep_alive.js";
 
 $stylesheets = array();
 $stylesheets[] = "/phpgwapi/templates/pure/css/global.css";
