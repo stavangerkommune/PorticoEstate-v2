@@ -1335,11 +1335,11 @@ class property_soinvoice
 
 			$value_set = array();
 
-			foreach ($metadata as $_field)
+			foreach ($metadata as $_field_name => $_field_data)
 			{
-				if ($_field->name != 'id')
+				if ($_field_name != 'id')
 				{
-					$value_set[$_field->name] = $this->db->f($_field->name, true);
+					$value_set[$_field_name] = $this->db->f($_field_name, true);
 				}
 			}
 
@@ -2686,11 +2686,11 @@ class property_soinvoice
 					'process_log'
 				);
 
-				foreach ($metadata as $_field)
+				foreach ($metadata as $_field_name => $_field_data)
 				{
-					if (!in_array($_field->name, $skip_values))
+					if (!in_array($_field_name, $skip_values))
 					{
-						$value_set[$_field->name] = $this->db->f($_field->name, true);
+						$value_set[$_field_name] = $this->db->f($_field_name, true);
 					}
 				}
 

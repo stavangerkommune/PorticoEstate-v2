@@ -963,6 +963,7 @@ class property_solocation
 
 		if ($column_search)
 		{
+			$metadata = array();
 			foreach ($column_search as $key => $value)
 			{
 				switch ($key)
@@ -985,11 +986,14 @@ class property_solocation
 						$filtermethod	 .= " {$where} fm_location{$type_id}_category.descr $this->like '%{$value}%'";
 						break;
 					default:
-						$metadata	 = $this->db->metadata("fm_location{$type_id}");
+						if(!$metadata)
+						{
+							$metadata = $this->db->metadata("fm_location{$type_id}");
+						}
 
 						if (isset($metadata[$key]))
 						{
-							if (in_array($metadata[$key]->type, array('varchar', 'text')))
+							if (in_array($metadata[$key]->type, array('varchar', 'text', 'character varying', 'character')))
 							{
 								$filtermethod	 .= " {$where} fm_location{$type_id}.{$key} $this->like '%{$value}%'";
 							}
@@ -997,7 +1001,7 @@ class property_solocation
 							{
 								$filtermethod	 .= " {$where} fm_location{$type_id}.{$key} = '" . (float)$value . "'";
 							}
-							if (in_array($metadata[$key]->type, array('int2', 'int4', 'int8')))
+							if (in_array($metadata[$key]->type, array('integer', 'smallint', 'bigint', 'int2', 'int4', 'int8')))
 							{
 								$filtermethod	 .= " {$where} fm_location{$type_id}.{$key} = " . (int)$value;
 							}
