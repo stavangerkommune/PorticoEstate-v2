@@ -529,7 +529,8 @@ class Sessions
 		}
 		else
 		{
-			$user_info['domain'] = \Sanitizer::get_var('last_domain', 'string', 'COOKIE', false);
+			//FIX ME: this is a hack to get the domain from the cookie
+			$user_info['domain'] = \Sanitizer::get_var('last_domain', 'string', 'COOKIE', 'default');
 		}
 
 		Settings::getInstance()->set('user', $user_info);
