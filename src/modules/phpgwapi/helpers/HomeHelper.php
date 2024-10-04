@@ -4,6 +4,7 @@ namespace App\modules\phpgwapi\helpers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use App\modules\phpgwapi\security\Sessions;
 use App\modules\phpgwapi\services\Settings;
 use App\modules\phpgwapi\services\Hooks;
 use App\modules\phpgwapi\services\Cache;
@@ -39,6 +40,44 @@ class HomeHelper
 
 	public function processHome(Request $request, Response $response, array $args)
 	{
+		/**
+		 * In case there is an extra session border to cross from outside a firewall
+		 */
+		if (\Sanitizer::get_var('keep_alive', 'bool', 'GET')	&& \Sanitizer::get_var('phpgw_return_as', 'string', 'GET') == 'json')
+		{
+			$now = time();
+			$keep_alive_timestamp = Cache::session_get('mobilefrontend', 'keep_alive_timestamp');
+
+			// first check
+			if (!$keep_alive_timestamp)
+			{
+				$keep_alive_timestamp = $now;
+				Cache::session_set('mobilefrontend', 'keep_alive_timestamp', $keep_alive_timestamp);
+			}
+
+			$sessions_timeout = 7200; // 120 minutes
+			//		$sessions_timeout = $this->serverSettings['sessions_timeout'];
+			if (($now - $keep_alive_timestamp) > $sessions_timeout)
+			{
+				$ret = array('status' => 440); //Login Time-out
+				http_response_code(440);
+
+				$sessions = Sessions::getInstance();
+				$sessionid = $sessions->get_session_id();
+				$this->hooks->process('logout');
+				$sessions->destroy($sessionid);
+			}
+			else
+			{
+				Cache::session_set('mobilefrontend', 'keep_alive_timestamp', $now);
+				$ret = array('status' => 200);
+			}
+
+			header('Content-Type: application/json');
+			echo json_encode($ret);
+			$this->phpgwapi_common->phpgw_exit();
+		}
+
 		// check if forward parameter is set
 		if (isset($_GET['phpgw_forward']) && is_array($_GET['phpgw_forward']))
 		{

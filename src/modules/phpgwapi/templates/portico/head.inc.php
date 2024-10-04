@@ -189,6 +189,7 @@ if (isset($flags['noframework']))
 function parse_footer_end_noframe()
 {
 	$phpgwapi_common = new phpgwapi_common();
+	$serverSettings = Settings::getInstance()->get('server');
 
 	$cache_refresh_token = '';
 	if (!empty($serverSettings['cache_refresh_token']))
