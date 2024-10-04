@@ -2,3 +2,9 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]
+
+<IfModule mod_headers.c>
+   SetEnvIf Origin "http(s)?://(www\.)?(google.com)$" AccessControlAllowOrigin=$0
+   Header add Access-Control-Allow-Origin %{AccessControlAllowOrigin}e env=AccessControlAllowOrigin
+   Header merge Vary Origin
+</IfModule>
