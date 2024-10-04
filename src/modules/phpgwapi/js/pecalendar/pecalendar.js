@@ -1195,6 +1195,15 @@ class PECalendar {
         // this.tempEvent(this.createTemporaryEvent(startTime));
     }
 
+
+    handleDragStart(eventData, edge, event) {
+        event.stopPropagation();
+        this.tempEvent(eventData.event);
+        this.isDragging(true);
+        this.dragStart(edge === 'bottom' ? eventData.event.to : eventData.event.from);
+        this.tempEvents(this.tempEvents().filter(e => e.id !== eventData.event.id));
+    }
+
     isAdjacentEvents(event1, event2) {
         if (event1.date !== event2.date) {
             return false;
@@ -2065,7 +2074,11 @@ if (globalThis['ko']) {
                             </div>
 
                             <!-- /ko -->
-
+                            <!-- ko if: $data.event.type === 'temporary' -->
+                            <div class="drag-handle">
+                                <div class="drag-handle-inner" ></div>
+                            </div>
+                            <!-- /ko -->
                         </div>
                         <!-- /ko -->
 
