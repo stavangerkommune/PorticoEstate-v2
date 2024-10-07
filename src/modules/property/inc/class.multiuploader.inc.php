@@ -347,11 +347,6 @@
 
 		private function upload_file( $save_path, $uploaded_file, &$file )
 		{
-			if ($file->name == 'image.jpg') //Apple fuck up
-			{
-				// add timestamp
-				$file->name =	'image_' . date('Y-m-d_H-i-s', phpgwapi_datetime::user_localtime()) . ".jpg";
-			}
 
 			$to_file = "{$this->bofiles->fakebase}/{$save_path}/{$file->name}";
 
