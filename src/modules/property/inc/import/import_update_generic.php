@@ -13,10 +13,12 @@ class import_conversion
 {
 
 	protected $db;
+	protected $join;
 	public $messages		 = array();
 	public $warnings		 = array();
 	public $errors			 = array();
 	public $debug			 = false;
+	protected $account;
 	protected $is_eav;
 	protected $location_id;
 	protected $bim_type_id	 = 0;
@@ -230,7 +232,7 @@ class import_conversion
 
 			$_value_set = array(
 				//					'xml_representation' => $this->db->db_addslashes($xml),
-				'json_representation'	 => json_encode($value_set),
+				'json_representation'	 => json_encode($value_set, JSON_HEX_APOS),
 				'p_location_id'			 => isset($value_set['p_location_id']) && $value_set['p_location_id'] ? $value_set['p_location_id'] : '',
 				'p_id'					 => isset($value_set['p_id']) && $value_set['p_id'] ? $value_set['p_id'] : '',
 				'location_code'			 => $value_set['location_code'],
@@ -285,8 +287,7 @@ class import_conversion
 				'type'					 => $type,
 				'location_id'			 => $location_id,
 				'guid'					 => $guid,
-				//					'xml_representation' => $this->db->db_addslashes($xml),
-				'json_representation'	 => json_encode($value_set),
+				'json_representation'	 => json_encode($value_set, JSON_HEX_APOS),
 				'model'					 => 0,
 				'p_location_id'			 => isset($value_set['p_location_id']) && $value_set['p_location_id'] ? $value_set['p_location_id'] : '',
 				'p_id'					 => isset($value_set['p_id']) && $value_set['p_id'] ? $value_set['p_id'] : '',
