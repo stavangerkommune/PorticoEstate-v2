@@ -18,6 +18,7 @@ class import_conversion
 	public $warnings		 = array();
 	public $errors			 = array();
 	public $debug			 = false;
+	public $fields;
 	protected $account;
 	protected $is_eav;
 	protected $location_id;
