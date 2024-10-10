@@ -6,6 +6,7 @@ use App\modules\bookingfrontend\models\Building;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use App\modules\bookingfrontend\services\DocumentService;
 use Exception;
 use App\modules\phpgwapi\services\Settings;
 use App\Database\Db;
@@ -21,11 +22,12 @@ class BuildingController
 {
     private $db;
     private $userSettings;
-
+    private $documentService;
     public function __construct(ContainerInterface $container)
     {
         $this->db = Db::getInstance();
         $this->userSettings = Settings::getInstance()->get('user');
+        $this->documentService = new DocumentService();
     }
 
     private function getUserRoles()
@@ -134,6 +136,48 @@ class BuildingController
         } catch (Exception $e)
         {
             $error = "Error fetching building: " . $e->getMessage();
+            $response->getBody()->write(json_encode(['error' => $error]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+
+    // TODO: Rewrite function to be just /documents, with searchparams for ?type=images|documents
+    /**
+     * @OA\Get(
+     *     path="/bookingfrontend/buildings/{id}/images",
+     *     summary="Get images for a specific building",
+     *     tags={"Buildings"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID of the building",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of building images",
+     *         @OA\JsonContent(type="array", @OA\Items(type="object"))
+     *     )
+     * )
+     */
+    public function getImages(Request $request, Response $response, array $args): Response
+    {
+        $buildingId = (int)$args['id'];
+
+        try {
+            $images = $this->documentService->getImagesForBuilding($buildingId);
+
+
+            $serializedImages = array_map(function($image)  {
+                return $image->serialize();
+            }, $images);
+
+            $response->getBody()->write(json_encode($serializedImages));
+            return $response->withHeader('Content-Type', 'application/json');
+        } catch (Exception $e) {
+            $error = "Error fetching building images: " . $e->getMessage();
             $response->getBody()->write(json_encode(['error' => $error]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
