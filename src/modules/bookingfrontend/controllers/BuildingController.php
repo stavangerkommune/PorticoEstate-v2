@@ -12,6 +12,7 @@ use Exception;
 use App\modules\phpgwapi\services\Settings;
 use App\Database\Db;
 use OpenApi\Annotations as OA;
+use Slim\Psr7\Stream;
 
 /**
  * @OA\Tag(
@@ -28,7 +29,7 @@ class BuildingController
     {
         $this->db = Db::getInstance();
         $this->userSettings = Settings::getInstance()->get('user');
-        $this->documentService = new DocumentService();
+        $this->documentService = new DocumentService(Document::OWNER_BUILDING);
     }
 
     private function getUserRoles()
@@ -213,5 +214,84 @@ class BuildingController
         }
 
         return !empty($validTypes) ? array_unique($validTypes) : null;
+    }
+
+
+
+    /**
+     * @OA\Get(
+     *     path="/bookingfrontend/buildings/documents/{id}/download",
+     *     summary="Download a specific document",
+     *     tags={"Buildings"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID of the document to download",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Document file",
+     *         @OA\Header(
+     *             header="Content-Type",
+     *             description="MIME type of the document",
+     *             @OA\Schema(type="string")
+     *         ),
+     *         @OA\Header(
+     *             header="Content-Disposition",
+     *             description="Attachment with filename",
+     *             @OA\Schema(type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Document not found"
+     *     )
+     * )
+     */
+    public function downloadDocument(Request $request, Response $response, array $args): Response
+    {
+        $documentId = (int)$args['id'];
+
+        try {
+            $document = $this->documentService->getDocumentById($documentId);
+
+            if (!$document) {
+                $response->getBody()->write(json_encode(['error' => 'Document not found']));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+            }
+
+            // Assuming the document's physical path is stored in the 'file_path' property
+            $filePath = $document->generate_filename();
+
+            if (!file_exists($filePath)) {
+                $response->getBody()->write(json_encode(['error' => 'Document file not found']));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+            }
+
+            $fileType = $document->getFileTypeFromExtension();
+
+            $latin1FileName = mb_convert_encoding($document->name, 'ISO-8859-1', 'UTF-8');
+            $utf8FileName = rawurlencode($document->name);
+
+            // Determine if the file should be displayed inline
+            $isDisplayable = Document::isDisplayableFileType($fileType);
+            $disposition = $isDisplayable ? 'inline' : 'attachment';
+
+            $response = $response
+                ->withHeader('Content-Type', $fileType)
+                ->withHeader('Content-Disposition', "{$disposition}; filename={$latin1FileName}")
+                ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
+                ->withHeader('Pragma', 'cache');
+
+            $stream = fopen($filePath, 'r');
+            return $response->withBody(new Stream($stream));
+
+        } catch (Exception $e) {
+            $error = "Error downloading document: " . $e->getMessage();
+            $response->getBody()->write(json_encode(['error' => $error]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
     }
 }

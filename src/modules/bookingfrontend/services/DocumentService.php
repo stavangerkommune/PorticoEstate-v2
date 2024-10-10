@@ -8,9 +8,9 @@ class DocumentService
 {
     private $documentRepository;
 
-    public function __construct()
+    public function __construct(string $owner_type = Document::OWNER_BUILDING)
     {
-        $this->documentRepository = new DocumentRepository();
+        $this->documentRepository = new DocumentRepository($owner_type);
     }
 
     /**
@@ -36,5 +36,14 @@ class DocumentService
     public function getDocumentsByCategory(int $buildingId, string $category): array
     {
         return $this->documentRepository->getDocumentsForBuilding($buildingId, [$category]);
+    }
+
+
+    /**
+     * @return ?Document
+     */
+    public function getDocumentById(int $documentId): ?Document
+    {
+        return $this->documentRepository->getDocumentById($documentId);
     }
 }

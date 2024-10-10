@@ -2,6 +2,7 @@
 
 namespace App\modules\phpgwapi\models;
 
+use App\modules\phpgwapi\services\Settings;
 use App\traits\SerializableTrait;
 
 /**
@@ -296,6 +297,13 @@ class ServerSettings
     {
         $this->populate($data); // Populate first to set the initial values
         $this->setDefaults();   // Then set defaults for properties that were not set in populate
+    }
+
+    public static function getInstance(): ServerSettings
+    {
+        $settings = Settings::getInstance();
+        $serverSettingsRaw = $settings->get('server');
+        return new ServerSettings($serverSettingsRaw);
     }
 
     private function setDefaults()
