@@ -428,8 +428,6 @@ abstract class booking_uidocument extends booking_uicommon
 		$id = Sanitizer::get_var('id', 'int');
 
 		$document = $this->bo->read_single($id);
-        _debug_array($document);
-        die();
 		self::send_file($document['filename'], array('filename' => $document['name']));
 	}
 
