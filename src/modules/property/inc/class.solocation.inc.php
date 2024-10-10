@@ -2187,7 +2187,7 @@ class property_solocation
 		$cols = "count(*) as count, fm_location{$type_id}.category, fm_location{$type_id}_category.descr as type";
 
 		$sql = "SELECT $cols FROM $paranthesis fm_location1 $joinmethod";
-		_debug_array($sql . $filtermethod . $groupmethod);
+//		_debug_array($sql . $filtermethod . $groupmethod);
 		$this->db->query($sql . $filtermethod . $groupmethod . " ORDER BY $entity_table.category", __LINE__, __FILE__);
 
 		$values = array();
