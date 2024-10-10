@@ -57,7 +57,6 @@ if (!class_exists("lag_agresso_ordre_fra_melding"))
 			$config						 = CreateObject('admin.soconfig', $location_obj->get_id('property', '.invoice'));
 			$this->debug				 = empty($config->config_data['export']['activate_transfer']) ? true : false;
 			$this->db					 = Db::getInstance();
-			
 		}
 
 		public function transfer($id, $resend_order = null)
@@ -143,10 +142,10 @@ if (!class_exists("lag_agresso_ordre_fra_melding"))
 			if ($resend_order || (Sanitizer::get_var('on_behalf_of_assigned', 'bool') && isset($_ticket['assignedto_name'])))
 			{
 				$user_name		 = $_ticket['assignedto_name'];
-				
+
 				$preferences = createObject('phpgwapi.preferences', $_ticket['assignedto']);
 				Settings::getInstance()->update('user', ['preferences' => $preferences->data]);
-				
+
 				$accounts_obj	 = new Accounts();
 				$account_lid	 = $accounts_obj->id2lid($_ticket['assignedto']);
 			}
@@ -302,13 +301,50 @@ if (!class_exists("lag_agresso_ordre_fra_melding"))
 			);
 			$exporter_ordre->create_transfer_xml($param);
 
-			$export_ok = $exporter_ordre->transfer($this->debug);
+			$export_ok = $exporter_ordre->transfer();
 
 			if ($export_ok)
 			{
 				Cache::message_set("Ordre #{$_ticket['order_id']} er overført");
 				$this->log_transfer($id);
 			}
+
+			$voucher_type = 'V3';
+
+			if ($_ticket['order_id'] >= 45000000 && $_ticket['order_id'] <= 45249999)
+			{
+				$voucher_type = 'V3';
+			}
+			else if ($_ticket['order_id'] >= 45250000 && $_ticket['order_id'] <= 45499999)
+			{
+				$voucher_type = 'V4';
+			}
+			else
+			{
+				throw new Exception("Ordrenummer '{$_ticket['order_id']}' er utenfor serien:<br/>" . __FILE__ . '<br/>linje:' . __LINE__);
+			}
+
+			$quantity = 1; // closing the order
+
+			$param = array(
+				'voucher_type'	 => $voucher_type,
+				'order_id'		 => $_ticket['order_id'],
+				'lines'			 => array(
+					array(
+						'UnitCode'	 => 'STK',
+						'Quantity'	 => $quantity,
+					)
+				)
+			);
+
+			if (empty($_ticket['order_sent']))
+			{
+				$exporter_ordre->reset_transfer_xml();
+				$exporter_ordre->create_order_receive_xml($param);
+				$export_ok = $exporter_ordre->transfer($order_receive  = true);
+			}
+
+			return $export_ok;
 		}
 
 		private function log_transfer($id)

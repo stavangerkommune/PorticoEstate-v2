@@ -88,6 +88,13 @@ if (!class_exists("lag_agresso_varemottak"))
 		public function transfer($id, $received_amount, $external_voucher_id)
 		{
 			$values = $this->values;
+
+			$ordre_mottak_samtidig_med_ordre = strtotime('2024-10-10 00:00:00') > $values['order_sent'] ? true : false;
+			
+			if(!empty($values['order_sent']) && $ordre_mottak_samtidig_med_ordre)
+			{
+				return false;
+			}
 			//		_debug_array($values);die();
 
 			/*

@@ -398,6 +398,41 @@ if (!class_exists("lag_agresso_ordre_fra_workorder"))
 			{
 				throw new Exception("Overføring til UBW av Ordre #{$workorder['id']} feilet");
 			}
+
+			$voucher_type = 'V3';
+
+			if ($workorder['id'] >= 45000000 && $workorder['id'] <= 45249999)
+			{
+				$voucher_type = 'V3';
+			}
+			else if ($workorder['id'] >= 45250000 && $workorder['id'] <= 45499999)
+			{
+				$voucher_type = 'V4';
+			}
+			else
+			{
+				throw new Exception("Ordrenummer '{$workorder['id']}' er utenfor serien:<br/>" . __FILE__ . '<br/>linje:' . __LINE__);
+			}
+
+			$quantity = 1; // closing the order
+
+			$param = array(
+				'voucher_type'	 => $voucher_type,
+				'order_id'		 => $workorder['id'],
+				'lines'			 => array(
+					array(
+						'UnitCode'	 => 'STK',
+						'Quantity'	 => $quantity,
+					)
+				)
+			);
+
+			if (empty($workorder['order_sent']))
+			{
+				$exporter_ordre->reset_transfer_xml();
+				$exporter_ordre->create_order_receive_xml($param);
+				$export_ok = $exporter_ordre->transfer($order_receive  = true);
+			}
 		}
 
 		private function log_transfer($id)
