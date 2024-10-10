@@ -18,6 +18,23 @@ class DocumentService
      */
     public function getImagesForBuilding(int $buildingId): array
     {
-        return $this->documentRepository->getImagesForBuilding($buildingId);
+        $imageCategories = [Document::CATEGORY_PICTURE, Document::CATEGORY_PICTURE_MAIN];
+        return $this->documentRepository->getDocumentsForBuilding($buildingId, $imageCategories);
+    }
+
+    /**
+     * @return Document[]
+     */
+    public function getDocumentsForBuilding(int $buildingId, ?array $categories = null): array
+    {
+        return $this->documentRepository->getDocumentsForBuilding($buildingId, $categories);
+    }
+
+    /**
+     * @return Document[]
+     */
+    public function getDocumentsByCategory(int $buildingId, string $category): array
+    {
+        return $this->documentRepository->getDocumentsForBuilding($buildingId, [$category]);
     }
 }

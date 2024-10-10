@@ -19,7 +19,7 @@ $app->group('/bookingfrontend', function (RouteCollectorProxy $group)
         $group->get('', BuildingController::class . ':index');
         $group->get('/{id}', BuildingController::class . ':show');
         $group->get('/{id}/resources', ResourceController::class . ':getResourcesByBuilding');
-        $group->get('/{id}/images', BuildingController::class . ':getImages');
+        $group->get('/{id}/documents', BuildingController::class . ':getDocuments');
     });
     $group->group('/resources', function (RouteCollectorProxy $group)
     {

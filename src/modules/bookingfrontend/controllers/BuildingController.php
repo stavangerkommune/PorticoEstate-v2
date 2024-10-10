@@ -3,6 +3,7 @@
 namespace App\modules\bookingfrontend\controllers;
 
 use App\modules\bookingfrontend\models\Building;
+use App\modules\bookingfrontend\models\Document;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -142,11 +143,10 @@ class BuildingController
     }
 
 
-    // TODO: Rewrite function to be just /documents, with searchparams for ?type=images|documents
     /**
      * @OA\Get(
-     *     path="/bookingfrontend/buildings/{id}/images",
-     *     summary="Get images for a specific building",
+     *     path="/bookingfrontend/buildings/{id}/documents",
+     *     summary="Get documents for a specific building",
      *     tags={"Buildings"},
      *     @OA\Parameter(
      *         name="id",
@@ -155,31 +155,63 @@ class BuildingController
      *         required=true,
      *         @OA\Schema(type="integer")
      *     ),
+     *     @OA\Parameter(
+     *         name="type",
+     *         in="query",
+     *         description="Type of documents to retrieve. Can be 'images' for all image types, or specific document categories. Multiple types can be comma-separated.",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="string",
+     *             example="images,regulation,price_list"
+     *         )
+     *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="List of building images",
-     *         @OA\JsonContent(type="array", @OA\Items(type="object"))
+     *         description="List of building documents",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Document"))
      *     )
      * )
      */
-    public function getImages(Request $request, Response $response, array $args): Response
+    public function getDocuments(Request $request, Response $response, array $args): Response
     {
         $buildingId = (int)$args['id'];
+        $typeParam = $request->getQueryParams()['type'] ?? null;
 
         try {
-            $images = $this->documentService->getImagesForBuilding($buildingId);
+            $types = $this->parseDocumentTypes($typeParam);
+            $documents = $this->documentService->getDocumentsForBuilding($buildingId, $types);
 
+            $serializedDocuments = array_map(function($document) {
+                return $document->serialize();
+            }, $documents);
 
-            $serializedImages = array_map(function($image)  {
-                return $image->serialize();
-            }, $images);
-
-            $response->getBody()->write(json_encode($serializedImages));
+            $response->getBody()->write(json_encode($serializedDocuments));
             return $response->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
-            $error = "Error fetching building images: " . $e->getMessage();
+            $error = "Error fetching building documents: " . $e->getMessage();
             $response->getBody()->write(json_encode(['error' => $error]));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
+    }
+
+    private function parseDocumentTypes(?string $typeParam): ?array
+    {
+        if ($typeParam === null) {
+            return null; // Return all document types
+        }
+
+        $types = explode(',', $typeParam);
+        $validTypes = [];
+
+        foreach ($types as $type) {
+            if ($type === 'images') {
+                $validTypes[] = Document::CATEGORY_PICTURE;
+                $validTypes[] = Document::CATEGORY_PICTURE_MAIN;
+            } elseif (in_array($type, Document::getCategories())) {
+                $validTypes[] = $type;
+            }
+        }
+
+        return !empty($validTypes) ? array_unique($validTypes) : null;
     }
 }
