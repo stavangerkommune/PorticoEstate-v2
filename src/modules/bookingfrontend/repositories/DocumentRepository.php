@@ -16,9 +16,20 @@ class DocumentRepository
         $this->owner_type = $owner_type;
     }
 
+    private function getDBTable(): string
+    {
+        return match ($this->owner_type) {
+            Document::OWNER_BUILDING => 'bb_document_building',
+            Document::OWNER_APPLICATION => 'bb_document_application',
+            Document::OWNER_RESOURCE => 'bb_document_resource',
+            default => 'bb_document_building',
+        };
+    }
+
     public function getDocumentsForBuilding(int $buildingId, array $categories = null): array
     {
-        $sql = "SELECT * FROM bb_document_building WHERE owner_id = :buildingId";
+        $table = $this->getDBTable();
+        $sql = "SELECT * FROM {$table} WHERE owner_id = :buildingId";
         $params = [':buildingId' => $buildingId];
 
         if ($categories !== null && !empty($categories)) {
@@ -43,7 +54,8 @@ class DocumentRepository
 
     public function getDocumentById(int $documentId): ?Document
     {
-        $sql = "SELECT * FROM bb_document_building WHERE id = :documentId";
+        $table = $this->getDBTable();
+        $sql = "SELECT * FROM {$table} WHERE id = :documentId";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':documentId' => $documentId]);
 

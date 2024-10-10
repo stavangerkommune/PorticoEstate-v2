@@ -62,7 +62,7 @@ class Document
 
     /**
      * @OA\Property(type="string", enum={"building", "resource", "application"})
-     * @Expose
+     * @Exclude
      */
     public $owner_type;
 
