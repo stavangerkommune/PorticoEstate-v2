@@ -12,7 +12,7 @@ trait SerializableTrait
 
 
 
-    public function serialize(array $userRoles = [], bool $short = false): array
+    public function serialize(array $userRoles = [], bool $short = false): ?array
     {
         $reflection = new \ReflectionClass($this);
         $properties = $reflection->getProperties();
@@ -50,7 +50,7 @@ trait SerializableTrait
             }
         }
 
-        return $serialized;
+        return !empty($serialized) ? $serialized : null;
     }
     private function serializeAs($value, array $serializeAsAnnotation): mixed
     {
@@ -67,26 +67,27 @@ trait SerializableTrait
     }
 
 
-    private function serializeAsObject($value, string $className): mixed
+    private function serializeAsObject($value, string $className): ?array
     {
         if (!is_object($value)) {
             $value = $this->instantiate($className, $value);
         }
 
         if (method_exists($value, 'serialize')) {
-            return $value->serialize();
+            $serialized = $value->serialize();
+            return !empty($serialized) ? $serialized : null;
         }
 
         return $value;
     }
 
-    private function serializeAsArray($value, string $className): array
+    private function serializeAsArray($value, string $className): ?array
     {
         if (!is_array($value)) {
-            return [];
+            return null;
         }
 
-        return array_map(function ($item) use ($className) {
+        $serialized = array_map(function ($item) use ($className) {
             if (!is_object($item)) {
                 $item = $this->instantiate($className, $item);
             }
@@ -97,6 +98,8 @@ trait SerializableTrait
 
             return $item;
         }, $value);
+
+        return !empty($serialized) ? array_filter($serialized, function($item) { return $item !== null; }) : null;
     }
 
 
