@@ -45,7 +45,9 @@ trait SerializableTrait
                         $value = $this->serializeAs($value, $serializeAsAnnotation);
                     }
 
-                    $serialized[$property->getName()] = $value;
+                    if ($value !== null) {
+                        $serialized[$property->getName()] = $value;
+                    }
                 }
             }
         }
@@ -69,10 +71,17 @@ trait SerializableTrait
 
     private function serializeAsObject($value, string $className): ?array
     {
+        if ($value === null) {
+            return null;
+        }
+
         if (!is_object($value)) {
             $value = $this->instantiate($className, $value);
         }
 
+        if ($value === null) {
+            return null;
+        }
         if (method_exists($value, 'serialize')) {
             $serialized = $value->serialize();
             return !empty($serialized) ? $serialized : null;
@@ -83,13 +92,21 @@ trait SerializableTrait
 
     private function serializeAsArray($value, string $className): ?array
     {
-        if (!is_array($value)) {
+        if (!is_array($value) || empty($value)) {
             return null;
         }
 
         $serialized = array_map(function ($item) use ($className) {
+            if ($item === null) {
+                return null;
+            }
+
             if (!is_object($item)) {
                 $item = $this->instantiate($className, $item);
+            }
+
+            if ($item === null) {
+                return null;
             }
 
             if (method_exists($item, 'serialize')) {
@@ -99,7 +116,9 @@ trait SerializableTrait
             return $item;
         }, $value);
 
-        return !empty($serialized) ? array_filter($serialized, function($item) { return $item !== null; }) : null;
+        $serialized = array_filter($serialized, function($item) { return $item !== null; });
+
+        return !empty($serialized) ? $serialized : null;
     }
 
 
@@ -110,6 +129,10 @@ trait SerializableTrait
         }
 
         $reflection = new \ReflectionClass($className);
+
+        if (empty($data)) {
+            return null;
+        }
 
         if ($reflection->getConstructor() && $reflection->getConstructor()->getNumberOfParameters() > 0) {
             return $reflection->newInstance($data);
