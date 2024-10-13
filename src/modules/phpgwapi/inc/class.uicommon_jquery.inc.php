@@ -66,7 +66,7 @@ abstract class phpgwapi_uicommon_jquery
 
 
 		$yui = isset($yui) && $yui == 'yui3' ? 'yui3' : 'yahoo';
-		$currentapp = $currentapp ? $currentapp : Settings::getInstance()->get('flags')['currentapp'];
+		$currentapp = $currentapp ? $currentapp : $this->flags['currentapp'];
 
 		if (preg_match("/(Trident\/(\d{2,}|7|8|9)(.*)rv:(\d{2,}))|(MSIE\ (\d{2,}|8|9)(.*)Tablet\ PC)|(Trident\/(\d{2,}|7|8|9))/", $_SERVER["HTTP_USER_AGENT"]))
 		{
@@ -102,7 +102,8 @@ abstract class phpgwapi_uicommon_jquery
 
 		if ($datatable2)
 		{
-			self::add_javascript('phpgwapi', 'DataTables2', 'datatables.min.js', false, array('combine' => false));
+			Settings::getInstance()->update('server', ['datatable2' => true]);
+			self::add_javascript('phpgwapi', 'DataTables2', 'datatables.js', false, array('combine' => false));
 			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/DataTables2/datatables.min.css');
 
 		}
@@ -556,6 +557,12 @@ abstract class phpgwapi_uicommon_jquery
 
 	public static function render_template_xsl($files, $data, $xsl_rootdir = '', $base = 'data')
 	{
+		//experimental
+		if (!empty(Settings::getInstance()->get('server')['datatable2']) && $files == 'datatable_jquery')
+		{
+			$files = 'datatable2';
+		}
+		
 		$flags = Settings::getInstance()->get('flags');
 		$flags['xslt_app'] = true;
 		Settings::getInstance()->update('flags', ['xslt_app' => true]);
