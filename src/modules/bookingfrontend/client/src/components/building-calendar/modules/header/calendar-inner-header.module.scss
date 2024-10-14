@@ -8,20 +8,26 @@
     gap:0.5rem;
 
     display: grid;
-    grid-template-columns:auto 20rem 1fr auto auto;
+    grid-template-columns:auto auto 1fr auto auto;
     grid-template-rows: auto;
     grid-template-areas: "resource-button date mode-select-time mode-select order";
 
     @include mobile {
-        display: grid;
         grid-template-columns:auto 1fr;
         grid-template-rows: auto auto;
         grid-template-areas: "mode-select resource-button" "date date";
         //display: none;
     }
+    @include tablet {
+        grid-template-columns:auto 1fr;
+        grid-template-rows: auto auto;
+        grid-template-areas: "mode-select resource-button" "resource-button date";
+        //display: none;
+    }
 
     .datePicker {
         grid-area: date;
+        width: min-content;
     }
 
 
@@ -68,12 +74,16 @@
 .mobileResourcesButton {
     grid-area: resource-button;
 
-    @include desktop {
+    @include tablet {
         display: none;
     }
 }
 
 .expandCollapseButton {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 0.5rem;
     @include mobile {
         display: none;
     }
