@@ -18,7 +18,6 @@ const UserMenu: FC<UserMenuProps> = (props) => {
 
     if (bookingUser?.is_logged_in) {
         return (<Dropdown.Context
-            placement="bottom-end"
             size="md"
         >
             <Dropdown.Trigger variant={'tertiary'} color={'accent'} size={'sm'}>
