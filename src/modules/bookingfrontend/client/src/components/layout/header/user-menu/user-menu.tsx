@@ -17,11 +17,9 @@ const UserMenu: FC<UserMenuProps> = (props) => {
     const {data: bookingUser, isLoading} = bookingUserQ;
 
     if (bookingUser?.is_logged_in) {
-        return (<Dropdown.Context
-            size="md"
-        >
+        return (<Dropdown.Context>
             <Dropdown.Trigger variant={'tertiary'} color={'accent'} size={'sm'}>
-                <FontAwesomeIcon icon={faUser}/> {bookingUser.name} <FontAwesomeIcon icon={faChevronDown} />
+                <FontAwesomeIcon icon={faUser}/> {bookingUser.name} <FontAwesomeIcon icon={faChevronDown}/>
             </Dropdown.Trigger>
             <Dropdown>
                 <Dropdown.List>
@@ -35,7 +33,10 @@ const UserMenu: FC<UserMenuProps> = (props) => {
                 <Divider/>
                 <Dropdown.List>
                     {bookingUser.delegates?.map((delegate) => <Dropdown.Item asChild key={delegate.org_id}>
-                        <Link href={phpGWLink('bookingfrontend/', {menuaction: 'bookingfrontend.uiorganization.show', id: delegate.org_id}, false)}
+                        <Link href={phpGWLink('bookingfrontend/', {
+                            menuaction: 'bookingfrontend.uiorganization.show',
+                            id: delegate.org_id
+                        }, false)}
                               className={'link-text link-text-unset normal'}>
                             <FontAwesomeIcon icon={faFutbol}/> {delegate.name}
                         </Link>
@@ -46,13 +47,13 @@ const UserMenu: FC<UserMenuProps> = (props) => {
                 <Divider/>
                 <Dropdown.List>
 
-                        <Dropdown.Item asChild>
-                            <Link href={phpGWLink(['bookingfrontend', 'logout'])}
-                                  className="link-text link-text-unset normal">
+                    <Dropdown.Item asChild>
+                        <Link href={phpGWLink(['bookingfrontend', 'logout'])}
+                              className="link-text link-text-unset normal">
                             {t('common.logout')}
-                            </Link>
+                        </Link>
 
-                        </Dropdown.Item>
+                    </Dropdown.Item>
 
                 </Dropdown.List>
             </Dropdown>
