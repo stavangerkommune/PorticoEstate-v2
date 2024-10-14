@@ -78,7 +78,8 @@ class property_boentity
 		'set_geolocation'		 => true,
 	);
 	var $type_app				 = array();
-	var $type, $locations_obj, $acl, $userSettings;
+	var $type, $locations_obj, $acl;
+	protected $userSettings;
 	private $location_relation_data	 = array();
 
 	function __construct($session = false, $type = '', $entity_id = 0, $cat_id = 0)

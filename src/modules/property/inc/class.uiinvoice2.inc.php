@@ -570,7 +570,7 @@ class property_uiinvoice2 extends phpgwapi_uicommon_jquery
 			'invoice_layout_config'	 => json_encode(execMethod('phpgwapi.template_portico.retrieve_local', 'invoice_layout_config')),
 			'preferences_url'		 => phpgw::link('/preferences/index.php'),
 			'preferences_text'		 => lang('preferences'),
-			'home_url'				 => phpgw::link('/home.php'),
+			'home_url'				 => phpgw::link('/home/'),
 			'home_text'				 => lang('home'),
 			'home_icon'				 => 'icon icon-home',
 			'about_url'				 => phpgw::link('/about.php', array('app' => $this->flags['currentapp'])),

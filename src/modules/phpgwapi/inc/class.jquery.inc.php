@@ -257,12 +257,20 @@ class phpgwapi_jquery
 					//				"js/{$_jquery_core}{$_type}",
 					'bootstrap-multiselect' => array("js/bootstrap-multiselect.min")
 				);
-
-				if ($userSettings['preferences']['common']['template_set'] != 'bootstrap')
+				if (! in_array($userSettings['preferences']['common']['template_set'] ,array('bootstrap', 'bookingfrontend', 'mobilefrontend')))
 				{
-					unset($load['bootstrap-multiselect']); //to be inserted last
 					$load['popper']					 = array("popper2.min");
 					$load['bootstrap5']				 = array("vendor/twbs/bootstrap/dist/js/bootstrap.min");
+
+					$load['bootstrap-multiselect']	 = array("js/bootstrap-multiselect.min");
+
+					phpgwapi_css::getInstance()->add_external_file("phpgwapi/js/bootstrap5/vendor/twbs/bootstrap/dist/css/bootstrap.min.css");
+				}
+				else
+				{
+					unset($load['bootstrap-multiselect']); //to be inserted last
+		//			$load['popper']					 = array("popper2.min");
+		//			$load['bootstrap5']				 = array("vendor/twbs/bootstrap/dist/js/bootstrap.min");
 
 					$load['bootstrap-multiselect']	 = array("js/bootstrap-multiselect.min");
 

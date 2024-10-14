@@ -5,7 +5,6 @@
 	 */
 
 use App\Database\Db;
-use App\modules\phpgwapi\services\Settings;
 use App\modules\phpgwapi\controllers\Locations;
 
 class entity_data_sync extends property_boentity
@@ -22,10 +21,9 @@ class entity_data_sync extends property_boentity
 	{
 		parent::__construct();
 		$this->db		 = Db::getInstance();
-		$userSettings = Settings::getInstance()->get('user');
 		$this->location_obj = new Locations();
 
-		$this->account	 = $userSettings['account_id'];
+		$this->account	 = (int)$this->userSettings['account_id'];
 
 		if ($this->acl_location != '.entity.2.17')
 		{

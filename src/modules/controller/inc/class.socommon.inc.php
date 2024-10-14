@@ -30,6 +30,7 @@
  */
 
 use App\Database\Db;
+use App\Database\Db2;
 use App\modules\phpgwapi\services\Settings;
 
 abstract class controller_socommon
@@ -45,7 +46,7 @@ abstract class controller_socommon
 	public function __construct()
 	{
 
-		$this->db = Db::getInstance();
+		$this->db = clone (Db::getInstance());
 
 		$this->like = &$this->db->like;
 		$this->join = &$this->db->join;
@@ -273,7 +274,7 @@ abstract class controller_socommon
 		}
 
 		// test-input for break on ordered queries
-		$db2 = clone ($this->db);
+		$db2 = new Db2();
 
 		$sql = $this->get_query($sort_field, $ascending, $search_for, $search_type, $filters, false);
 

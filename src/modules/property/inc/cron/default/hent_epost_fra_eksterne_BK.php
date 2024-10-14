@@ -33,7 +33,6 @@
  * @package property
  */
 include_class('property', 'cron_parent', 'inc/cron/');
-//require_once PHPGW_SERVER_ROOT . '/phpgwapi/inc/ews/vendor/autoload.php';
 
 use App\Database\Db2;
 use App\modules\phpgwapi\services\Settings;

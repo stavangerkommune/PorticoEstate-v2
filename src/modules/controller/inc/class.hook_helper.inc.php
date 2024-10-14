@@ -715,7 +715,7 @@ JS;
 		$styling .= "\n" . '<!-- END checklist info -->' . "\n";
 		echo $styling;
 
-		//Loaded from home.php
+		//Loaded from home/
 
 		$script	 = "<script>";
 		$script	 .= "$(document).ready(function(){";

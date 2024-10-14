@@ -106,7 +106,6 @@ class EBF_ticket_smartsheet_integration extends property_botts
 
 		$hyperlink = str_replace(array("http:", "&amp;"), array("https:", "&"), phpgw::link('/index.php', $link_data, false, true));
 
-//		require_once PHPGW_API_INC . '/smartsheet/vendor/autoload.php';
 
 		$config			 = array('token' => $access_token);
 

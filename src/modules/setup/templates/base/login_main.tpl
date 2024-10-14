@@ -10,7 +10,7 @@
 <tr class="row_off">
 	<td colspan="2" class="feedback">{HeaderLoginMSG}</td>
 </tr>
-<form action="../setup/manageheader" method="POST" name="admin">
+<form action="setup/manageheader" method="POST" name="admin">
 <tr class="row_off">
 	<td>
 		Password:
@@ -37,12 +37,10 @@
 	<td colspan="2">&nbsp;<b>Other Options</b></td>
 </tr>
 <tr class="row_on">
-	<td colspan="2"><a href="../">Return to Portico Estate</a></td>
+	<td colspan="2"><a href="login_ui">Return to Portico Estate</a></td>
 </tr>
 <tr class="row_on">
 	<td colspan="2">&nbsp;</td>
 </tr>
 </table>
 <!-- end login_main.tpl -->
-
-

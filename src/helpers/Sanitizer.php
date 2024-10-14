@@ -1,5 +1,7 @@
 <?php
 
+use App\modules\phpgwapi\services\Log;
+
 class Sanitizer
 {
 
@@ -241,9 +243,10 @@ class Sanitizer
 			if ($_POST) //$_POST: it "could" be a valid userinput...
 			{
 				/*
-						* Log entry - just in case..
-						*/
-				$GLOBALS['phpgw']->log->error(array(
+				* Log entry - just in case..
+				*/
+				$log = new Log();
+				$log->error(array(
 					'text'	=> 'Possible SQL-injection spottet from IP: %1. Error: %2',
 					'p1'	=> $ip_address,
 					'p2'	=> 'input value ending with apos',

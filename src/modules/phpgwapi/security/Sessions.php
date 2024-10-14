@@ -368,7 +368,7 @@ class Sessions
 		}
 		else
 		{
-			$action = $_SERVER['REDIRECT_URL'];
+			$action = $_SERVER['REQUEST_URI'];
 		}
 
 		$_SESSION['phpgw_session']['session_dla'] = time();

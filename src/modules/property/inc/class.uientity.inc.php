@@ -3702,7 +3702,7 @@ JS;
 
 		$data = array(
 			'form_action'				 => self::link(array('menuaction' => "{$this->type_app[$this->type]}.uientity.summary", 'entity_id' => $this->entity_id)),
-			'cancel_url'				 => phpgw::link('/home.php'),
+			'cancel_url'				 => phpgw::link('/home/'),
 			'value_type'				 => $this->type,
 			'value_entity_id'			 => $this->entity_id,
 			'vendor_data'				 => $vendor_data,

@@ -869,7 +869,7 @@
 					}
 					$children[] = array
 						(
-						'link'	 => phpgw::link('/home.php'),
+						'link'	 => phpgw::link('/home/'),
 						'text'	 => $file->getFilename(),
 						'is_dir' => $file->isDir(),
 						'path'	 => $file->getPathname(),
@@ -924,7 +924,7 @@
 					}
 					$file_list[] = array
 						(
-						'link'	 => phpgw::link('/home.php'),
+						'link'	 => phpgw::link('/home/'),
 						'text'	 => $file->getFilename(),
 						'is_dir' => $file->isDir(),
 						'path'	 => $file->getPathname(),

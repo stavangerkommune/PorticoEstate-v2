@@ -41,7 +41,7 @@ function parse_navbar($force = False)
 		$extra_vars[$name] = Sanitizer::clean_value($value);
 	}
 
-	$print_url = "{$_SERVER['REDIRECT_URL']}?" . http_build_query(array_merge($extra_vars, array('phpgw_return_as' => 'noframes')));
+	$print_url = "?" . http_build_query(array_merge($extra_vars, array('phpgw_return_as' => 'noframes')));
 	$user_fullname	= $user->__toString();
 	$print_text		= lang('print');
 	$home_url		= phpgw::link('/home/');
@@ -144,7 +144,7 @@ HTML;
 	// breadcrumbs
 	$current_url = array(
 		'id'	=> $flags['menu_selection'],
-		'url'	=> 	"{$_SERVER['REDIRECT_URL']}?" . http_build_query($extra_vars),
+		'url'	=> 	"?" . http_build_query($extra_vars),
 		'name'	=> $var['current_app_title']
 	);
 	$breadcrumbs = Cache::session_get('phpgwapi', 'breadcrumbs');

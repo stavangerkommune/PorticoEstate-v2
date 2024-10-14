@@ -31,6 +31,7 @@ class HomeHelper
 		$flags['currentapp']           = 'home';
 		$flags['template_set']           = 'mobilefrontend';
 		$flags['custom_frontend']           = 'mobilefrontend';
+		$flags['menu_selection']             = 'home';
 
 		Settings::getInstance()->set('flags', $flags);
 		require_once SRC_ROOT_PATH . '/helpers/LegacyObjectHandler.php';

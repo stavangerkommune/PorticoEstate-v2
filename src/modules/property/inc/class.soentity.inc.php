@@ -1193,7 +1193,7 @@ use App\modules\phpgwapi\services\Cache;
 			}
 			$sql	 = str_replace($acl_group_join, '', $sql);
 			$sql_arr = explode('WHERE', $sql);
-			$this->db->query("{$sql_arr[0]} WHERE fm_bim_item.id IN (" . implode(', ', $ids) . ") AND fm_bim_item.type IN ({$types[0]})" . $ordermethod, __LINE__, __FILE__);
+			$this->db->query("{$sql_arr[0]} WHERE fm_bim_item.id IN (" . implode(', ', $ids) . ") AND fm_bim_item.type IN ({$types[0]}) {$group_method} " . $ordermethod, __LINE__, __FILE__);
 
 			$j = 0;
 

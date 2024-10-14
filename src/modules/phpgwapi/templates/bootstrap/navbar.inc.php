@@ -42,7 +42,7 @@ function parse_navbar($force = False)
 		$extra_vars[$name] = Sanitizer::clean_value($value);
 	}
 
-	$print_url = "{$_SERVER['REDIRECT_URL']}?" . http_build_query(array_merge($extra_vars, array('phpgw_return_as' => 'noframes')));
+	$print_url = "?" . http_build_query(array_merge($extra_vars, array('phpgw_return_as' => 'noframes')));
 	$user_fullname	= $user->__toString();
 	$print_text		= lang('print');
 	$home_url		= phpgw::link('/home/');
@@ -87,7 +87,7 @@ HTML;
 	// breadcrumbs
 	$current_url = array(
 		'id'	=> $breadcrumb_selection,
-		'url'	=> 	"{$_SERVER['REDIRECT_URL']}?" . http_build_query($extra_vars),
+		'url'	=> 	"?" . http_build_query($extra_vars),
 		'name'	=> $var['current_app_title']
 	);
 	$breadcrumbs = Cache::session_get('phpgwapi', 'breadcrumbs');
@@ -172,8 +172,17 @@ HTML;
 		$history_url = array();
 		for ($i = 0; $i < (count($breadcrumbs) - 1); $i++)
 		{
+			if (preg_match('/\/home\//', $_SERVER['REDIRECT_URL']))
+			{
+				$history_url = str_replace('?', '../?', $breadcrumbs[$i]['url']);
+			}
+			else
+			{
+				$history_url = $breadcrumbs[$i]['url'];
+			}
+
 			$breadcrumb_html .= <<<HTML
-					<li class="breadcrumb-item"><a href="{$breadcrumbs[$i]['url']}">{$breadcrumbs[$i]['name']}</a></li>
+					<li class="breadcrumb-item"><a href="{$history_url}">{$breadcrumbs[$i]['name']}</a></li>
 HTML;
 		}
 

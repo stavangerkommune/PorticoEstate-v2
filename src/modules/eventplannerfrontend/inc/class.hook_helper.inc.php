@@ -200,8 +200,8 @@ HTML;
 			}
 			else
 			{
-				$action = phpgw::link('/eventplannerfrontend/home.php');
-				$base = 'eventplannerfrontend/home.php';
+				$action = phpgw::link('/eventplannerfrontend/home/');
+				$base = 'eventplannerfrontend/home/';
 				$oArgs = '{}';
 			}
 

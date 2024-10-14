@@ -44,6 +44,8 @@ $app->get('/swagger[/{params:.*}]', function (Request $request, Response $respon
 });
 
 
+$app->get('/login.php', LoginHelper::class . ':processLogin');
+$app->post('/login.php', LoginHelper::class . ':processLogin');
 $app->get('/login_ui[/{params:.*}]', LoginHelper::class . ':processLogin');
 $app->post('/login_ui[/{params:.*}]', LoginHelper::class . ':processLogin');
 

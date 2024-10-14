@@ -35,7 +35,7 @@ docker compose up -d
 First-time: Execute the following command to install dependencies inside the `portico_api` container:
 
 ```bash
-docker exec -it portico_api composer install
+docker exec -it -w /var/www/html portico_api composer update
 ```
 
 6. **Access the API**

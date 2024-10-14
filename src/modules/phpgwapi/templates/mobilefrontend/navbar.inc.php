@@ -332,10 +332,10 @@ HTML;
 	$flags['menu_selection'] = isset($flags['menu_selection']) ? $flags['menu_selection'] : '';
 	$breadcrumb_selection = !empty($flags['breadcrumb_selection']) ? $flags['breadcrumb_selection'] : $flags['menu_selection'];
 	// breadcrumbs
-//_debug_array($_SERVER['REDIRECT_URL']);
+
 	$current_url = array(
 		'id'	=> $breadcrumb_selection,
-		'url'	=> 	"{$_SERVER['REDIRECT_URL']}?" . http_build_query($extra_vars),
+		'url' => '?' . http_build_query($extra_vars),
 		'name'	=> $var['current_app_title']
 	);
 	$breadcrumbs = Cache::session_get('phpgwapi', 'breadcrumbs');
@@ -419,8 +419,17 @@ HTML;
 		$history_url = array();
 		for ($i = 0; $i < (count($breadcrumbs) - 1); $i++)
 		{
+			if (preg_match('/\/home\//', $_SERVER['REDIRECT_URL']))
+			{
+				$history_url = str_replace('?', '../?', $breadcrumbs[$i]['url']);
+			}
+			else
+			{
+				$history_url = $breadcrumbs[$i]['url'];
+			}
+
 			$breadcrumb_html .= <<<HTML
-					<li class="breadcrumb-item"><a href="{$breadcrumbs[$i]['url']}">{$breadcrumbs[$i]['name']}</a></li>
+					<li class="breadcrumb-item"><a href="{$history_url}">{$breadcrumbs[$i]['name']}</a></li>
 HTML;
 		}
 

@@ -137,8 +137,6 @@ class Log
 			$parms['severity'] = $level;
 			$err = new LogMessage($parms);
 			$this->write_error_to_db($err);
-			$this->handle_fatal_error($err);              // this is here instead of in fatal() because I still support
-			// the old methods.
 			return true;
 		}
 		else
@@ -266,60 +264,6 @@ class Log
 
 		$stmt = $db->prepare($sql);
 		$stmt->execute($values);
-	}
-
-	// I pulled this from the old code, where it's used to display a fatal error and determinate processing..
-	// Do I still want to do this?  If so, do I want to translate the error message like it used to?
-	//
-	function handle_fatal_error($err)
-	{
-		$user = Settings::getInstance()->get('user');
-
-		if ($err->severity == 'F')
-		{
-			$trace = '<p>' . lang('Please report this incident to your system administrator') . "</p>\n";
-			$msg = $err->msg;
-			if (strpos($err->msg, "\n"))
-			{
-				$msg_array = explode("\n", $err->msg);
-				$msg = $msg_array[0];
-				unset($msg_array[0]);
-				if (isset($user['apps']['admin']))
-				{
-					$trace = '<h2>' . lang('back trace') . "</h2>\n"
-						. '<p>' . lang(
-							'Please include the following output when you report this incident on our bug tracker - %1',
-							'<a href="https://github.com/PorticoEstate/PorticoEstate/issues" target="_blank">https://github.com/PorticoEstate/PorticoEstate/issues</a>'
-						) . "</p>\n"
-						. '<pre>' . implode("\n", $msg_array) . '</pre>';
-				}
-			}
-
-
-			$message = '<h1>' . lang('Fatal Error') . "</h1>\n";
-			if (ini_get('display_errors'))
-			{
-				$message .= "<h2>{$msg}</h2>\n"
-					. '<p>' . lang('file') . ': ' . $err->fname . "<br>\n"
-					. lang('line') . ': ' . $err->line . "</p>\n"
-					. $trace;
-			}
-
-			if (\Sanitizer::get_var('phpgw_return_as') == 'json')
-			{
-				echo json_encode($message);
-				$call_footer = false;
-			}
-			else
-			{
-				echo $message;
-				$call_footer = false;
-			}
-			//		\App\modules\phpgwapi\services\Cache::message_set($message, 'error');
-	//		$phpgwapi_common = new \phpgwapi_common();
-	//		$phpgwapi_common->phpgw_exit($call_footer);
-
-		}
 	}
 
 
