@@ -63,8 +63,11 @@ const CalendarInnerHeader: FC<CalendarInnerHeaderProps> = (props) => {
                                 calendarApi.prev();
                             }
                         }}
-                        aria-label='Tertiary med ikon'>
-                    <ChevronLeftIcon fontSize='2.25rem'/>
+                >
+                    <ChevronLeftIcon style={{
+                        height: '100%',
+                        width: '100%'
+                    }}/>
                 </Button>
                 <CalendarDatePicker currentDate={currentDate} view={c.getApi().view.type}
                                     onDateChange={(v) => v && calendarApi.gotoDate(v)}/>
@@ -74,8 +77,11 @@ const CalendarInnerHeader: FC<CalendarInnerHeaderProps> = (props) => {
                                 calendarApi.next();
                             }
                         }}
-                        aria-label='Tertiary med ikon'>
-                    <ChevronRightIcon fontSize='2.25rem'/>
+                >
+                    <ChevronRightIcon style={{
+                        height: '100%',
+                        width: '100%'
+                    }}/>
                 </Button>
             </div>
 
