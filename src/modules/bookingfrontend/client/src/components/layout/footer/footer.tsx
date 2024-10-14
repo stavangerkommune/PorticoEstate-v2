@@ -3,7 +3,6 @@ import {fetchServerSettings} from "@/service/api/api-utils";
 import {getTranslation} from "@/app/i18n";
 import Link from "next/link";
 import FooterUser from "@/components/layout/footer/footer-user";
-import {ILanguage} from "@/app/i18n/settings";
 
 interface FooterProps {
     lang: string
@@ -12,6 +11,10 @@ interface FooterProps {
 const Footer = async (props: FooterProps) => {
     const {t} = await getTranslation(props.lang)
     const serverSettings = await fetchServerSettings();
+
+
+    const supportAddress = serverSettings.booking_config?.support_address || serverSettings.support_address;
+
     return (
         <footer className={styles.footerContainer}>
             <div className={styles.footerLogoContainer}>
@@ -28,14 +31,9 @@ const Footer = async (props: FooterProps) => {
                 </h3>
                 <ul className={'list-unstyled text-small'}>
                     <li>
-                        <span>TODO: Fix denne eposten:</span>
-                        <span>{'$config_backend\t = CreateObject(\'phpgwapi.config\', \'booking\')->read();'}</span>
-
-                    </li>
-                    <li>
-                        <Link href={`mailto:${serverSettings.support_address}`} target="_blank"
+                        <Link href={`mailto:${supportAddress}`} target="_blank"
                               rel="noopener noreferrer"  className="link-text link-text-secondary normal">
-                            {serverSettings.support_address}
+                            {supportAddress}
                         </Link>
                     </li>
                     <li>

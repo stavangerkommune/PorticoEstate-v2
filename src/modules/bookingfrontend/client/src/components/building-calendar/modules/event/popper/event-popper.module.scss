@@ -7,7 +7,7 @@
     background-color: $grey-24;
     flex-grow: 1;
 
-    @include desktop {
+    @include tablet {
         max-width: 300px;
         border-radius: 4px;
         padding-bottom: 1.5rem;
