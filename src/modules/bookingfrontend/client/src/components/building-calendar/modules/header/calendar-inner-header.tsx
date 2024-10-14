@@ -108,7 +108,7 @@ const CalendarInnerHeader: FC<CalendarInnerHeaderProps> = (props) => {
                 }}><FontAwesomeIcon icon={faTableList}/> <span
                     className={styles.modeTitle}>{t('bookingfrontend.list_view')}</span></Button>
             </ButtonGroup>
-            <Button variant={'primary'} size={'sm'} onClick={() => {
+            <Button variant={'primary'} size={'sm'} className={styles.orderButton} onClick={() => {
                 props.setView('listWeek')
             }}>
                 {t('bookingfrontend.to application site')}

@@ -14,8 +14,7 @@
 
     @include mobile {
         grid-template-columns:auto 1fr;
-        grid-template-rows: auto auto;
-        grid-template-areas: "mode-select resource-button" "date date";
+        grid-template-areas: "mode-select resource-button" "date date" "order order";
         //display: none;
     }
     @include tablet {
@@ -24,10 +23,15 @@
         grid-template-areas: "mode-select resource-button" "resource-button date";
         //display: none;
     }
-
+    .orderButton {
+        grid-area: order;
+    }
     .datePicker {
         grid-area: date;
         width: min-content;
+        @include mobile {
+            width: unset;
+        }
     }
 
 
@@ -99,6 +103,8 @@
         border-bottom: 0;
 
     }
+
+
     //&.open {
     //    margin-left: -0.875rem;
     //}

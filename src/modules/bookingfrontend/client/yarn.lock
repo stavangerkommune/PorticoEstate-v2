@@ -93,28 +93,28 @@
     "@babel/helper-validator-identifier" "^7.24.7"
     to-fast-properties "^2.0.0"
 
-"@digdir/designsystemet-css@1.0.0-next.34":
-  version "1.0.0-next.34"
-  resolved "https://registry.yarnpkg.com/@digdir/designsystemet-css/-/designsystemet-css-1.0.0-next.34.tgz#477c51b7cf9adbf2d4c44a9aba0cf3a5010cbc2d"
-  integrity sha512-uVtXfJBkCMCalf1XgOL85UZrb7eAWSDDFnMdw2BJ+lnFzydMfP7/mgMyORy90tKCQpA6tU6n9gucih5HKxKgag==
+"@digdir/designsystemet-css@1.0.0-next.35":
+  version "1.0.0-next.35"
+  resolved "https://registry.yarnpkg.com/@digdir/designsystemet-css/-/designsystemet-css-1.0.0-next.35.tgz#2f406742e364edb2a4f793b02df7db829e78ce9e"
+  integrity sha512-bPnT4dU8GO0/1vz3J3Id3k3bhQ9HRynVrUjJ5U0mqeY5c6jjlHWN+e8TSbf34+MPcYFqrkIKiBTyG76y1+LkJA==
 
-"@digdir/designsystemet-react@1.0.0-next.34":
-  version "1.0.0-next.34"
-  resolved "https://registry.yarnpkg.com/@digdir/designsystemet-react/-/designsystemet-react-1.0.0-next.34.tgz#bf7a8113685ffda1f2f7ecd6664d89eeabecc22b"
-  integrity sha512-GdX5odE/dX5MynskXYPqWGwXAYS3+8xGJzl4X+ssWBA4roFtF32QBHQpxfdy1XrIBrB108bZ14NR3rJSzesubw==
+"@digdir/designsystemet-react@1.0.0-next.35":
+  version "1.0.0-next.35"
+  resolved "https://registry.yarnpkg.com/@digdir/designsystemet-react/-/designsystemet-react-1.0.0-next.35.tgz#9b94e67f8a34df98e6c3c5de28fddc17c896df0d"
+  integrity sha512-+YUed5ulTrJPHRu79SZiwlT+vJBDdvJMuOxELcfwq+kVIEkWoinD4C5oQFXvJYMWG3u+SvWyKssARGiCJObzww==
   dependencies:
     "@floating-ui/dom" "^1.6.10"
     "@floating-ui/react" "0.26.23"
     "@navikt/aksel-icons" "^6.14.0"
     "@radix-ui/react-slot" "^1.1.0"
     "@tanstack/react-virtual" "^3.10.7"
-    "@u-elements/u-details" "^0.0.5"
+    "@u-elements/u-details" "^0.1.0"
     clsx "^2.1.1"
 
-"@digdir/designsystemet-theme@1.0.0-next.34":
-  version "1.0.0-next.34"
-  resolved "https://registry.yarnpkg.com/@digdir/designsystemet-theme/-/designsystemet-theme-1.0.0-next.34.tgz#a7a1ade890313a2c87e2dbf12441a716a4c8e900"
-  integrity sha512-vsFUrOkjSneNHOyq/FoPBMTFfFUCrgm/MYqt+IsUrkp/ogJPZ/6womgI61zMjl1hInTLjt52tpp1v6YN9gDFrg==
+"@digdir/designsystemet-theme@1.0.0-next.35":
+  version "1.0.0-next.35"
+  resolved "https://registry.yarnpkg.com/@digdir/designsystemet-theme/-/designsystemet-theme-1.0.0-next.35.tgz#41a3c75a2643288b59eea37c18cc2df310fef13c"
+  integrity sha512-U34JIHYEmBjQ204XqMb9bM2zbCBcshed1B/cyZsGiHFtOEaFQ+D8RMmIUkBGfv9JIf5njqxdW5GdY2LN/nNYRQ==
 
 "@emotion/babel-plugin@^11.12.0":
   version "11.12.0"
@@ -694,10 +694,10 @@
     "@typescript-eslint/types" "7.2.0"
     eslint-visitor-keys "^3.4.1"
 
-"@u-elements/u-details@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@u-elements/u-details/-/u-details-0.0.5.tgz#d6b00d85745f7259966d168652db9ec0c492e8d0"
-  integrity sha512-XyvTGVG4DDd+YsZAET3ATufO/MJmVA0Ldt6/r17i1ESGi4hZY4/LDkgpp02LPeLwzrT8il21IcRMddUhCw9F9w==
+"@u-elements/u-details@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@u-elements/u-details/-/u-details-0.1.0.tgz#2c5997288eafc9d6a0af0661b41b0f9b0724aa5f"
+  integrity sha512-PAyTwXXsKj7SOI5U+iqSFrnOcMbOkw9aR6egTVlj4CgTZ+apxhS/RE5MW7t3LDXJp+ecVQA21u+XVyEGyuMW6Q==
 
 "@ungap/structured-clone@^1.2.0":
   version "1.2.0"

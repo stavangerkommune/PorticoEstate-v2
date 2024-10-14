@@ -17,6 +17,8 @@ const Footer = async (props: FooterProps) => {
 
     return (
         <footer className={styles.footerContainer}>
+            <div className={styles.footerContent}>
+
             <div className={styles.footerLogoContainer}>
                 {/*  LOGO */}
                 <img
@@ -76,6 +78,7 @@ const Footer = async (props: FooterProps) => {
                 </h3>
                 <FooterUser />
 
+            </div>
             </div>
         </footer>
     );

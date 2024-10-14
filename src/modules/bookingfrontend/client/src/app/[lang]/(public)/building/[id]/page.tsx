@@ -1,5 +1,5 @@
 import BuildingCalendar from "@/components/building-calendar";
-import {fetchBuilding, useBuilding} from "@/service/api/building";
+import {fetchBuilding} from "@/service/api/building";
 import {notFound} from "next/navigation";
 import BuildingHeader from "@/components/building-page/building-header";
 import BuildingDescription from "@/components/building-page/building-description";
