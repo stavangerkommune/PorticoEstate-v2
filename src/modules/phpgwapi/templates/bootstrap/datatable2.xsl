@@ -450,7 +450,7 @@
 </xsl:template>
 
 <xsl:template name="datasource-definition">
-	<table id="datatable-container" class="cell-border table-sm" style="width:100%">
+	<table id="datatable-container" class="table table-striped" style="width:100%">
 		<thead>
 			<tr>
 				<xsl:for-each select="//datatable/field">
@@ -863,8 +863,8 @@
 									var n = 0;
 									for (; n &lt; numSelected; ) {
 									//				console.log(selected[n]);
-									var aData = oTable.fnGetData( selected[n] ); //complete dataset from json returned from server
-									//				console.log(aData);
+									var aData = oTable.api().rows(selected[n]).data(); //complete dataset from json returned from server
+									//console.log(aData);
 
 									//delete stuff comes here
 									var action = "<xsl:value-of select="action"/>";
@@ -876,7 +876,7 @@
 										var i = 0;
 										len = parameters.parameter.length;
 										for (; i &lt; len; ) {
-										action += '&amp;' + parameters.parameter[i]['name'] + '=' + aData[parameters.parameter[i]['source']];
+										action += '&amp;' + parameters.parameter[i]['name'] + '=' + aData[0][parameters.parameter[i]['source']];
 										i++;
 										}
 									</xsl:if>
@@ -887,7 +887,9 @@
 									action += "&amp;confirm=yes&amp;phpgw_return_as=json";
 									execute_ajax(action, function(result){
 									document.getElementById("message").innerHTML += '<br/>' + result;
-									oTable.fnDraw();
+									
+									oTable.api().draw();
+
 									});
 									}
 									else if (target == 'ajax')
@@ -895,7 +897,7 @@
 									action += "&amp;phpgw_return_as=json";
 									execute_ajax(action, function(result){
 									document.getElementById("message").innerHTML += '<br/>' + result;
-									oTable.fnDraw();
+									oTable.api().draw();
 									});
 									}
 									else
@@ -1010,16 +1012,6 @@
 				}
 			}
 
-			if(JqueryPortico.buttons)
-			{
-//					var sDom_def = 'lCT<"clear">f<"top"ip>rt<"bottom"><"clear">';
-					var sDom_def = 'lB<"clear">f<"top"ip>rt<"bottom"><"clear">';
-					var sDom_def = 'Bfrtlip';
-			}
-			else
-			{
-				var sDom_def = '<"clear">lfrtip';
-			}
 			init_multiselect = function(oControl)
 			{
 				try
@@ -1132,16 +1124,102 @@
 			init_table = function()
 			{
 				oTable = $('#datatable-container').dataTable({
+	//			oTable = new DataTable(#datatable-container', {
+
 				paginate:		disablePagination ? false : true,
-				pagingType:		"input",
+//				pagingType:		"input",
 				processing:		true,
 				serverSide:		true,
 				responsive:		responsive,
 				select: select,
 				deferRender:	true,
+				layout: {
+							topStart: 'buttons',
+							topEnd: 'search',
+							bottomStart: 'pageLength',
+							bottomEnd: 'paging'
+					},
 				ajax:{
 					url: ajax_url,
-					data:{},
+					data:function ( aoData ) {
+						var _columns = aoData.columns;
+						delete aoData.columns;
+						aoData.columns = {};
+
+						if(typeof(aoData.order[0]) != 'undefined')
+						{
+							var column = aoData.order[0].column;
+							var dir = aoData.order[0].dir;
+							var column_to_keep = _columns[column];
+
+							if(JqueryPortico.columns[column]['orderable'] == true)
+							{
+								aoData.columns[column] = column_to_keep;
+							}
+						}
+						
+						for ( var i=0 ; i< _columns.length ; i++ )
+						{
+						if(_columns[i].searchable && _columns[i].search.value !=="")
+						{
+							aoData.columns[i] = _columns[i];
+						}
+						}
+
+						active_filters_html = [];
+						var select = null;
+						for (var i in filter_selects)
+						{
+							select = $("#" + filter_selects[i]);
+							var select_name = select.prop("name");
+							var select_value = select.val();
+							aoData[select_name] = select_value;
+						}
+
+						oControls.each(function()
+						{
+							oControl = $(this);
+							var test = $(this).val();
+						//	console.log(test.constructor);
+							if ( $(this).attr('name') && test != null && test.constructor !== Array)
+							{
+								value = $(this).val().replace('"', '"');
+								aoData[ $(this).attr('name') ] = value;
+								if(value && value !=0 )
+								{
+									active_filters_html.push($(this).attr('title'));
+								}
+							}
+							if ( $(this).attr('name') && test != null && test.constructor === Array)
+							{
+								value = $(this).val();
+								aoData[ $(this).attr('name') ] = value;
+
+								if(value.length > 0 )
+								{
+									active_filters_html.push($(this).attr('title'));
+								}
+								init_multiselect(oControl);
+							}
+
+						});
+
+						if(active_filters_html.length > 0 )
+						{
+							$('#active_filters').html("Aktive filter: " + active_filters_html.join(', '));
+						}
+						var search_value = $('.dataTables_filter input[aria-controls="datatable-container"]').val();
+
+						if(active_filters_html.length > 0 || search_value || column_search_is_initated)
+						{
+							$('#reset_filter').show();
+						}
+						else
+						{
+							$('#reset_filter').hide();
+						}
+
+					},
 					dataSrc: function ( json ) {
 						if (typeof(json.sessionExpired) != 'undefined' && json.sessionExpired == true)
 						{
@@ -1251,85 +1329,6 @@
 					}
 					return true;
 				},
-				fnServerParams: function ( aoData ) {
-					var _columns = aoData.columns;
-					delete aoData.columns;
-					aoData.columns = {};
-
-					if(typeof(aoData.order[0]) != 'undefined')
-					{
-						var column = aoData.order[0].column;
-						var dir = aoData.order[0].dir;
-						var column_to_keep = _columns[column];
-
-						if(JqueryPortico.columns[column]['orderable'] == true)
-						{
-							aoData.columns[column] = column_to_keep;
-						}
-					}
-					
-					for ( var i=0 ; i < _columns.length ; i++ )
-					{
-					   if(_columns[i].searchable && _columns[i].search.value !=="")
-					   {
-						   aoData.columns[i] = _columns[i];
-					   }
-					}
-
-					active_filters_html = [];
-					var select = null;
-					for (var i in filter_selects)
-					{
-						select = $("#" + filter_selects[i]);
-						var select_name = select.prop("name");
-						var select_value = select.val();
-						aoData[select_name] = select_value;
-					}
-
-					oControls.each(function()
-					{
-						oControl = $(this);
-						var test = $(this).val();
-//						console.log(test.constructor);
-						if ( $(this).attr('name') && test != null && test.constructor !== Array)
-						{
-							value = $(this).val().replace('"', '"');
-							aoData[ $(this).attr('name') ] = value;
-							if(value && value !=0 )
-							{
-								active_filters_html.push($(this).attr('title'));
-							}
-						}
-						if ( $(this).attr('name') && test != null && test.constructor === Array)
-						{
-							value = $(this).val();
-							aoData[ $(this).attr('name') ] = value;
-
-							if(value.length > 0 )
-							{
-								active_filters_html.push($(this).attr('title'));
-							}
-							init_multiselect(oControl);
-						}
-
-					});
-
-					if(active_filters_html.length > 0 )
-					{
-						$('#active_filters').html("Aktive filter: " + active_filters_html.join(', '));
-					}
-					var search_value = $('.dataTables_filter input[aria-controls="datatable-container"]').val();
-
-					if(active_filters_html.length > 0 || search_value || column_search_is_initated)
-					{
-						$('#reset_filter').show();
-					}
-					else
-					{
-						$('#reset_filter').hide();
-					}
-
-				 },
 				fnCreatedRow  : function( nRow, aData, iDataIndex ){
  				},
 				fnRowCallback: function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
@@ -1341,7 +1340,7 @@
 							$('td', nRow).parents('tr').addClass('context-menu');
                 },
 				fnDrawCallback: function () {
-				return;
+			//	return;
 					oTable.makeEditable({
 							sUpdateURL: editor_action,
 							fnOnEditing: function(input){
@@ -1354,10 +1353,10 @@
 
 								console.log(rowIndex);
 							//	console.log(oTable);
-								var aData = oTable.fnGetData( rowIndex );
+								var aData = oTable.api().rows( rowIndex );
 							//	console.log(aData);
 							//	id = input.parents("tr").children("td:first").text();
-								id = aData.id;
+								id = aData[0].id;
 							//	console.log(id);
 								return true;
 							},
@@ -1404,7 +1403,6 @@
 				lengthMenu:		JqueryPortico.i18n.lengthmenu(),
 				language:		JqueryPortico.i18n.datatable(),
 				columns:		JqueryPortico.columns,
-				dom:			sDom_def,
 				stateSave:		true,
 				stateDuration: -1, //sessionstorage
 				tabIndex:		1,
@@ -1505,7 +1503,6 @@
 					reset_filter_is_visible = true;
 				}
 
-//				oTable.fnDraw();
 				oTable.api().responsive.recalc();
 				if(reset_filter_is_visible == true)
 				{
@@ -1676,7 +1673,7 @@
 			function fnGetSelected( )
 			{
 				var aReturn = new Array();
-				 var aTrs = oTable.fnGetNodes();
+				 var aTrs = oTable.api().rows().nodes();
 				 for ( var i=0 ; i < aTrs.length ; i++ )
 				 {
 					if ( $(aTrs[i]).hasClass('context-menu-active'))
@@ -1697,7 +1694,8 @@
 				var table = oTable.DataTable();
 				if(typeof(dt.trigger) != 'undefined' && dt.trigger == 'right')
 				{
-					var aTrs = oTable.fnGetNodes();
+					var aTrs = oTable.api().rows().nodes();
+
 					for ( var i=0 ; i < aTrs.length ; i++ )
 					{
 						if ( $(aTrs[i]).hasClass('selected') )
@@ -1823,7 +1821,7 @@
 		function filterData(param, value)
 		{
 			oTable.dataTableSettings[0]['ajax']['data'][param] = value;
-			oTable.fnDraw();
+			oTable.api().draw();
 		}
 
 		function clearFilterParam(param)

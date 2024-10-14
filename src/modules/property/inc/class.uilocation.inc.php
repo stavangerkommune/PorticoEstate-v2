@@ -1008,8 +1008,8 @@ class property_uilocation extends phpgwapi_uicommon_jquery
 		}
 
 
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
+	//	self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
+	//	self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 		$this->bo->read(array(
 			'type_id'		 => $type_id, 'lookup_tenant'	 => $lookup_tenant,
@@ -1606,8 +1606,8 @@ JS;
 			}
 		}
 
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
+	//	self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
+	//	self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 		self::add_javascript('property', 'base', 'location.responsiblility_role.js');
 
 		$this->bo->get_responsible(array(
@@ -3244,7 +3244,7 @@ JS;
 			return $this->query_summary();
 		}
 
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
+	//	self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 		$appname		 = lang('Summary');
 		$function_msg	 = lang('List') . ' ' . lang($this->role);

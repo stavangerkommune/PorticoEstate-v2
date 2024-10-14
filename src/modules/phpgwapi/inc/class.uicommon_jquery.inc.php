@@ -104,6 +104,9 @@ abstract class phpgwapi_uicommon_jquery
 		{
 			Settings::getInstance()->update('server', ['datatable2' => true]);
 			self::add_javascript('phpgwapi', 'DataTables2', 'datatables.js', false, array('combine' => false));
+			self::add_javascript('phpgwapi', 'DataTables2', 'plugins/input.js', false, array('combine' => false));
+			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js', false, array('combine' => true));
+			self::add_javascript('phpgwapi', 'DataTables2', 'plugins/jquery.dataTables.editable.js', false, array('combine' => true));
 			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/DataTables2/datatables.min.css');
 
 		}
