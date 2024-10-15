@@ -707,8 +707,8 @@
 						oParams.columns = null;
 						oParams.start = null;
 						oParams.draw = null;
+			//			var addtional_filterdata = oTable.dataTableSettings[0]['ajax']['data'];
 						var addtional_filterdata = oTable.dataTableSettings[0]['oAjaxData'];
-
 						for (var attrname in addtional_filterdata)
 						{
 							oParams[attrname] = addtional_filterdata[attrname];
@@ -716,6 +716,7 @@
 						var iframe = document.createElement('iframe');
 						iframe.style.height = "0px";
 						iframe.style.width = "0px";
+						console.log(oParams);
 
 						if(typeof(oParams.order[0]) != 'undefined')
 						{
@@ -945,7 +946,7 @@
 				{
 					group_buttons = true;
 				}
-//				$.fn.dataTable.Buttons.swfPath = "phpgwapi/js/DataTables/extensions/Buttons/swf/flashExport.swf";
+				$.fn.dataTable.Buttons.swfPath = "phpgwapi/js/DataTables/extensions/Buttons/swf/flashExport.swf";
 
 
 				if(isChrome == true)

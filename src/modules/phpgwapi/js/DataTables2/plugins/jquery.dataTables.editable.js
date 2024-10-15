@@ -201,6 +201,8 @@ returns true if plugin should continue with sending AJAX request, false will abo
             if (properties.bDisableEditing)
                 return;
             var oDefaultEditableSettings = {
+				tooltip : 'DoubleClick to edit',
+				placeholder: '...',
                 event: 'dblclick',
 
                 "onsubmit": function (settings, original) {
