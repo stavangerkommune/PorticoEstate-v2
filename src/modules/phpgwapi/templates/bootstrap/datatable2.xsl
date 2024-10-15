@@ -863,7 +863,7 @@
 									var n = 0;
 									for (; n &lt; numSelected; ) {
 									//				console.log(selected[n]);
-									var aData = oTable.api().rows(selected[n]).data(); //complete dataset from json returned from server
+									var aData = oTable.api().rows(selected[n]).data()[0]; //complete dataset from json returned from server
 									//console.log(aData);
 
 									//delete stuff comes here
@@ -876,7 +876,7 @@
 										var i = 0;
 										len = parameters.parameter.length;
 										for (; i &lt; len; ) {
-										action += '&amp;' + parameters.parameter[i]['name'] + '=' + aData[0][parameters.parameter[i]['source']];
+										action += '&amp;' + parameters.parameter[i]['name'] + '=' + aData[parameters.parameter[i]['source']];
 										i++;
 										}
 									</xsl:if>
@@ -1340,7 +1340,6 @@
 							$('td', nRow).parents('tr').addClass('context-menu');
                 },
 				fnDrawCallback: function () {
-			//	return;
 					oTable.makeEditable({
 							sUpdateURL: editor_action,
 							fnOnEditing: function(input){
@@ -1348,15 +1347,12 @@
 
 								//it is a hack...but it works
 								var rowIndex = cell.parents("tr")[0]._DT_RowIndex;
-								/* Does not work correctly for responsive*/
-						//		var rowIndex = cell.parents("tr").index()
 
-								console.log(rowIndex);
+							//	console.log(rowIndex);
 							//	console.log(oTable);
-								var aData = oTable.api().rows( rowIndex );
+								var aData = oTable.api().rows( rowIndex ).data()[0];
 							//	console.log(aData);
-							//	id = input.parents("tr").children("td:first").text();
-								id = aData[0].id;
+								id = aData.id;
 							//	console.log(id);
 								return true;
 							},
@@ -1580,8 +1576,10 @@
 		*/
 		<xsl:if test="//left_click_action != ''">
 			$("#datatable-container").on("click", "tbody tr", function() {
-			var iPos = oTable.fnGetPosition( this );
-			var aData = oTable.fnGetData( iPos ); //complete dataset from json returned from server
+		//	var iPos = oTable.fnGetPosition( this );
+			var iPos =oTable.api().row(this).index();
+		//	var aData = oTable.fnGetData( iPos ); //complete dataset from json returned from server
+			var aData = oTable.api().rows( iPos ).data()[0];
 			try {
 			<xsl:value-of select="//left_click_action"/>
 			}
@@ -1596,8 +1594,10 @@
 		*/
 		<xsl:if test="dbl_click_action != ''">
 			$("#datatable-container").on("dblclick", "tr", function() {
-			var iPos = oTable.fnGetPosition( this );
-			var aData = oTable.fnGetData( iPos ); //complete dataset from json returned from server
+	//		var iPos = oTable.fnGetPosition( this );
+			var iPos =oTable.api().row(this).index();
+		//	var aData = oTable.fnGetData( iPos ); //complete dataset from json returned from server
+			var aData = oTable.api().rows( iPos ).data()[0];
 			try {
 			<xsl:value-of select="dbl_click_action"/>(aData);
 			}
