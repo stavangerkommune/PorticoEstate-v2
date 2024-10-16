@@ -98,7 +98,7 @@ abstract class phpgwapi_uicommon_jquery
 		self::add_javascript('phpgwapi', "jquery", 'common.js', false, array('combine' => true));
 
 		//experimental
-		$datatable2 = false;
+		$datatable2 = true;
 
 		if ($datatable2)
 		{
