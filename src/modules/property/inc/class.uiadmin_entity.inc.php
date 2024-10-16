@@ -156,8 +156,6 @@
 				return $this->query(array('method' => $this->type));
 			}
 
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 			$appname		 = lang('entity');
 			$function_msg	 = lang('list entity type');
@@ -418,8 +416,6 @@
 				return $this->query(array('method' => 'category', 'entity_id' => $entity_id));
 			}
 
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 			$appname		 = lang('Entity:' . $entity['name']);
 			$function_msg	 = lang('list entity type');
@@ -1265,8 +1261,6 @@
 						'cat_id'	 => $cat_id
 				));
 			}
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 			$category	 									 = $this->bo->read_single_category($entity_id, $cat_id);
 			$appname										 = lang('attribute group');
@@ -1477,8 +1471,6 @@
 				);
 			}
 
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 			$appname		 = lang('attribute');
 			$function_msg	 = lang('list entity attribute');
@@ -2127,8 +2119,6 @@
 				);
 			}
 
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 			$appname										 = lang('attribute');
 			$function_msg									 = lang('list entity attribute');
@@ -2701,8 +2691,6 @@
 				);
 			}
 
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 			$appname		 = lang('checklist');
 			$function_msg	 = " ({$category['name']})";
@@ -2910,8 +2898,6 @@
 				);
 			}
 
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 			$appname		 = lang('checklist stage');
 			$function_msg	 = " ({$category['name']} / {$checklist['name']})";

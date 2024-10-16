@@ -128,8 +128,6 @@ use App\modules\phpgwapi\controllers\Accounts\Accounts;
 				return $this->query();
 			}
 
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 			$appname		 = lang('custom');
 			$function_msg	 = lang('list custom');
@@ -533,8 +531,6 @@ use App\modules\phpgwapi\controllers\Accounts\Accounts;
 
 //			$datatable = array();
 
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 			$custom = $this->bo->read_single($custom_id);
 

@@ -450,7 +450,7 @@
 </xsl:template>
 
 <xsl:template name="datasource-definition">
-	<table id="datatable-container" class="table table-striped" style="width:100%">
+	<table id="datatable-container" class="cell-border compact stripe" style="width:100%">
 		<thead>
 			<tr>
 				<xsl:for-each select="//datatable/field">
@@ -1085,30 +1085,6 @@
 				menuaction += '_type_' + table_url.searchObject.type;
 			}
 
-			//https://datatables.net/forums/discussion/33028/searchdelay-for-server-side-issue
-			$.fn.dataTable.Debounce = function ( table, options ) {
-
-				var tableId = table.api().settings()[0].sTableId;
-				$('.dataTables_filter input[aria-controls="' + tableId + '"]') // select the correct input field
-					.unbind() // Unbind previous default bindings
-					.bind('input', (delay(function (e) { // Bind our desired behavior
-						table.api().search($(this).val()).draw();
-						return;
-					}, 1200))); // Set delay in milliseconds
-			}
-
-			function delay(callback, ms) {
-
-				var timer = 0;
-				return function () {
-					var context = this, args = arguments;
-					clearTimeout(timer);
-					timer = setTimeout(function () {
-						callback.apply(context, args);
-					}, ms || 0);
-				};
-			}
-
 			var select = false;
 
 			if(select_all)
@@ -1120,6 +1096,28 @@
 				select = true;
 			}
 
+			if(button_def.length > 8)
+			{
+				var layout = {
+							top2Start: 'buttons',
+							topStart: null,
+							topEnd: 'search',
+							bottomStart: ['pageLength'],
+							bottomEnd: ['paging'],
+							bottom2Start: 'info'
+					}
+			}
+			else
+			{
+				var layout = {
+							topStart: 'buttons',
+							topEnd: 'search',
+							bottomStart: ['pageLength'],
+							bottomEnd: ['paging'],
+							bottom2Start: 'info'
+					}
+			}
+
 			init_table = function()
 			{
 				oTable = $('#datatable-container').dataTable({
@@ -1127,17 +1125,13 @@
 
 				paginate:		disablePagination ? false : true,
 //				pagingType:		"input",
+				searchDelay: 	1200,
 				processing:		true,
 				serverSide:		true,
 				responsive:		responsive,
 				select: select,
 				deferRender:	true,
-				layout: {
-							topStart: 'buttons',
-							topEnd: 'search',
-							bottomStart: 'pageLength',
-							bottomEnd: 'paging'
-					},
+				layout: layout,
 				ajax:{
 					url: ajax_url,
 					data:function ( aoData ) {
@@ -1382,8 +1376,8 @@
 				},//alternative
 				fnInitComplete: function (oSettings, json)
 				{
-				//	$(".btn-group").addClass('w-100');
-				//	$(".dropdown-menu").addClass('w-100');
+					$(".btn-group").addClass('w-100');
+					$(".dropdown-menu").addClass('w-100');
 					$(".multiselect ").addClass('form-control');
 					$(".multiselect").removeClass('btn');
 					$(".multiselect").removeClass('btn-default');
@@ -1393,7 +1387,6 @@
 						initCompleteDatatable(oSettings, json, oTable);
 					}
 
-					var debounce = new $.fn.dataTable.Debounce(oTable);
 				},
 				lengthMenu:		JqueryPortico.i18n.lengthmenu(),
 				language:		JqueryPortico.i18n.datatable(),

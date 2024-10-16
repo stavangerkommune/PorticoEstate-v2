@@ -124,8 +124,6 @@
 				);
 			}
 
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 			$appname		 = lang('entity');
 			$function_msg	 = lang('list entity type');
@@ -606,8 +604,6 @@
 				));
 			}
 
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 			$appname		 = lang('attribute');
 			$function_msg	 = lang('list entity attribute group');
@@ -903,8 +899,6 @@
 				));
 			}
 
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 			$appname		 = lang('attribute');
 			$function_msg	 = lang('list entity attribute');
