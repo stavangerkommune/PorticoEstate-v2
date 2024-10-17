@@ -804,8 +804,6 @@ class property_uiworkorder extends phpgwapi_uicommon_jquery
 		$query = Sanitizer::get_var('query');
 
 		phpgwapi_jquery::load_widget('numberformat');
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 		self::add_javascript('property', 'base', 'workorder.index.js');
 
 		$this->jqcal->add_listener('filter_start_date');

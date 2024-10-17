@@ -3362,8 +3362,8 @@ class Vfs extends VfsShared
 		$params = array_merge($params, $extraSql['params']);
 
 		$stmt->execute($params);
-
-		if ($stmt->fetch())
+		
+		if ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 		{
 			return true;
 		}

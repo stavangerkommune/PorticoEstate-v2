@@ -493,6 +493,24 @@ class Db
 		return 'Y-m-d H:i:s';
 	}
 	/**
+	 * Get the correct datetime format for MONEY field for a particular RDBMS
+	 *
+	 * @return string the formatted string
+	 */
+	final public function money_format($amount)
+	{
+		$db_type = $this->config['db_type'];
+
+		if (in_array($db_type, array('mssql', 'mssqlnative')))
+		{
+			return "CONVERT(MONEY,'{$amount}',0)";
+		}
+		else
+		{
+			return "'{$amount}'";
+		}
+	}
+	/**
 	 * Convert a unix timestamp to a rdms specific timestamp
 	 *
 	 * @param int unix timestamp

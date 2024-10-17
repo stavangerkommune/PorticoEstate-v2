@@ -446,7 +446,7 @@
 																		action += "&amp;confirm=yes&amp;phpgw_return_as=json";
 																		execute_ajax(action, function(result){
 																			document.getElementById("message").innerHTML += '<br/>' + result;
-																			oTable.fnDraw();
+																			oTable.api().draw();
 																		});
 																	}
 																	else if (target == 'ajax')
@@ -454,7 +454,7 @@
 																		action += "&amp;phpgw_return_as=json";
 																		execute_ajax(action, function(result){
 																			document.getElementById("message").innerHTML += '<br/>' + result;
-																			oTable.fnDraw();
+																			oTable.api().draw();
 																		});
 																	}
 																	else

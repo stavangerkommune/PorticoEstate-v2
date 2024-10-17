@@ -194,8 +194,6 @@ class property_uialarm extends phpgwapi_uicommon_jquery
 			return $this->query();
 		}
 
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 		$appname		 = lang('alarm');
 		$function_msg	 = lang('list alarm');
@@ -504,8 +502,6 @@ class property_uialarm extends phpgwapi_uicommon_jquery
 			return $this->query_list();
 		}
 
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 		$appname		 = lang('alarm');
 		$function_msg	 = lang('list alarm');

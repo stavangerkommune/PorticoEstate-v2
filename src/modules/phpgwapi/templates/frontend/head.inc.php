@@ -199,7 +199,7 @@ $manual_text = lang('manual');
 
 $script_path = Sanitizer::get_var('REDIRECT_URL', 'string', 'SERVER');
 
-if (preg_match('/\/home/', $script_path))
+if ($script_path && preg_match('/\/home/', $script_path))
 {
 	$home_text	= '';
 }

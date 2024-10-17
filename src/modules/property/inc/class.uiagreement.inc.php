@@ -281,8 +281,6 @@
 				return $this->query();
 			}
 
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 			$appname		 = lang('agreement');
 			$function_msg	 = lang('List') . ' ' . lang($this->role);

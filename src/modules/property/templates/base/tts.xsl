@@ -247,7 +247,7 @@
 														<xsl:attribute name="data-url">
 															<xsl:value-of select="multi_upload_action"/>
 														</xsl:attribute>
-														<xsl:attribute name="capture">camera</xsl:attribute>
+														<!--xsl:attribute name="capture">camera</xsl:attribute-->
 													</input>
 												</span>
 												<!--												<button type="button" id="start_file_upload" class="start pure-button">
@@ -835,7 +835,7 @@
 									<xsl:with-param name="multi_upload_action">
 										<xsl:value-of select="multi_upload_action"/>
 									</xsl:with-param>
-									<xsl:with-param name="capture">camera</xsl:with-param>
+									<!--xsl:with-param name="capture">camera</xsl:with-param-->
 								</xsl:call-template>
 							</div>
 						</xsl:when>

@@ -1391,8 +1391,6 @@ class property_uientity extends phpgwapi_uicommon_jquery
 			$category = $this->soadmin_entity->read_single_category($this->entity_id, $this->cat_id);
 		}
 
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 		$jqcal = CreateObject('phpgwapi.jqcal');
 		$jqcal->add_listener('filter_start_date');

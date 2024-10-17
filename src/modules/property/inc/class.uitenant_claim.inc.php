@@ -242,8 +242,6 @@ class property_uitenant_claim extends phpgwapi_uicommon_jquery
 			return $this->query(array('project_id' => Sanitizer::get_var('project_id')));
 		}
 		phpgwapi_jquery::load_widget('numberformat');
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 		$appname		 = lang('Tenant claim');
 		$function_msg	 = lang('list claim');

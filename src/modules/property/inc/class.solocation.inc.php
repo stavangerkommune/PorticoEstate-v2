@@ -963,6 +963,7 @@ class property_solocation
 
 		if ($column_search)
 		{
+			$metadata = array();
 			foreach ($column_search as $key => $value)
 			{
 				switch ($key)
@@ -978,6 +979,9 @@ class property_solocation
 					case 'antallrom':
 						$filtermethod	 .= " {$where} antallrom = " . (int)$value;
 						break;
+					case 'street_number':
+						$filtermethod	 .= " {$where} street_number  $this->like '%{$value}%'";
+						break;
 					case 'street_name':
 						$filtermethod	 .= " {$where} fm_streetaddress.descr $this->like '%{$value}%'";
 						break;
@@ -985,11 +989,14 @@ class property_solocation
 						$filtermethod	 .= " {$where} fm_location{$type_id}_category.descr $this->like '%{$value}%'";
 						break;
 					default:
-						$metadata	 = $this->db->metadata("fm_location{$type_id}");
+						if(!$metadata)
+						{
+							$metadata = $this->db->metadata("fm_location{$type_id}");
+						}
 
 						if (isset($metadata[$key]))
 						{
-							if (in_array($metadata[$key]->type, array('varchar', 'text')))
+							if (in_array($metadata[$key]->type, array('varchar', 'text', 'character varying', 'character')))
 							{
 								$filtermethod	 .= " {$where} fm_location{$type_id}.{$key} $this->like '%{$value}%'";
 							}
@@ -997,7 +1004,7 @@ class property_solocation
 							{
 								$filtermethod	 .= " {$where} fm_location{$type_id}.{$key} = '" . (float)$value . "'";
 							}
-							if (in_array($metadata[$key]->type, array('int2', 'int4', 'int8')))
+							if (in_array($metadata[$key]->type, array('integer', 'smallint', 'bigint', 'int2', 'int4', 'int8')))
 							{
 								$filtermethod	 .= " {$where} fm_location{$type_id}.{$key} = " . (int)$value;
 							}
@@ -2183,7 +2190,7 @@ class property_solocation
 		$cols = "count(*) as count, fm_location{$type_id}.category, fm_location{$type_id}_category.descr as type";
 
 		$sql = "SELECT $cols FROM $paranthesis fm_location1 $joinmethod";
-		_debug_array($sql . $filtermethod . $groupmethod);
+//		_debug_array($sql . $filtermethod . $groupmethod);
 		$this->db->query($sql . $filtermethod . $groupmethod . " ORDER BY $entity_table.category", __LINE__, __FILE__);
 
 		$values = array();

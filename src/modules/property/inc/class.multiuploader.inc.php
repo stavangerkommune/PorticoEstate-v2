@@ -204,15 +204,15 @@
 				$this->handle_form_data($file, $index);
 				//$upload_dir = $this->get_upload_path();
 
-				$file_path	 = $this->get_upload_path($file->name);
-				$append_file = $content_range && is_file($file_path) &&
-					$file->size > $this->get_file_size($file_path);
-
 				$this->upload_file($this->options['base_dir'], $uploaded_file, $file);
+
 				if ($file->error)
 				{
 					return $file;
 				}
+				$file_path	 = $this->get_upload_path($file->name);
+				$append_file = $content_range && is_file($file_path) &&
+					$file->size > $this->get_file_size($file_path);
 
 				$file_size = $this->get_file_size($file_path, $append_file);
 				if ($file_size === $file->size)
@@ -347,6 +347,12 @@
 
 		private function upload_file( $save_path, $uploaded_file, &$file )
 		{
+			if ($file->name == 'image.jpg') //Apple fuck up
+			{
+				// add timestamp
+				$file->name =	date('Y-m-d_H-i-s', phpgwapi_datetime::user_localtime()) . ".jpg";
+			}
+
 			$to_file = "{$this->bofiles->fakebase}/{$save_path}/{$file->name}";
 
 			if(!$this->bofiles->vfs->securitycheck(array('string' => $to_file)))

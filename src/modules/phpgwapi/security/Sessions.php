@@ -529,7 +529,8 @@ class Sessions
 		}
 		else
 		{
-			$user_info['domain'] = \Sanitizer::get_var('last_domain', 'string', 'COOKIE', false);
+			//FIX ME: this is a hack to get the domain from the cookie
+			$user_info['domain'] = \Sanitizer::get_var('last_domain', 'string', 'COOKIE', 'default');
 		}
 
 		Settings::getInstance()->set('user', $user_info);
@@ -837,6 +838,7 @@ class Sessions
 		$this->_data['session_ip']  = $this->_get_user_ip();
 		$this->_data['session_lid'] = $this->_account_lid . '#' . $this->_account_domain;
 		$this->_data['account_id']  = $this->_account_id;
+		$this->_data['account_lid']  = $this->_account_lid;
 
 		Settings::getInstance()->set('user', $this->_data);
 		Cache::session_set('phpgwapi', 'phpgw_info', array(

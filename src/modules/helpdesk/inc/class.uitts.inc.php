@@ -1250,8 +1250,6 @@ HTML;
 		}
 
 		phpgwapi_jquery::load_widget('numberformat');
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 		self::add_javascript('helpdesk', 'base', 'tts.index.js');
 
 		phpgwapi_jquery::load_widget('bootstrap-multiselect');

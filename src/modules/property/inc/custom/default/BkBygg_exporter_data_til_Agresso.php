@@ -80,6 +80,11 @@ if (!class_exists("BkBygg_exporter_data_til_Agresso"))
 			$this->voucher_id	 = $param['external_voucher_id'];
 		}
 
+		public function reset_transfer_xml()
+		{
+			$this->transfer_xml = '';
+		}
+		
 		public function create_transfer_xml($param)
 		{
 			$Orders = array();
@@ -214,6 +219,46 @@ if (!class_exists("BkBygg_exporter_data_til_Agresso"))
 			//		die();
 		}
 
+
+		public function create_order_receive_xml($param)
+		{
+			$this->voucher_type	 = $param['voucher_type'];
+
+			$Orders	 = array();
+			$Detail	 = array();
+			$i		 = 1;
+			foreach ($param['lines'] as $line)
+			{
+				$Detail[] = array(
+					'LineNo'	 => $i,
+					'Status'	 => 'N',
+					'UnitCode'	 => $line['UnitCode'],
+					'Quantity'	 => $line['Quantity'],
+				);
+				$i++;
+			}
+
+			$Orders['Order'][] = array(
+				'OrderNo'		 => $param['order_id'],
+				'VoucherType'	 => $param['voucher_type'],
+				'TransType'		 => 51,
+				'Details'		 => array('Detail' => $Detail)
+			);
+
+			//			_debug_array($Orders);
+			//			die();
+
+			$root_attributes	 = array(
+				'Version'						 => "542",
+				'xmlns:xsi'						 => "http://www.w3.org/2001/XMLSchema-instance",
+				'xsi:noNamespaceSchemaLocation'	 => "http://services.agresso.com/schema/ABWOrder/2004/07/02/ABWOrder.xsd"
+			);
+			$xml_creator		 = new xml_creator('ABWOrder', $root_attributes);
+			$xml_creator->fromArray($Orders);
+			$this->transfer_xml	 = $xml_creator->getDocument();
+			return $this->transfer_xml;
+		}
+
 		/**
 		 * Output the content of a current xml document.
 		 * @access public
@@ -249,11 +294,41 @@ if (!class_exists("BkBygg_exporter_data_til_Agresso"))
 			return $filename;
 		}
 
-		public function transfer()
+		protected function create_file_name_order_receive()
+		{
+			$voucher_type	 = $this->voucher_type;
+			$order_id		 = $this->order_id;
+
+			if (!$voucher_type)
+			{
+				throw new Exception('BkBygg_exporter_varemottak_til_Agresso::create_file_name() Mangler bilagstype');
+			}
+
+			$fil_katalog = $this->config->config_data['export']['path'];
+
+			$filename = "{$fil_katalog}/{$voucher_type}_varemottak_{$order_id}.xml";
+
+			//Sjekk om filen eksisterer
+			if (file_exists($filename))
+			{
+				unlink($filename);
+			}
+
+			return $filename;
+		}
+
+		public function transfer($order_receive = false)
 		{
 			$batchid		 = $this->soXport->increment_batchid();
 			$this->batchid	 = $batchid;
-			$filename		 = $this->create_file_name($this->order_id);
+			if ($order_receive)
+			{
+				$filename = $this->create_file_name_order_receive();
+			}
+			else
+			{
+				$filename = $this->create_file_name($this->order_id);
+			}
 			$content		 = $this->transfer_xml;
 			$debug			 = empty($this->config->config_data['export']['activate_transfer']) ? true : false;
 
@@ -351,9 +426,10 @@ if (!class_exists("BkBygg_exporter_data_til_Agresso"))
 					default:
 						$transfer_ok = false;
 				}
+				$what_to_transfer = $order_receive ? 'order_receive' : 'order';
 				if ($transfer_ok)
 				{
-					$this->soXport->log_transaction($batchid, $this->order_id, lang('transferred Order %1 to Agresso', basename($filename)));
+					$this->soXport->log_transaction($batchid, $this->order_id, lang("transferred {$what_to_transfer} %1 to Agresso", basename($filename)));
 					if (!$this->global_lock)
 					{
 						$this->db->transaction_commit();
@@ -365,7 +441,7 @@ if (!class_exists("BkBygg_exporter_data_til_Agresso"))
 					{
 						$this->db->transaction_abort(); // Reverse the batch_id - increment
 					}
-					$this->soXport->log_transaction($batchid, $this->order_id, lang('Failed to transfere Order %1 to Agresso', basename($filename)));
+					$this->soXport->log_transaction($batchid, $this->order_id, lang("Failed to transfere {$what_to_transfer} %1 to Agresso", basename($filename)));
 					//		@unlink($filename);
 				}
 			}

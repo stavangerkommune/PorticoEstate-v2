@@ -283,8 +283,6 @@ class property_uigab extends phpgwapi_uicommon_jquery
 			return $this->query();
 		}
 
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 		$location_code = Sanitizer::get_var('location_code');
 
 		$appname		 = lang('gab');

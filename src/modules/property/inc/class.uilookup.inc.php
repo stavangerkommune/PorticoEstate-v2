@@ -297,8 +297,6 @@ JS;
 			$this->cat_id		 = $default_category;
 		}
 
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 		if ($column)
 		{
@@ -1229,8 +1227,6 @@ JS;
 			}
 		}
 
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 		$data = array(
 			'left_click_action'	 => $action,
@@ -1376,8 +1372,6 @@ JS;
 			return $this->jquery_results($result_data);
 		}
 
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 		if ($column)
 		{
@@ -1855,8 +1849,6 @@ JS;
 			return $this->jquery_results($result_data);
 		}
 
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 		$custom_id	 = $column;
 		$custom_name = "label_{$column}";

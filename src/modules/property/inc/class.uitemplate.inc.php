@@ -145,8 +145,6 @@ class property_uitemplate extends phpgwapi_uicommon_jquery
 			return $this->query();
 		}
 
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 		$appname		 = lang('template');
 		$function_msg	 = lang('list template');
@@ -475,8 +473,6 @@ class property_uitemplate extends phpgwapi_uicommon_jquery
 			return $this->query_hour($template_id);
 		}
 
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.editable.js');
-		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 		$appname		 = lang('template');
 		$function_msg	 = lang('view template detail');

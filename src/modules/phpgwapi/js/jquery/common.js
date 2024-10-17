@@ -159,7 +159,7 @@ JqueryPortico.move_record = function (sUrl)
 	var baseUrl = sUrl + "&confirm=yes&phpgw_return_as=json";
 	$.post(baseUrl, function (data)
 	{
-		oTable.fnDraw();
+		oTable.api().draw();
 	});
 };
 
@@ -451,9 +451,14 @@ JqueryPortico.inlineTableHelper = function (container, ajax_url, columns, option
 
 	if (buttons_def)
 	{
-//		var sDom_def = 'B<"clear">lfrtip';
-		var sDom_def = 'Bfrtlip';
-//		var sDom_def = '<lfB<t>ip>'
+		var layout = {
+					topStart: 'buttons',
+					topEnd: 'search',
+					bottomStart: ['pageLength'],
+					bottomEnd: ['paging'],
+					bottom2Start: 'info'
+			}
+
 		if (singleSelect == true)
 		{
 			select = true;
@@ -465,10 +470,13 @@ JqueryPortico.inlineTableHelper = function (container, ajax_url, columns, option
 	}
 	else
 	{
-		var sDom_def = '<"clear">lfrtip';
+		var layout = {
+					topStart: 'pageLength',
+					topEnd: 'search',
+					bottomStart: 'info',
+					bottomEnd: 'paging'
+			}
 	}
-//	$(document).ready(function ()
-//	{
 
 	var oTable = $("#" + container).dataTable({
 		scrollY: scrollY,
@@ -589,7 +597,7 @@ JqueryPortico.inlineTableHelper = function (container, ajax_url, columns, option
 				//nothing
 			}
 		},
-		sDom: sDom_def,
+		layout: layout,
 		buttons: buttons_def,
 		search: initial_search
 	});
@@ -620,8 +628,6 @@ JqueryPortico.inlineTableHelper = function (container, ajax_url, columns, option
 		}
 	});
 
-
-//	});
 	return oTable;
 };
 
@@ -637,7 +643,7 @@ JqueryPortico.updateinlineTableHelper = function (oTable, requestUrl)
 	}
 	if (typeof (requestUrl) == 'undefined')
 	{
-		_oTable.fnDraw();
+		_oTable.api().draw();
 	}
 	else
 	{

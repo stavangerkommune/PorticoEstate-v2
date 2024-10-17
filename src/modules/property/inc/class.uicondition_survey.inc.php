@@ -192,8 +192,6 @@
 			}
 
 			phpgwapi_jquery::load_widget('numberformat');
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js');
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js');
 
 			$categories	 = $this->_get_categories();
 			$status_list = execMethod('property.bogeneric.get_list', array(

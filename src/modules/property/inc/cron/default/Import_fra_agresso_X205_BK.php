@@ -39,6 +39,8 @@ use App\modules\phpgwapi\controllers\Accounts\Accounts;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Ftp\FtpAdapter;
 use League\Flysystem\Ftp\FtpConnectionOptions;
+use League\Flysystem\FilesystemException;
+use League\Flysystem\UnableToDeleteFile;
 use App\modules\phpgwapi\services\Cache;
 
 
@@ -637,6 +639,7 @@ class Import_fra_agresso_X205_BK extends property_cron_parent
 
 					$order_type = $this->bocommon->socommon->get_order_type($order_id);
 
+					//Altered to be send simultaneously with order sendt to Agresso after 2024-10-10
 					switch ($order_type['type'])
 					{
 						case 'workorder':

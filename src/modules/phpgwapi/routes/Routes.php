@@ -8,6 +8,7 @@ use App\modules\phpgwapi\middleware\SessionsMiddleware;
 use App\modules\preferences\helpers\PreferenceHelper;
 use App\modules\phpgwapi\helpers\HomeHelper;
 use App\modules\phpgwapi\helpers\LoginHelper;
+use App\modules\phpgwapi\helpers\RedirectHelper;
 use Slim\Routing\RouteCollectorProxy;
 
 
@@ -43,6 +44,8 @@ $app->get('/swagger[/{params:.*}]', function (Request $request, Response $respon
     return $response;
 });
 
+
+$app->get('/redirect.php', RedirectHelper::class . ':processRedirect');
 
 $app->get('/login.php', LoginHelper::class . ':processLogin');
 $app->post('/login.php', LoginHelper::class . ':processLogin');
