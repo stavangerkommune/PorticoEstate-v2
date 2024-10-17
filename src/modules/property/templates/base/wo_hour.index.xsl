@@ -422,7 +422,7 @@
 																var n = 0;
 																for (; n &lt; numSelected; ) {
 																	// console.log(selected[n]);
-																	var aData = oTable.fnGetData( selected[n] ); //complete dataset from json returned from server
+																	var aData = oTable.api().rows(selected[n]).data()[0]; //complete dataset from json returned from server
 																	// console.log(aData);
 
 																	//delete stuff comes here
@@ -485,7 +485,6 @@
 								{
 									group_buttons = true;
 								}
-									$.fn.dataTable.Buttons.swfPath = "phpgwapi/js/DataTables/extensions/Buttons/swf/flashExport.swf";
 
 
 								if(group_buttons === true)
@@ -514,8 +513,8 @@
 		*/
 		<xsl:if test="//left_click_action != ''">
 			$("#datatable-container").on("click", "tr", function() {
-			var iPos = oTable.fnGetPosition( this );
-			var aData = oTable.fnGetData( iPos ); //complete dataset from json returned from server
+			var iPos =oTable.api().row(this).index();
+			var aData = oTable.api().rows( iPos ).data()[0]; //complete dataset from json returned from server
 			try {
 			<xsl:value-of select="//left_click_action"/>
 			}

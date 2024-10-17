@@ -965,7 +965,6 @@
 				{
 					group_buttons = true;
 				}
-//				$.fn.dataTable.Buttons.swfPath = "phpgwapi/js/DataTables/extensions/Buttons/swf/flashExport.swf";
 
 
 				if(isChrome == true)
