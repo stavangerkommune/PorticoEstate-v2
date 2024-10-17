@@ -521,7 +521,7 @@ returns true if plugin should continue with sending AJAX request, false will abo
                     $("tr.last-added-row", oTable).removeClass("last-added-row");
                     $(oTRAdded).addClass("last-added-row");
                 } /*else {
-                    oTable.fnDraw(false);
+                    oTable.api().draw(false);
                 }*/
                 //Close the dialog
                 oAddNewRowForm.dialog('close');

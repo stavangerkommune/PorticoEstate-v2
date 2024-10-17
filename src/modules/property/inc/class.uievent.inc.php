@@ -688,7 +688,7 @@ class property_uievent extends phpgwapi_uicommon_jquery
 			url: '$link_shedule2',
 			data:{values:values},
 			success: function(data) {
-				oTable0.fnDraw();
+				oTable0.api().draw();
 			}
 			});
 	}
