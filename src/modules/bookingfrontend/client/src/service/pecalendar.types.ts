@@ -11,7 +11,7 @@ export interface IEvent {
     name: string
     shortname?: string
     organization_id?: number
-    resources: IBuildingResource[]
+    resources: IShortResource[]
     season_id?: number
     season_name?: string
     from: string
@@ -33,7 +33,7 @@ export interface IEvent {
     is_public?: number
 }
 
-export type IBuildingResource = Pick<IResource, 'active' | 'name' | 'id' | 'activity_id' | 'simple_booking'>;
+export type IShortResource = Pick<IResource, 'active' | 'name' | 'id' | 'activity_id' | 'simple_booking'>;
 
 export interface IEventDate {
     from_: string
