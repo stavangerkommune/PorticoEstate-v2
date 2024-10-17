@@ -552,7 +552,8 @@ JqueryPortico.inlineTableHelper = function (container, ajax_url, columns, option
 					fnOnEditing: function (input)
 					{
 						var iPos = input.closest("tr").prevAll().length;
-						var aData = oTable.fnGetData(iPos);
+				//		var aData = oTable.fnGetData(iPos);
+						var aData = oTable.api().rows(iPos).data()[0];
 						id = aData['id'];
 						cell = input.parents("td");
 						return true;

@@ -3,7 +3,7 @@
 use App\modules\phpgwapi\services\Settings;
 use App\modules\phpgwapi\services\Cache;
 
-
+phpgw::import_class('phpgwapi.datetime');
 phpgw::import_class('rental.uicommon');
 phpgw::import_class('rental.soprice_item');
 phpgw::import_class('rental.socontract_price_item');

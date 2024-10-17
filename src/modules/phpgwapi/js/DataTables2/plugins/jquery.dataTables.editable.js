@@ -769,11 +769,7 @@ returns true if plugin should continue with sending AJAX request, false will abo
              //   oSettings.api.draw();
             //}
 
-		//	oTable.api().draw();
-
-			var settings = oTable.api().settings()[0];
-			// do nothing...
-		//	oTable.api()._fnDraw(settings);
+			oTable.api().draw('page');
 
         }
 

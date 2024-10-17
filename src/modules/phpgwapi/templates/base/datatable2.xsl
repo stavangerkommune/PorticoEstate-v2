@@ -907,7 +907,7 @@
 									execute_ajax(action, function(result){
 									document.getElementById("message").innerHTML += '<br/>' + result;
 									
-									oTable.api().draw();
+									oTable.api().draw('page');
 
 									});
 									}
@@ -916,7 +916,7 @@
 									action += "&amp;phpgw_return_as=json";
 									execute_ajax(action, function(result){
 									document.getElementById("message").innerHTML += '<br/>' + result;
-									oTable.api().draw();
+									oTable.api().draw('page');
 									});
 									}
 									else
