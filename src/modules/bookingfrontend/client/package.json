@@ -11,9 +11,9 @@
         "start:production": "next start"
     },
     "dependencies": {
-        "@digdir/designsystemet-css": "1.0.0-next.34",
-        "@digdir/designsystemet-react": "1.0.0-next.34",
-        "@digdir/designsystemet-theme": "1.0.0-next.34",
+        "@digdir/designsystemet-css": "1.0.0-next.35",
+        "@digdir/designsystemet-react": "1.0.0-next.35",
+        "@digdir/designsystemet-theme": "1.0.0-next.35",
         "@emotion/react": "^11.13.0",
         "@emotion/styled": "^11.13.0",
         "@floating-ui/react": "^0.26.23",

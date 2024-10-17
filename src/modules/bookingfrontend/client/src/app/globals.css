@@ -2499,6 +2499,11 @@ body {
   text-transform: capitalize;
 }
 
+.pswp img {
+  max-width: none;
+  object-fit: contain;
+}
+
 /*:root {*/
 /*  --max-width: 1100px;*/
 /*  --border-radius: 12px;*/
