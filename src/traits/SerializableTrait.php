@@ -11,7 +11,6 @@ trait SerializableTrait
     private static $annotationCache = [];
 
 
-
     public function serialize(array $userRoles = [], bool $short = false): ?array
     {
         $reflection = new \ReflectionClass($this);
@@ -30,8 +29,9 @@ trait SerializableTrait
             if ($excludeAnnotation) {
                 continue; // Skip this property
             }
-
+//            _debug_array(['ref' => $reflection, 't' => $property , 'short' => $shortAnnotation, 'forSho' => $short, 'as' => $serializeAsAnnotation]);
             if ($short && !$shortAnnotation) {
+
                 continue; // Skip non-short properties when short serialization is requested
             }
 
@@ -54,22 +54,23 @@ trait SerializableTrait
 
         return !empty($serialized) ? $serialized : null;
     }
+
     private function serializeAs($value, array $serializeAsAnnotation): mixed
     {
         $type = $serializeAsAnnotation['type'];
         $of = $serializeAsAnnotation['of'];
+        $useShort = $serializeAsAnnotation['short'] ?? false;
 
         if ($type === 'object') {
-            return $this->serializeAsObject($value, $of);
+            return $this->serializeAsObject($value, $of, $useShort);
         } elseif ($type === 'array') {
-            return $this->serializeAsArray($value, $of);
+            return $this->serializeAsArray($value, $of, $useShort);
         }
 
         return $value;
     }
 
-
-    private function serializeAsObject($value, string $className): ?array
+    private function serializeAsObject($value, string $className, bool $short): ?array
     {
         if ($value === null) {
             return null;
@@ -83,20 +84,20 @@ trait SerializableTrait
             return null;
         }
         if (method_exists($value, 'serialize')) {
-            $serialized = $value->serialize();
+            $serialized = $value->serialize([], $short);
             return !empty($serialized) ? $serialized : null;
         }
 
         return $value;
     }
 
-    private function serializeAsArray($value, string $className): ?array
+    private function serializeAsArray($value, string $className, bool $short): ?array
     {
         if (!is_array($value) || empty($value)) {
             return null;
         }
 
-        $serialized = array_map(function ($item) use ($className) {
+        $serialized = array_map(function ($item) use ($className, $short) {
             if ($item === null) {
                 return null;
             }
@@ -110,7 +111,7 @@ trait SerializableTrait
             }
 
             if (method_exists($item, 'serialize')) {
-                return $item->serialize();
+                return $item->serialize([], $short);
             }
 
             return $item;
@@ -194,6 +195,7 @@ trait SerializableTrait
         return self::$annotationCache[$className]['properties'][$propertyName]['exclude'];
     }
 
+
     private function parseShortAnnotation(\ReflectionProperty $property): bool
     {
         $className = $property->getDeclaringClass()->getName();
@@ -213,10 +215,11 @@ trait SerializableTrait
 
         if (!isset(self::$annotationCache[$className]['properties'][$propertyName]['serializeAs'])) {
             $docComment = $property->getDocComment();
-            if (preg_match('/@SerializeAs\(type="(object|array)"(?:,\s*of="(.+?)")?\)/', $docComment, $matches)) {
+            if (preg_match('/@SerializeAs\(type="(object|array)"(?:,\s*of="(.+?)")?(?:,\s*short=(true|false))?\)/', $docComment, $matches)) {
                 self::$annotationCache[$className]['properties'][$propertyName]['serializeAs'] = [
                     'type' => $matches[1],
-                    'of' => $matches[2] ?? null
+                    'of' => $matches[2] ?? null,
+                    'short' => isset($matches[3]) ? $matches[3] === 'true' : false
                 ];
             } else {
                 self::$annotationCache[$className]['properties'][$propertyName]['serializeAs'] = null;
