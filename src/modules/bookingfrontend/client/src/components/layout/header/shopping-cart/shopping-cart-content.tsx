@@ -7,13 +7,15 @@ import {usePartialApplications} from "@/service/hooks/api-hooks";
 import styles from "./shopping-cart-content.module.scss";
 import {Badge, Button, Spinner, Table, List} from "@digdir/designsystemet-react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faArrowRightLong, faArrowUpRightFromSquare, faTrashCan} from "@fortawesome/free-solid-svg-icons";
+import {faArrowRightLong, faArrowUpRightFromSquare, faLayerGroup, faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import {phpGWLink} from "@/service/util";
 import Link from "next/link";
 import {IApplication} from "@/service/types/api/application.types";
 import {DateTime} from "luxon";
 import {da} from "date-fns/locale";
 import {deletePartialApplication} from "@/service/api/api-utils";
+import ColourCircle from "@/components/building-calendar/modules/colour-circle/colour-circle";
+import {IShortResource} from "@/service/pecalendar.types";
 
 interface ShoppingCartContentProps {
     setOpen: Dispatch<boolean>;
@@ -90,9 +92,34 @@ const ShoppingCartContent: FC<ShoppingCartContentProps> = (props) => {
         }
         return <span><Badge count={application.dates.length} color={'neutral'}/> Flere tidspunkt</span>
     }
+
+
+    const renderColorCircles = (resources: IShortResource[], maxCircles: number, size: 'medium' | 'small') => {
+        const totalResources = resources.length;
+        const circlesToShow = resources.slice(0, maxCircles);
+        const remainingCount = totalResources - maxCircles;
+
+        return (
+            <div className={styles.colorCircles}>
+                <FontAwesomeIcon icon={faLayerGroup}/>
+                {circlesToShow.map((res, index) => (
+                    <ColourCircle resourceId={res.id} key={index} className={styles.colorCircle} size={size}/>
+                ))}
+                {remainingCount === 1 && (
+                    <ColourCircle
+                        resourceId={resources[maxCircles].id}
+                        key={maxCircles}
+                        className={styles.colorCircle}
+                        size={size}
+                    />
+                )}
+                {remainingCount > 1 && <span className={styles.remainingCount}>+{remainingCount}</span>}
+            </div>
+        );
+    };
     const getResources = (application: IApplication) => {
         if (application.resources.length === 1) {
-            return application.resources[0].name;
+            return <span><ColourCircle resourceId={application.resources[0].id} /> {application.resources[0].name}</span>;
         }
         if (expandedId === application.id) {
             return <List.Unordered
@@ -101,10 +128,10 @@ const ShoppingCartContent: FC<ShoppingCartContentProps> = (props) => {
                     padding: 0
                 }}>
 
-                {application.resources.map((res) => <List.Item key={res.id}>{res.name}</List.Item>)}
+                {application.resources.map((res) => <List.Item key={res.id}><ColourCircle resourceId={res.id} /> {res.name}</List.Item>)}
             </List.Unordered>
         }
-        return <span><Badge count={application.resources.length} color={'neutral'}/> Flere ressurser</span>
+        return <span>{renderColorCircles(application.resources, 4, 'small')}</span>
     }
 
     console.log(basketData)
