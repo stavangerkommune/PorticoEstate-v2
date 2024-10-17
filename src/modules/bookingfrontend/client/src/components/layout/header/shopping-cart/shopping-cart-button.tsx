@@ -24,7 +24,7 @@ const ShoppingCartButton: FC<ShoppingCartButtonProps> = (props) => {
                     gap: 'var(--ds-spacing-6)',
                 }}
             >
-                {cartItems?.list?.length > 0 && (<Badge
+                {(cartItems?.list?.length || 0) > 0 && (<Badge
                     color="info"
                     placement="top-right"
                     size={'sm'}
