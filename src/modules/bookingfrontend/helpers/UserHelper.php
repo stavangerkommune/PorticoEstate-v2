@@ -457,6 +457,12 @@ class UserHelper
         }
     }
 
+    public function get_session_id()
+    {
+        return Cache::session_get($this->get_module(), self::ORGID_SESSION_KEY);
+
+    }
+
 
     protected function current_app()
     {
