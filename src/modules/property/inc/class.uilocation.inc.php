@@ -1400,7 +1400,7 @@ JS;
 		$flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 		Settings::getInstance()->set('flags', $flags);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function get_uicols_responsiblility_role()
@@ -3303,7 +3303,7 @@ JS;
 		$flags = Settings::getInstance()->get('flags');
 		$flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 		Settings::getInstance()->set('flags', $flags);
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function get_delivery_address()

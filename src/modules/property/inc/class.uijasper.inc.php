@@ -345,7 +345,7 @@ class property_uijasper extends phpgwapi_uicommon_jquery
 		unset($parameters);
 		unset($parameters_view);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	public function query()

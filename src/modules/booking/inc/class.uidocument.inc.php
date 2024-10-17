@@ -206,7 +206,7 @@ abstract class booking_uidocument extends booking_uicommon
 			$data['datatable']['new_item'] = $this->get_owner_typed_link('add');
 		}
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	public function query()

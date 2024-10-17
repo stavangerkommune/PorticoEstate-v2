@@ -431,7 +431,7 @@ class property_uiinvestment extends phpgwapi_uicommon_jquery
 
 		phpgwapi_jquery::load_widget('numberformat');
 		self::add_javascript('property', 'base', 'investment.index.js');
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function update_investment($values = '')

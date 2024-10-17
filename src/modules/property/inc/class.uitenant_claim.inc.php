@@ -466,7 +466,7 @@ class property_uitenant_claim extends phpgwapi_uicommon_jquery
 
 		unset($parameters);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	public function query($data = array())

@@ -364,7 +364,7 @@ class property_uievent extends phpgwapi_uicommon_jquery
 
 
 		self::add_javascript('property', 'base', 'event.index.js');
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	public function query()

@@ -239,7 +239,7 @@ use App\modules\phpgwapi\controllers\Accounts\Accounts;
 
 			unset($parameters);
 
-			self::render_template_xsl('datatable_jquery', $data);
+			self::render_template_xsl('datatable2', $data);
 		}
 
 		public function query()
@@ -598,7 +598,7 @@ use App\modules\phpgwapi\controllers\Accounts\Accounts;
 
 			$data['datatable']['actions'][] = array();
 
-			self::render_template_xsl('datatable_jquery', $data);
+			self::render_template_xsl('datatable2', $data);
 		}
 
 		public function query_view( $custom_id )

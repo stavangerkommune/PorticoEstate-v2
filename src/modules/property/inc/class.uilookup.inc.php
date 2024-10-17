@@ -242,7 +242,7 @@ JS;
 		$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function organisation()
@@ -390,7 +390,7 @@ JS;
 		$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function vendor()
@@ -543,7 +543,7 @@ JS;
 		$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function contact()
@@ -677,7 +677,7 @@ JS;
 		$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function b_account()
@@ -806,7 +806,7 @@ JS;
 		$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function street()
@@ -894,7 +894,7 @@ JS;
 		$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function tenant()
@@ -987,7 +987,7 @@ JS;
 		$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function ns3420()
@@ -1079,7 +1079,7 @@ JS;
 		$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function entity()
@@ -1445,7 +1445,7 @@ JS;
 		$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function external_project()
@@ -1535,7 +1535,7 @@ JS;
 		$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function ecodimb()
@@ -1627,7 +1627,7 @@ JS;
 		$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function order_template()
@@ -1718,7 +1718,7 @@ JS;
 		$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function response_template()
@@ -1811,7 +1811,7 @@ JS;
 		$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function custom()
@@ -1909,6 +1909,6 @@ JS;
 		$this->flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 }
