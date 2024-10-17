@@ -64,7 +64,7 @@ export interface Result {
 
 export interface SchedulingResults {
     schedule: IEvent[]
-    resources: Record<string, IBuildingResource>
+    resources: Record<string, IShortResource>
     seasons: Season[]
 }
 
