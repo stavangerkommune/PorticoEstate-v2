@@ -2,11 +2,7 @@ import React, {Dispatch, FC, useEffect, useRef} from 'react';
 import {arrow, autoUpdate, flip, offset, shift, useFloating} from "@floating-ui/react";
 import {useIsMobile} from "@/service/hooks/is-mobile";
 import ShoppingCartContent from "@/components/layout/header/shopping-cart/shopping-cart-content";
-import styles from "@/components/dialog/mobile-dialog.module.scss";
-import {Button, Tooltip} from "@digdir/designsystemet-react";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faXmark} from "@fortawesome/free-solid-svg-icons";
-import {useTrans} from "@/app/i18n/ClientTranslationProvider";
+import MobileDialog from "@/components/dialog/mobile-dialog";
 
 interface ShoppingCartPopperProps {
     anchor: HTMLButtonElement | null;
@@ -17,6 +13,7 @@ interface ShoppingCartPopperProps {
 const placement = 'bottom-end';
 const ShoppingCartPopper: FC<ShoppingCartPopperProps> = (props) => {
     const arrowRef = useRef<HTMLDivElement | null>(null);
+    const isMobile = useIsMobile();
 
 
     const {x, y, strategy, refs, middlewareData, update} = useFloating({
@@ -56,6 +53,15 @@ const ShoppingCartPopper: FC<ShoppingCartPopperProps> = (props) => {
     const {x: arrowX, y: arrowY} = middlewareData.arrow || {};
 
     const content = <ShoppingCartContent setOpen={props.setOpen}/>
+
+
+    if (isMobile) {
+        return (
+            <MobileDialog open={props.open} onClose={() => props.setOpen(false)}>
+                {content}
+            </MobileDialog>
+        );
+    }
 
     return (
         <>
