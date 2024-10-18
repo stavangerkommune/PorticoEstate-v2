@@ -31,7 +31,6 @@ const EventPopperContent: FC<EventPopperContentProps> = (props) => {
         return popperInfo && (popperInfo.info_user_can_delete_events || (popperInfo as any).info_user_can_delete_bookings || (popperInfo as any).info_user_can_delete_allocations);
     };
 
-    console.log(popperInfo)
     return (
         <PopperContentSharedWrapper onClose={props.onClose}>
 
