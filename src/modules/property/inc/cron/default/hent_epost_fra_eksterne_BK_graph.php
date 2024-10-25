@@ -48,9 +48,10 @@ use Microsoft\Graph\Core\Authentication\GraphPhpLeagueAuthenticationProvider;
 use Microsoft\Graph\GraphRequestAdapter;
 use Microsoft\Graph\GraphServiceClient;
 use Microsoft\Graph\Core\GraphClientFactory;
-use Microsoft\Graph\Generated\Users\Item\Messages\MessagesRequestBuilderGetRequestConfiguration;
-
+//use Microsoft\Graph\Generated\Users\Item\Messages\MessagesRequestBuilderGetRequestConfiguration;
+use Microsoft\Graph\Generated\Users\Item\MailFolders\Item\Messages\MessagesRequestBuilderGetRequestConfiguration;
 use Microsoft\Graph\Generated\Models\Message;
+use Microsoft\Graph\Generated\Users\Item\Messages\Item\Move\MovePostRequestBody;
 use Microsoft\Kiota\Abstractions\NativeResponseHandler;
 use Microsoft\Kiota\Http\Middleware\Options\ResponseHandlerOption;
 use Microsoft\Graph\Model\MailFolder;
@@ -61,6 +62,7 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 {
 
 	private $graphServiceClient;
+	private $userPrincipalName;
 	private $user;
 	private $config;
 	private $items_to_move = array();
@@ -75,6 +77,7 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 		$this->join = $this->db->join;
 
 		$this->config = CreateObject('admin.soconfig', $this->location_obj->get_id('property', '.admin'))->read();
+		$this->userPrincipalName = $this->config['xPortico']['mailbox'];
 
 		$this->initializeGraph();
 	}
@@ -89,7 +92,7 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 		$tenantId = $this->config['xPortico']['tenant_id'];
 		$clientId = $this->config['xPortico']['client_id'];
 		$clientSecret = $this->config['xPortico']['client_secret'];
-		$userPrincipalName = $this->config['xPortico']['mailbox'];
+		$this->userPrincipalName = $this->config['xPortico']['mailbox'];
 
 		$tokenRequestContext = new ClientCredentialContext(
 			$tenantId,
@@ -112,31 +115,50 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 		}
 
 
-$httpClient = GraphClientFactory::createWithConfig($guzzleConfig);
-$requestAdapter = new GraphRequestAdapter($authProvider, $httpClient);
-$this->graphServiceClient = GraphServiceClient::createWithRequestAdapter($requestAdapter);
+		$httpClient = GraphClientFactory::createWithConfig($guzzleConfig);
+		$requestAdapter = new GraphRequestAdapter($authProvider, $httpClient);
+		$this->graphServiceClient = GraphServiceClient::createWithRequestAdapter($requestAdapter);
 
 
-$requestConfig = new MessagesRequestBuilderGetRequestConfiguration(
-	queryParameters: MessagesRequestBuilderGetRequestConfiguration::createQueryParameters(
-		select: ['subject', 'body', 'from', 'isRead'],
-		top: 2
-	),
-	headers: ['Prefer' => 'outlook.body-content-type=text']
-);
+		$requestConfig = new MessagesRequestBuilderGetRequestConfiguration(
+			queryParameters: MessagesRequestBuilderGetRequestConfiguration::createQueryParameters(
+				select: ['subject', 'body', 'from', 'isRead'],
+				top: 2
+			),
+			headers: ['Prefer' => 'outlook.body-content-type=text']
+		);
 
 
-$messages = $this->graphServiceClient->users()->byUserId($userPrincipalName)->messages()->get($requestConfig)->wait();
 
-foreach ($messages->getValue() as $message)
-{
-	_debug_array($message->getSubject());
-	_debug_array($message->getBody()->getContent());
-	_debug_array($message->getFrom()->getEmailAddress()->getAddress());
-	_debug_array($message->getIsRead());
-	_debug_array($message->getId());
-}
+		$source_folder = 'Portico_Leverandor-meldinger';
+		$targer_folder = 'ImportertTilDatabase';
 
+		$source_folder_id = $this->findFolderId($source_folder);
+		$targer_folder_id = $this->findFolderId($targer_folder);
+
+		$messages = $this->graphServiceClient->users()->byUserId($this->userPrincipalName)->mailFolders()->byMailFolderId($source_folder_id)->messages()->get($requestConfig)->wait();
+
+		foreach ($messages->getValue() as $message)
+		{
+			// Mark message as read
+			$requestBody = new Message();
+			$requestBody->setIsRead(true);
+
+			$message_id =  $message->getId();
+			$result = $this->graphServiceClient->users()->byUserId($this->userPrincipalName)->messages()->byMessageId($message_id)->patch($requestBody)->wait();
+
+			// move message to another folder
+			$requestBody = new MovePostRequestBody();
+			$requestBody->setDestinationId($targer_folder_id);
+
+			$result = $this->graphServiceClient->users()->byUserId($this->userPrincipalName)->messages()->byMessageId($message_id)->move()->post($requestBody)->wait();
+
+			_debug_array($message->getSubject());
+			_debug_array($message->getBody()->getContent());
+			_debug_array($message->getFrom()->getEmailAddress()->getAddress());
+			_debug_array($message->getIsRead());
+			_debug_array($message->getId());
+		}
 	}
 
 
@@ -191,25 +213,35 @@ foreach ($messages->getValue() as $message)
 
 	private function findFolderId($folderName)
 	{
-		$mailFolders = $this->graphServiceClient->createRequest("GET", "/me/mailFolders")
-		->setReturnType(Model\MailFolder::class)
-			->execute();
+		$folderId = null;
+		$folders = $this->graphServiceClient->users()->byUserId($this->userPrincipalName)->mailFolders()->get()->wait();
 
-		foreach ($mailFolders as $folder)
+		foreach ($folders->getValue() as $folder)
 		{
-			if ($folder->getDisplayName() === $folderName)
+			if ($folder->getDisplayName() == $folderName)
 			{
-				return $folder->getId();
+				$folderId = $folder->getId();
+				break;
+			}
+
+			$childFolders = $this->graphServiceClient->users()->byUserId($this->userPrincipalName)->mailFolders()->byMailFolderId($folder->getId())->childFolders()->get()->wait();
+			foreach ($childFolders->getValue() as $childFolder)
+			{
+				if ($childFolder->getDisplayName() == $folderName)
+				{
+					$folderId = $childFolder->getId();
+					break 2;
+				}
 			}
 		}
 
-		return null;
+		return $folderId;
 	}
 
 	private function getUnreadMessages($folderId)
 	{
 		return $this->graphServiceClient->createRequest("GET", "/me/mailFolders/{$folderId}/messages?\$filter=isRead eq false")
-		->setReturnType(Model\Message::class)
+			->setReturnType(Model\Message::class)
 			->execute();
 	}
 
@@ -314,7 +346,7 @@ foreach ($messages->getValue() as $message)
 	private function handleAttachments($message, $target)
 	{
 		$attachments = $this->graphServiceClient->createRequest("GET", "/me/messages/{$message->getId()}/attachments")
-		->setReturnType(Model\Attachment::class)
+			->setReturnType(Model\Attachment::class)
 			->execute();
 
 		foreach ($attachments as $attachment)
@@ -325,7 +357,7 @@ foreach ($messages->getValue() as $message)
 			}
 
 			$content = $this->graphServiceClient->createRequest("GET", "/me/messages/{$message->getId()}/attachments/{$attachment->getId()}/\$value")
-			->execute();
+				->execute();
 
 			$tempFile = tempnam(sys_get_temp_dir(), "attachment");
 			file_put_contents($tempFile, $content);
@@ -346,14 +378,14 @@ foreach ($messages->getValue() as $message)
 		foreach ($this->items_to_move as $messageId)
 		{
 			$this->graphServiceClient->createRequest("POST", "/me/messages/{$messageId}/move")
-			->attachBody(array("destinationId" => $destinationFolderId))
+				->attachBody(array("destinationId" => $destinationFolderId))
 				->execute();
 		}
 
 		$this->items_to_move = array();
 	}
 
-	
+
 	function update_external_communication($identificator_arr, $body, $sender)
 	{
 		$ticket_id	 = (int)$identificator_arr[1];
@@ -738,9 +770,8 @@ foreach ($messages->getValue() as $message)
 	/**
 	 * Set message as read
 	 */
-	
+
 	function update_message()
 	{
 	}
-
 }
