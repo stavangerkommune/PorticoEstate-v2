@@ -40,15 +40,22 @@ include_class('property', 'cron_parent', 'inc/cron/');
  */
 
 
-use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model;
-use GuzzleHttp\Client;
 
+use Microsoft\Kiota\Authentication\Cache\InMemoryAccessTokenCache;
 use Microsoft\Kiota\Authentication\Oauth\ClientCredentialContext;
 use Microsoft\Graph\Core\Authentication\GraphPhpLeagueAuthenticationProvider;
 use Microsoft\Graph\GraphRequestAdapter;
 use Microsoft\Graph\GraphServiceClient;
 use Microsoft\Graph\Core\GraphClientFactory;
+use Microsoft\Graph\Generated\Users\Item\Messages\MessagesRequestBuilderGetRequestConfiguration;
+
+use Microsoft\Graph\Generated\Models\Message;
+use Microsoft\Kiota\Abstractions\NativeResponseHandler;
+use Microsoft\Kiota\Http\Middleware\Options\ResponseHandlerOption;
+use Microsoft\Graph\Model\MailFolder;
+
+use Microsoft\Graph\Generated\Users\Item\UserItemRequestBuilderGetRequestConfiguration;
 
 class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 {
@@ -67,7 +74,7 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 		$this->function_msg = 'Hent epost fra eksterne';
 		$this->join = $this->db->join;
 
-		$this->config = CreateObject('admin.soconfig', $this->location_obj->get_id('property', '.admin'));
+		$this->config = CreateObject('admin.soconfig', $this->location_obj->get_id('property', '.admin'))->read();
 
 		$this->initializeGraph();
 	}
@@ -78,12 +85,19 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 		//https://github.com/microsoftgraph/msgraph-sdk-php/blob/main/docs/Examples.md
 		//https://learn.microsoft.com/en-us/graph/tutorials/php?tabs=aad&tutorial-step=3
 		//https://github.com/microsoftgraph/msgraph-sdk-php/issues/1483
-		$userPrincipalName = $this->config->config_data['xPortico']['mailbox'];
-		$tokenRequestContext = $this->getAccessToken();
+
+		$tenantId = $this->config['xPortico']['tenant_id'];
+		$clientId = $this->config['xPortico']['client_id'];
+		$clientSecret = $this->config['xPortico']['client_secret'];
+		$userPrincipalName = $this->config['xPortico']['mailbox'];
+
+		$tokenRequestContext = new ClientCredentialContext(
+			$tenantId,
+			$clientId,
+			$clientSecret
+		);
 
 		$authProvider = new GraphPhpLeagueAuthenticationProvider($tokenRequestContext);
-	
-		$scopes = ['User.Read', 'Mail.ReadWrite'];
 
 		// Create HTTP client with a Guzzle config to specify proxy
 		if (!empty($this->serverSettings['httpproxy_server']))
@@ -94,51 +108,38 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 		}
 		else
 		{
-			$guzzleConfig = null;
+			$guzzleConfig = array();
 		}
 
 
+$httpClient = GraphClientFactory::createWithConfig($guzzleConfig);
+$requestAdapter = new GraphRequestAdapter($authProvider, $httpClient);
+$this->graphServiceClient = GraphServiceClient::createWithRequestAdapter($requestAdapter);
 
-		$httpClient = GraphClientFactory::createWithConfig($guzzleConfig);
-		$requestAdapter = new GraphRequestAdapter($authProvider, $httpClient);
 
-		$this->graphServiceClient = GraphServiceClient::createWithRequestAdapter($requestAdapter);
+$requestConfig = new MessagesRequestBuilderGetRequestConfiguration(
+	queryParameters: MessagesRequestBuilderGetRequestConfiguration::createQueryParameters(
+		select: ['subject', 'body', 'from', 'isRead'],
+		top: 2
+	),
+	headers: ['Prefer' => 'outlook.body-content-type=text']
+);
 
-		$this->graphServiceClient = new GraphServiceClient($tokenRequestContext, $scopes);
 
-		$this->user = $this->graphServiceClient->users()->byUserId($userPrincipalName)->get()->wait();
+$messages = $this->graphServiceClient->users()->byUserId($userPrincipalName)->messages()->get($requestConfig)->wait();
+
+foreach ($messages->getValue() as $message)
+{
+	_debug_array($message->getSubject());
+	_debug_array($message->getBody()->getContent());
+	_debug_array($message->getFrom()->getEmailAddress()->getAddress());
+	_debug_array($message->getIsRead());
+	_debug_array($message->getId());
+}
+
 	}
 
-	private function getAccessToken()
-	{
-		$tenantId = $this->config->config_data['xPortico']['tenant_id'];
-		$clientId = $this->config->config_data['xPortico']['client_id'];
-		$clientSecret = $this->config->config_data['xPortico']['client_secret'];
 
-		
-		$tokenRequestContext = new ClientCredentialContext(
-			$tenantId,
-			$clientId,
-			$clientSecret
-		);
-
-		return $tokenRequestContext;
-
-
-// alternative way to get access token
-		$guzzle = new Client();
-		$url = "https://login.microsoftonline.com/{$tenantId}/oauth2/v2.0/token";
-		$token = json_decode($guzzle->post($url, [
-			'form_params' => [
-				'client_id' => $clientId,
-				'client_secret' => $clientSecret,
-				'scope' => 'https://graph.microsoft.com/.default',
-				'grant_type' => 'client_credentials',
-			],
-		])->getBody()->getContents());
-
-		return $token->access_token;
-	}
 
 	public function execute()
 	{
