@@ -34,36 +34,20 @@
  */
 include_class('property', 'cron_parent', 'inc/cron/');
 
-/**
- * 
- * Work in progress...
- */
-
-
-use Microsoft\Graph\Model;
-
-use Microsoft\Kiota\Authentication\Cache\InMemoryAccessTokenCache;
 use Microsoft\Kiota\Authentication\Oauth\ClientCredentialContext;
 use Microsoft\Graph\Core\Authentication\GraphPhpLeagueAuthenticationProvider;
 use Microsoft\Graph\GraphRequestAdapter;
 use Microsoft\Graph\GraphServiceClient;
 use Microsoft\Graph\Core\GraphClientFactory;
-//use Microsoft\Graph\Generated\Users\Item\Messages\MessagesRequestBuilderGetRequestConfiguration;
 use Microsoft\Graph\Generated\Users\Item\MailFolders\Item\Messages\MessagesRequestBuilderGetRequestConfiguration;
 use Microsoft\Graph\Generated\Models\Message;
 use Microsoft\Graph\Generated\Users\Item\Messages\Item\Move\MovePostRequestBody;
-use Microsoft\Kiota\Abstractions\NativeResponseHandler;
-use Microsoft\Kiota\Http\Middleware\Options\ResponseHandlerOption;
-use Microsoft\Graph\Model\MailFolder;
-
-use Microsoft\Graph\Generated\Users\Item\UserItemRequestBuilderGetRequestConfiguration;
 
 class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 {
 
 	private $graphServiceClient;
 	private $userPrincipalName;
-	private $user;
 	private $config;
 	private $items_to_move = array();
 
@@ -114,53 +98,11 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 			$guzzleConfig = array();
 		}
 
-
 		$httpClient = GraphClientFactory::createWithConfig($guzzleConfig);
 		$requestAdapter = new GraphRequestAdapter($authProvider, $httpClient);
 		$this->graphServiceClient = GraphServiceClient::createWithRequestAdapter($requestAdapter);
 
-
-		$requestConfig = new MessagesRequestBuilderGetRequestConfiguration(
-			queryParameters: MessagesRequestBuilderGetRequestConfiguration::createQueryParameters(
-				select: ['subject', 'body', 'from', 'isRead'],
-				top: 2
-			),
-			headers: ['Prefer' => 'outlook.body-content-type=text']
-		);
-
-
-
-		$source_folder = 'Portico_Leverandor-meldinger';
-		$targer_folder = 'ImportertTilDatabase';
-
-		$source_folder_id = $this->findFolderId($source_folder);
-		$targer_folder_id = $this->findFolderId($targer_folder);
-
-		$messages = $this->graphServiceClient->users()->byUserId($this->userPrincipalName)->mailFolders()->byMailFolderId($source_folder_id)->messages()->get($requestConfig)->wait();
-
-		foreach ($messages->getValue() as $message)
-		{
-			// Mark message as read
-			$requestBody = new Message();
-			$requestBody->setIsRead(true);
-
-			$message_id =  $message->getId();
-			$result = $this->graphServiceClient->users()->byUserId($this->userPrincipalName)->messages()->byMessageId($message_id)->patch($requestBody)->wait();
-
-			// move message to another folder
-			$requestBody = new MovePostRequestBody();
-			$requestBody->setDestinationId($targer_folder_id);
-
-			$result = $this->graphServiceClient->users()->byUserId($this->userPrincipalName)->messages()->byMessageId($message_id)->move()->post($requestBody)->wait();
-
-			_debug_array($message->getSubject());
-			_debug_array($message->getBody()->getContent());
-			_debug_array($message->getFrom()->getEmailAddress()->getAddress());
-			_debug_array($message->getIsRead());
-			_debug_array($message->getId());
-		}
 	}
-
 
 
 	public function execute()
@@ -168,7 +110,7 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 		$start = time();
 		$this->process_messages();
 		$msg = 'Tidsbruk: ' . (time() - $start) . ' sekunder';
-		$this->cron_log($msg, $cron);
+		$this->cron_log($msg);
 		echo "$msg\n";
 		$this->receipt['message'][] = array('msg' => $msg);
 	}
@@ -240,9 +182,15 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 
 	private function getUnreadMessages($folderId)
 	{
-		return $this->graphServiceClient->createRequest("GET", "/me/mailFolders/{$folderId}/messages?\$filter=isRead eq false")
-			->setReturnType(Model\Message::class)
-			->execute();
+		$requestConfig = new MessagesRequestBuilderGetRequestConfiguration(
+			queryParameters: MessagesRequestBuilderGetRequestConfiguration::createQueryParameters(
+				select: ['subject', 'body', 'from', 'isRead']
+			),
+			headers: ['Prefer' => 'outlook.body-content-type=text']
+		);
+		$messages = $this->graphServiceClient->users()->byUserId($this->userPrincipalName)->mailFolders()->byMailFolderId($folderId)->messages()->get($requestConfig)->wait();
+
+		return $messages;
 	}
 
 	private function handleMessage($message)
@@ -343,12 +291,12 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 		}
 	}
 
+
 	private function handleAttachments($message, $target)
 	{
-		$attachments = $this->graphServiceClient->createRequest("GET", "/me/messages/{$message->getId()}/attachments")
-			->setReturnType(Model\Attachment::class)
-			->execute();
+		//https://learn.microsoft.com/en-us/graph/api/message-list-attachments?view=graph-rest-1.0&tabs=php
 
+		$attachments = $this->graphServiceClient->users()->byUserId($this->userPrincipalName)->messages()->byMessageId($message->getId())->attachments()->get()->wait();
 		foreach ($attachments as $attachment)
 		{
 			if ($attachment->getIsInline())
@@ -356,8 +304,10 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 				continue;
 			}
 
-			$content = $this->graphServiceClient->createRequest("GET", "/me/messages/{$message->getId()}/attachments/{$attachment->getId()}/\$value")
-				->execute();
+			// Get the attachment content
+			//https://learn.microsoft.com/en-us/graph/api/attachment-get?view=graph-rest-1.0&tabs=php
+			$_attachment = $this->graphServiceClient->users()->byUserId($this->userPrincipalName)->messages()->byMessageId($message->getId())->attachments()->byAttachmentId($attachment->getId())->get()->wait();
+			$content = $_attachment->getContentBytes();
 
 			$tempFile = tempnam(sys_get_temp_dir(), "attachment");
 			file_put_contents($tempFile, $content);
@@ -377,9 +327,18 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 
 		foreach ($this->items_to_move as $messageId)
 		{
-			$this->graphServiceClient->createRequest("POST", "/me/messages/{$messageId}/move")
-				->attachBody(array("destinationId" => $destinationFolderId))
-				->execute();
+			// Mark message as read
+			$requestBody = new Message();
+			$requestBody->setIsRead(true);
+
+			$result = $this->graphServiceClient->users()->byUserId($this->userPrincipalName)->messages()->byMessageId($messageId)->patch($requestBody)->wait();
+
+			// move message to another folder
+			$requestBody = new MovePostRequestBody();
+			$requestBody->setDestinationId($destinationFolderId);
+
+			$result = $this->graphServiceClient->users()->byUserId($this->userPrincipalName)->messages()->byMessageId($messageId)->move()->post($requestBody)->wait();
+
 		}
 
 		$this->items_to_move = array();
@@ -719,59 +678,4 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 		return $ticket_id;
 	}
 
-	function clean_attacthment_from_temp($saved_attachments)
-	{
-		foreach ($saved_attachments as $saved_attachment)
-		{
-			unlink($saved_attachment['tmp_name']);
-		}
-	}
-
-	function add_attacthment_to_target($target, $saved_attachments)
-	{
-		$target['type'];
-		$target['id'];
-
-		$bofiles = CreateObject('property.bofiles');
-		foreach ($saved_attachments as $saved_attachment)
-		{
-			$file_name = str_replace(array('/', ' ', '..'), array('_', '_', '.'), $saved_attachment['name']);
-
-			if ($file_name && $target['id'])
-			{
-				$to_file = "{$bofiles->fakebase}/{$target['type']}/{$target['id']}/{$file_name}";
-
-				if ($bofiles->vfs->file_exists(array(
-					'string'	 => $to_file,
-					'relatives'	 => array(RELATIVE_NONE)
-				)))
-				{
-					$this->receipt['error'][] = array('msg' => lang('This file already exists !'));
-				}
-				else
-				{
-					$bofiles->create_document_dir("{$target['type']}/{$target['id']}");
-					$bofiles->vfs->override_acl = 1;
-
-					if (!$bofiles->vfs->cp(array(
-						'from'		 => $saved_attachment['tmp_name'],
-						'to'		 => $to_file,
-						'relatives'	 => array(RELATIVE_NONE | VFS_REAL, RELATIVE_ALL)
-					)))
-					{
-						$this->receipt['error'][] = array('msg' => lang('Failed to upload file !'));
-					}
-					$bofiles->vfs->override_acl = 0;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Set message as read
-	 */
-
-	function update_message()
-	{
-	}
 }
