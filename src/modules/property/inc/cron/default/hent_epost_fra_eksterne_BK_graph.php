@@ -29,7 +29,8 @@
  */
 /**
  * Description
- * example cron : /usr/local/bin/php -q /var/www/html/phpgroupware/property/inc/cron/cron.php default hent_epost_fra_eksterne_BK
+ * example cron : /usr/bin/php -q /var/www/Api/src/modules/property/inc/cron/cron.php default hent_epost_fra_eksterne_BK_graph
+
  * @package property
  */
 include_class('property', 'cron_parent', 'inc/cron/');
