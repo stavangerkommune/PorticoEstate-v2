@@ -324,25 +324,38 @@ class Acl
 	public function add($appname, $location, $rights, $grantor = -1, $mask = 0)
 	{
 		$app_id = $this->_get_app_id($appname);
-		$location_id	= $this->location_obj->get_id($appname, $location);
+		$_location_id	= $this->location_obj->get_id($appname, $location);
 
-		if (!$location_id > 0)
+		if (!$_location_id > 0)
 		{
 			return $this->_data;
 		}
-		$this->_clear_cache[$location_id] = true;
 
-		if (!isset($this->_data[$this->_account_id]) || !is_array($this->_data[$this->_account_id]))
+		$locations = array();
+		$locations[] = $_location_id;
+
+		if ($this->enable_inheritance)
 		{
-			$this->_data[$this->_account_id] = array();
+			$subs = $this->location_obj->get_subs($appname, $location);
+			$locations = array_unique(array_merge($locations, array_keys($subs)));
 		}
 
-		$this->_data[$this->_account_id][$location_id][] = array(
-			'account'	=> $this->_account_id,
-			'rights'	=> $rights,
-			'grantor'	=> $grantor,
-			'type'		=> $mask
-		);
+		foreach ($locations as $location_id)
+		{
+			$this->_clear_cache[$location_id] = true;
+
+			if (!isset($this->_data[$this->_account_id]) || !is_array($this->_data[$this->_account_id]))
+			{
+				$this->_data[$this->_account_id] = array();
+			}
+
+			$this->_data[$this->_account_id][$location_id][] = array(
+				'account'	=> $this->_account_id,
+				'rights'	=> $rights,
+				'grantor'	=> $grantor,
+				'type'		=> $mask
+			);
+		}
 		return $this->_data;
 	}
 
@@ -391,7 +404,6 @@ class Acl
 						unset($this->_data[$this->_account_id][$location_id][$idx]);
 						if (!count($this->_data[$this->_account_id][$location_id]))
 						{
-							//		unset($this->_data[$this->_account_id][$location_id]);
 							$this->_data[$this->_account_id][$location_id] = array();
 						}
 					}
@@ -422,12 +434,9 @@ class Acl
 		}
 		else
 		{
-			foreach ($this->_data[$this->_account_id] as $_app => $_location)
+			foreach ($this->_data[$this->_account_id] as $location_id => $dummy)
 			{
-				foreach ($_location as $location_id => $dummy)
-				{
-					$_locations[] = $location_id;
-				}
+				$_locations[] = $location_id;
 			}
 		}
 
@@ -510,29 +519,6 @@ class Acl
 				}
 				$new_data[$location_id][$entry['grantor']][$entry['type']] |= $entry['rights'];
 
-				/*
-						FIXME The inheritence model should be handled in the check
-					*/
-
-				if ($this->enable_inheritance)
-				{
-					$subs = $this->location_obj->get_subs($location_info['appname'], $location_info['location']);
-
-					foreach (array_keys($subs) as $sub)
-					{
-						//FIX ME for removing sub for inheritance
-						if (empty($this->_data[$acct_id][$sub]))
-						{
-//							continue;
-						}
-						if (!isset($new_data[$sub][$entry['grantor']][$entry['type']]))
-						{
-							$new_data[$sub][$entry['grantor']][$entry['type']] = 0;
-						}
-
-						$new_data[$sub][$entry['grantor']][$entry['type']] |= $entry['rights'];
-					}
-				}
 			}
 		}
 		
@@ -1982,7 +1968,7 @@ class Acl
 
 		while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
 		{
-			$this->_data[$this->_account_id][$row['app_id']][$row['location_id']][] = array(
+			$this->_data[$this->_account_id][$row['location_id']][] = array(
 				'account'       => $row['acl_account'],
 				'rights'        => $row['acl_rights'],
 				'grantor'       => $row['acl_grantor'],
