@@ -1153,12 +1153,12 @@ class Acl
 		$location = $this->_db->db_addslashes($location);
 
 		$sql = 'SELECT location_id FROM phpgw_locations'
-			. " JOIN phpgw_applications ON phpgw_locations.app_id = phpgw_applications.app_id"
-			. " WHERE phpgw_applications.app_name = '{$app}'"
-			. " AND phpgw_locations.name {$this->_like} '{$location}%'";
+		. ' JOIN phpgw_applications ON phpgw_locations.app_id = phpgw_applications.app_id'
+		. ' WHERE phpgw_applications.app_name = :app'
+		. ' AND phpgw_locations.name = :location';
 
 		$stmt = $this->_db->prepare($sql);
-		$stmt->execute();
+		$stmt->execute([':app' => $app, ':location' => $location]);
 
 		$locations = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
 
