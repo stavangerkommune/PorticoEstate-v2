@@ -162,7 +162,7 @@ class Acl
 	protected $cache;
 	protected $accounts;
 	protected $apps;
-	private $locations;
+	private $location_obj;
 
 	private static $instance = null;
 
@@ -188,7 +188,7 @@ class Acl
 		$this->cache = new Cache();
 		$this->accounts = new Accounts();
 		$this->apps = Settings::getInstance()->get('apps');
-		$this->locations = new Locations();
+		$this->location_obj = new Locations();
 		if ($account_id)
 		{
 			$this->set_account_id($account_id);
@@ -235,7 +235,7 @@ class Acl
 			if ($location)
 			{
 				$app_id			= $this->_get_app_id($appname);
-				$location_id	= $this->locations->get_id($appname, $location);
+				$location_id	= $this->location_obj->get_id($appname, $location);
 			}
 
 			$this->_read_repository($account_type, $app_id, $location_id);
@@ -324,7 +324,7 @@ class Acl
 	public function add($appname, $location, $rights, $grantor = -1, $mask = 0)
 	{
 		$app_id = $this->_get_app_id($appname);
-		$location_id	= $this->locations->get_id($appname, $location);
+		$location_id	= $this->location_obj->get_id($appname, $location);
 
 		if (!$location_id > 0)
 		{
@@ -367,12 +367,12 @@ class Acl
 		$app_id = $this->_get_app_id($appname);
 
 		$locations = array();
-		$locations[] = $this->locations->get_id($appname, $location);
+		$locations[] = $this->location_obj->get_id($appname, $location);
 
 		if ($this->enable_inheritance)
 		{
-			$subs = $this->locations->get_subs($appname, $location);
-			$locations = array_merge($locations, array_keys($subs));
+			$subs = $this->location_obj->get_subs($appname, $location);
+			$locations = array_unique(array_merge($locations, array_keys($subs)));
 		}
 
 		foreach ($locations as $location_id)
@@ -413,7 +413,7 @@ class Acl
 	public function save_repository($appname = '', $location = '')
 	{
 		$app_id = $this->_get_app_id($appname);
-		$location_id	= $this->locations->get_id($appname, $location);
+		$location_id	= $this->location_obj->get_id($appname, $location);
 
 		$_locations = array();
 		if ($appname)
@@ -436,7 +436,7 @@ class Acl
 			return; //nothing more to do here.
 		}
 		$acct_id = (int) $this->_account_id;
-		$locations = $this->locations;
+
 		$subs = array();
 		$sub_delete = '';
 
@@ -444,8 +444,8 @@ class Acl
 		{
 			foreach ($_locations as $location_id)
 			{
-				$location_info = $locations->get_name($location_id);
-				$_subs = $locations->get_subs($location_info['appname'], $location_info['location']);
+				$location_info = $this->location_obj->get_name($location_id);
+				$_subs = $this->location_obj->get_subs($location_info['appname'], $location_info['location']);
 				if ($_subs)
 				{
 					$subs = array_merge($subs, array_keys($_subs));
@@ -498,7 +498,7 @@ class Acl
 		
 		foreach ($this->_data[$acct_id] as $location_id => $at_location)
 		{
-			$location_info = $locations->get_name($location_id);
+			$location_info = $this->location_obj->get_name($location_id);
 			foreach ($at_location as $entry)
 			{
 				$entry['grantor']	= $entry['grantor'] ? $entry['grantor'] : -1;
@@ -516,10 +516,15 @@ class Acl
 
 				if ($this->enable_inheritance)
 				{
-					$subs = $locations->get_subs($location_info['appname'], $location_info['location']);
+					$subs = $this->location_obj->get_subs($location_info['appname'], $location_info['location']);
 
 					foreach (array_keys($subs) as $sub)
 					{
+						//FIX ME for removing sub for inheritance
+						if (empty($this->_data[$acct_id][$sub]))
+						{
+//							continue;
+						}
 						if (!isset($new_data[$sub][$entry['grantor']][$entry['type']]))
 						{
 							$new_data[$sub][$entry['grantor']][$entry['type']] = 0;
@@ -812,7 +817,7 @@ class Acl
 
 		$app_id = $this->_get_app_id($appname);
 
-		if (!$location_id = $this->locations->get_id($appname, $location))
+		if (!$location_id = $this->location_obj->get_id($appname, $location))
 		{
 			//not a valid location
 			return 0;
@@ -945,7 +950,7 @@ class Acl
 		$rights = 0;
 
 		$app_id = $this->_get_app_id($appname);
-		$location_id	= $this->locations->get_id($appname, $location);
+		$location_id	= $this->location_obj->get_id($appname, $location);
 
 		if (isset($this->_data[$this->_account_id][$location_id]) && count($this->_data[$this->_account_id][$location_id]))
 		{
@@ -1079,7 +1084,7 @@ class Acl
 			]);
 		}
 
-		$location_id = $this->locations->get_id($app, $location);
+		$location_id = $this->location_obj->get_id($app, $location);
 		if ($location_id)
 		{
 			$this->_delete_cache($account_id, $location_id);
