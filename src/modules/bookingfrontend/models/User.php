@@ -112,7 +112,7 @@ class User
      */
     public $delegates;
 
-    private $userHelper;
+    public $userHelper;
 
     public function __construct(UserHelper $userHelper)
     {
@@ -142,6 +142,7 @@ class User
             $this->street = $userDetails['street'] ?? null;
             $this->zip_code = $userDetails['zip_code'] ?? null;
             $this->city = $userDetails['city'] ?? null;
+            $this->customer_number = $userDetails['customer_number'] ?? null;
 
 
 //            $this->loadApplications();
