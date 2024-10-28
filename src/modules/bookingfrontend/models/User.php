@@ -49,6 +49,12 @@ class User
     public $orgname;
 
     /**
+     * @OA\Property(type="string")
+     * @Expose
+     */
+    public $customer_number;
+
+    /**
      * @OA\Property(type="integer")
      * @Expose
      */
