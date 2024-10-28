@@ -1706,7 +1706,7 @@ class property_uientity extends phpgwapi_uicommon_jquery
 		$this->flags['app_header'] = lang($this->type_app[$this->type]) . ' - ' . $appname . ': ' . $function_msg;
 		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function edit($values = array(), $mode = 'edit')

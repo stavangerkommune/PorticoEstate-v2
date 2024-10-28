@@ -404,7 +404,7 @@ class property_uis_agreement extends phpgwapi_uicommon_jquery
 		unset($parameters);
 		unset($parameters2);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	public function query()

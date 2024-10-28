@@ -491,7 +491,7 @@ JS;
 
 		unset($parameters);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function inbox()

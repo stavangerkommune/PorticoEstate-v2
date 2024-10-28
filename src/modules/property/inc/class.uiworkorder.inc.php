@@ -1079,7 +1079,7 @@ class property_uiworkorder extends phpgwapi_uicommon_jquery
 			);
 		}
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 	/*
 		 * Overrides with incoming data from POST

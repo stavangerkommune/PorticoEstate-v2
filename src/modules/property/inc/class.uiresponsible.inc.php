@@ -422,7 +422,7 @@ class property_uiresponsible extends phpgwapi_uicommon_jquery
 			$datatable['valida']			 = '';
 		}
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	public function query()

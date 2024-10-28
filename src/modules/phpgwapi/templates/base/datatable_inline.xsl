@@ -278,7 +278,7 @@
 																	for (; n &lt; numSelected; ) {
 
 														//				console.log(selected[n]);
-																		var aData = oTable<xsl:number value="$num"/>.fnGetData( selected[n] ); //complete dataset from json returned from server
+																		var aData = oTable<xsl:number value="$num"/>.api().rows(selected[n]).data()[0]; //complete dataset from json returned from server
 														//				console.log(aData);
 
 																		//delete stuff comes here

@@ -368,7 +368,7 @@ class property_uialarm extends phpgwapi_uicommon_jquery
 		phpgwapi_jquery::load_widget('numberformat');
 
 		self::add_javascript('property', 'base', 'uialarm.index.js');
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	public function query_list()
@@ -585,7 +585,7 @@ class property_uialarm extends phpgwapi_uicommon_jquery
 		phpgwapi_jquery::load_widget('core');
 		phpgwapi_jquery::load_widget('numberformat');
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function edit()

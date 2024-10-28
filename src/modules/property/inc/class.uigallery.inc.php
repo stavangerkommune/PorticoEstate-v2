@@ -386,7 +386,7 @@ class property_uigallery extends phpgwapi_uicommon_jquery
 		unset($parameters);
 		$data['datatable']['actions'][] = array();
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	public function query()

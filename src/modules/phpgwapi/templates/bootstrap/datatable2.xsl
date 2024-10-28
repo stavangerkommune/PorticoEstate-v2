@@ -883,25 +883,25 @@
 									// look for the word "DELETE" in URL and my_name
 									if(substr_count(action,'delete')>0 || substr_count(my_name,'delete')>0)
 									{
-									action += "&amp;confirm=yes&amp;phpgw_return_as=json";
-									execute_ajax(action, function(result){
-									document.getElementById("message").innerHTML += '<br/>' + result;
-									
-									oTable.api().draw();
+										action += "&amp;confirm=yes&amp;phpgw_return_as=json";
+										execute_ajax(action, function(result){
+											document.getElementById("message").innerHTML += '<br/>' + result;
+										
+											oTable.api().draw('page');
 
-									});
+										});
 									}
 									else if (target == 'ajax')
 									{
-									action += "&amp;phpgw_return_as=json";
-									execute_ajax(action, function(result){
-									document.getElementById("message").innerHTML += '<br/>' + result;
-									oTable.api().draw();
-									});
+										action += "&amp;phpgw_return_as=json";
+										execute_ajax(action, function(result){
+											document.getElementById("message").innerHTML += '<br/>' + result;
+											oTable.api().draw('page');
+										});
 									}
 									else
 									{
-									window.open(action,target);
+										window.open(action,target);
 									}
 									n++;
 									}
@@ -945,7 +945,6 @@
 				{
 					group_buttons = true;
 				}
-//				$.fn.dataTable.Buttons.swfPath = "phpgwapi/js/DataTables/extensions/Buttons/swf/flashExport.swf";
 
 
 				if(isChrome == true)
@@ -1103,7 +1102,7 @@
 							topStart: null,
 							topEnd: 'search',
 							bottomStart: ['pageLength'],
-							bottomEnd: ['paging'],
+							bottomEnd: ['inputPaging'],
 							bottom2Start: 'info'
 					}
 			}
@@ -1113,7 +1112,7 @@
 							topStart: 'buttons',
 							topEnd: 'search',
 							bottomStart: ['pageLength'],
-							bottomEnd: ['paging'],
+							bottomEnd: ['inputPaging'],
 							bottom2Start: 'info'
 					}
 			}
@@ -1121,10 +1120,7 @@
 			init_table = function()
 			{
 				oTable = $('#datatable-container').dataTable({
-	//			oTable = new DataTable(#datatable-container', {
-
 				paginate:		disablePagination ? false : true,
-//				pagingType:		"input",
 				searchDelay: 	1200,
 				processing:		true,
 				serverSide:		true,
@@ -1201,7 +1197,7 @@
 						{
 							$('#active_filters').html("Aktive filter: " + active_filters_html.join(', '));
 						}
-						var search_value = $('.dataTables_filter input[aria-controls="datatable-container"]').val();
+						var search_value = $('.dt-search input[aria-controls="datatable-container"]').val();
 
 						if(active_filters_html.length > 0 || search_value || column_search_is_initated)
 						{

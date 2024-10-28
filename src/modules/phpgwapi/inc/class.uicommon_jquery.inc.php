@@ -97,69 +97,13 @@ abstract class phpgwapi_uicommon_jquery
 		phpgwapi_jquery::load_widget('contextMenu');
 		self::add_javascript('phpgwapi', "jquery", 'common.js', false, array('combine' => true));
 
-		//experimental
-		$datatable2 = true;
 
-		if ($datatable2)
-		{
-			Settings::getInstance()->update('server', ['datatable2' => true]);
-			self::add_javascript('phpgwapi', 'DataTables2', 'datatables.js', false, array('combine' => false));
-			self::add_javascript('phpgwapi', 'DataTables2', 'plugins/input.js', false, array('combine' => false));
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.min.js', false, array('combine' => true));
-			self::add_javascript('phpgwapi', 'DataTables2', 'plugins/jquery.dataTables.editable.js', false, array('combine' => true));
-			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/DataTables2/datatables.min.css');
-
-		}
-		else
-		{
-
-			self::add_javascript('phpgwapi', 'DataTables', 'DataTables/js/jquery.dataTables.min.js', false, array('combine' => true));
-
-			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/DataTables/DataTables/css/jquery.dataTables.min.css');
-			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/DataTables/Responsive/css/responsive.dataTables.min.css');
-			phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/DataTables/Buttons/css/buttons.dataTables.css');
-			/**
-			 * If we want to use boostrap - styling
-			 */
-			if (in_array($this->userSettings['preferences']['common']['template_set'], array('bookingfrontend', 'bookingfrontend_2', 'bootstrap')))
-			{
-				phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/DataTables/DataTables/css/dataTables.bootstrap5.min.css');
-				phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/DataTables/Buttons/css/buttons.bootstrap5.min.css');
-				phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/DataTables/Select/css/select.bootstrap5.min.css');
-				phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/DataTables/Scroller/css/scroller.bootstrap5.min.css');
-				phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/DataTables/FixedColumns/css/fixedColumns.bootstrap5.min.css');
-				self::add_javascript('phpgwapi', 'DataTables', 'DataTables/js/dataTables.bootstrap5.min.js', false, array('combine' => true));
-				self::add_javascript('phpgwapi', 'DataTables', 'FixedColumns/js/fixedColumns.bootstrap5.min.js', false, array('combine' => true));
-				self::add_javascript('phpgwapi', 'DataTables', 'Scroller/js/scroller.bootstrap5.min.js', false, array('combine' => true));
-			}
-			else
-			{
-				phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/DataTables/DataTables/css/dataTables.jqueryui.min.css');
-				phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/DataTables/Scroller/css/scroller.jqueryui.min.css');
-				phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/DataTables/FixedColumns/css/fixedColumns.jqueryui.min.css');
-				self::add_javascript('phpgwapi', 'DataTables', 'DataTables/js/dataTables.jqueryui.min.js', false, array('combine' => true));
-				self::add_javascript('phpgwapi', 'DataTables', 'FixedColumns/js/fixedColumns.jqueryui.min.js', false, array('combine' => true));
-				self::add_javascript('phpgwapi', 'DataTables', 'Scroller/js/scroller.jqueryui.min.js', false, array('combine' => true));
-			}
-
-
-			self::add_javascript('phpgwapi', 'DataTables', 'Scroller/js/dataTables.scroller.js', false, array('combine' => true));
-			self::add_javascript('phpgwapi', 'DataTables', 'FixedColumns/js/dataTables.fixedColumns.js', false, array('combine' => true));
-
-
-			self::add_javascript('phpgwapi', 'DataTables', 'Responsive/js/dataTables.responsive.js', false, array('combine' => true));
-			//Buttons
-			self::add_javascript('phpgwapi', 'DataTables', 'Buttons/js/dataTables.buttons.min.js', false, array('combine' => true));
-			self::add_javascript('phpgwapi', 'DataTables', 'Buttons/js/buttons.flash.js', false, array('combine' => true));
-			self::add_javascript('phpgwapi', 'DataTables', 'Buttons/js/buttons.html5.js', false, array('combine' => true));
-			self::add_javascript('phpgwapi', 'jszip', 'jszip.min.js', false, array('combine' => true));
-			self::add_javascript('phpgwapi', 'DataTables', 'Select/js/dataTables.select.min.js', false, array('combine' => true));
-			//			self::add_javascript('phpgwapi', 'DataTables', 'ColReorder/js/dataTables.ColReorder.min.js', false, array('combine' => true ));
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.js', false, array('combine' => true));
-			self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js', false, array('combine' => true));
-			self::add_javascript('phpgwapi', 'DataTables', 'plugins/input.js', false, array('combine' => true));
-		}
-
+		self::add_javascript('phpgwapi', 'DataTables2', 'datatables.min.js', false, array('combine' => true));
+		self::add_javascript('phpgwapi', 'DataTables2', 'plugins/dataTables.inputPaging.min.js', false, array('combine' => true));
+		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.jeditable.min.js', false, array('combine' => true));
+		self::add_javascript('phpgwapi', 'jquery', 'editable/jquery.dataTables.editable.js', false, array('combine' => true));
+		phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/DataTables2/datatables.min.css');
+		phpgwapi_css::getInstance()->add_external_file('phpgwapi/js/DataTables2/plugins/dataTables.inputPaging.min.css');
 
 		//pop up script
 		self::add_javascript('phpgwapi', 'tinybox2', 'packed.js', false, array('combine' => true));
@@ -560,11 +504,6 @@ abstract class phpgwapi_uicommon_jquery
 
 	public static function render_template_xsl($files, $data, $xsl_rootdir = '', $base = 'data')
 	{
-		//experimental
-		if (!empty(Settings::getInstance()->get('server')['datatable2']) && $files == 'datatable_jquery')
-		{
-			$files = 'datatable2';
-		}
 
 		$flags = Settings::getInstance()->get('flags');
 		$flags['xslt_app'] = true;

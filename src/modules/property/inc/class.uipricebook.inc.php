@@ -455,7 +455,7 @@ class property_uipricebook extends phpgwapi_uicommon_jquery
 		phpgwapi_jquery::load_widget('numberformat');
 
 		self::add_javascript('property', 'base', 'pricebook.index.js');
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	private function query_group_filter()
@@ -642,7 +642,7 @@ class property_uipricebook extends phpgwapi_uicommon_jquery
 		phpgwapi_jquery::load_widget('core');
 		phpgwapi_jquery::load_widget('numberformat');
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function edit_agreement_group()
@@ -1272,7 +1272,7 @@ JS;
 
 		phpgwapi_js::getInstance()->add_code('', $js, true);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	public function query_vendor($activity_id)
@@ -1490,7 +1490,7 @@ JS;
 
 		$this->save_sessiondata();
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function edit_activity()

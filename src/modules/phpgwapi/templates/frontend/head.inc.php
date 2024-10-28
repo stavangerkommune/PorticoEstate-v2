@@ -85,10 +85,9 @@ $stylesheets = array();
 $stylesheets[] = "/phpgwapi/templates/pure/css/version_3/pure-min.css";
 $stylesheets[] = "/phpgwapi/templates/pure/css/pure-extension.css";
 $stylesheets[] = "/phpgwapi/templates/pure/css/version_3/grids-responsive-min.css";
+$stylesheets[] = "/phpgwapi/js/DataTables2/datatables.min.css";
 
-$stylesheets[] = "/phpgwapi/js/DataTables/DataTables/css/jquery.dataTables.min.css";
-$stylesheets[] = "/phpgwapi/js/DataTables/DataTables/css/dataTables.jqueryui.min.css";
-$stylesheets[] = "/phpgwapi/js/DataTables/Responsive/css/responsive.dataTables.min.css";
+
 $stylesheets[] = "/{$app}/templates/base/css/base.css";
 //	$stylesheets[] = "/{$app}/css/frontend.css";
 $stylesheets[] = "/phpgwapi/templates/frontend/css/frontend.css";

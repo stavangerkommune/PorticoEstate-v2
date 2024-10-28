@@ -264,7 +264,7 @@
 
 			unset($parameters);
 
-			self::render_template_xsl('datatable_jquery', $data);
+			self::render_template_xsl('datatable2', $data);
 		}
 
 		public function query( $data = array() )
@@ -627,7 +627,7 @@
 			unset($parameters3);
 			unset($parameters4);
 
-			self::render_template_xsl('datatable_jquery', $data);
+			self::render_template_xsl('datatable2', $data);
 		}
 
 		public function save()
@@ -1436,7 +1436,7 @@
 
 			unset($parameters);
 			unset($parameters2);
-			self::render_template_xsl('datatable_jquery', $data);
+			self::render_template_xsl('datatable2', $data);
 		}
 
 		function list_attribute()
@@ -1653,7 +1653,7 @@
 			unset($parameters);
 			unset($parameters2);
 
-			self::render_template_xsl('datatable_jquery', $data);
+			self::render_template_xsl('datatable2', $data);
 		}
 
 		function edit_attrib_group()
@@ -2276,7 +2276,7 @@
 			unset($parameters);
 			unset($parameters2);
 
-			self::render_template_xsl('datatable_jquery', $data);
+			self::render_template_xsl('datatable2', $data);
 		}
 
 		function edit_custom_function()
@@ -2845,7 +2845,7 @@
 
 			
 
-			self::render_template_xsl('datatable_jquery', $data);
+			self::render_template_xsl('datatable2', $data);
 		}
 
 		function list_checklist_stage()
@@ -3017,7 +3017,7 @@
 
 			unset($parameters);
 
-			self::render_template_xsl('datatable_jquery', $data);
+			self::render_template_xsl('datatable2', $data);
 		}
 
 		/**

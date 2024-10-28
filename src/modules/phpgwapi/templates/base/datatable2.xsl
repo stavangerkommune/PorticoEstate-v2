@@ -907,7 +907,7 @@
 									execute_ajax(action, function(result){
 									document.getElementById("message").innerHTML += '<br/>' + result;
 									
-									oTable.api().draw();
+									oTable.api().draw('page');
 
 									});
 									}
@@ -916,7 +916,7 @@
 									action += "&amp;phpgw_return_as=json";
 									execute_ajax(action, function(result){
 									document.getElementById("message").innerHTML += '<br/>' + result;
-									oTable.api().draw();
+									oTable.api().draw('page');
 									});
 									}
 									else
@@ -965,7 +965,6 @@
 				{
 					group_buttons = true;
 				}
-//				$.fn.dataTable.Buttons.swfPath = "phpgwapi/js/DataTables/extensions/Buttons/swf/flashExport.swf";
 
 
 				if(isChrome == true)
@@ -1123,7 +1122,7 @@
 							topStart: null,
 							topEnd: 'search',
 							bottomStart: ['pageLength'],
-							bottomEnd: ['paging'],
+							bottomEnd: ['inputPaging'],
 							bottom2Start: 'info'
 					}
 			}
@@ -1133,7 +1132,7 @@
 							topStart: 'buttons',
 							topEnd: 'search',
 							bottomStart: ['pageLength'],
-							bottomEnd: ['paging'],
+							bottomEnd: ['inputPaging'],
 							bottom2Start: 'info'
 					}
 			}
@@ -1141,9 +1140,7 @@
 			init_table = function()
 			{
 				oTable = $('#datatable-container').dataTable({
-
 				paginate:		disablePagination ? false : true,
-//				pagingType:		"input",
 				searchDelay: 	1200,
 				processing:		true,
 				serverSide:		true,
@@ -1220,7 +1217,7 @@
 						{
 							$('#active_filters').html("Aktive filter: " + active_filters_html.join(', '));
 						}
-						var search_value = $('.dataTables_filter input[aria-controls="datatable-container"]').val();
+						var search_value = $('.dt-search input[aria-controls="datatable-container"]').val();
 
 						if(active_filters_html.length > 0 || search_value || column_search_is_initated)
 						{

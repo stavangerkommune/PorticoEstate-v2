@@ -1032,9 +1032,10 @@ class property_uilocation extends phpgwapi_uicommon_jquery
 
 				$(document).ready(function() {
 					$("#datatable-container").on("click", "tbody tr", function() {
-					var iPos = oTable.fnGetPosition( this );
-					var aData = oTable.fnGetData( iPos ); //complete dataset from json returned from server
-
+				//	var iPos = oTable.fnGetPosition( this );
+					var iPos =oTable.api().row(this).index();
+				//	var aData = oTable.fnGetData( iPos ); //complete dataset from json returned from server
+					var aData = oTable.api().rows( iPos ).data()[0];
 					if(typeof(iPos) === 'undefined')
 					{
 						return;
@@ -1400,7 +1401,7 @@ JS;
 		$flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 		Settings::getInstance()->set('flags', $flags);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function get_uicols_responsiblility_role()
@@ -3303,7 +3304,7 @@ JS;
 		$flags = Settings::getInstance()->get('flags');
 		$flags['app_header'] = lang('property') . ' - ' . $appname . ': ' . $function_msg;
 		Settings::getInstance()->set('flags', $flags);
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function get_delivery_address()

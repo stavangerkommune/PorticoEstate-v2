@@ -1520,7 +1520,7 @@ JS;
 
 		Settings::getInstance()->update('flags', ['app_header' => $this->lang_app_name . ': ' . $function_msg]);
 
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function upload_clip()

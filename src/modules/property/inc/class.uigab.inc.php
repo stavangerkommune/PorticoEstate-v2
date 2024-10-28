@@ -437,7 +437,7 @@ JS;
 		Settings::getInstance()->update('flags', ['app_header' => $this->flags['app_header']]);
 
 		self::add_javascript('property', 'base', 'gab.index.js');
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	/**

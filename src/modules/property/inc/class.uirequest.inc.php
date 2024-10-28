@@ -1172,7 +1172,7 @@ JS;
 		}
 
 		self::add_javascript('property', 'base', 'request.index.js');
-		self::render_template_xsl('datatable_jquery', $data);
+		self::render_template_xsl('datatable2', $data);
 	}
 
 	function priority_key()
