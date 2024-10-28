@@ -209,6 +209,9 @@ class PECalendar {
                     nointeraction = false,
                     filterGroups = undefined
                 }) {
+
+        // resource_id=416;
+        // building_id=130;
         luxon.Settings.defaultLocale = getCookie("selected_lang") || 'no';
         this.instance = instance;
         this.disableInteraction = nointeraction;
@@ -399,40 +402,6 @@ class PECalendar {
     });
 
 
-    mergeDateTimestamps(events) {
-        return events.map(event => {
-            if (!event.dates || event.dates.length <= 1) {
-                return event; // No need to merge if there's only one or no dates
-            }
-
-            // Sort dates by start time
-            const sortedDates = [...event.dates].sort((a, b) =>
-                a.from_.localeCompare(b.from_)
-            );
-
-            const mergedDates = sortedDates.reduce((acc, current) => {
-                if (acc.length === 0) {
-                    acc.push(current);
-                    return acc;
-                }
-
-                const last = acc[acc.length - 1];
-                const lastDate = last.from_.split(' ')[0];
-                const currentDate = current.from_.split(' ')[0];
-
-                if (lastDate === currentDate && last.to_ === current.from_) {
-                    // Merge the timestamps
-                    last.to_ = current.to_;
-                } else {
-                    acc.push(current);
-                }
-
-                return acc;
-            }, []);
-
-            return { ...event, dates: mergedDates };
-        });
-    }
 
 
     async loadBuildingData() {
@@ -472,9 +441,7 @@ class PECalendar {
             this.calculateStartEndHours(buildingData?.schedule || [], buildingData.seasons);
             this.seasons(buildingData.seasons);
             this.availableTimeSlots(timeSlotsData);
-            const eventsWithMergedDates = this.mergeDateTimestamps(buildingData?.schedule || []);
-            this.events(eventsWithMergedDates);
-            // this.events(buildingData?.schedule || []);
+            this.events(buildingData?.schedule || []);
         } catch (error) {
             console.error('Error loading building data:', error);
         }
@@ -633,57 +600,57 @@ class PECalendar {
         return gridCells;
     });
 
-
-    /**
-     * Calculates and returns time intervals based on given dates and specified start and end hours.
-     *
-     * @param {Array<{from_: string, to_: string}>} dates - An array of date objects with from and to properties.
-     * @param {number} startHour - The start hour constraint.
-     * @param {number} endHour - The end hour constraint.
-     * @returns {Array<{from: luxon.DateTime, to: luxon.DateTime}>} An array of calculated intervals.
-     */
-    getIntervals(dates, startHour, endHour) {
-        const intervals = [];
-
-        // Iterate over each date in the input array
-        for (let date of dates) {
-            // Convert date strings to luxon.DateTime objects
-            let fromDate = luxon.DateTime.fromISO(date.from_.replace(" ", "T"));
-            const toDate = luxon.DateTime.fromISO(date.to_.replace(" ", "T"));
-
-            // Calculate intervals ensuring they stay within the start and end hour constraints
-            while (fromDate < toDate) {
-                let from = fromDate;
-                let to = fromDate.set({hour: endHour, minute: 0, second: 0});
-
-                if (fromDate.hour < startHour) {
-                    from = fromDate.set({hour: startHour, minute: 0, second: 0});
-                }
-
-                if (toDate < to) {
-                    to = toDate;
-                }
-
-                // Add the calculated interval to the intervals array
-                intervals.push({
-                    from: from,
-                    to: to
-                });
-
-                // Move to the next day starting from the specified start hour
-                fromDate = fromDate.set({hour: endHour, minute: 0, second: 0}).plus({days: 1}).set({
-                    hour: startHour,
-                    minute: 0,
-                    second: 0
-                });
-            }
-        }
-
-        // // Log the calculated intervals (this can be removed if not needed in production)
-        // console.log("Intervals", intervals);
-
-        return intervals;
-    }
+    //
+    // /**
+    //  * Calculates and returns time intervals based on given dates and specified start and end hours.
+    //  *
+    //  * @param {Array<{from_: string, to_: string}>} dates - An array of date objects with from and to properties.
+    //  * @param {number} startHour - The start hour constraint.
+    //  * @param {number} endHour - The end hour constraint.
+    //  * @returns {Array<{from: luxon.DateTime, to: luxon.DateTime}>} An array of calculated intervals.
+    //  */
+    // getIntervals(dates, startHour, endHour) {
+    //     const intervals = [];
+    //
+    //     // Iterate over each date in the input array
+    //     for (let date of dates) {
+    //         // Convert date strings to luxon.DateTime objects
+    //         let fromDate = luxon.DateTime.fromISO(date.from_.replace(" ", "T"));
+    //         const toDate = luxon.DateTime.fromISO(date.to_.replace(" ", "T"));
+    //
+    //         // Calculate intervals ensuring they stay within the start and end hour constraints
+    //         while (fromDate < toDate) {
+    //             let from = fromDate;
+    //             let to = fromDate.set({hour: endHour, minute: 0, second: 0});
+    //
+    //             if (fromDate.hour < startHour) {
+    //                 from = fromDate.set({hour: startHour, minute: 0, second: 0});
+    //             }
+    //
+    //             if (toDate < to) {
+    //                 to = toDate;
+    //             }
+    //
+    //             // Add the calculated interval to the intervals array
+    //             intervals.push({
+    //                 from: from,
+    //                 to: to
+    //             });
+    //
+    //             // Move to the next day starting from the specified start hour
+    //             fromDate = fromDate.set({hour: endHour, minute: 0, second: 0}).plus({days: 1}).set({
+    //                 hour: startHour,
+    //                 minute: 0,
+    //                 second: 0
+    //             });
+    //         }
+    //     }
+    //
+    //     // // Log the calculated intervals (this can be removed if not needed in production)
+    //     // console.log("Intervals", intervals);
+    //
+    //     return intervals;
+    // }
 
 
     /**
@@ -693,20 +660,24 @@ class PECalendar {
      * @returns {Array<{from: luxon.DateTime, to: luxon.DateTime}>} - An array of objects, each containing a "from" and "to" luxon.DateTime.
      */
     getEventDates(event) {
-        if (event?.dates && event.dates.length > 0) {
-            return event.dates.map(date => ({
-                from: luxon.DateTime.fromISO(date.from_.replace(" ", "T")),
-                to: luxon.DateTime.fromISO(date.to_.replace(" ", "T"))
-            }));
-        } else {
+        // if (event?.dates && event.dates.length > 0 && false) {
+        //     return event.dates.map(date => ({
+        //         from: luxon.DateTime.fromISO(date.from_.replace(" ", "T")),
+        //         to: luxon.DateTime.fromISO(date.to_.replace(" ", "T"))
+        //     }));
+        // } else {
             // Construct luxon.DateTime objects for event's start and end times
             const dateFrom = luxon.DateTime.fromISO(`${event.date}T${event.from}`);
             const dateTo = luxon.DateTime.fromISO(`${event.date}T${event.to}`);
+
+            // console.log(event.id, event.from, event.to, dateFrom.toISO(), dateTo.toISO())
             return [{
                 from: dateFrom,
-                to: dateTo
+                to: dateTo,
+                from_str:dateFrom.toISO(),
+                to_str: dateTo.toISO()
             }];
-        }
+        // }
     }
 
 
@@ -858,7 +829,6 @@ class PECalendar {
 
 
     sizedEvents = ko.computed(() => {
-
         if (!this.resourceEvents() || this.resourceEvents().length === 0) {
             return []
         }
@@ -876,19 +846,21 @@ class PECalendar {
                             days[dayKey] = [];
                         }
 
+                        // Calculate proper start and end times for this day's portion of the event
                         let dayStart, dayEnd;
-
                         if (currentDate.hasSame(dateRange.from, 'day')) {
-                            // First day of the event
+                            // First day - use actual start time
                             dayStart = dateRange.from;
-                            dayEnd = currentDate.endOf('day');
-                        } else if (currentDate.hasSame(dateRange.to, 'day')) {
-                            // Last day of the event
+                        } else {
+                            // Middle or last day - start at beginning of day
                             dayStart = currentDate.startOf('day');
+                        }
+
+                        if (currentDate.hasSame(dateRange.to, 'day')) {
+                            // Last day - use actual end time
                             dayEnd = dateRange.to;
                         } else {
-                            // Middle days of the event
-                            dayStart = currentDate.startOf('day');
+                            // First or middle day - end at end of day
                             dayEnd = currentDate.endOf('day');
                         }
 
@@ -896,7 +868,9 @@ class PECalendar {
                             event,
                             date: {
                                 from: dayStart,
-                                to: dayEnd
+                                to: dayEnd,
+                                from_str: dayStart.toISO(),
+                                to_str: dayEnd.toISO()
                             },
                         });
                     }
@@ -911,20 +885,18 @@ class PECalendar {
             eventsByDay[dayKey] = this.allocateEvents(eventsByDay[dayKey]);
         });
 
-
         // Rebuild the array for the computed observable
         const calEvents = [];
         Object.entries(eventsByDay).forEach(([dayKey, events]) => {
             events.forEach(({event, date, columnSpan, startColumn}) => {
-                // Add more properties as needed
                 const props = {
                     [`event-${event.type}`]: true,
-                    columnSpan: columnSpan, // Use the calculated columnSpan
-                    startColumn: startColumn, // Use the calculated columnSpan
+                    columnSpan: columnSpan,
+                    startColumn: startColumn,
                 };
 
-                const heightREM = ko.observable(100); // Adjust as needed based on event details
-                const popper = ko.observable(null); // Adjust as needed based on event details
+                const heightREM = ko.observable(100);
+                const popper = ko.observable(null);
 
                 calEvents.push({event, date, props, heightREM, popper});
             });
@@ -1557,6 +1529,8 @@ class PECalendar {
         }
 
         if (e.popper && e.popper()) {
+            // console.log(e)
+
             e.popper().update()
         }
 

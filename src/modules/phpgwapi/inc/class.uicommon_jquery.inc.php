@@ -565,7 +565,7 @@ abstract class phpgwapi_uicommon_jquery
 		{
 			$files = 'datatable2';
 		}
-		
+
 		$flags = Settings::getInstance()->get('flags');
 		$flags['xslt_app'] = true;
 		Settings::getInstance()->update('flags', ['xslt_app' => true]);
