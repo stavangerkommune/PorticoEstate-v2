@@ -47,12 +47,14 @@ class import_conversion
 		}
 		$this->filename_template = 'etter_registrer_fakturamottak_ebf';
 		$this->bocommon		 = CreateObject('property.bocommon');
-
 	}
 
 	public function add($data)
 	{
 		$BA = trim($data[0]);
+		/**
+		 * In case there are empty rows at the end.
+		 */
 		if (empty($BA))
 		{
 			return true;
@@ -64,19 +66,14 @@ class import_conversion
 
 		$received_amount = $belop * 0.8; //shave off 25 % tax from the top.
 
-		_debug_array($order_id);
-		_debug_array($Bilagsnr);
-		_debug_array($belop);
-		_debug_array($received_amount);
-
-		/**
-		 * In case there are empty rows at the end.
-		 */
-//		if (empty($BA))
+		if ($this->debug)
 		{
+			_debug_array($order_id);
+			_debug_array($Bilagsnr);
+			_debug_array($belop);
+			_debug_array($received_amount);
 			return true;
 		}
-
 
 		$this->db->Exception_On_Error = true;
 		$received = false;
@@ -86,7 +83,7 @@ class import_conversion
 		try
 		{
 
-			if (!$receive_order_performed )
+			if (!$receive_order_performed)
 			{
 
 				$order_type = $this->bocommon->socommon->get_order_type($order_id);
