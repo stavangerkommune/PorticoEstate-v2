@@ -48,7 +48,7 @@ const UserLayout: FC<UserLayoutProps> = (props) => {
     }, [user])
 
 
-    if(!user.data?.is_logged_in && !user.isLoading) {
+    if (!user.data?.is_logged_in && !user.isLoading) {
         router.push('/')
         return;
     }
@@ -58,8 +58,8 @@ const UserLayout: FC<UserLayoutProps> = (props) => {
         return;
     }
 
-    if(user.isLoading) {
-        return <Spinner title={'Loading user'} />
+    if (user.isLoading) {
+        return <Spinner title={'Loading user'}/>
     }
 
 
@@ -82,12 +82,14 @@ const UserLayout: FC<UserLayoutProps> = (props) => {
                             {links.map((link) => {
                                 const SVGIcon = link.icon;
 
-                                return (<Tabs.Tab value={link.href} asChild key={link.href}>
-                                    <Link href={link.href} className={'link-text link-text-unset normal'}>
-                                        <SVGIcon fontSize='1.75rem' aria-hidden/>
-                                        {link.label}
+                                return (
+                                    <Link key={link.href} href={link.href} className={'link-text link-text-unset normal'}>
+                                        <Tabs.Tab value={link.href} >
+                                            <SVGIcon fontSize='1.75rem' aria-hidden/>
+                                            {link.label}
+                                        </Tabs.Tab>
                                     </Link>
-                                </Tabs.Tab>)
+                                )
                             })}
                         </Tabs.List>
 
