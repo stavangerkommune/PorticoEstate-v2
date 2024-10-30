@@ -59,7 +59,7 @@ const UserLayout: FC<UserLayoutProps> = (props) => {
     }
 
     if(user.isLoading) {
-        return <Spinner />
+        return <Spinner title={'Loading user'} />
     }
 
 
