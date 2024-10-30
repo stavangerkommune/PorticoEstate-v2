@@ -1,11 +1,10 @@
 'use client'
 import {FC, PropsWithChildren, useMemo} from 'react';
-import {redirect, usePathname, useRouter} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import {useIsMobile} from "@/service/hooks/is-mobile";
 import Link from "next/link";
 import {useBookingUser} from "@/service/hooks/api-hooks";
 import styles from "@/components/layout/header/internal-nav/internal-nav.module.scss";
-import {phpGWLink} from "@/service/util";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 import {useTrans} from "@/app/i18n/ClientTranslationProvider";
@@ -14,11 +13,9 @@ import {
     TasklistSendIcon,
     ReceiptIcon,
     PersonGroupIcon,
-    InformationIcon,
-    InformationSquareIcon
+    InformationSquareIcon,
 } from "@navikt/aksel-icons";
 import {Spinner, Tabs} from "@digdir/designsystemet-react";
-import SvgTasklistSend from "@navikt/aksel-icons/src/TasklistSend";
 
 interface UserLayoutProps extends PropsWithChildren {
 }
@@ -35,7 +32,7 @@ const UserLayout: FC<UserLayoutProps> = (props) => {
 
     const links = useMemo(() => {
         const temp: ({
-            icon: typeof SvgTasklistSend;
+            icon: typeof TasklistSendIcon;
             href: string;
             label: string
         })[] = [
