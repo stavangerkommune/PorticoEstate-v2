@@ -35,7 +35,7 @@ const Details: FC<DetailsProps> = (props) => {
                 }}
             >
                 <Table.Body>
-                    {fields.map(a => <Table.Row key={a.key}><Table.Cell>{a.label}</Table.Cell><Table.Cell>{user?.[a.key]}</Table.Cell></Table.Row>)}
+                    {fields.map(a => <Table.Row key={a.key}><Table.Cell>{a.label}</Table.Cell><Table.Cell>{user?.[a.key] as string}</Table.Cell></Table.Row>)}
                 </Table.Body>
             </Table>
         </main>
