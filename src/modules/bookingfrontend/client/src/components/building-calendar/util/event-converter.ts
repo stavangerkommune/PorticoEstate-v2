@@ -20,8 +20,8 @@ export function FCallEventConverter(event: IEvent, enabledResources: Set<string>
     //     endDateTime = DateTime.fromSQL(event.dates[0].to_);
     // } else {
         // If no dates array, use the top-level from/to/date
-        startDateTime = DateTime.fromISO(`${event.date}T${event.from}`);
-        endDateTime = DateTime.fromISO(`${event.date}T${event.to}`);
+        startDateTime = DateTime.fromSQL(event._from);
+        endDateTime = DateTime.fromSQL(event._to);
     // }
 
     // Calculate the duration of the event in minutes
