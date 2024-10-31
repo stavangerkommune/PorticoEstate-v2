@@ -124,7 +124,6 @@ class Import_fra_agresso_X205_BK extends property_cron_parent
 				if ($bilagsnr)
 				{
 					// move file
-					$receive_order_performed = false;
 					$_file		 = basename($file);
 					$movefrom	 = "{$dirname}/{$_file}";
 					$moveto		 = "{$dirname}/arkiv/{$_file}";
