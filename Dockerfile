@@ -99,9 +99,12 @@ RUN echo 'upload_max_filesize = 8M' >> /usr/local/etc/php/php.ini
 #RUN wget -O /tmp/openjdk.deb https://download.oracle.com/java/21/latest/jdk-21_linux-x64_bin.deb \
 #    && dpkg -i /tmp/openjdk.deb \
 #    && rm /tmp/openjdk.deb
-RUN  apt install lsb-release -y \
-    && wget https://packages.microsoft.com/config/debian/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \
-    && dpkg -i packages-microsoft-prod.deb
+
+# insert microsoft repo if ${INSTALL_MSSQL} is not true or not set
+RUN if [ "${INSTALL_MSSQL}" != "true" ]; then \
+    wget -qO - https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/microsoft.asc.gpg && \
+    echo "deb [arch=amd64] https://packages.microsoft.com/debian/$(cat /etc/debian_version | cut -d. -f1)/prod $(lsb_release -cs) main" > /etc/apt/sources.list.d/mssql-release.list; \
+   fi
 
 RUN apt-get update && apt-get install -y msopenjdk-21
 
