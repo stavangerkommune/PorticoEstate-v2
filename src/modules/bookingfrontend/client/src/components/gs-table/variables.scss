@@ -1,35 +1,15 @@
-$large-breakpoint: 1300px;
-$medium-breakpoint: 1000px;
-$small-breakpoint: 1024px;
-
+@import "../../styles/util.module";
 
 
 @mixin smallmode {
-  @include underBreakpoint($medium-breakpoint) {
+  @include mobile {
     @content;
   }
 }
 
 @mixin bigmode {
-  @include breakpoint($medium-breakpoint) {
+  @include desktop {
     @content;
   }
 }
 
-
-@mixin breakpoint($point) {
-  @media (min-width: $point) {
-    @content;
-  }
-}
-
-@mixin underBreakpoint($point) {
-  @media (max-width: $point) {
-    @content;
-  }
-}
-@mixin heading-s {
-  font-weight: bold;
-  font-size: 1.125rem;
-  line-height: 1.625rem;
-}
