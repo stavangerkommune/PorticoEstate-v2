@@ -1,0 +1,122 @@
+@import 'variables';
+
+.table {
+    display: grid;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+
+    @include smallmode {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .tableRow {
+        display: grid;
+
+        div {
+            display: flex;
+        }
+
+        .bigCol {
+            @include smallmode {
+                grid-column: 1/3;
+            }
+        }
+        .columnMame {
+            @include bigmode {
+                display: none;
+            }
+        }
+        .centerCol {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            @include smallmode {
+                flex-direction: column;
+            }
+            @include bigmode {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+    }
+
+    .tableHeader,
+    .tableRowContainer {
+        display: grid;
+        //padding-bottom: 0.875rem;
+        min-height: 3.125rem;
+        border-bottom: var(--ds-border-width-default) solid var(--ds-color-neutral-border-subtle);
+
+    }
+    .tableRow {
+        gap: 0.5rem;
+        @include smallmode {
+            grid-template-columns: 1fr 1fr !important; // important because overwrites inline styles
+        }
+    }
+
+    .tableHeaderSmall {
+        @include bigmode {
+            display: none;
+        }
+
+        .tableHeaderCol {
+            display: grid;
+            align-content: center;
+            grid-template-columns: 1fr auto;
+            margin: 0 1rem;
+            div,
+            button {
+                display: flex;
+                align-items: center;
+            }
+        }
+    }
+
+    .tableHeaderBig {
+        gap: 0.5rem;
+        @include smallmode {
+            display: none;
+        }
+        div {
+            display: flex;
+        }
+
+        //@include heading-s;
+        margin:0;
+    }
+
+    button {
+        align-items: center;
+
+        display: flex;
+        background: inherit;
+        color: inherit;
+        border: none;
+        padding: 0;
+        font: inherit;
+        outline: inherit;
+        gap: 0.5rem
+    }
+    .tableHeaderCol {
+        //justify-content: center;
+
+
+        .capitalize {
+            text-transform: capitalize;
+            //padding-right: 1rem;
+        }
+    }
+}
+.clickable {
+    cursor: pointer;
+}
+
+.notClickable {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    cursor: default;
+}
+

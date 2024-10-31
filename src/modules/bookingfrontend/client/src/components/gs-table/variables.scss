@@ -1,0 +1,35 @@
+$large-breakpoint: 1300px;
+$medium-breakpoint: 1000px;
+$small-breakpoint: 1024px;
+
+
+
+@mixin smallmode {
+  @include underBreakpoint($medium-breakpoint) {
+    @content;
+  }
+}
+
+@mixin bigmode {
+  @include breakpoint($medium-breakpoint) {
+    @content;
+  }
+}
+
+
+@mixin breakpoint($point) {
+  @media (min-width: $point) {
+    @content;
+  }
+}
+
+@mixin underBreakpoint($point) {
+  @media (max-width: $point) {
+    @content;
+  }
+}
+@mixin heading-s {
+  font-weight: bold;
+  font-size: 1.125rem;
+  line-height: 1.625rem;
+}
