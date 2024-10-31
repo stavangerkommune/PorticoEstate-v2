@@ -1,80 +1,94 @@
-import { ReactElement, useMemo } from 'react';
-import { TableColumnDefinition, TableOptions } from '../table.types';
-import { isTableColumnDefinition } from '../table.helper';
+// table-row.tsx
+import {CSSProperties, ReactElement} from 'react';
+import { Row, flexRender } from '@tanstack/react-table';
+import { ColumnDef } from '../table.types';
 import RowExpand from './row-expand';
 import styles from '../table.module.scss';
 
 interface TableRowProps<T> {
-    options: TableOptions<T>;
+    row: Row<T>;
     gridTemplateColumns?: string;
-    data: T;
-    _key: string;
+    icon?: (data: T) => ReactElement;
+    renderExpandedContent?: (data: T) => ReactElement;
+    rowStyle?: (data: T) => CSSProperties | undefined;
 }
 
 function TableRow<T>(props: TableRowProps<T>): ReactElement {
-    const { options, data, gridTemplateColumns, _key } = props;
-
-    const columns: { content: any; columnDef: TableColumnDefinition<T> }[] = useMemo(() => {
-        return options.columns.map((columnDef) => {
-            if (!isTableColumnDefinition(columnDef)) {
-                return {
-                    content: data[columnDef],
-                    columnDef: { key: columnDef },
-                };
-            }
-            if (columnDef.render) {
-                return {
-                    content: columnDef.render(data[columnDef.key], data),
-                    columnDef: columnDef,
-                };
-            }
-            return { content: data[columnDef.key], columnDef: columnDef };
-        });
-    }, [options, data]);
-
-    const containerColumns = useMemo(() => {
-        let content = '1fr';
-        if (options.icon) {
-            content = 'auto ' + content;
-        }
-        if (options.expandedContent) {
-            content = content + ' 4rem';
-        }
-        return content;
-    }, [options]);
+    const { row, gridTemplateColumns, icon, renderExpandedContent, rowStyle } = props;
 
     return (
-        <div className={styles.tableRowContainer} key={_key} style={{ gridTemplateColumns: containerColumns,gridTemplateAreas: options.expandedContent ? `"line expand" "content content"` : `"line" "content"`, gap: "0 0.5rem", ...(options.rowStyle ? options.rowStyle(data) : {}) }}>
-            {options.icon && <div style={{ margin: '0.5rem', marginRight:'16px', marginLeft: '0', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{options.icon(data)}</div>}
-            <div className={styles.tableRow} style={{ gridTemplateColumns: gridTemplateColumns, gridArea: 'line' }}>
-                {columns.map((column, colIndex) => (
-                    <div
-                        className={`${styles.centerCol} ${
-                            column.columnDef.size && column.columnDef.size > 1 ? styles.bigCol : ''
-                        }`}
-                        style={{
-                            justifyContent: column.columnDef?.contentAlign
-                                ? column.columnDef.contentAlign
-                                : 'flex-start',
-                        }}
-                        key={_key + '-col-' + column.columnDef.key.toString()}
-                    >
-                        {/* Only shown in smallmode */}
-                        {!column.columnDef.smallHideTitle && (
-                            <div className={`heading-s ${styles.columnMame}`}>
-                                <span className={styles.capitalize}>
-                                    {!column.columnDef.title
-                                        ? column.columnDef.key.toString()
-                                        : column.columnDef.title}
-                                </span>
-                            </div>
-                        )}
-                        {/*-------------------------*/}
-                        {column.content}
-                    </div>
-                ))}
+        <div
+            className={styles.tableRowContainer}
+            key={row.id}
+            style={{
+                gridTemplateColumns: renderExpandedContent ? `1fr auto` : '1fr',
+                gridTemplateAreas: renderExpandedContent
+                    ? `"line expand" "content content"`
+                    : `"line" "content"`,
+                gap: "0 0.5rem",
+                ...(rowStyle?.(row.original) || {})
+            }}
+        >
+            {icon && (
+                <div style={{
+                    margin: '0.5rem',
+                    marginRight: '16px',
+                    marginLeft: '0',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
+                    {icon(row.original)}
+                </div>
+            )}
+
+            <div
+                className={styles.tableRow}
+                style={{
+                    gridTemplateColumns,
+                    gridArea: 'line'
+                }}
+            >
+                {row.getVisibleCells().map(cell => {
+                    const meta = (cell.column.columnDef as ColumnDef<T>).meta;
+                    return (
+                        <div
+                            key={cell.id}
+                            className={`${styles.centerCol} ${
+                                meta?.size && meta.size > 1 ? styles.bigCol : ''
+                            }`}
+                            style={{
+                                justifyContent: meta?.align === 'end'
+                                    ? 'flex-end'
+                                    : meta?.align === 'center'
+                                        ? 'center'
+                                        : 'flex-start',
+                            }}
+                        >
+                            {!meta?.smallHideTitle && (
+                                <div className={`heading-s ${styles.columnName}`}>
+                                    <span className={styles.capitalize}>
+                                        {flexRender(
+                                            cell.column.columnDef.header,
+                                            cell.getContext()
+                                        )}
+                                    </span>
+                                </div>
+                            )}
+                            {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                            )}
+                        </div>
+                    );
+                })}
             </div>
-            {options.expandedContent && <RowExpand>{options.expandedContent(data)}</RowExpand>}
+
+            {renderExpandedContent && (
+                <RowExpand>
+                    {renderExpandedContent(row.original)}
+                </RowExpand>
+            )}
         </div>
     );
 }

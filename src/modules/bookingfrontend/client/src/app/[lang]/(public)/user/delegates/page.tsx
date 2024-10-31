@@ -1,8 +1,9 @@
 'use client'
 import React, {FC} from 'react';
 import {useTrans} from "@/app/i18n/ClientTranslationProvider";
-import {GSTable, TableOptions} from "@/components/gs-table";
-import {DateCompare, NumberCompare, StringCompare } from "@/components/gs-table/table.helper";
+import {GSTable} from "@/components/gs-table";
+import {CellContext, createColumnHelper} from "@tanstack/table-core";
+import {ColumnDef} from "@/components/gs-table/table.types";
 
 interface DelegatesProps {
 }
@@ -71,67 +72,83 @@ const Delegates: FC<DelegatesProps> = (props) => {
     const t = useTrans();
 
 
-    const tableOptions: TableOptions<UserData> = {
-        keyField: 'id',
-        columns: [
-            {
-                key: 'name',
-                title: 'User Name',
-                size: 2,
-                sortCompare: StringCompare
+    // Optional: Use TanStack's column helper for better type inference
+    const columnHelper = createColumnHelper<UserData>();
+
+
+    const columns: ColumnDef<UserData>[] = [
+        {
+            id: 'name',
+            accessorFn: row => row.name,
+            header: 'User Name',
+            meta: {
+                size: 2
             },
-            {
-                key: 'email',
-                size: 2,
-                sortCompare: StringCompare
+            sortingFn: 'alphanumeric'
+        },
+        {
+            id: 'email',
+            accessorFn: row => row.email,
+            meta: {
+                size: 2
             },
-            {
-                key: 'status',
-                render: (value) => (
-                    <div className={`px-2 py-1 rounded-full text-sm inline-flex ${
-                        value === 'active' ? 'bg-green-100 text-green-800' :
-                            value === 'inactive' ? 'bg-red-100 text-red-800' :
-                                'bg-yellow-100 text-yellow-800'
-                    }`}>
-                        {value}
+            sortingFn: 'alphanumeric'
+        },
+        {
+            id: 'status',
+            accessorFn: row => row.status,
+            cell: (info: CellContext<UserData, 'active' | 'inactive' | 'pending'>) => {
+                const status = info.getValue();
+                return (
+                    <div>
+                        {status}
                     </div>
-                ),
-                sortCompare: StringCompare
+                );
             },
-            {
-                key: 'lastLogin',
-                title: 'Last Login',
-                render: (value) => value.toLocaleDateString(),
-                sortCompare: DateCompare
-            },
-            {
-                key: 'posts',
-                title: 'Total Posts',
-                contentAlign: 'flex-end',
-                sortCompare: NumberCompare
-            },
-            {
-                key: 'role',
-                sortCompare: StringCompare
+            sortingFn: 'alphanumeric'
+        },
+        {
+            id: 'lastLogin',
+            accessorFn: row => row.lastLogin,
+            header: 'Last Login',
+            cell: (info: CellContext<UserData, Date>) =>
+                info.getValue().toLocaleDateString(),
+            sortingFn: (rowA, rowB) => {
+                return rowA.original.lastLogin.getTime() - rowB.original.lastLogin.getTime();
             }
-        ],
-        expandedContent: (user) => (
-            <div className="p-4 bg-gray-50">
-                <h3 className="font-bold mb-2">User Details</h3>
-                <p>ID: {user.id}</p>
-                <p>Email: {user.email}</p>
-                <p>Role: {user.role}</p>
-                <p>Posts: {user.posts}</p>
-                <p>Status: {user.status}</p>
-                <p>Last Login: {user.lastLogin.toLocaleString()}</p>
-            </div>
-        )
-    };
+        },
+        {
+            id: 'posts',
+            accessorFn: row => row.posts,
+            header: 'Total Posts',
+            meta: {
+                align: 'end'
+            },
+            sortingFn: 'alphanumeric'
+        },
+        {
+            id: 'role',
+            accessorFn: row => row.role,
+            sortingFn: 'alphanumeric'
+        }
+    ] as const;
     return (
-            <GSTable<UserData>
-                data={userData}
-                options={tableOptions}
-            />
+        <GSTable<UserData>
+            data={userData}
+            columns={columns}
+            enableSorting={true}
+            renderExpandedContent={(user) => (
+                <div className="p-4 bg-gray-50">
+                    <h3 className="font-bold mb-2">User Details</h3>
+                    <p>ID: {user.id}</p>
+                    <p>Email: {user.email}</p>
+                    <p>Role: {user.role}</p>
+                    <p>Posts: {user.posts}</p>
+                    <p>Status: {user.status}</p>
+                    <p>Last Login: {user.lastLogin.toLocaleString()}</p>
+                </div>
+            )}
+        />
     );
 }
 

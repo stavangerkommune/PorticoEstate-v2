@@ -1,87 +1,127 @@
 'use client';
-import { ReactElement, useMemo, useState } from 'react';
-import TableRow from './row/table-row';
-import { TableOptions } from './table.types';
-import { isTableColumnDefinition } from './table.helper';
-import TableHeader from './table-header';
+import {
+    useReactTable,
+    getCoreRowModel,
+    getSortedRowModel,
+    flexRender,
+    ColumnDef as TanStackColumnDef,
+    Row,
+    SortingState
+} from '@tanstack/react-table';
+import { useState, useMemo } from 'react';
 import styles from './table.module.scss';
+import type {ColumnDef, TableProps} from './table.types';
+import {SortButton} from "@/components/gs-table/subcomponents/sort-button";
+import {Chevron} from "@/components/gs-table/vectors/chevron";
+import TableRow from "@/components/gs-table/row/table-row";
 
-interface TableProps<T> {
-    options: TableOptions<T>;
-    data: T[];
-    empty?: JSX.Element;
-}
+function Table<T>({
+                      data,
+                      columns,
+                      empty,
+                      enableSorting = true,
+                      renderExpandedContent,
+                      icon,
+                      iconPadding,
+                      rowStyle,
+                      defaultSort = []
+                  }: TableProps<T>) {
+    const [sorting, setSorting] = useState<SortingState>(defaultSort);
 
-function Table<T>(props: TableProps<T>): ReactElement {
-    const { options, data } = props;
-    const [sort, setSort] = useState<{ key: keyof T; direction: 'desc' | 'asc' }>();
-
-    const rowData = useMemo(() => {
-        if (!sort) {
-            return data;
-        }
-        const columnDef = options.columns.find(
-            (col) => isTableColumnDefinition(col) && col.key === sort.key
-        );
-        if (!columnDef || !isTableColumnDefinition(columnDef) || !columnDef.sortCompare) {
-            return data;
-        }
-
-        return [...data].sort((a, b) => {
-            const res = columnDef.sortCompare!(a[columnDef.key], b[columnDef.key], a, b);
-            return sort.direction === 'desc' ? -res : res;
-        });
-    }, [sort, data, options.columns]);
+    // Add default headers to columns if not provided
+    const processedColumns = useMemo(() => {
+        return columns.map(col => ({
+            ...col,
+            header: col.header || col.id || String(col.accessorKey) || '',
+        }));
+    }, [columns]);
 
     const gridTemplateColumns = useMemo(() => {
-        return options.columns
+        return processedColumns
             .map((col) => {
-                if (isTableColumnDefinition(col)) {
-                    if (col.size) {
-                        return `${col.size}fr`;
-                    }
-                    return '1fr';
-                }
-                return '1fr';
+                const size = col.meta?.size || 1;
+                return `${size}fr`;
             })
             .join(' ');
-    }, [options.columns]);
+    }, [processedColumns]);
 
-    const onSort = (key: keyof T | null) => {
-        if (key === null) {
-            setSort(undefined);
-            return;
-        }
-        if (sort?.key === key) {
-            if (sort.direction === 'asc') {
-                setSort(undefined);
-                return;
-            }
-            setSort({ key: key, direction: 'asc' });
-            return;
-        }
-        setSort({ key: key, direction: 'desc' });
-    };
+    const table = useReactTable({
+        data,
+        columns: processedColumns,
+        state: {
+            sorting,
+        },
+        enableSorting,
+        onSortingChange: setSorting,
+        getCoreRowModel: getCoreRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+    });
 
     return (
         <div className={styles.table}>
-            <TableHeader
-                onSort={onSort}
-                sort={sort}
-                options={options}
-                gridTemplateColumns={gridTemplateColumns}
-            />
-            {(rowData.length !== 0 || !props.empty) && rowData.map((row) => {
-                return (
+            <div className={styles.tableHeader}>
+                {table.getHeaderGroups().map(headerGroup => (
+                    <h4
+                        key={headerGroup.id}
+                        className={`${styles.tableRow} ${styles.tableHeaderBig}`}
+                        style={{
+                            gridTemplateColumns: gridTemplateColumns + (renderExpandedContent ? ' 4rem' : ''),
+                            ...(icon ? {paddingLeft: iconPadding || '5.875rem'} : {})
+                        }}
+                    >
+                        {headerGroup.headers.map(header => {
+                            const meta = (header.column.columnDef as ColumnDef<T>).meta;
+                            const canSort = header.column.getCanSort();
+
+                            return (
+                                <div
+                                    key={header.id}
+                                    className={`${styles.tableHeaderCol} ${
+                                        canSort ? styles.clickable : styles.notClickable
+                                    }`}
+                                    onClick={header.column.getToggleSortingHandler()}
+                                >
+                                    {!meta?.hideHeader && (
+                                        <span className={styles.capitalize}>
+                                            {flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext()
+                                            )}
+                                        </span>
+                                    )}
+                                    {canSort && (
+                                        <SortButton
+                                            direction={
+                                                header.column.getIsSorted() === 'desc'
+                                                    ? 'desc'
+                                                    : header.column.getIsSorted() === 'asc'
+                                                        ? 'asc'
+                                                        : undefined
+                                            }
+                                        />
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </h4>
+                ))}
+            </div>
+
+
+            {data.length === 0 && empty ? (
+                empty
+            ) : (
+                table.getRowModel().rows.map(row => (
                     <TableRow
-                        _key={`tableRow-${row[options.keyField]}`}
-                        key={`tableRow-${row[options.keyField]}`}
-                        options={options}
+                        key={row.id}
+                        row={row}
                         gridTemplateColumns={gridTemplateColumns}
-                        data={row}
+                        icon={icon}
+                        renderExpandedContent={renderExpandedContent}
+                        rowStyle={rowStyle}
                     />
-                );
-            }) || props.empty}
+                ))
+            )}
         </div>
     );
 }

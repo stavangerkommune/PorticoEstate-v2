@@ -10,11 +10,10 @@ const RowExpand: FC<RowExpandProps> = (props) => {
     const [expanded, setExpanded] = useState<boolean>(false);
     return (
         <Fragment>
-            <div className={'center-content'}>
+            <div className={'center-content'} style={{gridArea: 'expand',}}>
                 <button
                     onClick={() => setExpanded(!expanded)}
                     style={{
-                        gridArea: 'expand',
                         padding: '1.2rem',
                     }}
                 >
@@ -25,7 +24,7 @@ const RowExpand: FC<RowExpandProps> = (props) => {
                 open={expanded}
                 style={{
                     // gridColumn: '1/12',
-                    gridArea: 'line'
+                    gridArea: 'content'
                 }}
             >
                 {props.children}

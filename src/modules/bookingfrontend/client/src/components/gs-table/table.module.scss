@@ -22,7 +22,7 @@
                 grid-column: 1/3;
             }
         }
-        .columnMame {
+        .columnName {
             @include bigmode {
                 display: none;
             }
@@ -101,8 +101,12 @@
     }
     .tableHeaderCol {
         //justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
 
-
+        &.clickable {
+            user-select: none;
+        }
         .capitalize {
             text-transform: capitalize;
             //padding-right: 1rem;
