@@ -1,5 +1,4 @@
-// table-row.tsx
-import {CSSProperties, ReactElement} from 'react';
+import { ReactElement, CSSProperties } from 'react';
 import { Row, flexRender } from '@tanstack/react-table';
 import { ColumnDef } from '../table.types';
 import RowExpand from './row-expand';
@@ -51,11 +50,16 @@ function TableRow<T>(props: TableRowProps<T>): ReactElement {
             >
                 {row.getVisibleCells().map(cell => {
                     const meta = (cell.column.columnDef as ColumnDef<T>).meta;
+                    const header = cell.column.columnDef.header;
+                    const headerContent = typeof header === 'string'
+                        ? header
+                        : cell.column.id;
+
                     return (
                         <div
                             key={cell.id}
                             className={`${styles.centerCol} ${
-                                meta?.size && meta.size > 1 ? styles.bigCol : ''
+                                meta?.size &&  meta.size > 1 ? styles.bigCol : ''
                             }`}
                             style={{
                                 justifyContent: meta?.align === 'end'
@@ -68,10 +72,7 @@ function TableRow<T>(props: TableRowProps<T>): ReactElement {
                             {!meta?.smallHideTitle && (
                                 <div className={`heading-s ${styles.columnName}`}>
                                     <span className={styles.capitalize}>
-                                        {flexRender(
-                                            cell.column.columnDef.header,
-                                            cell.getContext()
-                                        )}
+                                        {headerContent}
                                     </span>
                                 </div>
                             )}

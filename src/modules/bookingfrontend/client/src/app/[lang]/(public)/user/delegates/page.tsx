@@ -1,13 +1,14 @@
 'use client'
-import React, {FC} from 'react';
+import React, {FC, useState} from 'react';
 import {useTrans} from "@/app/i18n/ClientTranslationProvider";
 import {GSTable} from "@/components/gs-table";
 import {CellContext, createColumnHelper} from "@tanstack/table-core";
 import {ColumnDef} from "@/components/gs-table/table.types";
+import {useBookingUser} from "@/service/hooks/api-hooks";
+import {IDelegate} from "@/service/types/api.types";
 
 interface DelegatesProps {
 }
-
 
 
 // Define the data type
@@ -20,6 +21,7 @@ interface UserData {
     posts: number;
     role: string;
 }
+
 const userData: UserData[] = [
     {
         id: 1,
@@ -70,84 +72,146 @@ const userData: UserData[] = [
 
 const Delegates: FC<DelegatesProps> = (props) => {
     const t = useTrans();
+    const {data: user} = useBookingUser();
+    const delegates = user?.delegates;
+    const [searchTerm, setSearchTerm] = useState('');
 
 
     // Optional: Use TanStack's column helper for better type inference
-    const columnHelper = createColumnHelper<UserData>();
-
-
-    const columns: ColumnDef<UserData>[] = [
+    const columnHelper = createColumnHelper<IDelegate>();
+    const columns: ColumnDef<IDelegate>[] = [
         {
             id: 'name',
             accessorFn: row => row.name,
-            header: 'User Name',
+            header: 'Navn',
             meta: {
                 size: 2
             },
             sortingFn: 'alphanumeric'
         },
         {
-            id: 'email',
-            accessorFn: row => row.email,
+            id: 'organization_number',
+            header: 'Organisasjonnummer',
+            accessorFn: row => row.organization_number,
             meta: {
                 size: 2
             },
             sortingFn: 'alphanumeric'
         },
         {
-            id: 'status',
-            accessorFn: row => row.status,
-            cell: (info: CellContext<UserData, 'active' | 'inactive' | 'pending'>) => {
+            id: 'active',
+            accessorFn: row => row.active,
+            header: 'Status',
+            cell: (info: CellContext<IDelegate, boolean>) => {
                 const status = info.getValue();
                 return (
                     <div>
-                        {status}
+                        {status ? 'Aktiv' : 'Inaktiv'}
                     </div>
                 );
             },
             sortingFn: 'alphanumeric'
         },
         {
-            id: 'lastLogin',
-            accessorFn: row => row.lastLogin,
+            id: 'org_id',
+            accessorFn: row => row.org_id,
             header: 'Last Login',
-            cell: (info: CellContext<UserData, Date>) =>
-                info.getValue().toLocaleDateString(),
-            sortingFn: (rowA, rowB) => {
-                return rowA.original.lastLogin.getTime() - rowB.original.lastLogin.getTime();
-            }
+            enableSorting: false,
+
+            // cell: (info: CellContext<UserData, Date>) =>
+            //     info.getValue().toLocaleDateString(),
+            // sortingFn: (rowA, rowB) => {
+            //     return rowA.original.lastLogin.getTime() - rowB.original.lastLogin.getTime();
+            // }
         },
-        {
-            id: 'posts',
-            accessorFn: row => row.posts,
-            header: 'Total Posts',
-            meta: {
-                align: 'end'
-            },
-            sortingFn: 'alphanumeric'
-        },
-        {
-            id: 'role',
-            accessorFn: row => row.role,
-            sortingFn: 'alphanumeric'
-        }
     ] as const;
+
+    // const columns: ColumnDef<UserData>[] = [
+    //     {
+    //         id: 'name',
+    //         accessorFn: row => row.name,
+    //         header: 'User Name',
+    //         meta: {
+    //             size: 2
+    //         },
+    //         sortingFn: 'alphanumeric'
+    //     },
+    //     {
+    //         id: 'email',
+    //         accessorFn: row => row.email,
+    //         meta: {
+    //             size: 2
+    //         },
+    //         sortingFn: 'alphanumeric'
+    //     },
+    //     {
+    //         id: 'status',
+    //         accessorFn: row => row.status,
+    //         cell: (info: CellContext<UserData, 'active' | 'inactive' | 'pending'>) => {
+    //             const status = info.getValue();
+    //             return (
+    //                 <div>
+    //                     {status}
+    //                 </div>
+    //             );
+    //         },
+    //         sortingFn: 'alphanumeric'
+    //     },
+    //     {
+    //         id: 'lastLogin',
+    //         accessorFn: row => row.lastLogin,
+    //         header: 'Last Login',
+    //         cell: (info: CellContext<UserData, Date>) =>
+    //             info.getValue().toLocaleDateString(),
+    //         sortingFn: (rowA, rowB) => {
+    //             return rowA.original.lastLogin.getTime() - rowB.original.lastLogin.getTime();
+    //         }
+    //     },
+    //     {
+    //         id: 'posts',
+    //         accessorFn: row => row.posts,
+    //         header: 'Total Posts',
+    //         meta: {
+    //             align: 'end'
+    //         },
+    //         sortingFn: 'alphanumeric'
+    //     },
+    //     {
+    //         id: 'role',
+    //         accessorFn: row => row.role,
+    //         sortingFn: 'alphanumeric'
+    //     }
+    // ] as const;
     return (
-        <GSTable<UserData>
-            data={userData}
+        <GSTable<IDelegate>
+            data={delegates || []}
             columns={columns}
             enableSorting={true}
-            renderExpandedContent={(user) => (
-                <div className="p-4 bg-gray-50">
-                    <h3 className="font-bold mb-2">User Details</h3>
-                    <p>ID: {user.id}</p>
-                    <p>Email: {user.email}</p>
-                    <p>Role: {user.role}</p>
-                    <p>Posts: {user.posts}</p>
-                    <p>Status: {user.status}</p>
-                    <p>Last Login: {user.lastLogin.toLocaleString()}</p>
-                </div>
-            )}
+            // enableRowSelection
+            // enableMultiRowSelection
+            // onSelectionChange={(e) => console.log(e)}
+            // enableSearch
+            // searchPlaceholder="Search users..."
+            // onSearchChange={(value) => {
+            //     console.log('Search term:', value);
+            // }}
+            // utilityHeader={{
+            //     right: (
+            //         <button>Add New User</button>
+            //     )
+            // }}
+            // selectedRows={selectedRows}
+            // renderExpandedContent={(user) => (
+            //     <div className="p-4 bg-gray-50">
+            //         <h3 className="font-bold mb-2">User Details</h3>
+            //         <p>ID: {user.id}</p>
+            //         <p>Email: {user.email}</p>
+            //         <p>Role: {user.role}</p>
+            //         <p>Posts: {user.posts}</p>
+            //         <p>Status: {user.status}</p>
+            //         <p>Last Login: {user.lastLogin.toLocaleString()}</p>
+            //     </div>
+            // )}
         />
     );
 }

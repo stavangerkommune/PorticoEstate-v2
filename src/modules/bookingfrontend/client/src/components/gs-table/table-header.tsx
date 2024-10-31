@@ -1,6 +1,6 @@
 import {ReactElement} from 'react';
 import {HeaderGroup, flexRender} from '@tanstack/react-table';
-import {ColumnDef} from './table.types';
+import {ColumnDef, TableProps} from './table.types';
 import {SortButton} from './subcomponents/sort-button';
 import styles from './table.module.scss';
 
@@ -9,7 +9,7 @@ interface TableHeaderProps<T> {
     gridTemplateColumns: string;
     renderExpandedContent?: boolean;
     icon?: boolean;
-    iconPadding?: string;
+    iconPadding?: TableProps<T>['iconPadding'];
 }
 
 function TableHeader<T>(props: TableHeaderProps<T>): ReactElement {
@@ -40,11 +40,11 @@ function TableHeader<T>(props: TableHeaderProps<T>): ReactElement {
                             >
                                 {!meta?.hideHeader && (
                                     <span className={styles.capitalize}>
-                                            {flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext()
-                                            )}
-                                        </span>
+                                        {flexRender(
+                                            header.column.columnDef.header,
+                                            header.getContext()
+                                        )}
+                                    </span>
                                 )}
                                 {canSort && (
                                     <SortButton
@@ -63,9 +63,7 @@ function TableHeader<T>(props: TableHeaderProps<T>): ReactElement {
                 </h4>
             ))}
         </div>
-
-    )
-        ;
+    );
 }
 
 export default TableHeader;

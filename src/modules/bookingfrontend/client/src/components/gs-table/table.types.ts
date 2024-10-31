@@ -1,5 +1,5 @@
-import { CSSProperties, ReactElement } from 'react';
-import { ColumnDef as TanStackColumnDef, SortingState, VisibilityState } from '@tanstack/react-table';
+import {CSSProperties, ReactElement, ReactNode} from 'react';
+import {ColumnDef as TanStackColumnDef, RowSelectionState, SortingState, VisibilityState} from '@tanstack/react-table';
 //
 // export type TableColumnDefinition<T> = {
 //     /*
@@ -37,7 +37,7 @@ import { ColumnDef as TanStackColumnDef, SortingState, VisibilityState } from '@
 
 export interface ColumnMeta {
     align?: 'start' | 'center' | 'end';
-    size?: 0.5 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+    size?: 0.5 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 'icon';
     hideHeader?: boolean;
     smallHideTitle?: boolean;
 }
@@ -58,4 +58,18 @@ export interface TableProps<T> {
     iconPadding?: CSSProperties['paddingLeft'];
     rowStyle?: (data: T) => CSSProperties | undefined;
     defaultSort?: SortingState;
+    // Selection props
+    enableRowSelection?: boolean;
+    enableMultiRowSelection?: boolean;
+    onSelectionChange?: (selection: RowSelectionState) => void;
+    selectedRows?: RowSelectionState;
+    utilityHeader?: {
+        left?: ReactNode;
+        right?: ReactNode;
+    };
+    enableSearch?: boolean;
+    searchPlaceholder?: string;
+    onSearchChange?: (value: string) => void;
+    defaultColumnVisibility?: VisibilityState;
+    onColumnVisibilityChange?: (visibility: VisibilityState) => void;
 }
