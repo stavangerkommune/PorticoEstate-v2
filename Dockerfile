@@ -9,8 +9,6 @@ ARG INSTALL_ORACLE=false
 
 # Define build argument for OCI8 version
 ARG OCI8_VERSION=3.4.0
-# Define build argument for PHP version
-# ARG PHP_VERSION=8.3.13
 
 # Install necessary packages
 RUN apt-get update && apt-get install -y software-properties-common \
@@ -125,12 +123,14 @@ COPY oracle/ /tmp/
 COPY oracle/ /tmp/
 
 # Set environment variables for Oracle support
-ENV LD_LIBRARY_PATH "/usr/local/lib/instantclient_12_2"
-ENV TNS_ADMIN "/usr/local/lib/instantclient_12_2"
-ENV ORACLE_BASE "/usr/local/lib/instantclient_12_2"
-ENV ORACLE_HOME "/usr/local/lib/instantclient_12_2"
+ENV LD_LIBRARY_PATH=/usr/local/lib/instantclient_12_2
+ENV TNS_ADMIN=/usr/local/lib/instantclient_12_2
+ENV ORACLE_BASE=/usr/local/lib/instantclient_12_2
+ENV ORACLE_HOME=/usr/local/lib/instantclient_12_2
 
 #  https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html
+# Define build argument for PHP version
+ARG PHP_VERSION=8.3.13
 
 # Conditionally install Oracle suppor
 RUN if [ "${INSTALL_ORACLE}" = "true" ]; then \
