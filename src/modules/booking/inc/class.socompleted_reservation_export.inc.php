@@ -71,7 +71,24 @@
 			$this->config_data = CreateObject('phpgwapi.config', 'booking')->read();
 		}
 
-		protected function _get_search_to_date( &$entity )
+		protected function _get_search_from_date(&$entity)
+		{
+			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
+			$from_date = isset($entity['from_']) && $entity['from_'] ? $entity['from_'] : date($dateformat);
+
+			$from_date = date('Y-m-d', phpgwapi_datetime::date_to_timestamp($from_date));
+
+			if (strtotime($from_date) > strtotime('tomorrow'))
+			{
+				$from_date = date('Y-m-d');
+			}
+
+			$from_date .= ' 00:00:00';
+
+			return $from_date;
+		}
+
+		protected function _get_search_to_date(&$entity)
 		{
 			$dateformat = $this->userSettings['preferences']['common']['dateformat'];
 			$to_date = isset($entity['to_']) && $entity['to_'] ? $entity['to_'] : date($dateformat);
@@ -87,6 +104,8 @@
 
 			return $to_date;
 		}
+
+		
 
 		protected function doValidate( $entity, booking_errorstack $errors )
 		{
@@ -274,6 +293,10 @@
 			if (is_array($entity))
 			{
 				$filters['where'] = array("%%table%%" . sprintf(".to_ <= '%s'", $this->_get_search_to_date($entity)));
+				if(!empty($entity['from_']))
+				{
+					$filters['where'][] = "%%table%%" . sprintf(".from_ >= '%s'", $this->_get_search_from_date($entity));
+				}
 				$filters['exported'] = null;
 
 				if ($entity['season_id'])
