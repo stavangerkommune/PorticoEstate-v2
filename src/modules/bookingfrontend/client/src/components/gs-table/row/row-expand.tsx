@@ -1,35 +1,50 @@
-import { FC, Fragment, PropsWithChildren, useState } from 'react';
+import { FC, PropsWithChildren, useState } from 'react';
 import { Chevron } from '../vectors/chevron';
-import ExpandableContent from '../expandable-content/expandable-content';
+import styles from './row-expand.module.scss';
+import ExpandableContent from "@/components/gs-table/expandable-content/expandable-content";
 
-type RowExpandProps = PropsWithChildren<{
+interface RowExpandProps extends PropsWithChildren {
     unCenter?: boolean;
-}>
+    renderExpandButton?: (props: {
+        isExpanded: boolean;
+        onClick: () => void;
+    }) => React.ReactNode;
+}
 
-const RowExpand: FC<RowExpandProps> = (props) => {
+const RowExpand: FC<RowExpandProps> = ({ children, unCenter, renderExpandButton }) => {
     const [expanded, setExpanded] = useState<boolean>(false);
+
+    const defaultExpandButton = (
+        <button
+            onClick={() => setExpanded(!expanded)}
+            className={styles.expandButton}
+        >
+            <Chevron open={expanded} />
+        </button>
+    );
+
     return (
-        <Fragment>
-            <div className={'center-content'} style={{gridArea: 'expand',}}>
-                <button
-                    onClick={() => setExpanded(!expanded)}
-                    style={{
-                        padding: '1.2rem',
-                    }}
-                >
-                    <Chevron open={expanded} />
-                </button>
+        <>
+            <div className={styles.buttonContainer}>
+                {renderExpandButton ?
+                    renderExpandButton({
+                        isExpanded: expanded,
+                        onClick: () => setExpanded(!expanded)
+                    })
+                    : defaultExpandButton
+                }
             </div>
             <ExpandableContent
                 open={expanded}
+                className={styles.expandableContent}
                 style={{
-                    // gridColumn: '1/12',
-                    gridArea: 'content'
+                    gridArea: 'content',
+                    // display: expanded ? 'block' : 'none'
                 }}
             >
-                {props.children}
+                {children}
             </ExpandableContent>
-        </Fragment>
+        </>
     );
 };
 

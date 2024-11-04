@@ -84,6 +84,7 @@ function Table<T>({
                       empty,
                       enableSorting = true,
                       renderExpandedContent,
+                      renderRowButton,
                       icon,
                       iconPadding,
                       rowStyle,
@@ -112,13 +113,13 @@ function Table<T>({
 
         const selectionColumn: ColumnDef<T> = {
             id: 'select',
-            meta: { size: 'icon' },
+            meta: { size: 'icon', smallHideTitle: true },
             header: ({ table }) => (
                 enableMultiRowSelection ? (
                     <input
                         type="checkbox"
                         checked={table.getIsAllRowsSelected()}
-                        indeterminate={table.getIsSomeRowsSelected()}
+                        // indeterminate={table.getIsSomeRowsSelected()}
                         onChange={table.getToggleAllRowsSelectedHandler()}
                     />
                 ) : null
@@ -183,15 +184,14 @@ function Table<T>({
 
     const gridTemplateColumns = useMemo(() => {
         const visibleColumns = tableColumns.filter(col => {
-            const id = typeof col === 'string' ? col : col.id;
+            const id = 'id' in col ? col.id : col.accessorKey;
             return columnVisibility[id as string] !== false;
         });
-
         return visibleColumns
             .map((column) => {
                 const size = column.meta?.size || 1;
                 if(column.meta?.size === 'icon'){
-                    return '4rem';
+                    return '2rem';
                 }
                 return `${size}fr`;
             })
@@ -207,26 +207,26 @@ function Table<T>({
                         placeholder={searchPlaceholder}
                     />
                 )}
-                {utilityHeader?.left}
+                {typeof utilityHeader === 'object' && utilityHeader?.left}
             </>
         ),
         right: (
             <>
                 <ColumnToggle table={table} tableColumns={tableColumns} columnVisibility={columnVisibility}/>
-                {utilityHeader?.right}
+                {typeof utilityHeader === 'object' && utilityHeader?.right}
             </>
         ),
     }), [utilityHeader, enableSearch, searchPlaceholder, table, tableColumns, columnVisibility]);
     return (
-        <div className={styles.tableContainer}>
-            {/*{!!utilityHeader || !!enableSearch && (*/}
+        <div className={`gs-table ${styles.tableContainer}`}>
+            {!!utilityHeader && (
                 <TableUtilityHeader {...combinedUtilityHeader} />
-            {/*)}*/}
+            )}
             <div className={styles.table}>
                 <TableHeader
                     headerGroups={table.getHeaderGroups()}
                     gridTemplateColumns={gridTemplateColumns}
-                    renderExpandedContent={!!renderExpandedContent}
+                    renderExpandedContent={!!renderExpandedContent || !!renderRowButton}
                     icon={!!icon}
                     iconPadding={iconPadding}
                 />
@@ -240,6 +240,7 @@ function Table<T>({
                             gridTemplateColumns={gridTemplateColumns}
                             icon={icon}
                             renderExpandedContent={renderExpandedContent}
+                            renderRowButton={renderRowButton}
                             rowStyle={rowStyle}
                         />
                     ))

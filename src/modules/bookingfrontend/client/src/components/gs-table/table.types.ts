@@ -1,5 +1,5 @@
 import {CSSProperties, ReactElement, ReactNode} from 'react';
-import {ColumnDef as TanStackColumnDef, RowSelectionState, SortingState, VisibilityState} from '@tanstack/react-table';
+import {ColumnDef as TanStackColumnDef, RowSelectionState, SortingState, VisibilityState, AccessorFnColumnDefBase, AccessorKeyColumnDefBase, IdIdentifier} from '@tanstack/react-table';
 //
 // export type TableColumnDefinition<T> = {
 //     /*
@@ -43,9 +43,11 @@ export interface ColumnMeta {
 }
 
 // Properly extending TanStack's ColumnDef
-export type ColumnDef<T> = TanStackColumnDef<T> & {
+export type ColumnDef<T> = (TanStackColumnDef<T> | AccessorFnColumnDefBase<T> | AccessorKeyColumnDefBase<T>) & ({id: string} | {accessorKey: string}) & {
     meta?: ColumnMeta;
 };
+
+
 
 // Table props
 export interface TableProps<T> {
@@ -54,6 +56,7 @@ export interface TableProps<T> {
     empty?: JSX.Element;
     enableSorting?: boolean;
     renderExpandedContent?: (row: T) => ReactElement;
+    renderRowButton?: (row: T) => ReactElement; // New prop for standalone buttons/links
     icon?: (data: T) => ReactElement;
     iconPadding?: CSSProperties['paddingLeft'];
     rowStyle?: (data: T) => CSSProperties | undefined;
@@ -66,7 +69,7 @@ export interface TableProps<T> {
     utilityHeader?: {
         left?: ReactNode;
         right?: ReactNode;
-    };
+    } | boolean;
     enableSearch?: boolean;
     searchPlaceholder?: string;
     onSearchChange?: (value: string) => void;

@@ -9,21 +9,32 @@ interface TableRowProps<T> {
     gridTemplateColumns?: string;
     icon?: (data: T) => ReactElement;
     renderExpandedContent?: (data: T) => ReactElement;
+    renderRowButton?: (data: T) => ReactElement;
     rowStyle?: (data: T) => CSSProperties | undefined;
 }
 
 function TableRow<T>(props: TableRowProps<T>): ReactElement {
-    const { row, gridTemplateColumns, icon, renderExpandedContent, rowStyle } = props;
+    const {
+        row,
+        gridTemplateColumns,
+        icon,
+        renderExpandedContent,
+        renderRowButton,
+        rowStyle
+    } = props;
+
+    // Determine if we need the extra column for button/expand
+    const hasExtraColumn = renderRowButton || renderExpandedContent;
 
     return (
         <div
             className={styles.tableRowContainer}
             key={row.id}
             style={{
-                gridTemplateColumns: renderExpandedContent ? `1fr auto` : '1fr',
+                gridTemplateColumns: hasExtraColumn ? `1fr 4rem` : '1fr',
                 gridTemplateAreas: renderExpandedContent
-                    ? `"line expand" "content content"`
-                    : `"line" "content"`,
+                    ? `"line action" "content content"`
+                    : `"line action"`,
                 gap: "0 0.5rem",
                 ...(rowStyle?.(row.original) || {})
             }}
@@ -59,7 +70,7 @@ function TableRow<T>(props: TableRowProps<T>): ReactElement {
                         <div
                             key={cell.id}
                             className={`${styles.centerCol} ${
-                                meta?.size &&  meta.size > 1 ? styles.bigCol : ''
+                                meta?.size && typeof meta.size === 'number' && meta.size > 1 ? styles.bigCol : ''
                             }`}
                             style={{
                                 justifyContent: meta?.align === 'end'
@@ -85,11 +96,23 @@ function TableRow<T>(props: TableRowProps<T>): ReactElement {
                 })}
             </div>
 
-            {renderExpandedContent && (
-                <RowExpand>
-                    {renderExpandedContent(row.original)}
-                </RowExpand>
+            {hasExtraColumn && (
+                // <div className={styles.actionColumn} style={{ gridArea: 'action' }}>
+                    renderRowButton ? (
+                        renderRowButton(row.original)
+                    ) : renderExpandedContent ? (
+                        <RowExpand>
+                            {renderExpandedContent(row.original)}
+                        </RowExpand>
+                    ) : null
+                // </div>
             )}
+
+            {/*{renderExpandedContent && (*/}
+            {/*    <div className={styles.expandedContent} style={{ gridArea: 'content' }}>*/}
+            {/*        {renderExpandedContent(row.original)}*/}
+            {/*    </div>*/}
+            {/*)}*/}
         </div>
     );
 }

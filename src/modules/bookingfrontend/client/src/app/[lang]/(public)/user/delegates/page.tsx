@@ -6,6 +6,9 @@ import {CellContext, createColumnHelper} from "@tanstack/table-core";
 import {ColumnDef} from "@/components/gs-table/table.types";
 import {useBookingUser} from "@/service/hooks/api-hooks";
 import {IDelegate} from "@/service/types/api.types";
+import Link from "next/link";
+import {phpGWLink} from "@/service/util";
+import {Button} from "@digdir/designsystemet-react";
 
 interface DelegatesProps {
 }
@@ -112,18 +115,18 @@ const Delegates: FC<DelegatesProps> = (props) => {
             },
             sortingFn: 'alphanumeric'
         },
-        {
-            id: 'org_id',
-            accessorFn: row => row.org_id,
-            header: 'Last Login',
-            enableSorting: false,
-
-            // cell: (info: CellContext<UserData, Date>) =>
-            //     info.getValue().toLocaleDateString(),
-            // sortingFn: (rowA, rowB) => {
-            //     return rowA.original.lastLogin.getTime() - rowB.original.lastLogin.getTime();
-            // }
-        },
+        // {
+        //     id: 'org_id',
+        //     accessorFn: row => row.org_id,
+        //     header: 'ID',
+        //     enableSorting: false,
+        //
+        //     // cell: (info: CellContext<UserData, Date>) =>
+        //     //     info.getValue().toLocaleDateString(),
+        //     // sortingFn: (rowA, rowB) => {
+        //     //     return rowA.original.lastLogin.getTime() - rowB.original.lastLogin.getTime();
+        //     // }
+        // },
     ] as const;
 
     // const columns: ColumnDef<UserData>[] = [
@@ -187,6 +190,18 @@ const Delegates: FC<DelegatesProps> = (props) => {
             data={delegates || []}
             columns={columns}
             enableSorting={true}
+            renderRowButton={(delegate) => (
+                <Button asChild variant="tertiary">
+                    <Link
+                        href={phpGWLink('bookingfrontend/', {menuaction: 'bookingfrontend.uiorganization.show', id: delegate.org_id}, false)}
+                        className="link-text link-text-unset normal" target={'_blank'}
+
+                    >
+                        Vis
+                    </Link>
+                </Button>
+
+            )}
             // enableRowSelection
             // enableMultiRowSelection
             // onSelectionChange={(e) => console.log(e)}
@@ -195,21 +210,17 @@ const Delegates: FC<DelegatesProps> = (props) => {
             // onSearchChange={(value) => {
             //     console.log('Search term:', value);
             // }}
-            // utilityHeader={{
-            //     right: (
-            //         <button>Add New User</button>
-            //     )
-            // }}
-            // selectedRows={selectedRows}
+            // utilityHeader={true}
+            // // selectedRows={selectedRows}
             // renderExpandedContent={(user) => (
-            //     <div className="p-4 bg-gray-50">
+            //     <div className="">
             //         <h3 className="font-bold mb-2">User Details</h3>
-            //         <p>ID: {user.id}</p>
-            //         <p>Email: {user.email}</p>
-            //         <p>Role: {user.role}</p>
-            //         <p>Posts: {user.posts}</p>
-            //         <p>Status: {user.status}</p>
-            //         <p>Last Login: {user.lastLogin.toLocaleString()}</p>
+            //         <p>ID: {user.name}</p>
+            //         <p>Email: {user.org_id}</p>
+            //         <p>Role: {user.organization_number}</p>
+            //         {/*<p>Posts: {user.}</p>*/}
+            //         {/*<p>Status: {user.status}</p>*/}
+            //         {/*<p>Last Login: {user.lastLogin.toLocaleString()}</p>*/}
             //     </div>
             // )}
         />

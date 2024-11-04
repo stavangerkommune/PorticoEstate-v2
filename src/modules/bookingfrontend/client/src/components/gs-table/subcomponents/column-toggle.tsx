@@ -1,12 +1,14 @@
-// column-toggle.tsx
 import {useState, useRef, useEffect, useCallback} from 'react';
 import {Table, Column, VisibilityState} from '@tanstack/react-table';
 import styles from './column-toggle.module.scss';
 import type {ColumnDef} from "@/components/gs-table/table.types";
+import {Badge, Button} from "@digdir/designsystemet-react";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faShoppingBasket, faSliders} from "@fortawesome/free-solid-svg-icons";
 
 interface ColumnToggleProps<T> {
     table: Table<T>;
-    tableColumns: ColumnDef<T>;
+    tableColumns: ColumnDef<T>[];
     columnVisibility: VisibilityState;
 
 }
@@ -31,13 +33,13 @@ function ColumnToggle<T>({ table, tableColumns, columnVisibility }: ColumnToggle
     }, [isOpen]);
 
     // Get fresh column data
-    const allColumns = table.getAllLeafColumns();
+    const allColumns = table.getAllLeafColumns().filter(column => column.getCanHide())
     const hiddenColumnsCount = Object.values(columnVisibility).filter(v => !v).length;
 
 
     // Memoize column render for performance
     const renderColumn = useCallback((column: Column<T, unknown>) => {
-        const columnId = typeof column === 'string' ? column : column.id;
+        const columnId = column.id;
         const isVisible = columnVisibility[columnId as string] !== false;
         const title = typeof column.columnDef.header === 'string'
             ? column.columnDef.header
@@ -62,20 +64,37 @@ function ColumnToggle<T>({ table, tableColumns, columnVisibility }: ColumnToggle
 
     return (
         <div className={styles.columnToggle} ref={menuRef}>
-            <button
+            <Button variant="tertiary"
+                    size={'sm'}
+                    color={'neutral'}
                 onClick={() => setIsOpen(!isOpen)}
-                className={styles.toggleButton}
+                // className={styles.toggleButton}
                 title="Toggle columns"
             >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M3 7h18M3 12h18M3 17h18" />
-                </svg>
-                {hiddenColumnsCount > 0 && (
-                    <span className={styles.hiddenCount}>
-                        {hiddenColumnsCount}
-                    </span>
-                )}
-            </button>
+
+                {hiddenColumnsCount > 0 && (<Badge
+                    color="info"
+                    placement="top-right"
+                    size={'sm'}
+                    count={hiddenColumnsCount || undefined}
+                    // style={{
+                    //     right: '10%',
+                    //     top: '16%'
+                    // }}
+                >
+                    <FontAwesomeIcon size={'lg'} icon={faSliders}/>
+                </Badge>) || <FontAwesomeIcon icon={faSliders}/>}
+
+
+                {/*<Badge count={hiddenColumnsCount} size={'sm'}>*/}
+                {/*    <FontAwesomeIcon icon={faSliders} />*/}
+                {/*</Badge>*/}
+                {/*{hiddenColumnsCount > 0 && (*/}
+                {/*    <span className={styles.hiddenCount}>*/}
+                {/*        {hiddenColumnsCount}*/}
+                {/*    </span>*/}
+                {/*)}*/}
+            </Button>
 
             {isOpen && (
                 <div className={styles.menu}>
