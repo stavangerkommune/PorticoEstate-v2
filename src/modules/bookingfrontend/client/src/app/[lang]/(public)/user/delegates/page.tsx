@@ -191,7 +191,7 @@ const Delegates: FC<DelegatesProps> = (props) => {
             columns={columns}
             enableSorting={true}
             renderRowButton={(delegate) => (
-                <Button asChild variant="tertiary">
+                <Button asChild variant="tertiary" size="sm">
                     <Link
                         href={phpGWLink('bookingfrontend/', {menuaction: 'bookingfrontend.uiorganization.show', id: delegate.org_id}, false)}
                         className="link-text link-text-unset normal" target={'_blank'}
@@ -213,7 +213,7 @@ const Delegates: FC<DelegatesProps> = (props) => {
             // utilityHeader={true}
             // // selectedRows={selectedRows}
             // renderExpandedContent={(user) => (
-            //     <div className="">
+            //     <div style={{display: 'flex', flexDirection: 'column'}}>
             //         <h3 className="font-bold mb-2">User Details</h3>
             //         <p>ID: {user.name}</p>
             //         <p>Email: {user.org_id}</p>

@@ -191,11 +191,11 @@ function Table<T>({
             .map((column) => {
                 const size = column.meta?.size || 1;
                 if(column.meta?.size === 'icon'){
-                    return '2rem';
+                    return '2.5rem';
                 }
                 return `${size}fr`;
             })
-            .join(' ');
+            .join(' ') + ((!!renderExpandedContent || !!renderRowButton) ? ' 4rem' : '');
     }, [tableColumns, columnVisibility]);
 
     const combinedUtilityHeader = useMemo(() => ({
@@ -217,12 +217,14 @@ function Table<T>({
             </>
         ),
     }), [utilityHeader, enableSearch, searchPlaceholder, table, tableColumns, columnVisibility]);
+
+    console.log('gridTemplateColumns: ', gridTemplateColumns)
     return (
         <div className={`gs-table ${styles.tableContainer}`}>
             {!!utilityHeader && (
                 <TableUtilityHeader {...combinedUtilityHeader} />
             )}
-            <div className={styles.table}>
+            <div className={styles.table} style={{ gridTemplateColumns: gridTemplateColumns }}>
                 <TableHeader
                     headerGroups={table.getHeaderGroups()}
                     gridTemplateColumns={gridTemplateColumns}

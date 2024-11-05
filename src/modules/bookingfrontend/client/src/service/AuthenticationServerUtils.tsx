@@ -35,7 +35,7 @@ export function withAuth(Component: React.ComponentType) {
     return async function AuthenticatedComponent() {
         const session = await getServerSession();
 
-        if (!session.is_logged_in) {
+        if (!session?.is_logged_in) {
             // console.log('Not logged in, redirecting to login page');
             redirect('/');
         }
@@ -48,7 +48,7 @@ export function withAuth(Component: React.ComponentType) {
 export async function requireAuth() {
     const session = await getServerSession();
 
-    if (!session.is_logged_in) {
+    if (!session?.is_logged_in) {
         // console.log('Not logged in, redirecting to login page');
         redirect('/');
     }

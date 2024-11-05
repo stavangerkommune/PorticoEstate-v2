@@ -13,17 +13,17 @@ interface TableHeaderProps<T> {
 }
 
 function TableHeader<T>(props: TableHeaderProps<T>): ReactElement {
-    const {headerGroups, gridTemplateColumns, renderExpandedContent, icon, iconPadding} = props;
+    const {headerGroups, gridTemplateColumns, icon, iconPadding} = props;
 
     return (
-        <div className={styles.tableHeader}>
-            {headerGroups.map(headerGroup => (
+            <>{headerGroups.map(headerGroup => (
                 <h4
                     key={headerGroup.id}
-                    className={`${styles.tableRow} ${styles.tableHeaderBig}`}
+                    className={`${styles.tableRow} ${styles.tableHeaderBig} ${styles.tableHeader}`}
                     style={{
-                        gridTemplateColumns: gridTemplateColumns + (renderExpandedContent ? ' 4rem' : ''),
-                        ...(icon ? {paddingLeft: iconPadding || '5.875rem'} : {})
+                        display: 'contents'
+                        // gridTemplateColumns: gridTemplateColumns,
+                        // ...(icon ? {paddingLeft: iconPadding || '5.875rem'} : {})
                     }}
                 >
                     {headerGroup.headers.map(header => {
@@ -60,9 +60,11 @@ function TableHeader<T>(props: TableHeaderProps<T>): ReactElement {
                             </div>
                         );
                     })}
+                    {props.renderExpandedContent && <div />}
+
                 </h4>
             ))}
-        </div>
+        </>
     );
 }
 

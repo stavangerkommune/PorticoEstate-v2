@@ -21,6 +21,7 @@
 }
 
 .expandableContent {
-    grid-area: content;
+    //grid-area: content;
+    grid-column: 1 / -1;
     transition: all 0.2s ease;
 }
