@@ -42,7 +42,7 @@
             > * {
                 background-color: var(--dsc-table-background);
             }
-            &:nth-child(even) > * {
+            &:nth-child(odd) > * {
                 /* Apply background color here */
                 background-color: var(--ds-color-neutral-background-subtle);
             }
