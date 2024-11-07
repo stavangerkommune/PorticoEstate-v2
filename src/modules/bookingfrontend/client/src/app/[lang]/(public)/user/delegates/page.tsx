@@ -211,6 +211,7 @@ const Delegates: FC<DelegatesProps> = (props) => {
             data={delegates || []}
             columns={columns}
             enableSorting={true}
+            enablePagination={false}
             // renderRowButton={(delegate) => (
             //     <Button asChild variant="tertiary" size="sm">
             //         <Link

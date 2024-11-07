@@ -7,6 +7,7 @@ import {IApplication} from "@/service/types/api/application.types";
 import {ColumnDef} from "@/components/gs-table/table.types";
 import {createColumnHelper} from "@tanstack/table-core";
 import {DateTime} from "luxon";
+import ResourceCircles from "@/components/resource-circles/resource-circles";
 
 interface ApplicationsProps {
 }
@@ -71,11 +72,7 @@ const Applications: FC<ApplicationsProps> = (props) => {
                 const resources = info.getValue();
                 return (
                     <div className="resources-list" style={{display: 'flex', flexDirection: 'column'}}>
-                        {/*{resources.map(resource => (*/}
-                        {/*    <div key={resource.id} className="resource-item">*/}
-                        {/*        {resource.name}<br/>*/}
-                        {/*    </div>*/}
-                        {/*))}*/}
+                        <ResourceCircles resources={resources} maxCircles={4} size={'small'} expandable />
                     </div>
                 );
             },

@@ -2,6 +2,7 @@
 
 use App\modules\bookingfrontend\controllers\ApplicationController;
 use App\modules\bookingfrontend\controllers\BuildingController;
+use App\modules\bookingfrontend\controllers\CompletedReservationController;
 use App\modules\bookingfrontend\controllers\DataStore;
 use App\modules\bookingfrontend\controllers\BookingUserController;
 use App\modules\bookingfrontend\controllers\ResourceController;
@@ -41,6 +42,7 @@ $app->group('/bookingfrontend', function (RouteCollectorProxy $group)
         $group->get('', ApplicationController::class . ':getApplications');
         $group->delete('/{id}', [ApplicationController::class, 'deletePartial']);
     });
+    $group->get('/invoices', CompletedReservationController::class . ':getReservations');
 })->add(new SessionsMiddleware($app->getContainer()));
 
 
