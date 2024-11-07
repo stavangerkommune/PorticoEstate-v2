@@ -95,13 +95,6 @@ class HomeHelper
 			exit;
 		}
 
-		if (
-			isset($this->serverSettings['force_default_app'])
-			&& $this->serverSettings['force_default_app'] != 'user_choice'
-		)
-		{
-			$this->userSettings['preferences']['common']['default_app'] = $this->serverSettings['force_default_app'];
-		}
 
 		if (
 			isset($_GET['cd']) && $_GET['cd'] == 'yes'

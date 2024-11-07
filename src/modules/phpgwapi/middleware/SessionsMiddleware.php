@@ -51,12 +51,12 @@ class SessionsMiddleware implements MiddlewareInterface
 				list($currentApp, $class, $method) = explode('.', $_POST['menuaction']);
 			}
 		}
-		
-		
+
+
 		$this->routePath = $route->getPattern();
 		$routePath_arr = explode('/', $this->routePath);
 		$_currentApp = trim($routePath_arr[1], '[');
-		$currentApp = $currentApp ? $currentApp : $_currentApp;		
+		$currentApp = $currentApp ? $currentApp : $_currentApp;
 
 		$this->read_initial_settings($currentApp, $_currentApp);
 		$sessions = Sessions::getInstance();
@@ -125,23 +125,27 @@ class SessionsMiddleware implements MiddlewareInterface
 						$cookietime = time() + 60;
 						$sessions->phpgw_setcookie('redirect', json_encode($_GET), $cookietime);
 					}
-//					\phpgw::redirect_link('/login_ui');
+					//					\phpgw::redirect_link('/login_ui');
 					\phpgw::redirect_link('/login.php');
 				}
 				$response = new Response();
 				return $response->withHeader('Content-Type', 'text/html');
-
 			}
 			else if ($second_pass)
 			{
 				$sessions->phpgw_setcookie('login_second_pass', false);
-				return $this->sendErrorResponse(['msg' => 'A valid session could not be found'], 401);
+				\phpgw::redirect_link('/login_ui');
+				//return $this->sendErrorResponse(['msg' => 'A valid session could not be found'], 401);
 			}
 			else
 			{
 				$process_login = new Login();
 				if ($process_login->login())
 				{
+					if (!$currentApp)
+					{
+						\phpgw::redirect_link('/home/', array('cd' => 'yes'));
+					}
 					Settings::getInstance()->set('flags', $flags);
 					return $handler->handle($request);
 				}

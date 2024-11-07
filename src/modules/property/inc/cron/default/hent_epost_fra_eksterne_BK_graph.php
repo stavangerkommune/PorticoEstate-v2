@@ -43,6 +43,7 @@ use Microsoft\Graph\Core\GraphClientFactory;
 use Microsoft\Graph\Generated\Users\Item\MailFolders\Item\Messages\MessagesRequestBuilderGetRequestConfiguration;
 use Microsoft\Graph\Generated\Models\Message;
 use Microsoft\Graph\Generated\Users\Item\Messages\Item\Move\MovePostRequestBody;
+use Microsoft\Kiota\Abstractions\ApiException;
 
 class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 {
@@ -102,7 +103,17 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 		$httpClient = GraphClientFactory::createWithConfig($guzzleConfig);
 		$requestAdapter = new GraphRequestAdapter($authProvider, $httpClient);
 		$this->graphServiceClient = GraphServiceClient::createWithRequestAdapter($requestAdapter);
-
+		/*
+		try
+		{
+			$user = $this->graphServiceClient->users()->byUserId($this->userPrincipalName)->get()->wait();
+			_debug_array("Hello, I am {$user->getGivenName()}");
+		}
+		catch (ApiException $ex)
+		{
+			echo $ex->getError()->getMessage();
+		}
+*/
 	}
 
 
@@ -146,7 +157,7 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 
 		$messages = $this->getUnreadMessages($folderId);
 
-		foreach ($messages as $message)
+		foreach ($messages->getValue() as $message)
 		{
 			$this->handleMessage($message);
 		}
@@ -186,6 +197,7 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 		$requestConfig = new MessagesRequestBuilderGetRequestConfiguration(
 			queryParameters: MessagesRequestBuilderGetRequestConfiguration::createQueryParameters(
 				select: ['subject', 'body', 'from', 'isRead']
+				//				top: 10
 			),
 			headers: ['Prefer' => 'outlook.body-content-type=text']
 		);
@@ -298,8 +310,9 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 		//https://learn.microsoft.com/en-us/graph/api/message-list-attachments?view=graph-rest-1.0&tabs=php
 
 		$attachments = $this->graphServiceClient->users()->byUserId($this->userPrincipalName)->messages()->byMessageId($message->getId())->attachments()->get()->wait();
-		foreach ($attachments as $attachment)
+		foreach ($attachments->getValue() as $attachment)
 		{
+
 			if ($attachment->getIsInline())
 			{
 				continue;
@@ -307,11 +320,14 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 
 			// Get the attachment content
 			//https://learn.microsoft.com/en-us/graph/api/attachment-get?view=graph-rest-1.0&tabs=php
-			$_attachment = $this->graphServiceClient->users()->byUserId($this->userPrincipalName)->messages()->byMessageId($message->getId())->attachments()->byAttachmentId($attachment->getId())->get()->wait();
-			$content = $_attachment->getContentBytes();
+			$content = $this->graphServiceClient->users()->byUserId($this->userPrincipalName)
+			->messages()->byMessageId($message->getId())
+			->attachments()->byAttachmentId($attachment->getId())->get()->wait()
+			->getContentBytes()
+			->getContents();
 
 			$tempFile = tempnam(sys_get_temp_dir(), "attachment");
-			file_put_contents($tempFile, $content);
+			file_put_contents($tempFile, base64_decode($content));
 
 			$this->add_attachment_to_target($target, array(
 				'tmp_name' => $tempFile,
@@ -339,7 +355,6 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 			$requestBody->setDestinationId($destinationFolderId);
 
 			$result = $this->graphServiceClient->users()->byUserId($this->userPrincipalName)->messages()->byMessageId($messageId)->move()->post($requestBody)->wait();
-
 		}
 
 		$this->items_to_move = array();
@@ -353,7 +368,7 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 
 		if (!$msg_id)
 		{
-			return false;
+			return $ticket_id;
 		}
 		$soexternal = createObject('property.soexternal_communication');
 
@@ -678,5 +693,4 @@ class hent_epost_fra_eksterne_BK_graph extends property_cron_parent
 		}
 		return $ticket_id;
 	}
-
 }

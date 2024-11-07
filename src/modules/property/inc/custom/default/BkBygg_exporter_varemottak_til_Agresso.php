@@ -89,7 +89,7 @@ if (!class_exists("lag_agresso_varemottak"))
 		{
 			$values = $this->values;
 
-			$ordre_mottak_samtidig_med_ordre = strtotime('2024-10-11 00:00:00') > $values['order_sent'] ? true : false;
+			$ordre_mottak_samtidig_med_ordre = strtotime('2024-10-11 00:00:00') < $values['order_sent'] ? true : false;
 			
 			if(!empty($values['order_sent']) && $ordre_mottak_samtidig_med_ordre)
 			{
@@ -150,7 +150,7 @@ if (!class_exists("lag_agresso_varemottak"))
 			));
 			$exporter_varemottak->create_transfer_xml($param);
 
-			$export_ok = $exporter_varemottak->transfer($this->debug);
+			$export_ok = $exporter_varemottak->transfer();
 			if ($export_ok)
 			{
 				$this->log_transfer($id, $received_amount);
