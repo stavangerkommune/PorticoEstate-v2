@@ -93,7 +93,7 @@ class import_conversion
 					$received	 = createObject('property.botts')->receive_order((int)$order_id, $received_amount, $Bilagsnr);
 					break;
 				default:
-					throw new Exception("Ordre type for {$order_id} er ikke støttet");
+					throw new Exception("Ordretype for {$order_id} er ikke støttet");
 			}
 
 			if ($received)
