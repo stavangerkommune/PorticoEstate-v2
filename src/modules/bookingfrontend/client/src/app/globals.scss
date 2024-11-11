@@ -26,6 +26,25 @@ body {
     }
 }
 
+.ds-accordion__item {
+    border-radius: 0;
+    user-select: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    border-top: var(--dsc-accordion-border);
+    background-color: inherit;
+    u-summary {
+        border-radius: 0;
+    }
+    u-summary:not([aria-expanded="true"]) {
+        background-color: inherit;
+    }
+    >*:not(u-summary) {
+        background-color: white;
+    }
+}
+
 .fc-event-main {
     display: flex;
 }
