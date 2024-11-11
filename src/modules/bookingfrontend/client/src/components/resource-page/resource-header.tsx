@@ -18,7 +18,7 @@ const ResourceHeader = async (props: ResourceHeaderProps) => {
     const {building, resource} = props
     const {t} = await getTranslation()
     return (
-        <section className={`${styles.buildingHeader} mx-3`}>
+        <section className={`${styles.buildingHeader} mx-standard`}>
             <div className={styles.buildingName}>
                 <h2>
                     <FontAwesomeIcon style={{fontSize: '22px'}} icon={faLayerGroup}/>

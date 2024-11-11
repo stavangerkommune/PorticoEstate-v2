@@ -16,7 +16,7 @@ const BuildingResources = async (props: BuildingResourcesProps) => {
     const resources = await fetchBuildingResources(props.building.id)
     const {t} = await getTranslation()
     return (
-        <div className={'mx-3'}>
+        <div className={'mx-standard'}>
 
             <hr className={`my-2`}/>
             <ResourceContainer>

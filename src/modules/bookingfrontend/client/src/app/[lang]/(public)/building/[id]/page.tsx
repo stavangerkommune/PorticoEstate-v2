@@ -58,9 +58,9 @@ const BuildingShow = async (props: BuildingShowProps) => {
         <main>
             <BuildingHeader building={building}/>
             <BuildingResources building={building}/>
-            <hr className={`my-2 mx-3`}/>
+            <hr className={`my-2 mx-standard`}/>
 
-            <GSAccordion   border color={"neutral"} className={'mx-3 my-2'}>
+            <GSAccordion   border color={"neutral"} className={'mx-standard my-2'}>
                 <DescriptionAccordion description_json={building.description_json}/>
                 <PhotosAccordion object={building} type={'building'}/>
                 {/*<BuildingDescription building={building}/>*/}

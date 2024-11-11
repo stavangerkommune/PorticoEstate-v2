@@ -66,8 +66,8 @@ const Resource = async (props: ResourceProps) => {
     return (
         <main>
             <ResourceHeader building={building} resource={resource}/>
-            <hr className={`my-2 mx-3`}/>
-            <GSAccordion  border color={"neutral"} className={'mx-3 my-2'}>
+            <hr className={`my-2 mx-standard`}/>
+            <GSAccordion  border color={"neutral"} className={'mx-standard my-2'}>
                 <DescriptionAccordion description_json={resource.description_json}/>
                 <PhotosAccordion object={resource} type={"resource"}/>
                 <TextAccordion text={resource.opening_hours} title={t('booking.opening hours')}/>
