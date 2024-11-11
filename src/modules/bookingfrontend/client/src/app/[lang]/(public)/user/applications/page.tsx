@@ -68,6 +68,9 @@ const Applications: FC<ApplicationsProps> = (props) => {
 
         columnHelper.accessor('resources', {
             header: t('bookingfrontend.resources'),
+            meta: {
+                toStringEx: (v: IResource[]) => v.map(r => r.name)
+            },
             cell: info => {
                 const resources = info.getValue();
                 return (
@@ -222,13 +225,15 @@ const Applications: FC<ApplicationsProps> = (props) => {
                 // )}
                 enableRowSelection
                 enableMultiRowSelection
-                onSelectionChange={(e) => console.log(e)}
+                // onSelectionChange={(e) => console.log(e)}
                 enableSearch
-                searchPlaceholder="Search users..."
-                onSearchChange={(value) => {
-                    console.log('Search term:', value);
-                }}
+                // searchPlaceholder="Search users..."
+                // onSearchChange={(value) => {
+                //     console.log('Search term:', value);
+                // }}
                 utilityHeader={true}
+                exportFileName={"applications"}
+
                 // selectedRows={selectedRows}
                 // renderExpandedContent={(user) => (
                 //     <div className="p-4 bg-gray-50">

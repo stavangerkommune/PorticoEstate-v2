@@ -143,14 +143,15 @@ const Invoices: FC<InvoicesProps> = (props) => {
                 // )}
                 enableRowSelection
                 enableMultiRowSelection
-                onSelectionChange={(e) => console.log(e)}
+                // onSelectionChange={(e) => console.log(e)}
                 enableSearch
-                searchPlaceholder="Search users..."
-                onSearchChange={(value) => {
-                    console.log('Search term:', value);
-                }}
+                // searchPlaceholder="Search users..."
+                // onSearchChange={(value) => {
+                //     console.log('Search term:', value);
+                // }}
                 utilityHeader={true}
                 storageId={'invoicesTable'}
+                exportFileName={"Invoices"}
                 // selectedRows={selectedRows}
                 // renderExpandedContent={(user) => (
                 //     <div className="p-4 bg-gray-50">

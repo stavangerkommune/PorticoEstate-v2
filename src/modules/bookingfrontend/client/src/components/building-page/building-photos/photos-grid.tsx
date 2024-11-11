@@ -7,12 +7,11 @@ import {Gallery, Item} from 'react-photoswipe-gallery'
 import {IDocument} from "@/service/types/api.types";
 import {getDocumentLink} from "@/service/api/api-utils";
 
-interface BuildingPhotosProps {
-    building: IBuilding
+interface PhotosGridProps {
     photos: IDocument[];
 }
 
-const BuildingPhotos = (props: BuildingPhotosProps) => {
+const PhotosGrid = (props: PhotosGridProps) => {
     const t = useTrans();
     return (
         <Accordion.Item>
@@ -56,6 +55,6 @@ const BuildingPhotos = (props: BuildingPhotosProps) => {
 );
 }
 
-export default BuildingPhotos
+export default PhotosGrid
 
 

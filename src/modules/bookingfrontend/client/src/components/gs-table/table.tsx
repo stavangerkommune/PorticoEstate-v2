@@ -17,6 +17,7 @@ import {rankItem} from '@tanstack/match-sorter-utils';
 import TableSearch from "@/components/gs-table/subcomponents/table-search";
 import ColumnToggle from "@/components/gs-table/subcomponents/column-toggle";
 import TablePagination from "./subcomponents/table-pagination";
+import TableExport from "@/components/gs-table/subcomponents/table-export";
 
 
 // Fuzzy filter function
@@ -134,8 +135,9 @@ function Table<T>({
                       onSearchChange,
                       defaultColumnVisibility,
                       onColumnVisibilityChange,
-                      pageSize: defaultPageSize = 10, // Add default page size
-                      enablePagination = true, // Add pagination toggle
+                      pageSize: defaultPageSize = 10,
+                      enablePagination = true,
+                      exportFileName
                   }: TableProps<T>) {
 
 
@@ -287,11 +289,18 @@ function Table<T>({
         ),
         right: (
             <>
+                {!!exportFileName && (
+                    <TableExport
+                        table={table}
+                        fileName={exportFileName}
+                        rowSelection={selectedRows || rowSelection}
+                    />
+                )}
                 <ColumnToggle table={table} tableColumns={tableColumns} columnVisibility={columnVisibility}/>
                 {typeof utilityHeader === 'object' && utilityHeader?.right}
             </>
         ),
-    }), [utilityHeader, enableSearch, searchPlaceholder, table, tableColumns, columnVisibility]);
+    }), [enableSearch, table, searchPlaceholder, utilityHeader, exportFileName, selectedRows, rowSelection, tableColumns, columnVisibility]);
 
     console.log('gridTemplateColumns: ', gridTemplateColumns)
     return (
