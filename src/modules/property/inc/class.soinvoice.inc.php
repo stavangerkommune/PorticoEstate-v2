@@ -227,7 +227,7 @@ class property_soinvoice
 		if ($query && !$no_q)
 		{
 			$query		 = (int)$query;
-			$querymethod = " $where ( spvend_code = {$query} OR bilagsnr = {$query})";
+			$querymethod = " $where ( spvend_code = {$query} OR bilagsnr = {$query} OR external_voucher_id = {$query})";
 		}
 
 
