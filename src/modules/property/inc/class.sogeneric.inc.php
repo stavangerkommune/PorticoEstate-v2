@@ -1125,6 +1125,20 @@
 								)
 							),
 							array(
+								'name'		 => 'eco_service_id',
+								'descr'		 => lang('service'),
+								'type'		 => 'select',
+								'nullable'	 => true,
+								'filter'	 => true,
+								'values_def' => array(
+									'valueset'			 => false,
+									'method'			 => 'property.bogeneric.get_list',
+									'get_single_value'	 => 'property.sogeneric.get_name',
+									'method_input'		 => array('type' => 'eco_service', 'selected' => '##eco_service_id##')
+								)
+							),
+	
+							array(
 								'name'		 => 'active',
 								'descr'		 => lang('active'),
 								'type'		 => 'checkbox',
