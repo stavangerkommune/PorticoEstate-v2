@@ -367,11 +367,13 @@ class property_uiinvoice extends phpgwapi_uicommon_jquery
 		if ($paid)
 		{
 			$this->flags['menu_selection'] = 'property::economy::paid';
+			
 		}
 		else
 		{
 			$this->flags['menu_selection'] = 'property::economy::invoice::invoice';
 		}
+		Settings::getInstance()->update('flags', ['menu_selection' => $this->flags['menu_selection']]);
 		//-- captura datos de URL
 		$start_date	 = $start_date ? urldecode($start_date) : '';
 		$end_date	 = $end_date ? urldecode($end_date) : '';
@@ -2231,6 +2233,7 @@ JS;
 
 		//-- ubica focus del menu derecho
 		$this->flags['menu_selection'] = 'property::economy::consume';
+		Settings::getInstance()->update('flags', ['menu_selection' => 'property::economy::consume']);
 
 		//-- captura datos de URL
 		$start_date	 = $start_date ? urldecode($start_date) : '';
@@ -2533,6 +2536,7 @@ JS;
 		}
 
 		$this->flags['menu_selection'] .= '::add';
+		Settings::getInstance()->update('flags', ['menu_selection' => $this->flags['menu_selection']]);
 
 		$receipt = Cache::session_get('add_receipt', 'session_data');
 
@@ -3268,6 +3272,7 @@ JS;
 		$type = Sanitizer::get_var('type', 'string', 'GET', 'deposition');
 
 		$this->flags['menu_selection'] = "property::economy::{$type}";
+		Settings::getInstance()->update('flags', ['menu_selection' => $this->flags['menu_selection']]);
 
 		$values = Sanitizer::get_var('values');
 
