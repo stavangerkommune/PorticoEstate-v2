@@ -755,6 +755,7 @@ JS;
 				'hidden',
 				'hidden',
 				'link',
+				'varchar',
 				'link',
 				'hidden',
 				'hidden',
@@ -787,6 +788,7 @@ JS;
 				'number',
 				'',
 				'url',
+				'number',
 				'msg_box',
 				'',
 				'',
@@ -819,6 +821,7 @@ JS;
 				'voucher_id_num',
 				'voucher_id',
 				'voucher_id_lnk',
+				'external_voucher_id',
 				'voucher_date_lnk',
 				'sign_orig',
 				'num_days_orig',
@@ -851,6 +854,7 @@ JS;
 				'voucher_id',
 				'voucher_id',
 				'voucher_id',
+				'external_voucher_id',
 				'voucher_date',
 				'sign_orig',
 				'num_days',
@@ -873,6 +877,7 @@ JS;
 				'transfer_id'
 			),
 			'formatter'	 => array(
+				'',
 				'',
 				'',
 				'',
@@ -915,6 +920,7 @@ JS;
 				'dummy',
 				'dummy',
 				lang('voucher'),
+				lang('voucher') . ' 2',
 				lang('Voucher Date'),
 				'dummy',
 				'dummy',
@@ -937,6 +943,7 @@ JS;
 				lang('Transfer')
 			),
 			'className'	 => array(
+				'',
 				'',
 				'',
 				'',
@@ -1023,11 +1030,16 @@ JS;
 			'menuaction' => 'property.uiinvoice.list_sub',
 			'user_lid'	 => $this->user_lid
 		));
+		$link_sub_paid = phpgw::link('/index.php', array(
+			'menuaction' => 'property.uiinvoice.list_sub',
+			'user_lid'	 => $this->user_lid,
+			'paid'		 => true
+		));
 
-		if ($paid)
-		{
-			$link_sub .= "&paid=true";
-		}
+//		if ($paid)
+//		{
+//			$link_sub .= "&paid=true";
+//		}
 
 		$data	 = array();
 		$j		 = 0;
@@ -1069,7 +1081,14 @@ JS;
 							$data[$j]['column'][$i]['link']		 = '#';
 							if ($uicols['type'][$i] == 'url')
 							{
-								$data[$j]['column'][$i]['link'] = $link_sub . "&voucher_id=" . $invoices[$uicols['name'][$i]];
+								if($invoices['period'])
+								{
+									$data[$j]['column'][$i]['link'] = $link_sub_paid . "&voucher_id=" . $invoices[$uicols['name'][$i]];
+								}
+								else
+								{
+									$data[$j]['column'][$i]['link'] = $link_sub . "&voucher_id=" . $invoices[$uicols['name'][$i]];
+								}
 							}
 							$data[$j]['column'][$i]['target'] = '';
 						}
