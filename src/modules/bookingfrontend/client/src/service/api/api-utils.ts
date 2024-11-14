@@ -87,7 +87,6 @@ export async function fetchInvoices(): Promise<ICompletedReservation[]> {
     return result;
 }
 
-
 export async function deletePartialApplication(id: number): Promise<void> {
     const queryClient = getQueryClient();
     queryClient.resetQueries({queryKey: ['partialApplications']})
