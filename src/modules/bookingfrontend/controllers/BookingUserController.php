@@ -9,6 +9,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Exception;
+use Sanitizer;
 
 /**
  * @OA\Tag(
@@ -150,7 +151,7 @@ class BookingUserController
             $updateData = [];
             foreach ($data as $field => $value) {
                 if (isset(self::ALLOWED_FIELDS[$field])) {
-                    $updateData[$field] = $value;
+                    $updateData[$field] = Sanitizer::clean_value($value, $value_type = 'string', $default = null);
                 }
             }
 

@@ -58,8 +58,9 @@ export async function patchBookingUser(updateData: Partial<IBookingUser>): Promi
     const url = phpGWLink(['bookingfrontend', 'user']);
     const response = await fetch(url, {method: 'PATCH', body: JSON.stringify(updateData)});
     const result = await response.json();
-
-    console.log("PATCH result: ", result);
+    if(process.env.NODE_ENV === 'development') {
+        console.log("PATCH result: ", result);
+    }
     return result;
 }
 
