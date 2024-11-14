@@ -1,6 +1,6 @@
 import {DateTime} from "luxon";
 import {phpGWLink} from "@/service/util";
-import {IBookingUser, IDocument, IServerSettings} from "@/service/types/api.types";
+import {IBookingUser, IBookingUserBase, IDocument, IServerSettings} from "@/service/types/api.types";
 import {IApplication} from "@/service/types/api/application.types";
 import {getQueryClient} from "@/service/query-client";
 import {ICompletedReservation} from "@/service/types/api/invoices.types";
@@ -44,15 +44,27 @@ export async function fetchServerSettings(): Promise<IServerSettings> {
     return result;
 }
 
-export async function fetchBookingUser(): Promise<IBookingUser> {
+export async function fetchBookingUser(): Promise<IBookingUserBase> {
     const url = phpGWLink(['bookingfrontend', 'user']);
     const response = await fetch(url);
     const result = await response.json();
     return result;
 }
 
+export async function patchBookingUser(updateData: Partial<IBookingUser>): Promise<{
+    message?: string,
+    user?: IBookingUserBase
+}> {
+    const url = phpGWLink(['bookingfrontend', 'user']);
+    const response = await fetch(url, {method: 'PATCH', body: JSON.stringify(updateData)});
+    const result = await response.json();
 
-export async function fetchPartialApplications(): Promise<{list: IApplication[], total_sum: number}> {
+    console.log("PATCH result: ", result);
+    return result;
+}
+
+
+export async function fetchPartialApplications(): Promise<{ list: IApplication[], total_sum: number }> {
     const url = phpGWLink(['bookingfrontend', 'applications', 'partials']);
     const response = await fetch(url);
     const result = await response.json();
@@ -60,7 +72,7 @@ export async function fetchPartialApplications(): Promise<{list: IApplication[],
 }
 
 
-export async function fetchDeliveredApplications(): Promise<{list: IApplication[], total_sum: number}> {
+export async function fetchDeliveredApplications(): Promise<{ list: IApplication[], total_sum: number }> {
     const url = phpGWLink(['bookingfrontend', 'applications']);
     const response = await fetch(url);
     const result = await response.json();
@@ -75,7 +87,6 @@ export async function fetchInvoices(): Promise<ICompletedReservation[]> {
 }
 
 
-
 export async function deletePartialApplication(id: number): Promise<void> {
     const queryClient = getQueryClient();
     queryClient.resetQueries({queryKey: ['partialApplications']})
@@ -86,7 +97,6 @@ export async function deletePartialApplication(id: number): Promise<void> {
 
     return result;
 }
-
 
 
 export function getDocumentLink(doc: IDocument): string {

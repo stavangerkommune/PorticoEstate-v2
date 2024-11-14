@@ -62,6 +62,7 @@ $app->post('/bookingfrontend/index.php', StartPoint::class . ':bookingfrontend')
 $app->group('/bookingfrontend', function (RouteCollectorProxy $group)
 {
     $group->get('/user', BookingUserController::class . ':index');
+    $group->patch('/user', BookingUserController::class . ':update');
 })->add(new SessionsMiddleware($app->getContainer()));
 
 
