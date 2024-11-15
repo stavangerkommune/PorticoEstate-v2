@@ -99,7 +99,3 @@ export async function deletePartialApplication(id: number): Promise<void> {
 }
 
 
-export function getDocumentLink(doc: IDocument): string {
-    const url = phpGWLink(['bookingfrontend', 'documents', doc.id, 'download']);
-    return url
-}
