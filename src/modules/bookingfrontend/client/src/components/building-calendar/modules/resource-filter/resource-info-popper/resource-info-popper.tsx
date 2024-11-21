@@ -1,7 +1,6 @@
 import {FC, useEffect, useRef, useState} from 'react';
 import {arrow, autoUpdate, flip, offset, Placement, shift, useFloating} from "@floating-ui/react";
 import {useIsMobile} from "@/service/hooks/is-mobile";
-import {useTrans} from "@/app/i18n/ClientTranslationProvider";
 import ResourceInfoPopperContent
     from "@/components/building-calendar/modules/resource-filter/resource-info-popper/resource-info-popper-content";
 import MobileDialog from "@/components/dialog/mobile-dialog";
@@ -52,7 +51,7 @@ const ResourceInfoPopper: FC<ResourceInfoPopperProps> = ({ resource_id, onClose,
         }
     }, [open, anchor, onClose, refs.floating]);
 
-    if (!resource_id || !anchor) {
+    if (!resource_id || !anchor || !resource_name) {
         return null;
     }
     const content = <ResourceInfoPopperContent resource_id={resource_id} onClose={onClose} name={resource_name} />

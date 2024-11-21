@@ -251,7 +251,7 @@ const EventContent: FC<EventContentProps> = (props) => {
         );
     };
 
-    const actualTimeText = formatEventTime(eventInfo.event, eventInfo.view.currentStart);
+    const actualTimeText = formatEventTime(eventInfo.event);
 
     const content = (
         <div className={`${styles.event} ${eventLen}`} onClick={() => console.log(layout, eventInfo.event.start, eventInfo.event.end)}>
