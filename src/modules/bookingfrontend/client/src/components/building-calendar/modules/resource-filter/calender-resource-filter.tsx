@@ -4,10 +4,12 @@ import ColourCircle from "@/components/building-calendar/modules/colour-circle/c
 import {Checkbox, Button} from "@digdir/designsystemet-react";
 import {useTempEvents} from "@/components/building-calendar/calendar-context";
 import {useTrans} from "@/app/i18n/ClientTranslationProvider";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faLayerGroup} from "@fortawesome/free-solid-svg-icons";
 import MobileDialog from "@/components/dialog/mobile-dialog";
 import {useIsMobile} from "@/service/hooks/is-mobile";
+import {InformationSquareIcon} from "@navikt/aksel-icons";
+import ResourceInfoPopper
+    from "@/components/building-calendar/modules/resource-filter/resource-info-popper/resource-info-popper";
+import {FCallEvent, FCallTempEvent} from "@/components/building-calendar/building-calendar.types";
 
 export interface CalendarResourceFilterOption {
     value: string;
@@ -19,7 +21,7 @@ interface CalendarResourceFilterProps {
     resourceOptions: CalendarResourceFilterOption[];
     enabledResources: Set<string>;
     onToggle: (resourceId: string) => void;
-    transparent:  boolean;
+    transparent: boolean;
     onToggleAll: () => void;
     setOpen: (open: boolean) => void;
 }
@@ -30,16 +32,18 @@ const CalendarResourceFilter: FC<CalendarResourceFilterProps> = ({
                                                                      onToggle,
                                                                      onToggleAll,
                                                                      open,
-                                                                 transparent,
+                                                                     transparent,
                                                                      setOpen
                                                                  }) => {
     const isMobile = useIsMobile();
     const t = useTrans();
     const {tempEvents} = useTempEvents();
-
+    const [popperResource, setPopperResource] = useState<CalendarResourceFilterOption | null>(null);
+    const [popperAnchorEl, setPopperAnchorEl] = useState<HTMLElement | null>(null);
 
     const content = (
-        <div className={`${styles.resourceToggleContainer} ${!open ? styles.hidden : ''}  ${transparent ? styles.transparent : ''}`}
+        <div
+            className={`${styles.resourceToggleContainer} ${!open ? styles.hidden : ''}  ${transparent ? styles.transparent : ''}`}
         >
             <div className={styles.toggleAllContainer}>
                 {/*<Button*/}
@@ -79,15 +83,30 @@ const CalendarResourceFilter: FC<CalendarResourceFilterProps> = ({
                     >
                         <label
                             htmlFor={`resource-${resource.value}`}
-                            className={styles.resourceLabel}
+                            className={`${styles.resourceLabel} text-normal`}
                         >
-                            {resource.label}
-                            <ColourCircle resourceId={+resource.value} size={'medium'}/>
+                            <div>
+                                <ColourCircle resourceId={+resource.value} size={'medium'}/>
+
+                                <span>{resource.label}</span>
+                            </div>
+                            {!isMobile && (
+                                <Button variant={'tertiary'} size={'sm'} data-size="xs" onClick={(a) => {
+                                    setPopperResource(resource);
+                                    setPopperAnchorEl(a.currentTarget)
+                                }}><InformationSquareIcon
+                                    fontSize={'1.5rem'}/></Button>)}
                         </label>
                     </Checkbox>
 
                 </div>
             ))}
+            {!isMobile && (
+                <ResourceInfoPopper resource_id={popperResource?.value || null} resource_name={popperResource?.label || null} onClose={() => {
+                    setPopperResource(null);
+                    setPopperAnchorEl(null);
+                }} anchor={popperAnchorEl} placement={'right-start'} />
+                )}
         </div>
     );
 

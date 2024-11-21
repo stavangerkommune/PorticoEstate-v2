@@ -7,7 +7,8 @@ import interactionPlugin, {EventResizeDoneArg} from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import {IEvent, IShortResource, Season} from "@/service/pecalendar.types";
 import {
-    DateSelectArg,
+    AllowFunc,
+    DateSelectArg, DateSpanApi,
     DatesSetArg,
     EventDropArg,
     EventInput,
@@ -16,9 +17,8 @@ import styles from './building-calender.module.scss'
 import {FCallEventConverter} from "@/components/building-calendar/util/event-converter";
 import CalendarResourceFilter, {
     CalendarResourceFilterOption
-} from "@/components/building-calendar/modules/calender-resource-filter";
+} from "@/components/building-calendar/modules/resource-filter/calender-resource-filter";
 import EventContent from "@/components/building-calendar/modules/event/content/event-content";
-import CalendarHeader from "@/components/building-calendar/modules/header/calendar-header";
 import EventPopper from "@/components/building-calendar/modules/event/popper/event-popper";
 import CalendarInnerHeader from "@/components/building-calendar/modules/header/calendar-inner-header";
 import {usePopperData} from "@/service/api/event-info";
@@ -35,6 +35,8 @@ import {useTrans} from "@/app/i18n/ClientTranslationProvider";
 import {Placement} from "@floating-ui/utils";
 import {useIsMobile} from "@/service/hooks/is-mobile";
 import EventContentList from "@/components/building-calendar/modules/event/content/event-content-list";
+import {EventImpl} from "@fullcalendar/core/internal";
+import EventContentAllDay from "@/components/building-calendar/modules/event/content/event-content-all-day";
 
 interface BuildingCalendarProps {
     events: IEvent[];
@@ -55,7 +57,7 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
     const t = useTrans();
     const {events} = props;
     const [currentDate, setCurrentDate] = useState<DateTime>(props.initialDate);
-    const [calendarEvents, setCalendarEvents] = useState<FCallEvent[]>([]);
+    const [calendarEvents, setCalendarEvents] = useState<(FCallBaseEvent)[]>([]);
     const [slotMinTime, setSlotMinTime] = useState('00:00:00');
     const [slotMaxTime, setSlotMaxTime] = useState('24:00:00');
     const [selectedEvent, setSelectedEvent] = useState<FCallEvent | FCallTempEvent | null>(null);
@@ -71,7 +73,6 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
     // const [enabledResources, setEnabledResources] = useState<Set<string>>(
     //     new Set(resourceOptions.map(option => option.value))
     // );
-
     const eventInfos = usePopperData(
         events.filter(e => e.type === 'event').map(e => e.id),
         events.filter(e => e.type === 'allocation').map(e => e.id),
@@ -203,10 +204,26 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
 
     const renderBackgroundEvents = useCallback(() => {
         const backgroundEvents: FCallBackgroundEvent[] = [];
+        const today = DateTime.now();
         const startDate = currentDate.startOf('week');
-        const endDate = startDate.plus({weeks: 4});
+        const endDate = startDate.plus({ weeks: 4 });
+        // Add past dates background
+        if (startDate.toMillis() < today.toMillis()) {
+            console.log(startDate.toJSDate(), today.toJSDate())
 
-        for (let date = startDate; date < endDate; date = date.plus({days: 1})) {
+            backgroundEvents.push({
+                start: startDate.toJSDate(),
+                end: today.toJSDate(),
+                display: 'background',
+                classNames: styles.closedHours,
+                extendedProps: {
+                    type: 'background'
+                }
+            });
+        }
+
+        // Add closed hours for each day
+        for (let date = startDate; date < endDate; date = date.plus({ days: 1 })) {
             const dayOfWeek = date.weekday;
             const season = props.seasons.find(s => s.wday === dayOfWeek);
 
@@ -218,6 +235,7 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
                     display: 'background',
                     classNames: styles.closedHours,
                     extendedProps: {
+                        closed: true,
                         type: 'background'
                     }
                 });
@@ -225,10 +243,11 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
                 // Add background event for time after closing
                 backgroundEvents.push({
                     start: new Date(date.toFormat(`yyyy-MM-dd'T${season.to_}'`)),
-                    end: new Date(date.plus({days: 1}).toFormat("yyyy-MM-dd'T00:00:00'")),
+                    end: new Date(date.plus({ days: 1 }).toFormat("yyyy-MM-dd'T00:00:00'")),
                     display: 'background',
                     classNames: styles.closedHours,
                     extendedProps: {
+                        closed: true,
                         type: 'background'
                     }
                 });
@@ -238,6 +257,45 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
         return backgroundEvents;
     }, [currentDate, props.seasons]);
 
+
+
+    const checkEventOverlap = useCallback((span: DateSpanApi, movingEvent: EventImpl | null): boolean => {
+        const calendarApi = calendarRef.current?.getApi();
+        if (!calendarApi) return false;
+
+        const selectStart = DateTime.fromJSDate(span.start);
+        const selectEnd = DateTime.fromJSDate(span.end);
+
+        // Get all events in the calendar
+        const allEvents = calendarApi.getEvents();
+
+        // Filter to only get actual events (not background events)
+        const relevantEvents = allEvents.filter(event => {
+            const eventProps = event.extendedProps as any;
+            // Skip the moving event if it exists
+            if (movingEvent && event === movingEvent) {
+                return false;
+            }
+            return eventProps.type === 'event' || eventProps.type === 'booking' || eventProps.type === 'allocation' || eventProps.closed;
+        });
+
+        // Check for overlap with each event's actual times
+        return !relevantEvents.some(event => {
+            // Get actual start and end times from extendedProps
+            const eventStart = DateTime.fromJSDate(event.extendedProps.actualStart || event.start!);
+            const eventEnd = DateTime.fromJSDate(event.extendedProps.actualEnd || event.end!);
+
+            // Check if the selection overlaps with this event
+            const overlap = !(selectEnd <= eventStart || selectStart >= eventEnd);
+
+            // If there's an overlap and it's an event type that blocks selection, return true
+            if (overlap && (event.extendedProps.type === 'event' || event.extendedProps.closed)) {
+                return true;
+            }
+
+            return false;
+        });
+    }, []);
 
     const handleEventResize = useCallback((resizeInfo: EventResizeDoneArg | EventDropArg) => {
         if (resizeInfo.event.extendedProps?.type === 'temporary') {
@@ -269,11 +327,19 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
     }
 
     useEffect(() => {
-        const filteredEvents = events
-            .map((e) => FCallEventConverter(e, enabledResources)!)
-            .filter(e => e);
-        setCalendarEvents(filteredEvents);
+        const convertedEvents = events
+            .map((e) => FCallEventConverter(e, enabledResources))
+            .filter(e => e.mainEvent || e.backgroundEvent);
+
+        const allEvents: FCallBaseEvent[] = [
+            ...convertedEvents.map(e => e.mainEvent).filter<FCallEvent>((item): item is FCallEvent => item !== null),
+            ...convertedEvents.map(e => e.backgroundEvent).filter<FCallBackgroundEvent>((item): item is FCallBackgroundEvent => item !== null),
+            ...renderBackgroundEvents()
+        ];
+
+        setCalendarEvents(allEvents);
     }, [events, enabledResources]);
+
 
     useEffect(() => {
         calendarRef?.current?.getApi().changeView(view)
@@ -319,6 +385,9 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
         }
     }, [isMobile]);
 
+
+    // console.log([...calendarEvents, ...tempEventArr, ...renderBackgroundEvents()])
+
     function renderEventContent(eventInfo: FCEventContentArg<FCallBaseEvent>) {
         const type = eventInfo.event.extendedProps.type;
         if (type === 'background') {
@@ -327,8 +396,12 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
         if (type === 'temporary') {
             return <EventContentTemp eventInfo={eventInfo as FCEventContentArg<FCallTempEvent>}/>
         }
+
         if (calendarRef.current?.getApi().view.type === 'listWeek') {
             return <EventContentList eventInfo={eventInfo as FCEventContentArg<FCallEvent>} />;
+        }
+        if (eventInfo.event.allDay) {
+            return <EventContentAllDay eventInfo={eventInfo as FCEventContentArg<FCallEvent>} />;
         }
         return <EventContent eventInfo={eventInfo as FCEventContentArg<FCallEvent>}
         />
@@ -368,6 +441,7 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
                     eventClick={(clickInfo) => handleEventClick(clickInfo as any)}
                     datesSet={(dateInfo) => {
                         props.onDateChange(dateInfo);
+                        setCurrentDate(DateTime.fromJSDate(dateInfo.start));
                     }}
                     eventContent={(eventInfo: FCEventContentArg<FCallEvent | FCallTempEvent>) => renderEventContent(eventInfo)}
                     views={{
@@ -408,9 +482,13 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
                     eventMaxStack={4}
                     select={handleDateSelect}
                     dateClick={handleDateClick}
-                    events={[...calendarEvents, ...tempEventArr, ...renderBackgroundEvents()] as EventInput[]}
+                    events={[...calendarEvents, ...tempEventArr] as EventInput[]}
                     // editable={true}
-                    selectOverlap={(stillEvent, movingEvent) => stillEvent?.extendedProps?.type !== 'event'}
+                    // selectOverlap={(stillEvent, movingEvent) => {
+                    //     console.log(stillEvent);
+                    //     return stillEvent?.extendedProps?.type !== 'event'
+                    // }}
+                    selectAllow={checkEventOverlap}
                     eventResize={handleEventResize}
                     eventDrop={handleEventResize}
                     initialDate={currentDate.toJSDate()}
