@@ -138,8 +138,8 @@ class TenantController
 
 			$tenant = new Tenant($result);
             $response->getBody()->write(json_encode($tenant->serialize($this->getUserRoles())));
-			echo json_encode($tenant->serialize($this->getUserRoles()));
-			die();
+	//		echo json_encode($tenant->serialize($this->getUserRoles()));
+	//		die();
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (Exception $e)
         {
