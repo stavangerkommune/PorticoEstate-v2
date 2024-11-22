@@ -67,8 +67,9 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
     const [resourcesHidden, setSResourcesHidden] = useState<boolean>(props.initialResourcesHidden || isMobile);
     const [resourcesContainerRendered, setResourcesContainerRendered] = useState<boolean>(!props.initialResourcesHidden && !isMobile);
     const [lastCalendarView, setLastCalendarView] = useState<string>('timeGridWeek');
-    const [tempEvents, setTempEvents] = useState<Record<string, FCallTempEvent>>({});
+    const [storedTempEvents, setStoredTempEvents] = useState<Record<string, FCallTempEvent>>({});
     const [enabledResources, setEnabledResources] = useState<Set<string>>(props.initialEnabledResources);
+    const [currentTempEvent, setCurrentTempEvent] = useState<Partial<FCallTempEvent>>();
 
     // const [enabledResources, setEnabledResources] = useState<Set<string>>(
     //     new Set(resourceOptions.map(option => option.value))
@@ -78,6 +79,7 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
         events.filter(e => e.type === 'allocation').map(e => e.id),
         events.filter(e => e.type === 'booking').map(e => e.id)
     );
+
 
 
     useEffect(() => {
@@ -137,7 +139,8 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
                 resources: [...enabledResources].map(a => props.resources[a]),
             },
         };
-        setTempEvents(prev => ({...prev, [newEvent.id]: newEvent}));
+        // setTempEvents(prev => ({...prev, [newEvent.id]: newEvent}))
+        setCurrentTempEvent(newEvent);
         selectInfo.view.calendar.unselect(); // Clear selection
     }, [props.resources, enabledResources]);
 
@@ -299,7 +302,15 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
 
     const handleEventResize = useCallback((resizeInfo: EventResizeDoneArg | EventDropArg) => {
         if (resizeInfo.event.extendedProps?.type === 'temporary') {
-            setTempEvents(prev => ({
+            if(currentTempEvent && resizeInfo.event.id === currentTempEvent.id) {
+                setCurrentTempEvent({
+                    ...currentTempEvent,
+                    end: resizeInfo.event.end as Date,
+                    start: resizeInfo.event.start as Date
+                });
+                return;
+            }
+            setStoredTempEvents(prev => ({
                 ...prev,
                 [resizeInfo.event.id]: {
                     ...prev[resizeInfo.event.id],
@@ -312,7 +323,7 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
 
     }, []);
 
-    const tempEventArr = useMemo(() => Object.values(tempEvents), [tempEvents])
+    const tempEventArr = useMemo(() => Object.values(storedTempEvents), [storedTempEvents])
 
     const popperPlacement = (): Placement => {
         switch (calendarRef.current?.getApi().view.type) {
@@ -385,7 +396,7 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
         }
     }, [isMobile]);
 
-
+    const calendarVisEvents = useMemo(() => [...calendarEvents, ...tempEventArr, currentTempEvent].filter(Boolean) as EventInput[], [calendarEvents, tempEventArr, currentTempEvent]);
     // console.log([...calendarEvents, ...tempEventArr, ...renderBackgroundEvents()])
 
     function renderEventContent(eventInfo: FCEventContentArg<FCallBaseEvent>) {
@@ -408,9 +419,9 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
     }
     return (
         <CalendarProvider resources={props.resources}
-                          tempEvents={tempEvents}
+                          tempEvents={storedTempEvents}
                           enabledResources={enabledResources}
-                          setTempEvents={setTempEvents}
+                          setTempEvents={setStoredTempEvents}
         >
             <div className={`${styles.calendar} ${resourcesHidden ? styles.closed : ''} `}
                 // onTransitionStart={handleBeforeTransition}
@@ -482,7 +493,7 @@ const BuildingCalendarClient: FC<BuildingCalendarProps> = (props) => {
                     eventMaxStack={4}
                     select={handleDateSelect}
                     dateClick={handleDateClick}
-                    events={[...calendarEvents, ...tempEventArr] as EventInput[]}
+                    events={calendarVisEvents}
                     // editable={true}
                     // selectOverlap={(stillEvent, movingEvent) => {
                     //     console.log(stillEvent);
