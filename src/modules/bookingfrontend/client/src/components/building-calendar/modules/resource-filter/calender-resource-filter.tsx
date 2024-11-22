@@ -9,7 +9,6 @@ import {useIsMobile} from "@/service/hooks/is-mobile";
 import {InformationSquareIcon} from "@navikt/aksel-icons";
 import ResourceInfoPopper
     from "@/components/building-calendar/modules/resource-filter/resource-info-popper/resource-info-popper";
-import {FCallEvent, FCallTempEvent} from "@/components/building-calendar/building-calendar.types";
 
 export interface CalendarResourceFilterOption {
     value: string;
@@ -92,6 +91,8 @@ const CalendarResourceFilter: FC<CalendarResourceFilterProps> = ({
                             </div>
                             {!isMobile && (
                                 <Button variant={'tertiary'} size={'sm'} data-size="xs" onClick={(a) => {
+                                    setPopperResource(null)
+                                    setPopperAnchorEl(null)
                                     setPopperResource(resource);
                                     setPopperAnchorEl(a.currentTarget)
                                 }}><InformationSquareIcon
