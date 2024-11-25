@@ -9,17 +9,6 @@ import {IApplication} from "@/service/types/api/application.types";
 import {ICompletedReservation} from "@/service/types/api/invoices.types";
 import {phpGWLink} from "@/service/util";
 
-// export function useBookingUser(): UseQueryResult<IBookingUserBase> {
-//     return useQuery(
-//         {
-//             queryKey: ['bookingUser'],
-//             queryFn: () => fetchBookingUser(), // Fetch function
-//             retry: 2, // Number of retry attempts if the query fails
-//             refetchOnWindowFocus: false, // Do not refetch on window focus by default
-//         }
-//     );
-// }
-
 
 export function useBookingUser() {
     return useQuery<IBookingUser>({
