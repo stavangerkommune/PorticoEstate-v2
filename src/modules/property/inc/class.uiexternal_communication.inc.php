@@ -716,7 +716,7 @@ JS;
 			'config'	 => array(
 				array('disableFilter' => true),
 				array('disablePagination' => true),
-				array('order' => json_encode(array(0, 'asc'))),
+				array('order' => json_encode(array(0, 'desc'))),
 			)
 		);
 
