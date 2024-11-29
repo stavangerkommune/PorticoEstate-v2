@@ -1244,7 +1244,7 @@ JS;
 		if (!empty($config_admin['xPortico']['sender_email_address']))
 		{
 			$coordinator_email	 = $config_admin['xPortico']['sender_email_address'];
-			$coordinator_name	 = $this->serverSettings['site_title'];
+			$coordinator_name 	 = !empty($config_admin['xPortico']['sender_name']) ? $config_admin['xPortico']['sender_name'] : $this->serverSettings['site_title'];
 		}
 
 		try
