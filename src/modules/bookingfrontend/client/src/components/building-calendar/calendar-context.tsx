@@ -10,7 +10,7 @@ interface CalendarContextType {
     enabledResources: Set<string>
     setResourcesHidden: (value: boolean) => void
     resourcesHidden: boolean
-
+    currentBuilding: number | string;
 }
 
 
@@ -26,6 +26,11 @@ export const useResourcesHidden = () => {
     const ctx = useCalendarContext();
     return {resourcesHidden: ctx.resourcesHidden, setResourcesHidden: ctx.setResourcesHidden};
 }
+export const useCurrentBuilding = () => {
+    const ctx = useCalendarContext();
+    return ctx.currentBuilding;
+}
+
 
 export const useEnabledResources = () => {
     const {setEnabledResources, enabledResources} = useCalendarContext();
@@ -48,6 +53,7 @@ interface CalendarContextProps extends CalendarContextType {
 const CalendarProvider: FC<PropsWithChildren<CalendarContextProps>> = (props) => {
     return (
         <CalendarContext.Provider value={{
+            currentBuilding: props.currentBuilding,
             setResourcesHidden: props.setResourcesHidden,
             resourcesHidden: props.resourcesHidden,
             setTempEvents: props.setTempEvents,

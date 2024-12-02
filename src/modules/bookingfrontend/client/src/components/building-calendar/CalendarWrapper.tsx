@@ -141,6 +141,7 @@ const CalendarWrapper: React.FC<CalendarWrapperProps> = ({
             setEnabledResources={setEnabledResources}
             setResourcesHidden={setResourcesHidden}
             resourcesHidden={resourcesHidden}
+            currentBuilding={buildingId}
         >
 
             <div className={`${styles.calendar} ${resourcesHidden ? styles.closed : ''} `}
