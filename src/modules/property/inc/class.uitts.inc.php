@@ -3681,6 +3681,7 @@ JS;
 		{
 			$tabs['documents']	 = array('label' => lang('documents'), 'link' => '#documents');
 		}
+		$tabs['external_communication']	 = array('label' => lang('external communication'), 'link' => '#external_communication');
 
 		if($order_read)
 		{
