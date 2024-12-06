@@ -210,7 +210,7 @@
 			return $this->repeat_type;
 		}
 
-		public function set_repeat_type_label( int $repeat_type = null )
+		public function set_repeat_type_label(int|null $repeat_type = null )
 		{
 			switch ($repeat_type)
 			{
