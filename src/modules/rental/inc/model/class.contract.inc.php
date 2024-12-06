@@ -94,7 +94,7 @@ class rental_contract extends rental_model
 	 *
 	 * @param int $id the id of this composite
 	 */
-	public function __construct(int $id = null)
+	public function __construct(int|null $id = null)
 	{
 		parent::__construct($id);
 		$this->id = (int)$id;
