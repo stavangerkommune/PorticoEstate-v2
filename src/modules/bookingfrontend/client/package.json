@@ -8,7 +8,8 @@
         "start": "next start",
         "lint": "next lint",
         "start:development": "next dev",
-        "start:production": "next start"
+        "start:production": "next start",
+        "postinstall": "patch-package"
     },
     "dependencies": {
         "@digdir/designsystemet-css": "1.0.0-next.39",
@@ -44,7 +45,9 @@
         "i18next": "^23.14.0",
         "luxon": "^3.4.4",
         "next": "14.2.4",
+        "patch-package": "^8.0.0",
         "photoswipe": "^5.4.4",
+        "postinstall-postinstall": "^2.1.0",
         "react": "^18",
         "react-country-flag": "^3.1.0",
         "react-datepicker": "^7.3.0",
