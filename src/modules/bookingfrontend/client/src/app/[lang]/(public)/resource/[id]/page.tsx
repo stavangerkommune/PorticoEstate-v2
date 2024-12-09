@@ -41,6 +41,7 @@ export async function generateMetadata(props: ResourceProps) {
         title: `${resource.name} - ${building.name}`,
     }
 }
+
 const Resource = async (props: ResourceProps) => {
     // Convert the id to a number
     const resourceId = parseInt(props.params.id, 10);
@@ -67,17 +68,17 @@ const Resource = async (props: ResourceProps) => {
         <main>
             <ResourceHeader building={building} resource={resource}/>
             <hr className={`my-2 mx-standard`}/>
-            <GSAccordion  border color={"neutral"} className={'mx-standard my-2'}>
+            <section className={'mx-standard my-2'}>
+
                 <DescriptionAccordion description_json={resource.description_json}/>
                 <PhotosAccordion object={resource} type={"resource"}/>
                 <TextAccordion text={resource.opening_hours} title={t('booking.opening hours')}/>
                 <TextAccordion text={resource.contact_info} title={t('bookingfrontend.contact information')}/>
-            </GSAccordion>
-
-            <BuildingCalendar building_id={`${building.id}`} resource_id={`${resourceId}`}/>
-            {/*<BuildingContact building={building}/>*/}
+            </section>
+                <BuildingCalendar building_id={`${building.id}`} resource_id={`${resourceId}`}/>
+                {/*<BuildingContact building={building}/>*/}
         </main>
-    );
+);
 }
 
 export default Resource

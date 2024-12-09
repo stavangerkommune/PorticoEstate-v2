@@ -36,13 +36,13 @@ body {
     }
 }
 
-.ds-accordion__item {
+.ds-details {
     border-radius: 0;
     user-select: none;
     border-left: none;
     border-right: none;
     border-bottom: none;
-    border-top: var(--dsc-accordion-border);
+    border-top: var(--dsc-details-border);
     background-color: inherit;
     u-summary {
         border-radius: 0;
