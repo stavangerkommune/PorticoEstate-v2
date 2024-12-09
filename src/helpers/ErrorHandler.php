@@ -239,17 +239,6 @@ class ErrorHandler
 					$message .=  '<pre>' . $this->phpgw_parse_backtrace($bt) . "</pre>\n";
 				}
 				break;
-			case E_STRICT:
-				$log_args['severity'] = 'S';
-				$log->strict($log_args);
-				if (isset($this->serverSettings['log_levels']['global_level']) && $this->serverSettings['log_levels']['global_level'] == 'S')
-				{
-
-					//  		Will find the messages in the log - no need to print to screen
-					//			echo '<p>' . lang('Strict: %1 in %2 at line %3', $error_msg, $error_file, $error_line) . "</p>\n";
-					//			echo '<pre>' . $this->phpgw_parse_backtrace($bt) . "</pre>\n";
-				}
-				break;
 
 			case E_DEPRECATED:
 			case E_USER_DEPRECATED:
@@ -314,7 +303,7 @@ class ErrorHandler
 
 					// Drop passwords from backtrace
 					if (
-						$arg == $this->serverSettings['header_admin_password']
+						isset($this->serverSettings['header_admin_password']) && $arg == $this->serverSettings['header_admin_password']
 						|| (isset($this->serverSettings['db_pass']) && $arg == $this->serverSettings['db_pass'])
 						|| (isset($this->userSettings['passwd']) && $arg == $this->userSettings['passwd'])
 					)

@@ -11465,17 +11465,15 @@
 	*
 	*/
 	$test[] = '0.9.17.760';
-	function property_upgrade0_9_17_760()
+	function property_upgrade0_9_17_760($oProc)
 	{
-		$GLOBALS['phpgw_setup']->oProc->m_odb->transaction_begin();
+		$oProc->m_odb->transaction_begin();
 
-		$GLOBALS['phpgw_setup']->oProc->RenameColumn('fm_ecodimb_role', 'amount', 'amount_limit');
+		$oProc->RenameColumn('fm_ecodimb_role', 'amount', 'amount_limit');
 
-
-		if($GLOBALS['phpgw_setup']->oProc->m_odb->transaction_commit())
+		if($oProc->m_odb->transaction_commit())
 		{
-			$GLOBALS['setup_info']['property']['currentver'] = '0.9.17.761';
-			return $GLOBALS['setup_info']['property']['currentver'];
+			return	'0.9.17.761';
 		}
 	}
 
@@ -11498,5 +11496,26 @@
 		if ($oProc->m_odb->transaction_commit())
 		{
 			return	'0.9.17.762';
+		}
+	}
+	/**
+	 * Update property version from 0.9.17.562 to 0.9.17.563
+	 * Rename column
+	 *
+	 */
+	$test[] = '0.9.17.762';
+	function property_upgrade0_9_17_762($oProc)
+	{
+		$oProc->m_odb->transaction_begin();
+
+		$oProc->AddColumn('fm_tenant', 'ssn', array(
+			'type' => 'varchar',
+			'precision' => 11,
+			'nullable' => True
+		));
+
+		if ($oProc->m_odb->transaction_commit())
+		{
+			return	'0.9.17.763';
 		}
 	}
