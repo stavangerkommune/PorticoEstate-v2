@@ -5,9 +5,7 @@ import PhotosAccordion from "@/components/building-page/building-photos/photos-a
 import ResourceHeader from "@/components/resource-page/resource-header";
 import TextAccordion from "@/components/building-page/text-accordion";
 import {getTranslation} from "@/app/i18n";
-import {Accordion} from "@digdir/designsystemet-react";
 import BuildingCalendar from "@/components/building-calendar";
-import GSAccordion from "@/components/gs-accordion/g-s-accordion";
 
 interface ResourceParams {
     id: string;
