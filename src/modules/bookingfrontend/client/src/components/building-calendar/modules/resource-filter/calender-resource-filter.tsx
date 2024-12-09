@@ -99,7 +99,7 @@ const CalendarResourceFilter: FC<CalendarResourceFilterProps> = ({
                                 <span>{resource.label}</span>
                             </div>
                             {!isMobile && (
-                                <Button variant={'tertiary'} data-size={'xs'} onClick={(a) => {
+                                <Button variant={'tertiary'} data-size={'sm'} onClick={(a) => {
                                     setPopperResource(resource);
                                 }}><InformationSquareIcon
                                     fontSize={'1.5rem'}/></Button>)}
