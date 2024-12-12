@@ -21,7 +21,13 @@ RUN apt-get update && apt-get install -y software-properties-common \
     sudo \
     libaio1 locales wget \
     libmagickwand-dev --no-install-recommends \
-    apache2 libapache2-mod-fcgid
+    apache2 libapache2-mod-fcgid ssl-cert \
+	cron \
+	iputils-ping \
+	wkhtmltopdf
+
+RUN touch /etc/cron.d/cronjob && chmod 0644 /etc/cron.d/cronjob
+
 
 # Download and install the install-php-extensions script
 RUN curl -sSL https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o /usr/local/bin/install-php-extensions \
@@ -157,7 +163,6 @@ ENV APP_DOCUMENT_ROOT=/var/www/html
 
 EXPOSE 80
 
-RUN apt-get update && apt-get install -y ssl-cert
 
 # Enable Apache modules
 RUN a2enmod proxy_fcgi setenvif
