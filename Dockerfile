@@ -28,6 +28,14 @@ RUN apt-get update && apt-get install -y software-properties-common \
 
 RUN touch /etc/cron.d/cronjob && chmod 0644 /etc/cron.d/cronjob
 
+# Generate the specified locale
+RUN locale-gen --purge en_US.UTF-8
+
+# Set environment variables
+ENV LC_ALL=en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US.UTF-8
+
 
 # Download and install the install-php-extensions script
 RUN curl -sSL https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o /usr/local/bin/install-php-extensions \
@@ -66,12 +74,6 @@ RUN if [ "${INSTALL_MSSQL}" = "true" ]; then \
     pecl install sqlsrv pdo_sqlsrv && \
     docker-php-ext-enable sqlsrv pdo_sqlsrv; \
     fi
-
-# Configure locales
-RUN locale-gen --purge en_US.UTF-8
-ENV LC_ALL=en_US.UTF-8
-ENV LANG=en_US.UTF-8
-ENV LANGUAGE=en_US.UTF-8
 
 # PHP configuration
 RUN if [ "${INSTALL_XDEBUG}" = "true" ]; then \
@@ -139,18 +141,23 @@ RUN mkdir -p /var/public/files
 RUN chmod 777 /var/public/files
 
 # Ensure PHP-FPM socket directory exists
-RUN mkdir -p /run/php
+RUN mkdir -p /run/php && chown www-data:www-data /run/php
 
-# Update PHP-FPM configuration
+# Update PHP-FPM configuration to use Unix socket
+RUN sed -i 's|^listen = .*|listen = /run/php/php8.3-fpm.sock|' /usr/local/etc/php-fpm.d/www.conf \
+    && echo 'listen.owner = www-data' >> /usr/local/etc/php-fpm.d/www.conf \
+    && echo 'listen.group = www-data' >> /usr/local/etc/php-fpm.d/www.conf \
+    && echo 'listen.mode = 0660' >> /usr/local/etc/php-fpm.d/www.conf
 
-RUN sed -i 's|^listen = .*|listen = 127.0.0.1:9000|' /usr/local/etc/php-fpm.d/www.conf
-
-
-# Ensure PHP-FPM PID file is defined
-#RUN sed -i 's|^;pid = .*|pid = /run/php/php-fpm.pid|' /usr/local/etc/php-fpm.conf
+# Alternative: Update PHP-FPM configuration to use TCP socket
+#RUN sed -i 's|^listen = .*|listen = 127.0.0.1:9000|' /usr/local/etc/php-fpm.d/www.conf
 
 # Update include directive in php-fpm.conf
 RUN sed -i 's|^include=.*|include=/usr/local/etc/php-fpm.d/*.conf|' /usr/local/etc/php-fpm.conf
+
+# Comment out conflicting listen directives
+RUN sed -i 's|^listen = .*|;listen = 127.0.0.1:9000|' /usr/local/etc/php-fpm.d/www.conf.default
+RUN sed -i 's|^listen = .*|;listen = 9000|' /usr/local/etc/php-fpm.d/zz-docker.conf
 
 # Copy PHP-FPM configuration
 COPY php-fpm.conf /etc/apache2/conf-available/php-fpm.conf
