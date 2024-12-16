@@ -212,7 +212,7 @@ const EventCrud: React.FC<EventCrudProps> = ({selectedTempEvent, onClose}) => {
             return (
                 <div className={styles.selectedResourcesList}>
                     <div className={styles.resourcesHeader}>
-                        <h4>{t('bookingfrontend.selected_resources')}</h4>
+                        <h4>{t('bookingfrontend.chosen rent object')}</h4>
                         <Button
                             variant="tertiary"
                             data-size="sm"
@@ -262,7 +262,7 @@ const EventCrud: React.FC<EventCrudProps> = ({selectedTempEvent, onClose}) => {
         return (
             <div className={styles.resourceList}>
                 <div className={styles.resourcesHeader}>
-                    <h4>{t('bookingfrontend.select_resources')}</h4>
+                    <h4>{t('bookingfrontend.choose resources')}</h4>
                     <Button
                         variant="tertiary"
                         data-size="sm"
@@ -350,10 +350,10 @@ const EventCrud: React.FC<EventCrudProps> = ({selectedTempEvent, onClose}) => {
                             control={control}
                             render={({field}) => (
                                 <Textfield
-                                    label={t('common.title')}
+                                    label={t('bookingfrontend.title')}
                                     {...field}
                                     error={errors.title?.message}
-                                    placeholder={t('bookingfrontend.enter title')}
+                                    placeholder={t('bookingfrontend.enter_title')}
                                 />
                             )}
                         />
