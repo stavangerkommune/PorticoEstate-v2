@@ -371,3 +371,5 @@ choose language	common	no	Velg språk
 which language do you want?	common	no	Hvilket språk ønsker du?
 which language do you want?	common	no	Hvilket språk ønsker du?
 error_report_system	common	no	Feilmelding (om systemet)
+start	common	no	Start
+end	common	no	Slutt
