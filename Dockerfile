@@ -1,5 +1,5 @@
 # Use an official PHP-FPM base image
-FROM php:8.3-fpm
+FROM php:8.4-fpm
 
 LABEL maintainer="Sigurd Nes <sigurdne@gmail.com>"
 
@@ -8,9 +8,6 @@ ARG INSTALL_MSSQL=false
 ARG INSTALL_XDEBUG=false
 ARG INSTALL_ORACLE=false
 
-# Define build argument for OCI8 version
-ARG OCI8_VERSION=3.4.0
-ARG PDO_OCI_VERSION=1.1.0
 
 # Install necessary packages
 RUN apt-get update && apt-get install -y software-properties-common \
