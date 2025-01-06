@@ -9,6 +9,24 @@ ARG INSTALL_XDEBUG=false
 ARG INSTALL_ORACLE=false
 
 
+# Download and install the install-php-extensions script
+RUN curl -sSL https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o /usr/local/bin/install-php-extensions \
+    && chmod +x /usr/local/bin/install-php-extensions
+
+# Configure PEAR
+RUN if [ -n "${http_proxy}" ]; then pear config-set http_proxy ${http_proxy}; fi && \
+    pear config-set php_ini $PHP_INI_DIR/php.ini
+
+
+# Conditionally install Oracle support
+RUN if [ "${INSTALL_ORACLE}" = "true" ]; then \
+    echo "Installing Oracle support..."; \
+     # Install OCI8 and PDO_OCI extensions
+    install-php-extensions oci8 pdo_oci; \
+else \
+    echo "Skipping Oracle support installation."; \
+fi
+
 # Install necessary packages
 RUN apt-get update && apt-get install -y software-properties-common \
     apt-utils libcurl4-openssl-dev libicu-dev libxslt-dev libpq-dev zlib1g-dev libpng-dev libc-client-dev libkrb5-dev libzip-dev libonig-dev \
@@ -33,14 +51,6 @@ ENV LC_ALL=en_US.UTF-8
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US.UTF-8
 
-
-# Download and install the install-php-extensions script
-RUN curl -sSL https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o /usr/local/bin/install-php-extensions \
-    && chmod +x /usr/local/bin/install-php-extensions
-
-# Configure PEAR
-RUN if [ -n "${http_proxy}" ]; then pear config-set http_proxy ${http_proxy}; fi && \
-    pear config-set php_ini $PHP_INI_DIR/php.ini
 
 # Install PHP extensions
 RUN docker-php-ext-install curl intl xsl pdo_pgsql pdo_mysql gd \
@@ -103,36 +113,6 @@ RUN apt-get update && apt-get install -y msopenjdk-21 unzip
 
 ## Verify Java installation
 RUN java -version
-
-# Copy all content from the host oracle directory to /tmp in the build context
-# https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html
-COPY oracle/ /tmp/
-
-# Set environment variables for Oracle support
-ENV LD_LIBRARY_PATH=/usr/local/lib/instantclient_12_2
-ENV TNS_ADMIN=/usr/local/lib/instantclient_12_2
-ENV ORACLE_BASE=/usr/local/lib/instantclient_12_2
-ENV ORACLE_HOME=/usr/local/lib/instantclient_12_2
-
-# Conditionally install Oracle support
-RUN if [ "${INSTALL_ORACLE}" = "true" ]; then \
-    echo "Installing Oracle support..."; \
-    # Unzip Oracle Instant Client
-    unzip -o /tmp/instantclient-sdk-linux.x64-12.2.0.1.0.zip -d /usr/local/lib/; \
-    unzip -o /tmp/instantclient-basic-linux.x64-12.2.0.1.0.zip -d /usr/local/lib/; \
-    # Create symbolic links
-    ln -s /usr/local/lib/instantclient_12_2/libclntsh.so.12.1 /usr/local/lib/instantclient_12_2/libclntsh.so; \
-    mkdir -p /usr/local/lib/instantclient_12_2/lib/oracle/12.2; \
-    ln -s /usr/local/lib/instantclient_12_2/sdk/ /usr/local/lib/instantclient_12_2/lib/oracle/12.2/client; \
-    ln -s /usr/local/lib/instantclient_12_2 /usr/local/lib/instantclient_12_2/lib/oracle/12.2/client/lib; \
-    # Install OCI8 and PDO_OCI extensions
-    install-php-extensions oci8 pdo_oci; \
-    # Clean up
-    rm -rf /tmp/instantclient-sdk-linux.x64-12.2.0.1.0.zip /tmp/instantclient-basic-linux.x64-12.2.0.1.0.zip; \
-else \
-    echo "Skipping Oracle support installation."; \
-fi
-
 
 RUN mkdir -p /var/public/files
 RUN chmod 777 /var/public/files
